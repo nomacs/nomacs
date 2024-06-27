@@ -55,7 +55,7 @@ DkMenuBar::DkMenuBar(QWidget *parent, int timeToShow)
 
     mTimerMenu = new QTimer(this);
     mTimerMenu->setSingleShot(true);
-    connect(mTimerMenu, SIGNAL(timeout()), this, SLOT(hideMenu()));
+    connect(mTimerMenu, &QTimer::timeout, this, &DkMenuBar::hideMenu);
 
     // uncomment if you want to show menu on start-up
     // if (timeToShow != -1)
@@ -153,8 +153,8 @@ void DkMenuBar::leaveEvent(QEvent *event)
 DkTcpMenu::DkTcpMenu(const QString &title, QWidget *parent)
     : QMenu(title, parent)
 {
-    connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
-    connect(this, SIGNAL(synchronizeWithSignal(quint16)), DkSyncManager::inst().client(), SLOT(synchronizeWith(quint16)));
+    connect(this, &DkTcpMenu::aboutToShow, this, &DkTcpMenu::updatePeers);
+    connect(this, &DkTcpMenu::synchronizeWithSignal, DkSyncManager::inst().client(), &DkClientManager::synchronizeWith);
 }
 
 DkTcpMenu::~DkTcpMenu()
@@ -234,9 +234,11 @@ void DkTcpMenu::updatePeers()
         if (!mNoClientsFound)
             peerEntry->setTcpActions(&mTcpActions);
 
-        connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), ct, SLOT(synchronizeWith(quint16)));
-        connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), ct, SLOT(stopSynchronizeWith(quint16)));
-        connect(peerEntry, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
+        connect(peerEntry, &DkTcpAction::synchronizeWithSignal, ct, &DkClientManager::synchronizeWith);
+        connect(peerEntry, &DkTcpAction::disableSynchronizeWithSignal, ct, &DkClientManager::stopSynchronizeWith);
+        connect(peerEntry, &DkTcpAction::enableActions, this, [this](bool enable) {
+            this->enableActions(enable);
+        });
 
         addAction(peerEntry);
     }
@@ -279,7 +281,7 @@ void DkTcpAction::init()
     setObjectName("tcpAction");
     setCheckable(true);
     setChecked(peer->isSynchronized());
-    connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
+    connect(this, &DkTcpAction::triggered, this, &DkTcpAction::synchronize);
 }
 
 void DkTcpAction::setTcpActions(QList<QAction *> *actions)

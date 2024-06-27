@@ -31,6 +31,7 @@
 #include "DkImageLoader.h"
 #include "DkImageStorage.h"
 #include "DkMessageBox.h"
+#include "DkNoMacs.h"
 #include "DkSettings.h"
 #include "DkStatusBar.h"
 #include "DkThumbs.h"
@@ -60,6 +61,7 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <QUrl>
+#include <QtGlobal>
 #include <qmath.h>
 #pragma warning(pop) // no warnings from includes - end
 
@@ -106,7 +108,7 @@ void DkFilePreview::init()
 
     moveImageTimer = new QTimer(this);
     moveImageTimer->setInterval(5); // reduce cpu utilization
-    connect(moveImageTimer, SIGNAL(timeout()), this, SLOT(moveImages()));
+    connect(moveImageTimer, &QTimer::timeout, this, &DkFilePreview::moveImages);
 
     int borderTriggerI = qRound(borderTrigger);
     leftGradient =
@@ -130,8 +132,10 @@ void DkFilePreview::init()
     wheelButton->setPixmap(wp);
     wheelButton->hide();
 
-    QWidget *nomacs = DkUtils::getMainWindow();
-    connect(this, SIGNAL(showThumbsDockSignal(bool)), nomacs, SLOT(showThumbsDock(bool)));
+    auto nomacs = dynamic_cast<DkNoMacs *>(DkUtils::getMainWindow());
+    if (nomacs != nullptr) {
+        connect(this, &DkFilePreview::showThumbsDockSignal, nomacs, &DkNoMacs::showThumbsDock);
+    }
 }
 
 void DkFilePreview::initOrientations()
@@ -197,23 +201,23 @@ void DkFilePreview::createContextMenu()
 
     contextMenuActions[cm_pos_west] = new QAction(tr("Show Left"), this);
     contextMenuActions[cm_pos_west]->setStatusTip(tr("Shows the Thumbnail Bar on the Left"));
-    connect(contextMenuActions[cm_pos_west], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(contextMenuActions[cm_pos_west], &QAction::triggered, this, &DkFilePreview::newPosition);
 
     contextMenuActions[cm_pos_north] = new QAction(tr("Show Top"), this);
     contextMenuActions[cm_pos_north]->setStatusTip(tr("Shows the Thumbnail Bar at the Top"));
-    connect(contextMenuActions[cm_pos_north], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(contextMenuActions[cm_pos_north], &QAction::triggered, this, &DkFilePreview::newPosition);
 
     contextMenuActions[cm_pos_east] = new QAction(tr("Show Right"), this);
     contextMenuActions[cm_pos_east]->setStatusTip(tr("Shows the Thumbnail Bar on the Right"));
-    connect(contextMenuActions[cm_pos_east], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(contextMenuActions[cm_pos_east], &QAction::triggered, this, &DkFilePreview::newPosition);
 
     contextMenuActions[cm_pos_south] = new QAction(tr("Show Bottom"), this);
     contextMenuActions[cm_pos_south]->setStatusTip(tr("Shows the Thumbnail Bar at the Bottom"));
-    connect(contextMenuActions[cm_pos_south], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(contextMenuActions[cm_pos_south], &QAction::triggered, this, &DkFilePreview::newPosition);
 
     contextMenuActions[cm_pos_dock_hor] = new QAction(tr("Undock"), this);
     contextMenuActions[cm_pos_dock_hor]->setStatusTip(tr("Undock the thumbnails"));
-    connect(contextMenuActions[cm_pos_dock_hor], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(contextMenuActions[cm_pos_dock_hor], &QAction::triggered, this, &DkFilePreview::newPosition);
 
     contextMenu = new QMenu(tr("File Preview Menu"), this);
     contextMenu->addActions(contextMenuActions.toList());
@@ -346,7 +350,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         // only fetch thumbs if we are not moving too fast...
         if (thumb->hasImage() == DkThumbNail::not_loaded && fabs(currentDx) < 40) {
             thumb->fetchThumb();
-            connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(update()));
+            connect(thumb.data(), &DkThumbNailT::thumbLoadedSignal, this, QOverload<>::of(&DkFilePreview::update));
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
@@ -854,7 +858,7 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb)
     if (thumb.isNull())
         return;
 
-    connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(updateLabel()));
+    connect(thumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbLabel::updateLabel);
     QFileInfo fileInfo(thumb->getFilePath());
     QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n" + tr("Created: ")
         + fileInfo.birthTime().toString();
@@ -1133,9 +1137,9 @@ void DkThumbScene::updateThumbLabels()
 
     for (int idx = 0; idx < mThumbs.size(); idx++) {
         DkThumbLabel *thumb = new DkThumbLabel(mThumbs.at(idx)->getThumb());
-        connect(thumb, SIGNAL(loadFileSignal(const QString &, bool)), this, SIGNAL(loadFileSignal(const QString &, bool)));
-        connect(thumb, SIGNAL(showFileSignal(const QString &)), this, SLOT(showFile(const QString &)));
-        connect(mThumbs.at(idx).data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(thumbLoadedSignal()));
+        connect(thumb, &DkThumbLabel::loadFileSignal, this, &DkThumbScene::loadFileSignal);
+        connect(thumb, &DkThumbLabel::showFileSignal, this, &DkThumbScene::showFile);
+        connect(mThumbs.at(idx).data(), &DkImageContainerT::thumbLoadedSignal, this, &DkThumbScene::thumbLoadedSignal);
 
         // thumb->show();
         addItem(thumb);
@@ -1164,16 +1168,9 @@ void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool conn
         return;
 
     if (connectSignals) {
-        connect(loader.data(),
-                SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>)),
-                this,
-                SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT>>)),
-                Qt::UniqueConnection);
+        connect(loader.data(), &DkImageLoader::updateDirSignal, this, &DkThumbScene::updateThumbs, Qt::UniqueConnection);
     } else {
-        disconnect(loader.data(),
-                   SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>)),
-                   this,
-                   SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT>>)));
+        disconnect(loader.data(), &DkImageLoader::updateDirSignal, this, &DkThumbScene::updateThumbs);
     }
 }
 
@@ -1580,7 +1577,7 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
 {
     setObjectName("DkThumbsView");
     this->scene = scene;
-    connect(scene, SIGNAL(thumbLoadedSignal()), this, SLOT(fetchThumbs()));
+    connect(scene, &DkThumbScene::thumbLoadedSignal, this, &DkThumbsView::fetchThumbs);
 
     setResizeAnchor(QGraphicsView::AnchorUnderMouse);
     setAcceptDrops(true);
@@ -1930,39 +1927,39 @@ void DkThumbScrollWidget::connectToActions(bool activate)
         a->setEnabled(activate);
 
     if (activate) {
-        connect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
-        connect(am.action(DkActionManager::preview_zoom_in), SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
-        connect(am.action(DkActionManager::preview_zoom_out), SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
-        connect(am.action(DkActionManager::preview_display_squares), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
-        connect(am.action(DkActionManager::preview_show_labels), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
-        connect(am.action(DkActionManager::preview_filter), SIGNAL(triggered()), this, SLOT(setFilterFocus()));
-        connect(am.action(DkActionManager::preview_delete), SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
-        connect(am.action(DkActionManager::preview_copy), SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
-        connect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
-        connect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
-        connect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
-        connect(am.action(DkActionManager::preview_print), SIGNAL(triggered()), this, SLOT(batchPrint()));
+        connect(am.action(DkActionManager::preview_select_all), &QAction::triggered, mThumbsScene, &DkThumbScene::selectAllThumbs);
+        connect(am.action(DkActionManager::preview_zoom_in), &QAction::triggered, mThumbsScene, &DkThumbScene::increaseThumbs);
+        connect(am.action(DkActionManager::preview_zoom_out), &QAction::triggered, mThumbsScene, &DkThumbScene::decreaseThumbs);
+        connect(am.action(DkActionManager::preview_display_squares), &QAction::triggered, mThumbsScene, &DkThumbScene::toggleSquaredThumbs);
+        connect(am.action(DkActionManager::preview_show_labels), &QAction::triggered, mThumbsScene, &DkThumbScene::toggleThumbLabels);
+        connect(am.action(DkActionManager::preview_filter), &QAction::triggered, this, &DkThumbScrollWidget::setFilterFocus);
+        connect(am.action(DkActionManager::preview_delete), &QAction::triggered, mThumbsScene, &DkThumbScene::deleteSelected);
+        connect(am.action(DkActionManager::preview_copy), &QAction::triggered, mThumbsScene, &DkThumbScene::copySelected);
+        connect(am.action(DkActionManager::preview_paste), &QAction::triggered, mThumbsScene, &DkThumbScene::pasteImages);
+        connect(am.action(DkActionManager::preview_rename), &QAction::triggered, mThumbsScene, &DkThumbScene::renameSelected);
+        connect(am.action(DkActionManager::preview_batch), &QAction::triggered, this, &DkThumbScrollWidget::batchProcessFiles);
+        connect(am.action(DkActionManager::preview_print), &QAction::triggered, this, &DkThumbScrollWidget::batchPrint);
 
-        connect(mFilterEdit, SIGNAL(textChanged(const QString &)), this, SIGNAL(filterChangedSignal(const QString &)));
-        connect(mView, SIGNAL(updateDirSignal(const QString &)), this, SIGNAL(updateDirSignal(const QString &)));
-        connect(mThumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
+        connect(mFilterEdit, &QLineEdit::textChanged, this, &DkThumbScrollWidget::filterChangedSignal);
+        connect(mView, &DkThumbsView::updateDirSignal, this, &DkThumbScrollWidget::updateDirSignal);
+        connect(mThumbsScene, &DkThumbScene::selectionChanged, this, &DkThumbScrollWidget::enableSelectionActions);
     } else {
-        disconnect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
-        disconnect(am.action(DkActionManager::preview_zoom_in), SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
-        disconnect(am.action(DkActionManager::preview_zoom_out), SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
-        disconnect(am.action(DkActionManager::preview_display_squares), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
-        disconnect(am.action(DkActionManager::preview_show_labels), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
-        disconnect(am.action(DkActionManager::preview_filter), SIGNAL(triggered()), this, SLOT(setFilterFocus()));
-        disconnect(am.action(DkActionManager::preview_delete), SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
-        disconnect(am.action(DkActionManager::preview_copy), SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
-        disconnect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
-        disconnect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
-        disconnect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
-        disconnect(am.action(DkActionManager::preview_print), SIGNAL(triggered()), this, SLOT(batchPrint()));
+        disconnect(am.action(DkActionManager::preview_select_all), &QAction::triggered, mThumbsScene, &DkThumbScene::selectAllThumbs);
+        disconnect(am.action(DkActionManager::preview_zoom_in), &QAction::triggered, mThumbsScene, &DkThumbScene::increaseThumbs);
+        disconnect(am.action(DkActionManager::preview_zoom_out), &QAction::triggered, mThumbsScene, &DkThumbScene::decreaseThumbs);
+        disconnect(am.action(DkActionManager::preview_display_squares), &QAction::triggered, mThumbsScene, &DkThumbScene::toggleSquaredThumbs);
+        disconnect(am.action(DkActionManager::preview_show_labels), &QAction::triggered, mThumbsScene, &DkThumbScene::toggleThumbLabels);
+        disconnect(am.action(DkActionManager::preview_filter), &QAction::triggered, this, &DkThumbScrollWidget::setFilterFocus);
+        disconnect(am.action(DkActionManager::preview_delete), &QAction::triggered, mThumbsScene, &DkThumbScene::deleteSelected);
+        disconnect(am.action(DkActionManager::preview_copy), &QAction::triggered, mThumbsScene, &DkThumbScene::copySelected);
+        disconnect(am.action(DkActionManager::preview_paste), &QAction::triggered, mThumbsScene, &DkThumbScene::pasteImages);
+        disconnect(am.action(DkActionManager::preview_rename), &QAction::triggered, mThumbsScene, &DkThumbScene::renameSelected);
+        disconnect(am.action(DkActionManager::preview_batch), &QAction::triggered, this, &DkThumbScrollWidget::batchProcessFiles);
+        disconnect(am.action(DkActionManager::preview_print), &QAction::triggered, this, &DkThumbScrollWidget::batchPrint);
 
-        disconnect(mFilterEdit, SIGNAL(textChanged(const QString &)), this, SIGNAL(filterChangedSignal(const QString &)));
-        disconnect(mView, SIGNAL(updateDirSignal(const QString &)), this, SIGNAL(updateDirSignal(const QString &)));
-        disconnect(mThumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
+        disconnect(mFilterEdit, &QLineEdit::textChanged, this, &DkThumbScrollWidget::filterChangedSignal);
+        disconnect(mView, &DkThumbsView::updateDirSignal, this, &DkThumbScrollWidget::updateDirSignal);
+        disconnect(mThumbsScene, &DkThumbScene::selectionChanged, this, &DkThumbScrollWidget::enableSelectionActions);
     }
 }
 
@@ -2007,7 +2004,7 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath, int thumbSize,
     mThumbSize = thumbSize;
 
     mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath));
-    connect(mThumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(thumbLoaded()));
+    connect(mThumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbPreviewLabel::thumbLoaded);
 
     setFixedSize(mThumbSize, mThumbSize);
     setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -2099,7 +2096,7 @@ void DkRecentDirWidget::createLayout()
     if (DkUtils::exists(QFileInfo(mRecentDir.firstFilePath()), 30)) {
         for (auto tp : mRecentDir.filePaths(4)) {
             auto tpl = new DkThumbPreviewLabel(tp, 42, this);
-            connect(tpl, SIGNAL(loadFileSignal(const QString &, bool)), this, SIGNAL(loadFileSignal(const QString &, bool)));
+            connect(tpl, &DkThumbPreviewLabel::loadFileSignal, this, &DkRecentDirWidget::loadFileSignal);
             tls << tpl;
         }
     } else {
@@ -2218,9 +2215,9 @@ void DkRecentFilesWidget::updateList()
     for (auto rd : fm.recentDirs()) {
         DkRecentDirWidget *rf = new DkRecentDirWidget(rd, dummy);
         rf->setMaximumWidth(500);
-        connect(rf, SIGNAL(loadFileSignal(const QString &, bool)), this, SIGNAL(loadFileSignal(const QString &, bool)));
-        connect(rf, SIGNAL(loadDirSignal(const QString &)), this, SIGNAL(loadDirSignal(const QString &)));
-        connect(rf, SIGNAL(removeSignal()), this, SLOT(entryRemoved()));
+        connect(rf, &DkRecentDirWidget::loadFileSignal, this, &DkRecentFilesWidget::loadFileSignal);
+        connect(rf, &DkRecentDirWidget::loadDirSignal, this, &DkRecentFilesWidget::loadDirSignal);
+        connect(rf, &DkRecentDirWidget::removeSignal, this, &DkRecentFilesWidget::entryRemoved);
 
         recentFiles << rf;
         l->addWidget(rf);

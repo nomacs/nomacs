@@ -45,6 +45,7 @@
 #include <QSharedPointer>
 #include <QStackedLayout>
 #include <QTransform>
+#include <QtGlobal>
 #pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
@@ -265,67 +266,76 @@ void DkControlWidget::connectWidgets()
         return;
 
     // thumbs widget
-    connect(mFilePreview, SIGNAL(loadFileSignal(const QString &)), mViewport, SLOT(loadFile(const QString &)));
-    connect(mFilePreview, SIGNAL(changeFileSignal(int)), mViewport, SLOT(loadFileFast(int)));
-    connect(mFilePreview, SIGNAL(positionChangeSignal(int)), this, SLOT(changeThumbNailPosition(int)));
+    connect(mFilePreview, &DkFilePreview::loadFileSignal, mViewport, QOverload<const QString &>::of(&DkViewPort::loadFile));
+    connect(mFilePreview, &DkFilePreview::changeFileSignal, mViewport, &DkViewPort::loadFileFast);
+    connect(mFilePreview, &DkFilePreview::positionChangeSignal, this, &DkControlWidget::changeThumbNailPosition);
 
     // metadata widget
-    connect(mMetaDataInfo, SIGNAL(positionChangeSignal(int)), this, SLOT(changeMetaDataPosition(int)));
+    connect(mMetaDataInfo, &DkMetaDataHUD::positionChangeSignal, this, &DkControlWidget::changeMetaDataPosition);
 
     // overview
-    connect(mZoomWidget->getOverview(), SIGNAL(moveViewSignal(const QPointF &)), mViewport, SLOT(moveView(const QPointF &)));
-    connect(mZoomWidget->getOverview(), SIGNAL(sendTransformSignal()), mViewport, SLOT(tcpSynchronize()));
+    connect(mZoomWidget->getOverview(), &DkOverview::moveViewSignal, mViewport, &DkViewPort::moveView);
+    connect(mZoomWidget->getOverview(), &DkOverview::sendTransformSignal, mViewport, [this]() {
+        mViewport->tcpSynchronize();
+    });
 
     // zoom widget
-    connect(mZoomWidget, SIGNAL(zoomSignal(double)), mViewport, SLOT(zoomTo(double)));
-    connect(mViewport, SIGNAL(zoomSignal(double)), mZoomWidget, SLOT(updateZoom(double)));
+    connect(mZoomWidget, &DkZoomWidget::zoomSignal, mViewport, &DkViewPort::zoomTo);
+    connect(mViewport, &DkViewPort::zoomSignal, mZoomWidget, &DkZoomWidget::updateZoom);
 
     // waiting
-    connect(mDelayedInfo, SIGNAL(infoSignal(const QString &, int)), this, SLOT(setInfo(const QString &, int)));
+    connect(mDelayedInfo, &DkDelayedMessage::infoSignal, this, [this](const QString &msg, int time) {
+        setInfo(msg, time);
+    });
 
     // rating
-    connect(mFileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
-    connect(mRatingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
-    // connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
+    connect(mFileInfoLabel->getRatingLabel(), &DkRatingLabel::newRatingSignal, this, &DkControlWidget::updateRating);
+    connect(mRatingLabel, &DkRatingLabelBg::newRatingSignal, this, &DkControlWidget::updateRating);
 
     // playing
-    connect(mPlayer, SIGNAL(previousSignal()), mViewport, SLOT(loadPrevFileFast()));
-    connect(mPlayer, SIGNAL(nextSignal()), mViewport, SLOT(loadNextFileFast()));
+    connect(mPlayer, &DkPlayer::previousSignal, mViewport, &DkViewPort::loadPrevFileFast);
+    connect(mPlayer, &DkPlayer::nextSignal, mViewport, &DkViewPort::loadNextFileFast);
 
     // cropping
-    connect(mCropWidget,
-            SIGNAL(cropImageSignal(const DkRotatingRect &, const QColor &, bool)),
-            mViewport,
-            SLOT(cropImage(const DkRotatingRect &, const QColor &, bool)));
-    connect(mCropWidget, SIGNAL(hideSignal()), this, SLOT(hideCrop()));
+    connect(mCropWidget, &DkCropWidget::cropImageSignal, mViewport, &DkViewPort::cropImage);
+    connect(mCropWidget, &DkCropWidget::hideSignal, this, [this]() {
+        hideCrop();
+    });
 
     // comment widget
-    connect(mCommentWidget, SIGNAL(showInfoSignal(const QString &)), this, SLOT(setInfo(const QString &)));
-    connect(mCommentWidget, SIGNAL(commentSavedSignal()), this, SLOT(setCommentSaved()));
-    connect(this, SIGNAL(imageUpdatedSignal()), mCommentWidget, SLOT(resetComment()));
+    connect(mCommentWidget, &DkCommentWidget::showInfoSignal, this, [this](const QString &msg) {
+        setInfo(msg);
+    });
+    connect(mCommentWidget, QOverload<>::of(&DkCommentWidget::commentSavedSignal), this, &DkControlWidget::setCommentSaved);
+    connect(this, &DkControlWidget::imageUpdatedSignal, mCommentWidget, &DkCommentWidget::resetComment);
 
     // mViewport
-    connect(mViewport, SIGNAL(infoSignal(const QString &)), this, SLOT(setInfo(const QString &)));
+    connect(mViewport, &DkViewPort::infoSignal, this, [this](const QString &msg) {
+        setInfo(msg);
+    });
 
     DkActionManager &am = DkActionManager::instance();
 
     // plugins
     if (am.pluginActionManager()) {
-        connect(am.pluginActionManager(), SIGNAL(runPlugin(DkViewPortInterface *, bool)), this, SLOT(setPluginWidget(DkViewPortInterface *, bool)));
-        connect(am.pluginActionManager(), SIGNAL(applyPluginChanges(bool)), this, SLOT(applyPluginChanges(bool)));
+        connect(am.pluginActionManager(),
+                QOverload<DkViewPortInterface *, bool>::of(&DkPluginActionManager::runPlugin),
+                this,
+                &DkControlWidget::setPluginWidget);
+        connect(am.pluginActionManager(), &DkPluginActionManager::applyPluginChanges, this, &DkControlWidget::applyPluginChanges);
     }
 
     // actions
-    connect(am.action(DkActionManager::menu_edit_crop), SIGNAL(triggered(bool)), this, SLOT(showCrop(bool)));
-    connect(am.action(DkActionManager::menu_panel_overview), SIGNAL(toggled(bool)), this, SLOT(showOverview(bool)));
-    connect(am.action(DkActionManager::menu_panel_player), SIGNAL(toggled(bool)), this, SLOT(showPlayer(bool)));
-    connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), this, SLOT(showPreview(bool)));
-    connect(am.action(DkActionManager::menu_panel_scroller), SIGNAL(toggled(bool)), this, SLOT(showScroller(bool)));
-    connect(am.action(DkActionManager::menu_panel_exif), SIGNAL(toggled(bool)), this, SLOT(showMetaData(bool)));
-    connect(am.action(DkActionManager::menu_panel_info), SIGNAL(toggled(bool)), this, SLOT(showFileInfo(bool)));
-    connect(am.action(DkActionManager::menu_panel_histogram), SIGNAL(toggled(bool)), this, SLOT(showHistogram(bool)));
-    connect(am.action(DkActionManager::menu_panel_comment), SIGNAL(toggled(bool)), this, SLOT(showCommentWidget(bool)));
-    connect(am.action(DkActionManager::menu_panel_toggle), SIGNAL(toggled(bool)), this, SLOT(toggleHUD(bool)));
+    connect(am.action(DkActionManager::menu_edit_crop), &QAction::triggered, this, &DkControlWidget::showCrop);
+    connect(am.action(DkActionManager::menu_panel_overview), &QAction::toggled, this, &DkControlWidget::showOverview);
+    connect(am.action(DkActionManager::menu_panel_player), &QAction::toggled, this, &DkControlWidget::showPlayer);
+    connect(am.action(DkActionManager::menu_panel_preview), &QAction::toggled, this, &DkControlWidget::showPreview);
+    connect(am.action(DkActionManager::menu_panel_scroller), &QAction::toggled, this, &DkControlWidget::showScroller);
+    connect(am.action(DkActionManager::menu_panel_exif), &QAction::toggled, this, &DkControlWidget::showMetaData);
+    connect(am.action(DkActionManager::menu_panel_info), &QAction::toggled, this, &DkControlWidget::showFileInfo);
+    connect(am.action(DkActionManager::menu_panel_histogram), &QAction::toggled, this, &DkControlWidget::showHistogram);
+    connect(am.action(DkActionManager::menu_panel_comment), &QAction::toggled, this, &DkControlWidget::showCommentWidget);
+    connect(am.action(DkActionManager::menu_panel_toggle), &QAction::toggled, this, &DkControlWidget::toggleHUD);
 }
 
 void DkControlWidget::setCommentSaved()
@@ -476,7 +486,7 @@ void DkControlWidget::showCrop(bool visible)
     if (visible) {
         mCropWidget->reset();
         switchWidget(mWidgets[crop_widget]);
-        connect(mCropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush &)), mViewport, SLOT(setBackgroundBrush(const QBrush &)));
+        connect(mCropWidget->getToolbar(), &DkCropToolBar::colorSignal, mViewport, &DkViewPort::setBackgroundBrush);
     } else
         switchWidget();
 }
@@ -620,10 +630,28 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
         mPluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
         mPluginViewport->updateImageContainer(mViewport->imageContainer());
 
-        connect(mPluginViewport, SIGNAL(closePlugin(bool)), this, SLOT(closePlugin(bool)), Qt::UniqueConnection);
-        connect(mPluginViewport, SIGNAL(loadFile(const QString &)), mViewport, SLOT(loadFile(const QString &)), Qt::UniqueConnection);
-        connect(mPluginViewport, SIGNAL(loadImage(const QImage &)), mViewport, SLOT(setImage(const QImage &)), Qt::UniqueConnection);
-        connect(mPluginViewport, SIGNAL(showInfo(const QString &)), this, SLOT(setInfo(const QString &)), Qt::UniqueConnection);
+        connect(
+            mPluginViewport,
+            &DkPluginViewPort::closePlugin,
+            this,
+            [this](bool askForSaving) {
+                closePlugin(askForSaving);
+            },
+            Qt::UniqueConnection);
+        connect(mPluginViewport, &DkPluginViewPort::loadFile, mViewport, QOverload<const QString &>::of(&DkViewPort::loadFile), Qt::UniqueConnection);
+        connect(mPluginViewport,
+                &DkPluginViewPort::loadImage,
+                mViewport,
+                QOverload<QImage>::of(&DkViewPort::setImage), // TODO: will this copy without using reference?
+                Qt::UniqueConnection);
+        connect(
+            mPluginViewport,
+            &DkPluginViewPort::showInfo,
+            this,
+            [this](const QString &msg) {
+                setInfo(msg);
+            },
+            Qt::UniqueConnection);
     }
 
     setAttribute(Qt::WA_TransparentForMouseEvents, !removeWidget && pluginWidget->hideHUD());
@@ -658,7 +686,7 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
     mCommentWidget->setMetaData(metaData); // reset
     updateRating(metaData->getRating());
 
-    connect(imgC.get(), SIGNAL(imageUpdatedSignal()), this, SIGNAL(imageUpdatedSignal()));
+    connect(imgC.get(), &DkImageContainerT::imageUpdatedSignal, this, &DkControlWidget::imageUpdatedSignal);
 }
 
 void DkControlWidget::setInfo(const QString &msg, int time, int location)

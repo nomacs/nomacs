@@ -52,7 +52,7 @@ DkLogWidget::DkLogWidget(QWidget *parent)
     if (!msgQueuer)
         msgQueuer = QSharedPointer<DkMessageQueuer>(new DkMessageQueuer());
 
-    connect(msgQueuer.data(), SIGNAL(message(const QString &)), this, SLOT(log(const QString &)), Qt::QueuedConnection);
+    connect(msgQueuer.data(), &DkMessageQueuer::message, this, &DkLogWidget::log, Qt::QueuedConnection);
 
     qInstallMessageHandler(widgetMessageHandler);
 }

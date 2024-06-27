@@ -313,9 +313,9 @@ void DkGradient::addSlider(qreal pos, QColor color)
 {
     DkColorSlider *actSlider = new DkColorSlider(this, pos, color, mSliderWidth);
     mSliders.append(actSlider);
-    connect(actSlider, SIGNAL(sliderMoved(DkColorSlider *, int, int)), this, SLOT(moveSlider(DkColorSlider *, int, int)));
-    connect(actSlider, SIGNAL(colorChanged(DkColorSlider *)), this, SLOT(changeColor(DkColorSlider *)));
-    connect(actSlider, SIGNAL(sliderActivated(DkColorSlider *)), this, SLOT(activateSlider(DkColorSlider *)));
+    connect(actSlider, &DkColorSlider::sliderMoved, this, &DkGradient::moveSlider);
+    connect(actSlider, &DkColorSlider::colorChanged, this, &DkGradient::changeColor);
+    connect(actSlider, &DkColorSlider::sliderActivated, this, &DkGradient::activateSlider);
 }
 
 void DkGradient::insertSlider(qreal pos, QColor col)
@@ -516,14 +516,14 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
     mHistoryCombo = new QComboBox(this);
 
     QAction *delGradientAction = new QAction(tr("Delete"), mHistoryCombo);
-    connect(delGradientAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
+    connect(delGradientAction, &QAction::triggered, this, &DkTransferToolBar::deleteGradient);
 
     mHistoryCombo->addAction(delGradientAction);
     mHistoryCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     updateGradientHistory();
-    connect(mHistoryCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
-    connect(mHistoryCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
+    connect(mHistoryCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkTransferToolBar::switchGradient);
+    connect(mHistoryCombo, &QComboBox::customContextMenuRequested, this, &DkTransferToolBar::deleteGradientMenu);
 
     this->addWidget(mHistoryCombo);
 
@@ -547,11 +547,11 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
     enableToolBar(false);
     mEnableTFCheckBox->setEnabled(true);
 
-    connect(mEnableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
-    connect(mGradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
+    connect(mEnableTFCheckBox, &QCheckBox::stateChanged, this, &DkTransferToolBar::enableTFCheckBoxClicked);
+    connect(mGradient, &DkGradient::gradientChanged, this, &DkTransferToolBar::applyTF);
 
     // needed for initialization
-    connect(this, SIGNAL(gradientChanged()), mGradient, SIGNAL(gradientChanged()));
+    connect(this, &DkTransferToolBar::gradientChanged, mGradient, &DkGradient::gradientChanged);
 
     if (!mOldGradients.empty())
         mGradient->setGradient(mOldGradients.first());
@@ -575,7 +575,7 @@ void DkTransferToolBar::createIcons()
     mToolBarActions.resize(toolbar_end);
     mToolBarActions[toolbar_reset] = new QAction(mToolBarIcons[icon_toolbar_reset], tr("Reset"), this);
     mToolBarActions[toolbar_reset]->setStatusTip(tr("Resets the Pseudo Color function"));
-    connect(mToolBarActions[toolbar_reset], SIGNAL(triggered()), this, SLOT(resetGradient()));
+    connect(mToolBarActions[toolbar_reset], &QAction::triggered, this, &DkTransferToolBar::resetGradient);
 
     // toolBarActions[toolbar_reset]->setToolTip("was geht?");
 
@@ -583,11 +583,11 @@ void DkTransferToolBar::createIcons()
     mToolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));
     mToolBarActions[toolbar_pipette]->setCheckable(true);
     mToolBarActions[toolbar_pipette]->setChecked(false);
-    connect(mToolBarActions[toolbar_pipette], SIGNAL(triggered(bool)), this, SLOT(pickColor(bool)));
+    connect(mToolBarActions[toolbar_pipette], &QAction::triggered, this, &DkTransferToolBar::pickColor);
 
     mToolBarActions[toolbar_save] = new QAction(mToolBarIcons[icon_toolbar_save], tr("Save Gradient"), this);
     mToolBarActions[toolbar_save]->setStatusTip(tr("Saves the current Gradient"));
-    connect(mToolBarActions[toolbar_save], SIGNAL(triggered()), this, SLOT(saveGradient()));
+    connect(mToolBarActions[toolbar_save], &QAction::triggered, this, &DkTransferToolBar::saveGradient);
 
     addActions(mToolBarActions.toList());
 }
@@ -654,7 +654,7 @@ void DkTransferToolBar::deleteGradientMenu(QPoint pos)
 {
     QMenu *cm = new QMenu(this);
     QAction *delAction = new QAction("Delete", this);
-    connect(delAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
+    connect(delAction, &QAction::triggered, this, &DkTransferToolBar::deleteGradient);
     cm->popup(mHistoryCombo->mapToGlobal(pos));
     cm->exec();
 }
@@ -705,7 +705,7 @@ void DkTransferToolBar::applyImageMode(int mode)
         return;
     }
 
-    disconnect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
+    disconnect(mChannelComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkTransferToolBar::changeChannel);
     mChannelComboBox->clear();
 
     if (mode == mode_gray) {
@@ -719,7 +719,7 @@ void DkTransferToolBar::applyImageMode(int mode)
 
     mChannelComboBox->setCurrentIndex(0);
 
-    connect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
+    connect(mChannelComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkTransferToolBar::changeChannel);
 }
 
 void DkTransferToolBar::pickColor(bool enabled)
@@ -1006,7 +1006,7 @@ void DkCropToolBar::createLayout()
     addSeparator();
     addWidget(mCropRect);
 
-    connect(mCropRect, SIGNAL(updateRectSignal(const QRect &)), this, SIGNAL(updateRectSignal(const QRect &)));
+    connect(mCropRect, &DkRectWidget::updateRectSignal, this, &DkCropToolBar::updateRectSignal);
 }
 
 void DkCropToolBar::setVisible(bool visible)

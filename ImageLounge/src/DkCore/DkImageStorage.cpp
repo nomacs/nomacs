@@ -1455,12 +1455,12 @@ DkImageStorage::DkImageStorage(const QImage &img)
 
     init();
 
-    connect(mWaitTimer, SIGNAL(timeout()), this, SLOT(compute()), Qt::UniqueConnection);
-    connect(&mFutureWatcher, SIGNAL(finished()), this, SLOT(imageComputed()), Qt::UniqueConnection);
+    connect(mWaitTimer, &QTimer::timeout, this, &DkImageStorage::compute, Qt::UniqueConnection);
+    connect(&mFutureWatcher, &QFutureWatcher<QImage>::finished, this, &DkImageStorage::imageComputed, Qt::UniqueConnection);
     connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing),
-            SIGNAL(toggled(bool)),
+            &QAction::toggled,
             this,
-            SLOT(antiAliasingChanged(bool)),
+            &DkImageStorage::antiAliasingChanged,
             Qt::UniqueConnection);
 }
 

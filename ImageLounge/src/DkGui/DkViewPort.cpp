@@ -58,6 +58,7 @@
 #include <QSvgRenderer>
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
+#include <QtGlobal>
 
 #include <qmath.h>
 #pragma warning(pop) // no warnings from includes - end
@@ -85,10 +86,10 @@ DkViewPort::DkViewPort(QWidget *parent)
     }
 
     mRepeatZoomTimer->setInterval(20);
-    connect(mRepeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
+    connect(mRepeatZoomTimer, &QTimer::timeout, this, &DkViewPort::repeatZoom);
 
     mAnimationTimer->setInterval(5);
-    connect(mAnimationTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
+    connect(mAnimationTimer, &QTimer::timeout, this, &DkViewPort::animateFade);
 
     // no border
     setMouseTracking(true); // receive mouse event everytime
@@ -137,47 +138,47 @@ DkViewPort::DkViewPort(QWidget *parent)
     addActions(am.pluginActionManager()->pluginDummyActions().toList());
 #endif
 
-    connect(&mImgStorage, SIGNAL(infoSignal(const QString &)), this, SIGNAL(infoSignal(const QString &)));
+    connect(&mImgStorage, &DkImageStorage::infoSignal, this, &DkViewPort::infoSignal);
 
     if (am.pluginActionManager())
         connect(am.pluginActionManager(),
-                SIGNAL(runPlugin(DkPluginContainer *, const QString &)),
+                QOverload<DkPluginContainer *, const QString &>::of(&DkPluginActionManager::runPlugin),
                 this,
-                SLOT(applyPlugin(DkPluginContainer *, const QString &)));
+                &DkViewPort::applyPlugin);
 
     // connect
-    connect(am.action(DkActionManager::menu_file_reload), SIGNAL(triggered()), this, SLOT(reloadFile()));
-    connect(am.action(DkActionManager::menu_file_next), SIGNAL(triggered()), this, SLOT(loadNextFileFast()));
-    connect(am.action(DkActionManager::menu_file_prev), SIGNAL(triggered()), this, SLOT(loadPrevFileFast()));
-    connect(am.action(DkActionManager::menu_file_save), SIGNAL(triggered()), this, SLOT(saveFile()));
-    connect(am.action(DkActionManager::menu_file_save_as), SIGNAL(triggered()), this, SLOT(saveFileAs()));
-    connect(am.action(DkActionManager::menu_file_save_web), SIGNAL(triggered()), this, SLOT(saveFileWeb()));
-    connect(am.action(DkActionManager::menu_tools_wallpaper), SIGNAL(triggered()), this, SLOT(setAsWallpaper()));
+    connect(am.action(DkActionManager::menu_file_reload), &QAction::triggered, this, &DkViewPort::reloadFile);
+    connect(am.action(DkActionManager::menu_file_next), &QAction::triggered, this, &DkViewPort::loadNextFileFast);
+    connect(am.action(DkActionManager::menu_file_prev), &QAction::triggered, this, &DkViewPort::loadPrevFileFast);
+    connect(am.action(DkActionManager::menu_file_save), &QAction::triggered, this, &DkViewPort::saveFile);
+    connect(am.action(DkActionManager::menu_file_save_as), &QAction::triggered, this, &DkViewPort::saveFileAs);
+    connect(am.action(DkActionManager::menu_file_save_web), &QAction::triggered, this, &DkViewPort::saveFileWeb);
+    connect(am.action(DkActionManager::menu_tools_wallpaper), &QAction::triggered, this, &DkViewPort::setAsWallpaper);
 
-    connect(am.action(DkActionManager::menu_edit_rotate_cw), SIGNAL(triggered()), this, SLOT(rotateCW()));
-    connect(am.action(DkActionManager::menu_edit_rotate_ccw), SIGNAL(triggered()), this, SLOT(rotateCCW()));
-    connect(am.action(DkActionManager::menu_edit_rotate_180), SIGNAL(triggered()), this, SLOT(rotate180()));
-    connect(am.action(DkActionManager::menu_edit_transform), SIGNAL(triggered()), this, SLOT(resizeImage()));
-    connect(am.action(DkActionManager::menu_edit_delete), SIGNAL(triggered()), this, SLOT(deleteImage()));
-    connect(am.action(DkActionManager::menu_edit_copy), SIGNAL(triggered()), this, SLOT(copyImage()));
-    connect(am.action(DkActionManager::menu_edit_copy_buffer), SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
-    connect(am.action(DkActionManager::menu_edit_copy_color), SIGNAL(triggered()), this, SLOT(copyPixelColorValue()));
+    connect(am.action(DkActionManager::menu_edit_rotate_cw), &QAction::triggered, this, &DkViewPort::rotateCW);
+    connect(am.action(DkActionManager::menu_edit_rotate_ccw), &QAction::triggered, this, &DkViewPort::rotateCCW);
+    connect(am.action(DkActionManager::menu_edit_rotate_180), &QAction::triggered, this, &DkViewPort::rotate180);
+    connect(am.action(DkActionManager::menu_edit_transform), &QAction::triggered, this, &DkViewPort::resizeImage);
+    connect(am.action(DkActionManager::menu_edit_delete), &QAction::triggered, this, &DkViewPort::deleteImage);
+    connect(am.action(DkActionManager::menu_edit_copy), &QAction::triggered, this, &DkViewPort::copyImage);
+    connect(am.action(DkActionManager::menu_edit_copy_buffer), &QAction::triggered, this, &DkViewPort::copyImageBuffer);
+    connect(am.action(DkActionManager::menu_edit_copy_color), &QAction::triggered, this, &DkViewPort::copyPixelColorValue);
 
-    connect(am.action(DkActionManager::menu_view_reset), SIGNAL(triggered()), this, SLOT(zoomToFit()));
-    connect(am.action(DkActionManager::menu_view_100), SIGNAL(triggered()), this, SLOT(fullView()));
-    connect(am.action(DkActionManager::menu_view_zoom_in), SIGNAL(triggered()), this, SLOT(zoomIn()));
-    connect(am.action(DkActionManager::menu_view_zoom_out), SIGNAL(triggered()), this, SLOT(zoomOut()));
-    connect(am.action(DkActionManager::menu_view_tp_pattern), SIGNAL(toggled(bool)), this, SLOT(togglePattern(bool)));
-    connect(am.action(DkActionManager::menu_view_movie_pause), SIGNAL(triggered(bool)), this, SLOT(pauseMovie(bool)));
-    connect(am.action(DkActionManager::menu_view_movie_prev), SIGNAL(triggered()), this, SLOT(previousMovieFrame()));
-    connect(am.action(DkActionManager::menu_view_movie_next), SIGNAL(triggered()), this, SLOT(nextMovieFrame()));
+    connect(am.action(DkActionManager::menu_view_reset), &QAction::triggered, this, &DkViewPort::zoomToFit);
+    connect(am.action(DkActionManager::menu_view_100), &QAction::triggered, this, &DkViewPort::fullView);
+    connect(am.action(DkActionManager::menu_view_zoom_in), &QAction::triggered, this, &DkViewPort::zoomIn);
+    connect(am.action(DkActionManager::menu_view_zoom_out), &QAction::triggered, this, &DkViewPort::zoomOut);
+    connect(am.action(DkActionManager::menu_view_tp_pattern), &QAction::toggled, this, &DkViewPort::togglePattern);
+    connect(am.action(DkActionManager::menu_view_movie_pause), &QAction::triggered, this, &DkViewPort::pauseMovie);
+    connect(am.action(DkActionManager::menu_view_movie_prev), &QAction::triggered, this, &DkViewPort::previousMovieFrame);
+    connect(am.action(DkActionManager::menu_view_movie_next), &QAction::triggered, this, &DkViewPort::nextMovieFrame);
 
-    connect(am.action(DkActionManager::sc_test_img), SIGNAL(triggered()), this, SLOT(loadLena()));
-    connect(am.action(DkActionManager::menu_sync_view), SIGNAL(triggered()), this, SLOT(tcpForceSynchronize()));
+    connect(am.action(DkActionManager::sc_test_img), &QAction::triggered, this, &DkViewPort::loadLena);
+    connect(am.action(DkActionManager::menu_sync_view), &QAction::triggered, this, &DkViewPort::tcpForceSynchronize);
 
     // playing
-    connect(mNavigationWidget, SIGNAL(previousSignal()), this, SLOT(loadPrevFileFast()));
-    connect(mNavigationWidget, SIGNAL(nextSignal()), this, SLOT(loadNextFileFast()));
+    connect(mNavigationWidget, &DkHudNavigation::previousSignal, this, &DkViewPort::loadPrevFileFast);
+    connect(mNavigationWidget, &DkHudNavigation::nextSignal, this, &DkViewPort::loadNextFileFast);
 
     // trivial connects
     connect(this, &DkViewPort::movieLoadedSignal, [this](bool movie) {
@@ -187,16 +188,18 @@ DkViewPort::DkViewPort(QWidget *parent)
     // connect sync
     auto cm = DkSyncManager::inst().client();
 
-    connect(this, SIGNAL(sendTransformSignal(QTransform, QTransform, QPointF)), cm, SLOT(sendTransform(QTransform, QTransform, QPointF)));
-    connect(this, SIGNAL(sendNewFileSignal(qint16, const QString &)), cm, SLOT(sendNewFile(qint16, const QString &)));
-    connect(cm, SIGNAL(receivedNewFile(qint16, const QString &)), this, SLOT(tcpLoadFile(qint16, const QString &)));
-    connect(cm, SIGNAL(updateConnectionSignal(const QString &)), mController, SLOT(setInfo(const QString &)));
-    connect(cm, SIGNAL(receivedTransformation(QTransform, QTransform, QPointF)), this, SLOT(tcpSetTransforms(QTransform, QTransform, QPointF)));
+    connect(this, &DkViewPort::sendTransformSignal, cm, &DkClientManager::sendTransform);
+    connect(this, &DkViewPort::sendNewFileSignal, cm, &DkClientManager::sendNewFile);
+    connect(cm, &DkClientManager::receivedNewFile, this, &DkViewPort::tcpLoadFile);
+    connect(cm, &DkClientManager::updateConnectionSignal, mController, [this](const QString &msg) {
+        mController->setInfo(msg);
+    });
+    connect(cm, &DkClientManager::receivedTransformation, this, &DkViewPort::tcpSetTransforms);
 
     for (auto action : am.manipulatorActions())
-        connect(action, SIGNAL(triggered()), this, SLOT(applyManipulator()));
+        connect(action, &QAction::triggered, this, &DkViewPort::applyManipulator);
 
-    connect(&mManipulatorWatcher, SIGNAL(finished()), this, SLOT(manipulatorApplied()));
+    connect(&mManipulatorWatcher, &QFutureWatcher<QImage>::finished, this, &DkViewPort::manipulatorApplied);
 
     // TODO:
     // one could blur the canvas if a transparent GUI is present
@@ -218,14 +221,14 @@ DkViewPort::~DkViewPort()
 void DkViewPort::createShortcuts()
 {
     DkActionManager &am = DkActionManager::instance();
-    connect(am.action(DkActionManager::sc_first_file), SIGNAL(triggered()), this, SLOT(loadFirst()));
-    connect(am.action(DkActionManager::sc_last_file), SIGNAL(triggered()), this, SLOT(loadLast()));
-    connect(am.action(DkActionManager::sc_skip_prev), SIGNAL(triggered()), this, SLOT(loadSkipPrev10()));
-    connect(am.action(DkActionManager::sc_skip_next), SIGNAL(triggered()), this, SLOT(loadSkipNext10()));
-    connect(am.action(DkActionManager::sc_first_file_sync), SIGNAL(triggered()), this, SLOT(loadFirst()));
-    connect(am.action(DkActionManager::sc_last_file_sync), SIGNAL(triggered()), this, SLOT(loadLast()));
-    connect(am.action(DkActionManager::sc_skip_next_sync), SIGNAL(triggered()), this, SLOT(loadNextFileFast()));
-    connect(am.action(DkActionManager::sc_skip_prev_sync), SIGNAL(triggered()), this, SLOT(loadPrevFileFast()));
+    connect(am.action(DkActionManager::sc_first_file), &QAction::triggered, this, &DkViewPort::loadFirst);
+    connect(am.action(DkActionManager::sc_last_file), &QAction::triggered, this, &DkViewPort::loadLast);
+    connect(am.action(DkActionManager::sc_skip_prev), &QAction::triggered, this, &DkViewPort::loadSkipPrev10);
+    connect(am.action(DkActionManager::sc_skip_next), &QAction::triggered, this, &DkViewPort::loadSkipNext10);
+    connect(am.action(DkActionManager::sc_first_file_sync), &QAction::triggered, this, &DkViewPort::loadFirst);
+    connect(am.action(DkActionManager::sc_last_file_sync), &QAction::triggered, this, &DkViewPort::loadLast);
+    connect(am.action(DkActionManager::sc_skip_next_sync), &QAction::triggered, this, &DkViewPort::loadNextFileFast);
+    connect(am.action(DkActionManager::sc_skip_prev_sync), &QAction::triggered, this, &DkViewPort::loadPrevFileFast);
 }
 
 void DkViewPort::setPaintWidget(QWidget *widget, bool removeWidget)
@@ -248,6 +251,11 @@ void DkViewPort::setImage(cv::Mat newImg)
     setImage(imgQt);
 }
 #endif
+
+void DkViewPort::updateLoadedImage(QSharedPointer<DkImageContainerT> image)
+{
+    updateImage(image, true);
+}
 
 void DkViewPort::updateImage(QSharedPointer<DkImageContainerT> image, bool loaded)
 {
@@ -1025,7 +1033,7 @@ void DkViewPort::loadMovie()
 
     mMovie = m;
 
-    connect(mMovie.data(), SIGNAL(frameChanged(int)), this, SLOT(update()));
+    connect(mMovie.data(), &QMovie::frameChanged, this, QOverload<>::of(&DkViewPort::update));
     mMovie->start();
 
     emit movieLoadedSignal(true);
@@ -1043,7 +1051,7 @@ void DkViewPort::loadSvg()
         mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(mLoader->filePath()));
     }
 
-    connect(mSvg.data(), SIGNAL(repaintNeeded()), this, SLOT(update()));
+    connect(mSvg.data(), &QSvgRenderer::repaintNeeded, this, QOverload<>::of(&DkViewPort::update));
 }
 
 void DkViewPort::pauseMovie(bool pause)
@@ -1864,96 +1872,77 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
         return;
 
     if (connectSignals) {
+        connect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkViewPort::updateImage, Qt::UniqueConnection);
         connect(loader.data(),
-                SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)),
-                this,
-                SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)),
-                Qt::UniqueConnection);
-        connect(loader.data(),
-                SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)),
+                &DkImageLoader::imageLoadedSignal,
                 mController->getMetaDataWidget(),
-                SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)),
+                QOverload<QSharedPointer<DkImageContainerT>>::of(&DkMetaDataHUD::updateMetaData),
                 Qt::UniqueConnection);
-        connect(loader.data(),
-                SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)),
-                mController,
-                SLOT(updateImage(QSharedPointer<DkImageContainerT>)),
-                Qt::UniqueConnection);
+        connect(loader.data(), &DkImageLoader::imageLoadedSignal, mController, &DkControlWidget::updateImage, Qt::UniqueConnection);
 
         connect(loader.data(),
-                SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
+                QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
                 this,
-                SLOT(updateImage(QSharedPointer<DkImageContainerT>)),
+                &DkViewPort::updateLoadedImage,
                 Qt::UniqueConnection); // update image matrix
 
+        connect(loader.data(), &DkImageLoader::updateDirSignal, mController->getFilePreview(), &DkFilePreview::updateThumbs, Qt::UniqueConnection);
         connect(loader.data(),
-                SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>)),
+                QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
                 mController->getFilePreview(),
-                SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT>>)),
-                Qt::UniqueConnection);
-        connect(loader.data(),
-                SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
-                mController->getFilePreview(),
-                SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)),
+                &DkFilePreview::setFileInfo,
                 Qt::UniqueConnection);
 
-        connect(loader.data(), SIGNAL(showInfoSignal(const QString &, int, int)), mController, SLOT(setInfo(const QString &, int, int)), Qt::UniqueConnection);
+        connect(loader.data(), &DkImageLoader::showInfoSignal, mController, &DkControlWidget::setInfo, Qt::UniqueConnection);
 
-        connect(loader.data(), SIGNAL(setPlayer(bool)), mController->getPlayer(), SLOT(play(bool)), Qt::UniqueConnection);
+        connect(loader.data(), &DkImageLoader::setPlayer, mController->getPlayer(), &DkPlayer::play, Qt::UniqueConnection);
 
+        connect(loader.data(), &DkImageLoader::updateDirSignal, mController->getScroller(), &DkFolderScrollBar::updateDir, Qt::UniqueConnection);
         connect(loader.data(),
-                SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>)),
+                QOverload<int>::of(&DkImageLoader::imageUpdatedSignal),
                 mController->getScroller(),
-                SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT>>)),
+                &DkFolderScrollBar::updateFile,
                 Qt::UniqueConnection);
-        connect(loader.data(), SIGNAL(imageUpdatedSignal(int)), mController->getScroller(), SLOT(updateFile(int)), Qt::UniqueConnection);
-        connect(mController->getScroller(), SIGNAL(valueChanged(int)), loader.data(), SLOT(loadFileAt(int)));
+
+        // TODO: this connect seems to have no corresponding disconnect
+        connect(mController->getScroller(), &DkFolderScrollBar::valueChanged, loader.data(), &DkImageLoader::loadFileAt);
     } else {
+        disconnect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkViewPort::updateImage);
         disconnect(loader.data(),
-                   SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)),
-                   this,
-                   SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)));
-        disconnect(loader.data(),
-                   SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)),
+                   &DkImageLoader::imageLoadedSignal,
                    mController->getMetaDataWidget(),
-                   SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)));
-        disconnect(loader.data(),
-                   SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)),
-                   mController,
-                   SLOT(updateImage(QSharedPointer<DkImageContainerT>)));
+                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkMetaDataHUD::updateMetaData));
+        disconnect(loader.data(), &DkImageLoader::imageLoadedSignal, mController, &DkControlWidget::updateImage);
 
-        disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)));
+        disconnect(loader.data(), QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal), this, &DkViewPort::updateLoadedImage);
 
+        disconnect(loader.data(), &DkImageLoader::updateDirSignal, mController->getFilePreview(), &DkFilePreview::updateThumbs);
         disconnect(loader.data(),
-                   SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>)),
+                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
                    mController->getFilePreview(),
-                   SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT>>)));
+                   &DkFilePreview::setFileInfo);
+
+        disconnect(loader.data(), &DkImageLoader::showInfoSignal, mController, &DkControlWidget::setInfo);
+
+        disconnect(loader.data(), &DkImageLoader::setPlayer, mController->getPlayer(), &DkPlayer::play);
+
+        disconnect(loader.data(), &DkImageLoader::updateDirSignal, mController->getScroller(), &DkFolderScrollBar::updateDir);
+
+        disconnect(loader.data(), QOverload<int>::of(&DkImageLoader::imageUpdatedSignal), mController->getScroller(), &DkFolderScrollBar::updateFile);
+
+        // TODO: this disconnect seems to have no corresponding connect
         disconnect(loader.data(),
-                   SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
-                   mController->getFilePreview(),
-                   SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
-        disconnect(loader.data(),
-                   SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
+                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
                    mController->getMetaDataWidget(),
-                   SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)));
+                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkMetaDataHUD::updateMetaData));
+        // TODO: this disconnect seems to have no corresponding connect
         disconnect(loader.data(),
-                   SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
+                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
                    mController,
-                   SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
+                   &DkControlWidget::updateImage);
 
-        disconnect(loader.data(), SIGNAL(showInfoSignal(const QString &, int, int)), mController, SLOT(setInfo(const QString &, int, int)));
-        disconnect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), mController, SLOT(setSpinnerDelayed(bool, int)));
-
-        disconnect(loader.data(), SIGNAL(setPlayer(bool)), mController->getPlayer(), SLOT(play(bool)));
-
-        disconnect(loader.data(),
-                   SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>)),
-                   mController->getScroller(),
-                   SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT>>)));
-        disconnect(loader.data(),
-                   SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
-                   mController->getScroller(),
-                   SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
+        // TODO: setSpinnerDelayed does not exist
+        // disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, mController, &DkControlWidget::setSpinnerDelayed);
     }
 }
 
@@ -2303,12 +2292,12 @@ DkViewPortContrast::DkViewPortContrast(QWidget *parent)
 
     // connect
     auto ttb = DkToolBarManager::inst().transferToolBar();
-    connect(ttb, SIGNAL(colorTableChanged(QGradientStops)), this, SLOT(changeColorTable(QGradientStops)));
-    connect(ttb, SIGNAL(channelChanged(int)), this, SLOT(changeChannel(int)));
-    connect(ttb, SIGNAL(pickColorRequest(bool)), this, SLOT(pickColor(bool)));
-    connect(ttb, SIGNAL(tFEnabled(bool)), this, SLOT(enableTF(bool)));
-    connect(this, SIGNAL(tFSliderAdded(qreal)), ttb, SLOT(insertSlider(qreal)));
-    connect(this, SIGNAL(imageModeSet(int)), ttb, SLOT(setImageMode(int)));
+    connect(ttb, &DkTransferToolBar::colorTableChanged, this, &DkViewPortContrast::changeColorTable);
+    connect(ttb, &DkTransferToolBar::channelChanged, this, &DkViewPortContrast::changeChannel);
+    connect(ttb, &DkTransferToolBar::pickColorRequest, this, &DkViewPortContrast::pickColor);
+    connect(ttb, &DkTransferToolBar::tFEnabled, this, &DkViewPortContrast::enableTF);
+    connect(this, &DkViewPortContrast::tFSliderAdded, ttb, &DkTransferToolBar::insertSlider);
+    connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
 
 DkViewPortContrast::~DkViewPortContrast()

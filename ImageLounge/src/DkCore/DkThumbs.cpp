@@ -311,7 +311,7 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
     mFetching = true;
     mForceLoad = forceLoad;
 
-    connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()), Qt::UniqueConnection);
+    connect(&mThumbWatcher, &QFutureWatcherBase::finished, this, &DkThumbNailT::thumbLoaded, Qt::UniqueConnection);
 
     // add work to the thread pool
     // note: arguments to lambda must be thread-safe or copies (no "&", "this") to prevent race conditions

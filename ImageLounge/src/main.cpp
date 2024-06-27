@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
 #ifdef Q_WS_MAC
     nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
     app.installEventFilter(osxEventFilter);
-    QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo &)), w, SLOT(loadFile(const QFileInfo &)));
+    QObject::connect(osxEventFilter, &nmc::DkNomacsOSXEventFilter::loadFile, w, &nmc::DkNoMacs::loadFile);
 #endif
 
     int rVal = -1;

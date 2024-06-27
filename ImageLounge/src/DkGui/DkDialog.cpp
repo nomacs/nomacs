@@ -157,7 +157,7 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
     exitButton->setShortcut(QKeySequence(Qt::Key_Escape));
     exitButton->move(10, 435);
     exitButton->hide();
-    connect(exitButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(exitButton, &QPushButton::clicked, this, &DkSplashScreen::close);
 
     // set the text
     text = QString(
@@ -195,7 +195,7 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
     showTimer = new QTimer(this);
     showTimer->setInterval(5000);
     showTimer->setSingleShot(true);
-    connect(showTimer, SIGNAL(timeout()), exitButton, SLOT(hide()));
+    connect(showTimer, &QTimer::timeout, exitButton, &QPushButton::hide);
 
     qDebug() << "splash screen created...";
 }
@@ -321,11 +321,13 @@ void DkTrainDialog::createLayout()
     mPathEdit = new QLineEdit(this);
     mPathEdit->setValidator(&mFileValidator);
     mPathEdit->setObjectName("DkWarningEdit");
-    connect(mPathEdit, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-    connect(mPathEdit, SIGNAL(editingFinished()), this, SLOT(loadFile()));
+    connect(mPathEdit, &QLineEdit::textChanged, this, &DkTrainDialog::textChanged);
+    connect(mPathEdit, &QLineEdit::editingFinished, this, [this]() {
+        loadFile();
+    });
 
     QPushButton *openButton = new QPushButton(tr("&Browse"), this);
-    connect(openButton, SIGNAL(pressed()), this, SLOT(openFile()));
+    connect(openButton, &QPushButton::pressed, this, &DkTrainDialog::openFile);
 
     mFeedbackLabel = new QLabel("", this);
     mFeedbackLabel->setObjectName("DkDecentInfo");
@@ -340,8 +342,8 @@ void DkTrainDialog::createLayout()
     mButtons->button(QDialogButtonBox::Ok)->setText(tr("&Add"));
     mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
     mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(mButtons, &QDialogButtonBox::accepted, this, &DkTrainDialog::accept);
+    connect(mButtons, &QDialogButtonBox::rejected, this, &DkTrainDialog::reject);
 
     QWidget *trainWidget = new QWidget(this);
     QGridLayout *gdLayout = new QGridLayout(trainWidget);
@@ -523,8 +525,8 @@ void DkAppManagerDialog::createLayout()
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkAppManagerDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkAppManagerDialog::reject);
     buttons->addButton(runButton, QDialogButtonBox::ActionRole);
     buttons->addButton(addButton, QDialogButtonBox::ActionRole);
     buttons->addButton(deleteButton, QDialogButtonBox::ActionRole);
@@ -667,8 +669,8 @@ void DkSearchDialog::init()
     mButtons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
     mButtons->addButton(mFilterButton, QDialogButtonBox::ActionRole);
 
-    connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(mButtons, &QDialogButtonBox::accepted, this, &DkSearchDialog::accept);
+    connect(mButtons, &QDialogButtonBox::rejected, this, &DkSearchDialog::reject);
 
     layout->addWidget(mSearchBar);
     layout->addWidget(mResultListView);
@@ -922,7 +924,7 @@ void DkResizeDialog::createLayout()
     mOrigView = new DkBaseViewPort(this);
     mOrigView->setForceFastRendering(true);
     mOrigView->setPanControl(QPointF(0.0f, 0.0f));
-    connect(mOrigView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
+    connect(mOrigView, &DkBaseViewPort::imageUpdated, this, &DkResizeDialog::drawPreview);
 
     //// maybe we should report this:
     //// if a stylesheet (with border) is set, the var
@@ -1075,8 +1077,8 @@ void DkResizeDialog::createLayout()
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkResizeDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkResizeDialog::reject);
 
     QGridLayout *layout = new QGridLayout(this);
     layout->setColumnStretch(0, 1);
@@ -1480,6 +1482,7 @@ DkShortcutDelegate::DkShortcutDelegate(QObject *parent)
     mClearPm = DkImage::loadIcon(":/nomacs/img/close.svg");
 }
 
+// TODO: I don't think this is ever used
 QWidget *DkShortcutDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QWidget *scW = QItemDelegate::createEditor(parent, option, index);
@@ -1487,6 +1490,8 @@ QWidget *DkShortcutDelegate::createEditor(QWidget *parent, const QStyleOptionVie
     if (!scW)
         return scW;
 
+    // TODO: It would seem that this line wants scW to be QKeySequenceEdit,
+    // but I could not verify because this is never called.
     connect(scW, SIGNAL(keySequenceChanged(const QKeySequence &)), this, SLOT(keySequenceChanged(const QKeySequence &)));
 
     return scW;
@@ -1856,11 +1861,14 @@ void DkShortcutsDialog::createLayout()
 
     mDefaultButton = new QPushButton(tr("Set to &Default"), this);
     mDefaultButton->setToolTip(tr("Removes All Custom Shortcuts"));
-    connect(mDefaultButton, SIGNAL(clicked()), this, SLOT(defaultButtonClicked()));
-    connect(mModel, SIGNAL(duplicateSignal(const QString &)), mNotificationLabel, SLOT(setText(const QString &)));
+    connect(mDefaultButton, &QPushButton::clicked, this, &DkShortcutsDialog::defaultButtonClicked);
+    connect(mModel, &DkShortcutsModel::duplicateSignal, mNotificationLabel, &QLabel::setText);
 
-    connect(scDelegate, SIGNAL(checkDuplicateSignal(const QKeySequence &, void *)), mModel, SLOT(checkDuplicate(const QKeySequence &, void *)));
-    connect(scDelegate, SIGNAL(clearDuplicateSignal()), mModel, SLOT(clearDuplicateInfo()));
+    connect(scDelegate,
+            QOverload<const QString &, void *>::of(&DkShortcutDelegate::checkDuplicateSignal),
+            mModel,
+            QOverload<const QString &, void *>::of(&DkShortcutsModel::checkDuplicate));
+    connect(scDelegate, &DkShortcutDelegate::clearDuplicateSignal, mModel, &DkShortcutsModel::clearDuplicateInfo);
 
     // mButtons
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -1868,8 +1876,8 @@ void DkShortcutsDialog::createLayout()
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     buttons->addButton(mDefaultButton, QDialogButtonBox::ActionRole);
 
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkShortcutsDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkShortcutsDialog::reject);
 
     layout->addWidget(treeView);
     layout->addWidget(mNotificationLabel);
@@ -1925,8 +1933,8 @@ void DkTextDialog::createLayout()
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&Save"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
 
-    connect(buttons, SIGNAL(accepted()), this, SLOT(save()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkTextDialog::save);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkTextDialog::reject);
 
     // dialog layout
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -1981,8 +1989,8 @@ void DkUpdateDialog::init()
 {
     createLayout();
 
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(close()));
-    connect(okButton, SIGNAL(clicked()), this, SLOT(okButtonClicked()));
+    connect(cancelButton, &QPushButton::clicked, this, &DkUpdateDialog::close);
+    connect(okButton, &QPushButton::clicked, this, &DkUpdateDialog::okButtonClicked);
 }
 
 void DkUpdateDialog::createLayout()
@@ -2061,7 +2069,7 @@ void DkPrintPreviewDialog::init()
     setMinimumHeight(600);
     setMinimumWidth(800);
 
-    connect(mPreview, SIGNAL(dpiChanged(int)), mDpiBox, SLOT(setValue(int)));
+    connect(mPreview, &DkPrintPreviewWidget::dpiChanged, mDpiBox, &QSpinBox::setValue);
 }
 
 void DkPrintPreviewDialog::createIcons()
@@ -2142,17 +2150,17 @@ void DkPrintPreviewDialog::createLayout()
     zoomOutButton->setAutoRepeatInterval(200);
     zoomOutButton->setAutoRepeatDelay(200);
 
-    connect(mDpiBox, SIGNAL(valueChanged(int)), mPreview, SLOT(changeDpi(int)));
-    connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
-    connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
+    connect(mDpiBox, QOverload<int>::of(&QSpinBox::valueChanged), mPreview, &DkPrintPreviewWidget::changeDpi);
+    connect(zoomInButton, &QPushButton::clicked, this, &DkPrintPreviewDialog::zoomIn);
+    connect(zoomOutButton, &QPushButton::clicked, this, &DkPrintPreviewDialog::zoomOut);
 
-    connect(lsc, SIGNAL(triggered()), mPreview, SLOT(setLandscapeOrientation()));
-    connect(prt, SIGNAL(triggered()), mPreview, SLOT(setPortraitOrientation()));
-    connect(fitWidth, SIGNAL(triggered()), this, SLOT(previewFitWidth()));
-    connect(fitPage, SIGNAL(triggered()), this, SLOT(previewFitPage()));
+    connect(lsc, &QAction::triggered, mPreview, &DkPrintPreviewWidget::setLandscapeOrientation);
+    connect(prt, &QAction::triggered, mPreview, &DkPrintPreviewWidget::setPortraitOrientation);
+    connect(fitWidth, &QAction::triggered, this, &DkPrintPreviewDialog::previewFitWidth);
+    connect(fitPage, &QAction::triggered, this, &DkPrintPreviewDialog::previewFitPage);
 
-    connect(printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
-    connect(pageSetup, SIGNAL(triggered(bool)), this, SLOT(pageSetup()));
+    connect(printAction, &QAction::triggered, this, &DkPrintPreviewDialog::print);
+    connect(pageSetup, &QAction::triggered, this, &DkPrintPreviewDialog::pageSetup);
 
     QMainWindow *mw = new QMainWindow();
     mw->addToolBar(toolbar);
@@ -2231,7 +2239,7 @@ DkPrintPreviewWidget::DkPrintPreviewWidget(QPrinter *printer, QWidget *parent, Q
     : QPrintPreviewWidget(printer, parent, flags)
 {
     mPrinter = printer;
-    connect(this, SIGNAL(paintRequested(QPrinter *)), this, SLOT(paintPreview(QPrinter *)));
+    connect(this, &DkPrintPreviewWidget::paintRequested, this, &DkPrintPreviewWidget::paintPreview);
 }
 
 void DkPrintPreviewWidget::paintEvent(QPaintEvent *event)
@@ -2373,8 +2381,8 @@ void DkOpacityDialog::createLayout()
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkOpacityDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkOpacityDialog::reject);
 
     layout->addWidget(slider);
     layout->addWidget(buttons);
@@ -2393,10 +2401,10 @@ DkExportTiffDialog::DkExportTiffDialog(QWidget *parent /* = 0 */, Qt::WindowFlag
     createLayout();
     setAcceptDrops(true);
 
-    connect(this, SIGNAL(updateImage(const QImage &)), mViewport, SLOT(setImage(const QImage &)));
-    connect(&mWatcher, SIGNAL(finished()), this, SLOT(processingFinished()));
-    connect(this, SIGNAL(infoMessage(const QString &)), mMsgLabel, SLOT(setText(const QString &)));
-    connect(this, SIGNAL(updateProgress(int)), mProgress, SLOT(setValue(int)));
+    connect(this, &DkExportTiffDialog::updateImage, mViewport, QOverload<QImage>::of(&DkBaseViewPort::setImage));
+    connect(&mWatcher, &QFutureWatcherBase::finished, this, &DkExportTiffDialog::processingFinished);
+    connect(this, &DkExportTiffDialog::infoMessage, mMsgLabel, &QLabel::setText);
+    connect(this, &DkExportTiffDialog::updateProgress, mProgress, &QProgressBar::setValue);
 }
 
 void DkExportTiffDialog::dropEvent(QDropEvent *event)
@@ -2502,8 +2510,8 @@ void DkExportTiffDialog::createLayout()
     mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     mButtons->button(QDialogButtonBox::Ok)->setText(tr("&Export"));
     mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(mButtons, &QDialogButtonBox::accepted, this, &DkExportTiffDialog::accept);
+    connect(mButtons, &QDialogButtonBox::rejected, this, &DkExportTiffDialog::reject);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(mViewport);
@@ -2694,12 +2702,12 @@ DkMosaicDialog::DkMosaicDialog(QWidget *parent /* = 0 */, Qt::WindowFlags f /* =
     createLayout();
     setAcceptDrops(true);
 
-    connect(this, SIGNAL(updateImage(const QImage &)), mPreview, SLOT(setImage(const QImage &)));
-    connect(&mMosaicWatcher, SIGNAL(finished()), this, SLOT(mosaicFinished()));
-    connect(&mPostProcessWatcher, SIGNAL(finished()), this, SLOT(postProcessFinished()));
-    connect(&mPostProcessWatcher, SIGNAL(canceled()), this, SLOT(postProcessFinished()));
-    connect(this, SIGNAL(infoMessage(const QString &)), mMsgLabel, SLOT(setText(const QString &)));
-    connect(this, SIGNAL(updateProgress(int)), mProgress, SLOT(setValue(int)));
+    connect(this, &DkMosaicDialog::updateImage, mPreview, QOverload<QImage>::of(&DkBaseViewPort::setImage));
+    connect(&mMosaicWatcher, &QFutureWatcherBase::finished, this, &DkMosaicDialog::mosaicFinished);
+    connect(&mPostProcessWatcher, &QFutureWatcherBase::finished, this, &DkMosaicDialog::postProcessFinished);
+    connect(&mPostProcessWatcher, &QFutureWatcherBase::canceled, this, &DkMosaicDialog::postProcessFinished);
+    connect(this, &DkMosaicDialog::infoMessage, mMsgLabel, &QLabel::setText);
+    connect(this, &DkMosaicDialog::updateProgress, mProgress, &QProgressBar::setValue);
 }
 
 void DkMosaicDialog::dropEvent(QDropEvent *event)
@@ -2875,9 +2883,9 @@ void DkMosaicDialog::createLayout()
     mButtons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
     mButtons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
     mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    // connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(mButtons, SIGNAL(clicked(QAbstractButton *)), this, SLOT(buttonClicked(QAbstractButton *)));
-    connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
+
+    connect(mButtons, &QDialogButtonBox::clicked, this, &DkMosaicDialog::buttonClicked);
+    connect(mButtons, &QDialogButtonBox::rejected, this, &DkMosaicDialog::reject);
     mButtons->button(QDialogButtonBox::Save)->setEnabled(false);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -3608,8 +3616,8 @@ void DkForceThumbDialog::createLayout()
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkForceThumbDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkForceThumbDialog::reject);
 
     layout->addWidget(infoLabel);
     layout->addWidget(cbForceSave);
@@ -3654,8 +3662,8 @@ void DkWelcomeDialog::createLayout()
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkWelcomeDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkWelcomeDialog::reject);
 
     layout->addItem(new QSpacerItem(10, 10), 0, 0, -1, -1);
     layout->addWidget(welcomeLabel, 1, 0, 1, 3);
@@ -3716,20 +3724,22 @@ void DkArchiveExtractionDialog::createLayout()
     mArchivePathEdit = new QLineEdit(this);
     mArchivePathEdit->setObjectName("DkWarningEdit");
     mArchivePathEdit->setValidator(&mFileValidator);
-    connect(mArchivePathEdit, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-    connect(mArchivePathEdit, SIGNAL(editingFinished()), this, SLOT(loadArchive()));
+    connect(mArchivePathEdit, &QLineEdit::textChanged, this, &DkArchiveExtractionDialog::textChanged);
+    connect(mArchivePathEdit, &QLineEdit::editingFinished, this, [this]() {
+        loadArchive();
+    });
 
     QPushButton *openArchiveButton = new QPushButton(tr("&Browse"));
-    connect(openArchiveButton, SIGNAL(pressed()), this, SLOT(openArchive()));
+    connect(openArchiveButton, &QPushButton::pressed, this, &DkArchiveExtractionDialog::openArchive);
 
     // dir file path
     QLabel *dirLabel = new QLabel(tr("Extract to"));
     mDirPathEdit = new QLineEdit();
     mDirPathEdit->setValidator(&mFileValidator);
-    connect(mDirPathEdit, SIGNAL(textChanged(const QString &)), this, SLOT(dirTextChanged(const QString &)));
+    connect(mDirPathEdit, &QLineEdit::textChanged, this, &DkArchiveExtractionDialog::dirTextChanged);
 
     QPushButton *openDirButton = new QPushButton(tr("&Browse"));
-    connect(openDirButton, SIGNAL(pressed()), this, SLOT(openDir()));
+    connect(openDirButton, &QPushButton::pressed, this, &DkArchiveExtractionDialog::openDir);
 
     mFeedbackLabel = new QLabel("", this);
     mFeedbackLabel->setObjectName("DkDecentInfo");
@@ -3738,15 +3748,19 @@ void DkArchiveExtractionDialog::createLayout()
 
     mRemoveSubfolders = new QCheckBox(tr("Remove Subfolders"), this);
     mRemoveSubfolders->setChecked(false);
-    connect(mRemoveSubfolders, SIGNAL(stateChanged(int)), this, SLOT(checkbocChecked(int)));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(mRemoveSubfolders, &QCheckBox::checkStateChanged, this, &DkArchiveExtractionDialog::checkbocChecked);
+#else
+    connect(mRemoveSubfolders, &QCheckBox::stateChanged, this, &DkArchiveExtractionDialog::checkbocChecked);
+#endif
 
     // mButtons
     mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     mButtons->button(QDialogButtonBox::Ok)->setText(tr("&Extract"));
     mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
     mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(mButtons, &QDialogButtonBox::accepted, this, &DkArchiveExtractionDialog::accept);
+    connect(mButtons, &QDialogButtonBox::rejected, this, &DkArchiveExtractionDialog::reject);
 
     QWidget *extractWidget = new QWidget(this);
     QGridLayout *gdLayout = new QGridLayout(extractWidget);
@@ -4004,10 +4018,10 @@ DkDialogManager::DkDialogManager(QObject *parent)
 {
     DkActionManager &am = DkActionManager::instance();
 
-    connect(am.action(DkActionManager::menu_edit_shortcuts), SIGNAL(triggered()), this, SLOT(openShortcutsDialog()));
-    connect(am.action(DkActionManager::menu_file_app_manager), SIGNAL(triggered()), this, SLOT(openAppManager()));
-    connect(am.action(DkActionManager::menu_file_print), SIGNAL(triggered()), this, SLOT(openPrintDialog()));
-    connect(am.action(DkActionManager::menu_tools_mosaic), SIGNAL(triggered()), this, SLOT(openMosaicDialog()));
+    connect(am.action(DkActionManager::menu_edit_shortcuts), &QAction::triggered, this, &DkDialogManager::openShortcutsDialog);
+    connect(am.action(DkActionManager::menu_file_app_manager), &QAction::triggered, this, &DkDialogManager::openAppManager);
+    connect(am.action(DkActionManager::menu_file_print), &QAction::triggered, this, &DkDialogManager::openPrintDialog);
+    connect(am.action(DkActionManager::menu_tools_mosaic), &QAction::triggered, this, &DkDialogManager::openMosaicDialog);
 }
 
 void DkDialogManager::openShortcutsDialog() const
@@ -4055,7 +4069,7 @@ void DkDialogManager::openAppManager() const
     DkActionManager &am = DkActionManager::instance();
 
     DkAppManagerDialog *appManagerDialog = new DkAppManagerDialog(am.appManager(), DkUtils::getMainWindow());
-    connect(appManagerDialog, SIGNAL(openWithSignal(QAction *)), am.appManager(), SIGNAL(openFileSignal(QAction *))); // forward
+    connect(appManagerDialog, &DkAppManagerDialog::openWithSignal, am.appManager(), &DkAppManager::openFileSignal); // forward
     appManagerDialog->exec();
 
     appManagerDialog->deleteLater();
@@ -4262,8 +4276,8 @@ void DkSvgSizeDialog::createLayout()
     auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkSvgSizeDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkSvgSizeDialog::reject);
 
     QGridLayout *layout = new QGridLayout(this);
     layout->addWidget(wl, 1, 1);
@@ -4323,8 +4337,8 @@ void DkChooseMonitorDialog::createLayout()
     auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkChooseMonitorDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkChooseMonitorDialog::reject);
 
     QGridLayout *layout = new QGridLayout(this);
     layout->setRowStretch(0, 1);
