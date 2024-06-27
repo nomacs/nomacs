@@ -843,15 +843,13 @@ void DkCentralWidget::showThumbView(bool show)
             if (tabInfo->getImage())
                 tw->getThumbWidget()->ensureVisible(tabInfo->getImage());
 
-            // TODO: I cannot get rid of this for now because
-            // connect with lambda cannot easily be disconnected
-            connect(tw, SIGNAL(updateDirSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString &)), Qt::UniqueConnection);
+            connect(tw, &DkThumbScrollWidget::updateDirSignal, tabInfo->getImageLoader().data(), &DkImageLoader::loadDirRecursive, Qt::UniqueConnection);
             connect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter, Qt::UniqueConnection);
         }
 
     } else {
         if (auto tw = getThumbScrollWidget()) {
-            disconnect(tw, SIGNAL(updateDirSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString &)));
+            disconnect(tw, &DkThumbScrollWidget::updateDirSignal, tabInfo->getImageLoader().data(), &DkImageLoader::loadDirRecursive);
             disconnect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter);
         }
         // mViewport->connectLoader(tabInfo->getImageLoader(), true);
