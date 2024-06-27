@@ -308,6 +308,11 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     return true;
 }
 
+void DkImageLoader::loadDirRecursive(const QString &newDirPath)
+{
+    this->loadDir(newDirPath, true);
+}
+
 void DkImageLoader::sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images)
 {
     if (mSortingImages) {

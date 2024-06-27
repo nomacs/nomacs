@@ -169,6 +169,7 @@ public slots:
     QString getFolderFilter();
     QStringList getFolderFilters();
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);
+    void loadDirRecursive(const QString &newDirPath);
     void errorDialog(const QString &msg) const;
     void loadFileAt(int idx);
 
