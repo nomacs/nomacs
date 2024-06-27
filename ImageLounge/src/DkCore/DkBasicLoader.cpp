@@ -1809,7 +1809,7 @@ FileDownloader::FileDownloader(const QUrl &imageUrl, const QString &filePath, QO
         mWebCtrl.setProxy(listOfProxies[0]);
     }
 
-    connect(&mWebCtrl, SIGNAL(finished(QNetworkReply *)), SLOT(fileDownloaded(QNetworkReply *)));
+    connect(&mWebCtrl, &QNetworkAccessManager::finished, this, &FileDownloader::fileDownloaded);
 
     downloadFile(imageUrl);
 }
@@ -1870,7 +1870,7 @@ void FileDownloader::fileDownloaded(QNetworkReply *pReply)
     }
     // ok save it
     else {
-        connect(&mSaveWatcher, SIGNAL(finished()), this, SLOT(saved()), Qt::UniqueConnection);
+        connect(&mSaveWatcher, &QFutureWatcherBase::finished, this, &FileDownloader::saved, Qt::UniqueConnection);
         mSaveWatcher.setFuture(QtConcurrent::run([&] {
             return save(mFilePath, mDownloadedData);
         }));

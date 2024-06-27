@@ -153,7 +153,7 @@ DkUpdater::DkUpdater(QObject *parent)
     silent = true;
     mCookie = new QNetworkCookieJar(this);
     mAccessManagerSetup.setCookieJar(mCookie);
-    connect(&mAccessManagerSetup, SIGNAL(finished(QNetworkReply *)), this, SLOT(downloadFinishedSlot(QNetworkReply *)));
+    connect(&mAccessManagerSetup, &QNetworkAccessManager::finished, this, &DkUpdater::downloadFinishedSlot);
     mUpdateAborted = false;
 }
 
@@ -196,9 +196,9 @@ void DkUpdater::checkForUpdates()
     }
 
     qDebug() << "checking for updates";
-    connect(&mAccessManagerVersion, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
+    connect(&mAccessManagerVersion, &QNetworkAccessManager::finished, this, &DkUpdater::replyFinished);
     mReply = mAccessManagerVersion.get(QNetworkRequest(url));
-    connect(mReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
+    connect(mReply, &QNetworkReply::errorOccurred, this, &DkUpdater::replyError);
 }
 
 void DkUpdater::replyFinished(QNetworkReply *reply)
@@ -287,7 +287,7 @@ void DkUpdater::startDownload(QUrl downloadUrl)
     QNetworkRequest req(downloadUrl);
     req.setRawHeader("User-Agent", "Auto-Updater");
     mReply = mAccessManagerSetup.get(req);
-    connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
+    connect(mReply, &QNetworkReply::downloadProgress, this, &DkUpdater::updateDownloadProgress);
 }
 
 void DkUpdater::downloadFinishedSlot(QNetworkReply *data)
@@ -361,7 +361,7 @@ DkTranslationUpdater::DkTranslationUpdater(bool silent, QObject *parent)
     : QObject(parent)
 {
     this->silent = silent;
-    connect(&mAccessManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
+    connect(&mAccessManager, &QNetworkAccessManager::finished, this, &DkTranslationUpdater::replyFinished);
 
     updateAborted = false;
     updateAbortedQt = false;
@@ -395,12 +395,12 @@ void DkTranslationUpdater::checkForUpdates()
              + ".qm");
     qInfo() << "checking for new translations at " << url;
     mReply = mAccessManager.get(QNetworkRequest(url));
-    connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
+    connect(mReply, &QNetworkReply::downloadProgress, this, &DkTranslationUpdater::updateDownloadProgress);
 
     url = QUrl("https://nomacs.org/translations/qt/qt_" + DkSettingsManager::param().global().language + ".qm");
     qDebug() << "checking for new translations at " << url;
     mReplyQt = mAccessManager.get(QNetworkRequest(url));
-    connect(mReplyQt, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgressQt(qint64, qint64)));
+    connect(mReplyQt, &QNetworkReply::downloadProgress, this, &DkTranslationUpdater::updateDownloadProgressQt);
 }
 
 void DkTranslationUpdater::replyFinished(QNetworkReply *reply)

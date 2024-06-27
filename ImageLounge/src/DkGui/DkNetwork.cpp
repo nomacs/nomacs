@@ -169,9 +169,10 @@ void DkClientManager::sendTitle(const QString &newTitle)
         if (!peer)
             continue;
 
-        connect(this, SIGNAL(sendNewTitleMessage(const QString &)), peer->connection, SLOT(sendNewTitleMessage(const QString &)));
+        // TODO: why not call the method directly?
+        connect(this, &DkClientManager::sendNewTitleMessage, peer->connection, &DkConnection::sendNewTitleMessage);
         emit sendNewTitleMessage(newTitle);
-        disconnect(this, SIGNAL(sendNewTitleMessage(const QString &)), peer->connection, SLOT(sendNewTitleMessage(const QString &)));
+        disconnect(this, &DkClientManager::sendNewTitleMessage, peer->connection, &DkConnection::sendNewTitleMessage);
     }
 }
 
@@ -182,15 +183,9 @@ void DkClientManager::sendTransform(QTransform transform, QTransform imgTransfor
         if (!peer)
             continue;
 
-        connect(this,
-                SIGNAL(sendNewTransformMessage(QTransform, QTransform, QPointF)),
-                peer->connection,
-                SLOT(sendNewTransformMessage(QTransform, QTransform, QPointF)));
+        connect(this, &DkClientManager::sendNewTransformMessage, peer->connection, &DkConnection::sendNewTransformMessage);
         emit sendNewTransformMessage(transform, imgTransform, canvasSize);
-        disconnect(this,
-                   SIGNAL(sendNewTransformMessage(QTransform, QTransform, QPointF)),
-                   peer->connection,
-                   SLOT(sendNewTransformMessage(QTransform, QTransform, QPointF)));
+        disconnect(this, &DkClientManager::sendNewTransformMessage, peer->connection, &DkConnection::sendNewTransformMessage);
     }
 }
 
@@ -201,9 +196,9 @@ void DkClientManager::sendPosition(QRect newRect, bool overlaid)
         if (!peer)
             continue;
 
-        connect(this, SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer->connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
+        connect(this, &DkClientManager::sendNewPositionMessage, peer->connection, &DkConnection::sendNewPositionMessage);
         emit sendNewPositionMessage(newRect, true, overlaid);
-        disconnect(this, SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer->connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
+        disconnect(this, &DkClientManager::sendNewPositionMessage, peer->connection, &DkConnection::sendNewPositionMessage);
     }
 }
 
@@ -214,9 +209,9 @@ void DkClientManager::sendNewFile(qint16 op, const QString &filename)
         if (!peer)
             continue;
 
-        connect(this, SIGNAL(sendNewFileMessage(qint16, const QString &)), peer->connection, SLOT(sendNewFileMessage(qint16, const QString &)));
+        connect(this, &DkClientManager::sendNewFileMessage, peer->connection, &DkConnection::sendNewFileMessage);
         emit sendNewFileMessage(op, filename);
-        disconnect(this, SIGNAL(sendNewFileMessage(qint16, const QString &)), peer->connection, SLOT(sendNewFileMessage(qint16, const QString &)));
+        disconnect(this, &DkClientManager::sendNewFileMessage, peer->connection, &DkConnection::sendNewFileMessage);
     }
 }
 
@@ -232,34 +227,16 @@ void DkClientManager::newConnection(int socketDescriptor)
 void DkClientManager::connectConnection(DkConnection *connection)
 {
     qRegisterMetaType<QList<quint16>>("QList<quint16>");
-    connect(connection,
-            SIGNAL(connectionReadyForUse(quint16, const QString &, DkConnection *)),
-            this,
-            SLOT(connectionReadyForUse(quint16, const QString &, DkConnection *)));
-    connect(connection, SIGNAL(connectionStopSynchronize(DkConnection *)), this, SLOT(connectionStopSynchronized(DkConnection *)));
-    connect(connection, SIGNAL(connectionStartSynchronize(QList<quint16>, DkConnection *)), this, SLOT(connectionSynchronized(QList<quint16>, DkConnection *)));
-    connect(connection, SIGNAL(disconnected()), this, SLOT(disconnected()));
-    connect(connection,
-            SIGNAL(connectionTitleHasChanged(DkConnection *, const QString &)),
-            this,
-            SLOT(connectionSentNewTitle(DkConnection *, const QString &)));
-    connect(connection,
-            SIGNAL(connectionNewPosition(DkConnection *, QRect, bool, bool)),
-            this,
-            SLOT(connectionReceivedPosition(DkConnection *, QRect, bool, bool)));
-    connect(connection,
-            SIGNAL(connectionNewTransform(DkConnection *, QTransform, QTransform, QPointF)),
-            this,
-            SLOT(connectionReceivedTransformation(DkConnection *, QTransform, QTransform, QPointF)));
-    connect(connection,
-            SIGNAL(connectionNewFile(DkConnection *, qint16, const QString &)),
-            this,
-            SLOT(connectionReceivedNewFile(DkConnection *, qint16, const QString &)));
-    connect(connection, SIGNAL(connectionGoodBye(DkConnection *)), this, SLOT(connectionReceivedGoodBye(DkConnection *)));
-    connect(connection,
-            SIGNAL(connectionShowStatusMessage(DkConnection *, const QString &)),
-            this,
-            SLOT(connectionShowStatusMessage(DkConnection *, const QString &)));
+    connect(connection, &DkConnection::connectionReadyForUse, this, &DkClientManager::connectionReadyForUse);
+    connect(connection, &DkConnection::connectionStopSynchronize, this, &DkClientManager::connectionStopSynchronized);
+    connect(connection, &DkConnection::connectionStartSynchronize, this, &DkClientManager::connectionSynchronized);
+    connect(connection, &DkConnection::disconnected, this, &DkClientManager::disconnected);
+    connect(connection, &DkConnection::connectionTitleHasChanged, this, &DkClientManager::connectionSentNewTitle);
+    connect(connection, &DkConnection::connectionNewPosition, this, &DkClientManager::connectionReceivedPosition);
+    connect(connection, &DkConnection::connectionNewTransform, this, &DkClientManager::connectionReceivedTransformation);
+    connect(connection, &DkConnection::connectionNewFile, this, &DkClientManager::connectionReceivedNewFile);
+    connect(connection, &DkConnection::connectionGoodBye, this, &DkClientManager::connectionReceivedGoodBye);
+    connect(connection, &DkConnection::connectionShowStatusMessage, this, &DkClientManager::connectionShowStatusMessage);
 
     connection->synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 }
@@ -296,9 +273,9 @@ void DkClientManager::sendGoodByeToAll()
         if (!peer)
             continue;
 
-        connect(this, SIGNAL(sendGoodByeMessage()), peer->connection, SLOT(sendNewGoodbyeMessage()));
+        connect(this, &DkClientManager::sendGoodByeMessage, peer->connection, &DkConnection::sendNewGoodbyeMessage);
         emit sendGoodByeMessage();
-        disconnect(this, SIGNAL(sendGoodByeMessage()), peer->connection, SLOT(sendNewGoodbyeMessage()));
+        disconnect(this, &DkClientManager::sendGoodByeMessage, peer->connection, &DkConnection::sendNewGoodbyeMessage);
     }
 }
 
@@ -338,13 +315,13 @@ QMimeData *DkLocalClientManager::mimeData() const
 void DkLocalClientManager::startServer()
 {
     mServer = new DkLocalTcpServer(this);
-    connect(mServer, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
+    connect(mServer, &DkLocalTcpServer::serverReiceivedNewConnection, this, &DkLocalClientManager::newConnection);
 
     // TODO: hook on thread
     searchForOtherClients();
 
     DkActionManager &am = DkActionManager::instance();
-    connect(am.action(DkActionManager::menu_sync_connect_all), SIGNAL(triggered()), this, SLOT(connectAll()));
+    connect(am.action(DkActionManager::menu_sync_connect_all), &QAction::triggered, this, &DkLocalClientManager::connectAll);
 }
 
 // slots
@@ -397,9 +374,9 @@ void DkLocalClientManager::connectionSynchronized(QList<quint16> synchronizedPee
             if (!peer)
                 continue;
 
-            connect(this, SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
+            connect(this, &DkLocalClientManager::sendSynchronizeMessage, peer->connection, &DkConnection::sendStartSynchronizeMessage);
             emit sendSynchronizeMessage();
-            disconnect(this, SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
+            disconnect(this, &DkLocalClientManager::sendSynchronizeMessage, peer->connection, &DkConnection::sendStartSynchronizeMessage);
         }
     }
     // qDebug() << "--------------------";
@@ -441,9 +418,9 @@ void DkLocalClientManager::synchronizeWith(quint16 peerId)
 
     // qDebug() << "synchronizing with: " << peerId;
 
-    connect(this, SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
+    connect(this, &DkLocalClientManager::sendSynchronizeMessage, peer->connection, &DkConnection::sendStartSynchronizeMessage);
     emit sendSynchronizeMessage();
-    disconnect(this, SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
+    disconnect(this, &DkLocalClientManager::sendSynchronizeMessage, peer->connection, &DkConnection::sendStartSynchronizeMessage);
 }
 
 void DkLocalClientManager::stopSynchronizeWith(quint16)
@@ -454,10 +431,10 @@ void DkLocalClientManager::stopSynchronizeWith(quint16)
         if (!peer)
             continue;
 
-        connect(this, SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
+        connect(this, &DkLocalClientManager::sendDisableSynchronizeMessage, peer->connection, &DkConnection::sendStopSynchronizeMessage);
         emit sendDisableSynchronizeMessage();
         mPeerList.setSynchronized(peer->peerId, false);
-        disconnect(this, SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
+        disconnect(this, &DkLocalClientManager::sendDisableSynchronizeMessage, peer->connection, &DkConnection::sendStopSynchronizeMessage);
     }
 
     emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
@@ -491,9 +468,9 @@ void DkLocalClientManager::sendArrangeInstances(bool overlaid)
             continue;
 
         QRect newPosition = QRect(curX, curY, width, height);
-        connect(this, SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer->connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
+        connect(this, &DkLocalClientManager::sendNewPositionMessage, peer->connection, &DkConnection::sendNewPositionMessage);
         emit sendNewPositionMessage(newPosition, false, overlaid);
-        disconnect(this, SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer->connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
+        disconnect(this, &DkLocalClientManager::sendNewPositionMessage, peer->connection, &DkConnection::sendNewPositionMessage);
 
         count++;
         if (count < instancesPerRow)
@@ -533,10 +510,10 @@ DkLocalConnection *DkLocalClientManager::createConnection()
     connection->setLocalTcpServerPort(mServer->serverPort());
     connection->setTitle(mCurrentTitle);
     connectConnection(connection);
-    connect(this, SIGNAL(synchronizedPeersListChanged(QList<quint16>)), connection, SLOT(synchronizedPeersListChanged(QList<quint16>)));
-    connect(this, SIGNAL(sendQuitMessage()), connection, SLOT(sendQuitMessage()));
-    connect(connection, SIGNAL(connectionQuitReceived()), this, SLOT(connectionReceivedQuit()));
-    connect(connection, SIGNAL(connected()), this, SLOT(connectToNomacs()));
+    connect(this, &DkLocalClientManager::synchronizedPeersListChanged, connection, &DkLocalConnection::synchronizedPeersListChanged);
+    connect(this, &DkLocalClientManager::sendQuitMessage, connection, &DkLocalConnection::sendQuitMessage);
+    connect(connection, &DkLocalConnection::connectionQuitReceived, this, &DkLocalClientManager::connectionReceivedQuit);
+    connect(connection, &DkLocalConnection::connected, this, &DkLocalClientManager::connectToNomacs);
 
     return connection;
 }
@@ -583,7 +560,7 @@ DkPeer::DkPeer(quint16 port,
     this->clientName = clientName;
     this->showInMenu = showInMenu;
     mHasChangedRecently = false;
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
+    connect(timer, &QTimer::timeout, this, &DkPeer::timerTimeout, Qt::UniqueConnection);
 }
 
 DkPeer::~DkPeer()
@@ -594,7 +571,7 @@ void DkPeer::setSynchronized(bool flag)
 {
     sychronized = flag;
     mHasChangedRecently = true;
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
+    connect(timer, &QTimer::timeout, this, &DkPeer::timerTimeout, Qt::UniqueConnection);
     timer->start(1000);
 }
 
@@ -757,8 +734,6 @@ DkSyncManager::DkSyncManager()
     DkTimer dt;
     mClient = new DkLocalClientManager("nomacs | Image Lounge", 0);
 
-    // connect(this, SIGNAL(syncWithSignal(quint16)), mClient, SLOT(synchronizeWith(quint16)));
-    // connect(this, SIGNAL(stopSyncWithSignal(quint16)), mClient, SLOT(stopSynchronizeWith(quint16)));
     qInfo() << "local client created in: " << dt; // takes 1 sec in the client thread
 }
 

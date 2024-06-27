@@ -70,7 +70,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
         w->setObjectName("darkManipulator");
 
     for (QAction *a : am.manipulatorActions())
-        connect(a, SIGNAL(triggered()), this, SLOT(selectManipulator()), Qt::UniqueConnection);
+        connect(a, &QAction::triggered, this, &DkManipulatorWidget::selectManipulator, Qt::UniqueConnection);
 }
 
 void DkManipulatorWidget::createLayout()
@@ -90,7 +90,7 @@ void DkManipulatorWidget::createLayout()
         auto mpl = am.manipulatorManager().manipulatorExt((DkManipulatorManager::ManipulatorExtId)idx);
 
         DkTabEntryWidget *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
-        connect(entry, SIGNAL(clicked()), mpl->action(), SIGNAL(triggered()), Qt::UniqueConnection);
+        connect(entry, &DkTabEntryWidget::clicked, mpl->action(), &QAction::triggered, Qt::UniqueConnection);
 
         aLayout->addWidget(entry);
         group->addButton(entry);
@@ -124,7 +124,7 @@ void DkManipulatorWidget::createLayout()
     undoButton->setIconSize(QSize(32, 32));
     undoButton->setObjectName("DkRestartButton");
     undoButton->setStatusTip(tr("Undo"));
-    connect(undoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_undo), SIGNAL(triggered()));
+    connect(undoButton, &QPushButton::clicked, am.action(DkActionManager::menu_edit_undo), &QAction::triggered);
 
     pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/rotate-cw.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
     QPushButton *redoButton = new QPushButton(pm, "", this);
@@ -132,7 +132,7 @@ void DkManipulatorWidget::createLayout()
     redoButton->setIconSize(QSize(32, 32));
     redoButton->setObjectName("DkRestartButton");
     redoButton->setStatusTip(tr("Redo"));
-    connect(redoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_redo), SIGNAL(triggered()));
+    connect(redoButton, &QPushButton::clicked, am.action(DkActionManager::menu_edit_redo), &QAction::triggered);
 
     QWidget *buttonWidget = new QWidget(this);
     QHBoxLayout *buttonLayout = new QHBoxLayout(buttonWidget);
@@ -413,7 +413,7 @@ DkResizeWidget::DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator,
     manipulator->setWidget(this);
 
     // I would have loved setObjectName to be virtual : )
-    connect(this, SIGNAL(objectNameChanged(const QString &)), this, SLOT(onObjectNameChanged(const QString &)));
+    connect(this, &DkResizeWidget::objectNameChanged, this, &DkResizeWidget::onObjectNameChanged);
 }
 
 QSharedPointer<DkResizeManipulator> DkResizeWidget::manipulator() const

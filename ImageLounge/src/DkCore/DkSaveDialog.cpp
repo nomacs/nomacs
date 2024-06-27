@@ -81,8 +81,8 @@ void DkTifDialog::init()
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkTifDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkTifDialog::reject);
 
     layout()->addWidget(buttonWidget);
     layout()->addWidget(buttons);
@@ -231,7 +231,7 @@ void DkCompressDialog::createLayout()
     mOrigView = new DkBaseViewPort(this);
     mOrigView->setForceFastRendering(true);
     mOrigView->setPanControl(QPointF(0.0f, 0.0f));
-    connect(mOrigView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
+    connect(mOrigView, &DkBaseViewPort::imageUpdated, this, &DkCompressDialog::drawPreview);
 
     //// maybe we should report this:
     //// if a stylesheet (with border) is set, the var
@@ -249,7 +249,7 @@ void DkCompressDialog::createLayout()
     mSizeCombo->addItem(tr("Medium (1024 x 786)"), 1024);
     mSizeCombo->addItem(tr("Large  (1920 x 1080)"), 1920);
     mSizeCombo->addItem(tr("Original Size"), -1);
-    connect(mSizeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSizeWeb(int)));
+    connect(mSizeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkCompressDialog::changeSizeWeb);
 
     // compression quality is set in ::init()
     mCompressionCombo = new QComboBox(this);
@@ -259,11 +259,11 @@ void DkCompressDialog::createLayout()
     mCompressionCombo->addItem(tr("Low Quality"));
     mCompressionCombo->addItem(tr("Bad Quality"));
     mCompressionCombo->setCurrentIndex(1);
-    connect(mCompressionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(drawPreview()));
+    connect(mCompressionCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkCompressDialog::drawPreview);
 
     // lossless
     mCbLossless = new QCheckBox(tr("Lossless Compression"), this);
-    connect(mCbLossless, SIGNAL(toggled(bool)), this, SLOT(losslessCompression(bool)));
+    connect(mCbLossless, &QCheckBox::toggled, this, &DkCompressDialog::losslessCompression);
 
     mPreviewSizeLabel = new QLabel();
     mPreviewSizeLabel->setAlignment(Qt::AlignRight);
@@ -272,7 +272,7 @@ void DkCompressDialog::createLayout()
     mColChooser = new DkColorChooser(mBgCol, tr("Background Color"), this);
     mColChooser->setVisible(mHasAlpha);
     mColChooser->enableAlpha(false);
-    connect(mColChooser, SIGNAL(accepted()), this, SLOT(newBgCol()));
+    connect(mColChooser, &DkColorChooser::accepted, this, &DkCompressDialog::newBgCol);
 
     QWidget *previewWidget = new QWidget(this);
     QGridLayout *previewLayout = new QGridLayout(previewWidget);
@@ -296,8 +296,8 @@ void DkCompressDialog::createLayout()
     buttons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
     buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &DkCompressDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &DkCompressDialog::reject);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(previewWidget);

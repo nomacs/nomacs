@@ -140,7 +140,8 @@ void DkBatchContainer::setContentWidget(QWidget *batchContent)
 {
     mBatchContent = dynamic_cast<DkBatchContent *>(batchContent);
 
-    connect(mHeaderButton, SIGNAL(toggled(bool)), this, SLOT(showContent(bool)));
+    connect(mHeaderButton, &DkBatchTabButton::toggled, this, &DkBatchContainer::showContent);
+    // TODO: this is QWidget, maybe need refactoring
     connect(batchContent, SIGNAL(newHeaderText(const QString &)), mHeaderButton, SLOT(setInfo(const QString &)));
 }
 
@@ -183,7 +184,7 @@ DkInputTextEdit::DkInputTextEdit(QWidget *parent /* = 0 */)
     : QTextEdit(parent)
 {
     setAcceptDrops(true);
-    connect(this, SIGNAL(textChanged()), this, SIGNAL(fileListChangedSignal()));
+    connect(this, &DkInputTextEdit::textChanged, this, &DkInputTextEdit::fileListChangedSignal);
 }
 
 void DkInputTextEdit::appendFiles(const QStringList &fileList)
@@ -371,20 +372,17 @@ void DkBatchInput::createLayout()
     widgetLayout->addWidget(mInputTabs, 1, 1);
     setLayout(widgetLayout);
 
-    connect(mThumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
-    connect(mThumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList &)), mInputTextEdit, SLOT(appendFiles(const QStringList &)));
-    connect(mThumbScrollWidget, SIGNAL(updateDirSignal(const QString &)), this, SLOT(setDir(const QString &)));
-    connect(mThumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), mLoader.data(), SLOT(setFolderFilter(const QString &)), Qt::UniqueConnection);
+    connect(mThumbScrollWidget->getThumbWidget(), &DkThumbScene::selectionChanged, this, &DkBatchInput::selectionChanged);
+    connect(mThumbScrollWidget, &DkThumbScrollWidget::batchProcessFilesSignal, mInputTextEdit, &DkInputTextEdit::appendFiles);
+    connect(mThumbScrollWidget, &DkThumbScrollWidget::updateDirSignal, this, &DkBatchInput::setDir);
+    connect(mThumbScrollWidget, &DkThumbScrollWidget::filterChangedSignal, mLoader.data(), &DkImageLoader::setFolderFilter, Qt::UniqueConnection);
 
-    connect(mInputTextEdit, SIGNAL(fileListChangedSignal()), this, SLOT(selectionChanged()));
+    connect(mInputTextEdit, &DkInputTextEdit::fileListChangedSignal, this, &DkBatchInput::selectionChanged);
 
-    connect(mDirectoryEdit, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
-    connect(mDirectoryEdit, SIGNAL(directoryChanged(const QString &)), this, SLOT(setDir(const QString &)));
-    connect(mExplorer, SIGNAL(openDir(const QString &)), this, SLOT(setDir(const QString &)));
-    connect(mLoader.data(),
-            SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>)),
-            mThumbScrollWidget,
-            SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT>>)));
+    connect(mDirectoryEdit, &DkDirectoryEdit::textChanged, this, &DkBatchInput::parameterChanged);
+    connect(mDirectoryEdit, &DkDirectoryEdit::directoryChanged, this, &DkBatchInput::setDir);
+    connect(mExplorer, &DkExplorer::openDir, this, &DkBatchInput::setDir);
+    connect(mLoader.data(), &DkImageLoader::updateDirSignal, mThumbScrollWidget, &DkThumbScrollWidget::updateThumbs);
 }
 
 void DkBatchInput::applyDefault()
@@ -553,22 +551,22 @@ void DkFilenameWidget::createLayout()
     mCbType->insertItem(fileNameTypes_fileName, tr("Current Filename"));
     mCbType->insertItem(fileNameTypes_Text, tr("Text"));
     mCbType->insertItem(fileNameTypes_Number, tr("Number"));
-    connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeCBChanged(int)));
-    connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
-    connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
+    connect(mCbType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkFilenameWidget::typeCBChanged);
+    connect(mCbType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkFilenameWidget::checkForUserInput);
+    connect(mCbType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkFilenameWidget::changed);
 
     mCbCase = new QComboBox(this);
     mCbCase->addItem(tr("Keep Case"));
     mCbCase->addItem(tr("To lowercase"));
     mCbCase->addItem(tr("To UPPERCASE"));
-    connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
-    connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
+    connect(mCbCase, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkFilenameWidget::checkForUserInput);
+    connect(mCbCase, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkFilenameWidget::changed);
 
     mSbNumber = new QSpinBox(this);
     mSbNumber->setValue(1);
     mSbNumber->setMinimum(0);
     mSbNumber->setMaximum(999); // changes - if cbDigits->setCurrentIndex() is changed!
-    connect(mSbNumber, SIGNAL(valueChanged(int)), this, SIGNAL(changed()));
+    connect(mSbNumber, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkFilenameWidget::changed);
 
     mCbDigits = new QComboBox(this);
     mCbDigits->addItem(tr("1 digit"));
@@ -577,11 +575,10 @@ void DkFilenameWidget::createLayout()
     mCbDigits->addItem(tr("4 digits"));
     mCbDigits->addItem(tr("5 digits"));
     mCbDigits->setCurrentIndex(2); // see sBNumber->setMaximum()
-    connect(mCbDigits, SIGNAL(currentIndexChanged(int)), this, SLOT(digitCBChanged(int)));
+    connect(mCbDigits, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkFilenameWidget::digitCBChanged);
 
     mLeText = new QLineEdit(this);
-    connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
-    connect(mLeText, SIGNAL(textChanged(const QString &)), this, SIGNAL(changed()));
+    connect(mLeText, &QLineEdit::textChanged, this, &DkFilenameWidget::changed);
 
     mPbPlus = new QPushButton("+", this);
     mPbPlus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -591,10 +588,10 @@ void DkFilenameWidget::createLayout()
     mPbMinus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     mPbMinus->setMinimumSize(10, 10);
     mPbMinus->setMaximumSize(30, 30);
-    connect(mPbPlus, SIGNAL(clicked()), this, SLOT(pbPlusPressed()));
-    connect(mPbMinus, SIGNAL(clicked()), this, SLOT(pbMinusPressed()));
-    connect(mPbPlus, SIGNAL(clicked()), this, SIGNAL(changed()));
-    connect(mPbMinus, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(mPbPlus, &QPushButton::clicked, this, &DkFilenameWidget::pbPlusPressed);
+    connect(mPbMinus, &QPushButton::clicked, this, &DkFilenameWidget::pbMinusPressed);
+    connect(mPbPlus, &QPushButton::clicked, this, &DkFilenameWidget::changed);
+    connect(mPbMinus, &QPushButton::clicked, this, &DkFilenameWidget::changed);
 }
 
 void DkFilenameWidget::typeCBChanged(int index)
@@ -765,23 +762,25 @@ void DkBatchOutput::createLayout()
     mOutputBrowseButton = new QPushButton(tr("Browse"));
     mOutputlineEdit = new DkDirectoryEdit(this);
     mOutputlineEdit->setPlaceholderText(tr("Select a Directory"));
-    connect(mOutputBrowseButton, SIGNAL(clicked()), this, SLOT(browse()));
-    connect(mOutputlineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setDir(const QString &)));
+    connect(mOutputBrowseButton, &QPushButton::clicked, this, &DkBatchOutput::browse);
+    connect(mOutputlineEdit, &DkDirectoryEdit::textChanged, this, [this](const QString &path) {
+        setDir(path);
+    });
 
     // overwrite existing
     mCbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
     mCbOverwriteExisting->setToolTip(tr("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!"));
-    connect(mCbOverwriteExisting, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(mCbOverwriteExisting, &QCheckBox::clicked, this, &DkBatchOutput::changed);
 
     // overwrite existing
     mCbDoNotSave = new QCheckBox(tr("Do not Save Output Images"));
     mCbDoNotSave->setToolTip(tr("If checked, output images are not saved at all.\nThis option is only useful if plugins save sidecar files - so be careful!"));
-    connect(mCbDoNotSave, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(mCbDoNotSave, &QCheckBox::clicked, this, &DkBatchOutput::changed);
 
     // Use Input Folder
     mCbUseInput = new QCheckBox(tr("Use Input Folder"));
     mCbUseInput->setToolTip(tr("If checked, the batch is applied to the input folder - so be careful!"));
-    connect(mCbUseInput, SIGNAL(clicked(bool)), this, SLOT(useInputFolderChanged(bool)));
+    connect(mCbUseInput, &QCheckBox::clicked, this, &DkBatchOutput::useInputFolderChanged);
 
     // delete original
     mCbDeleteOriginal = new QCheckBox(tr("Delete Input Files"));
@@ -814,9 +813,11 @@ void DkBatchOutput::createLayout()
     fwidget->enableMinusButton(false);
     mFilenameWidgets.push_back(fwidget);
     mFilenameVBLayout->addWidget(fwidget);
-    connect(fwidget, SIGNAL(plusPressed(DkFilenameWidget *)), this, SLOT(plusPressed(DkFilenameWidget *)));
-    connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget *)), this, SLOT(minusPressed(DkFilenameWidget *)));
-    connect(fwidget, SIGNAL(changed()), this, SLOT(parameterChanged()));
+    connect(fwidget, &DkFilenameWidget::plusPressed, this, [this](DkFilenameWidget *widget) {
+        plusPressed(widget);
+    });
+    connect(fwidget, &DkFilenameWidget::minusPressed, this, &DkBatchOutput::minusPressed);
+    connect(fwidget, &DkFilenameWidget::changed, this, &DkBatchOutput::parameterChanged);
 
     QWidget *extensionWidget = new QWidget(this);
     QHBoxLayout *extensionLayout = new QHBoxLayout(extensionWidget);
@@ -826,13 +827,13 @@ void DkBatchOutput::createLayout()
     mCbExtension = new QComboBox(this);
     mCbExtension->addItem(tr("Keep Extension"));
     mCbExtension->addItem(tr("Convert To"));
-    connect(mCbExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(extensionCBChanged(int)));
+    connect(mCbExtension, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkBatchOutput::extensionCBChanged);
 
     mCbNewExtension = new QComboBox(this);
     mCbNewExtension->addItems(DkSettingsManager::param().app().saveFilters);
     mCbNewExtension->setFixedWidth(150);
     mCbNewExtension->setEnabled(false);
-    connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
+    connect(mCbNewExtension, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkBatchOutput::parameterChanged);
 
     mCbCompression = new QComboBox(this);
     updateCBCompression();
@@ -981,9 +982,11 @@ DkFilenameWidget *DkBatchOutput::createFilenameWidget(const QString &tag)
     DkFilenameWidget *fw = new DkFilenameWidget(this);
     fw->setTag(tag);
 
-    connect(fw, SIGNAL(plusPressed(DkFilenameWidget *)), this, SLOT(plusPressed(DkFilenameWidget *)));
-    connect(fw, SIGNAL(minusPressed(DkFilenameWidget *)), this, SLOT(minusPressed(DkFilenameWidget *)));
-    connect(fw, SIGNAL(changed()), this, SLOT(parameterChanged()));
+    connect(fw, &DkFilenameWidget::plusPressed, this, [this](DkFilenameWidget *widget) {
+        plusPressed(widget);
+    });
+    connect(fw, &DkFilenameWidget::minusPressed, this, &DkBatchOutput::minusPressed);
+    connect(fw, &DkFilenameWidget::changed, this, &DkBatchOutput::parameterChanged);
 
     return fw;
 }
@@ -1330,9 +1333,9 @@ void DkProfileWidget::createLayout()
 
     updateProfileList();
 
-    connect(mSummary, SIGNAL(updateCurrentProfile()), this, SLOT(updateCurrentProfile()));
-    connect(mSummary, SIGNAL(deleteCurrentProfile()), this, SLOT(deleteCurrentProfile()));
-    connect(mSummary, SIGNAL(exportCurrentProfile()), this, SLOT(exportCurrentProfile()));
+    connect(mSummary, &DkProfileSummaryWidget::updateCurrentProfile, this, &DkProfileWidget::updateCurrentProfile);
+    connect(mSummary, &DkProfileSummaryWidget::deleteCurrentProfile, this, &DkProfileWidget::deleteCurrentProfile);
+    connect(mSummary, &DkProfileSummaryWidget::exportCurrentProfile, this, &DkProfileWidget::exportCurrentProfile);
 }
 
 bool DkProfileWidget::hasUserInput() const
@@ -1495,14 +1498,8 @@ DkBatchPluginWidget::DkBatchPluginWidget(QWidget *parent /* = 0 */, Qt::WindowFl
     DkPluginManager::instance().loadPlugins();
     createLayout();
 
-    connect(mSettingsEditor,
-            SIGNAL(changeSettingSignal(const QString &, const QVariant &, const QStringList &)),
-            this,
-            SLOT(changeSetting(const QString &, const QVariant &, const QStringList &)));
-    connect(mSettingsEditor,
-            SIGNAL(removeSettingSignal(const QString &, const QStringList &)),
-            this,
-            SLOT(removeSetting(const QString &, const QStringList &)));
+    connect(mSettingsEditor, &DkSettingsWidget::changeSettingSignal, this, &DkBatchPluginWidget::changeSetting);
+    connect(mSettingsEditor, &DkSettingsWidget::removeSettingSignal, this, &DkBatchPluginWidget::removeSetting);
 }
 
 void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const
@@ -1552,11 +1549,8 @@ void DkBatchPluginWidget::createLayout()
     layout->addWidget(pluginList, 1, 0);
     layout->addWidget(mSettingsEditor, 1, 1);
 
-    connect(mModel, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(itemChanged(QStandardItem *)));
-    connect(pluginList->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-            this,
-            SLOT(selectionChanged(const QItemSelection &)));
+    connect(mModel, &QStandardItemModel::itemChanged, this, &DkBatchPluginWidget::itemChanged);
+    connect(pluginList->selectionModel(), &QItemSelectionModel::selectionChanged, this, &DkBatchPluginWidget::selectionChanged);
 }
 
 bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlugin)
@@ -1830,11 +1824,8 @@ void DkBatchManipulatorWidget::createLayout()
     layout->addWidget(manipulatorList, 1, 0);
     layout->addWidget(rightWidget, 1, 1);
 
-    connect(mModel, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(itemChanged(QStandardItem *)));
-    connect(manipulatorList->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-            this,
-            SLOT(selectionChanged(const QItemSelection &)));
+    connect(mModel, &QStandardItemModel::itemChanged, this, &DkBatchManipulatorWidget::itemChanged);
+    connect(manipulatorList->selectionModel(), &QItemSelectionModel::selectionChanged, this, &DkBatchManipulatorWidget::selectionChanged);
 }
 
 void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager &manager)
@@ -1860,7 +1851,7 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager &manager)
         mSettingsLayout->addWidget(w);
 
     for (QAction *a : manager.actions())
-        connect(a, SIGNAL(triggered()), this, SLOT(selectManipulator()), Qt::UniqueConnection);
+        connect(a, &QAction::triggered, this, QOverload<>::of(&DkBatchManipulatorWidget::selectManipulator), Qt::UniqueConnection);
 }
 
 bool DkBatchManipulatorWidget::loadProperties(QSharedPointer<DkManipulatorBatch> batchManipulators)
@@ -2112,15 +2103,15 @@ void DkBatchTransformWidget::createLayout()
     layout->setColumnStretch(3, 10);
     layout->addWidget(mCbCropRectCenter, 11, 0);
 
-    connect(mResizeComboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged()));
-    connect(mResizeSbPercent, SIGNAL(valueChanged(double)), this, SLOT(updateHeader()));
-    connect(mResizeSbPx, SIGNAL(valueChanged(int)), this, SLOT(updateHeader()));
-    connect(mResizeSbZoomHeightPx, SIGNAL(valueChanged(int)), this, SLOT(updateHeader()));
+    connect(mResizeComboMode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkBatchTransformWidget::modeChanged);
+    connect(mResizeSbPercent, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkBatchTransformWidget::updateHeader);
+    connect(mResizeSbPx, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkBatchTransformWidget::updateHeader);
+    connect(mResizeSbZoomHeightPx, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkBatchTransformWidget::updateHeader);
 
-    connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateHeader()));
-    connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(updateHeader()));
-    connect(mCbCropRectangle, SIGNAL(clicked()), this, SLOT(modeChanged()));
-    connect(mCbCropRectCenter, SIGNAL(clicked()), this, SLOT(modeChanged()));
+    connect(mRotateGroup, &QButtonGroup::idClicked, this, &DkBatchTransformWidget::updateHeader);
+    connect(mCbCropMetadata, &QCheckBox::clicked, this, &DkBatchTransformWidget::updateHeader);
+    connect(mCbCropRectangle, &QCheckBox::clicked, this, &DkBatchTransformWidget::modeChanged);
+    connect(mCbCropRectCenter, &QCheckBox::clicked, this, &DkBatchTransformWidget::modeChanged);
 }
 
 void DkBatchTransformWidget::applyDefault()
@@ -2363,8 +2354,8 @@ void DkBatchButtonsWidget::createLayout()
     mLogButton->setEnabled(false);
 
     // connect
-    connect(mPlayButton, SIGNAL(clicked(bool)), this, SIGNAL(playSignal(bool)));
-    connect(mLogButton, SIGNAL(clicked()), this, SIGNAL(showLogSignal()));
+    connect(mPlayButton, &QPushButton::clicked, this, &DkBatchButtonsWidget::playSignal);
+    connect(mLogButton, &QPushButton::clicked, this, &DkBatchButtonsWidget::showLogSignal);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(mPlayButton);
@@ -2438,16 +2429,16 @@ DkBatchWidget::DkBatchWidget(const QString &currentDirectory, QWidget *parent /*
     mCurrentDirectory = currentDirectory;
     mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
 
-    connect(mBatchProcessing, SIGNAL(progressValueChanged(int)), this, SLOT(updateProgress(int)));
-    connect(mBatchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
+    connect(mBatchProcessing, &DkBatchProcessing::progressValueChanged, this, &DkBatchWidget::updateProgress);
+    connect(mBatchProcessing, &DkBatchProcessing::finished, this, &DkBatchWidget::processingFinished);
 
     createLayout();
 
-    connect(inputWidget(), SIGNAL(updateInputDir(const QString &)), outputWidget(), SLOT(setInputDir(const QString &)));
-    connect(&mLogUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLog()));
-    connect(profileWidget(), SIGNAL(saveProfileSignal(const QString &)), this, SLOT(saveProfile(const QString &)));
-    connect(profileWidget(), SIGNAL(loadProfileSignal(const QString &)), this, SLOT(loadProfile(const QString &)));
-    connect(profileWidget(), SIGNAL(applyDefaultSignal()), this, SLOT(applyDefault()));
+    connect(inputWidget(), &DkBatchInput::updateInputDir, outputWidget(), &DkBatchOutput::setInputDir);
+    connect(&mLogUpdateTimer, &QTimer::timeout, this, &DkBatchWidget::updateLog);
+    connect(profileWidget(), &DkProfileWidget::saveProfileSignal, this, &DkBatchWidget::saveProfile);
+    connect(profileWidget(), &DkProfileWidget::loadProfileSignal, this, &DkBatchWidget::loadProfile);
+    connect(profileWidget(), &DkProfileWidget::applyDefaultSignal, this, &DkBatchWidget::applyDefault);
 
     inputWidget()->setDir(currentDirectory);
     outputWidget()->setInputDir(currentDirectory);
@@ -2455,13 +2446,13 @@ DkBatchWidget::DkBatchWidget(const QString &currentDirectory, QWidget *parent /*
     // change tabs with page up page down
     QAction *nextAction = new QAction(tr("next"), this);
     nextAction->setShortcut(Qt::Key_PageDown);
-    connect(nextAction, SIGNAL(triggered()), this, SLOT(nextTab()));
+    connect(nextAction, &QAction::triggered, this, &DkBatchWidget::nextTab);
     addAction(nextAction);
 
     QAction *previousAction = new QAction(tr("previous"), this);
     previousAction->setShortcut(Qt::Key_PageUp);
     previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
+    connect(previousAction, &QAction::triggered, this, &DkBatchWidget::previousTab);
     addAction(previousAction);
 }
 
@@ -2480,8 +2471,10 @@ void DkBatchWidget::createLayout()
 
     // Input Directory
     mWidgets[batch_input] = new DkBatchContainer(tr("Input"), tr("no files selected"), this);
-    mWidgets[batch_input]->setContentWidget(new DkBatchInput(this));
+    const auto bi = new DkBatchInput(this);
+    mWidgets[batch_input]->setContentWidget(bi);
     inputWidget()->setDir(mCurrentDirectory);
+    connect(bi, &DkBatchInput::changed, this, &DkBatchWidget::widgetChanged);
 
     // fold content
     mWidgets[batch_manipulator] = new DkBatchContainer(tr("Adjustments"), tr("inactive"), this);
@@ -2496,7 +2489,9 @@ void DkBatchWidget::createLayout()
 #endif
 
     mWidgets[batch_output] = new DkBatchContainer(tr("Output"), tr("not set"), this);
-    mWidgets[batch_output]->setContentWidget(new DkBatchOutput(this));
+    const auto bo = new DkBatchOutput(this);
+    mWidgets[batch_output]->setContentWidget(bo);
+    connect(bo, &DkBatchOutput::changed, this, &DkBatchWidget::widgetChanged);
 
     // profiles
     mWidgets[batch_profile] = new DkBatchContainer(tr("Profiles"), tr("inactive"), this);
@@ -2513,11 +2508,10 @@ void DkBatchWidget::createLayout()
         if (!w)
             continue;
         mCentralLayout->addWidget(w->contentWidget());
-        connect(w, SIGNAL(showSignal()), this, SLOT(changeWidget()));
+        connect(w, &DkBatchContainer::showSignal, this, [this]() {
+            changeWidget();
+        });
     }
-
-    connect(mWidgets[batch_input]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
-    connect(mWidgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 
     mContentTitle = new QLabel("", this);
     mContentTitle->setObjectName("batchContentTitle");
@@ -2581,12 +2575,9 @@ void DkBatchWidget::createLayout()
     if (!mWidgets.empty())
         mWidgets[0]->headerWidget()->click();
 
-    connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
-    connect(mButtonWidget, SIGNAL(showLogSignal()), this, SLOT(showLog()));
-    connect(this,
-            SIGNAL(infoSignal(const QString &, const DkBatchInfoWidget::InfoMode &)),
-            mInfoWidget,
-            SLOT(setInfo(const QString &, const DkBatchInfoWidget::InfoMode &)));
+    connect(mButtonWidget, &DkBatchButtonsWidget::playSignal, this, &DkBatchWidget::toggleBatch);
+    connect(mButtonWidget, &DkBatchButtonsWidget::showLogSignal, this, &DkBatchWidget::showLog);
+    connect(this, &DkBatchWidget::infoSignal, mInfoWidget, &DkBatchInfoWidget::setInfo);
 }
 
 DkBatchInput *DkBatchWidget::inputWidget() const
@@ -2910,7 +2901,7 @@ void DkBatchWidget::changeWidget(DkBatchContainer *widget)
             mContentTitle->setText(cw->headerWidget()->text());
             mContentInfo->setText(cw->headerWidget()->info());
             cw->headerWidget()->setChecked(true);
-            connect(cw->headerWidget(), SIGNAL(infoChanged(const QString &)), mContentInfo, SLOT(setText(const QString &)), Qt::UniqueConnection);
+            connect(cw->headerWidget(), &DkBatchTabButton::infoChanged, mContentInfo, &QLabel::setText, Qt::UniqueConnection);
         }
     }
 }

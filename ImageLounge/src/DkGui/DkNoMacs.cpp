@@ -89,6 +89,7 @@
 #include <QStringBuilder>
 #include <QTimer>
 #include <QVector2D>
+#include <QtGlobal>
 #include <qmath.h>
 #pragma warning(pop) // no warnings from includes - end
 
@@ -210,7 +211,7 @@ void DkNoMacs::init()
     }
 
     // connections to the image loader
-    connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
+    connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, this, QOverload<QSharedPointer<DkImageContainerT>>::of(&DkNoMacs::setWindowTitle));
 
     DkActionManager::instance().enableMovieActions(false);
 
@@ -271,66 +272,82 @@ void DkNoMacs::createActions()
 {
     DkActionManager &am = DkActionManager::instance();
 
-    connect(am.action(DkActionManager::menu_file_open), SIGNAL(triggered()), this, SLOT(openFile()));
-    connect(am.action(DkActionManager::menu_file_open_dir), SIGNAL(triggered()), this, SLOT(openDir()));
-    connect(am.action(DkActionManager::menu_file_quick_launch), SIGNAL(triggered()), this, SLOT(openQuickLaunch()));
-    connect(am.action(DkActionManager::menu_file_open_list), SIGNAL(triggered()), this, SLOT(openFileList()));
-    connect(am.action(DkActionManager::menu_file_save_list), SIGNAL(triggered()), this, SLOT(saveFileList()));
-    connect(am.action(DkActionManager::menu_file_rename), SIGNAL(triggered()), this, SLOT(renameFile()));
-    connect(am.action(DkActionManager::menu_file_goto), SIGNAL(triggered()), this, SLOT(goTo()));
+    connect(am.action(DkActionManager::menu_file_open), &QAction::triggered, this, &DkNoMacs::openFile);
+    connect(am.action(DkActionManager::menu_file_open_dir), &QAction::triggered, this, &DkNoMacs::openDir);
+    connect(am.action(DkActionManager::menu_file_quick_launch), &QAction::triggered, this, &DkNoMacs::openQuickLaunch);
+    connect(am.action(DkActionManager::menu_file_open_list), &QAction::triggered, this, &DkNoMacs::openFileList);
+    connect(am.action(DkActionManager::menu_file_save_list), &QAction::triggered, this, &DkNoMacs::saveFileList);
+    connect(am.action(DkActionManager::menu_file_rename), &QAction::triggered, this, &DkNoMacs::renameFile);
+    connect(am.action(DkActionManager::menu_file_goto), &QAction::triggered, this, &DkNoMacs::goTo);
+
+    // TODO: centralWidget() returns showRecentFiles, not sure the underlying type
     connect(am.action(DkActionManager::menu_file_show_recent), SIGNAL(triggered(bool)), centralWidget(), SLOT(showRecentFiles(bool)));
-    connect(am.action(DkActionManager::menu_file_new_instance), SIGNAL(triggered()), this, SLOT(newInstance()));
-    connect(am.action(DkActionManager::menu_file_private_instance), SIGNAL(triggered()), this, SLOT(newInstance()));
-    connect(am.action(DkActionManager::menu_file_find), SIGNAL(triggered()), this, SLOT(find()));
-    connect(am.action(DkActionManager::menu_file_recursive), SIGNAL(triggered(bool)), this, SLOT(setRecursiveScan(bool)));
-    connect(am.action(DkActionManager::menu_file_exit), SIGNAL(triggered()), this, SLOT(close()));
+    connect(am.action(DkActionManager::menu_file_new_instance), &QAction::triggered, this, [this]() {
+        newInstance();
+    });
+    connect(am.action(DkActionManager::menu_file_private_instance), &QAction::triggered, this, [this]() {
+        newInstance();
+    });
+    connect(am.action(DkActionManager::menu_file_find), &QAction::triggered, this, &DkNoMacs::find);
+    connect(am.action(DkActionManager::menu_file_recursive), &QAction::triggered, this, &DkNoMacs::setRecursiveScan);
+    connect(am.action(DkActionManager::menu_file_exit), &QAction::triggered, this, &DkNoMacs::close);
 
-    connect(am.action(DkActionManager::menu_sort_filename), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
-    connect(am.action(DkActionManager::menu_sort_file_size), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
-    connect(am.action(DkActionManager::menu_sort_date_created), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
-    connect(am.action(DkActionManager::menu_sort_date_modified), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
-    connect(am.action(DkActionManager::menu_sort_random), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
-    connect(am.action(DkActionManager::menu_sort_ascending), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
-    connect(am.action(DkActionManager::menu_sort_descending), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+    connect(am.action(DkActionManager::menu_sort_filename), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::menu_sort_file_size), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::menu_sort_date_created), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::menu_sort_date_modified), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::menu_sort_random), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::menu_sort_ascending), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::menu_sort_descending), &QAction::triggered, this, &DkNoMacs::changeSorting);
 
-    connect(am.action(DkActionManager::menu_panel_menu), SIGNAL(toggled(bool)), this, SLOT(showMenuBar(bool)));
-    connect(am.action(DkActionManager::menu_panel_explorer), SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
-    connect(am.action(DkActionManager::menu_panel_metadata_dock), SIGNAL(toggled(bool)), this, SLOT(showMetaDataDock(bool)));
-    connect(am.action(DkActionManager::menu_edit_image), SIGNAL(toggled(bool)), this, SLOT(showEditDock(bool)));
-    connect(am.action(DkActionManager::menu_panel_history), SIGNAL(toggled(bool)), this, SLOT(showHistoryDock(bool)));
-    connect(am.action(DkActionManager::menu_panel_log), SIGNAL(toggled(bool)), this, SLOT(showLogDock(bool)));
-    connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), this, SLOT(showThumbsDock(bool)));
-    connect(am.action(DkActionManager::menu_panel_toggle), SIGNAL(toggled(bool)), this, SLOT(toggleDocks(bool)));
+    connect(am.action(DkActionManager::menu_panel_menu), &QAction::toggled, this, &DkNoMacs::showMenuBar);
+    connect(am.action(DkActionManager::menu_panel_explorer), &QAction::toggled, this, [this](bool show) {
+        showExplorer(show);
+    });
+    connect(am.action(DkActionManager::menu_panel_metadata_dock), &QAction::toggled, this, [this](bool show) {
+        showMetaDataDock(show);
+    });
+    connect(am.action(DkActionManager::menu_edit_image), &QAction::toggled, this, [this](bool show) {
+        showEditDock(show);
+    });
+    connect(am.action(DkActionManager::menu_panel_history), &QAction::toggled, this, [this](bool show) {
+        showHistoryDock(show);
+    });
+    connect(am.action(DkActionManager::menu_panel_log), &QAction::toggled, this, [this](bool show) {
+        showLogDock(show);
+    });
+    connect(am.action(DkActionManager::menu_panel_preview), &QAction::toggled, this, &DkNoMacs::showThumbsDock);
+    connect(am.action(DkActionManager::menu_panel_toggle), &QAction::toggled, this, &DkNoMacs::toggleDocks);
 
-    connect(am.action(DkActionManager::menu_view_fit_frame), SIGNAL(triggered()), this, SLOT(fitFrame()));
-    connect(am.action(DkActionManager::menu_view_fullscreen), SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
-    connect(am.action(DkActionManager::menu_view_frameless), SIGNAL(toggled(bool)), this, SLOT(restartFrameless(bool)));
-    connect(am.action(DkActionManager::menu_panel_transfertoolbar), SIGNAL(toggled(bool)), this, SLOT(restartWithPseudoColor(bool)));
-    connect(am.action(DkActionManager::menu_view_opacity_change), SIGNAL(triggered()), this, SLOT(showOpacityDialog()));
-    connect(am.action(DkActionManager::menu_view_opacity_up), SIGNAL(triggered()), this, SLOT(opacityUp()));
-    connect(am.action(DkActionManager::menu_view_opacity_down), SIGNAL(triggered()), this, SLOT(opacityDown()));
-    connect(am.action(DkActionManager::menu_view_opacity_an), SIGNAL(triggered()), this, SLOT(animateChangeOpacity()));
-    connect(am.action(DkActionManager::menu_view_lock_window), SIGNAL(triggered(bool)), this, SLOT(lockWindow(bool)));
+    connect(am.action(DkActionManager::menu_view_fit_frame), &QAction::triggered, this, &DkNoMacs::fitFrame);
+    connect(am.action(DkActionManager::menu_view_fullscreen), &QAction::triggered, this, &DkNoMacs::toggleFullScreen);
+    connect(am.action(DkActionManager::menu_view_frameless), &QAction::toggled, this, &DkNoMacs::restartFrameless);
+    connect(am.action(DkActionManager::menu_panel_transfertoolbar), &QAction::toggled, this, &DkNoMacs::restartWithPseudoColor);
+    connect(am.action(DkActionManager::menu_view_opacity_change), &QAction::triggered, this, &DkNoMacs::showOpacityDialog);
+    connect(am.action(DkActionManager::menu_view_opacity_up), &QAction::triggered, this, &DkNoMacs::opacityUp);
+    connect(am.action(DkActionManager::menu_view_opacity_down), &QAction::triggered, this, &DkNoMacs::opacityDown);
+    connect(am.action(DkActionManager::menu_view_opacity_an), &QAction::triggered, this, &DkNoMacs::animateChangeOpacity);
+    connect(am.action(DkActionManager::menu_view_lock_window), &QAction::triggered, this, &DkNoMacs::lockWindow);
 
-    connect(am.action(DkActionManager::menu_tools_thumbs), SIGNAL(triggered()), this, SLOT(computeThumbsBatch()));
-    connect(am.action(DkActionManager::menu_tools_filter), SIGNAL(triggered(bool)), this, SLOT(find(bool)));
-    connect(am.action(DkActionManager::menu_tools_export_tiff), SIGNAL(triggered()), this, SLOT(exportTiff()));
-    connect(am.action(DkActionManager::menu_tools_extract_archive), SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
-    connect(am.action(DkActionManager::menu_tools_train_format), SIGNAL(triggered()), this, SLOT(trainFormat()));
+    connect(am.action(DkActionManager::menu_tools_thumbs), &QAction::triggered, this, &DkNoMacs::computeThumbsBatch);
+    connect(am.action(DkActionManager::menu_tools_filter), &QAction::triggered, this, &DkNoMacs::find);
+    connect(am.action(DkActionManager::menu_tools_export_tiff), &QAction::triggered, this, &DkNoMacs::exportTiff);
+    connect(am.action(DkActionManager::menu_tools_extract_archive), &QAction::triggered, this, &DkNoMacs::extractImagesFromArchive);
+    connect(am.action(DkActionManager::menu_tools_train_format), &QAction::triggered, this, &DkNoMacs::trainFormat);
 
-    connect(am.action(DkActionManager::sc_test_rec), SIGNAL(triggered()), this, SLOT(loadRecursion()));
-    connect(am.action(DkActionManager::sc_test_pong), SIGNAL(triggered()), this, SLOT(startPong()));
+    connect(am.action(DkActionManager::sc_test_rec), &QAction::triggered, this, &DkNoMacs::loadRecursion);
+    connect(am.action(DkActionManager::sc_test_pong), &QAction::triggered, this, &DkNoMacs::startPong);
 
-    connect(am.action(DkActionManager::menu_plugin_manager), SIGNAL(triggered()), this, SLOT(openPluginManager()));
+    connect(am.action(DkActionManager::menu_plugin_manager), &QAction::triggered, this, &DkNoMacs::openPluginManager);
 
     // help menu
-    connect(am.action(DkActionManager::menu_help_about), SIGNAL(triggered()), this, SLOT(aboutDialog()));
-    connect(am.action(DkActionManager::menu_help_documentation), SIGNAL(triggered()), this, SLOT(openDocumentation()));
-    connect(am.action(DkActionManager::menu_help_bug), SIGNAL(triggered()), this, SLOT(bugReport()));
-    connect(am.action(DkActionManager::menu_help_update), SIGNAL(triggered()), this, SLOT(checkForUpdate()));
-    connect(am.action(DkActionManager::menu_help_update_translation), SIGNAL(triggered()), this, SLOT(updateTranslations()));
+    connect(am.action(DkActionManager::menu_help_about), &QAction::triggered, this, &DkNoMacs::aboutDialog);
+    connect(am.action(DkActionManager::menu_help_documentation), &QAction::triggered, this, &DkNoMacs::openDocumentation);
+    connect(am.action(DkActionManager::menu_help_bug), &QAction::triggered, this, &DkNoMacs::bugReport);
+    connect(am.action(DkActionManager::menu_help_update), &QAction::triggered, this, &DkNoMacs::checkForUpdate);
+    connect(am.action(DkActionManager::menu_help_update_translation), &QAction::triggered, this, &DkNoMacs::updateTranslations);
 
-    connect(am.appManager(), SIGNAL(openFileSignal(QAction *)), this, SLOT(openFileWith(QAction *)));
+    connect(am.appManager(), &DkAppManager::openFileSignal, this, &DkNoMacs::openFileWith);
 }
 
 void DkNoMacs::clearFileHistory()
@@ -665,7 +682,9 @@ void DkNoMacs::restartFrameless(bool)
 
 void DkNoMacs::showRecentFilesOnStartUp()
 {
-    QTimer::singleShot(100, getTabWidget(), SLOT(showRecentFiles()));
+    QTimer::singleShot(100, this, [this]() {
+        getTabWidget()->showRecentFiles();
+    });
 }
 
 void DkNoMacs::startPong() const
@@ -770,7 +789,7 @@ void DkNoMacs::animateOpacityDown()
     }
 
     setWindowOpacity(newO);
-    QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
+    QTimer::singleShot(20, this, &DkNoMacs::animateOpacityDown);
 }
 
 void DkNoMacs::animateOpacityUp()
@@ -783,7 +802,7 @@ void DkNoMacs::animateOpacityUp()
     }
 
     setWindowOpacity(newO);
-    QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
+    QTimer::singleShot(20, this, &DkNoMacs::animateOpacityUp);
 }
 
 // >DIR: diem - why can't we put it in mViewport?
@@ -913,12 +932,11 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings)
         mExplorer->setDisplaySettings(&DkSettingsManager::param().app().showExplorer);
         addDockWidget(mExplorer->getDockLocationSettings(Qt::LeftDockWidgetArea), mExplorer);
 
-        connect(mExplorer, SIGNAL(openFile(const QString &)), getTabWidget(), SLOT(loadFile(const QString &)));
-        connect(mExplorer, SIGNAL(openDir(const QString &)), getTabWidget(), SLOT(loadDirToTab(const QString &)));
-        connect(getTabWidget(),
-                SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
-                mExplorer,
-                SLOT(setCurrentImage(QSharedPointer<DkImageContainerT>)));
+        connect(mExplorer, &DkExplorer::openFile, getTabWidget(), [this](const QString &path) {
+            getTabWidget()->loadFile(path);
+        });
+        connect(mExplorer, &DkExplorer::openDir, getTabWidget(), &DkCentralWidget::loadDirToTab);
+        connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mExplorer, &DkExplorer::setCurrentImage);
     }
 
     mExplorer->setVisible(show, saveSettings);
@@ -944,10 +962,7 @@ void DkNoMacs::showMetaDataDock(bool show, bool saveSettings)
         mMetaDataDock->setDisplaySettings(&DkSettingsManager::param().app().showMetaDataDock);
         addDockWidget(mMetaDataDock->getDockLocationSettings(Qt::RightDockWidgetArea), mMetaDataDock);
 
-        connect(getTabWidget(),
-                SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
-                mMetaDataDock,
-                SLOT(setImage(QSharedPointer<DkImageContainerT>)));
+        connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mMetaDataDock, &DkMetaDataDock::setImage);
     }
 
     mMetaDataDock->setVisible(show, saveSettings);
@@ -967,7 +982,7 @@ void DkNoMacs::showEditDock(bool show, bool saveSettings)
         mEditDock->setDisplaySettings(&DkSettingsManager::param().app().showEditDock);
         addDockWidget(mEditDock->getDockLocationSettings(Qt::RightDockWidgetArea), mEditDock);
 
-        connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mEditDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
+        connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mEditDock, &DkEditDock::setImage);
     }
 
     mEditDock->setVisible(show, saveSettings);
@@ -987,10 +1002,7 @@ void DkNoMacs::showHistoryDock(bool show, bool saveSettings)
         mHistoryDock->setDisplaySettings(&DkSettingsManager::param().app().showHistoryDock);
         addDockWidget(mHistoryDock->getDockLocationSettings(Qt::RightDockWidgetArea), mHistoryDock);
 
-        connect(getTabWidget(),
-                SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
-                mHistoryDock,
-                SLOT(updateImage(QSharedPointer<DkImageContainerT>)));
+        connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mHistoryDock, &DkHistoryDock::updateImage);
     }
 
     mHistoryDock->setVisible(show, saveSettings);
@@ -1060,7 +1072,7 @@ void DkNoMacs::showThumbsDock(bool show)
         thumbsTitle->setFixedHeight(16);
         mThumbsDock->setTitleBarWidget(thumbsTitle);
 
-        connect(mThumbsDock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(thumbsDockAreaChanged()));
+        connect(mThumbsDock, &DkDockWidget::dockLocationChanged, this, &DkNoMacs::thumbsDockAreaChanged);
     }
 
     if (show != mThumbsDock->isVisible())
@@ -1212,11 +1224,13 @@ void DkNoMacs::openQuickLaunch()
         // add all actions
         mQuickAccess->addActions(DkActionManager::instance().allActions());
 
-        connect(mQuickAccess, SIGNAL(loadFileSignal(const QString &)), getTabWidget(), SLOT(loadFile(const QString &)));
+        connect(mQuickAccess, &DkQuickAccess::loadFileSignal, this, [this](const QString &path) {
+            getTabWidget()->loadFile(path);
+        });
     }
 
     if (tb)
-        connect(tb->getQuickAccess(), SIGNAL(executeSignal(const QString &)), mQuickAccess, SLOT(execute(const QString &)), Qt::UniqueConnection);
+        connect(tb->getQuickAccess(), &DkQuickAccessEdit::executeSignal, mQuickAccess, &DkQuickAccess::execute, Qt::UniqueConnection);
 
     mQuickAccess->addDirs(DkSettingsManager::param().global().recentFolders);
     mQuickAccess->addFiles(DkSettingsManager::param().global().recentFiles);
@@ -1226,7 +1240,7 @@ void DkNoMacs::openQuickLaunch()
     else {
         if (!mQuickAccessEdit) {
             mQuickAccessEdit = new DkQuickAccessEdit(this);
-            connect(mQuickAccessEdit, SIGNAL(executeSignal(const QString &)), mQuickAccess, SLOT(execute(const QString &)));
+            connect(mQuickAccessEdit, &DkQuickAccessEdit::executeSignal, mQuickAccess, &DkQuickAccess::execute);
         }
 
         int right = getTabWidget()->geometry().right();
@@ -1335,8 +1349,10 @@ void DkNoMacs::find(bool filterAction)
         searchDialog->setFiles(getTabWidget()->getCurrentImageLoader()->getFileNames());
         searchDialog->setPath(getTabWidget()->getCurrentImageLoader()->getDirPath());
 
-        connect(searchDialog, SIGNAL(filterSignal(const QString &)), getTabWidget()->getCurrentImageLoader().data(), SLOT(setFolderFilter(const QString &)));
-        connect(searchDialog, SIGNAL(loadFileSignal(const QString &)), getTabWidget(), SLOT(loadFile(const QString &)));
+        connect(searchDialog, &DkSearchDialog::filterSignal, getTabWidget()->getCurrentImageLoader().data(), &DkImageLoader::setFolderFilter);
+        connect(searchDialog, &DkSearchDialog::loadFileSignal, this, [this](const QString &path) {
+            getTabWidget()->loadFile(path);
+        });
         int answer = searchDialog->exec();
 
         DkActionManager::instance().action(DkActionManager::menu_tools_filter)->setChecked(answer == DkSearchDialog::filter_button);
@@ -1772,8 +1788,8 @@ void DkNoMacs::checkForUpdate(bool silent)
 
         if (!mUpdater) {
             mUpdater = new DkUpdater(this);
-            connect(mUpdater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-            connect(mUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+            connect(mUpdater, &DkUpdater::displayUpdateDialog, this, &DkNoMacs::showUpdateDialog);
+            connect(mUpdater, &DkUpdater::showUpdaterMessage, this, &DkNoMacs::showUpdaterMessage);
         }
         mUpdater->silent = silent;
         mUpdater->checkForUpdates();
@@ -1807,7 +1823,7 @@ void DkNoMacs::showUpdateDialog(QString msg, QString title)
         mUpdateDialog = new DkUpdateDialog(this);
         mUpdateDialog->setWindowTitle(title);
         mUpdateDialog->upperLabel->setText(msg);
-        connect(mUpdateDialog, SIGNAL(startUpdate()), this, SLOT(performUpdate()));
+        connect(mUpdateDialog, &DkUpdateDialog::startUpdate, this, &DkNoMacs::performUpdate);
     }
 
     mUpdateDialog->exec();
@@ -1825,11 +1841,10 @@ void DkNoMacs::performUpdate()
     if (!mProgressDialog) {
         mProgressDialog = new QProgressDialog(tr("Downloading update..."), tr("Cancel Update"), 0, 100, this);
         mProgressDialog->setWindowIcon(windowIcon());
-        connect(mProgressDialog, SIGNAL(canceled()), mUpdater, SLOT(cancelUpdate()));
-        connect(mUpdater, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgress(qint64, qint64)));
-        connect(mUpdater, SIGNAL(downloadFinished(QString)), mProgressDialog, SLOT(close()));
-        // connect(updater, SIGNAL(downloadFinished(QString)), progressDialog, SLOT(deleteLater()));
-        connect(mUpdater, SIGNAL(downloadFinished(QString)), this, SLOT(startSetup(QString)));
+        connect(mProgressDialog, &QProgressDialog::canceled, mUpdater, &DkUpdater::cancelUpdate);
+        connect(mUpdater, &DkUpdater::downloadProgress, this, &DkNoMacs::updateProgress);
+        connect(mUpdater, &DkUpdater::downloadFinished, mProgressDialog, &QProgressDialog::close);
+        connect(mUpdater, &DkUpdater::downloadFinished, this, &DkNoMacs::startSetup);
     }
     // mProgressDialog->setWindowModality(Qt::ApplicationModal);
 
@@ -1869,16 +1884,15 @@ void DkNoMacs::updateTranslations()
 {
     if (!mTranslationUpdater) {
         mTranslationUpdater = new DkTranslationUpdater(false, this);
-        connect(mTranslationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+        connect(mTranslationUpdater, &DkTranslationUpdater::showUpdaterMessage, this, &DkNoMacs::showUpdaterMessage);
     }
 
     if (!mProgressDialogTranslations) {
         mProgressDialogTranslations = new QProgressDialog(tr("Downloading new translations..."), tr("Cancel"), 0, 100, this);
         mProgressDialogTranslations->setWindowIcon(windowIcon());
-        connect(mProgressDialogTranslations, SIGNAL(canceled()), mTranslationUpdater, SLOT(cancelUpdate()));
-        // connect(progressDialogTranslations, SIGNAL(canceled()), translationUpdater, SLOT(cancelUpdate()));
-        connect(mTranslationUpdater, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgressTranslations(qint64, qint64)));
-        connect(mTranslationUpdater, SIGNAL(downloadFinished()), mProgressDialogTranslations, SLOT(close()));
+        connect(mProgressDialogTranslations, &QProgressDialog::canceled, mTranslationUpdater, &DkTranslationUpdater::cancelUpdate);
+        connect(mTranslationUpdater, &DkTranslationUpdater::downloadProgress, this, &DkNoMacs::updateProgressTranslations);
+        connect(mTranslationUpdater, &DkTranslationUpdater::downloadFinished, mProgressDialogTranslations, &QProgressDialog::close);
     }
     // mProgressDialogTranslations->setWindowModality(Qt::ApplicationModal);
 
@@ -1894,10 +1908,12 @@ void DkNoMacs::restartWithTranslationUpdate()
 {
     if (!mTranslationUpdater) {
         mTranslationUpdater = new DkTranslationUpdater(false, this);
-        connect(mTranslationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+        connect(mTranslationUpdater, &DkTranslationUpdater::showUpdaterMessage, this, &DkNoMacs::showUpdaterMessage);
     }
 
     mTranslationUpdater->silent = true;
+
+    // TODO: restart does not exist in DkNoMacs
     connect(mTranslationUpdater, SIGNAL(downloadFinished()), this, SLOT(restart()));
     updateTranslations();
 }
@@ -1947,18 +1963,21 @@ void DkNoMacsSync::createActions()
     DkActionManager &am = DkActionManager::instance();
 
     // sync menu
-    connect(am.action(DkActionManager::menu_sync_pos), SIGNAL(triggered()), this, SLOT(tcpSendWindowRect()));
-    connect(am.action(DkActionManager::menu_sync_arrange), SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
+    connect(am.action(DkActionManager::menu_sync_pos), &QAction::triggered, this, &DkNoMacs::tcpSendWindowRect);
+    connect(am.action(DkActionManager::menu_sync_arrange), &QAction::triggered, this, &DkNoMacs::tcpSendArrange);
 
     auto cm = DkSyncManager::inst().client();
     assert(cm);
 
     // just for local client
-    connect(this, SIGNAL(sendArrangeSignal(bool)), cm, SLOT(sendArrangeInstances(bool)));
-    connect(this, SIGNAL(sendQuitLocalClientsSignal()), cm, SLOT(sendQuitMessageToPeers()));
+    const auto localCM = dynamic_cast<DkLocalClientManager *>(cm);
+    if (localCM != nullptr) {
+        connect(this, &DkNoMacsSync::sendArrangeSignal, localCM, &DkLocalClientManager::sendArrangeInstances);
+        connect(this, &DkNoMacsSync::sendQuitLocalClientsSignal, localCM, &DkLocalClientManager::sendQuitMessageToPeers);
+    }
 
-    connect(cm, SIGNAL(clientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
-    connect(cm, SIGNAL(receivedPosition(QRect, bool, bool)), this, SLOT(tcpSetWindowRect(QRect, bool, bool)));
+    connect(cm, &DkClientManager::clientConnectedSignal, this, &DkNoMacsSync::newClientConnected);
+    connect(cm, &DkClientManager::receivedPosition, this, &DkNoMacsSync::tcpSetWindowRect);
 }
 
 // mouse events
@@ -2065,8 +2084,8 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     show();
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    connect(mDesktop, SIGNAL(workAreaResized(int)), this, SLOT(chooseMonitor()));
-    connect(am.action(DkActionManager::menu_view_monitors), SIGNAL(triggered()), this, SLOT(chooseMonitor()));
+    connect(mDesktop, &QDesktopWidget::workAreaResized, this, &DkNoMacsFrameless::chooseMonitor);
+    connect(am.action(DkActionManager::menu_view_monitors), &QAction::triggered, this, &DkNoMacsFrameless::chooseMonitor);
 #endif
 
     setObjectName("DkNoMacsFrameless");

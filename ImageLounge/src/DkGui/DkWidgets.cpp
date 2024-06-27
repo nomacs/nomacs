@@ -117,7 +117,7 @@ DkFolderScrollBar::~DkFolderScrollBar()
 // DkFadeWidget stuff
 void DkFolderScrollBar::registerAction(QAction *action)
 {
-    connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+    connect(this, &DkFolderScrollBar::visibleSignal, action, &QAction::setChecked);
 }
 
 void DkFolderScrollBar::block(bool blocked)
@@ -259,7 +259,7 @@ void DkFolderScrollBar::animateOpacityUp()
         return;
     }
 
-    QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
+    QTimer::singleShot(20, this, &DkFolderScrollBar::animateOpacityUp);
     mOpacityEffect->setOpacity(mOpacityEffect->opacity() + 0.05);
 }
 
@@ -277,7 +277,7 @@ void DkFolderScrollBar::animateOpacityDown()
         return;
     }
 
-    QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
+    QTimer::singleShot(20, this, &DkFolderScrollBar::animateOpacityDown);
     mOpacityEffect->setOpacity(mOpacityEffect->opacity() - 0.05);
 }
 
@@ -302,8 +302,8 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
 
     // pd->setWindowModality(Qt::WindowModal);
 
-    connect(this, SIGNAL(numFilesSignal(int)), mPd, SLOT(setValue(int)));
-    connect(mPd, SIGNAL(canceled()), this, SLOT(stopProgress()));
+    connect(this, &DkThumbsSaver::numFilesSignal, mPd, &QProgressDialog::setValue);
+    connect(mPd, &QProgressDialog::canceled, this, &DkThumbsSaver::stopProgress);
 
     mPd->show();
 
@@ -336,7 +336,7 @@ void DkThumbsSaver::loadNext()
     int force = (mForceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
 
     for (int idx = 0; idx < mImages.size(); idx++) {
-        connect(mImages.at(idx)->getThumb().data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
+        connect(mImages.at(idx)->getThumb().data(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbsSaver::thumbLoaded);
         mImages.at(idx)->getThumb()->fetchThumb(force);
     }
 }
@@ -409,7 +409,7 @@ DkBrowseExplorer::DkBrowseExplorer(const QString &title, QWidget *parent, Qt::Wi
     createLayout();
     readSettings();
 
-    connect(mRootPathBrowseButton, SIGNAL(clicked()), this, SLOT(browseClicked()));
+    connect(mRootPathBrowseButton, &QPushButton::clicked, this, &DkBrowseExplorer::browseClicked);
 }
 
 DkBrowseExplorer::~DkBrowseExplorer()
@@ -475,18 +475,14 @@ DkExplorer::DkExplorer(const QString &title, QWidget *parent /* = 0 */, Qt::Wind
     QAction *selAction = new QAction(tr("Open Image"), this);
     selAction->setShortcut(Qt::Key_Return);
     selAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(selAction, SIGNAL(triggered()), this, SLOT(openSelected()));
+    connect(selAction, &QAction::triggered, this, &DkExplorer::openSelected);
 
-    connect(mFileTree, SIGNAL(clicked(const QModelIndex &)), this, SLOT(fileClicked(const QModelIndex &)));
+    connect(mFileTree, &QTreeView::clicked, this, &DkExplorer::fileClicked);
 
     addAction(selAction);
 
     if (mLoadSelected)
-        connect(mFileTree->selectionModel(),
-                SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
-                this,
-                SLOT(fileClicked(const QModelIndex &)),
-                Qt::UniqueConnection);
+        connect(mFileTree->selectionModel(), &QItemSelectionModel::currentChanged, this, &DkExplorer::fileClicked, Qt::UniqueConnection);
 }
 
 DkExplorer::~DkExplorer()
@@ -558,13 +554,13 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
     QAction *editAction = new QAction(tr("Editable"), this);
     editAction->setCheckable(true);
     editAction->setChecked(!mFileModel->isReadOnly());
-    connect(editAction, SIGNAL(triggered(bool)), this, SLOT(setEditable(bool)));
+    connect(editAction, &QAction::triggered, this, &DkExplorer::setEditable);
 
     // open selected images
     QAction *selAction = new QAction(tr("Open Selected Image"), this);
     selAction->setCheckable(true);
     selAction->setChecked(mLoadSelected);
-    connect(selAction, SIGNAL(triggered(bool)), this, SLOT(loadSelectedToggled(bool)));
+    connect(selAction, &QAction::triggered, this, &DkExplorer::loadSelectedToggled);
 
     cm->addAction(editAction);
     cm->addAction(selAction);
@@ -572,7 +568,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
 
     // adjust sizes
     QAction *sizeAction = new QAction(tr("Adjust Columns"), this);
-    connect(sizeAction, SIGNAL(triggered()), this, SLOT(adjustColumnWidth()));
+    connect(sizeAction, &QAction::triggered, this, &DkExplorer::adjustColumnWidth);
 
     cm->addAction(sizeAction);
     cm->addSeparator();
@@ -585,7 +581,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
         action->setChecked(!mFileTree->isColumnHidden(idx));
         action->setObjectName(QString::number(idx));
 
-        connect(action, SIGNAL(toggled(bool)), this, SLOT(showColumn(bool)));
+        connect(action, &QAction::toggled, this, &DkExplorer::showColumn);
         mColumnActions.push_back(action);
 
         cm->addAction(action);
@@ -610,13 +606,9 @@ void DkExplorer::loadSelectedToggled(bool checked)
     mLoadSelected = checked;
 
     if (mLoadSelected)
-        connect(mFileTree->selectionModel(),
-                SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
-                this,
-                SLOT(fileClicked(const QModelIndex &)),
-                Qt::UniqueConnection);
+        connect(mFileTree->selectionModel(), &QItemSelectionModel::currentChanged, this, &DkExplorer::fileClicked, Qt::UniqueConnection);
     else
-        disconnect(mFileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(fileClicked(const QModelIndex &)));
+        disconnect(mFileTree->selectionModel(), &QItemSelectionModel::currentChanged, this, &DkExplorer::fileClicked);
 }
 
 void DkExplorer::openSelected()
@@ -1124,25 +1116,26 @@ void DkRatingLabel::init()
 
     mStars.resize(5);
 
+    // TODO: make this into a for loop?
     mStars[rating_1] = new DkButton(starWhite, starDark, tr("one star"), this);
     mStars[rating_1]->setCheckable(true);
-    connect(mStars[rating_1], SIGNAL(released()), this, SLOT(rating1()));
+    connect(mStars[rating_1], &DkButton::released, this, &DkRatingLabel::rating1);
 
     mStars[rating_2] = new DkButton(starWhite, starDark, tr("two stars"), this);
     mStars[rating_2]->setCheckable(true);
-    connect(mStars[rating_2], SIGNAL(released()), this, SLOT(rating2()));
+    connect(mStars[rating_2], &DkButton::released, this, &DkRatingLabel::rating2);
 
     mStars[rating_3] = new DkButton(starWhite, starDark, tr("three star"), this);
     mStars[rating_3]->setCheckable(true);
-    connect(mStars[rating_3], SIGNAL(released()), this, SLOT(rating3()));
+    connect(mStars[rating_3], &DkButton::released, this, &DkRatingLabel::rating3);
 
     mStars[rating_4] = new DkButton(starWhite, starDark, tr("four star"), this);
     mStars[rating_4]->setCheckable(true);
-    connect(mStars[rating_4], SIGNAL(released()), this, SLOT(rating4()));
+    connect(mStars[rating_4], &DkButton::released, this, &DkRatingLabel::rating4);
 
     mStars[rating_5] = new DkButton(starWhite, starDark, tr("five star"), this);
     mStars[rating_5]->setCheckable(true);
-    connect(mStars[rating_5], SIGNAL(released()), this, SLOT(rating5()));
+    connect(mStars[rating_5], &DkButton::released, this, &DkRatingLabel::rating5);
 }
 
 // DkRatingLabelBg --------------------------------------------------------------------
@@ -1161,19 +1154,22 @@ DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget *parent, Qt::WindowFlags fl
 
     DkActionManager &am = DkActionManager::instance();
 
-    connect(am.action(DkActionManager::sc_star_rating_0), SIGNAL(triggered()), this, SLOT(rating0()));
+    // TODO: replace this with a for loop?
+    connect(am.action(DkActionManager::sc_star_rating_0), &QAction::triggered, this, &DkRatingLabel::rating0);
     mStars[rating_1]->addAction(am.action(DkActionManager::sc_star_rating_1));
-    connect(am.action(DkActionManager::sc_star_rating_1), SIGNAL(triggered()), this, SLOT(rating1()));
+    connect(am.action(DkActionManager::sc_star_rating_1), &QAction::triggered, this, &DkRatingLabel::rating1);
     mStars[rating_2]->addAction(am.action(DkActionManager::sc_star_rating_2));
-    connect(am.action(DkActionManager::sc_star_rating_2), SIGNAL(triggered()), this, SLOT(rating2()));
+    connect(am.action(DkActionManager::sc_star_rating_2), &QAction::triggered, this, &DkRatingLabel::rating2);
     mStars[rating_3]->addAction(am.action(DkActionManager::sc_star_rating_3));
-    connect(am.action(DkActionManager::sc_star_rating_3), SIGNAL(triggered()), this, SLOT(rating3()));
+    connect(am.action(DkActionManager::sc_star_rating_3), &QAction::triggered, this, &DkRatingLabel::rating3);
     mStars[rating_4]->addAction(am.action(DkActionManager::sc_star_rating_4));
-    connect(am.action(DkActionManager::sc_star_rating_4), SIGNAL(triggered()), this, SLOT(rating4()));
+    connect(am.action(DkActionManager::sc_star_rating_4), &QAction::triggered, this, &DkRatingLabel::rating4);
     mStars[rating_5]->addAction(am.action(DkActionManager::sc_star_rating_5));
-    connect(am.action(DkActionManager::sc_star_rating_5), SIGNAL(triggered()), this, SLOT(rating5()));
+    connect(am.action(DkActionManager::sc_star_rating_5), &QAction::triggered, this, &DkRatingLabel::rating5);
 
-    connect(mHideTimer, SIGNAL(timeout()), this, SLOT(hide()));
+    connect(mHideTimer, &QTimer::timeout, this, [this]() {
+        this->hide();
+    });
 }
 
 DkRatingLabelBg::~DkRatingLabelBg()
@@ -1348,7 +1344,7 @@ void DkPlayer::createLayout()
     previousButton->setToolTip(tr("Show previous image"));
     previousButton->setObjectName("DkPlayerButton");
     previousButton->setFlat(true);
-    connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
+    connect(previousButton, &QPushButton::pressed, this, &DkPlayer::previous);
 
     QIcon icon;
     icon.addPixmap(DkImage::loadIcon(":/nomacs/img/pause.svg", ih, Qt::white), QIcon::Normal, QIcon::On);
@@ -1363,7 +1359,7 @@ void DkPlayer::createLayout()
     playButton->setCheckable(true);
     playButton->setChecked(false);
     playButton->addAction(DkActionManager::instance().action(DkActionManager::menu_view_slideshow));
-    connect(playButton, SIGNAL(clicked(bool)), this, SLOT(play(bool)));
+    connect(playButton, &QPushButton::clicked, this, &DkPlayer::play);
 
     nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", ih, Qt::white), "", this);
     // nextButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1372,7 +1368,7 @@ void DkPlayer::createLayout()
     nextButton->setToolTip(tr("Show next image"));
     nextButton->setObjectName("DkPlayerButton");
     nextButton->setFlat(true);
-    connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
+    connect(nextButton, &QPushButton::pressed, this, &DkPlayer::next);
 
     // now add to mLayout
     container = new QWidget(this);
@@ -1403,14 +1399,16 @@ void DkPlayer::init()
     displayTimer = new QTimer(this);
     displayTimer->setInterval(timeToDisplay);
     displayTimer->setSingleShot(true);
-    connect(displayTimer, SIGNAL(timeout()), this, SLOT(autoNext()));
+    connect(displayTimer, &QTimer::timeout, this, &DkPlayer::autoNext);
 
     hideTimer = new QTimer(this);
     hideTimer->setInterval(timeToDisplayPlayer);
     hideTimer->setSingleShot(true);
-    connect(hideTimer, SIGNAL(timeout()), this, SLOT(hide()));
+    connect(hideTimer, &QTimer::timeout, this, [this]() {
+        this->hide();
+    });
 
-    connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow), SIGNAL(triggered()), this, SLOT(togglePlay()));
+    connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow), &QAction::triggered, this, &DkPlayer::togglePlay);
 }
 
 void DkPlayer::play(bool play)
@@ -1506,14 +1504,14 @@ void DkHudNavigation::createLayout()
     mPreviousButton->setToolTip(tr("Show previous image"));
     mPreviousButton->setFlat(true);
     mPreviousButton->setIconSize(s);
-    connect(mPreviousButton, SIGNAL(pressed()), this, SIGNAL(previousSignal()));
+    connect(mPreviousButton, &QPushButton::pressed, this, &DkHudNavigation::previousSignal);
 
     mNextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next-hud.svg", s, c), "", this);
     mNextButton->setObjectName("hudNavigationButton");
     mNextButton->setToolTip(tr("Show next image"));
     mNextButton->setFlat(true);
     mNextButton->setIconSize(s);
-    connect(mNextButton, SIGNAL(pressed()), this, SIGNAL(nextSignal()));
+    connect(mNextButton, &QPushButton::pressed, this, &DkHudNavigation::nextSignal);
 
     QHBoxLayout *l = new QHBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
@@ -1632,11 +1630,8 @@ DkEditableRect::DkEditableRect(const QRectF &rect, QWidget *parent, Qt::WindowFl
     for (int idx = 0; idx < 8; idx++) {
         mCtrlPoints.push_back(new DkTransformRect(idx, &this->mRect, this));
         mCtrlPoints[idx]->hide();
-        connect(mCtrlPoints[idx],
-                SIGNAL(ctrlMovedSignal(int, const QPointF &, Qt::KeyboardModifiers, bool)),
-                this,
-                SLOT(updateCorner(int, const QPointF &, Qt::KeyboardModifiers, bool)));
-        connect(mCtrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
+        connect(mCtrlPoints[idx], &DkTransformRect::ctrlMovedSignal, this, &DkEditableRect::updateCorner);
+        connect(mCtrlPoints[idx], &DkTransformRect::updateDiagonal, this, &DkEditableRect::updateDiagonal);
     }
 }
 
@@ -2152,19 +2147,21 @@ void DkCropWidget::createToolbar()
 {
     cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
 
-    connect(cropToolbar, SIGNAL(updateRectSignal(const QRect &)), this, SLOT(setRect(const QRect &)));
+    connect(cropToolbar, &DkCropToolBar::updateRectSignal, this, &DkCropWidget::setRect);
 
-    connect(cropToolbar, SIGNAL(cropSignal(bool)), this, SLOT(crop(bool)));
-    connect(cropToolbar, SIGNAL(cancelSignal()), this, SIGNAL(hideSignal()));
-    connect(cropToolbar, SIGNAL(aspectRatio(const DkVector &)), this, SLOT(setFixedDiagonal(const DkVector &)));
-    connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
-    connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
-    connect(cropToolbar, SIGNAL(paintHint(int)), this, SLOT(setPaintHint(int)));
-    connect(cropToolbar, SIGNAL(shadingHint(bool)), this, SLOT(setShadingHint(bool)));
-    connect(cropToolbar, SIGNAL(showInfo(bool)), this, SLOT(setShowInfo(bool)));
-    connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
-    connect(this, SIGNAL(aRatioSignal(const QPointF &)), cropToolbar, SLOT(setAspectRatio(const QPointF &)));
-    connect(this, SIGNAL(updateRectSignal(const QRect &)), cropToolbar, SLOT(setRect(const QRect &)));
+    connect(cropToolbar, &DkCropToolBar::cropSignal, this, &DkCropWidget::crop);
+    connect(cropToolbar, &DkCropToolBar::cancelSignal, this, &DkCropWidget::hideSignal);
+    connect(cropToolbar, &DkCropToolBar::aspectRatio, this, &DkCropWidget::setFixedDiagonal);
+    connect(cropToolbar, &DkCropToolBar::angleSignal, this, [this](double angle) {
+        this->setAngle(angle);
+    });
+    connect(cropToolbar, &DkCropToolBar::panSignal, this, &DkCropWidget::setPanning);
+    connect(cropToolbar, &DkCropToolBar::paintHint, this, &DkCropWidget::setPaintHint);
+    connect(cropToolbar, &DkCropToolBar::shadingHint, this, &DkCropWidget::setShadingHint);
+    connect(cropToolbar, &DkCropToolBar::showInfo, this, &DkCropWidget::setShowInfo);
+    connect(this, &DkCropWidget::angleSignal, cropToolbar, &DkCropToolBar::angleChanged);
+    connect(this, &DkCropWidget::aRatioSignal, cropToolbar, &DkCropToolBar::setAspectRatio);
+    connect(this, &DkCropWidget::updateRectSignal, cropToolbar, &DkCropToolBar::setRect);
 
     cropToolbar->loadSettings(); // need to this manually after connecting the slots
 }
@@ -2574,7 +2571,7 @@ DkDirectoryEdit::DkDirectoryEdit(QWidget *parent /* = 0 */)
     : QLineEdit(parent)
 {
     setObjectName("DkWarningEdit");
-    connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
+    connect(this, &DkDirectoryEdit::textChanged, this, &DkDirectoryEdit::lineEditChanged);
 
     QCompleter *completer = new QCompleter(this);
     QFileSystemModel *model = new QFileSystemModel(completer);
@@ -2587,7 +2584,7 @@ DkDirectoryEdit::DkDirectoryEdit(const QString &content, QWidget *parent /* = 0 
     : QLineEdit(parent)
 {
     setObjectName("DkWarningEdit");
-    connect(this, SIGNAL(textChanged(const QString &)), this, SLOT(lineEditChanged(const QString &)));
+    connect(this, &DkDirectoryEdit::textChanged, this, &DkDirectoryEdit::lineEditChanged);
     setText(content);
 
     QCompleter *completer = new QCompleter(this);
@@ -2637,7 +2634,7 @@ void DkDirectoryChooser::createLayout(const QString &dirPath)
     layout->addWidget(mDirEdit);
     layout->addWidget(dirButton);
 
-    connect(mDirEdit, SIGNAL(textChanged(const QString &)), this, SIGNAL(directoryChanged(const QString &)));
+    connect(mDirEdit, &DkDirectoryEdit::textChanged, this, &DkDirectoryChooser::directoryChanged);
 }
 
 void DkDirectoryChooser::onDirButtonClicked()
@@ -2710,10 +2707,10 @@ DkProgressBar::DkProgressBar(QWidget *parent)
 {
     initPoints();
     mTimer.setInterval(20);
-    connect(&mTimer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(&mTimer, &QTimer::timeout, this, QOverload<>::of(&DkProgressBar::update));
 
     mShowTimer.setInterval(3000);
-    connect(&mShowTimer, SIGNAL(timeout()), this, SLOT(show()));
+    connect(&mShowTimer, &QTimer::timeout, this, &DkProgressBar::show);
 }
 
 void DkProgressBar::setVisible(bool visible)
@@ -2834,9 +2831,10 @@ void DkGenericProfileWidget::init()
 {
     createLayout();
 
-    connect(mSaveButton, SIGNAL(clicked()), this, SLOT(saveSettings()));
-    connect(mDeleteButton, SIGNAL(clicked()), this, SLOT(deleteCurrentSetting()));
-    connect(mProfileList, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadSettings(const QString &)));
+    connect(mSaveButton, &QPushButton::clicked, this, QOverload<>::of(&DkGenericProfileWidget::saveSettings));
+    connect(mDeleteButton, &QPushButton::clicked, this, &DkGenericProfileWidget::deleteCurrentSetting);
+    // NOTE:This was changed
+    connect(mProfileList, &QComboBox::currentTextChanged, this, &DkGenericProfileWidget::loadSettings);
 
     activate(false); // inits gui states
 }
@@ -2859,7 +2857,7 @@ void DkGenericProfileWidget::createLayout()
     mProfileList->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
 
     QAction *delGradientAction = new QAction(tr("Set As Default"), mProfileList);
-    connect(delGradientAction, SIGNAL(triggered()), this, SLOT(setDefaultModel()));
+    connect(delGradientAction, &QAction::triggered, this, &DkGenericProfileWidget::setDefaultModel);
 
     mProfileList->addAction(delGradientAction);
     mProfileList->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -3074,8 +3072,6 @@ void DkDisplayWidget::createLayout()
         sb->setObjectName("displayButton");
         sb->setCheckable(true);
         sb->setFlat(true);
-
-        // connect(sb, SIGNAL(clicked()), this, SLOT(changeDisplay()));
 
         bg->addButton(sb);
         mScreenButtons << sb;

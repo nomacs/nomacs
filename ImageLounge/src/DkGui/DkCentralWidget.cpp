@@ -273,16 +273,20 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     setAcceptDrops(true);
 
     DkActionManager &am = DkActionManager::instance();
-    connect(am.action(DkActionManager::menu_view_new_tab), SIGNAL(triggered()), this, SLOT(addTab()));
-    connect(am.action(DkActionManager::menu_view_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
+    connect(am.action(DkActionManager::menu_view_new_tab), &QAction::triggered, this, [this]() {
+        addTab();
+    });
+    connect(am.action(DkActionManager::menu_view_close_tab), &QAction::triggered, this, [this]() {
+        removeTab();
+    });
     connect(am.action(DkActionManager::menu_view_close_all_tabs), &QAction::triggered, this, [this]() {
         clearAllTabs();
     });
     connect(am.action(DkActionManager::menu_view_first_tab), &QAction::triggered, this, [this]() {
         setActiveTab(0);
     });
-    connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
-    connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), this, SLOT(pasteImage()));
+    connect(am.action(DkActionManager::menu_view_previous_tab), &QAction::triggered, this, &DkCentralWidget::previousTab);
+    connect(am.action(DkActionManager::menu_edit_paste), &QAction::triggered, this, &DkCentralWidget::pasteImage);
 
     connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
         bool ok = false;
@@ -291,16 +295,20 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
         if (ok)
             setActiveTab(idx - 1);
     });
-    connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
+    connect(am.action(DkActionManager::menu_view_next_tab), &QAction::triggered, this, &DkCentralWidget::nextTab);
     connect(am.action(DkActionManager::menu_view_last_tab), &QAction::triggered, this, [this]() {
         setActiveTab(getTabs().count() - 1);
     });
-    connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(openBatch()));
-    connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(triggered(bool)), this, SLOT(showThumbView(bool)));
+    connect(am.action(DkActionManager::menu_tools_batch), &QAction::triggered, this, [this]() {
+        openBatch();
+    });
+    connect(am.action(DkActionManager::menu_panel_thumbview), &QAction::triggered, this, &DkCentralWidget::showThumbView);
 
 #ifdef WITH_PLUGINS
     if (am.pluginActionManager())
-        connect(am.pluginActionManager(), SIGNAL(showViewPort()), this, SLOT(showViewPort()));
+        connect(am.pluginActionManager(), &DkPluginActionManager::showViewPort, this, [this]() {
+            showViewPort();
+        });
 #endif
 
     // runs in the background & will be deleted with this widget...
@@ -348,14 +356,14 @@ void DkCentralWidget::createLayout()
     vbLayout->addWidget(viewWidget);
 
     // connections
-    connect(mTabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
-    connect(mTabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
-    connect(mTabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
+    connect(mTabbar, &QTabBar::currentChanged, this, &DkCentralWidget::currentTabChanged);
+    connect(mTabbar, &QTabBar::tabCloseRequested, this, &DkCentralWidget::tabCloseRequested);
+    connect(mTabbar, &QTabBar::tabMoved, this, &DkCentralWidget::tabMoved);
 
-    connect(this, SIGNAL(imageHasGPSSignal(bool)), DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SLOT(setEnabled(bool)));
+    connect(this, &DkCentralWidget::imageHasGPSSignal, DkActionManager::instance().action(DkActionManager::menu_view_gps_map), &QAction::setEnabled);
 
     // preferences
-    connect(am.action(DkActionManager::menu_edit_preferences), SIGNAL(triggered()), this, SLOT(openPreferences()));
+    connect(am.action(DkActionManager::menu_edit_preferences), &QAction::triggered, this, &DkCentralWidget::openPreferences);
 }
 
 void DkCentralWidget::saveSettings(bool saveTabs) const
@@ -462,18 +470,15 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
         if (l != loader)
             mTabInfos.at(tIdx)->deactivate();
 
-        disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)));
+        disconnect(loader.data(), QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal), this, &DkCentralWidget::imageLoaded);
         disconnect(loader.data(),
-                   SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
+                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
                    this,
-                   SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)));
-        disconnect(loader.data(),
-                   SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)),
-                   this,
-                   SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)));
-        disconnect(loader.data(), SIGNAL(imageHasGPSSignal(bool)), this, SIGNAL(imageHasGPSSignal(bool)));
-        disconnect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(showProgress(bool, int)));
-        disconnect(loader.data(), SIGNAL(loadImageToTab(const QString &)), this, SLOT(loadFileToTab(const QString &)));
+                   &DkCentralWidget::imageUpdatedSignal);
+        disconnect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkCentralWidget::imageLoadedSignal);
+        disconnect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal);
+        disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress);
+        disconnect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadFileToTab);
     }
 
     if (!loader)
@@ -481,24 +486,21 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
 
     if (hasViewPort())
         getViewPort()->setImageLoader(loader);
+
     connect(loader.data(),
-            SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
+            QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
             this,
-            SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)),
+            &DkCentralWidget::imageLoaded,
             Qt::UniqueConnection);
     connect(loader.data(),
-            SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
+            QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
             this,
-            SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)),
+            &DkCentralWidget::imageUpdatedSignal,
             Qt::UniqueConnection);
-    connect(loader.data(),
-            SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)),
-            this,
-            SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)),
-            Qt::UniqueConnection);
-    connect(loader.data(), SIGNAL(imageHasGPSSignal(bool)), this, SIGNAL(imageHasGPSSignal(bool)), Qt::UniqueConnection);
-    connect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(showProgress(bool, int)), Qt::UniqueConnection);
-    connect(loader.data(), SIGNAL(loadImageToTab(const QString &)), this, SLOT(loadFileToTab(const QString &)), Qt::UniqueConnection);
+    connect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkCentralWidget::imageLoadedSignal, Qt::UniqueConnection);
+    connect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal, Qt::UniqueConnection);
+    connect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress, Qt::UniqueConnection);
+    connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadFileToTab, Qt::UniqueConnection);
 }
 
 void DkCentralWidget::paintEvent(QPaintEvent *)
@@ -514,7 +516,7 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
     // add preference widget ------------------------------
     DkActionManager &am = DkActionManager::instance();
     DkPreferenceWidget *pw = new DkPreferenceWidget(this);
-    connect(pw, SIGNAL(restartSignal()), this, SLOT(restart()), Qt::UniqueConnection);
+    connect(pw, &DkPreferenceWidget::restartSignal, this, &DkCentralWidget::restart, Qt::UniqueConnection);
 
     // add actions
     pw->addActions(am.viewActions().toList());
@@ -583,8 +585,8 @@ DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
     rw->addActions(am.helpActions().toList());
     rw->addActions(am.hiddenActions().toList());
 
-    connect(rw, SIGNAL(loadFileSignal(const QString &, bool)), this, SLOT(loadFile(const QString &, bool)));
-    connect(rw, SIGNAL(loadDirSignal(const QString &)), this, SLOT(loadDirToTab(const QString &)));
+    connect(rw, &DkRecentFilesWidget::loadFileSignal, this, &DkCentralWidget::loadFile);
+    connect(rw, &DkRecentFilesWidget::loadDirSignal, this, &DkCentralWidget::loadDirToTab);
 
     return rw;
 }
@@ -608,8 +610,8 @@ DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
     thumbScrollWidget->addActions(am.hiddenActions().toList());
 
     // thumbnail preview widget
-    connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(const QString &, bool)), this, SLOT(loadFile(const QString &, bool)));
-    connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList &)), this, SLOT(openBatch(const QStringList &)));
+    connect(thumbScrollWidget->getThumbWidget(), &DkThumbScene::loadFileSignal, this, &DkCentralWidget::loadFile);
+    connect(thumbScrollWidget, &DkThumbScrollWidget::batchProcessFilesSignal, this, &DkCentralWidget::openBatch);
 
     return thumbScrollWidget;
 }
@@ -632,8 +634,10 @@ void DkCentralWidget::createViewPort()
 
     if (mTabbar->currentIndex() != -1)
         vp->setImageLoader(mTabInfos[mTabbar->currentIndex()]->getImageLoader());
-    connect(vp, SIGNAL(addTabSignal(const QString &)), this, SLOT(addTab(const QString &)));
-    connect(vp, SIGNAL(showProgress(bool, int)), this, SLOT(showProgress(bool, int)));
+    connect(vp, &DkViewPort::addTabSignal, this, [this](const QString &filePath) {
+        addTab(filePath);
+    });
+    connect(vp, &DkViewPort::showProgress, this, &DkCentralWidget::showProgress);
 
     mWidgets[viewport_widget] = vp;
     mViewLayout->insertWidget(viewport_widget, mWidgets[viewport_widget]);
@@ -839,19 +843,16 @@ void DkCentralWidget::showThumbView(bool show)
             if (tabInfo->getImage())
                 tw->getThumbWidget()->ensureVisible(tabInfo->getImage());
 
-            // mViewport->connectLoader(tabInfo->getImageLoader(), false);
+            // TODO: I cannot get rid of this for now because
+            // connect with lambda cannot easily be disconnected
             connect(tw, SIGNAL(updateDirSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString &)), Qt::UniqueConnection);
-            connect(tw,
-                    SIGNAL(filterChangedSignal(const QString &)),
-                    tabInfo->getImageLoader().data(),
-                    SLOT(setFolderFilter(const QString &)),
-                    Qt::UniqueConnection);
+            connect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter, Qt::UniqueConnection);
         }
 
     } else {
         if (auto tw = getThumbScrollWidget()) {
             disconnect(tw, SIGNAL(updateDirSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString &)));
-            disconnect(tw, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString &)));
+            disconnect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter);
         }
         // mViewport->connectLoader(tabInfo->getImageLoader(), true);
         showViewPort(true); // TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
@@ -906,9 +907,10 @@ void DkCentralWidget::showPreferences(bool show)
     if (show) {
         // create the preferences...
         if (!mWidgets[preference_widget]) {
-            mWidgets[preference_widget] = createPreferences();
+            const auto pref = createPreferences();
+            mWidgets[preference_widget] = pref;
             mViewLayout->insertWidget(preference_widget, mWidgets[preference_widget]);
-            connect(mWidgets[preference_widget], SIGNAL(restartSignal()), this, SLOT(restart()), Qt::UniqueConnection);
+            connect(pref, &DkPreferenceWidget::restartSignal, this, &DkCentralWidget::restart, Qt::UniqueConnection);
         }
 
         switchWidget(mWidgets[preference_widget]);
