@@ -45,6 +45,7 @@ related links:
 #include <QSpinBox>
 #include <QVBoxLayout>
 #include <QWidgetAction>
+#include <QtGlobal>
 #pragma warning(pop)
 
 namespace nmc
@@ -107,8 +108,8 @@ void DkSlider::createLayout()
     layout->addWidget(dummyBounds);
 
     // connect
-    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
-    connect(sliderBox, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
+    connect(slider, &QSlider::valueChanged, this, &DkSlider::setValue);
+    connect(sliderBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkSlider::setValue);
 }
 
 QSlider *DkSlider::getSlider() const
@@ -199,8 +200,8 @@ void DkDoubleSlider::createLayout()
     layout->addWidget(mSlider);
 
     // connect
-    connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(setIntValue(int)));
-    connect(mSliderBox, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)));
+    connect(mSlider, &QSlider::valueChanged, this, &DkDoubleSlider::setIntValue);
+    connect(mSliderBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkDoubleSlider::setValue);
 }
 
 int DkDoubleSlider::map(double val) const
@@ -454,7 +455,7 @@ void DkColorEdit::createLayout()
         mColBoxes[idx] = new QSpinBox(this);
         mColBoxes[idx]->setMinimum(0);
         mColBoxes[idx]->setMaximum(255);
-        connect(mColBoxes[idx], SIGNAL(valueChanged(int)), this, SLOT(colorChanged()));
+        connect(mColBoxes[idx], QOverload<int>::of(&QSpinBox::valueChanged), this, &DkColorEdit::colorChanged);
     }
 
     mColBoxes[r]->setPrefix("R: ");
@@ -462,8 +463,8 @@ void DkColorEdit::createLayout()
     mColBoxes[b]->setPrefix("B: ");
 
     mColHash = new QLineEdit(this);
-    connect(mColHash, SIGNAL(textEdited(const QString &)), this, SLOT(hashChanged(const QString &)));
-    connect(mColHash, SIGNAL(editingFinished()), this, SLOT(hashEditFinished()));
+    connect(mColHash, &QLineEdit::textEdited, this, &DkColorEdit::hashChanged);
+    connect(mColHash, &QLineEdit::editingFinished, this, &DkColorEdit::hashEditFinished);
 
     QGridLayout *gl = new QGridLayout(this);
     gl->addWidget(mColBoxes[r], 1, 1);
@@ -697,10 +698,12 @@ void DkColorPicker::createLayout()
     hb->addWidget(mColorPreview, 1, 0);
     hb->addWidget(mMenu, 1, 1);
 
-    connect(hueSlider, SIGNAL(valueChanged(int)), mColorPane, SLOT(setHue(int)));
-    connect(mColorPane, SIGNAL(colorSelected(const QColor &)), this, SIGNAL(colorSelected(const QColor &)));
-    connect(mColorPane, SIGNAL(colorSelected(const QColor &)), this, SLOT(setColor(const QColor &)));
-    connect(mMenu, SIGNAL(clicked()), this, SLOT(showMenu()));
+    connect(hueSlider, &QSlider::valueChanged, mColorPane, &DkColorPane::setHue);
+    connect(mColorPane, &DkColorPane::colorSelected, this, &DkColorPicker::colorSelected);
+    connect(mColorPane, &DkColorPane::colorSelected, this, &DkColorPicker::setColor);
+    connect(mMenu, &QPushButton::clicked, this, [this]() {
+        showMenu();
+    });
 
     setColor(mColorPane->color());
 }
@@ -710,8 +713,8 @@ void DkColorPicker::showMenu(const QPoint &pos)
     if (!mContextMenu) {
         mContextMenu = new QMenu(this);
         mColorEdit = new DkColorEdit(color(), this);
-        connect(mColorEdit, SIGNAL(newColor(const QColor &)), this, SLOT(setColor(const QColor &)));
-        connect(mColorEdit, SIGNAL(newColor(const QColor &)), mColorPane, SLOT(setColor(const QColor &)));
+        connect(mColorEdit, &DkColorEdit::newColor, this, &DkColorPicker::setColor);
+        connect(mColorEdit, &DkColorEdit::newColor, mColorPane, &DkColorPane::setColor);
 
         QWidgetAction *a = new QWidgetAction(this);
         a->setDefaultWidget(mColorEdit);
@@ -812,7 +815,7 @@ void DkRectWidget::createLayout()
         sp->setSuffix(tr(" px"));
         sp->setMinimum(0);
         sp->setMaximum(100000);
-        connect(sp, SIGNAL(valueChanged(int)), this, SLOT(updateRect()));
+        connect(sp, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkRectWidget::updateRect);
     }
 
     QHBoxLayout *cropLayout = new QHBoxLayout(this);

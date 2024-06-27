@@ -71,13 +71,13 @@ DkPreferenceWidget::DkPreferenceWidget(QWidget *parent)
 
     QAction *nextAction = new QAction(tr("next"), this);
     nextAction->setShortcut(Qt::Key_PageDown);
-    connect(nextAction, SIGNAL(triggered()), this, SLOT(nextTab()));
+    connect(nextAction, &QAction::triggered, this, &DkPreferenceWidget::nextTab);
     addAction(nextAction);
 
     QAction *previousAction = new QAction(tr("previous"), this);
     previousAction->setShortcut(Qt::Key_PageUp);
     previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
+    connect(previousAction, &QAction::triggered, this, &DkPreferenceWidget::previousTab);
     addAction(previousAction);
 }
 
@@ -95,7 +95,7 @@ void DkPreferenceWidget::createLayout()
     restartButton->setIconSize(pm.size());
     restartButton->setObjectName("DkRestartButton");
     restartButton->setStatusTip(tr("Restart nomacs"));
-    connect(restartButton, SIGNAL(clicked()), this, SIGNAL(restartSignal()));
+    connect(restartButton, &QPushButton::clicked, this, &DkPreferenceWidget::restartSignal);
 
     mTabLayout = new QVBoxLayout(tabs);
     mTabLayout->setContentsMargins(0, 60, 0, 0);
@@ -131,8 +131,8 @@ void DkPreferenceWidget::addTabWidget(DkPreferenceTabWidget *tabWidget)
 
     DkTabEntryWidget *tabEntry = new DkTabEntryWidget(tabWidget->icon(), tabWidget->name(), this);
     mTabLayout->insertWidget(mTabLayout->count() - 2, tabEntry); // -2 -> insert before stretch
-    connect(tabEntry, SIGNAL(clicked()), this, SLOT(changeTab()));
-    connect(tabWidget, SIGNAL(restartSignal()), this, SIGNAL(restartSignal()));
+    connect(tabEntry, &DkTabEntryWidget::clicked, this, &DkPreferenceWidget::changeTab);
+    connect(tabWidget, &DkPreferenceTabWidget::restartSignal, this, &DkPreferenceWidget::restartSignal);
     mTabEntries.append(tabEntry);
 
     // tick the first
@@ -201,7 +201,7 @@ void DkPreferenceTabWidget::createLayout()
     mInfoButton->setObjectName("infoButton");
     mInfoButton->setFlat(true);
     mInfoButton->setVisible(false);
-    connect(mInfoButton, SIGNAL(clicked()), this, SIGNAL(restartSignal()));
+    connect(mInfoButton, &QPushButton::clicked, this, &DkPreferenceTabWidget::restartSignal);
 
     QGridLayout *l = new QGridLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
@@ -216,6 +216,7 @@ void DkPreferenceTabWidget::setWidget(QWidget *w)
     mCentralScroller->setWidget(w);
     w->setObjectName("DkPreferenceWidget");
 
+    // TODO: cannot get rid of this befause infoSignal is not an interface of QWidget
     connect(w, SIGNAL(infoSignal(const QString &)), this, SLOT(setInfoMessage(const QString &)));
 }
 
@@ -1536,14 +1537,8 @@ void DkEditorPreference::createLayout()
 
     layout->addWidget(mSettingsWidget);
 
-    connect(mSettingsWidget,
-            SIGNAL(changeSettingSignal(const QString &, const QVariant &, const QStringList &)),
-            this,
-            SLOT(changeSetting(const QString &, const QVariant &, const QStringList &)));
-    connect(mSettingsWidget,
-            SIGNAL(removeSettingSignal(const QString &, const QStringList &)),
-            this,
-            SLOT(removeSetting(const QString &, const QStringList &)));
+    connect(mSettingsWidget, &DkSettingsWidget::changeSettingSignal, this, &DkEditorPreference::changeSetting);
+    connect(mSettingsWidget, &DkSettingsWidget::removeSettingSignal, this, &DkEditorPreference::removeSetting);
 }
 void DkEditorPreference::paintEvent(QPaintEvent *event)
 {

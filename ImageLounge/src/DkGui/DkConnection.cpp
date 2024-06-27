@@ -51,8 +51,8 @@ DkConnection::DkConnection(QObject *parent)
     connectionCreated = false;
     mSynchronizedTimer = new QTimer(this);
 
-    connect(mSynchronizedTimer, SIGNAL(timeout()), this, SLOT(synchronizedTimerTimeout()));
-    connect(this, SIGNAL(readyRead()), this, SLOT(processReadyRead()));
+    connect(mSynchronizedTimer, &QTimer::timeout, this, &DkConnection::synchronizedTimerTimeout);
+    connect(this, &DkConnection::readyRead, this, &DkConnection::processReadyRead);
 
     setReadBufferSize(MaxBufferSize);
 }

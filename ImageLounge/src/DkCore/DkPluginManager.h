@@ -372,7 +372,7 @@ class DkDescriptionEdit : public QTextEdit
 public:
     DkDescriptionEdit(QAbstractTableModel *data, QSortFilterProxyModel *proxy, QItemSelectionModel *selection, QWidget *parent = 0);
 
-protected slots:
+public slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
@@ -392,7 +392,7 @@ class DkDescriptionImage : public QLabel
 public:
     DkDescriptionImage(QAbstractTableModel *data, QSortFilterProxyModel *proxy, QItemSelectionModel *selection, QWidget *parent = 0);
 
-protected slots:
+public slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 

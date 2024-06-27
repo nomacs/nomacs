@@ -116,21 +116,23 @@ DkImageLoader::DkImageLoader(const QString &filePath)
     qRegisterMetaType<QFileInfo>("QFileInfo");
 
     mDirWatcher = new QFileSystemWatcher(this);
-    connect(mDirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
+    connect(mDirWatcher, &QFileSystemWatcher::directoryChanged, this, &DkImageLoader::directoryChanged);
 
     mSortingIsDirty = false;
     mSortingImages = false;
 
-    connect(&mCreateImageWatcher, SIGNAL(finished()), this, SLOT(imagesSorted()));
+    connect(&mCreateImageWatcher, &QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>>::finished, this, &DkImageLoader::imagesSorted);
 
     mDelayedUpdateTimer.setSingleShot(true);
-    connect(&mDelayedUpdateTimer, SIGNAL(timeout()), this, SLOT(directoryChanged()));
+    connect(&mDelayedUpdateTimer, &QTimer::timeout, this, [this]() {
+        directoryChanged();
+    });
 
-    connect(DkActionManager::instance().action(DkActionManager::menu_file_save_copy), SIGNAL(triggered()), this, SLOT(copyUserFile()));
-    connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo), SIGNAL(triggered()), this, SLOT(undo()));
-    connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), SIGNAL(triggered()), this, SLOT(redo()));
-    connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SIGNAL(triggered()), this, SLOT(showOnMap()));
-    connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), SIGNAL(triggered()), this, SLOT(deleteFile()), Qt::UniqueConnection);
+    connect(DkActionManager::instance().action(DkActionManager::menu_file_save_copy), &QAction::triggered, this, &DkImageLoader::copyUserFile);
+    connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo), &QAction::triggered, this, &DkImageLoader::undo);
+    connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), &QAction::triggered, this, &DkImageLoader::redo);
+    connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map), &QAction::triggered, this, &DkImageLoader::showOnMap);
+    connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), &QAction::triggered, this, &DkImageLoader::deleteFile, Qt::UniqueConnection);
 
     // saveDir = DkSettingsManager::param().global().lastSaveDir;	// loading save dir is obsolete ?!
 

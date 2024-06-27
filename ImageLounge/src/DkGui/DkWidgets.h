@@ -326,7 +326,6 @@ public slots:
     void animateOpacityUp();
     void animateOpacityDown();
 
-protected slots:
     void updateFile(int idx);
 
 signals:
@@ -835,7 +834,7 @@ public:
         if (time)
             timer->start(time);
 
-        connect(timer, SIGNAL(timeout()), this, SLOT(sendInfo()));
+        connect(timer, &QTimer::timeout, this, &DkDelayedInfo::sendInfo);
     }
 
     virtual ~DkDelayedInfo()
