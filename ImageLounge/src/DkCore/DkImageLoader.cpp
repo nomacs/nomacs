@@ -163,7 +163,7 @@ void DkImageLoader::clearPath()
 {
     // lastFileLoaded must exist
     if (mCurrentImage && mCurrentImage->exists()) {
-        mCurrentImage->receiveUpdates(this, false);
+        this->receiveUpdates(false);
         mLastImageLoaded = mCurrentImage;
         mImages.clear();
 
@@ -816,13 +816,14 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg)
 
             mCurrentImage->getLoader()->resetPageIdx();
         }
-        mCurrentImage->receiveUpdates(this, false); // reset updates
+        this->receiveUpdates(false); // reset updates
     }
 
     mCurrentImage = newImg;
 
-    if (mCurrentImage)
-        mCurrentImage->receiveUpdates(this);
+    if (mCurrentImage) {
+        this->receiveUpdates(true);
+    }
 }
 
 void DkImageLoader::reloadImage()
@@ -2213,4 +2214,38 @@ QString DkImageLoader::fileName() const
     return mCurrentImage->fileName();
 }
 
+/**
+ * Connects or disconnects the signals of the current image to corresponding slots.
+ *
+ * @param[in] connectSignals true to connect or false to disconnect
+ */
+void DkImageLoader::receiveUpdates(bool connectSignals)
+{
+    if (!mCurrentImage) {
+        return;
+    }
+
+    DkImageContainerT *currImage = mCurrentImage.data();
+
+    if (currImage == nullptr) {
+        return;
+    }
+
+    // !selected - do not connect twice
+    if (connectSignals && !currImage->isSelected()) {
+        connect(currImage, &DkImageContainerT::errorDialogSignal, this, &DkImageLoader::errorDialog, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::imageLoaded, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated, Qt::UniqueConnection);
+    } else if (!connectSignals) {
+        disconnect(currImage, &DkImageContainerT::errorDialogSignal, this, &DkImageLoader::errorDialog);
+        disconnect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::imageLoaded);
+        disconnect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal);
+        disconnect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved);
+        disconnect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated);
+    }
+
+    currImage->receiveUpdates(connectSignals);
+}
 }

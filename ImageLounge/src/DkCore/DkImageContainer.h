@@ -172,7 +172,7 @@ public:
     void fetchFile();
     void cancel();
     void clear() override;
-    void receiveUpdates(QObject *obj, bool connectSignals = true);
+    void receiveUpdates(bool connectSignals);
     void downloadFile(const QUrl &url);
 
     bool loadImageThreaded(bool force = false);
