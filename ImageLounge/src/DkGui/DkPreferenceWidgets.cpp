@@ -215,9 +215,6 @@ void DkPreferenceTabWidget::setWidget(QWidget *w)
 {
     mCentralScroller->setWidget(w);
     w->setObjectName("DkPreferenceWidget");
-
-    // TODO: cannot get rid of this befause infoSignal is not an interface of QWidget
-    connect(w, SIGNAL(infoSignal(const QString &)), this, SLOT(setInfoMessage(const QString &)));
 }
 
 void DkPreferenceTabWidget::setInfoMessage(const QString &msg)
