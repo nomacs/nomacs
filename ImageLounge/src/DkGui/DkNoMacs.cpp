@@ -1913,8 +1913,7 @@ void DkNoMacs::restartWithTranslationUpdate()
 
     mTranslationUpdater->silent = true;
 
-    // TODO: restart does not exist in DkNoMacs
-    connect(mTranslationUpdater, SIGNAL(downloadFinished()), this, SLOT(restart()));
+    connect(mTranslationUpdater, &DkTranslationUpdater::downloadFinished, getTabWidget(), &DkCentralWidget::restart);
     updateTranslations();
 }
 
