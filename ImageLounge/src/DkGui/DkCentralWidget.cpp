@@ -529,36 +529,42 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
     // general preferences
     DkPreferenceTabWidget *tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg", s), tr("General"), this);
     DkGeneralPreference *gp = new DkGeneralPreference(this);
+    connect(gp, &DkGeneralPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(gp);
     pw->addTabWidget(tab);
 
     // display preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display.svg", s), tr("Display"), this);
     DkDisplayPreference *dp = new DkDisplayPreference(this);
+    connect(dp, &DkDisplayPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(dp);
     pw->addTabWidget(tab);
 
     // file preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/dir.svg", s), tr("File"), this);
     DkFilePreference *fp = new DkFilePreference(this);
+    connect(fp, &DkFilePreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(fp);
     pw->addTabWidget(tab);
 
     // file association preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", s), tr("File Associations"), this);
     DkFileAssociationsPreference *fap = new DkFileAssociationsPreference(this);
+    connect(fap, &DkFileAssociationsPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(fap);
     pw->addTabWidget(tab);
 
     // advanced preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/advanced-settings.svg", s), tr("Advanced"), this);
     DkAdvancedPreference *ap = new DkAdvancedPreference(this);
+    connect(ap, &DkAdvancedPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(ap);
     pw->addTabWidget(tab);
 
     // file association preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/sliders.svg", s), tr("Editor"), this);
     DkEditorPreference *ep = new DkEditorPreference(this);
+    connect(ep, &DkEditorPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(ep);
     pw->addTabWidget(tab);
 
