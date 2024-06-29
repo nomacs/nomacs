@@ -1482,7 +1482,6 @@ DkShortcutDelegate::DkShortcutDelegate(QObject *parent)
     mClearPm = DkImage::loadIcon(":/nomacs/img/close.svg");
 }
 
-// TODO: I don't think this is ever used
 QWidget *DkShortcutDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QWidget *scW = QItemDelegate::createEditor(parent, option, index);
@@ -1490,9 +1489,10 @@ QWidget *DkShortcutDelegate::createEditor(QWidget *parent, const QStyleOptionVie
     if (!scW)
         return scW;
 
-    // TODO: It would seem that this line wants scW to be QKeySequenceEdit,
-    // but I could not verify because this is never called.
-    connect(scW, SIGNAL(keySequenceChanged(const QKeySequence &)), this, SLOT(keySequenceChanged(const QKeySequence &)));
+    const auto edit = dynamic_cast<QKeySequenceEdit *>(scW);
+    if (edit != nullptr) {
+        connect(edit, &QKeySequenceEdit::keySequenceChanged, this, &DkShortcutDelegate::keySequenceChanged);
+    }
 
     return scW;
 }
