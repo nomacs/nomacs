@@ -141,8 +141,7 @@ void DkBatchContainer::setContentWidget(QWidget *batchContent)
     mBatchContent = dynamic_cast<DkBatchContent *>(batchContent);
 
     connect(mHeaderButton, &DkBatchTabButton::toggled, this, &DkBatchContainer::showContent);
-    // TODO: this is QWidget, maybe need refactoring
-    connect(batchContent, SIGNAL(newHeaderText(const QString &)), mHeaderButton, SLOT(setInfo(const QString &)));
+    connect(mBatchContent, &DkBatchContent::newHeaderText, mHeaderButton, &DkBatchTabButton::setInfo);
 }
 
 QWidget *DkBatchContainer::contentWidget() const
@@ -323,7 +322,7 @@ QString DkInputTextEdit::firstDirPath() const
 
 // File Selection --------------------------------------------------------------------
 DkBatchInput::DkBatchInput(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
-    : DkWidget(parent, f)
+    : DkBatchContent(parent, f)
 {
     setObjectName("DkBatchInput");
     createLayout();
@@ -747,7 +746,7 @@ bool DkFilenameWidget::setTag(const QString &tag)
 
 // DkBatchOutput --------------------------------------------------------------------
 DkBatchOutput::DkBatchOutput(QWidget *parent, Qt::WindowFlags f)
-    : DkWidget(parent, f)
+    : DkBatchContent(parent, f)
 {
     setObjectName("DkBatchOutput");
     createLayout();
@@ -1292,7 +1291,7 @@ void DkProfileSummaryWidget::createLayout()
 
 // DkProfileWidget --------------------------------------------------------------------
 DkProfileWidget::DkProfileWidget(QWidget *parent, Qt::WindowFlags f)
-    : DkWidget(parent, f)
+    : DkBatchContent(parent, f)
 {
     createLayout();
 }
@@ -1492,7 +1491,7 @@ void DkProfileWidget::saveProfile()
 #ifdef WITH_PLUGINS
 // DkBatchPlugin --------------------------------------------------------------------
 DkBatchPluginWidget::DkBatchPluginWidget(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
-    : DkWidget(parent, f)
+    : DkBatchContent(parent, f)
 {
     // mSettings = DkSettingsManager::instance().qSettings();
     DkPluginManager::instance().loadPlugins();
@@ -1769,7 +1768,7 @@ void DkBatchPluginWidget::updateHeader() const
 
 // DkBatchManipulatorWidget --------------------------------------------------------------------
 DkBatchManipulatorWidget::DkBatchManipulatorWidget(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
-    : DkWidget(parent, f)
+    : DkBatchContent(parent, f)
 {
     mManager.createManipulators(this);
     createLayout();
@@ -2005,7 +2004,7 @@ void DkBatchManipulatorWidget::updateHeader() const
 
 // DkBatchTransform --------------------------------------------------------------------
 DkBatchTransformWidget::DkBatchTransformWidget(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
-    : DkWidget(parent, f)
+    : DkBatchContent(parent, f)
 {
     createLayout();
     applyDefault();
@@ -3036,4 +3035,8 @@ void DkBatchWidget::widgetChanged()
     }
 }
 
+DkBatchContent::DkBatchContent(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+    : DkWidget(parent, f)
+{
+}
 }
