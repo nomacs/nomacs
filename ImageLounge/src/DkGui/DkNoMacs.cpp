@@ -280,8 +280,7 @@ void DkNoMacs::createActions()
     connect(am.action(DkActionManager::menu_file_rename), &QAction::triggered, this, &DkNoMacs::renameFile);
     connect(am.action(DkActionManager::menu_file_goto), &QAction::triggered, this, &DkNoMacs::goTo);
 
-    // TODO: centralWidget() returns showRecentFiles, not sure the underlying type
-    connect(am.action(DkActionManager::menu_file_show_recent), SIGNAL(triggered(bool)), centralWidget(), SLOT(showRecentFiles(bool)));
+    connect(am.action(DkActionManager::menu_file_show_recent), &QAction::triggered, getTabWidget(), &DkCentralWidget::showRecentFiles);
     connect(am.action(DkActionManager::menu_file_new_instance), &QAction::triggered, this, [this]() {
         newInstance();
     });
