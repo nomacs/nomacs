@@ -59,12 +59,12 @@ jobs:
       - name: Checkout PR branch and all PR commits
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: ${{ env.PR_FETCH_DEPTH }}
       
       - name: Fetch the other branch with enough history for a common merge-base commit
         run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }}
+          git fetch origin ${{ github.event.pull_request.base.sha }}
 
       - name: Install dependencies
         # Need to use version above 15 to have non-zero return code
