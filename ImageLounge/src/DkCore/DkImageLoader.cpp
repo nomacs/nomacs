@@ -197,7 +197,7 @@ bool DkImageLoader::loadZipArchive(const QString &zipPath)
     QFileInfoList fileInfoList;
     // encode both the input zip file and the output image into a single fileInfo
     for (const QString &filePath : fileList)
-        fileInfoList.append(DkZipContainer::encodeZipFile(zipPath, filePath));
+        fileInfoList.append(QFileInfo(DkZipContainer::encodeZipFile(zipPath, filePath)));
 
     QFileInfo zipInfo(zipPath);
 

@@ -96,7 +96,7 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #include <QWinTaskbarButton>
 #endif
 
@@ -1127,7 +1127,7 @@ void DkNoMacs::openFile()
 
         if (!dup) {
             // > 1: only open in tab if more than one file is opened
-            bool newTab = filePaths.size() > 1 | getTabWidget()->getTabs().size() > 1;
+            bool newTab = (filePaths.size() > 1) || (getTabWidget()->getTabs().size() > 1);
             getTabWidget()->loadFile(fp, newTab);
         }
     }
@@ -1584,7 +1584,7 @@ void DkNoMacs::onWindowLoaded()
     getTabWidget()->loadSettings();
 
 // init global taskbar
-#ifdef WIN32
+#if defined(Q_OS_WIN) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QWinTaskbarButton *button = new QWinTaskbarButton(this);
     button->setWindow(windowHandle());
 

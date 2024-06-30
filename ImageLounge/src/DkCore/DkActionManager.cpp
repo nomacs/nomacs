@@ -251,7 +251,7 @@ void DkAppManager::assignIcon(QAction *app) const
         return;
     }
 
-    QFileInfo file = app->toolTip();
+    QFileInfo file(app->toolTip());
 
     if (!file.exists())
         return;
