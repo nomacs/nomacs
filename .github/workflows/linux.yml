@@ -50,7 +50,8 @@ jobs:
           ninja -j3
 
   check:
-    runs-on: ubuntu-latest
+    # Need to use newer clang-format
+    runs-on: ubuntu-24.04
     if: github.event_name == 'pull_request'
     steps:
       - name: PR commits + 1
@@ -67,11 +68,10 @@ jobs:
           git fetch origin ${{ github.event.pull_request.base.sha }}
 
       - name: Install dependencies
-        # Need to use version above 15 to have non-zero return code
         run: |
-          sudo apt-get install -y clang-format-15
+          sudo apt-get install -y clang-format
 
       - name: Check clang-format
         run: |
           cd ${GITHUB_WORKSPACE}
-          git clang-format-15 --diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} 
+          git clang-format --diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} 2>&1
