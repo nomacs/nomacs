@@ -404,8 +404,12 @@ void DkCompressDialog::drawPreview()
     } else
         updateFileSizeLabel();
 
-    // previewLabel->setScaledContents(true);
-    QImage img = mNewImg.scaled(mPreviewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+    qreal deviceScale = devicePixelRatioF();
+
+    QImage img = mNewImg.scaled(mPreviewLabel->size()*deviceScale, Qt::KeepAspectRatio, Qt::FastTransformation);
+
+    img.setDevicePixelRatio(devicePixelRatioF());
+
     mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 }
 

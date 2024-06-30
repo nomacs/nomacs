@@ -302,7 +302,11 @@ QSize DkBaseViewPort::getImageSize() const
         return mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
     }
 
-    return mImgStorage.size();
+    // HiDPI: Pretend the image is smaller and keep scaling/translating logic the same
+    // At 100%, this gives mImageRect.size()*dpr == img.rect().size(), so Qt disables device scaling
+    qreal deviceScale = devicePixelRatioF();
+
+    return mImgStorage.size() / deviceScale;
 }
 
 QRectF DkBaseViewPort::getImageViewRect() const
@@ -312,18 +316,16 @@ QRectF DkBaseViewPort::getImageViewRect() const
 
 QImage DkBaseViewPort::getCurrentImageRegion()
 {
-    QRectF viewRect = QRectF(QPoint(), size());
+    // return unscaled image pixels corresponding to the current viewport
+    qreal deviceScale = devicePixelRatioF();
+    QRectF viewRect = QRectF(QPoint(0,0), size());
+
     viewRect = mWorldMatrix.inverted().mapRect(viewRect);
-    viewRect = mImgMatrix.inverted().mapRect(viewRect);
+    viewRect = (mImgMatrix.inverted() * deviceScale).mapRect(viewRect);
 
-    QImage imgR(viewRect.size().toSize(), QImage::Format_ARGB32);
-    imgR.fill(0);
-
-    QPainter painter(&imgR);
-    painter.drawImage(imgR.rect(), mImgStorage.image(), viewRect.toRect());
-    painter.end();
-
-    return imgR;
+    // rect is now in image coordinates so just copy it;
+    // if there is any oob condition it gets default fill
+    return mImgStorage.image().copy(viewRect.toRect());
 }
 
 bool DkBaseViewPort::unloadImage(bool)
@@ -519,8 +521,11 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
         painter.setWorldMatrixEnabled(true);
     }
 
+    // HiDPI: displayRect is in fake pixels, convert back to real pixels to fetch the image
+    const qreal deviceScale = devicePixelRatioF();
+
     QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
-    QImage img = mImgStorage.image(displayRect.size());
+    QImage img = mImgStorage.image(displayRect.size() * deviceScale);
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
@@ -535,7 +540,7 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
         painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
     } else {
         // if we have the exact level cached: render it directly
-        if (displayRect.width() == img.width() && displayRect.height() == img.height()) {
+        if (fabs(displayRect.width() * deviceScale - img.width()) < 1.0) { // close enough (< 1 pixel)
             painter.setWorldMatrixEnabled(false);
             painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
             painter.drawImage(displayRect, img, img.rect());
