@@ -176,6 +176,7 @@ signals:
 protected slots:
     void processReadyRead();
     void processData();
+public slots:
     void sendQuitMessage();
 
 protected:

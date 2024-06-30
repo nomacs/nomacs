@@ -186,7 +186,7 @@ void DkFadeWidget::animateOpacityUp()
         return;
     }
 
-    QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
+    QTimer::singleShot(20, this, &DkFadeWidget::animateOpacityUp);
     mOpacityEffect->setOpacity(mOpacityEffect->opacity() + 0.05);
 }
 
@@ -204,7 +204,7 @@ void DkFadeWidget::animateOpacityDown()
         return;
     }
 
-    QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
+    QTimer::singleShot(20, this, &DkFadeWidget::animateOpacityDown);
     mOpacityEffect->setOpacity(mOpacityEffect->opacity() - 0.05);
 }
 
@@ -244,7 +244,7 @@ void DkLabel::init()
     mBlocked = false;
 
     mTimer.setSingleShot(true);
-    connect(&mTimer, SIGNAL(timeout()), this, SLOT(hide()));
+    connect(&mTimer, &QTimer::timeout, this, &DkLabel::hide);
 
     // default look and feel
     QFont font;
@@ -516,7 +516,7 @@ void DkFadeLabel::animateOpacityUp()
         return;
     }
 
-    QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
+    QTimer::singleShot(20, this, &DkFadeLabel::animateOpacityUp);
     opacityEffect->setOpacity(opacityEffect->opacity() + 0.05);
 }
 
@@ -534,7 +534,7 @@ void DkFadeLabel::animateOpacityDown()
         return;
     }
 
-    QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
+    QTimer::singleShot(20, this, &DkFadeLabel::animateOpacityDown);
     opacityEffect->setOpacity(opacityEffect->opacity() - 0.05);
 }
 

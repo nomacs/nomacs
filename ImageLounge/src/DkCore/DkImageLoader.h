@@ -169,6 +169,7 @@ public slots:
     QString getFolderFilter();
     QStringList getFolderFilters();
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);
+    void loadDirRecursive(const QString &newDirPath);
     void errorDialog(const QString &msg) const;
     void loadFileAt(int idx);
 
@@ -189,6 +190,7 @@ protected:
     void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images);
     void createImages(const QFileInfoList &files, bool sort = true);
     QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
+    void receiveUpdates(bool connectSignals);
 
     QStringList mIgnoreKeywords;
     QStringList mKeywords;

@@ -146,7 +146,7 @@ DkQuickAccessEdit::DkQuickAccessEdit(QWidget *parent)
     mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     setCompleter(mCompleter);
 
-    connect(this, SIGNAL(returnPressed()), this, SLOT(editConfirmed()));
+    connect(this, &DkQuickAccessEdit::returnPressed, this, &DkQuickAccessEdit::editConfirmed);
 }
 
 void DkQuickAccessEdit::setModel(QStandardItemModel *model)

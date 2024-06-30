@@ -116,21 +116,23 @@ DkImageLoader::DkImageLoader(const QString &filePath)
     qRegisterMetaType<QFileInfo>("QFileInfo");
 
     mDirWatcher = new QFileSystemWatcher(this);
-    connect(mDirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
+    connect(mDirWatcher, &QFileSystemWatcher::directoryChanged, this, &DkImageLoader::directoryChanged);
 
     mSortingIsDirty = false;
     mSortingImages = false;
 
-    connect(&mCreateImageWatcher, SIGNAL(finished()), this, SLOT(imagesSorted()));
+    connect(&mCreateImageWatcher, &QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>>::finished, this, &DkImageLoader::imagesSorted);
 
     mDelayedUpdateTimer.setSingleShot(true);
-    connect(&mDelayedUpdateTimer, SIGNAL(timeout()), this, SLOT(directoryChanged()));
+    connect(&mDelayedUpdateTimer, &QTimer::timeout, this, [this]() {
+        directoryChanged();
+    });
 
-    connect(DkActionManager::instance().action(DkActionManager::menu_file_save_copy), SIGNAL(triggered()), this, SLOT(copyUserFile()));
-    connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo), SIGNAL(triggered()), this, SLOT(undo()));
-    connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), SIGNAL(triggered()), this, SLOT(redo()));
-    connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SIGNAL(triggered()), this, SLOT(showOnMap()));
-    connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), SIGNAL(triggered()), this, SLOT(deleteFile()), Qt::UniqueConnection);
+    connect(DkActionManager::instance().action(DkActionManager::menu_file_save_copy), &QAction::triggered, this, &DkImageLoader::copyUserFile);
+    connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo), &QAction::triggered, this, &DkImageLoader::undo);
+    connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), &QAction::triggered, this, &DkImageLoader::redo);
+    connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map), &QAction::triggered, this, &DkImageLoader::showOnMap);
+    connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), &QAction::triggered, this, &DkImageLoader::deleteFile, Qt::UniqueConnection);
 
     // saveDir = DkSettingsManager::param().global().lastSaveDir;	// loading save dir is obsolete ?!
 
@@ -161,7 +163,7 @@ void DkImageLoader::clearPath()
 {
     // lastFileLoaded must exist
     if (mCurrentImage && mCurrentImage->exists()) {
-        mCurrentImage->receiveUpdates(this, false);
+        this->receiveUpdates(false);
         mLastImageLoaded = mCurrentImage;
         mImages.clear();
 
@@ -304,6 +306,11 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     //	qDebug() << "ignoring... old dir: " << dir.absolutePath() << " newDir: " << newDir << " file size: " << images.size();
 
     return true;
+}
+
+void DkImageLoader::loadDirRecursive(const QString &newDirPath)
+{
+    this->loadDir(newDirPath, true);
 }
 
 void DkImageLoader::sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images)
@@ -814,13 +821,14 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg)
 
             mCurrentImage->getLoader()->resetPageIdx();
         }
-        mCurrentImage->receiveUpdates(this, false); // reset updates
+        this->receiveUpdates(false); // reset updates
     }
 
     mCurrentImage = newImg;
 
-    if (mCurrentImage)
-        mCurrentImage->receiveUpdates(this);
+    if (mCurrentImage) {
+        this->receiveUpdates(true);
+    }
 }
 
 void DkImageLoader::reloadImage()
@@ -2211,4 +2219,38 @@ QString DkImageLoader::fileName() const
     return mCurrentImage->fileName();
 }
 
+/**
+ * Connects or disconnects the signals of the current image to corresponding slots.
+ *
+ * @param[in] connectSignals true to connect or false to disconnect
+ */
+void DkImageLoader::receiveUpdates(bool connectSignals)
+{
+    if (!mCurrentImage) {
+        return;
+    }
+
+    DkImageContainerT *currImage = mCurrentImage.data();
+
+    if (currImage == nullptr) {
+        return;
+    }
+
+    // !selected - do not connect twice
+    if (connectSignals && !currImage->isSelected()) {
+        connect(currImage, &DkImageContainerT::errorDialogSignal, this, &DkImageLoader::errorDialog, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::imageLoaded, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated, Qt::UniqueConnection);
+    } else if (!connectSignals) {
+        disconnect(currImage, &DkImageContainerT::errorDialogSignal, this, &DkImageLoader::errorDialog);
+        disconnect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::imageLoaded);
+        disconnect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal);
+        disconnect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved);
+        disconnect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated);
+    }
+
+    currImage->receiveUpdates(connectSignals);
+}
 }

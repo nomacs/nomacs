@@ -40,6 +40,7 @@
 #include <QShortcut>
 #include <QSvgRenderer>
 #include <QTimer>
+#include <QtGlobal>
 
 // gestures
 #include <QSwipeGesture>
@@ -69,8 +70,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent)
 
     mZoomTimer = new QTimer(this);
     mZoomTimer->setSingleShot(true);
-    connect(mZoomTimer, SIGNAL(timeout()), this, SLOT(stopBlockZooming()));
-    connect(&mImgStorage, SIGNAL(imageUpdated()), this, SLOT(update()));
+    connect(mZoomTimer, &QTimer::timeout, this, &DkBaseViewPort::stopBlockZooming);
+    connect(&mImgStorage, &DkImageStorage::imageUpdated, this, QOverload<>::of(&DkBaseViewPort::update));
 
     mPattern.setTexture(QPixmap(":/nomacs/img/tp-pattern.png"));
 
@@ -89,17 +90,17 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent)
 
     // connect pan actions
     const DkActionManager &am = DkActionManager::instance();
-    connect(am.action(DkActionManager::sc_pan_left), SIGNAL(triggered()), this, SLOT(panLeft()));
-    connect(am.action(DkActionManager::sc_pan_right), SIGNAL(triggered()), this, SLOT(panRight()));
-    connect(am.action(DkActionManager::sc_pan_up), SIGNAL(triggered()), this, SLOT(panUp()));
-    connect(am.action(DkActionManager::sc_pan_down), SIGNAL(triggered()), this, SLOT(panDown()));
+    connect(am.action(DkActionManager::sc_pan_left), &QAction::triggered, this, &DkBaseViewPort::panLeft);
+    connect(am.action(DkActionManager::sc_pan_right), &QAction::triggered, this, &DkBaseViewPort::panRight);
+    connect(am.action(DkActionManager::sc_pan_up), &QAction::triggered, this, &DkBaseViewPort::panUp);
+    connect(am.action(DkActionManager::sc_pan_down), &QAction::triggered, this, &DkBaseViewPort::panDown);
 
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollVertically(int)));
-    connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollHorizontally(int)));
+    connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &DkBaseViewPort::scrollVertically);
+    connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &DkBaseViewPort::scrollHorizontally);
 
     mHideCursorTimer = new QTimer(this);
     mHideCursorTimer->setInterval(1000);
-    connect(mHideCursorTimer, SIGNAL(timeout()), this, SLOT(hideCursor()));
+    connect(mHideCursorTimer, &QTimer::timeout, this, &DkBaseViewPort::hideCursor);
 }
 
 DkBaseViewPort::~DkBaseViewPort()

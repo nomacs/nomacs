@@ -322,8 +322,8 @@ DkPongPort::DkPongPort(QWidget *parent, Qt::WindowFlags)
     mCountDownTimer = new QTimer(this);
     mCountDownTimer->setInterval(500);
 
-    connect(mEventLoop, SIGNAL(timeout()), this, SLOT(gameLoop()));
-    connect(mCountDownTimer, SIGNAL(timeout()), this, SLOT(countDown()));
+    connect(mEventLoop, &QTimer::timeout, this, &DkPongPort::gameLoop);
+    connect(mCountDownTimer, &QTimer::timeout, this, &DkPongPort::countDown);
 
     initGame();
     pauseGame();

@@ -470,7 +470,7 @@ void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC)
         // we need to load the thumbnail fresh to guarantee, that we just consider the exif thumb
         // the imgC thumbnail might be created from the image
         mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(imgC->filePath()));
-        connect(mThumb.data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
+        connect(mThumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkMetaDataDock::thumbLoaded);
         mThumb->fetchThumb(DkThumbNailT::force_exif_thumb);
     }
 }
@@ -575,7 +575,7 @@ void DkMetaDataSelection::createLayout()
 
     mCbCheckAll = new QCheckBox(tr("Check All"), this);
     mCbCheckAll->setTristate(true);
-    connect(mCbCheckAll, SIGNAL(clicked(bool)), this, SLOT(checkAll(bool)));
+    connect(mCbCheckAll, &QCheckBox::clicked, this, &DkMetaDataSelection::checkAll);
 
     QVBoxLayout *l = new QVBoxLayout(this);
     l->addWidget(scrollArea);
@@ -588,7 +588,7 @@ void DkMetaDataSelection::appendGUIEntry(const QString &key, const QString &valu
     cleanKey = cleanKey.replace(".", " > ");
 
     QCheckBox *cb = new QCheckBox(cleanKey, this);
-    connect(cb, SIGNAL(clicked()), this, SLOT(selectionChanged()));
+    connect(cb, &QCheckBox::clicked, this, &DkMetaDataSelection::selectionChanged);
     mSelection.append(cb);
 
     QString cleanValue = DkUtils::cleanFraction(value);
@@ -752,32 +752,32 @@ void DkMetaDataHUD::createActions()
 
     mActions[action_change_keys] = new QAction(tr("Change Entries"), this);
     mActions[action_change_keys]->setStatusTip(tr("You can customize the entries displayed here."));
-    connect(mActions[action_change_keys], SIGNAL(triggered()), this, SLOT(changeKeys()));
+    connect(mActions[action_change_keys], &QAction::triggered, this, &DkMetaDataHUD::changeKeys);
 
     mActions[action_num_columns] = new QAction(tr("Number of Columns"), this);
     mActions[action_num_columns]->setStatusTip(tr("Select the desired number of columns."));
-    connect(mActions[action_num_columns], SIGNAL(triggered()), this, SLOT(changeNumColumns()));
+    connect(mActions[action_num_columns], &QAction::triggered, this, &DkMetaDataHUD::changeNumColumns);
 
     mActions[action_set_to_default] = new QAction(tr("Set to Default"), this);
     mActions[action_set_to_default]->setStatusTip(tr("Reset the metadata panel."));
-    connect(mActions[action_set_to_default], SIGNAL(triggered()), this, SLOT(setToDefault()));
+    connect(mActions[action_set_to_default], &QAction::triggered, this, &DkMetaDataHUD::setToDefault);
 
     // orientations
     mActions[action_pos_west] = new QAction(tr("Show Left"), this);
     mActions[action_pos_west]->setStatusTip(tr("Shows the Metadata on the Left"));
-    connect(mActions[action_pos_west], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(mActions[action_pos_west], &QAction::triggered, this, &DkMetaDataHUD::newPosition);
 
     mActions[action_pos_north] = new QAction(tr("Show Top"), this);
     mActions[action_pos_north]->setStatusTip(tr("Shows the Metadata at the Top"));
-    connect(mActions[action_pos_north], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(mActions[action_pos_north], &QAction::triggered, this, &DkMetaDataHUD::newPosition);
 
     mActions[action_pos_east] = new QAction(tr("Show Right"), this);
     mActions[action_pos_east]->setStatusTip(tr("Shows the Metadata on the Right"));
-    connect(mActions[action_pos_east], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(mActions[action_pos_east], &QAction::triggered, this, &DkMetaDataHUD::newPosition);
 
     mActions[action_pos_south] = new QAction(tr("Show Bottom"), this);
     mActions[action_pos_south]->setStatusTip(tr("Shows the Metadata at the Bottom"));
-    connect(mActions[action_pos_south], SIGNAL(triggered()), this, SLOT(newPosition()));
+    connect(mActions[action_pos_south], &QAction::triggered, this, &DkMetaDataHUD::newPosition);
 }
 
 void DkMetaDataHUD::loadSettings()
@@ -1098,8 +1098,8 @@ void DkMetaDataHUD::changeKeys()
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-    connect(buttons, SIGNAL(accepted()), dialog, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
 
     QVBoxLayout *layout = new QVBoxLayout(dialog);
     layout->addWidget(selWidget);

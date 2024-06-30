@@ -101,12 +101,18 @@ class DkSettingsWidget;
 class DkBatchPluginInterface;
 class DkRectWidget;
 
-class DkBatchContent
+class DkBatchContent : public DkWidget
 {
+    Q_OBJECT
+
 public:
+    DkBatchContent(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     virtual bool hasUserInput() const = 0;
     virtual bool requiresUserInput() const = 0;
     virtual void applyDefault() = 0;
+
+signals:
+    void newHeaderText(const QString &txt) const;
 };
 
 class DkBatchTabButton : public QPushButton
@@ -183,7 +189,7 @@ protected:
     QList<int> mResultList;
 };
 
-class DkBatchInput : public DkWidget, public DkBatchContent
+class DkBatchInput : public DkBatchContent
 {
     Q_OBJECT
 
@@ -229,7 +235,6 @@ public slots:
 
 signals:
     void updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>) const;
-    void newHeaderText(const QString &) const;
     void updateInputDir(const QString &) const;
     void changed() const;
 
@@ -300,7 +305,7 @@ private:
     bool hasChanged = false;
 };
 
-class DkBatchOutput : public DkWidget, public DkBatchContent
+class DkBatchOutput : public DkBatchContent
 {
     Q_OBJECT
 
@@ -325,7 +330,6 @@ public:
     void setExampleFilename(const QString &exampleName);
 
 signals:
-    void newHeaderText(const QString &) const;
     void changed() const;
 
 public slots:
@@ -397,7 +401,7 @@ protected:
     QLabel *mFunctions = 0;
 };
 
-class DkProfileWidget : public DkWidget, public DkBatchContent
+class DkProfileWidget : public DkBatchContent
 {
     Q_OBJECT
 
@@ -420,7 +424,6 @@ public slots:
     void exportCurrentProfile();
 
 signals:
-    void newHeaderText(const QString &txt) const;
     void loadProfileSignal(const QString &profilePath) const;
     void saveProfileSignal(const QString &profilePath) const;
     void applyDefaultSignal() const;
@@ -438,7 +441,7 @@ protected:
 };
 
 #ifdef WITH_PLUGINS
-class DkBatchPluginWidget : public DkWidget, public DkBatchContent
+class DkBatchPluginWidget : public DkBatchContent
 {
     Q_OBJECT
 
@@ -459,9 +462,6 @@ public slots:
     void changeSetting(const QString &key, const QVariant &value, const QStringList &parentList) const;
     void removeSetting(const QString &key, const QStringList &parentList) const;
 
-signals:
-    void newHeaderText(const QString &txt) const;
-
 public slots:
     void updateHeader() const;
 
@@ -480,7 +480,7 @@ protected:
 };
 #endif
 
-class DkBatchManipulatorWidget : public DkWidget, public DkBatchContent
+class DkBatchManipulatorWidget : public DkBatchContent
 {
     Q_OBJECT
 
@@ -499,9 +499,6 @@ public slots:
     void selectionChanged(const QItemSelection &selected);
     void selectManipulator(QSharedPointer<DkBaseManipulator> mpl);
     void selectManipulator();
-
-signals:
-    void newHeaderText(const QString &txt) const;
 
 public slots:
     void updateHeader() const;
@@ -522,7 +519,7 @@ protected:
     int mMaxPreview = 300;
 };
 
-class DkBatchTransformWidget : public DkWidget, public DkBatchContent
+class DkBatchTransformWidget : public DkBatchContent
 {
     Q_OBJECT
 
@@ -538,9 +535,6 @@ public:
 public slots:
     void updateHeader() const;
     void modeChanged();
-
-signals:
-    void newHeaderText(const QString &txt) const;
 
 protected:
     void createLayout();

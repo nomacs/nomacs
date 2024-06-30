@@ -67,3 +67,6 @@ private:
   QAction* action = 0;
 };
 ```
+
+- Avoid using `SIGNAL` and `SLOT` macros in favor of function pointers.
+  They enable compile time check of the signal and slot names and signature.

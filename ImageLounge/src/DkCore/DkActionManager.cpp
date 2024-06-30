@@ -81,7 +81,7 @@ DkAppManager::DkAppManager(QWidget *parent)
 
     for (int idx = 0; idx < mApps.size(); idx++) {
         assignIcon(mApps.at(idx));
-        connect(mApps.at(idx), SIGNAL(triggered()), this, SLOT(openTriggered()));
+        connect(mApps.at(idx), &QAction::triggered, this, &DkAppManager::openTriggered);
     }
 }
 
@@ -159,7 +159,7 @@ QAction *DkAppManager::createAction(const QString &filePath)
     QAction *newApp = new QAction(file.baseName(), parent());
     newApp->setToolTip(QDir::fromNativeSeparators(file.filePath()));
     assignIcon(newApp);
-    connect(newApp, SIGNAL(triggered()), this, SLOT(openTriggered()));
+    connect(newApp, &QAction::triggered, this, &DkAppManager::openTriggered);
 
     return newApp;
 }

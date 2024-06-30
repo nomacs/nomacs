@@ -1064,8 +1064,8 @@ DkBatchProcessing::DkBatchProcessing(const DkBatchConfig &config, QWidget *paren
 {
     mBatchConfig = config;
 
-    connect(&mBatchWatcher, SIGNAL(progressValueChanged(int)), this, SIGNAL(progressValueChanged(int)));
-    connect(&mBatchWatcher, SIGNAL(finished()), this, SIGNAL(finished()));
+    connect(&mBatchWatcher, &QFutureWatcher<void>::progressValueChanged, this, &DkBatchProcessing::progressValueChanged);
+    connect(&mBatchWatcher, &QFutureWatcher<void>::finished, this, &DkBatchProcessing::finished);
 }
 
 void DkBatchProcessing::init()

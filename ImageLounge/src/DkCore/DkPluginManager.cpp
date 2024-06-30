@@ -63,6 +63,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QXmlStreamReader>
+#include <QtGlobal>
 #pragma warning(pop) // no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
@@ -287,7 +288,7 @@ void DkPluginContainer::createMenu()
 
     for (auto action : p->pluginActions()) {
         mPluginMenu->addAction(action);
-        connect(action, SIGNAL(triggered()), this, SLOT(run()), Qt::UniqueConnection);
+        connect(action, &QAction::triggered, this, &DkPluginContainer::run, Qt::UniqueConnection);
     }
 }
 
@@ -564,7 +565,7 @@ void DkPluginManagerDialog::createLayout()
     tableWidgetInstalled = new DkPluginTableWidget(this);
 
     QPushButton *buttonClose = new QPushButton(tr("&Close"));
-    connect(buttonClose, SIGNAL(clicked()), this, SLOT(closePressed()));
+    connect(buttonClose, &QPushButton::clicked, this, &DkPluginManagerDialog::closePressed);
     buttonClose->setDefault(true);
 
     QWidget *dummy = new QWidget(this);
@@ -622,7 +623,7 @@ void DkPluginTableWidget::createLayout()
     // search line edit and update button
     mFilterEdit = new QLineEdit(this);
     mFilterEdit->setPlaceholderText(tr("Search plugins"));
-    connect(mFilterEdit, SIGNAL(textChanged(QString)), this, SLOT(filterTextChanged()));
+    connect(mFilterEdit, &QLineEdit::textChanged, this, &DkPluginTableWidget::filterTextChanged);
 
     // QPushButton* updateButton = new QPushButton(tr("Add or Remove Plugins"), this);
     // updateButton->setObjectName("updateButton");
@@ -661,28 +662,16 @@ void DkPluginTableWidget::createLayout()
     if (DkSettingsManager::instance().param().isPortable()) {
         DkPushButtonDelegate *buttonDelegate = new DkPushButtonDelegate(mTableView);
         mTableView->setItemDelegateForColumn(ip_column_uninstall, buttonDelegate);
-        connect(buttonDelegate, SIGNAL(buttonClicked(QModelIndex)), this, SLOT(uninstallPlugin(QModelIndex)));
+        connect(buttonDelegate, &DkPushButtonDelegate::buttonClicked, this, &DkPluginTableWidget::uninstallPlugin);
     }
 
     DkDescriptionEdit *descriptionEdit = new DkDescriptionEdit(mModel, mProxyModel, mTableView->selectionModel(), this);
-    connect(mTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-            descriptionEdit,
-            SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
-    connect(mProxyModel,
-            SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
-            descriptionEdit,
-            SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
+    connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, descriptionEdit, &DkDescriptionEdit::selectionChanged);
+    connect(mProxyModel, &QSortFilterProxyModel::dataChanged, descriptionEdit, &DkDescriptionEdit::dataChanged);
 
     DkDescriptionImage *descriptionImg = new DkDescriptionImage(mModel, mProxyModel, mTableView->selectionModel(), this);
-    connect(mTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-            descriptionImg,
-            SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
-    connect(mProxyModel,
-            SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
-            descriptionImg,
-            SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
+    connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, descriptionImg, &DkDescriptionImage::selectionChanged);
+    connect(mProxyModel, &QSortFilterProxyModel::dataChanged, descriptionImg, &DkDescriptionImage::dataChanged);
 
     QWidget *descWidget = new QWidget(this);
     QHBoxLayout *dLayout = new QHBoxLayout(descWidget);
@@ -1352,7 +1341,7 @@ void DkPluginActionManager::assignCustomPluginShortcuts()
             QString val = settings.value(psKeys.at(i), "no-shortcut").toString();
             if (val != "no-shortcut")
                 action->setShortcut(val);
-            connect(action, SIGNAL(triggered()), this, SLOT(runPluginFromShortcut()));
+            connect(action, &QAction::triggered, this, &DkPluginActionManager::runPluginFromShortcut);
             // assign widget shortcuts to all of them
             action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
             mPluginDummyActions.append(action);
@@ -1365,7 +1354,7 @@ void DkPluginActionManager::assignCustomPluginShortcuts()
 void DkPluginActionManager::setMenu(QMenu *menu)
 {
     mMenu = menu;
-    connect(mMenu, SIGNAL(aboutToShow()), this, SLOT(updateMenu()));
+    connect(mMenu, &QMenu::aboutToShow, this, &DkPluginActionManager::updateMenu);
 }
 
 QMenu *DkPluginActionManager::menu() const
@@ -1406,11 +1395,15 @@ void DkPluginActionManager::updateMenu()
     mMenu->clear();
 
     for (auto p : plugins) {
-        connect(p.data(), SIGNAL(runPlugin(DkViewPortInterface *, bool)), this, SIGNAL(runPlugin(DkViewPortInterface *, bool)), Qt::UniqueConnection);
         connect(p.data(),
-                SIGNAL(runPlugin(DkPluginContainer *, const QString &)),
+                QOverload<DkViewPortInterface *, bool>::of(&DkPluginContainer::runPlugin),
                 this,
-                SIGNAL(runPlugin(DkPluginContainer *, const QString &)),
+                QOverload<DkViewPortInterface *, bool>::of(&DkPluginActionManager::runPlugin),
+                Qt::UniqueConnection);
+        connect(p.data(),
+                QOverload<DkPluginContainer *, const QString &>::of(&DkPluginContainer::runPlugin),
+                this,
+                QOverload<DkPluginContainer *, const QString &>::of(&DkPluginActionManager::runPlugin),
                 Qt::UniqueConnection);
     }
 
@@ -1451,7 +1444,7 @@ void DkPluginActionManager::addPluginsToMenu()
             a->setData(plugin->id());
             mPluginActions.append(a);
             mMenu->addAction(a);
-            connect(a, SIGNAL(triggered()), plugin.data(), SLOT(run()));
+            connect(a, &QAction::triggered, plugin.data(), &DkPluginContainer::run);
         }
     }
 
