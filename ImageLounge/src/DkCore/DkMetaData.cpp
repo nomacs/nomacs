@@ -244,7 +244,8 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     // Copy image + new exif and return temporary object as byte array
     // The calling function should then write it back to the file
     Exiv2::DataBuf exifBuf = exifImgN->io().read((long)exifImgN->io().size());
-#if EXIV2_TEST_VERSION(0, 28, 0)
+
+#if ((((EXIV2_MAJOR_VERSION) << 16) + ((EXIV2_MINOR_VERSION) << 8) + (EXIV2_PATCH_VERSION)) >= (28 << 8))
     if (!exifBuf.empty()) {
         QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray(reinterpret_cast<const char *>(exifBuf.c_data()), exifBuf.size()));
 #else
@@ -719,7 +720,7 @@ QImage DkMetaDataT::getThumbnail() const
         Exiv2::ExifThumb thumb(exifData);
         Exiv2::DataBuf buffer = thumb.copy();
 
-#if EXIV2_TEST_VERSION(0, 28, 0)
+#if ((((EXIV2_MAJOR_VERSION) << 16) + ((EXIV2_MINOR_VERSION) << 8) + (EXIV2_PATCH_VERSION)) >= (28 << 8))
         QByteArray ba = QByteArray(reinterpret_cast<const char *>(buffer.c_data()), buffer.size());
 #else
         QByteArray ba = QByteArray(reinterpret_cast<const char *>(buffer.pData_), buffer.size_);
