@@ -85,7 +85,7 @@ set(DELAY_DLL_NAMES_DEBUG
 set(DELAY_DLL_NAMES_RELEASE
 	opencv_core490.dll
 	opencv_imgproc490.dll
-	quazip5.dll
+	quazip1-qt5.dll
 	Qt5WinExtras.dll
 	${DELAY_DLL_NAMES}
 	)
@@ -114,6 +114,10 @@ set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL R
 # this will break in the future - but is by far the easiest way now - sorry...
 file(GLOB PRECOMPILED_IMAGE_FORMATS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/win-binaries/*.dll")
 file(COPY ${PRECOMPILED_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
+
+if(ENABLE_QUAZIP)
+	file(COPY "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt5.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+endif(ENABLE_QUAZIP)
 
 if (ENABLE_AVIF)
     file(DOWNLOAD "https://github.com/novomesk/qt-avif-image-plugin/releases/latest/download/qavif.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/qavif.dll)
@@ -264,14 +268,12 @@ set(DC_PATHS_RELEASE
 	${EXIV2_BUILD_PATH}/Release/bin
 	${EXPAT_BUILD_PATH}/Release 
 	${LIBRAW_BUILD_PATH}/Release 
-	${QUAZIP_BUILD_PATH}/Release 
 	${OpenCV_DIR}/bin/Release 
 	${QT_QMAKE_PATH} ${VS_PATH})
 set(DC_PATHS_DEBUG 
 	${EXIV2_BUILD_PATH}/Debug/bin
 	${EXPAT_BUILD_PATH}/Debug 
 	${LIBRAW_BUILD_PATH}/Debug 
-	${QUAZIP_BUILD_PATH}/Debug 
 	${OpenCV_DIR}/bin/Debug 
 	${QT_QMAKE_PATH} ${VS_PATH})
 

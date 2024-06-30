@@ -77,14 +77,13 @@ set(DELAY_DLL_NAMES
 set(DELAY_DLL_NAMES_DEBUG 
 	opencv_core490d.dll
 	opencv_imgproc490d.dll
-	quazip5d.dll
 	${DELAY_DLL_NAMES}
 	)
 
 set(DELAY_DLL_NAMES_RELEASE
 	opencv_core490.dll
 	opencv_imgproc490.dll
-	quazip5.dll
+	quazip1-qt6.dll
 	${DELAY_DLL_NAMES}
 	)
 
@@ -108,6 +107,16 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE)
 
+# copy DLL files
+file(COPY ${EXIV2_BUILD_PATH}/Release/bin/exiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${EXPAT_BUILD_PATH}/Release/expat.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${LIBRAW_BUILD_PATH}/Release/raw.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${OpenCV_DIR}/bin/Release/opencv_core490.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${OpenCV_DIR}/bin/Release/opencv_imgproc490.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+if(ENABLE_QUAZIP)
+	file(COPY "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt6.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+endif(ENABLE_QUAZIP)
+
 if (ENABLE_AVIF)
     file(DOWNLOAD "https://github.com/novomesk/qt-avif-image-plugin/releases/latest/download/qavif6.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/qavif6.dll)
 endif()
@@ -122,6 +131,14 @@ if (ENABLE_HEIF)
     file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/libde265.dll" ${CMAKE_BINARY_DIR}/Release/libde265.dll)
     file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/openjp2.dll" ${CMAKE_BINARY_DIR}/Release/openjp2.dll)
 endif()
+
+# copy Qt libs
+file(COPY ${QT_QMAKE_PATH}/Qt6Widgets.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${QT_QMAKE_PATH}/Qt6Gui.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${QT_QMAKE_PATH}/Qt6Core.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${QT_QMAKE_PATH}/Qt6Network.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${QT_QMAKE_PATH}/Qt6PrintSupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${QT_QMAKE_PATH}/Qt6Concurrent.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 
 # copy additional Qt files
 # add image plugins
@@ -176,9 +193,9 @@ if (EXISTS ${OPEN_SSL_PATH})
 endif()
 
 # add default settings file
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo)
+#file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+#file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+#file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo)
 
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.ini)
@@ -230,10 +247,6 @@ set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore ${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
 
-### DependencyCollector
-set(DC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.py)
-set(DC_CONFIG ${CMAKE_BINARY_DIR}/DependencyCollector.ini)
-
 # CMAKE_MAKE_PROGRAM works for VS 2017 too
 get_filename_component(VS_PATH ${CMAKE_MAKE_PROGRAM} PATH)
 if(CMAKE_CL_64)
@@ -241,24 +254,3 @@ if(CMAKE_CL_64)
 else()
 	set(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
 endif()
-
-# path hints for the dependency collector
-set(DC_PATHS_RELEASE 
-	${EXIV2_BUILD_PATH}/Release/bin
-	${EXPAT_BUILD_PATH}/Release 
-	${LIBRAW_BUILD_PATH}/Release 
-	${QUAZIP_BUILD_PATH}/Release 
-	${OpenCV_DIR}/bin/Release 
-	${QT_QMAKE_PATH} ${VS_PATH})
-set(DC_PATHS_DEBUG 
-	${EXIV2_BUILD_PATH}/Debug/bin
-	${EXPAT_BUILD_PATH}/Debug 
-	${LIBRAW_BUILD_PATH}/Debug 
-	${QUAZIP_BUILD_PATH}/Debug 
-	${OpenCV_DIR}/bin/Debug 
-	${QT_QMAKE_PATH} ${VS_PATH})
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${Python_EXECUTABLE} ${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION>)
-

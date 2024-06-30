@@ -14,7 +14,7 @@ macro(NMC_FINDQT)
 		if(NOT QT_QMAKE_EXECUTABLE)
 		message(FATAL_ERROR "you have to set the path to the Qt5 qmake executable")
 		endif()
-		
+
 		message(STATUS "QMake found: ${QT_QMAKE_EXECUTABLE}")
 		get_filename_component(QT_QMAKE_PATH ${QT_QMAKE_EXECUTABLE} PATH)
 	 endif()
@@ -28,11 +28,11 @@ macro(NMC_FINDQT)
 	if (NOT Qt${QT_VERSION_MAJOR}_FOUND)
 		message(FATAL_ERROR "Qt Libraries not found!")
 	endif()
-	 
-	if ((MSVC OR MINGW) AND QT_MAJOR_VERSION STREQUAL "5")
+
+	if ((MSVC OR MINGW) AND QT_VERSION_MAJOR STREQUAL "5")
 		find_package(Qt5 ${QT5_MIN_VERSION} REQUIRED WinExtras)
 	endif()
-	 
+
 endmacro(NMC_FINDQT)
 
 macro(NMC_INSTALL)

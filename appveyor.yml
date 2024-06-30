@@ -27,7 +27,7 @@ cache:
     - 3rd-party/build/exiv2 -> scripts/make.py
     - 3rd-party/build/quazip -> scripts/make.py
     - 3rd-party/build/libraw -> scripts/make.py
-    - 3rd-party/build/imageformats -> scripts/make.py
+#    - 3rd-party/build/imageformats -> scripts/make.py
 
 install:
     - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
