@@ -159,7 +159,7 @@ class QuazipConfig(Config):
 
         super().defaults()
 
-        self.binaryfile = os.path.join(self.builddir, "quazip", "Release", "quazip1-qt6.dll")
+        self.binaryfile = os.path.join(self.builddir, "quazip", "Release", "quazip1-qt5.dll")
 
     def cmake_args(self):
 
