@@ -4,7 +4,6 @@ configuration: Release
 skip_commits:
   files:
     - '.github/*'
-    - '.travis.yml'
     - '.gitignore'
     - '*.md'
 

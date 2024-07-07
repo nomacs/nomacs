@@ -155,7 +155,7 @@ sudo make install
 
 ## Build in Docker
 
-We have created a docker image that best simulates the travis system (currently it's ubuntu xenial 16.04). To build nomacs in a docker, you have to create the image:
+We have created a docker image that best simulates the old travis system (currently it's ubuntu xenial 16.04). To build nomacs in a docker, you have to create the image:
 
 ````bash
 docker build --rm -f "Dockerfile" -t nomacs:latest empty-docker-dir

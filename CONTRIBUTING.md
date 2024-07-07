@@ -17,7 +17,7 @@ We will comment on pull requests within one week. Here are some things that incr
 
 - Write good commit messages.
 - Follow our style guide.
-- Don't break the [Travis](https://travis-ci.org/nomacs/nomacs) build.
+- Pass all the Github action checks.
 
 ## Style
 
