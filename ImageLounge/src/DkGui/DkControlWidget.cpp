@@ -108,9 +108,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags)
 
 void DkControlWidget::init()
 {
-    // debug: show invisible widgets
     setFocusPolicy(Qt::StrongFocus);
-    setFocus(Qt::TabFocusReason);
     setMouseTracking(true);
 
     // connect widgets with their settings

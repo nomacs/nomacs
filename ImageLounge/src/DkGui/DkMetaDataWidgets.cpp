@@ -388,7 +388,6 @@ void DkMetaDataDock::createLayout()
 {
     mFilterEdit = new QLineEdit(this);
     mFilterEdit->setPlaceholderText(tr("Filter"));
-    mFilterEdit->setFocusPolicy(Qt::ClickFocus);
     connect(mFilterEdit, &QLineEdit::textChanged, this, &DkMetaDataDock::onFilterTextChanged);
 
     // create our beautiful shortcut view
@@ -402,7 +401,6 @@ void DkMetaDataDock::createLayout()
     mTreeView->setAlternatingRowColors(true);
     // mTreeView->setIndentation(8);
     // mTreeView->setStyleSheet("QTreeView{border: none;}");
-    mTreeView->setFocusPolicy(Qt::ClickFocus);
 
     mThumbNailLabel = new QLabel(tr("Thumbnail"), this);
     mThumbNailLabel->hide();
