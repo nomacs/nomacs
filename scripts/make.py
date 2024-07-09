@@ -1,5 +1,5 @@
 # Change following line to force rebuild of AppVeyor cache:
-# Last rebuild: 2023-10-02
+# Last rebuild: 2024-07-09
 
 import os
 from utils.config import Config
@@ -27,7 +27,7 @@ class NomacsConfig(Config):
 
         # tune cmake parameters here
         args = [
-            "-DQT_VERSION_MAJOR=5",
+            "-DQT_VERSION_MAJOR=6",
             "-DCMAKE_PREFIX_PATH=" + self.qtpath,
             "-DDEPENDENCY_PATH=" + self.libpath,
             "-DENABLE_QUAZIP=ON",
@@ -159,7 +159,7 @@ class QuazipConfig(Config):
 
         super().defaults()
 
-        self.binaryfile = os.path.join(self.builddir, "quazip", "Release", "quazip1-qt5.dll")
+        self.binaryfile = os.path.join(self.builddir, "quazip", "Release", "quazip1-qt6.dll")
 
     def cmake_args(self):
 
@@ -169,7 +169,7 @@ class QuazipConfig(Config):
             "-B" + self.builddir,
             "-DQUAZIP_BZIP2=OFF",
             "-DQUAZIP_BZIP2_STDIO=OFF",
-            "-DQUAZIP_QT_MAJOR_VERSION=5",
+            "-DQUAZIP_QT_MAJOR_VERSION=6",
             self.srcpath
         ]
 
@@ -265,13 +265,13 @@ class FormatsConfig(Config):
 
         # tune cmake parameters here
         args = [
-            "-DQT_VERSION_MAJOR=5",
+            "-DQT_VERSION_MAJOR=6",
             "-DCMAKE_PREFIX_PATH=" +
             # os.path.join(self.libpath, "libde265") + ";" +
             # os.path.join(self.libpath, "libheif") + ";" +
             self.qtpath,
             "-DENABLE_QOI=ON",
-            "-DENABLE_WEBP=ON",
+            "-DENABLE_WEBP=OFF",
             "-B" + self.builddir,
             self.srcpath
         ]

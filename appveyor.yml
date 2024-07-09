@@ -36,7 +36,7 @@ install:
     - call "%VCVARS%"
     
 build_script:
-    - python scripts\make.py %QT5% --build-config release
+    - python scripts\make.py %QT6% --build-config release
 
 after_build:
     - cd installer
