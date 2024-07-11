@@ -67,6 +67,7 @@
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
+#include "DkViewPort.h"
 
 #include "DkDependencyResolver.h"
 #include "DkMetaData.h"
@@ -319,6 +320,9 @@ int main(int argc, char *argv[])
     if (parser.isSet(slideshowOpt)) {
         cw->startSlideshow();
     }
+
+    if (cw->hasViewPort())
+        cw->getViewPort()->setFocus(Qt::TabFocusReason);
 
 #ifdef Q_WS_MAC
     nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
