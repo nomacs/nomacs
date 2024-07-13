@@ -265,11 +265,20 @@ int main(int argc, char *argv[])
     } else
         w = new nmc::DkNoMacsIpl();
 
+    qInfo() << "maximized:" << w->isMaximized() << "fullscreen:" << w->isFullScreen();
+
     // show what we got...
     w->show();
 
-    // this triggers a first show
-    QCoreApplication::sendPostedEvents();
+    bool maximized = w->isMaximized();
+
+    while (!w->isActiveWindow())
+        qApp->processEvents();
+
+    // Qt emulates showMaximized() on some platforms (X11), so it might not work.
+    // If we try again with a visible window, it *could* work correctly (GNOME)
+    if (maximized && !w->isMaximized())
+        w->showMaximized();
 
     if (w)
         w->onWindowLoaded();
