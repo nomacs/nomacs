@@ -265,8 +265,6 @@ int main(int argc, char *argv[])
     } else
         w = new nmc::DkNoMacsIpl();
 
-    qInfo() << "maximized:" << w->isMaximized() << "fullscreen:" << w->isFullScreen();
-
     // show what we got...
     w->show();
 
