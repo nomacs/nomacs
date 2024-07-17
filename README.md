@@ -153,6 +153,81 @@ You will now have a binary (`nomacs.app`), which you can test (or use directly).
 sudo make install
 ```
 
+## Build nomacs (Windows Cross-Compile)
+
+Compiles nomacs for Windows using M Cross Environment (MXE) from a Linux/Unix host. 
+
+MXE environment is usually compiled from source, however you may be able to skip this if MXE has packages for your platform:
+
+````bash
+git clone <mxe url>
+cd mxe
+
+make MXE_TARGETS=`x86_64-w64-mingw32.shared` qtbase qtimageformats qtwinextras opencv quazip tiff exiv2 libraw
+````
+
+Setup build environment:
+
+````bash
+export MXE_DIR=~/mxe
+export MXE_TARGET=x86_64-w64-mingw32.shared
+export PATH="${MXE_DIR}/usr/bin:$PATH"
+
+alias pkg-config=${MXE_TARGET}-pkg-config
+alias qmake=${MXE_TARGET}-qmake
+alias cmake=${MXE_TARGET}-cmake
+````
+
+Run cmake out-of-tree:
+
+````bash
+mkdir build-nomacs
+cd build-nomacs
+
+cmake -D QT_VERSION_MAJOR=5 -D ENABLE_TRANSLATIONS=ON -D ENABLE_HEIF=ON -D ENABLE_AVIF=ON  \
+-DENABLE_JXL=ON -D USE_SYSTEM_QUAZIP=OFF <nomacs-path>/ImageLounge
+````
+
+Compile nomacs:
+
+````bash
+make -j8
+make collect
+````
+
+Run on WINE:
+
+````bash
+wine nomacs-mingw/nomacs.exe
+````
+
+Run on Windows:
+
+````console
+cd C:\
+xcopy /DEY <shared-folder>\build-nomacs\nomacs-mingw nomacs
+cd nomacs
+nomacs.exe
+````
+
+## Build nomacs (Windows with MSYS2)
+
+```bash
+export target=mingw-w64-x86_64
+
+pacman -S $target-qt5-base $target-qt5-svg $target-qt5-winextras $target-qt5-tools \
+          $target-libraw $target-libtiff $target-exiv2 $target-opencv $target-cmake $target-gcc
+
+export PATH=/ming64:$PATH
+
+cd <build-dir>
+
+cmake  -D  QT_MAJOR_VERSION=5  -D ENABLE_TRANSLATIONS=ON -D  USE_SYSTEM_QUAZIP=ON <nomacs-dir>/ImageLounge
+
+cmake --build . --parallel 8
+```
+
+
 ## Build in Docker
 
 We have created a docker image that best simulates the old travis system (currently it's ubuntu xenial 16.04). To build nomacs in a docker, you have to create the image:
