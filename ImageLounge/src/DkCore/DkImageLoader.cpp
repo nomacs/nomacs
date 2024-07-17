@@ -445,6 +445,8 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
         // do not scan recursive here since getSkippedImage is called for every scroll and can be slow when recursing
         // note: the recursive call already did loadDir() so its fine to have this here
         // note: we don't care if this fails
+        // note: loadDir will not update dir if we renamed or deleted a file, for that to happen,
+        //       mFolderUpdated must also be set
         loadDir(mCurrentImage->dirPath(), false);
 
         // note: this makes no sense so I've disabled it for now
@@ -454,8 +456,9 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
         currFileIdx = findFileIdx(file, mImages);
 
         if (currFileIdx == -1) {
-            // current file could have been deleted *externally* and loadDir() would have expunged it
-            qWarning() << "missing file" << mCurrentImage->filePath();
+            // current file was deleted or renamed, externally or by ourself
+            // locate where it would be in sorted order
+            qDebug() << "missing file" << mCurrentImage->filePath();
 
             bool sortAscending = DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending;
             const auto isLessThan = DkImageContainer::compareFunc();
@@ -467,9 +470,9 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
             }
 
             if (skipIdx > 0)
-                currFileIdx--; // -1 because the current file does not exist
-            if (mImages.size() == currFileIdx) // could not locate file - resize
-                currFileIdx = 0;
+                currFileIdx--; // -1 because the current file was dropped
+            if (mImages.size() == currFileIdx) // last one is the closest
+                currFileIdx = mImages.size() - 1;
         }
     }
 
@@ -1453,9 +1456,12 @@ bool DkImageLoader::deleteFile()
 {
     if (mCurrentImage && mCurrentImage->exists()) {
         QString fileName = mCurrentImage->fileName();
-
+        int currFileIdx = findFileIdx(mCurrentImage->filePath(), mImages);
         if (DkUtils::moveToTrash(mCurrentImage->filePath())) {
+            mImages.removeAt(currFileIdx);
             QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
+            if (!imgC)
+                imgC = getSkippedImage(0); // deleted from the end
             load(imgC);
             emit showInfoSignal(tr("%1 deleted...").arg(fileName));
             return true;
