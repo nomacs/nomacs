@@ -853,20 +853,34 @@ bool DkUtils::moveToTrash(const QString &filePath)
 {
     QFileInfo fileInfo(filePath);
 
-    // delete links
-    if (fileInfo.isSymLink()) {
-        QFile fh(filePath);
-        return fh.remove();
-    }
-
-    if (!fileInfo.exists()) {
-        qDebug() << "Sorry, I cannot delete a non-existing file: " << filePath;
-        return false;
-    }
-
-    // wohooooo - moveToTrash finally made it into Qt : )
     QFile file(filePath);
-    return file.moveToTrash();
+    bool ok = false;
+
+    // delete links first; exists() will fail on a broken symlink
+    if (fileInfo.isSymLink()) {
+        qInfo() << "move to trash: deleting symlink" << filePath;
+        ok = file.remove();
+    } else if (!fileInfo.exists()) {
+        qWarning() << "move to trash: cannot delete a non-existing file: " << filePath;
+        return false;
+    } else {
+        qInfo() << "move to trash: moving" << filePath;
+        ok = file.moveToTrash();
+    }
+
+    if (!ok) {
+        // clang-format off
+        qWarning().nospace() << "move to trash: error:" << file.errorString()
+                             << "\n\terror:" << file.error()
+                             << "\n\tisFile:" << fileInfo.isFile()
+                             << "\n\tfile permissions:" << file.permissions()
+                             << "\n\tdir permissions:" << QFileInfo(fileInfo.absolutePath()).permissions()
+                             << "\n\towner:" << fileInfo.owner()
+                             << "\n\tgroup:" << fileInfo.group();
+        // clang-format on
+    }
+
+    return ok;
 }
 
 QString DkUtils::readableByte(float bytes)
