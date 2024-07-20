@@ -48,7 +48,7 @@ cp -auv plugins/*/*.dll "$PKG_DIR/plugins/"
 
 echo "copying programs..."
 mkdir -p "$PKG_DIR"
-cp -auv nomacs.exe "$PKG_DIR/"
+cp -auv *.exe *.dll "$PKG_DIR/"
 
 # for some reason loop below won't pickup zlib
 cp -auv "$MXE_DIR/usr/$MXE_TARGET/bin/zlib1.dll" "$PKG_DIR/"
@@ -57,7 +57,7 @@ cp -auv "$MXE_DIR/usr/$MXE_TARGET/bin/zlib1.dll" "$PKG_DIR/"
 # loop repeats until no more errors appear
 # note: there will be missing dlls if they are loaded dynamically, may
 #       require running in a mode that will cause them all to load
-for exe in nomacs.exe; do
+for exe in *.exe; do
     PASS=1
     while [ $PASS -ge 1 ]; do
         echo "copying dlls for $exe (pass $PASS) ..."
@@ -65,10 +65,10 @@ for exe in nomacs.exe; do
         PASS=0
         DLLS=`wine "$PKG_DIR/$exe" --version 2>&1 | grep :err:module:import_dll | cut -d' ' -f3`
         for x in $DLLS; do
-            if   [ -e "$SELF_BIN/$x"   ]; then cp -au "$SELF_BIN/$x" "$PKG_DIR/"
-            elif [ -e "$MXE_BIN/$x"    ]; then cp -au "$MXE_BIN/$x" "$PKG_DIR/"
-            elif [ -e "$QT_BIN/$x"     ]; then cp -au "$QT_BIN/$x" "$PKG_DIR/"
-            elif [ -e "$CROSS_BIN/$x"  ]; then cp -au "$CROSS_BIN/$x" "$PKG_DIR/"
+            if   [ -e "$SELF_BIN/$x"   ]; then cp -auv "$SELF_BIN/$x" "$PKG_DIR/"
+            elif [ -e "$MXE_BIN/$x"    ]; then cp -auv "$MXE_BIN/$x" "$PKG_DIR/"
+            elif [ -e "$QT_BIN/$x"     ]; then cp -auv "$QT_BIN/$x" "$PKG_DIR/"
+            elif [ -e "$CROSS_BIN/$x"  ]; then cp -auv "$CROSS_BIN/$x" "$PKG_DIR/"
             else
                 echo "can't find dll: $x"
                 exit 1
