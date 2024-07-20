@@ -1123,8 +1123,25 @@ void DkThumbScene::updateLayout()
 
 void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
 {
+    int selectedIdx = mLastSelectedIdx;
+    mLastSelectedIdx = -1;
+
+    if (selectedIdx < 0) {
+        for (int idx = 0; idx < mThumbLabels.size(); idx++) {
+            if (mThumbLabels.at(idx)->isSelected()) {
+                selectedIdx = idx;
+                break;
+            }
+        }
+    }
+
     this->mThumbs = thumbs;
     updateThumbLabels();
+
+    if (selectedIdx >= 0) {
+        selectedIdx = qMax(0, qMin(selectedIdx, mThumbLabels.size() - 1));
+        selectThumb(selectedIdx);
+    }
 }
 
 void DkThumbScene::updateThumbLabels()
@@ -1438,24 +1455,16 @@ void DkThumbScene::copyImages(const QMimeData *mimeData, const Qt::DropAction &d
     }
 }
 
-void DkThumbScene::deleteSelected() const
+void DkThumbScene::deleteSelected()
 {
-    QStringList fileList = getSelectedFiles();
+    const int numFiles = getSelectedThumbs().size();
 
-    if (fileList.empty())
+    if (numFiles <= 0)
         return;
-
-    QString question;
-
-#if defined(Q_OS_WIN) || defined(W_OS_LINUX)
-    question = tr("Shall I move %1 file(s) to trash?").arg(fileList.size());
-#else
-    question = tr("Are you sure you want to permanently delete %1 file(s)?").arg(fileList.size());
-#endif
 
     DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
                                             tr("Delete File"),
-                                            question,
+                                            tr("Shall I move %1 file(s) to trash?").arg(numFiles),
                                             (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
                                             DkUtils::getMainWindow());
 
@@ -1465,27 +1474,39 @@ void DkThumbScene::deleteSelected() const
     int answer = msgBox->exec();
 
     if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
-        if (mLoader && fileList.size() > 100) // saves CPU
-            mLoader->deactivate();
+        blockSignals(true); // setSelected may emit
+        mLoader->blockSignals(true); // use-after-free if loader emits in the loop
 
-        for (const QString &fString : fileList) {
-            QString fName = QFileInfo(fString).fileName();
-            qDebug() << "deleting: " << fString;
+        mLastSelectedIdx = -1;
 
-            if (!DkUtils::moveToTrash(fString)) {
-                answer = QMessageBox::critical(DkUtils::getMainWindow(),
-                                               tr("Error"),
-                                               tr("Sorry, I cannot delete:\n%1").arg(fName),
-                                               QMessageBox::Ok | QMessageBox::Cancel);
+        for (int i = 0; i < mThumbLabels.size(); i++) {
+            DkThumbLabel *thumb = mThumbLabels.at(i);
+            if (!thumb->isSelected())
+                continue;
+
+            if (mLastSelectedIdx < 0)
+                mLastSelectedIdx = i;
+
+            const QString filePath = thumb->getThumb()->getFilePath();
+            const QString fileName = QFileInfo(filePath).fileName();
+
+            if (!DkUtils::moveToTrash(filePath)) {
+                QMessageBox::critical(DkUtils::getMainWindow(),
+                                      tr("Error"),
+                                      tr("Sorry, I cannot delete:\n%1").arg(fileName),
+                                      QMessageBox::Ok | QMessageBox::Cancel);
 
                 if (answer == QMessageBox::Cancel) {
                     break;
                 }
             }
+
+            // we might try to delete it twice because directoryChanged() can defer the update
+            thumb->setSelected(false);
         }
 
-        if (mLoader && fileList.size() > 100) // saves CPU
-            mLoader->activate();
+        mLoader->blockSignals(false);
+        blockSignals(false);
 
         if (mLoader)
             mLoader->directoryChanged(mLoader->getDirPath());

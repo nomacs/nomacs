@@ -265,7 +265,7 @@ public slots:
     void selectThumb(int idx, bool select = true);
     void selectAllThumbs(bool select = true);
     void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs);
-    void deleteSelected() const;
+    void deleteSelected();
     void copySelected() const;
     void pasteImages() const;
     void renameSelected() const;
@@ -283,6 +283,7 @@ protected:
     int mNumRows = 0;
     int mNumCols = 0;
     bool mFirstLayout = true;
+    int mLastSelectedIdx = -1; // last selected item to restore on updateThumbs()
 
     QVector<DkThumbLabel *> mThumbLabels;
     QSharedPointer<DkImageLoader> mLoader;
