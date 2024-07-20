@@ -299,12 +299,21 @@ QString DkUtils::getLongestNumber(const QString &str, int startIdx)
 
 bool DkUtils::compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf)
 {
-    return lhf.birthTime() < rhf.birthTime();
+    // avoid equality because we keep our directory position/index using the sorted position
+    auto left = lhf.birthTime(), right = rhf.birthTime();
+    if (left != right)
+        return left < right;
+    else
+        return compFilename(lhf, rhf);
 }
 
 bool DkUtils::compDateModified(const QFileInfo &lhf, const QFileInfo &rhf)
 {
-    return lhf.lastModified() < rhf.lastModified();
+    auto left = lhf.lastModified(), right = rhf.lastModified();
+    if (left != right)
+        return left < right;
+    else
+        return compFilename(lhf, rhf);
 }
 
 bool DkUtils::compFilename(const QFileInfo &lhf, const QFileInfo &rhf)
@@ -314,7 +323,11 @@ bool DkUtils::compFilename(const QFileInfo &lhf, const QFileInfo &rhf)
 
 bool DkUtils::compFileSize(const QFileInfo &lhf, const QFileInfo &rhf)
 {
-    return lhf.size() < rhf.size();
+    auto left = lhf.size(), right = rhf.size();
+    if (left != right)
+        return left < right;
+    else
+        return compFilename(lhf, rhf);
 }
 
 bool DkUtils::compRandom(const QFileInfo &lhf, const QFileInfo &rhf)
