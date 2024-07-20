@@ -593,7 +593,7 @@ void DkNoMacs::enterFullScreen()
 
     // here is an issue with windows that I can't quite fix:
     // if we send nomacs to fullscreen from an attached window (i.e. split window)
-    setWindowState(windowState() ^ Qt::WindowFullScreen);
+    setWindowState(windowState() | Qt::WindowFullScreen);
 
     if (getTabWidget()->getViewPort())
         getTabWidget()->getViewPort()->setFullScreen(true);
@@ -615,7 +615,7 @@ void DkNoMacs::exitFullScreen()
 
         DkToolBarManager::inst().restore();
         restoreDocks();
-        setWindowState(windowState() ^ Qt::WindowFullScreen);
+        setWindowState(windowState() & ~Qt::WindowFullScreen);
 
         if (getTabWidget())
             getTabWidget()->showTabs(true);
