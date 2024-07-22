@@ -129,8 +129,6 @@ public:
 
     void loadFile(const QString &filePath);
 
-    bool mSaveSettings = true;
-
 signals:
     void sendArrangeSignal(bool overlaid) const;
     void closeSignal() const;
@@ -232,6 +230,7 @@ protected:
     bool mOtherKeyPressed = true;
     QPoint mPosGrabKey;
     bool mOverlaid = false;
+    bool mWasMaximized = false;
 
     // menu
     DkMenuBar *mMenu = 0;
@@ -330,16 +329,11 @@ public:
     virtual ~DkNoMacsFrameless();
 
 public slots:
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    void chooseMonitor(bool force = true);
-#endif
+    void chooseMonitor(bool force);
 
 protected:
-    void closeEvent(QCloseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
     virtual void createContextMenu() override;
-
-    QDesktopWidget *mDesktop = 0;
 };
 
 class DllCoreExport DkNoMacsContrast : public DkNoMacsSync
