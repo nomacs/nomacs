@@ -374,6 +374,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
     app_p.useLogFile = settings.value("useLogFile", app_p.useLogFile).toBool();
     app_p.defaultJpgQuality = settings.value("defaultJpgQuality", app_p.defaultJpgQuality).toInt();
+    app_p.appMode = settings.value("appMode", app_p.appMode).toInt();
 
     QStringList tmpFileFilters = app_p.fileFilters;
     QStringList tmpContainerFilters = app_p.containerRawFilters.split(" ");
@@ -535,6 +536,7 @@ void DkSettings::save(bool force)
 {
     DefaultSettings s;
     save(s, force);
+    qDebug() << "saved settings to:" << s.fileName();
 }
 
 void DkSettings::save(QSettings &settings, bool force)
@@ -600,7 +602,7 @@ void DkSettings::save(QSettings &settings, bool force)
     // always save (user setting)
     settings.setValue("defaultJpgQuality", app_p.defaultJpgQuality);
     settings.setValue("appMode", app_p.appMode);
-    settings.setValue("currentAppMode", app_p.currentAppMode);
+    // settings.setValue("currentAppMode", app_p.currentAppMode);
 
     settings.endGroup();
     // Global Settings --------------------------------------------------------------------
@@ -802,8 +804,6 @@ void DkSettings::save(QSettings &settings, bool force)
     sync_d = sync_p;
     meta_d = meta_p;
     resources_d = resources_p;
-
-    qDebug() << "settings saved to" << settingsPath();
 }
 
 void DkSettings::setToDefaultSettings()
@@ -1078,8 +1078,9 @@ void DkSettingsManager::init()
 
     param().load(settings, true); // load defaults
 
-    int mode = settings.value("AppSettings/appMode", param().app().appMode).toInt();
-    param().app().currentAppMode = mode;
+    // TODO currentAppMode is obsolete, now set in main() after argument parsing
+    // int mode = settings.value("AppSettings/appMode", param().app().appMode).toInt();
+    // param().app().currentAppMode = mode;
 
     // init debug
     DkUtils::initializeDebug();

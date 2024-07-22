@@ -129,8 +129,6 @@ public:
 
     void loadFile(const QString &filePath);
 
-    bool mSaveSettings = true;
-
 signals:
     void sendArrangeSignal(bool overlaid) const;
     void closeSignal() const;
@@ -232,6 +230,7 @@ protected:
     bool mOtherKeyPressed = true;
     QPoint mPosGrabKey;
     bool mOverlaid = false;
+    bool mWasMaximized = false;
 
     // menu
     DkMenuBar *mMenu = 0;
@@ -335,7 +334,6 @@ public slots:
 #endif
 
 protected:
-    void closeEvent(QCloseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
     virtual void createContextMenu() override;
 
