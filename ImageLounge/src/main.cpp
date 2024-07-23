@@ -77,11 +77,11 @@
 #include <cassert>
 #include <iostream>
 
-#ifdef Q_OS_WIN
+#ifdef _MSC_BUILD
 #include <shlobj.h>
 #endif
 
-#ifdef Q_OS_WIN
+#ifdef _MSC_BUILD
 int main(int argc, wchar_t *argv[])
 {
 #else
