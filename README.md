@@ -163,7 +163,11 @@ MXE environment is usually compiled from source, however you may be able to skip
 git clone <mxe url>
 cd mxe
 
-make MXE_TARGETS=`x86_64-w64-mingw32.shared` qtbase qtimageformats qtwinextras opencv quazip tiff exiv2 libraw
+# qt5
+make MXE_TARGETS='x86_64-w64-mingw32.shared' qtbase qtimageformats qtwinextras opencv quazip tiff exiv2 libraw
+
+# qt6 (quazip-qt6 is unavailable)
+make MXE_TARGETS='x86_64-w64-mingw32.shared' qt6-qtbase qt6-qtimageformats qt6-qttools opencv tiff exiv2 libraw
 ````
 
 Setup build environment:
