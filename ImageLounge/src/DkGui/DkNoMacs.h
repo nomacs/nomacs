@@ -278,7 +278,6 @@ protected:
 
     virtual void init();
 
-    void loadStyleSheet();
     virtual void createActions();
     virtual void createMenu();
     virtual void createContextMenu();
@@ -325,7 +324,6 @@ class DllCoreExport DkNoMacsFrameless : public DkNoMacs
 
 public:
     DkNoMacsFrameless(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-
     virtual ~DkNoMacsFrameless();
 
 public slots:
@@ -334,6 +332,7 @@ public slots:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
     virtual void createContextMenu() override;
+    void paintEvent(QPaintEvent *event) override;
 };
 
 class DllCoreExport DkNoMacsContrast : public DkNoMacsSync

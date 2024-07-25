@@ -346,97 +346,86 @@ void DkDoubleSlider::setIntValue(int value)
 
 // DkColorChooser ------------------------------------
 DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget *parent, Qt::WindowFlags flags)
-    : DkWidget(parent, flags)
+    : mDefaultColor(defaultColor)
+    , mText(text)
+    , DkWidget(parent, flags)
 {
-    this->defaultColor = defaultColor;
-    this->mText = text;
-
-    init();
+    createLayout();
+    enableAlpha(true);
+    setColor(mDefaultColor);
 }
 
-void DkColorChooser::init()
+void DkColorChooser::createLayout()
 {
-    mAccepted = false;
-
-    colorDialog = new QColorDialog(this);
-    colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
-    connect(colorDialog, &QColorDialog::accepted, this, &DkColorChooser::onColorDialogAccepted);
+    mColorDialog = new QColorDialog(this);
+    connect(mColorDialog, &QColorDialog::accepted, this, &DkColorChooser::onColorDialogAccepted);
 
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->setContentsMargins(11, 0, 11, 0);
 
     QLabel *colorLabel = new QLabel(mText, this);
-    colorButton = new QPushButton("", this);
-    colorButton->setFlat(true);
-    colorButton->setAutoDefault(false);
-    connect(colorButton, &QPushButton::clicked, this, &DkColorChooser::onColorButtonClicked);
+    mColorButton = new QPushButton("", this);
+    mColorButton->setFlat(true);
+    mColorButton->setAutoDefault(false);
+    connect(mColorButton, &QPushButton::clicked, this, &DkColorChooser::onColorButtonClicked);
 
-    QPushButton *resetButton = new QPushButton(tr("Reset"), this);
-    resetButton->setAutoDefault(false);
-    connect(resetButton, &QPushButton::clicked, this, &DkColorChooser::onResetButtonClicked);
+    mResetButton = new QPushButton(tr("Reset"), this);
+    mResetButton->setAutoDefault(false);
+    connect(mResetButton, &QPushButton::clicked, this, &DkColorChooser::onResetButtonClicked);
 
     QWidget *colWidget = new QWidget(this);
     QHBoxLayout *hLayout = new QHBoxLayout(colWidget);
     hLayout->setContentsMargins(11, 0, 11, 0);
     hLayout->setAlignment(Qt::AlignLeft);
 
-    hLayout->addWidget(colorButton);
-    hLayout->addWidget(resetButton);
+    hLayout->addWidget(mColorButton);
+    hLayout->addWidget(mResetButton);
 
     vLayout->addWidget(colorLabel);
     vLayout->addWidget(colWidget);
-
-    setColor(defaultColor);
-}
-
-bool DkColorChooser::isAccept() const
-{
-    return mAccepted;
 }
 
 void DkColorChooser::enableAlpha(bool enable)
 {
-    colorDialog->setOption(QColorDialog::ShowAlphaChannel, enable);
+    mColorDialog->setOption(QColorDialog::ShowAlphaChannel, enable);
 }
 
 void DkColorChooser::setColor(const QColor &color)
 {
-    colorDialog->setCurrentColor(color);
-    colorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color) + "; border: 1px solid #888; min-height: 24px}");
-    if (mSettingColor)
-        *mSettingColor = color;
+    mColor = color;
+    mColorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color) + "; border: 1px solid #888; min-height: 24px}");
+    mResetButton->setEnabled(color != mDefaultColor);
 }
 
-void DkColorChooser::setColor(QColor *color)
+void DkColorChooser::setDefaultColor(const QColor &color)
 {
-    if (color) {
-        mSettingColor = color;
-        setColor(*color);
-    }
+    mDefaultColor = color;
+    mResetButton->setEnabled(mColor != mDefaultColor);
 }
 
-QColor DkColorChooser::getColor()
+void DkColorChooser::onColorDialogAccepted()
 {
-    return colorDialog->currentColor();
+    QColor prevColor = mColor;
+    setColor(mColorDialog->currentColor());
+    emit colorAccepted();
+    if (prevColor != mColor)
+        emit colorChanged(mColor);
 }
 
 void DkColorChooser::onResetButtonClicked()
 {
-    setColor(defaultColor);
-    emit resetClicked();
+    QColor prevColor = mColor;
+    setColor(mDefaultColor);
+    emit colorReset();
+    if (prevColor != mColor)
+        emit colorChanged(mColor);
 }
 
 void DkColorChooser::onColorButtonClicked()
 {
     // incorrect color? - see: https://bugreports.qt.io/browse/QTBUG-42988
-    colorDialog->show();
-}
-
-void DkColorChooser::onColorDialogAccepted()
-{
-    setColor(colorDialog->currentColor());
-    mAccepted = true;
-    emit accepted();
+    mColorDialog->setCurrentColor(mColor);
+    mColorDialog->show();
 }
 
 // -------------------------------------------------------------------- DkColorEdit

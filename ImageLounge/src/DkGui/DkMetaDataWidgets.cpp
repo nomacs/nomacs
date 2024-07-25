@@ -568,7 +568,6 @@ void DkMetaDataSelection::createLayout()
     scrollArea->setMinimumSize(QSize(200, 200));
     scrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scrollArea->setBackgroundRole(QPalette::Light); // TODO: this l
     scrollArea->setWidget(lWidget);
 
     mCbCheckAll = new QCheckBox(tr("Check All"), this);
@@ -1160,7 +1159,6 @@ void DkCommentTextEdit::paintEvent(QPaintEvent *e)
 DkCommentWidget::DkCommentWidget(QWidget *parent /* = 0 */, Qt::WindowFlags /* = 0 */)
     : DkFadeLabel(parent)
 {
-    setMaximumSize(220, 150);
     createLayout();
 }
 

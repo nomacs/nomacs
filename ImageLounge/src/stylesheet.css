@@ -1,11 +1,28 @@
-/* DEBUG */
 
-/* QWidget {
-	background-color: QColor(0,0,0,20); border: 1px solid #000000;
-} */
+/* Don't set the platform font family
+   - We want it to match the system font on different Linux DEs
+   - QT should set it correctly on Windows/MacOS
+   - We need to construct the default font in .cpp, so it won't match the CSS
+
+   The default platform font might not have a "thin" or "light" style, these
+   are the ones I know about:
+
+   Windows 10/11: Segoe UI      thin:yes light:yes
+   Ubuntu:        Ubuntu Sans   thin:yes light:yes
+   KDE:           Noto Sans     thin:no  light:no
+   KDE:           DejaVu Sans   thin:no  light:no
+   GNOME:         Cantarell     thin:yes light:yes
+   MacOS:         San Francisco thin:yes light:yes
+*/
 
 QWidget {
-	font-size: 10pt;
+    /* Note this won't always match the platform default font however we must do it
+       because other font sizes used here and in .cpp are based on it */
+    font-size: 11pt;
+}
+
+QToolTip {
+    font-size: 10pt;
 }
 
 /* batch */
@@ -15,15 +32,15 @@ nmc--DkBatchInput QTextEdit {
 
 QLabel#batchContentTitle {
 	text-transform: uppercase;
-	font: thin "Segoe UI";
-	font-size: 16pt;
+    font-style: thin;
+    font-size: 24pt; /* match DkPreferenceTitle */
 	font-weight: 100;
 }
 
 QLabel#batchContentInfo {
-	font-style: italic;
-	padding-bottom: 20px;
-	font-size: 8pt;
+    padding-bottom: 20px;
+    font-style: italic;
+    font-size: 10pt; /* should match DkBatchTabButton::paintEvent() */
 }
 
 QLabel#BatchInfo {
@@ -32,7 +49,7 @@ QLabel#BatchInfo {
 }
 
 QLabel#FileNamePreviewLabel {
-	font-size: 10pt;
+    font-size: 11pt;
 }
 
 nmc--DkPreferenceWidget nmc--DkResizableScrollArea,
@@ -72,17 +89,35 @@ QPushButton#flatWhite:pressed {
 	background-color: rgba(255,255,255,.4);
 }
 
+/* nomacs-if-colorscheme-eq-dark */
 QTabBar::close-button {
-    image: url(:/nomacs/img/close.svg);
+  image: url(:/nomacs/img/close-white.svg);
 }
-
 QTabBar::close-button:hover {
-	image: url(:/nomacs/img/close-hover.svg);
+  image: url(:/nomacs/img/close-white-hover.svg);
+}
+/* nomacs-else */
+QTabBar::close-button {
+  image: url(:/nomacs/img/close.svg);
+}
+QTabBar::close-button:hover {
+  image: url(:/nomacs/img/close-hover.svg);
+}
+/* nomacs-endif */
+
+/* prevent transparent background in central widgets,
+   dock widgets/status bar is handled by paintEvent() */
+nmc--DkNoMacsFrameless QTabBar,
+nmc--DkNoMacsFrameless QToolBar,
+nmc--DkNoMacsFrameless nmc--DkBatchWidget,
+nmc--DkNoMacsFrameless nmc--DkPreferenceWidget,
+nmc--DkNoMacsFrameless nmc--DkRecentFilesWidget QScrollArea > QWidget > QWidget {
+  background-color: BACKGROUND_COLOR;
 }
 
 QPushButton#DkPlayerButton {
 	margin: 0px;
-	border: none;
+  border: none;
 	background-color: HUD_BACKGROUND_COLOR;
 }
 
@@ -105,12 +140,12 @@ QPushButton#hudNavigationButton {
 
 QPushButton#DkRestartButton {
 	border: none;
-	padding: 4px;
+    padding: 8px;
 }
 
 QPushButton#DkRestartButton:hover{
-	background-color: rgba(255,255,255,.2);
-} 
+    background-color: rgba(255,255,255,.2);
+}
 
 QPushButton#DkRestartButton:pressed {
 	background-color: HIGHLIGHT_LIGHT;
@@ -137,6 +172,28 @@ QLabel#thumbsTitle {
 
 QGraphicsView#DkThumbsView {
 	border: none;
+}
+
+/* FIXME: the stylesheet is not reevaluted when entering/leaving fullscreen,
+          so it keeps the background it started with */
+QMainWindow[fullScreen="false"] QGraphicsView#DkThumbsView {
+    background-color: BACKGROUND_COLOR;
+}
+
+QMainWindow[fullScreen="true"] QGraphicsView#DkThumbsView {
+    background-color: SLIDESHOW_COLOR;
+}
+
+nmc--DkNoMacsFrameless[fullScreen="false"] QGraphicsView#DkThumbsView {
+    background-color: transparent;
+}
+
+nmc--DkNoMacsFrameless[fullScreen="true"] QGraphicsView#DkThumbsView {
+    background-color: HUD_BACKGROUND_COLOR;
+}
+
+nmc--DkNoMacsFrameless nmc--DkThumbsView > QWidget { /* scrollbar background */
+    background-color: BACKGROUND_COLOR;
 }
 
 QToolButton#DkThumbToolButton::menu-indicator { 
@@ -168,7 +225,7 @@ QGraphicsView#DkBaseViewPortGradient {
  
 QGraphicsView#DkBaseViewPortDefaultColor {
 	border-style: none; 
-	background-color: WINDOW_COLOR;
+    background-color: palette(window);  /* why can't this be BACKGROUND_COLOR */
 }
 
 QGraphicsView#DkBaseViewPort {
@@ -182,20 +239,22 @@ QLabel#DkBatchTitle {
 }
 
 /* Dialogs */
-QDialog#DkSplashScreenMac {
-	background-color: white;
-	font-size: 11px;
-}
-
 QLabel#DkSplashInfoLabel {
-	font-size: 11px;
+    font-size: 12px;
 }
 
 QPushButton#cancelButtonSplash {
-	font-size: 15px; 
-	font: bold; 
-	color: rgba(0,0,0,200);
+    image: url(":/nomacs/img/close.svg");
+    padding: 4px;
+    margin: 8px;
+    max-width: 1em;
+    max-height: 1em;
 }
+
+QPushButton#cancelButtonSplash:hover {
+    image: url(":/nomacs/img/close-hover.svg");
+}
+
 
 QLineEdit#DkWarningEdit {
 	color: #000;
@@ -243,12 +302,16 @@ QLabel#commentTitleLabel {
 	color: HUD_FOREGROUND_COLOR;
 	margin: 0; 
 	padding: 0; 
-	font-size: 25px; 
+    font-size: 18pt;
 	font-weight: light;
 }
 
 nmc--DkCommentWidget {
 	background-color: HUD_BACKGROUND_COLOR;
+    min-width: 15em; /* originally 220x150 px */
+    max-width: 15em;
+    min-height: 8em;
+    max-height: 8em;
 }
 
 nmc--DkCommentWidget > nmc--DkCommentTextEdit {
@@ -257,7 +320,7 @@ nmc--DkCommentWidget > nmc--DkCommentTextEdit {
 	background-color: rgba(0,0,0,0);
 	border-top: 2px dotted HUD_FOREGROUND_COLOR; 
 	color: HUD_FOREGROUND_COLOR; 
-	font-size: 15px; 
+    font-size: 12pt;
 	selection-background-color: HIGHLIGHT_COLOR; 
 }
 
@@ -330,11 +393,15 @@ QPushButton#removeFileButton:hover {
 	background-color: rgba(255,255,255,.4);
 }
  
-/* preferences */
+/* preferences, adjustments, batch dark panel */
 QScrollArea#DkPreferenceTabs,
 QWidget#DkPreferenceTabs,
 QWidget#DkBatchTabs {
-	background-color: #333;
+/* nomacs-if-colorscheme-eq-dark */
+  background-color: nomacsBlend(BACKGROUND_COLOR,0,0,0,50);
+/* nomacs-else */
+  background-color: nomacsBlend(BACKGROUND_COLOR,0,0,0,128);
+/* nomacs-endif */
 }
 
 /* fixes padding view issue of tab entries */
@@ -345,7 +412,7 @@ QScrollArea#DkPreferenceTabsScroller {
 QPushButton#DkTabEntryWidget,
 nmc--DkBatchTabButton {
 	color: #fff;
-	font: thin "Segoe UI";
+  font-style: thin;
 	font-size: 14pt;
 	padding: 10px 20px;
 	text-align: left;
@@ -374,13 +441,13 @@ nmc--DkBatchTabButton:checked {
 QLabel#DkPreferenceTitle {
 	text-transform: uppercase;
 	padding: 10px 20px;
-	font: thin "Segoe UI";
-	font-size: 24pt;
+    font-style: thin;
+    font-size: 24pt; /* match batchContentTitle */
 	font-weight: 100;
 }
 
 QPushButton#infoButton {
-	font: thin "Segoe UI";
+    font-style: thin;
 	font-size: 16pt;
 	font-weight: 100;
 	text-align: left;
@@ -402,7 +469,7 @@ QWidget#DkPreferenceWidget {
 }
 
 QLabel#subTitle {
-	font: thin "Segoe UI";
+    font-style: thin;
 	margin-top: 10px;
 	font-size: 14pt;
 }
@@ -419,9 +486,10 @@ nmc--DkDisplayPreference QComboBox {
 
 QLabel#settingsInfoLabel {
 	padding-top: 6px;
-	font: italic;
+    font-style: italic;
 }
 
+/*
 nmc--DkGroupWidget QCheckBox,
 nmc--DkGroupWidget QRadioButton,
 nmc--DkGroupWidget QPushButton,
@@ -430,8 +498,9 @@ nmc--DkGroupWidget QDoubleSpinBox,
 nmc--DkGroupWidget QComboBox,
 nmc--DkGroupWidget QLineEdit,
 nmc--DkGroupWidget QLabel {
-	font-size: 10pt;
+    font-size: 11pt;
 }
+*/
 
 nmc--DkProgressBar {
 	max-height: 3px;
@@ -444,6 +513,14 @@ nmc--DkDescriptionEdit {
 }
 
 /* edit image */
+nmc--DkBaseManipulatorWidget#darkManipulator QWidget {
+/* nomacs-if-colorscheme-eq-dark */
+  background-color: nomacsBlend(BACKGROUND_COLOR,0,0,0,100);
+/* nomacs-else */
+  background-color: nomacsBlend(BACKGROUND_COLOR,0,0,0,128);
+/* nomacs-endif */
+}
+
 nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QLabel,
 nmc--DkBaseManipulatorWidget#darkManipulator QCheckBox,
@@ -457,13 +534,8 @@ nmc--DkBaseManipulatorWidget#darkManipulator QLineEdit,
 nmc--DkBaseManipulatorWidget#darkManipulator QComboBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox {
-	background: #333;
-	border: none;
+  border: none;
 	border-bottom: 1px solid #fff;
-}
-
-nmc--DkBaseManipulatorWidget#darkManipulator QWidget {
-	background: #333;
 }
 
 nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::up-button,
@@ -471,8 +543,17 @@ nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::down-button,
 nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox::up-button,
 nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox::down-button {
 	border: none;
-	/* background-color: rgba(0,0,0,0); */
+  background-color: transparent;
+  width: 0px;
+  height: 0px;
 }	
+
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::up-arrow,
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::down-arrow,
+nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox::up-arrow,
+nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox::down-arrow {
+  image: none;
+}
 
 nmc--DkBaseManipulatorWidget#darkManipulator QSlider::groove:horizontal {
 	border: none; 
@@ -488,17 +569,9 @@ nmc--DkBaseManipulatorWidget#darkManipulator QSlider::handle:horizontal {
 	border: 2px solid #333;
 }
 
-nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::up-button,
-nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::down-button,
-nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox::up-button,
-nmc--DkBaseManipulatorWidget#darkManipulator QSlider::down-button {
-	border: none;
-	background-color: rgba(0,0,0,0);
-}
-
 nmc--DkBaseManipulatorWidget#darkManipulator {
-	/* background-color: palette(light); */
-	/* border-radius: 7px; */
+  /* background-color: palette(light); */
+  /* border-radius: 7px; */
 }
 
 /* DkManipulationWidget */
@@ -515,7 +588,7 @@ nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkHueSlider::groove:horizon
 }
 
 nmc--DkBaseManipulatorWidget#darkManipulator QComboBox {
-	font-size: 11pt;
+    font-size: 12pt;
 	min-height: 30px;
 }
 
@@ -533,21 +606,18 @@ nmc--DkBaseManipulatorWidget#darkManipulator QComboBox::drop-down:hover {
 
 nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QListView {
 	border: 1px solid #444;
-	font-size: 11pt;
+    font-size: 12pt;
 }
 
 nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QListView::item {
 	color: #fff;
 	padding: 5px;
-}
-
-nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QListView::item:selected { 
-	color: #333;
-	background-color: HIGHLIGHT_COLOR; 
+  selection-color: #fff;
+  selection-background-color: HIGHLIGHT_COLOR;
 }
 
 QLabel#DkManipulatorSettingsTitle {
-	font: thin "Segoe UI";
+    font-style: thin;
 	font-size: 14pt;
 	color: #fff;
 	margin-bottom: 5pt;
@@ -601,7 +671,7 @@ nmc--DkRecentDirWidget::hover {
 }
 
 QLabel#recentFilesTitle {
-	font: thin "Segoe UI";
+    font-style: thin;
 	font-size: 16pt;
 	font-weight: 100;
 }
@@ -651,7 +721,7 @@ QDoubleSpinBox#sbZoom {
 }
 
 QPushButton#displayButton {
-	font: light "Segoe UI";
+    font-style: light;
 	font-size: 16pt;
 	font-weight: 100;
 }
@@ -664,6 +734,8 @@ QPushButton#displayButton:checked {
 	border: 1px solid HIGHLIGHT_COLOR;
 }
 
+/* picks the wrong color on system theme; doesn't seem to be needed anymore
 QToolBar {
-	background-color: BACKGROUND_COLOR;
+    background-color: BACKGROUND_COLOR;
 }
+*/

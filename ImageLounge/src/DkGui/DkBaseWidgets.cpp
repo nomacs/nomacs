@@ -239,7 +239,7 @@ void DkLabel::init()
 {
     mTime = -1;
     mFixedWidth = -1;
-    mFontSize = 12;
+    mFontSize = 13; // two sizes larger than default font see:stylesheet.css
     mTextCol = DkSettingsManager::param().display().hudFgdColor;
     mBlocked = false;
 
@@ -298,7 +298,7 @@ QString DkLabel::getText()
 {
     return mText;
 }
-
+/* dead code
 void DkLabel::setFontSize(int fontSize)
 {
     mFontSize = fontSize;
@@ -308,7 +308,7 @@ void DkLabel::setFontSize(int fontSize)
     QLabel::setFont(font);
     QLabel::adjustSize();
 }
-
+*/
 void DkLabel::stop()
 {
     mTimer.stop();

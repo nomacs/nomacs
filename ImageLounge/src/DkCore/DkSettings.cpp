@@ -431,6 +431,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.hudBgColor = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.hudBgColor.rgba()).toInt());
     display_p.hudFgdColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.hudFgdColor.rgba()).toInt());
     display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
+    display_p.fgColor = QColor::fromRgba(settings.value("fgColorNoMacsRGBA", display_p.fgColor.rgba()).toInt());
     display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
     display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
     display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
@@ -444,6 +445,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
     display_p.showNavigation = settings.value("showNavigation", display_p.showNavigation).toBool();
     display_p.themeName = settings.value("themeName312", display_p.themeName).toString();
+    display_p.stylePlugin = settings.value("stylePlugin", display_p.stylePlugin).toString();
     display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
     display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
     display_p.showThumbLabel = settings.value("showThumbLabel", display_p.showThumbLabel).toBool();
@@ -451,7 +453,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.animationDuration = settings.value("fadeSec", display_p.animationDuration).toFloat();
     display_p.alwaysAnimate = settings.value("alwaysAnimate", display_p.alwaysAnimate).toBool();
     display_p.transition = (TransitionMode)settings.value("transition", display_p.transition).toInt();
-    display_p.defaultBackgroundColor = settings.value("useDefaultColor", display_p.defaultBackgroundColor).toBool();
+    display_p.defaultBackgroundColor = settings.value("defaultBackgroundColor", display_p.defaultBackgroundColor).toBool();
+    display_p.defaultForegroundColor = settings.value("defaultForegroundColor", display_p.defaultForegroundColor).toBool();
     display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
     display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
 
@@ -673,6 +676,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("fontColorRGBA", display_p.hudFgdColor.rgba());
     if (force || display_p.bgColor != display_d.bgColor)
         settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
+    if (force || display_p.fgColor != display_d.fgColor)
+        settings.setValue("fgColorNoMacsRGBA", display_p.fgColor.rgba());
     if (force || display_p.iconColor != display_d.iconColor)
         settings.setValue("iconColorRGBA", display_p.iconColor.rgba());
     if (force || display_p.bgColorFrameless != display_d.bgColorFrameless)
@@ -699,6 +704,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("showNavigation", display_p.showNavigation);
     if (force || display_p.themeName != display_d.themeName)
         settings.setValue("themeName312", display_p.themeName);
+    if (force || display_p.stylePlugin != display_d.stylePlugin)
+        settings.setValue("stylePlugin", display_p.stylePlugin);
     if (force || display_p.showBorder != display_d.showBorder)
         settings.setValue("showBorder", display_p.showBorder);
     if (force || display_p.displaySquaredThumbs != display_d.displaySquaredThumbs)
@@ -714,7 +721,9 @@ void DkSettings::save(QSettings &settings, bool force)
     if (force || display_p.transition != display_d.transition)
         settings.setValue("transition", display_p.transition);
     if (force || display_p.defaultBackgroundColor != display_d.defaultBackgroundColor)
-        settings.setValue("useDefaultColor", display_p.defaultBackgroundColor);
+        settings.setValue("defaultBackgroundColor", display_p.defaultBackgroundColor);
+    if (force || display_p.defaultForegroundColor != display_d.defaultForegroundColor)
+        settings.setValue("defaultForegroundColor", display_p.defaultForegroundColor);
     if (force || display_p.defaultIconColor != display_d.defaultIconColor)
         settings.setValue("defaultIconColor", display_p.defaultIconColor);
     if (force || display_p.interpolateZoomLevel != display_d.interpolateZoomLevel)
@@ -885,10 +894,11 @@ void DkSettings::setToDefaultSettings()
     display_p.hudBgColor = QColor(0, 0, 0, 100);
     display_p.hudFgdColor = QColor(255, 255, 255);
     display_p.bgColor = QColor(100, 100, 100, 255);
+    display_p.fgColor = QColor(0, 0, 0, 255);
     display_p.iconColor = QColor(100, 100, 100, 255);
     display_p.bgColorFrameless = QColor(0, 0, 0, 180);
     display_p.thumbSize = 64;
-    display_p.iconSize = 16;
+    display_p.iconSize = 20;
     display_p.thumbPreviewSize = 64;
     display_p.antiAliasing = true;
     display_p.highQualityAntiAliasing = false;
@@ -897,6 +907,7 @@ void DkSettings::setToDefaultSettings()
     display_p.tpPattern = false;
     display_p.showNavigation = true;
     display_p.themeName = "Light-Theme.css";
+    display_p.stylePlugin = "Default";
     display_p.showBorder = false;
     display_p.displaySquaredThumbs = true;
     display_p.showThumbLabel = false;
@@ -905,6 +916,7 @@ void DkSettings::setToDefaultSettings()
     display_p.alwaysAnimate = false;
     display_p.transition = trans_swipe;
     display_p.defaultBackgroundColor = true;
+    display_p.defaultForegroundColor = true;
     display_p.defaultIconColor = true;
     display_p.interpolateZoomLevel = 200;
 
@@ -1371,215 +1383,6 @@ DefaultSettings::DefaultSettings()
 {
 }
 #endif
-
-// -------------------------------------------------------------------- DkThemeManager
-QStringList DkThemeManager::getAvailableThemes() const
-{
-    QDir td(themeDir());
-    td.setNameFilters(QStringList() << "*.css");
-
-    QStringList themes = td.entryList(QDir::Files, QDir::Name);
-
-    return themes;
-}
-
-QString DkThemeManager::getCurrentThemeName() const
-{
-    return DkSettingsManager::param().display().themeName;
-}
-
-QString DkThemeManager::themeDir() const
-{
-    QStringList paths;
-    paths << QCoreApplication::applicationDirPath();
-    paths << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
-
-    QDir themeDir;
-
-    for (const QString &p : paths) {
-        themeDir = QDir(p + QDir::separator() + "themes");
-
-        if (themeDir.exists())
-            break;
-    }
-
-    return themeDir.absolutePath();
-}
-
-void DkThemeManager::setCurrentTheme(const QString &themeName) const
-{
-    DkSettingsManager::param().display().themeName = themeName;
-}
-
-QString DkThemeManager::loadTheme(const QString &themeName) const
-{
-    QString cssString;
-    QFileInfo tfi(themeDir(), themeName);
-    QFile theme(tfi.absoluteFilePath());
-
-    if (theme.open(QFile::ReadOnly)) {
-        QString ts = theme.readAll();
-        cssString = parseColors(ts);
-        cssString = cssString.trimmed();
-
-        qInfo() << "theme loaded from" << tfi.absoluteFilePath();
-    } else
-        qInfo() << "could not load theme from" << tfi.absoluteFilePath();
-
-    return cssString;
-}
-
-QString DkThemeManager::loadStylesheet() const
-{
-    QString cssString;
-
-    QFileInfo cssInfo(":/nomacs/stylesheet.css");
-    QFile file(cssInfo.absoluteFilePath());
-
-    if (file.open(QFile::ReadOnly)) {
-        cssString = file.readAll();
-        cssString = replaceColors(cssString);
-
-        qInfo() << "CSS loaded from: " << cssInfo.absoluteFilePath();
-    }
-
-    file.close();
-
-    return cssString;
-}
-
-void DkThemeManager::applyTheme() const
-{
-    // add theme
-    QString cssString = loadTheme(getCurrentThemeName());
-
-    DkSettings::Display &dp = DkSettingsManager::param().display();
-
-    // NOTE: it is important, that default.css does not contain
-    // any line of code except for the color definitions
-    // otherwise, we change the default palette here...
-    if (!cssString.isEmpty()) {
-        cssString = replaceColors(cssString);
-
-        QPalette p = qApp->palette();
-
-        if (dp.themeBgdColor != QPalette().color(QPalette::Window)) {
-            p.setColor(QPalette::Window, dp.themeBgdColor);
-            p.setColor(QPalette::Base, dp.themeBgdColor);
-        }
-
-        p.setColor(QPalette::WindowText, dp.themeFgdColor);
-        p.setColor(QPalette::ButtonText, dp.themeFgdColor);
-
-        // p.setColor(QPalette::Button, QColor(0, 0, 0));
-
-        qApp->setPalette(p);
-    }
-
-    QString cs = loadStylesheet();
-    cs += cssString;
-
-    qApp->setStyleSheet(cs);
-}
-
-QString DkThemeManager::cleanThemeName(const QString &theme) const
-{
-    QString t = theme;
-    t = t.replace(".css", "");
-    t = t.replace("-", " ");
-
-    return t;
-}
-
-QStringList DkThemeManager::cleanThemeNames(const QStringList &themes) const
-{
-    QStringList ctn;
-
-    for (const QString &t : themes)
-        ctn << cleanThemeName(t);
-
-    return ctn;
-}
-
-QString DkThemeManager::parseColors(const QString &styleSheet) const
-{
-    QStringList cs = styleSheet.split("--nomacs-color-def");
-
-    if (cs.size() == 3) {
-        // we expect something like this:
-        /* overload color settings of nomacs */
-        //	--nomacs-color-def
-        //		HIGHLIGHT_COLOR:	#ff0;
-        //		WINDOW_COLOR:		#333;
-        //	--nomacs-color-def
-        QStringList cols = cs[1].split(";");
-
-        for (auto str : cols) {
-            str = str.simplified();
-
-            // igonre blanks
-            if (str.isEmpty())
-                continue;
-
-            QStringList kv = str.split(":");
-
-            if (kv.size() != 2) {
-                qWarning() << "could not parse color from" << str;
-                qWarning() << "I expected a line like this: HUD_BACKGROUND_COLOR: #f00;";
-                continue;
-            }
-
-            QString cc = kv[1].simplified();
-
-            if (kv[0] == "HIGHLIGHT_COLOR" && cc != "default")
-                DkSettingsManager::param().display().highlightColor.setNamedColor(cc);
-            else if (kv[0] == "HUD_BACKGROUND_COLOR" && cc != "default")
-                DkSettingsManager::param().display().hudBgColor.setNamedColor(cc);
-            else if (kv[0] == "HUD_FOREGROUND_COLOR" && cc != "default")
-                DkSettingsManager::param().display().hudFgdColor.setNamedColor(cc);
-            else if (kv[0] == "BACKGROUND_COLOR") {
-                QColor c;
-                c.setNamedColor(cc);
-
-                if (cc == "default")
-                    c = QPalette().color(QPalette::Window);
-
-                if (DkSettingsManager::param().display().defaultBackgroundColor)
-                    DkSettingsManager::param().display().bgColor = c;
-                DkSettingsManager::param().display().themeBgdColor = c;
-            } else if (kv[0] == "FOREGROUND_COLOR" && cc != "default")
-                DkSettingsManager::param().display().themeFgdColor.setNamedColor(cc);
-            else if (kv[0] == "ICON_COLOR" && cc != "default") {
-                if (DkSettingsManager::param().display().defaultIconColor)
-                    DkSettingsManager::param().display().iconColor.setNamedColor(cc);
-            } else if (cc != "default")
-                qWarning() << "could not parse color:" << str;
-        }
-
-        return cs[0] + cs[2];
-    }
-
-    return styleSheet;
-}
-
-QString DkThemeManager::replaceColors(const QString &cssString) const
-{
-    QString cs = cssString;
-
-    QColor hc = DkSettingsManager::param().display().highlightColor;
-    hc.setAlpha(150);
-
-    // replace color placeholders
-    cs.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().highlightColor));
-    cs.replace("HIGHLIGHT_LIGHT", DkUtils::colorToString(hc));
-    cs.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudBgColor));
-    cs.replace("HUD_FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor));
-    cs.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().bgColor));
-    cs.replace("FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().themeFgdColor));
-    cs.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));
-
-    return cs;
-}
 
 // -------------------------------------------------------------------- DkZoomConfig
 DkZoomConfig::DkZoomConfig()

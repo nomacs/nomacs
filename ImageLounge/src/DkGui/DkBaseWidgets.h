@@ -131,7 +131,7 @@ public:
     virtual void showTimed(int time = 3000);
     virtual void setText(const QString &msg, int time = 3000);
     QString getText();
-    void setFontSize(int fontSize);
+    // void setFontSize(int fontSize);
     void stop();
     void setFixedWidth(int fixedWidth);
 
