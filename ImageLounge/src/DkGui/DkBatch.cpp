@@ -110,7 +110,7 @@ void DkBatchTabButton::paintEvent(QPaintEvent *event)
     // style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     QFont f;
-    f.setPointSize(9);
+    f.setPointSize(10); // one size smaller than default font see:stylesheet.css
     f.setItalic(true);
     p.setFont(f);
 
@@ -121,7 +121,14 @@ void DkBatchTabButton::paintEvent(QPaintEvent *event)
     fPen.setColor(c);
     p.setPen(fPen);
 
-    p.drawText(QPoint(25, 50), mInfo);
+    // Try to position the info text reasonably when dpi scaling is in effect
+    // NOTE: The stylesheet gives us 30px of bottom padding, however
+    // I could not derive a reliable rectangle with dpi scale factor
+    double dpiFactor = DkSettingsManager::instance().settings().dpiScaleFactor(this);
+    int x = 25 * dpiFactor;
+    int y = opt.rect.bottom() - p.fontMetrics().descent();
+    // p.drawRect(opt.rect.x(), opt.rect.bottom() - 30 * dpiFactor, opt.rect.width(), 30 * dpiFactor);
+    p.drawText(QPoint(x, y), mInfo);
 }
 
 // DkBatchContainer --------------------------------------------------------------------

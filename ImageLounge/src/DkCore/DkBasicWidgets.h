@@ -136,31 +136,29 @@ public:
     DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
     virtual ~DkColorChooser(){};
 
-    void setColor(const QColor &color);
-    void setColor(QColor *color);
-    QColor getColor();
-    bool isAccept() const;
+    void setColor(const QColor &color); // will not emit
+    void setDefaultColor(const QColor &color); // will not emit
     void enableAlpha(bool enable = true);
 
-public slots:
+protected slots:
     void onResetButtonClicked();
     void onColorButtonClicked();
     void onColorDialogAccepted();
 
 signals:
-    void resetClicked();
-    void accepted();
+    void colorReset(); // clicked reset button; color may not have changed
+    void colorAccepted(); // clicked accept/ok button; color may not have changed
+    void colorChanged(const QColor &color); // user changed the color for any reason
 
 protected:
-    QColorDialog *colorDialog = 0;
-    QPushButton *colorButton = 0;
+    QColorDialog *mColorDialog = 0;
+    QPushButton *mColorButton = 0;
+    QPushButton *mResetButton = 0;
 
-    QColor defaultColor;
-    QColor *mSettingColor = 0;
-    QString mText;
-    bool mAccepted = false;
+    QColor mColor, mDefaultColor;
+    const QString mText;
 
-    void init();
+    void createLayout();
 };
 
 class DllCoreExport DkColorEdit : public DkWidget

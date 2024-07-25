@@ -600,7 +600,7 @@ DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
 {
     DkThumbScrollWidget *thumbScrollWidget = new DkThumbScrollWidget(this);
-    thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettingsManager::param().slideShow().backgroundColor);
+    // thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettingsManager::param().slideShow().backgroundColor);
     thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 
     DkActionManager &am = DkActionManager::instance();
