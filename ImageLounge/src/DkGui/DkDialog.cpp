@@ -133,12 +133,8 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setMouseTracking(true);
 
-#ifdef Q_OS_MAC
-    setObjectName("DkSplashScreenMac");
-#else
     setObjectName("DkSplashScreen");
     setAttribute(Qt::WA_TranslucentBackground);
-#endif
 
     imgLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     imgLabel->setObjectName("DkSplashInfoLabel");
@@ -150,27 +146,29 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
 
     setFixedSize(imgLabel->size());
 
-    exitButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/close.svg"), "", this);
+    exitButton = new QPushButton(this);
     exitButton->setObjectName("cancelButtonSplash");
     exitButton->setFlat(true);
     exitButton->setToolTip(tr("Close (ESC)"));
     exitButton->setShortcut(QKeySequence(Qt::Key_Escape));
-    exitButton->move(10, 435);
+    exitButton->move(4, 474 - exitButton->height() - 20);
     exitButton->hide();
     connect(exitButton, &QPushButton::clicked, this, &DkSplashScreen::close);
 
     // set the text
     text = QString(
+        "<p style=\"color: #333; margin: 0; padding: 0;\">"
         "Flo was here und w&uuml;nscht<br>"
         "Stefan fiel Spa&szlig; w&auml;hrend<br>"
         "Markus rockt... <br><br><br>"
 
-        "<a href=\"https://github.com/nomacs/nomacs\">https://github.com/nomacs/nomacs</a><br>"
+        "<a style=\"color: blue;\" href=\"https://github.com/nomacs/nomacs\">"
+        "https://github.com/nomacs/nomacs</a><br>"
 
         "This program is licensed under GNU General Public License v3<br>"
         "&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011-2020<br><br>"
 
-        "Press [ESC] to exit");
+        "Press [ESC] to exit</p>");
 
     textLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     textLabel->setObjectName("DkSplashInfoLabel");
@@ -178,26 +176,21 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
     textLabel->setScaledContents(true);
     textLabel->setTextFormat(Qt::RichText);
     textLabel->setText(text);
-    textLabel->move(131, 280);
+    textLabel->move(48, 270); // aligned with logo text
     textLabel->setOpenExternalLinks(true);
-
-    // textLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     QLabel *versionLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     versionLabel->setObjectName("DkSplashInfoLabel");
     versionLabel->setTextFormat(Qt::RichText);
-
     versionLabel->setText(versionText());
     versionLabel->setAlignment(Qt::AlignRight);
-    versionLabel->move(450 - versionLabel->sizeHint().width(), 280);
+    versionLabel->move(478 - versionLabel->sizeHint().width(), 270); // aligned with martini glass stem
     versionLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     showTimer = new QTimer(this);
     showTimer->setInterval(5000);
     showTimer->setSingleShot(true);
     connect(showTimer, &QTimer::timeout, exitButton, &QPushButton::hide);
-
-    qDebug() << "splash screen created...";
 }
 
 void DkSplashScreen::mousePressEvent(QMouseEvent *event)
@@ -212,16 +205,15 @@ void DkSplashScreen::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() == Qt::LeftButton) {
         move(pos() - (mouseGrab - event->globalPos()));
         mouseGrab = event->globalPos();
-        qDebug() << "moving...";
-    } else
-        setCursor(Qt::OpenHandCursor);
+    }
+
     showClose();
     QDialog::mouseMoveEvent(event);
 }
 
 void DkSplashScreen::mouseReleaseEvent(QMouseEvent *event)
 {
-    setCursor(Qt::OpenHandCursor);
+    setCursor(Qt::ArrowCursor);
     showClose();
     QDialog::mouseReleaseEvent(event);
 }
@@ -236,18 +228,15 @@ QString DkSplashScreen::versionText() const
 {
     QString vt;
 
+    vt += "<p style=\"color: #333; margin: 0; padding: 0;\">";
+
     // print out if the name is changed (e.g. READ build)
     if (QApplication::applicationName() != "Image Lounge") {
         vt += QApplication::applicationName() + "<br>";
     }
 
     // architecture
-    QString platform = "";
-#ifdef _WIN64
-    platform = " [x64] ";
-#elif defined _WIN32
-    platform = " [x86] ";
-#endif
+    QString platform = " [" + QSysInfo::buildCpuArchitecture() + "]";
 
     // version & build date
     vt += QApplication::applicationVersion() + platform + "<br>";
@@ -257,9 +246,10 @@ QString DkSplashScreen::versionText() const
 #ifdef Q_OS_WIN
     vt += QString(__DATE__) + "<br>";
 #endif
+    vt += "</p>";
 
     // supplemental info
-    vt += "<p style=\"color: #666; font-size: 7pt; margin: 0; padding: 0;\">";
+    vt += "<p style=\"color: #666; margin: 0; padding: 0;\">";
 
     // OpenCV
 #ifdef WITH_OPENCV
@@ -1547,10 +1537,10 @@ void DkShortcutDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     TreeItem *ti = static_cast<TreeItem *>(index.internalPointer());
 
     if (index.column() == 1 && ti && !ti->data(1).toString().isEmpty()) {
-        QRect r = option.rect; // getting the rect of the cell
-        int s = r.height();
-        QRect pmr(r.right() - s, r.top(), s, s);
-
+        QRect r = option.rect;
+        int pad = r.height() * 0.1;
+        int size = r.height() - pad * 2;
+        QRect pmr(r.right() - size - pad, r.top() + pad, size, size);
         painter->drawPixmap(pmr, mClearPm);
     }
 }

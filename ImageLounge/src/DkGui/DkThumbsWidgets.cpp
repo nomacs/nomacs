@@ -929,7 +929,7 @@ void DkThumbLabel::updateLabel()
 
     QFont font;
     font.setBold(false);
-    font.setPointSize(8);
+    font.setPointSize(9); // two sizes smaller than default font see:stylesheet.css
     mText.setFont(font);
     mText.setPlainText(QFileInfo(mThumb->getFilePath()).fileName());
     mText.hide();

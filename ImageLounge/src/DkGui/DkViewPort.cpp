@@ -314,7 +314,10 @@ void DkViewPort::loadImage(QSharedPointer<DkImageContainerT> img)
 
 void DkViewPort::setImage(QImage newImg)
 {
+    mDisabledBackground = false;
+
     // calling show here fixes issues with the HUD
+    // FIXME: would update() be better or is this still needed?
     show();
 
     DkTimer dt;
@@ -970,8 +973,10 @@ void DkViewPort::paintEvent(QPaintEvent *event)
 
         // now disable world matrix for overlay display
         painter.setWorldMatrixEnabled(false);
-    } else
-        drawBackground(painter);
+    } else {
+        if (!mDisabledBackground)
+            drawBackground(painter);
+    }
 
     // draw the cropping rect
     if (!mCropRect.isEmpty() && DkSettingsManager::param().display().showCrop && imageContainer()) {
@@ -1668,6 +1673,7 @@ bool DkViewPort::unloadImage(bool fileChange)
 void DkViewPort::deactivate()
 {
     setImage(QImage());
+    mDisabledBackground = true;
 }
 
 void DkViewPort::loadFile(const QString &filePath)

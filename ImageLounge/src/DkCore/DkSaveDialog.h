@@ -104,7 +104,7 @@ public slots:
     void setVisible(bool visible) override;
 
 protected slots:
-    void newBgCol();
+    void newBgCol(const QColor &color);
     void losslessCompression(bool lossless);
     void changeSizeWeb(int);
     void drawPreview();

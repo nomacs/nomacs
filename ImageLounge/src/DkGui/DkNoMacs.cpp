@@ -179,7 +179,6 @@ void DkNoMacs::init()
 {
     // assign icon -> in windows the 32px version
     QString iconPath = ":/nomacs/img/nomacs.svg";
-    loadStyleSheet();
 
     QIcon nmcIcon = QIcon(iconPath);
     setObjectName("DkNoMacs");
@@ -230,12 +229,6 @@ void DkNoMacs::init()
 void DkNoMacs::createStatusBar()
 {
     setStatusBar(DkStatusBarManager::instance().statusbar());
-}
-
-void DkNoMacs::loadStyleSheet()
-{
-    DkThemeManager tm;
-    tm.applyTheme();
 }
 
 void DkNoMacs::createMenu()
@@ -2164,6 +2157,21 @@ void DkNoMacsFrameless::createContextMenu()
     am.contextMenu()->addSeparator();
     am.contextMenu()->addAction(am.action(DkActionManager::menu_view_monitors));
     am.contextMenu()->addAction(am.action(DkActionManager::menu_file_exit));
+}
+
+void DkNoMacsFrameless::paintEvent(QPaintEvent *event)
+{
+    // paint everything except the central/transparent area
+    const QRegion mask = QRegion(event->rect()).subtracted(centralWidget()->geometry());
+
+    if (!mask.isEmpty()) {
+        QPainter painter(this);
+        const QColor &bgColor = DkSettingsManager::param().display().bgColor;
+        for (auto it = mask.begin(); it != mask.end(); ++it)
+            painter.fillRect(*it, bgColor);
+    }
+
+    DkNoMacs::paintEvent(event);
 }
 
 void DkNoMacsFrameless::chooseMonitor(bool force)

@@ -72,6 +72,9 @@ void DkLogWidget::createLayout()
     mTextEdit = new QTextEdit(this);
     mTextEdit->setReadOnly(true);
 
+    // we can't change text colors in qss so also fix the background color
+    mTextEdit->setStyleSheet("QTextEdit { font-family: monospace; background-color: #000; }");
+
     QPushButton *clearButton = new QPushButton(this);
     clearButton->setFlat(true);
     clearButton->setFixedSize(QSize(32, 32));
@@ -124,20 +127,19 @@ void DkMessageQueuer::log(QtMsgType type, const QString &msg)
 
     switch (type) {
     case QtDebugMsg:
-        // return;	// ignore debug messages
-        txt = "<span style=\"color: #aaa\"><i>" + msg + "</i></span>";
+        txt = "<span style=\"color: #ddd\"><i>" + msg + "</i></span>";
         break;
     case QtInfoMsg:
-        txt = "<span style=\"color: #21729e\">" + msg + "</span>";
+        txt = "<span style=\"color: #66cce1\">" + msg + "</span>";
         break;
     case QtWarningMsg:
-        txt = "<span style=\"color: #e29b0d\">[Warning] " + msg + "</span>";
+        txt = "<span style=\"color: #faa23d\">[Warning] " + msg + "</span>";
         break;
     case QtCriticalMsg:
-        txt = "<span style=\"color: #a81e1e\">[Critical] " + msg + "</span>";
+        txt = "<span style=\"color: #ff5794\">[Critical] " + msg + "</span>";
         break;
     case QtFatalMsg:
-        txt = "<span style=\"color: #a81e1e\">[FATAL] " + msg + "</span>";
+        txt = "<span style=\"color: #ff5794\">[FATAL] " + msg + "</span>";
         break;
     default:
         return;

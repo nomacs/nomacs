@@ -1,3 +1,4 @@
+
 /*******************************************************************************************************
 DkPreferenceWidgets.cpp
 Created on:	14.12.2015
@@ -33,32 +34,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkNoMacs.h"
 #include "DkSettings.h"
 #include "DkSettingsWidget.h"
+#include "DkThemeManager.h"
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
 #pragma warning(push, 0) // no warnings from includes
 #include <QAction>
+#include <QApplication>
+#include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDebug>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QPainter>
 #include <QProcess>
+#include <QRadioButton>
 #include <QSpinBox>
 #include <QStackedLayout>
 #include <QStandardItemModel>
 #include <QStandardPaths>
+#include <QStyleFactory>
 #include <QStyleOption>
 #include <QTableView>
 #include <QVBoxLayout>
 #include <QtGlobal>
-
-#include <QButtonGroup>
-#include <QRadioButton>
-
-#include <QDebug>
 #pragma warning(pop)
 
 namespace nmc
@@ -90,7 +92,6 @@ void DkPreferenceWidget::createLayout()
     QSize s(32, 32);
     QPixmap pm = DkImage::loadIcon(":/nomacs/img/power.svg", QColor(255, 255, 255), s);
     QPushButton *restartButton = new QPushButton(pm, "", this);
-    restartButton->setObjectName("DkPlayerButton");
     restartButton->setFlat(true);
     restartButton->setIconSize(pm.size());
     restartButton->setObjectName("DkRestartButton");
@@ -288,37 +289,90 @@ DkGeneralPreference::DkGeneralPreference(QWidget *parent)
 
 void DkGeneralPreference::createLayout()
 {
+    static const QString restartText = tr("Previewing theme. Restart nomacs to apply all changes.");
+
     // Theme
-    DkThemeManager tm;
-    QStringList themes = tm.cleanThemeNames(tm.getAvailableThemes());
+    auto &tm = DkThemeManager::instance();
+    connect(&tm, &DkThemeManager::themeApplied, this, [this] {
+        emit infoSignal(restartText);
+    });
+
+    auto &display = DkSettingsManager::param().display();
+    auto &slideshow = DkSettingsManager::param().slideShow();
+
+    static bool noSetting = true; // TODO: defaultSlideShowColor
+    static const QColor defaultSlideShowColor(51, 51, 51); // TODO: themeSlideShowColor
+
+    struct {
+        const QString caption;
+        const bool restartRequired; // TODO: everying using icons must connect a theme change signal!
+        const QColor *themeColor; // setting: system palette or theme css
+        QColor *userColor; // setting: user modified color
+        bool *isThemeColor; // setting: true if user modified a color
+        DkColorChooser *chooser;
+    } colors[] = {{tr("Icon Color"), true, &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
+                  {tr("Foreground Color"), false, &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
+                  {tr("Background Color"), false, &display.themeBgdColor, &display.bgColor, &display.defaultBackgroundColor},
+                  {tr("Fullscreen Color"), false, &defaultSlideShowColor, &slideshow.backgroundColor, &noSetting}};
+
+    for (auto &c : colors) {
+        c.chooser = new DkColorChooser(*c.themeColor, c.caption, this);
+        c.chooser->setColor(*c.userColor);
+        connect(c.chooser, &DkColorChooser::colorAccepted, this, [this, c]() {
+            *c.isThemeColor = false;
+        });
+        connect(c.chooser, &DkColorChooser::colorReset, this, [this, c]() {
+            *c.isThemeColor = true;
+        });
+        connect(c.chooser, &DkColorChooser::colorChanged, this, [this, c](const QColor &color) {
+            *c.userColor = *c.isThemeColor ? *c.themeColor : color;
+            if (c.restartRequired)
+                emit infoSignal(restartText);
+            else
+                DkThemeManager::instance().applyTheme();
+        });
+        connect(&tm, &DkThemeManager::themeApplied, this, [this, c] {
+            c.chooser->setDefaultColor(*c.themeColor); // reset uses new color
+            if (*c.isThemeColor) // keep user color
+                c.chooser->setColor(*c.themeColor);
+        });
+    }
+
+    const QStringList themes = tm.getAvailableThemes();
 
     QComboBox *themeBox = new QComboBox(this);
-    themeBox->setView(new QListView());
-    themeBox->addItems(themes);
+    themeBox->setToolTip(tr("Sets the overall theme. The System theme uses the operating system theme except for custom widgets"));
+    for (auto &themeFile : themes)
+        themeBox->addItem(tm.cleanThemeName(themeFile), themeFile);
     themeBox->setCurrentText(tm.cleanThemeName(tm.getCurrentThemeName()));
-    connect(themeBox, &QComboBox::currentTextChanged, this, &DkGeneralPreference::onThemeBoxCurrentTextChanged);
 
-    DkColorChooser *iconColorChooser = new DkColorChooser(QColor(51, 51, 51, 255), tr("Icon Color"), this);
-    iconColorChooser->setColor(&DkSettingsManager::param().display().iconColor);
-    connect(iconColorChooser, &DkColorChooser::accepted, this, &DkGeneralPreference::onIconColorAccepted);
-    connect(iconColorChooser, &DkColorChooser::resetClicked, this, &DkGeneralPreference::onIconColorResetClicked);
+    connect(themeBox, &QComboBox::currentTextChanged, this, [this, themeBox, colors](const QString &text) {
+        (void)text;
+        const QString themeFile = themeBox->currentData().toString();
+        auto &tm = DkThemeManager::instance();
 
-    DkColorChooser *bgColorChooser = new DkColorChooser(QColor(100, 100, 100, 255), tr("Background Color"), this);
-    bgColorChooser->setColor(&DkSettingsManager::param().display().bgColor);
-    connect(bgColorChooser, &DkColorChooser::accepted, this, &DkGeneralPreference::onBackgroundColorAccepted);
-    connect(bgColorChooser, &DkColorChooser::resetClicked, this, &DkGeneralPreference::onBackgroundColorResetClicked);
+        if (tm.getCurrentThemeName() != themeFile) {
+            tm.setCurrentTheme(themeFile);
+            tm.applyTheme();
+        }
+    });
 
-    DkColorChooser *fullscreenColorChooser = new DkColorChooser(QColor(51, 51, 51), tr("Fullscreen Color"), this);
-    fullscreenColorChooser->setObjectName("fullscreenColor");
-    fullscreenColorChooser->setColor(&DkSettingsManager::param().slideShow().backgroundColor);
-    connect(fullscreenColorChooser, &DkColorChooser::accepted, this, &DkGeneralPreference::showRestartLabel);
-    // TODO: the value of this widget seems never read
+    QComboBox *stylesBox = new QComboBox(this);
+    stylesBox->setToolTip(tr("Sets the appearance of buttons, checkboxes, etc. on the System theme or otherwise unstyled elements"));
+    stylesBox->insertItems(0, tm.getStylePlugins());
+    stylesBox->setCurrentText(display.stylePlugin);
+    connect(stylesBox, &QComboBox::currentTextChanged, this, [this, stylesBox](const QString &text) {
+        DkThemeManager::instance().setStylePlugin(text);
+        DkSettingsManager::param().display().stylePlugin = text;
+    });
 
-    DkGroupWidget *colorGroup = new DkGroupWidget(tr("Color Settings"), this);
-    colorGroup->addWidget(themeBox);
-    colorGroup->addWidget(iconColorChooser);
-    colorGroup->addWidget(bgColorChooser);
-    colorGroup->addWidget(fullscreenColorChooser);
+    DkGroupWidget *themeGroup = new DkGroupWidget(tr("Appearance"), this);
+    themeGroup->addWidget(new QLabel(tr("Nomacs  Theme")));
+    themeGroup->addWidget(themeBox);
+    themeGroup->addWidget(new QLabel(tr("Widget Theme")));
+    themeGroup->addWidget(stylesBox);
+    for (auto &c : colors)
+        themeGroup->addWidget(c.chooser);
 
     // default pushbutton
     QPushButton *defaultSettings = new QPushButton(tr("Reset All Settings"));
@@ -344,7 +398,7 @@ void DkGeneralPreference::createLayout()
 
     QVBoxLayout *leftColumnLayout = new QVBoxLayout(leftColumn);
     leftColumnLayout->setAlignment(Qt::AlignTop);
-    leftColumnLayout->addWidget(colorGroup);
+    leftColumnLayout->addWidget(themeGroup);
     leftColumnLayout->addWidget(defaultGroup);
 
     // checkboxes
@@ -466,41 +520,6 @@ void DkGeneralPreference::createLayout()
 void DkGeneralPreference::showRestartLabel() const
 {
     emit infoSignal(tr("Please Restart nomacs to apply changes"));
-}
-
-void DkGeneralPreference::onBackgroundColorAccepted() const
-{
-    DkSettingsManager::param().display().defaultBackgroundColor = false;
-    showRestartLabel();
-}
-
-void DkGeneralPreference::onBackgroundColorResetClicked() const
-{
-    DkSettingsManager::param().display().defaultBackgroundColor = true;
-}
-
-void DkGeneralPreference::onIconColorAccepted() const
-{
-    DkSettingsManager::param().display().defaultIconColor = false;
-    showRestartLabel();
-}
-
-void DkGeneralPreference::onIconColorResetClicked() const
-{
-    DkSettingsManager::param().display().defaultIconColor = true;
-}
-
-void DkGeneralPreference::onThemeBoxCurrentTextChanged(const QString &text) const
-{
-    QString tn = text + ".css";
-    tn = tn.replace(" ", "-");
-
-    if (DkSettingsManager::param().display().themeName != tn) {
-        DkSettingsManager::param().display().themeName = tn;
-        DkThemeManager tm;
-        tm.loadTheme(tn);
-    }
-    showRestartLabel();
 }
 
 void DkGeneralPreference::onShowRecentFilesToggled(bool checked) const
