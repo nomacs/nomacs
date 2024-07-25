@@ -1565,17 +1565,34 @@ QString DkThemeManager::replaceColors(const QString &cssString) const
 {
     QString cs = cssString;
 
-    QColor hc = DkSettingsManager::param().display().highlightColor;
-    hc.setAlpha(150);
+    DkSettings &settings = DkSettingsManager::param();
+    const auto &d = settings.display();
+    const auto &s = settings.slideShow();
 
-    // replace color placeholders
-    cs.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().highlightColor));
-    cs.replace("HIGHLIGHT_LIGHT", DkUtils::colorToString(hc));
-    cs.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudBgColor));
-    cs.replace("HUD_FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor));
-    cs.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().bgColor));
-    cs.replace("FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().themeFgdColor));
-    cs.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));
+    QColor highlightAlpha = d.highlightColor;
+    highlightAlpha.setAlpha(150);
+
+    const QColor window = QPalette().color(QPalette::Window);
+
+    const struct {
+        const char *name;
+        const QColor *color;
+    } replacements[] = {{"HIGHLIGHT_COLOR", &d.highlightColor},
+                        {"HIGHLIGHT_LIGHT", &highlightAlpha},
+                        {"HUD_BACKGROUND_COLOR", &d.hudBgColor},
+                        {"HUD_FOREGROUND_COLOR", &d.hudFgdColor},
+                        {"BACKGROUND_COLOR", &d.bgColor},
+                        {"FOREGROUND_COLOR", &d.themeFgdColor},
+                        {"WINDOW_COLOR", &window},
+                        {"SLIDESHOW_COLOR", &s.backgroundColor},
+                        {"ICON_COLOR", &d.iconColor},
+                        {nullptr, nullptr}};
+
+    auto *p = replacements;
+    while (p->name) {
+        cs.replace(p->name, DkUtils::colorToString(*p->color));
+        p++;
+    }
 
     return cs;
 }

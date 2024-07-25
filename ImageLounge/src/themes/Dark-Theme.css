@@ -21,6 +21,10 @@ QPushButton:flat {
     border: none; /* no border for a flat push button */
 }
 
+QPushButton:default {
+    background-color: #444;
+}
+
 QTabWidget > QWidget {
     background-color: BACKGROUND_COLOR;
     border: none;
@@ -41,6 +45,11 @@ nmc--DkBatchTabButton:checked {
 	background-color: rgba(80, 80, 80, 80);
 	border: none;	/* clear border styles first */
 	border-left: 4px solid HIGHLIGHT_COLOR;
+}
+
+/* push buttons in overlays are broken by default pushbutton */
+nmc--DkCommentWidget QPushButton {
+    padding: 4px;
 }
 
 QLineEdit {
@@ -157,6 +166,12 @@ QTabBar::tab:selected {
     background: #666;
 }
 
+/* neutral colors for static selections */
+QDockWidget QTreeView,
+QDockWidget QListView {
+    selection-background-color: #666;
+}
+
 QMenu::item:checked {
     color: FOREGROUND_COLOR;
 }
@@ -218,6 +233,10 @@ QLineEdit#DkWarningEdit[error="true"] {
 
 nmc--DkFolderScrollBar {
 	border: 1px solid #444;
+}
+
+nmc--DkFolderScrollBar:handle {
+    background-color: #ddd;
 }
 
 nmc--DkCentralWidget {
