@@ -52,7 +52,6 @@
 #include <QProcess>
 #include <QTextStream>
 #include <QTranslator>
-
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QImageReader>
 #endif
@@ -60,19 +59,18 @@
 #pragma warning(pop) // no warnings from includes - end
 
 #include "DkCentralWidget.h"
+#include "DkDependencyResolver.h"
+#include "DkMetaData.h"
 #include "DkNoMacs.h"
 #include "DkPluginManager.h"
 #include "DkPong.h"
 #include "DkProcess.h"
 #include "DkSettings.h"
+#include "DkThemeManager.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
-#include "DkViewPort.h"
-
-#include "DkDependencyResolver.h"
-#include "DkMetaData.h"
-
 #include "DkVersion.h"
+#include "DkViewPort.h"
 
 #include <cassert>
 #include <iostream>
@@ -95,6 +93,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(NOMACS_VERSION_STR);
 
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
+
+#ifdef Q_OS_MAC
+    QApplication::setAttribute(Qt::AA_DontShowIconsInMenus, true);
+#endif
 
     QApplication app(argc, (char **)argv);
 
@@ -261,6 +263,9 @@ int main(int argc, char *argv[])
 
     nmc::DkTimer dt;
 
+    // bring up theme before any widgets
+    nmc::DkThemeManager::instance().applyTheme();
+
     // initialize nomacs
     const int modeType = nmc::DkSettings::normalMode(mode);
     if (modeType == nmc::DkSettings::mode_frameless) {
@@ -300,6 +305,9 @@ int main(int argc, char *argv[])
 
     qInfo() << "active window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode << "maximized:" << w->isMaximized()
             << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry() << "windowState:" << w->windowState();
+
+    qInfo() << "window font:" << w->font();
+    qInfo() << "system font:" << qApp->font();
 
     // Qt emulates showMaximized() on some platforms (X11), so it might not work.
     // If we try again with a visible window, it *could* work correctly (GNOME)
