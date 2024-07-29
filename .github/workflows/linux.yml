@@ -36,6 +36,7 @@ jobs:
 
       - name: Install build dependencies
         run: |
+          sudo apt-get update
           sudo apt-get install -y libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev build-essential ninja-build ${{ matrix.qt.deps }}
 
       - name: CMake configure
