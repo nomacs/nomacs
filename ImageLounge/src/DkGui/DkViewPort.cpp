@@ -1968,8 +1968,8 @@ void DkViewPort::cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool
 DkViewPortFrameless::DkViewPortFrameless(QWidget *parent)
     : DkViewPort(parent)
 {
-#ifdef Q_OS_MAC
-    parent->setAttribute(Qt::WA_MacNoShadow);
+#if defined(Q_OS_MAC) && QT_VERSION_MAJOR < 6
+    parent->setAttribute(Qt::WA_MacNoShadow); // deprecated
 #endif
 
     setAttribute(Qt::WA_TranslucentBackground, true);
