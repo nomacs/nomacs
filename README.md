@@ -132,22 +132,33 @@ cd build
 For Homebrew on Intel models:
 
 ```console
-Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake ../ImageLounge/.
+# qt5
+$ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake --install-prefix /Applications ../ImageLounge/.
+
+# qt6
+$ cmake -D QT_VERSION_MAJOR=6 --install-prefix /Applications ../ImageLounge/.
 ```
 
 For Homebrew on Apple Silicon models:
 
 ```console
-Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake ../ImageLounge/.
+$ Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake --install-prefix /Applications ../ImageLounge/.
 ```
 
 Run make:
 
 ```console
-make
+$ make
+$ make bundle
 ```
 
-You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/usr/local/bin`, use
+If make fails with `fatal error: 'libssh/libssh.h' file not found`, try to set `CPLUS_INCLUDE_PATH` before make.
+
+```console
+$ export CPLUS_INCLUDE_PATH=/usr/local/include
+```
+
+You will now have a binary (`nomacs.app`) and an image (`nomacs.dmg`), which you can test (or use directly). To install it to `/Applications`, use
 
 ```console
 sudo make install
