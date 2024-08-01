@@ -17,7 +17,8 @@ set(NOMACS_ICON_FILE "${CMAKE_CURRENT_SOURCE_DIR}/macosx/nomacs.icns")
 
 # binary
 link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS} ${CMAKE_BINARY_DIR})
-add_executable(${BINARY_NAME} MACOSX_BUNDLE 
+add_executable(
+	${BINARY_NAME} MACOSX_BUNDLE 
 	${NOMACS_EXE_SOURCES}
 	${NOMACS_EXE_HEADERS}
 	${NOMACS_QM}
@@ -27,7 +28,8 @@ add_executable(${BINARY_NAME} MACOSX_BUNDLE
 	${NOMACS_ICON_FILE}
 	${NOMACS_THEMES}
 	)
-target_link_libraries(${BINARY_NAME}
+target_link_libraries(
+	${BINARY_NAME}
 	${DLL_CORE_NAME}
 	${EXIV2_LIBRARIES}
 	${LIBRAW_LIBRARIES}
@@ -42,7 +44,8 @@ set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -
 set_target_properties(${BINARY_NAME} PROPERTIES IMPORTED_IMPLIB "")
 
 # add core dll
-add_library(${DLL_CORE_NAME} SHARED
+add_library(
+	${DLL_CORE_NAME} SHARED
 	${GUI_SOURCES} ${GUI_HEADERS}
 	${CORE_SOURCES} ${CORE_HEADERS}
 	${NOMACS_RCC} ${NOMACS_RC}
@@ -50,7 +53,8 @@ add_library(${DLL_CORE_NAME} SHARED
 	${LIBQPSD_SOURCES}
 	${LIBQPSD_HEADERS}
 	)
-target_link_libraries(${DLL_CORE_NAME}
+target_link_libraries(
+	${DLL_CORE_NAME}
 	${EXIV2_LIBRARIES}
 	${LIBRAW_LIBRARIES}
 	${OpenCV_LIBS}
@@ -58,10 +62,12 @@ target_link_libraries(${DLL_CORE_NAME}
 	${QUAZIP_LIBRARIES}
 	)
 
-add_dependencies(${BINARY_NAME}
+add_dependencies(
+	${BINARY_NAME}
 	${DLL_CORE_NAME}
 	${QUAZIP_DEPENDENCY}
-	${LIBQPSD_LIBRARY})
+	${LIBQPSD_LIBRARY}
+	)
 
 target_link_libraries(${BINARY_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg)
 target_link_libraries(${DLL_CORE_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg)
