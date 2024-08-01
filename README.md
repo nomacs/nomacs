@@ -133,7 +133,7 @@ For Homebrew on Intel models:
 
 ```console
 # qt5
-$ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake --install-prefix /Applications ../ImageLounge/.
+$ Qt5_DIR=/usr/local/opt/qt5/ cmake -D QT_VERSION_MAJOR=5 --install-prefix /Applications ../ImageLounge/.
 
 # qt6
 $ cmake -D QT_VERSION_MAJOR=6 --install-prefix /Applications ../ImageLounge/.
