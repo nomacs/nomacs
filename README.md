@@ -133,6 +133,7 @@ For Homebrew on Intel models:
 
 ```console
 # qt5
+$ export CPLUS_INCLUDE_PATH=/usr/local/include
 $ Qt5_DIR=/usr/local/opt/qt5/ cmake -D QT_VERSION_MAJOR=5 --install-prefix /Applications ../ImageLounge/.
 
 # qt6
@@ -149,19 +150,18 @@ Run make:
 
 ```console
 $ make
-$ make bundle
 ```
 
-If make fails with `fatal error: 'libssh/libssh.h' file not found`, try to set `CPLUS_INCLUDE_PATH` before make.
-
-```console
-$ export CPLUS_INCLUDE_PATH=/usr/local/include
-```
-
-You will now have a binary (`nomacs.app`) and an image (`nomacs.dmg`), which you can test (or use directly). To install it to `/Applications`, use
+You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/Applications`, use
 
 ```console
 sudo make install
+```
+
+If you want to have an independent bundle image (`nomacs.dmg`) you can create it by using
+
+```console
+$ make bundle
 ```
 
 ## Build nomacs (Windows Cross-Compile)
