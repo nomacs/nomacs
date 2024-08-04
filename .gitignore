@@ -55,3 +55,5 @@ snap/.snapcraft/
 
 # version thingies
 *-versioned*
+
+.DS_Store
