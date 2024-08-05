@@ -56,11 +56,6 @@ if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
     setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
 endif()
 
-if(APPLE)
-	set(ENABLE_QUAZIP OFF)
-	message(STATUS "QuaZip disabled - it's not supported on OSX")
-endif()
-
 # load paths from the user file if exists
 if (EXISTS ${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
     include(${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
