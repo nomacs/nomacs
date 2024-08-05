@@ -139,6 +139,23 @@ QGraphicsView#DkThumbsView {
 	border: none;
 }
 
+QMainWindow[fullScreen="true"] QGraphicsView#DkThumbsView {
+    background-color: SLIDESHOW_COLOR;
+}
+
+/* FIXME: this case is never taken. #1136 may have an effect on this */
+nmc--DkNoMacsFrameless[fullScreen="false"] QGraphicsView#DkThumbsView {
+    background-color: transparent;
+}
+
+nmc--DkNoMacsFrameless[fullScreen="true"] QGraphicsView#DkThumbsView {
+    background-color: HUD_BACKGROUND_COLOR;
+}
+
+nmc--DkNoMacsFrameless nmc--DkThumbsView > QWidget { /* scrollbar background */
+    background-color: BACKGROUND_COLOR;
+}
+
 QToolButton#DkThumbToolButton::menu-indicator { 
 	image: none; 
 }
