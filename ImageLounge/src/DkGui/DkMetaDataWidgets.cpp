@@ -823,6 +823,7 @@ QStringList DkMetaDataHUD::getDefaultKeys() const
     keyValues.append("Exif.Image.DateTime");
     keyValues.append("Exif.Image.ImageDescription");
 
+    keyValues.append("Exif.Photo.UserComment");
     keyValues.append("Exif.Photo.ISO");
     keyValues.append("Exif.Photo.FocalLength");
     keyValues.append("Exif.Photo.ExposureTime");
