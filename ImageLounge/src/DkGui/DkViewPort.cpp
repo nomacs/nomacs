@@ -1372,11 +1372,6 @@ void DkViewPort::setFullScreen(bool fullScreen)
     toggleLena(fullScreen);
 
     if (fullScreen)
-        QWidget::setWindowState(windowState() | Qt::WindowFullScreen);
-    else
-        QWidget::setWindowState(windowState() & ~Qt::WindowFullScreen);
-
-    if (fullScreen)
         mHideCursorTimer->start();
     else
         unsetCursor();

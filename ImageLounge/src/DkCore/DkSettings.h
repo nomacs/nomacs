@@ -110,14 +110,35 @@ public:
     DkSettings();
 
     enum modes {
+        mode_fullscreen_offset = 3,
         mode_default = 0,
-        mode_frameless,
-        mode_contrast,
-        mode_default_fullscreen,
-        mode_frameless_fullscreen,
-        mode_contrast_fullscreen,
-        mode_end,
+        mode_frameless = 1,
+        mode_contrast = 2,
+        mode_default_fullscreen = mode_default + mode_fullscreen_offset,
+        mode_frameless_fullscreen = mode_frameless + mode_fullscreen_offset,
+        mode_contrast_fullscreen = mode_contrast + mode_fullscreen_offset,
+        mode_end
     };
+
+    static bool modeIsValid(int mode)
+    {
+        return mode >= mode_default && mode < mode_end;
+    }
+
+    static bool modeIsFullscreen(int mode)
+    {
+        return mode >= mode_fullscreen_offset;
+    }
+
+    static int normalMode(int mode)
+    {
+        return modeIsFullscreen(mode) ? mode - mode_fullscreen_offset : mode;
+    }
+
+    static int fullscreenMode(int mode)
+    {
+        return modeIsFullscreen(mode) ? mode : mode + mode_fullscreen_offset;
+    }
 
     enum sortMode {
         sort_filename,
