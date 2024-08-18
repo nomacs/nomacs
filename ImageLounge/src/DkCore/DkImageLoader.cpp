@@ -1667,29 +1667,30 @@ QString DkImageLoader::getDirPath() const
 
 QStringList DkImageLoader::getFoldersRecursive(const QString &dirPath)
 {
-    DkTimer dt;
     QStringList subFolders;
 
     if (DkSettingsManager::param().global().scanSubFolders) {
+        DkTimer dt;
+        QProgressDialog dialog(DkUtils::getMainWindow());
+        dialog.setLabelText(tr("scanning recursively directory\n%1").arg(dirPath));
         qDebug() << "scanning folders recursively: " << dirPath;
         QDirIterator dirs(dirPath, QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
 
         int nFolders = 0;
         while (dirs.hasNext()) {
+            if (!dialog.isVisible() && dt.elapsed() > 1000) dialog.show();
+            qApp->processEvents();
+            if (dialog.wasCanceled()) break;
             dirs.next();
             subFolders << dirs.filePath();
             nFolders++;
-
-            if (nFolders > 100)
-                break;
         }
+        qDebug() << dirPath << "loaded recursively in" << dt;
     }
 
     subFolders << dirPath;
 
     std::sort(subFolders.begin(), subFolders.end(), DkUtils::compLogicQString);
-
-    qDebug() << dirPath << "loaded recursively in" << dt;
 
     return subFolders;
 }
