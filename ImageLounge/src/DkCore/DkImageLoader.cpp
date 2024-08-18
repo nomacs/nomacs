@@ -1707,11 +1707,10 @@ QFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
     // find the first subfolder that has images
     for (int idx = 0; idx < mSubFolders.size(); idx++) {
         mCurrentDir = mSubFolders[idx];
-        files = getFilteredFileInfoList(mCurrentDir,
-                                        mIgnoreKeywords,
-                                        mKeywords); // this line takes seconds if you have lots of files and slow loading (e.g. network)
-        if (!files.empty())
-            break;
+        // this takes seconds if you have lots of files and slow loading (e.g. network)
+        files.append(getFilteredFileInfoList(mCurrentDir,
+                                             mIgnoreKeywords,
+                                             mKeywords));
     }
 
     return files;
