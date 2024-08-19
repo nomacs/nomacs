@@ -1,6 +1,6 @@
 
 # check cmake requirements
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.10)
 
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW)
@@ -48,6 +48,7 @@ option(ENABLE_HEIF "Compile nomacs with HEIF support" OFF)
 option(ENABLE_AVIF "Compile nomacs with AVIF support" OFF)
 option(ENABLE_JXL "Compile nomacs with JPEG XL support" OFF)
 option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
+option(ENABLE_TESTING "Run tests" ON)
 option(USE_SYSTEM_QUAZIP "QuaZip will not be compiled from source" ON) # ignored by MSVC
 
 # Codecov
@@ -110,6 +111,20 @@ elseif(MINGW)
 else()
 	message(STATUS "build system unkown ... fallback to unix")
 	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Unix.cmake)
+endif()
+
+if (ENABLE_TESTING AND NOT UNIX) 
+	set(ENABLE_TESTING OFF)
+	message(WARNING "testing is only supported on unix")
+elseif (ENABLE_TESTING)
+	find_package(GTest)
+	if(GTEST_FOUND)
+		enable_testing()
+		add_subdirectory(tests EXCLUDE_FROM_ALL)
+	else()
+		set(ENABLE_TESTING OFF)
+		message(WARNING "GTest not found, disabling testing.")
+	endif()
 endif()
 
 file(GLOB NOMACS_EXE_SOURCES "src/*.cpp")
@@ -336,6 +351,12 @@ IF(ENABLE_QUAZIP)
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. YES")
 ELSE()
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. NO")
+ENDIF()
+
+IF(ENABLE_TESTING)
+    MESSAGE(STATUS " nomacs tests ................................................. YES")
+ELSE()
+    MESSAGE(STATUS " nomacs tests ................................................. NO")
 ENDIF()
 
 MESSAGE(STATUS "----------------------------------------------------------------------------------")
