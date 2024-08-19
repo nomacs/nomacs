@@ -981,11 +981,112 @@ QString DkUtils::stdWStringToQString(const std::wstring &str)
 }
 
 // DkConvertFileName --------------------------------------------------------------------
-DkFileNameConverter::DkFileNameConverter(const QString &fileName, const QString &pattern, int cIdx)
+DkFileNameConverter::DkFileNameConverter(const QString &p)
+    : mFrags{}
 {
-    this->mFileName = fileName;
-    this->mPattern = pattern;
-    this->mCIdx = cIdx;
+    const QStringView pattern(p);
+    qsizetype start = 0;
+    Token type = Token::Text;
+    std::vector<uint> numbers{};
+    FragType fragType = FragType::Text;
+
+    for (qsizetype i = 0; i < pattern.size(); i++) {
+        const QChar ch = pattern.at(i);
+
+        if (ch != '<' && ch != '>' && ch != ':') {
+            continue;
+        }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QStringView token = pattern.sliced(start, i - start);
+#else
+        QStringView token = pattern.mid(start, i - start);
+#endif
+        start = i + 1;
+
+        if (ch == '<') {
+            if (type != Token::Text) {
+                qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", expecting token text at index " << i;
+                return;
+            }
+            if (token.size() != 0) {
+                mFrags.push_back(Frag{FragType::Text, 0, 0, token.toString(), 0});
+            }
+            numbers.resize(0);
+            type = Token::TagName;
+
+        } else if (ch == '>' || ch == ':') {
+            switch (type) {
+            case Token::TagName:
+                if (token.compare(QString("c")) == 0) {
+                    fragType = FragType::FileName;
+                } else if (token.compare(QString("d")) == 0) {
+                    fragType = FragType::Index;
+                } else if (token.compare(QString("old")) == 0) {
+                    mFrags.push_back(Frag{FragType::Ext, 0, 0, "", 0});
+                    fragType = FragType::Ext;
+                } else {
+                    qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", invalid tag " << token;
+                    return;
+                }
+                break;
+
+            case Token::Number:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                numbers.push_back(token.toUInt());
+#else
+                numbers.push_back(token.toString().toInt());
+#endif
+                break;
+
+            default:
+                qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", expecting token tag name or number at index " << i;
+                return;
+            }
+
+            if (ch == '>') {
+                switch (fragType) {
+                case FragType::FileName:
+                    mFrags.push_back(Frag{
+                        FragType::FileName,
+                        0,
+                        0,
+                        "",
+                        numbers.size() > 0 ? numbers.at(0) : 0,
+                    });
+                    break;
+                case FragType::Index:
+                    mFrags.push_back(Frag{
+                        FragType::Index,
+                        numbers.size() > 0 ? numbers.at(0) + 1 : 0,
+                        numbers.size() > 1 ? numbers.at(1) : 0, // Plus 1 because pad n + index 0 counts 1 char
+                        "",
+                        0,
+                    });
+                    break;
+                default:
+                    break;
+                }
+
+                type = Token::Text;
+            } else {
+                type = Token::Number;
+            }
+        }
+    }
+
+    if (pattern.size() > start) {
+        if (type != Token::Text) {
+            qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", expecting token text at index " << pattern.size();
+            return;
+        }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QStringView token = pattern.sliced(start, pattern.size() - start);
+#else
+        QStringView token = pattern.mid(start, pattern.size() - start);
+#endif
+        mFrags.push_back(Frag{FragType::Text, 0, 0, token.toString(), 0});
+    }
 }
 
 /**
@@ -1001,96 +1102,41 @@ DkFileNameConverter::DkFileNameConverter(const QString &fileName, const QString 
  * some-fixed-name-<c:1><d:3>.<old>
  * @return QString
  **/
-QString DkFileNameConverter::getConvertedFileName()
+QString DkFileNameConverter::convert(const QString &file, int index) const
 {
-    QString newFileName = mPattern;
-    QRegularExpression rx("<.*>");
-    QRegularExpressionMatch match = rx.match(newFileName);
+    QStringList list{};
 
-    while (match.hasMatch()) {
-        QString tag = match.captured();
-        QString res = "";
+    for (const auto &frag : mFrags) {
+        switch (frag.type) {
+        case FragType::Text:
+            list.append(frag.text);
+            break;
+        case FragType::FileName: {
+            const qsizetype sep = file.lastIndexOf('.');
 
-        if (tag.contains("<c:"))
-            res = resolveFilename(tag);
-        else if (tag.contains("<d:"))
-            res = resolveIdx(tag);
-        else if (tag.contains("<old>"))
-            res = resolveExt(tag);
-
-        // replace() replaces all matches - so if two tags are the very same, we save a little computing
-        newFileName = newFileName.replace(tag, res);
-        match = rx.match(newFileName);
-    }
-
-    return newFileName;
-}
-
-QString DkFileNameConverter::resolveFilename(const QString &tag) const
-{
-    QString result = mFileName;
-
-    // remove extension (Qt's QFileInfo.baseName() does a bad job if you have filenames with dots)
-    result = result.replace("." + QFileInfo(mFileName).suffix(), "");
-
-    int attr = getIntAttribute(tag);
-
-    if (attr == 1)
-        result = result.toLower();
-    else if (attr == 2)
-        result = result.toUpper();
-
-    return result;
-}
-
-QString DkFileNameConverter::resolveIdx(const QString &tag) const
-{
-    QString result = "";
-
-    // append zeros
-    int numZeros = getIntAttribute(tag);
-    int startIdx = getIntAttribute(tag, 2);
-    int fIdx = startIdx + mCIdx;
-
-    if (numZeros > 0) {
-        // if fIdx <= 0, log10 must not be evaluated
-        int cNumZeros = fIdx > 0 ? numZeros - qFloor(std::log10(fIdx)) : numZeros;
-
-        // zero padding
-        for (int idx = 0; idx < cNumZeros; idx++) {
-            result += "0";
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            const QString fileName = sep >= 0 ? file.first(sep) : file;
+#else
+            const QString fileName = sep >= 0 ? file.left(sep) : file;
+#endif
+            if (frag.caseConv == 1) {
+                list.append(fileName.toLower());
+            } else if (frag.caseConv == 2) {
+                list.append(fileName.toUpper());
+            } else {
+                list.append(fileName);
+            }
+            break;
+        }
+        case FragType::Ext:
+            list.append(QFileInfo(file).suffix());
+            break;
+        case FragType::Index:
+            list.append(QStringLiteral("%1").arg(index + frag.indexStart, frag.indexDigits, 10, QLatin1Char('0')));
+            break;
         }
     }
-
-    result += QString::number(fIdx);
-
-    return result;
-}
-
-QString DkFileNameConverter::resolveExt(const QString &) const
-{
-    QString result = QFileInfo(mFileName).suffix();
-
-    return result;
-}
-
-int DkFileNameConverter::getIntAttribute(const QString &tag, int idx) const
-{
-    int attr = 0;
-
-    QStringList num = tag.split(":");
-
-    if (num.length() > idx) {
-        QString attrStr = num.at(idx);
-        attrStr.replace(">", "");
-        attr = attrStr.toInt();
-
-        // no negative idx
-        if (attr < 0)
-            return 0;
-    }
-
-    return attr;
+    return list.join("");
 }
 
 // TreeItem --------------------------------------------------------------------
