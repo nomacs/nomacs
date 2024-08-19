@@ -1523,22 +1523,25 @@ void DkThumbScene::renameSelected() const
     bool ok;
     QString newFileName = QInputDialog::getText(DkUtils::getMainWindow(), tr("Rename File(s)"), tr("New Filename:"), QLineEdit::Normal, "", &ok);
 
-    if (ok && !newFileName.isEmpty()) {
-        for (int idx = 0; idx < fileList.size(); idx++) {
-            QFileInfo fileInfo = QFileInfo(fileList.at(idx));
-            QFile file(fileInfo.absoluteFilePath());
-            QString pattern = (fileList.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>"; // no index if just 1 file was added
-            DkFileNameConverter converter(fileInfo.fileName(), pattern, idx);
-            QFileInfo newFileInfo(fileInfo.dir(), converter.getConvertedFileName());
-            if (!file.rename(newFileInfo.absoluteFilePath())) {
-                int answer = QMessageBox::critical(DkUtils::getMainWindow(),
-                                                   tr("Error"),
-                                                   tr("Sorry, I cannot rename: %1 to %2").arg(fileInfo.fileName(), newFileInfo.fileName()),
-                                                   QMessageBox::Ok | QMessageBox::Cancel);
+    if (!ok || newFileName.isEmpty()) {
+        return;
+    }
 
-                if (answer == QMessageBox::Cancel) {
-                    break;
-                }
+    QString pattern = (fileList.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>"; // no index if just 1 file was added
+    DkFileNameConverter converter(pattern);
+
+    for (int idx = 0; idx < fileList.size(); idx++) {
+        QFileInfo fileInfo = QFileInfo(fileList.at(idx));
+        QFile file(fileInfo.absoluteFilePath());
+        QFileInfo newFileInfo(fileInfo.dir(), converter.convert(fileInfo.fileName(), idx));
+        if (!file.rename(newFileInfo.absoluteFilePath())) {
+            int answer = QMessageBox::critical(DkUtils::getMainWindow(),
+                                               tr("Error"),
+                                               tr("Sorry, I cannot rename: %1 to %2").arg(fileInfo.fileName(), newFileInfo.fileName()),
+                                               QMessageBox::Ok | QMessageBox::Cancel);
+
+            if (answer == QMessageBox::Cancel) {
+                break;
             }
         }
     }

@@ -447,19 +447,33 @@ public:
 class DllCoreExport DkFileNameConverter
 {
 public:
-    DkFileNameConverter(const QString &fileName, const QString &pattern, int cIdx);
+    DkFileNameConverter(const QString &pattern);
 
-    QString getConvertedFileName();
+    QString convert(const QString &file, int index) const;
 
-protected:
-    QString resolveFilename(const QString &tag) const;
-    QString resolveIdx(const QString &tag) const;
-    QString resolveExt(const QString &tag) const;
-    int getIntAttribute(const QString &tag, int idx = 1) const;
+private:
+    enum class Token {
+        Text,
+        TagName,
+        Number,
+    };
 
-    QString mFileName;
-    QString mPattern;
-    int mCIdx;
+    enum class FragType {
+        FileName,
+        Index,
+        Text,
+        Ext,
+    };
+
+    struct Frag {
+        FragType type;
+        uint indexDigits;
+        uint indexStart;
+        QString text;
+        uint caseConv;
+    };
+
+    std::vector<Frag> mFrags;
 };
 
 // from: http://stackoverflow.com/questions/5006547/qt-best-practice-for-a-single-instance-app-protection
