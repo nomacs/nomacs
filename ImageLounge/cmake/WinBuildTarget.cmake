@@ -52,8 +52,8 @@ add_dependencies(
 	${DLL_CORE_NAME} 
 	)
 
-target_include_directories(${BINARY_NAME} 		PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
-target_include_directories(${DLL_CORE_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+target_include_directories(${BINARY_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} "${PROJECT_SOURCE_DIR}/../3rd-party/build/opencv/3rdparty/zlib")
+target_include_directories(${DLL_CORE_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} "${PROJECT_SOURCE_DIR}/../3rd-party/build/opencv/3rdparty/zlib")
 
 target_link_libraries(${BINARY_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg Qt::WinExtras)
 target_link_libraries(${DLL_CORE_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg Qt::WinExtras)
@@ -75,16 +75,16 @@ set(DELAY_DLL_NAMES
 
 # dear future me: sorry, for manually defining them - but I have no time right now
 set(DELAY_DLL_NAMES_DEBUG 
-	opencv_core490d.dll
-	opencv_imgproc490d.dll
+	opencv_core4100d.dll
+	opencv_imgproc4100d.dll
 	quazip5d.dll
 	Qt5WinExtrasd.dll
 	${DELAY_DLL_NAMES}
 	)
 
 set(DELAY_DLL_NAMES_RELEASE
-	opencv_core490.dll
-	opencv_imgproc490.dll
+	opencv_core4100.dll
+	opencv_imgproc4100.dll
 	quazip1-qt5.dll
 	Qt5WinExtras.dll
 	${DELAY_DLL_NAMES}

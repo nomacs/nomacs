@@ -52,8 +52,8 @@ add_dependencies(
 	${DLL_CORE_NAME} 
 	)
 
-target_include_directories(${BINARY_NAME} 		PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
-target_include_directories(${DLL_CORE_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+target_include_directories(${BINARY_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} "${PROJECT_SOURCE_DIR}/../3rd-party/build/opencv/3rdparty/zlib")
+target_include_directories(${DLL_CORE_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} "${PROJECT_SOURCE_DIR}/../3rd-party/build/opencv/3rdparty/zlib")
 
 target_link_libraries(${BINARY_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg)
 target_link_libraries(${DLL_CORE_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg)
@@ -75,14 +75,14 @@ set(DELAY_DLL_NAMES
 
 # dear future me: sorry, for manually defining them - but I have no time right now
 set(DELAY_DLL_NAMES_DEBUG 
-	opencv_core490d.dll
-	opencv_imgproc490d.dll
+	opencv_core4100d.dll
+	opencv_imgproc4100d.dll
 	${DELAY_DLL_NAMES}
 	)
 
 set(DELAY_DLL_NAMES_RELEASE
-	opencv_core490.dll
-	opencv_imgproc490.dll
+	opencv_core4100.dll
+	opencv_imgproc4100.dll
 	quazip1-qt6.dll
 	${DELAY_DLL_NAMES}
 	)
@@ -111,8 +111,8 @@ set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL R
 file(COPY ${EXIV2_BUILD_PATH}/Release/bin/exiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 file(COPY ${EXPAT_BUILD_PATH}/Release/expat.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 file(COPY ${LIBRAW_BUILD_PATH}/Release/raw.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${OpenCV_DIR}/bin/Release/opencv_core490.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${OpenCV_DIR}/bin/Release/opencv_imgproc490.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${OpenCV_DIR}/bin/Release/opencv_core4100.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${OpenCV_DIR}/bin/Release/opencv_imgproc4100.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 if(ENABLE_QUAZIP)
 	file(COPY "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt6.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 endif(ENABLE_QUAZIP)
