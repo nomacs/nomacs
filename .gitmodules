@@ -6,7 +6,7 @@
 	url = https://github.com/opencv/opencv.git
 [submodule "3rd-party/quazip"]
 	path = 3rd-party/quazip
-	url = https://github.com/stachenov/quazip.git
+	url = https://github.com/novomesk/nomacs-quazip.git
 [submodule "ImageLounge/plugins"]
 	path = ImageLounge/plugins
 	url = https://github.com/novomesk/nomacs-plugins.git
