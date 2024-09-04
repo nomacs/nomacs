@@ -37,6 +37,7 @@
 
 #pragma warning(push, 0)
 #include <QBuffer>
+#include <QColorSpace>
 #include <QDebug>
 #include <QFileInfo>
 #include <QIcon>
@@ -2035,6 +2036,7 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
         iProcessor.imgdata.params.output_color = 1;
         iProcessor.imgdata.params.output_bps = 8;
         iProcessor.imgdata.params.four_color_rgb = 1;
+        iProcessor.imgdata.params.user_flip = 0;
 
         if (DkSettingsManager::param().resources().filterRawImages) {
             iProcessor.imgdata.params.user_qual = 3;
@@ -2079,6 +2081,7 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
         if (rimg) {
             mImg = QImage(rimg->data, rimg->width, rimg->height, rimg->width * 3, QImage::Format_RGB888);
             mImg = mImg.copy(); // make a deep copy...
+            mImg.setColorSpace(QColorSpace(QColorSpace::SRgb));
             LibRaw::dcraw_clear_mem(rimg);
 
             return true;
