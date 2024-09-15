@@ -82,7 +82,7 @@
 #include <shlobj.h>
 #endif
 
-void logMessageHandler(const QtMsgType type, const QMessageLogContext& context, const QString& msg)
+void logMessageHandler(const QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QFile logFile(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/nomacs-app.log");
     if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
