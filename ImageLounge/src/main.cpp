@@ -126,9 +126,6 @@ int main(int argc, char *argv[])
     qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss,zzz} [%{type}] %{category}: %{message}");
 #endif
 
-    nmc::DefaultSettings settings;
-    int mode = settings.value("AppSettings/appMode", nmc::DkSettingsManager::param().app().appMode).toInt();
-
     // uncomment this for the single instance feature...
     //// check for single instance
     // nmc::DkRunGuard guard;
@@ -230,8 +227,8 @@ int main(int argc, char *argv[])
         return 0;
 
     // install translations
-    QString translationName = "nomacs_" + settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
-    QString translationNameQt = "qt_" + settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
+    const QString translationName = "nomacs_" + nmc::DkSettingsManager::param().global().language + ".qm";
+    const QString translationNameQt = "qt_" + nmc::DkSettingsManager::param().global().language + ".qm";
 
     QTranslator translator;
     nmc::DkSettingsManager::param().loadTranslation(translationName, translator);
@@ -250,44 +247,75 @@ int main(int argc, char *argv[])
         nmc::DkSettingsManager::param().app().privateMode = true;
     }
 
+    int mode = nmc::DkSettingsManager::param().app().appMode;
+    qInfo() << "loaded app mode:" << mode;
+
     if (parser.isSet(modeOpt)) {
         QString pm = parser.value(modeOpt);
 
         if (pm == "default")
-            mode = nmc::DkSettingsManager::param().mode_default;
+            mode = nmc::DkSettings::mode_default;
         else if (pm == "frameless")
-            mode = nmc::DkSettingsManager::param().mode_frameless;
+            mode = nmc::DkSettings::mode_frameless;
         else if (pm == "pseudocolor")
-            mode = nmc::DkSettingsManager::param().mode_contrast;
+            mode = nmc::DkSettings::mode_contrast;
         else
             qWarning() << "illegal mode: " << pm << "use either <default>, <frameless> or <pseudocolor>";
-
-        nmc::DkSettingsManager::param().app().currentAppMode = mode;
     }
+
+    if (parser.isSet(fullScreenOpt))
+        mode = nmc::DkSettings::fullscreenMode(mode);
+
+    if (!nmc::DkSettings::modeIsValid(mode)) {
+        qWarning() << "invalid mode:" << mode;
+        mode = nmc::DkSettings::mode_default;
+    }
+
+    // TODO: currentAppMode is obsolete now; use appMode instead
+    // currentAppMode is not saved/restored by settings but must be set early
+    nmc::DkSettingsManager::param().app().currentAppMode = mode;
 
     nmc::DkTimer dt;
 
     // initialize nomacs
-    if (mode == nmc::DkSettingsManager::param().mode_frameless) {
+    const int modeType = nmc::DkSettings::normalMode(mode);
+    if (modeType == nmc::DkSettings::mode_frameless) {
         w = new nmc::DkNoMacsFrameless();
         qDebug() << "this is the frameless nomacs...";
-    } else if (mode == nmc::DkSettingsManager::param().mode_contrast) {
+    } else if (modeType == nmc::DkSettings::mode_contrast) {
         w = new nmc::DkNoMacsContrast();
         qDebug() << "this is the contrast nomacs...";
     } else if (parser.isSet(pongOpt)) {
         pw = new nmc::DkPong();
         int rVal = app.exec();
         return rVal;
-    } else
+    } else {
         w = new nmc::DkNoMacsIpl();
+    }
 
-    // show what we got...
-    w->show();
+    qInfo() << "init window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode << "maximized:" << w->isMaximized()
+            << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry() << "windowState:" << w->windowState();
 
-    bool maximized = w->isMaximized();
+    if (nmc::DkSettings::modeIsFullscreen(mode))
+        w->showFullScreen();
+    else if (w->windowState() & Qt::WindowMaximized)
+        w->showMaximized();
+    else
+        w->showNormal();
 
-    while (!w->isActiveWindow())
+    const bool maximized = w->isMaximized(); // check if show* actually maximized us
+
+    qInfo() << "show window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode << "maximized:" << w->isMaximized()
+            << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry() << "windowState:" << w->windowState();
+
+    while (!w->isActiveWindow() && dt.elapsed() < 5000) {
+        qDebug() << "waiting for active window";
+        QThread::msleep(10);
         qApp->processEvents();
+    }
+
+    qInfo() << "active window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode << "maximized:" << w->isMaximized()
+            << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry() << "windowState:" << w->windowState();
 
     // Qt emulates showMaximized() on some platforms (X11), so it might not work.
     // If we try again with a visible window, it *could* work correctly (GNOME)
@@ -328,21 +356,14 @@ int main(int argc, char *argv[])
     }
 
     // load recent files if there is nothing to display
-    if (!loading && nmc::DkSettingsManager::param().app().showRecentFiles) {
+    if (!loading && nmc::DkSettingsManager::param().app().showRecentFiles)
         w->showRecentFilesOnStartUp();
-    }
 
-    int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettingsManager::param().app().currentAppMode).toInt();
-
-    if (fullScreenMode == nmc::DkSettingsManager::param().mode_default_fullscreen || fullScreenMode == nmc::DkSettingsManager::param().mode_frameless_fullscreen
-        || fullScreenMode == nmc::DkSettingsManager::param().mode_contrast_fullscreen || parser.isSet(fullScreenOpt)) {
+    if (w->isFullScreen())
         w->enterFullScreen();
-        qDebug() << "trying to enter fullscreen...";
-    }
 
-    if (parser.isSet(slideshowOpt)) {
+    if (parser.isSet(slideshowOpt))
         cw->startSlideshow();
-    }
 
     if (cw->hasViewPort())
         cw->getViewPort()->setFocus(Qt::TabFocusReason);
