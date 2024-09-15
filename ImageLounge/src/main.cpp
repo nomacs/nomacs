@@ -50,9 +50,9 @@
 #include <QMessageBox>
 #include <QObject>
 #include <QProcess>
+#include <QStandardPaths>
 #include <QTextStream>
 #include <QTranslator>
-#include <QStandardPaths>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QImageReader>
