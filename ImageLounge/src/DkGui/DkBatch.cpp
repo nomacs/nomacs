@@ -1032,10 +1032,10 @@ void DkBatchOutput::updateFileLabelPreview()
     if (mExampleName.isEmpty())
         return;
 
-    DkFileNameConverter converter(mExampleName, getFilePattern(), 0);
+    DkFileNameConverter converter(getFilePattern());
 
     mOldFileNameLabel->setText(mExampleName);
-    mNewFileNameLabel->setText(converter.getConvertedFileName());
+    mNewFileNameLabel->setText(converter.convert(mExampleName, 0));
 }
 
 QString DkBatchOutput::getOutputDirectory()

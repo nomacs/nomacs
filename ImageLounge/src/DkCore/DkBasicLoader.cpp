@@ -37,6 +37,7 @@
 
 #pragma warning(push, 0)
 #include <QBuffer>
+#include <QColorSpace>
 #include <QDebug>
 #include <QFileInfo>
 #include <QIcon>
@@ -2031,6 +2032,22 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
         // open the buffer
         LibRaw iProcessor;
 
+        iProcessor.imgdata.params.use_camera_wb = 1;
+        iProcessor.imgdata.params.output_color = 1;
+        iProcessor.imgdata.params.output_bps = 8;
+        iProcessor.imgdata.params.four_color_rgb = 1;
+        iProcessor.imgdata.params.user_flip = 0;
+
+        if (DkSettingsManager::param().resources().filterRawImages) {
+            iProcessor.imgdata.params.user_qual = 3;
+            iProcessor.imgdata.params.dcb_enhance_fl = 1;
+            iProcessor.imgdata.params.fbdd_noiserd = 2;
+        } else {
+            iProcessor.imgdata.params.user_qual = 0;
+            iProcessor.imgdata.params.dcb_enhance_fl = 0;
+            iProcessor.imgdata.params.fbdd_noiserd = 0;
+        }
+
         if (!openBuffer(ba, iProcessor)) {
             qDebug() << "could not open buffer for" << mFilePath;
             return false;
@@ -2057,18 +2074,17 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
             return false;
 
         // develop using libraw
-        if (mCamType == camera_unknown) {
-            error = iProcessor.dcraw_process();
+        error = iProcessor.dcraw_process();
 
-            auto rimg = iProcessor.dcraw_make_mem_image();
+        auto rimg = iProcessor.dcraw_make_mem_image();
 
-            if (rimg) {
-                mImg = QImage(rimg->data, rimg->width, rimg->height, rimg->width * 3, QImage::Format_RGB888);
-                mImg = mImg.copy(); // make a deep copy...
-                LibRaw::dcraw_clear_mem(rimg);
+        if (rimg) {
+            mImg = QImage(rimg->data, rimg->width, rimg->height, rimg->width * 3, QImage::Format_RGB888);
+            mImg = mImg.copy(); // make a deep copy...
+            mImg.setColorSpace(QColorSpace(QColorSpace::SRgb));
+            LibRaw::dcraw_clear_mem(rimg);
 
-                return true;
-            }
+            return true;
         }
 
         // demosaic image

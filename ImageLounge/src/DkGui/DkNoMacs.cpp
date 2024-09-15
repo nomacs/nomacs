@@ -136,8 +136,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     am.createMenus(mMenu);
     am.enableImageActions(false);
 
-    mSaveSettings = true;
-
     mOpenDialog = 0;
     mSaveDialog = 0;
     mThumbSaver = 0;
@@ -162,7 +160,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     mOldGeometry = geometry();
     mOverlaid = false;
 
-    resize(850, 504);
+    resize(986, 686); // default window size, fits the settings tab
     setMinimumSize(20, 20);
 
     //// fun fact
@@ -204,7 +202,7 @@ void DkNoMacs::init()
     readSettings();
     installEventFilter(this);
 
-    if (DkSettingsManager::param().app().appMode != DkSettings::mode_frameless) {
+    if (DkSettings::normalMode(DkSettingsManager::param().app().appMode) != DkSettings::mode_frameless) {
         DkToolBarManager::inst().showDefaultToolBar(DkSettingsManager::param().app().showToolBar);
         showMenuBar(DkSettingsManager::param().app().showMenuBar);
         DkStatusBarManager::instance().show(DkSettingsManager::param().app().showStatusBar);
@@ -398,33 +396,42 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
     }
 
     emit closeSignal();
-    qDebug() << "saving window settings...";
     setVisible(false);
-    // showNormal();
 
-    if (mSaveSettings) {
-        DefaultSettings settings;
-        settings.setValue("geometryNomacs", geometry());
-        settings.setValue("geometry", saveGeometry());
-        settings.setValue("windowState", saveState());
+    DefaultSettings settings;
 
-        if (mExplorer)
-            settings.setValue(mExplorer->objectName(), QMainWindow::dockWidgetArea(mExplorer));
-        if (mMetaDataDock)
-            settings.setValue(mMetaDataDock->objectName(), QMainWindow::dockWidgetArea(mMetaDataDock));
-        if (mEditDock)
-            settings.setValue(mEditDock->objectName(), QMainWindow::dockWidgetArea(mEditDock));
-        if (mThumbsDock)
-            settings.setValue(mThumbsDock->objectName(), QMainWindow::dockWidgetArea(mThumbsDock));
+    // TODO: this is temporary until currentAppMode is replaced with appMode
+    if (isFullScreen())
+        DkSettingsManager::param().app().appMode = DkSettings::fullscreenMode(DkSettingsManager::param().app().appMode);
 
-        nmc::DkSettingsManager::param().save();
+    if (objectName() != "DkNoMacsFrameless") {
+        // the frameless geometry is always the screen rect, don't save
+        // NOTE: saveGeometry() does not play well with mode switching, don't use it
+        settings.setValue("windowGeometry", normalGeometry());
+        settings.setValue("windowMaximized", isMaximized());
+        qInfo() << "save geometry:" << normalGeometry() << "windowState:" << windowState();
     }
+
+    settings.setValue("windowState", saveState());
+
+    if (mExplorer)
+        settings.setValue(mExplorer->objectName(), QMainWindow::dockWidgetArea(mExplorer));
+    if (mMetaDataDock)
+        settings.setValue(mMetaDataDock->objectName(), QMainWindow::dockWidgetArea(mMetaDataDock));
+    if (mEditDock)
+        settings.setValue(mEditDock->objectName(), QMainWindow::dockWidgetArea(mEditDock));
+    if (mThumbsDock)
+        settings.setValue(mThumbsDock->objectName(), QMainWindow::dockWidgetArea(mThumbsDock));
+
+    nmc::DkSettingsManager::param().save();
 
     QMainWindow::closeEvent(event);
 }
 
 void DkNoMacs::resizeEvent(QResizeEvent *event)
 {
+    qDebug() << "resize event" << event->size();
+
     QMainWindow::resizeEvent(event);
 
     if (!mOverlaid)
@@ -550,21 +557,48 @@ void DkNoMacs::readSettings()
 {
     DefaultSettings settings;
 
-#ifdef Q_WS_WIN
-    // fixes #392 - starting maximized on 2nd screen - tested on win8 only
-    QRect r = settings.value("geometryNomacs", QRect()).toRect();
+    QRect defaultGeometry = geometry(); // from DkNoMacs()
+    defaultGeometry.moveCenter(qApp->primaryScreen()->availableGeometry().center());
 
-    if (r.width() && r.height()) // do not set the geometry if nomacs is loaded the first time
-        setGeometry(r);
-#endif
+    // we don't use restoreGeometry() because it messes up mode switching,
+    // the downside is we have to correct bad geometry ourselves
+    QRect normalGeometry = settings.value("windowGeometry", defaultGeometry).toRect();
 
-    restoreGeometry(settings.value("geometry").toByteArray());
+    bool recenter = false;
+
+    const QScreen *screen = qApp->screenAt(normalGeometry.topLeft());
+    if (!screen) {
+        screen = qApp->primaryScreen();
+        recenter = true;
+    }
+
+    const QRect screenRect = screen->availableGeometry();
+
+    if (!screenRect.contains(normalGeometry, true)) { // must fit completely
+        recenter = true;
+        QSize size = normalGeometry.size();
+        size.setHeight(qBound(minimumSize().height(), size.height(), screenRect.size().height()));
+        size.setWidth(qBound(minimumSize().width(), size.width(), screenRect.size().width()));
+        normalGeometry.setSize(size);
+    }
+
+    if (recenter)
+        normalGeometry.moveCenter(screenRect.center());
+
+    setGeometry(normalGeometry);
+
+    bool wasMaximized = settings.value("windowMaximized", false).toBool();
+    if (wasMaximized)
+        setWindowState(Qt::WindowMaximized);
+
+    qInfo() << "restore geometry:" << geometry() << "windowState:" << windowState();
+
     restoreState(settings.value("windowState").toByteArray());
 
     // restore state makes the toolbar visible - so hide it again...
     if (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) {
-        DkToolBarManager::inst().showDefaultToolBar(false);
-        DkStatusBarManager::instance().show(false);
+        DkToolBarManager::inst().showDefaultToolBar(false, false);
+        DkStatusBarManager::instance().show(false, false);
     }
 }
 
@@ -578,44 +612,61 @@ void DkNoMacs::toggleFullScreen()
 
 void DkNoMacs::enterFullScreen()
 {
-    DkSettingsManager::param().app().currentAppMode += qFloor(DkSettings::mode_end * 0.5f);
-    if (DkSettingsManager::param().app().currentAppMode < 0) {
-        qDebug() << "illegal state: " << DkSettingsManager::param().app().currentAppMode;
-        DkSettingsManager::param().app().currentAppMode = DkSettings::mode_default;
-    }
+    int appMode = DkSettingsManager::param().app().currentAppMode;
+    appMode = DkSettings::fullscreenMode(appMode);
+    DkSettingsManager::param().app().currentAppMode = appMode;
 
     menuBar()->hide();
     DkToolBarManager::inst().show(false);
     DkStatusBarManager::instance().statusbar()->hide();
     getTabWidget()->showTabs(false);
-
     restoreDocks();
 
-    // here is an issue with windows that I can't quite fix:
-    // if we send nomacs to fullscreen from an attached window (i.e. split window)
-    setWindowState(windowState() | Qt::WindowFullScreen);
+    qInfo() << "before enter fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
+            << "windowState:" << windowState();
+
+    mWasMaximized = isMaximized();
+    showFullScreen();
+
+    qInfo() << "after enter fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
+            << "windowState:" << windowState();
 
     if (getTabWidget()->getViewPort())
         getTabWidget()->getViewPort()->setFullScreen(true);
+
+    update();
 }
 
 void DkNoMacs::exitFullScreen()
 {
     if (isFullScreen()) {
-        DkSettingsManager::param().app().currentAppMode -= qFloor(DkSettings::mode_end * 0.5f);
-        if (DkSettingsManager::param().app().currentAppMode < 0) {
-            qDebug() << "illegal state: " << DkSettingsManager::param().app().currentAppMode;
-            DkSettingsManager::param().app().currentAppMode = DkSettings::mode_default;
-        }
+        int appMode = DkSettingsManager::param().app().currentAppMode;
+        if (!DkSettings::modeIsFullscreen(appMode))
+            qWarning() << "expected fullscreen app mode, but got" << appMode;
 
-        if (DkSettingsManager::param().app().showMenuBar)
-            mMenu->show();
-        if (DkSettingsManager::param().app().showStatusBar)
-            DkStatusBarManager::instance().statusbar()->show();
+        appMode = DkSettings::normalMode(appMode);
+        DkSettingsManager::param().app().currentAppMode = appMode;
+
+        if (appMode != DkSettings::mode_frameless) {
+            if (DkSettingsManager::param().app().showMenuBar)
+                mMenu->show();
+            if (DkSettingsManager::param().app().showStatusBar)
+                DkStatusBarManager::instance().statusbar()->show();
+        }
 
         DkToolBarManager::inst().restore();
         restoreDocks();
-        setWindowState(windowState() & ~Qt::WindowFullScreen);
+
+        qInfo() << "before exit fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
+                << "windowState:" << windowState();
+
+        if (mWasMaximized)
+            showMaximized();
+        else
+            showNormal();
+
+        qInfo() << "after exit fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
+                << "windowState:" << windowState();
 
         if (getTabWidget())
             getTabWidget()->showTabs(true);
@@ -664,6 +715,12 @@ void DkNoMacs::restartFrameless(bool)
     else
         args << "-m"
              << "default";
+
+    if (isFullScreen())
+        args << "-f";
+
+    if (DkSettingsManager::param().app().privateMode)
+        args << "-p";
 
     if (getTabWidget()->getCurrentImage())
         args.append(getTabWidget()->getCurrentImage()->filePath());
@@ -1515,6 +1572,9 @@ void DkNoMacs::newInstance(const QString &filePath)
     else
         args.append(filePath);
 
+    DkSettingsManager::param().app().appMode = DkSettingsManager::param().app().currentAppMode;
+    DkSettingsManager::param().save();
+
     QProcess::startDetached(exe, args);
 }
 
@@ -1554,6 +1614,13 @@ void DkNoMacs::restartWithPseudoColor(bool contrast)
     else
         args << "-m"
              << "default";
+
+    if (isFullScreen())
+        args << "-f";
+
+    if (DkSettingsManager::param().app().privateMode)
+        args << "-p";
+
     args.append(getTabWidget()->getCurrentFilePath());
 
     bool started = mProcess.startDetached(exe, args);
@@ -2029,6 +2096,8 @@ void DkNoMacsSync::dropEvent(QDropEvent *event)
 DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     : DkNoMacsSync(parent, flags)
 {
+    DkSettingsManager::param().app().appMode = DkSettings::mode_default;
+
     // init members
     DkCentralWidget *cw = new DkCentralWidget(this);
     setCentralWidget(cw);
@@ -2036,9 +2105,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     init();
     setAcceptDrops(true);
     setMouseTracking(true); // receive mouse event everytime
-
-    DkSettingsManager::param().app().appMode = 0;
-    DkSettingsManager::param().app().appMode = DkSettings::mode_default;
 }
 
 // FramelessNoMacs --------------------------------------------------------------------
@@ -2074,20 +2140,13 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     am.action(DkActionManager::menu_view_frameless)->setChecked(true);
     am.action(DkActionManager::menu_view_frameless)->blockSignals(false);
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    mDesktop = QApplication::desktop();
-
     chooseMonitor(false);
-#endif
-    show();
+    connect(am.action(DkActionManager::menu_view_monitors), &QAction::triggered, this, [this] {
+        chooseMonitor(true);
+    });
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    connect(mDesktop, &QDesktopWidget::workAreaResized, this, &DkNoMacsFrameless::chooseMonitor);
-    connect(am.action(DkActionManager::menu_view_monitors), &QAction::triggered, this, &DkNoMacsFrameless::chooseMonitor);
-#endif
-
-    setObjectName("DkNoMacsFrameless");
-    DkStatusBarManager::instance().show(false); // fix
+    setObjectName("DkNoMacsFrameless"); // init() changed it
+    DkStatusBarManager::instance().show(false, false);
 
     // actions that should always be disabled
     DkActionManager::instance().action(DkActionManager::menu_view_fit_frame)->setEnabled(false);
@@ -2103,19 +2162,22 @@ void DkNoMacsFrameless::createContextMenu()
 
     DkActionManager &am = DkActionManager::instance();
     am.contextMenu()->addSeparator();
+    am.contextMenu()->addAction(am.action(DkActionManager::menu_view_monitors));
     am.contextMenu()->addAction(am.action(DkActionManager::menu_file_exit));
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void DkNoMacsFrameless::chooseMonitor(bool force)
 {
-    if (!mDesktop)
+    QScreen *oldScreen = qApp->screenAt(geometry().topLeft());
+    if (!oldScreen) {
+        qWarning() << "[chooseMonitor] invalid geometry";
         return;
+    }
 
-    QRect screenRect = mDesktop->availableGeometry();
+    disconnect(oldScreen, nullptr, this, nullptr);
+    QRect screenRect = oldScreen->availableGeometry();
 
-    // ask the user which monitor to use
-    if (mDesktop->screenCount() > 1) {
+    if (qApp->screens().count() > 1) {
         DkChooseMonitorDialog *cmd = new DkChooseMonitorDialog(this);
         cmd->setWindowTitle(tr("Choose a Monitor"));
 
@@ -2130,8 +2192,20 @@ void DkNoMacsFrameless::chooseMonitor(bool force)
     }
 
     setGeometry(screenRect);
+
+    QScreen *newScreen = qApp->screenAt(geometry().topLeft());
+    if (!newScreen) {
+        qWarning() << "[chooseMonitor] invalid screenRect returned";
+        return;
+    }
+
+    connect(newScreen, &QScreen::availableGeometryChanged, this, [this](const QRect &rect) {
+        qInfo() << "[chooseMonitor] screen geometry changed" << rect;
+        chooseMonitor(true);
+    });
+
+    qInfo() << "[chooseMonitor] force:" << force << "set geometry:" << geometry() << "windowState:" << windowState();
 }
-#endif
 
 // >DIR diem: eating shortcut overrides
 bool DkNoMacsFrameless::eventFilter(QObject *, QEvent *event)
@@ -2155,23 +2229,13 @@ bool DkNoMacsFrameless::eventFilter(QObject *, QEvent *event)
     return false;
 }
 
-void DkNoMacsFrameless::closeEvent(QCloseEvent *event)
-{
-    // do not save the window size
-    if (mSaveSettings)
-        DkSettingsManager::param().save();
-
-    mSaveSettings = false;
-
-    DkNoMacs::closeEvent(event);
-}
-
 // Transfer function:
 
 DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
     : DkNoMacsSync(parent, flags)
 {
     setObjectName("DkNoMacsContrast");
+    DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;
 
     // init members
     DkCentralWidget *cw = new DkCentralWidget(this);
@@ -2183,12 +2247,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
     setAcceptDrops(true);
     setMouseTracking(true); // receive mouse event everytime
-
-    DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;
-    setObjectName("DkNoMacsContrast");
-
-    // show it...
-    show();
 
     // TODO: this should be checked but no event should be called
     DkActionManager &am = DkActionManager::instance();

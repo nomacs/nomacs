@@ -1074,14 +1074,14 @@ void DkBatchProcessing::init()
 
     QStringList fileList = mBatchConfig.getFileList();
 
+    DkFileNameConverter converter(mBatchConfig.getFileNamePattern());
     for (int idx = 0; idx < fileList.size(); idx++) {
         DkSaveInfo si = mBatchConfig.saveInfo();
 
         QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
         QString outDir = si.isInputDirOutputDir() ? cFileInfo.absolutePath() : mBatchConfig.getOutputDirPath();
 
-        DkFileNameConverter converter(cFileInfo.fileName(), mBatchConfig.getFileNamePattern(), idx);
-        QString outputFilePath = QFileInfo(outDir, converter.getConvertedFileName()).absoluteFilePath();
+        QString outputFilePath = QFileInfo(outDir, converter.convert(cFileInfo.fileName(), idx)).absoluteFilePath();
 
         // set input/output file path
         si.setInputFilePath(fileList.at(idx));

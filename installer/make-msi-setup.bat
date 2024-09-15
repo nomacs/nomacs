@@ -1,7 +1,7 @@
 echo off
 
 REM set your WiX path
-SET PATH=%PATH%;"C:\Program Files (x86)\WiX Toolset v3.11\bin";"C:\Program Files (x86)\Windows Kits\10\bin\x64\";
+SET PATH=%PATH%;"C:\Program Files (x86)\WiX Toolset v3.14\bin";"C:\Program Files (x86)\Windows Kits\10\bin\x64\";
 SET ARCH=x64
 
 call sign .\nomacs.%ARCH%\nomacs.exe %~1

@@ -37,7 +37,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev build-essential ninja-build ${{ matrix.qt.deps }}
+          sudo apt-get install -y libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev build-essential ninja-build libgtest-dev ${{ matrix.qt.deps }}
 
       - name: CMake configure
         run: |
@@ -49,6 +49,11 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/build
           ninja -j3
+
+      - name: Test
+        run: |
+          cd ${GITHUB_WORKSPACE}/build
+          ninja check 
 
   check:
     # Need to use newer clang-format
