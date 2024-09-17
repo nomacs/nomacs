@@ -50,7 +50,6 @@
 #include <QMessageBox>
 #include <QObject>
 #include <QProcess>
-#include <QStandardPaths>
 #include <QTextStream>
 #include <QTranslator>
 
@@ -82,14 +81,6 @@
 #include <shlobj.h>
 #endif
 
-void logMessageHandler(const QtMsgType type, const QMessageLogContext &context, const QString &msg)
-{
-    QFile logFile(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/nomacs-app.log");
-    if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
-        logFile.write(qUtf8Printable(qFormatLogMessage(type, context, msg) + "\n"));
-    }
-}
-
 #ifdef _MSC_BUILD
 int main(int argc, wchar_t *argv[])
 {
@@ -118,13 +109,6 @@ int main(int argc, char *argv[])
     // init settings
     nmc::DkSettingsManager::instance().init();
     nmc::DkMetaDataHelper::initialize(); // this line makes the XmpParser thread-save - so don't delete it even if you seem to know what you do
-
-#ifdef DEBUG
-    qDebug() << "Writing to log file:" << QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/nomacs-app.log";
-    qInstallMessageHandler(logMessageHandler);
-    // Install custom message pattern
-    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss,zzz} [%{type}] %{category}: %{message}");
-#endif
 
     // uncomment this for the single instance feature...
     //// check for single instance
@@ -369,7 +353,7 @@ int main(int argc, char *argv[])
         cw->getViewPort()->setFocus(Qt::TabFocusReason);
 
 // since Qt5 only Q_OS_MACOS is defined, see https://doc.qt.io/qt-5/macos-issues.html#compile-time-flags
-#if defined(Q_WS_MAC) || defined(Q_OS_MACOS)
+#ifdef Q_OS_MACOS
     nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
     app.installEventFilter(osxEventFilter);
     QObject::connect(osxEventFilter, &nmc::DkNomacsOSXEventFilter::loadFile, w, &nmc::DkNoMacs::loadFile);
