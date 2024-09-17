@@ -164,6 +164,15 @@ If you want to have an independent bundle image (`nomacs.dmg`) you can create it
 $ make bundle
 ```
 
+If macdeployqt complains about `ERROR: Cannot resolve rpath "@rpath/QtGui.framework/Versions/A/QtGui"` [here](https://github.com/orgs/Homebrew/discussions/2823#discussioncomment-2010340) is the solution:
+```console
+$ /usr/local/lib/QtGui.framework/Versions/A
+$ install_name_tool -id '@rpath/QtGui.framework/Versions/A/QtGui' QtGui
+% otool -L QtGui| head -2
+QtGui:
+        @rpath/QtGui.framework/Versions/A/QtGui (compatibility version 6.0.0, current version 6.7.0)
+```
+
 ## Build nomacs (Windows Cross-Compile)
 
 Compiles nomacs for Windows using M Cross Environment (MXE) from a Linux/Unix host. 
