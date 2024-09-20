@@ -275,17 +275,6 @@ docker push diemmarkus/nomacs:latest
 ```
 
 
-## Enable Debug output
-
-To enable Qt debug messages set
-
-```bash
-cmake -D CMAKE_BUILD_TYPE=Debug ...
-```
-
-at the Makefiles generation phase. This will also write all logging information to a log file named 'nomacs-app.log' located in `QStandardPaths::AppLocalDataLocation` (see also logging output at console).
-
-
 ## Links
 
 - [nomacs.org](https://nomacs.org)
