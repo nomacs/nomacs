@@ -435,7 +435,11 @@ void DkUtils::initializeDebug()
         qInstallMessageHandler(qtMessageOutput);
 
     // format console
-    QString p = "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}%{if-fatal}[ERROR] %{endif}%{message}";
+    QString p = "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}%{if-fatal}[ERROR] %{endif}";
+#ifndef QT_NO_DEBUG_OUTPUT
+    p += "%{if-debug}[DEBUG] %{endif}";
+#endif
+    p += "%{message}";
     qSetMessagePattern(p);
 }
 
