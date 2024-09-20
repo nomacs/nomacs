@@ -115,6 +115,6 @@ get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 
 add_custom_target(bundle
-	COMMAND ${MACDEPLOYQT_EXECUTABLE} ${BINARY_NAME}.app -dmg
+	COMMAND ${MACDEPLOYQT_EXECUTABLE} ${BINARY_NAME}.app -always-overwrite -dmg
 	DEPENDS ${BINARY_NAME}
 	COMMENT "Execute ${MACDEPLOYQT_EXECUTABLE} to create macOS bundle")

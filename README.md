@@ -8,7 +8,7 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 ## Build nomacs (Windows)
 
-We assume you have an IDE (i.e. Visual Studio), python, git, and [Qt](https://www.qt.io/download-open-source) installed.  
+We assume you have an IDE (i.e. Visual Studio), python, git, and [Qt](https://www.qt.io/download-open-source) installed.
 
 Get all dependencies:
 
@@ -54,26 +54,26 @@ Get the required packages:
 
 - For Ubuntu 21.04 and above:
 
-  ``` console
+  ```console
   sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qtbase5-dev qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip5-dev libwebp-dev git build-essential lcov libzip-dev
   ```
 
 - For older Ubuntu versions:
 
-  ``` console
+  ```console
   sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip5-dev libwebp-dev git build-essential lcov libzip-dev
   ```
 
 Clone the nomacs repository from GitHub:
 
-``` console
+```console
 git clone https://github.com/nomacs/nomacs.git
 ```
 
 This will by default place the source into ~/nomacs
 Go to the nomacs/ImageLounge directory and run `cmake` to get the Makefiles:
 
-``` console
+```console
 mkdir build
 cd build
 cmake ../ImageLounge/.
@@ -81,19 +81,19 @@ cmake ../ImageLounge/.
 
 Compile nomacs:
 
-``` console
+```console
 make
 ```
 
 You will now have a binary (~/nomacs/build/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use:
 
-``` console
+```console
 sudo make install
 ```
 
 note that you have to execute
 
-``` console
+```console
 sudo ldconfig
 ```
 
@@ -111,19 +111,19 @@ Install the [heif plugin](https://github.com/jakar/qt-heif-image-plugin) for HEI
 Install [Homebrew](http://brew.sh/) for easier installation of dependencies.
 Install required dependencies:
 
-``` console
+```console
 brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
 Clone the nomacs repository from GitHub:
 
-``` console
+```console
 git clone https://github.com/nomacs/nomacs.git
 ```
 
 Go to the `nomacs` directory and run cmake to get the Makefiles:
 
-``` console
+```console
 cd nomacs
 mkdir build
 cd build
@@ -164,13 +164,22 @@ If you want to have an independent bundle image (`nomacs.dmg`) you can create it
 $ make bundle
 ```
 
+If macdeployqt complains about `ERROR: Cannot resolve rpath "@rpath/QtGui.framework/Versions/A/QtGui"` [here](https://github.com/orgs/Homebrew/discussions/2823#discussioncomment-2010340) is the solution:
+```console
+$ /usr/local/lib/QtGui.framework/Versions/A
+$ install_name_tool -id '@rpath/QtGui.framework/Versions/A/QtGui' QtGui
+% otool -L QtGui| head -2
+QtGui:
+        @rpath/QtGui.framework/Versions/A/QtGui (compatibility version 6.0.0, current version 6.7.0)
+```
+
 ## Build nomacs (Windows Cross-Compile)
 
 Compiles nomacs for Windows using M Cross Environment (MXE) from a Linux/Unix host. 
 
 MXE environment is usually compiled from source, however you may be able to skip this if MXE has packages for your platform:
 
-````bash
+```bash
 git clone <mxe url>
 cd mxe
 
@@ -179,11 +188,11 @@ make MXE_TARGETS='x86_64-w64-mingw32.shared' qtbase qtimageformats qtwinextras o
 
 # qt6 (quazip-qt6 is unavailable)
 make MXE_TARGETS='x86_64-w64-mingw32.shared' qt6-qtbase qt6-qtimageformats qt6-qttools opencv tiff exiv2 libraw
-````
+```
 
 Setup build environment:
 
-````bash
+```bash
 export MXE_DIR=~/mxe
 export MXE_TARGET=x86_64-w64-mingw32.shared
 export PATH="${MXE_DIR}/usr/bin:$PATH"
@@ -191,39 +200,39 @@ export PATH="${MXE_DIR}/usr/bin:$PATH"
 alias pkg-config=${MXE_TARGET}-pkg-config
 alias qmake=${MXE_TARGET}-qmake
 alias cmake=${MXE_TARGET}-cmake
-````
+```
 
 Run cmake out-of-tree:
 
-````bash
+```bash
 mkdir build-nomacs
 cd build-nomacs
 
 cmake -D QT_VERSION_MAJOR=5 -D ENABLE_TRANSLATIONS=ON -D ENABLE_HEIF=ON -D ENABLE_AVIF=ON  \
 -DENABLE_JXL=ON -D USE_SYSTEM_QUAZIP=OFF <nomacs-path>/ImageLounge
-````
+```
 
 Compile nomacs:
 
-````bash
+```bash
 make -j8
 make collect
-````
+```
 
 Run on WINE:
 
-````bash
+```bash
 wine nomacs-mingw/nomacs.exe
-````
+```
 
 Run on Windows:
 
-````console
+```console
 cd C:\
 xcopy /DEY <shared-folder>\build-nomacs\nomacs-mingw nomacs
 cd nomacs
 nomacs.exe
-````
+```
 
 ## Build nomacs (Windows with MSYS2)
 
@@ -237,7 +246,7 @@ export PATH=/ming64:$PATH
 
 cd <build-dir>
 
-cmake  -D  QT_MAJOR_VERSION=5  -D ENABLE_TRANSLATIONS=ON -D  USE_SYSTEM_QUAZIP=ON <nomacs-dir>/ImageLounge
+cmake -D QT_MAJOR_VERSION=5 -D ENABLE_TRANSLATIONS=ON -D USE_SYSTEM_QUAZIP=ON <nomacs-dir>/ImageLounge
 
 cmake --build . --parallel 8
 ```
@@ -247,23 +256,24 @@ cmake --build . --parallel 8
 
 We have created a docker image that best simulates the old travis system (currently it's ubuntu xenial 16.04). To build nomacs in a docker, you have to create the image:
 
-````bash
+```bash
 docker build --rm -f "Dockerfile" -t nomacs:latest empty-docker-dir
-`````
+```
 
 To deploy nomacs in a docker on your system, you can mount this directory using:
 
-````bash
+```bash
 docker run --rm -it -v C:\\coding\\nomacs:/usr/nomacs nomacs:latest
-````
+```
 
 If needed, you can upload the image:
 
-````bash
+```bash
 docker login
 docker tag nomacs diemmarkus/nomacs
 docker push diemmarkus/nomacs:latest
-````
+```
+
 
 ## Links
 

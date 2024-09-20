@@ -2,7 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
         <key>CFBundleDevelopmentRegion</key>
         <string>English</string>
         <key>CFBundleExecutable</key>
@@ -42,22 +41,22 @@
                         <key>CFBundleTypeExtensions</key>
                         <array>
                                 <string>png</string>
-		                		<string>PNG</string>
-                				<string>jpg</string>
-                				<string>JPG</string>
-                				<string>jpeg</string>
-				                <string>JPEG</string>
-                				<string>tiff</string>
-				                <string>TIFF</string>
+                                <string>PNG</string>
+                                <string>jpg</string>
+                                <string>JPG</string>
+                                <string>jpeg</string>
+                                <string>JPEG</string>
+                                <string>tiff</string>
+                                <string>TIFF</string>
                         </array>
                         <key>CFBundleTypeMIMETypes</key>
                         <array>
-                            <string>image/x-xpm</string>
-                             <string>image/jpeg</string>
-                             <string>image/gif</string>
-                             <string>image/tiff</string>
-                             <string>image/tiff-fx</string>
-                             <string>image/png</string>
+                                <string>image/x-xpm</string>
+                                <string>image/jpeg</string>
+                                <string>image/gif</string>
+                                <string>image/tiff</string>
+                                <string>image/tiff-fx</string>
+                                <string>image/png</string>
                         </array>
 
                         <key>CFBundleTypeIconFile</key>
@@ -69,6 +68,5 @@
                         <true/>
                 </dict>
         </array>
-
 </dict>
 </plist>

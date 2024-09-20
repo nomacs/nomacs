@@ -352,7 +352,8 @@ int main(int argc, char *argv[])
     if (cw->hasViewPort())
         cw->getViewPort()->setFocus(Qt::TabFocusReason);
 
-#ifdef Q_WS_MAC
+// since Qt5 only Q_OS_MACOS is defined, see https://doc.qt.io/qt-5/macos-issues.html#compile-time-flags
+#ifdef Q_OS_MACOS
     nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
     app.installEventFilter(osxEventFilter);
     QObject::connect(osxEventFilter, &nmc::DkNomacsOSXEventFilter::loadFile, w, &nmc::DkNoMacs::loadFile);
