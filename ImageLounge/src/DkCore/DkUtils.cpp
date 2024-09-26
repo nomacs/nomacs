@@ -381,14 +381,14 @@ void DkUtils::addLanguages(QComboBox *langCombo, QStringList &languages)
 /// DkUtils::instance().app().useLogFile ist true.
 /// </summary>
 /// <param name="type">The message type (QtDebugMsg are not written to the log).</param>
-/// <param name=""></param>
+/// <param name="context">Additional information about a log message</param>
 /// <param name="msg">The message.</param>
-void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg)
+void qtMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     if (!DkSettingsManager::param().app().useLogFile)
         return;
 
-    DkUtils::logToFile(type, msg);
+    DkUtils::logToFile(type, qFormatLogMessage(type, context, msg));
 }
 
 void DkUtils::logToFile(QtMsgType type, const QString &msg)
@@ -435,7 +435,11 @@ void DkUtils::initializeDebug()
         qInstallMessageHandler(qtMessageOutput);
 
     // format console
-    QString p = "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}%{if-fatal}[ERROR] %{endif}%{message}";
+    QString p = "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}%{if-fatal}[ERROR] %{endif}";
+#ifndef QT_NO_DEBUG_OUTPUT
+    p += "%{if-debug}[DEBUG] %{endif}";
+#endif
+    p += "%{message}";
     qSetMessagePattern(p);
 }
 

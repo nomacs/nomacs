@@ -275,6 +275,17 @@ docker push diemmarkus/nomacs:latest
 ```
 
 
+## Enable Debug output
+
+To enable Qt debug messages set
+
+```bash
+cmake -D CMAKE_BUILD_TYPE=Debug ...
+```
+
+at the Makefiles generation phase.
+
+
 ## Links
 
 - [nomacs.org](https://nomacs.org)
