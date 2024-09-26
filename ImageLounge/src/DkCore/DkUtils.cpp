@@ -398,35 +398,13 @@ void DkUtils::logToFile(QtMsgType type, const QString &msg)
     if (filePath.isEmpty())
         filePath = DkUtils::getLogFilePath();
 
-    QString txt;
-
-    switch (type) {
-    case QtDebugMsg:
-        return; // ignore debug messages
-        break;
-    case QtInfoMsg:
-        txt = msg;
-        break;
-    case QtWarningMsg:
-        txt = "[Warning] " + msg;
-        break;
-    case QtCriticalMsg:
-        txt = "[Critical] " + msg;
-        break;
-    case QtFatalMsg:
-        txt = "[FATAL] " + msg;
-        break;
-    default:
-        // txt = "unknown message type: " + QString::number(type) + msg;
-        return;
-    }
-
     QFile outFile(filePath);
-    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append))
+    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
         printf("cannot open %s for logging\n", filePath.toStdString().c_str());
-
-    QTextStream ts(&outFile);
-    ts << txt << Qt::endl;
+    } else {
+        QTextStream ts(&outFile);
+        ts << msg << Qt::endl;
+    }
 }
 
 void DkUtils::initializeDebug()
@@ -434,12 +412,10 @@ void DkUtils::initializeDebug()
     if (DkSettingsManager::param().app().useLogFile)
         qInstallMessageHandler(qtMessageOutput);
 
-    // format console
-    QString p = "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}%{if-fatal}[ERROR] %{endif}";
-#ifndef QT_NO_DEBUG_OUTPUT
-    p += "%{if-debug}[DEBUG] %{endif}";
-#endif
-    p += "%{message}";
+    // format message output
+    QString p =
+        "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}"
+        "%{if-fatal}[ERROR] %{endif}%{if-debug}[DEBUG] %{endif}%{message}";
     qSetMessagePattern(p);
 }
 
