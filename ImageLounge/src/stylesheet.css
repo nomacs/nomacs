@@ -5,7 +5,7 @@
 } */
 
 QWidget {
-	font-size: 10pt;
+    font-size: 10pt;
 }
 
 /* batch */
@@ -137,6 +137,28 @@ QLabel#thumbsTitle {
 
 QGraphicsView#DkThumbsView {
 	border: none;
+}
+
+/* FIXME: the stylesheet is not reevaluted when entering/leaving fullscreen,
+          so it keeps the background it started with */
+QMainWindow[fullScreen="false"] QGraphicsView#DkThumbsView {
+    background-color: BACKGROUND_COLOR;
+}
+
+QMainWindow[fullScreen="true"] QGraphicsView#DkThumbsView {
+    background-color: SLIDESHOW_COLOR;
+}
+
+nmc--DkNoMacsFrameless[fullScreen="false"] QGraphicsView#DkThumbsView {
+    background-color: transparent;
+}
+
+nmc--DkNoMacsFrameless[fullScreen="true"] QGraphicsView#DkThumbsView {
+    background-color: HUD_BACKGROUND_COLOR;
+}
+
+nmc--DkNoMacsFrameless nmc--DkThumbsView > QWidget { /* scrollbar background */
+    background-color: BACKGROUND_COLOR;
 }
 
 QToolButton#DkThumbToolButton::menu-indicator { 

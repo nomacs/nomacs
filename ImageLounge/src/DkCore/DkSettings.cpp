@@ -1455,14 +1455,14 @@ void DkThemeManager::applyTheme() const
 
     DkSettings::Display &dp = DkSettingsManager::param().display();
 
-    // NOTE: it is important, that default.css does not contain
-    // any line of code except for the color definitions
-    // otherwise, we change the default palette here...
     if (!cssString.isEmpty()) {
         cssString = replaceColors(cssString);
 
         QPalette p = qApp->palette();
 
+        // NOTE: while in theory the theme stylesheet should cover all cases,
+        //       if the stylesheet is broken or not applied for some reason it can
+        //       fall back to the palette. This is needed for Windows currently.
         if (dp.themeBgdColor != QPalette().color(QPalette::Window)) {
             p.setColor(QPalette::Window, dp.themeBgdColor);
             p.setColor(QPalette::Base, dp.themeBgdColor);
@@ -1470,8 +1470,6 @@ void DkThemeManager::applyTheme() const
 
         p.setColor(QPalette::WindowText, dp.themeFgdColor);
         p.setColor(QPalette::ButtonText, dp.themeFgdColor);
-
-        // p.setColor(QPalette::Button, QColor(0, 0, 0));
 
         qApp->setPalette(p);
     }
@@ -1566,17 +1564,34 @@ QString DkThemeManager::replaceColors(const QString &cssString) const
 {
     QString cs = cssString;
 
-    QColor hc = DkSettingsManager::param().display().highlightColor;
-    hc.setAlpha(150);
+    DkSettings &settings = DkSettingsManager::param();
+    const auto &d = settings.display();
+    const auto &s = settings.slideShow();
 
-    // replace color placeholders
-    cs.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().highlightColor));
-    cs.replace("HIGHLIGHT_LIGHT", DkUtils::colorToString(hc));
-    cs.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudBgColor));
-    cs.replace("HUD_FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor));
-    cs.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().bgColor));
-    cs.replace("FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().themeFgdColor));
-    cs.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));
+    QColor highlightAlpha = d.highlightColor;
+    highlightAlpha.setAlpha(150);
+
+    const QColor window = QPalette().color(QPalette::Window);
+
+    const struct {
+        const char *name;
+        const QColor *color;
+    } replacements[] = {{"HIGHLIGHT_COLOR", &d.highlightColor},
+                        {"HIGHLIGHT_LIGHT", &highlightAlpha},
+                        {"HUD_BACKGROUND_COLOR", &d.hudBgColor},
+                        {"HUD_FOREGROUND_COLOR", &d.hudFgdColor},
+                        {"BACKGROUND_COLOR", &d.bgColor},
+                        {"FOREGROUND_COLOR", &d.themeFgdColor},
+                        {"WINDOW_COLOR", &window},
+                        {"SLIDESHOW_COLOR", &s.backgroundColor},
+                        {"ICON_COLOR", &d.iconColor},
+                        {nullptr, nullptr}};
+
+    auto *p = replacements;
+    while (p->name) {
+        cs.replace(p->name, DkUtils::colorToString(*p->color));
+        p++;
+    }
 
     return cs;
 }
