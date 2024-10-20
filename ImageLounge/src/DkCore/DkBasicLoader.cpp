@@ -269,6 +269,17 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
         }
     }
 
+#ifdef WITH_LIBRAW
+    if (!imgLoaded
+        && newSuffix.contains(
+            QRegularExpression("(nef|nrw|crw|cr2|cr3|arw|dng|raw|rw2|mrw|srw|orf|3fr|x3f|mos|pef|iiq|raf)", QRegularExpression::CaseInsensitiveOption))) {
+        // prefer our RAW loader rather that Qt’s plug-in kimg_raw from KImageFormats
+        imgLoaded = loadRawFile(mFile, img, ba, fast);
+        if (imgLoaded)
+            mLoader = raw_loader;
+    }
+#endif
+
     // default Qt loader
     // here we just try those formats that are officially supported
     if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str()) || suf.isEmpty()) {

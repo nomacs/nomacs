@@ -2391,62 +2391,62 @@ Please restart nomacs and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="762"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="742"/>
         <source>Binary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="765"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="745"/>
         <source>Indexed 8-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="771"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="751"/>
         <source>RGB 32-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="777"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="757"/>
         <source>ARGB 32-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="782"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="762"/>
         <source>RGB 16-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="787"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="767"/>
         <source>ARGB 24-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="791"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="771"/>
         <source>RGB 24-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="794"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="774"/>
         <source>ARGB 16-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="798"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="778"/>
         <source>BGR 32-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="801"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="781"/>
         <source>ABGR 32-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="804"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="784"/>
         <source>Grayscale 8-bit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="807"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="787"/>
         <source>Alpha 8-bit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2591,12 +2591,12 @@ Please restart nomacs and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="365"/>
+        <location filename="../../src/main.cpp" line="366"/>
         <source>Critical Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="365"/>
+        <location filename="../../src/main.cpp" line="366"/>
         <source>Sorry, nomacs ran out of memory...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2884,13 +2884,13 @@ Please restart nomacs and try again.</source>
 <context>
     <name>nmc::DkBasicLoader</name>
     <message>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="381"/>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1189"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="393"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1201"/>
         <source>Original Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1356"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1368"/>
         <source>Sorry, I could not save: %1</source>
         <translation type="unfinished"></translation>
     </message>
