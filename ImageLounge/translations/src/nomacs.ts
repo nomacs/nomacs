@@ -2884,13 +2884,13 @@ Please restart nomacs and try again.</source>
 <context>
     <name>nmc::DkBasicLoader</name>
     <message>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="393"/>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1201"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="398"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1206"/>
         <source>Original Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1368"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1373"/>
         <source>Sorry, I could not save: %1</source>
         <translation type="unfinished"></translation>
     </message>

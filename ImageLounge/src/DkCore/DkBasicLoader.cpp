@@ -270,10 +270,13 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
 #ifdef WITH_LIBRAW
+    bool rawloaderused(false);
+
     if (!imgLoaded
         && newSuffix.contains(
             QRegularExpression("(nef|nrw|crw|cr2|cr3|arw|dng|raw|rw2|mrw|srw|orf|3fr|x3f|mos|pef|iiq|raf)", QRegularExpression::CaseInsensitiveOption))) {
         // prefer our RAW loader rather that Qt’s plug-in kimg_raw from KImageFormats
+        rawloaderused = true;
         imgLoaded = loadRawFile(mFile, img, ba, fast);
         if (imgLoaded)
             mLoader = raw_loader;
@@ -308,14 +311,16 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
             mLoader = psd_loader;
     }
 
-    // RAW loader
-    if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {
+#ifdef WITH_LIBRAW
+    // RAW loader (try only formats not handled before)
+    if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str()) && !rawloaderused) {
         // TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
         // load raw files
         imgLoaded = loadRawFile(mFile, img, ba, fast);
         if (imgLoaded)
             mLoader = raw_loader;
     }
+#endif
 
     // TGA loader
     if (!imgLoaded && newSuffix.contains(QRegularExpression("(tga)", QRegularExpression::CaseInsensitiveOption))) {
