@@ -285,6 +285,15 @@ cmake -D CMAKE_BUILD_TYPE=Debug ...
 
 at the Makefiles generation phase.
 
+## Build and run tests
+
+To build tests, install [GoogleTest](https://github.com/google/googletest) before running the cmake configuration.
+A `check` target will be created by default if GoogleTest is present
+to build the test binaries and execute `ctest`.
+
+```bash
+make check
+```
 
 ## Links
 
