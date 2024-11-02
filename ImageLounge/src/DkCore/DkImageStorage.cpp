@@ -204,7 +204,7 @@ DkImage::resizeImage(const QImage &img, const QSize &newSize, double factor /* =
 
 bool DkImage::alphaChannelUsed(const QImage &img)
 {
-    if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32)
+    if (img.format() != QImage::Format_ARGB32)
         return false;
 
     // number of used bytes per line
@@ -476,8 +476,7 @@ bool DkImage::autoAdjustImage(QImage &img)
     if (img.format() <= QImage::Format_Indexed8) {
         qDebug() << "[Auto Adjust] Grayscale - switching to Normalize: " << img.format();
         return normImage(img);
-    } else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB32
-               && img.format() != QImage::Format_RGB888) {
+    } else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB32 && img.format() != QImage::Format_RGB888) {
         qDebug() << "[Auto Adjust] Format not supported: " << img.format();
         return false;
     }
