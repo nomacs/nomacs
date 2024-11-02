@@ -1847,7 +1847,6 @@ void DkEditableRect::drawGuide(QPainter *painter, const QPolygonF &p, int paintM
     painter->setPen(cPen);
 
     // vertical
-    DkVector lp = p[1] - p[0]; // parallel to drawing
     DkVector l9 = p[3] - p[0]; // perpendicular to drawing
 
     int nLines = (paintMode == rule_of_thirds) ? 3 : qRound(l9.norm() / 20.0f);
@@ -1865,7 +1864,6 @@ void DkEditableRect::drawGuide(QPainter *painter, const QPolygonF &p, int paintM
     }
 
     // horizontal
-    lp = p[3] - p[0]; // parallel to drawing
     l9 = p[1] - p[0]; // perpendicular to drawing
 
     nLines = (paintMode == rule_of_thirds) ? 3 : qRound(l9.norm() / 20);
