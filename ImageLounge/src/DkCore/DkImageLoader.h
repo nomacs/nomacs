@@ -73,10 +73,7 @@ public:
 
     static QStringList getFoldersRecursive(const QString &dirPath);
     QFileInfoList updateSubFolders(const QString &rootDirPath);
-    QFileInfoList getFilteredFileInfoList(const QString &dirPath,
-                                          QStringList ignoreKeywords = QStringList(),
-                                          QStringList keywords = QStringList(),
-                                          QString folderKeywords = QString()) const;
+    QFileInfoList getFilteredFileInfoList(const QString &dirPath, QString folderKeywords = QString()) const;
 
     void rotateImage(double angle);
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
@@ -173,8 +170,6 @@ protected:
     QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void receiveUpdates(bool connectSignals);
 
-    QStringList mIgnoreKeywords;
-    QStringList mKeywords;
     QString mFolderFilterString; // are deleted if a new folder is opened
 
     QTimer mDelayedUpdateTimer;

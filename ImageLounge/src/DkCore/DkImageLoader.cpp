@@ -237,8 +237,6 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     if (mFolderUpdated && newDirPath == mCurrentDir) {
         mFolderUpdated = false;
         QFileInfoList files = getFilteredFileInfoList(newDirPath,
-                                                      mIgnoreKeywords,
-                                                      mKeywords,
                                                       mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
 
         // might get empty too (e.g. someone deletes all images)
@@ -276,8 +274,6 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
             files = updateSubFolders(mCurrentDir);
         else
             files = getFilteredFileInfoList(mCurrentDir,
-                                            mIgnoreKeywords,
-                                            mKeywords,
                                             mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
 
         if (files.empty()) {
@@ -1639,9 +1635,7 @@ QFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
     // find the first subfolder that has images
     for (int idx = 0; idx < mSubFolders.size(); idx++) {
         mCurrentDir = mSubFolders[idx];
-        files = getFilteredFileInfoList(mCurrentDir,
-                                        mIgnoreKeywords,
-                                        mKeywords); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+        files = getFilteredFileInfoList(mCurrentDir); // this line takes seconds if you have lots of files and slow loading (e.g. network)
         if (!files.empty())
             break;
     }
@@ -1679,9 +1673,8 @@ int DkImageLoader::getSubFolderIdx(int fromIdx, bool forward) const
             return -1;
 
         QDir cDir = mSubFolders[checkIdx];
-        QFileInfoList cFiles = getFilteredFileInfoList(cDir.absolutePath(),
-                                                       mIgnoreKeywords,
-                                                       mKeywords); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+        QFileInfoList cFiles =
+            getFilteredFileInfoList(cDir.absolutePath()); // this line takes seconds if you have lots of files and slow loading (e.g. network)
         if (!cFiles.empty()) {
             idx = checkIdx;
             break;
@@ -1773,11 +1766,9 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC)
  * directory or if the directory is in the net.
  * Currently the file list is sorted according to the system specification.
  * @param dir the directory to load the file list from.
- * @param ignoreKeywords if one of these keywords is in the file name, the file will be ignored.
- * @param keywords if one of these keywords is not in the file name, the file will be ignored.
  * @return QStringList all filtered files of the current directory.
  **/
-QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QStringList ignoreKeywords, QStringList keywords, QString folderKeywords) const
+QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QString folderKeywords) const
 {
     DkTimer dt;
 
@@ -1848,16 +1839,6 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QSt
         if (!name.contains(".") && DkUtils::isValid(QFileInfo(dirPath, name))) {
             fileList << name;
         }
-    }
-
-    // remove files that contain ignore keywords
-    for (int idx = 0; idx < ignoreKeywords.size(); idx++) {
-        QRegularExpression exp = QRegularExpression("^((?!" + ignoreKeywords[idx] + ").)*$", QRegularExpression::CaseInsensitiveOption);
-        fileList = fileList.filter(exp);
-    }
-
-    for (int idx = 0; idx < keywords.size(); idx++) {
-        fileList = fileList.filter(keywords[idx], Qt::CaseInsensitive);
     }
 
     if (folderKeywords != "") {
