@@ -689,12 +689,6 @@ QVector<QSharedPointer<DkImageContainerT>> DkImageLoader::getImages()
     return mImages;
 }
 
-void DkImageLoader::setImages(QVector<QSharedPointer<DkImageContainerT>> images)
-{
-    mImages = images;
-    emit updateDirSignal(images);
-}
-
 /**
  * Loads the first file of the current directory.
  **/
@@ -749,14 +743,6 @@ bool DkImageLoader::unloadFile()
     }
 
     return true;
-}
-
-/**
- * Convenience function see @activate.
- **/
-void DkImageLoader::deactivate()
-{
-    activate(false);
 }
 
 /**
@@ -1532,60 +1518,6 @@ void DkImageLoader::rotateImage(double angle)
 }
 
 /**
- * Restores files that were destroyed by the Exiv2 lib.
- * If a watch (or some other read lock) is on a file, the
- * Exiv2 lib is known do damage the files on Windows.
- * This function restores these files.
- * @param fileInfo the file to be restored.
- * @return bool true if the file could be restored.
- **/
-bool DkImageLoader::restoreFile(const QString &filePath)
-{
-    QFileInfo fInfo(filePath);
-    QStringList files = fInfo.dir().entryList();
-    QString fileName = fInfo.fileName();
-    QRegularExpression filePattern(fileName + "[0-9]+");
-    QString backupFileName;
-
-    // if exif crashed it saved a backup file with the format: filename.png1232
-    for (int idx = 0; idx < files.size(); idx++) {
-        if (filePattern.match(files[idx]).hasMatch()) {
-            backupFileName = files[idx];
-            break;
-        }
-    }
-
-    if (backupFileName.isEmpty()) {
-        qDebug() << "I could not locate the backup file...";
-        return true;
-    }
-
-    // delete the destroyed file
-    QFile file(filePath);
-    QFile backupFile(fInfo.absolutePath() + QDir::separator() + backupFileName);
-
-    if (file.size() == 0 || file.size() <= backupFile.size()) {
-        if (!file.remove()) {
-            // ok I did not destroy the original file - so delete the back-up
-            // -> this reverts the file - but otherwise we spam to the disk
-            // actions reverted here include meta data saving
-            if (file.size() != 0)
-                return backupFile.remove();
-
-            qDebug() << "I could not remove the file...";
-            return false;
-        }
-    } else {
-        qDebug() << "non-empty file: " << fileName << " I won't delete it...";
-        qDebug() << "file size: " << file.size() << " back-up file size: " << backupFile.size();
-        return false;
-    }
-
-    // now
-    return backupFile.rename(fInfo.absoluteFilePath());
-}
-
-/**
  * Reloads the file index if the directory was edited.
  * @param path the path to the current directory
  **/
@@ -2063,18 +1995,6 @@ void DkImageLoader::redo()
 }
 
 /**
- * Returns the currently loaded image.
- * @return QImage the current image
- **/
-QImage DkImageLoader::getImage()
-{
-    if (!mCurrentImage)
-        return QImage();
-
-    return mCurrentImage->image();
-}
-
-/**
  * @brief Returns the currently loaded pixmap. May differ from the image returned by getImage()
  * in case the pixmap represents a meta modification, like after rotating it.
  * This is primarily meant to be displayed in the gui.
@@ -2091,72 +2011,11 @@ QImage DkImageLoader::getPixmap()
     return mCurrentImage->getLoader()->pixmap();
 }
 
-bool DkImageLoader::dirtyTiff()
-{
-    if (!mCurrentImage)
-        return false;
-
-    return mCurrentImage->getLoader()->isDirty();
-}
-
-QStringList DkImageLoader::ignoreKeywords() const
-{
-    return mIgnoreKeywords;
-}
-
-void DkImageLoader::setIgnoreKeywords(const QStringList &ignoreKeywords)
-{
-    mIgnoreKeywords = ignoreKeywords;
-}
-
-void DkImageLoader::appendIgnoreKeyword(const QString &keyword)
-{
-    mIgnoreKeywords.append(keyword);
-}
-
-QStringList DkImageLoader::keywords() const
-{
-    return mKeywords;
-}
-
-void DkImageLoader::setKeywords(const QStringList &keywords)
-{
-    mKeywords = keywords;
-}
-
-void DkImageLoader::appendKeyword(const QString &keyword)
-{
-    mKeywords.append(keyword);
-}
-
-void DkImageLoader::loadLastDir()
-{
-    if (DkSettingsManager::param().global().recentFolders.empty())
-        return;
-
-    setDir(DkSettingsManager::param().global().recentFolders[0]);
-}
-
-void DkImageLoader::setFolderFilters(const QStringList &filter)
-{
-    setFolderFilter(filter.join(" "));
-}
-
 void DkImageLoader::setFolderFilter(const QString &filter)
 {
     mFolderFilterString = filter;
     mFolderUpdated = true;
     loadDir(mCurrentDir); // simulate a folder update operation
-}
-
-QString DkImageLoader::getFolderFilter()
-{
-    return mFolderFilterString;
-}
-
-QStringList DkImageLoader::getFolderFilters()
-{
-    return mFolderFilterString.split(" ");
 }
 
 /**
@@ -2171,15 +2030,6 @@ void DkImageLoader::setDir(const QString &dir)
 
     if (valid)
         firstFile();
-}
-
-/**
- * Sets a new save directory.
- * @param dir the new save directory.
- **/
-void DkImageLoader::setSaveDir(const QString &dirPath)
-{
-    mSaveDir = dirPath;
 }
 
 /**
