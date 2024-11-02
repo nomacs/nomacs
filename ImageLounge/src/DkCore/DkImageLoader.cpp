@@ -1667,34 +1667,31 @@ QString DkImageLoader::getDirPath() const
 
 QStringList DkImageLoader::getFoldersRecursive(const QString &dirPath)
 {
-    // DkTimer dt;
     QStringList subFolders;
-    // qDebug() << "scanning recursively: " << dir.absolutePath();
 
     if (DkSettingsManager::param().global().scanSubFolders) {
+        DkTimer dt;
+        QProgressDialog dialog(DkUtils::getMainWindow());
+        dialog.setLabelText(tr("scanning recursively directory\n%1").arg(dirPath));
+        qDebug() << "scanning folders recursively: " << dirPath;
         QDirIterator dirs(dirPath, QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
 
         int nFolders = 0;
         while (dirs.hasNext()) {
+            if (!dialog.isVisible() && dt.elapsed() > 1000) dialog.show();
+            qApp->processEvents();
+            if (dialog.wasCanceled()) break;
             dirs.next();
             subFolders << dirs.filePath();
             nFolders++;
-
-            if (nFolders > 100)
-                break;
-
-            // getFoldersRecursive(dirs.filePath(), subFolders);
-            // qDebug() << "loop: " << dirs.filePath();
         }
+        qDebug() << dirPath << "loaded recursively in" << dt;
     }
 
     subFolders << dirPath;
 
     std::sort(subFolders.begin(), subFolders.end(), DkUtils::compLogicQString);
 
-    qDebug() << dirPath << "loaded recursively...";
-
-    // qDebug() << "scanning folders recursively took me: " << QString::fromStdString(dt.getTotal());
     return subFolders;
 }
 
@@ -1702,17 +1699,23 @@ QFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
 {
     mSubFolders = getFoldersRecursive(rootDirPath);
     QFileInfoList files;
-    qDebug() << mSubFolders;
+    DkTimer dt;
+    QProgressDialog dialog(DkUtils::getMainWindow());
 
+    qDebug() << "recursively loading files from" << mSubFolders;
     // find the first subfolder that has images
     for (int idx = 0; idx < mSubFolders.size(); idx++) {
+        if (!dialog.isVisible() && dt.elapsed() > 1000) dialog.show();
+        qApp->processEvents();
+        if (dialog.wasCanceled()) break;
         mCurrentDir = mSubFolders[idx];
-        files = getFilteredFileInfoList(mCurrentDir,
-                                        mIgnoreKeywords,
-                                        mKeywords); // this line takes seconds if you have lots of files and slow loading (e.g. network)
-        if (!files.empty())
-            break;
+        dialog.setLabelText(tr("scanning recursively directory\n%1").arg(mCurrentDir));
+        // this takes seconds if you have lots of files and slow loading (e.g. network)
+        files.append(getFilteredFileInfoList(mCurrentDir,
+                                             mIgnoreKeywords,
+                                             mKeywords));
     }
+    qDebug() << "done loading files in" << dt;
 
     return files;
 }
