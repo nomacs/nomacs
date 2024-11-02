@@ -991,7 +991,7 @@ void DkImageLoader::saveFileWeb(const QImage &saveImg)
     QFileInfo saveFileInfo;
 
     if (hasFile()) {
-        saveFileInfo = QFileInfo(getSavePath(), fileName());
+        saveFileInfo = QFileInfo(mCurrentDir, fileName());
         qDebug() << "save path: " << saveFileInfo.absoluteFilePath();
     }
 
@@ -1093,7 +1093,7 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
     QFileInfo saveFileInfo;
 
     if (hasFile()) {
-        saveFileInfo = QFileInfo(getSavePath(), fileName());
+        saveFileInfo = QFileInfo(mCurrentDir, fileName());
 
         int filterIdx = -1;
 
@@ -1926,18 +1926,6 @@ QString DkImageLoader::getCopyPath() const
         return mCurrentDir;
     else
         return mCopyDir;
-}
-
-/**
- * Returns the directory where files are saved to.
- * @return QDir the directory where the user saved the last file to.
- **/
-QString DkImageLoader::getSavePath() const
-{
-    if (mSaveDir.isEmpty() || !QDir(mSaveDir).exists())
-        return mCurrentDir;
-    else
-        return mSaveDir;
 }
 
 /**

@@ -164,7 +164,6 @@ protected:
 
     void clearPath();
 
-    QString getSavePath() const;
     QString getCopyPath() const;
 
     QSharedPointer<DkImageContainerT> findOrCreateFile(const QString &filePath) const;
@@ -179,7 +178,6 @@ protected:
     QTimer mDelayedUpdateTimer;
     bool mTimerBlockedUpdate = false;
     QString mCurrentDir;
-    QString mSaveDir;
     QString mCopyDir;
     QFileSystemWatcher *mDirWatcher = 0;
     QStringList mSubFolders;
