@@ -71,9 +71,7 @@ public:
     DkImageLoader(const QString &filePath = QString());
     virtual ~DkImageLoader();
 
-    static QStringList getFoldersRecursive(const QString &dirPath);
     QFileInfoList updateSubFolders(const QString &rootDirPath);
-    QFileInfoList getFilteredFileInfoList(const QString &dirPath, QString folderKeywords = QString()) const;
 
     void rotateImage(double angle);
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
@@ -91,22 +89,13 @@ public:
     // file selection
     void firstFile();
     void lastFile();
-    void clearPath();
     QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool recursive = false, int currFileIdx = 0);
 
     QString getDirPath() const;
-    QString getSavePath() const;
-    QString getCopyPath() const;
     void setDir(const QString &dir);
 
-    QSharedPointer<DkImageContainerT> findOrCreateFile(const QString &filePath) const;
-    QSharedPointer<DkImageContainerT> findFile(const QString &filePath) const;
-    int findFileIdx(const QString &filePath, const QVector<QSharedPointer<DkImageContainerT>> &images) const;
-
-    bool hasFile() const;
     bool hasMovie() const;
     bool hasSvg() const;
-    QString fileName() const;
 
     void activate(bool isActive = true);
     bool hasImage() const;
@@ -169,6 +158,21 @@ protected:
     void createImages(const QFileInfoList &files, bool sort = true);
     QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void receiveUpdates(bool connectSignals);
+
+    static QStringList getFoldersRecursive(const QString &dirPath);
+    QFileInfoList getFilteredFileInfoList(const QString &dirPath, QString folderKeywords = QString()) const;
+
+    void clearPath();
+
+    QString getSavePath() const;
+    QString getCopyPath() const;
+
+    QSharedPointer<DkImageContainerT> findOrCreateFile(const QString &filePath) const;
+    QSharedPointer<DkImageContainerT> findFile(const QString &filePath) const;
+    int findFileIdx(const QString &filePath, const QVector<QSharedPointer<DkImageContainerT>> &images) const;
+
+    bool hasFile() const;
+    QString fileName() const;
 
     QString mFolderFilterString; // are deleted if a new folder is opened
 
