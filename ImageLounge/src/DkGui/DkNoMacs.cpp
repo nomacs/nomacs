@@ -878,7 +878,7 @@ void DkNoMacs::lockWindow(bool lock)
 
     qDebug() << "locking: " << lock;
 
-    if (lock) {
+    if (lock && windowOpacity() < 1.0f) {
         // setAttribute(Qt::WA_TransparentForMouseEvents);
         HWND hwnd = (HWND)winId(); // get handle of the widget
         LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
