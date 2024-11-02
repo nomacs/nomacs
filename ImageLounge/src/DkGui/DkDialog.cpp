@@ -452,8 +452,10 @@ void DkTrainDialog::accept()
         userFilters.append(tag);
         settings.setValue("ResourceSettings/userFilters", userFilters);
         DkSettingsManager::param().app().openFilters.append(tag);
-        DkSettingsManager::param().app().fileFilters.append("*." + acceptedFileInfo.suffix());
-        DkSettingsManager::param().app().browseFilters += acceptedFileInfo.suffix();
+
+        const QString filter = "*." + acceptedFileInfo.suffix();
+        DkSettingsManager::param().app().fileFilters.append(filter);
+        DkSettingsManager::param().app().browseFilters.append(filter);
     }
 
     QDialog::accept();
