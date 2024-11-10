@@ -71,12 +71,7 @@ public:
     DkImageLoader(const QString &filePath = QString());
     virtual ~DkImageLoader();
 
-    static QStringList getFoldersRecursive(const QString &dirPath);
     QFileInfoList updateSubFolders(const QString &rootDirPath);
-    QFileInfoList getFilteredFileInfoList(const QString &dirPath,
-                                          QStringList ignoreKeywords = QStringList(),
-                                          QStringList keywords = QStringList(),
-                                          QString folderKeywords = QString()) const;
 
     void rotateImage(double angle);
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
@@ -85,7 +80,6 @@ public:
     QStringList getFileNames() const;
 
     QVector<QSharedPointer<DkImageContainerT>> getImages();
-    void setImages(QVector<QSharedPointer<DkImageContainerT>> images);
     QSharedPointer<DkImageContainerT> setImage(const QImage &img, const QString &editName, const QString &editFilePath = QString());
     QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
     void setImageUpdated();
@@ -95,43 +89,19 @@ public:
     // file selection
     void firstFile();
     void lastFile();
-    void clearPath();
-    void loadLastDir();
     QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool recursive = false, int currFileIdx = 0);
 
     QString getDirPath() const;
-    QString getSavePath() const;
-    QString getCopyPath() const;
     void setDir(const QString &dir);
-    void setSaveDir(const QString &dir);
 
-    QSharedPointer<DkImageContainerT> findOrCreateFile(const QString &filePath) const;
-    QSharedPointer<DkImageContainerT> findFile(const QString &filePath) const;
-    int findFileIdx(const QString &filePath, const QVector<QSharedPointer<DkImageContainerT>> &images) const;
-
-    bool hasFile() const;
     bool hasMovie() const;
     bool hasSvg() const;
-    QString fileName() const;
 
-    void deactivate();
     void activate(bool isActive = true);
     bool hasImage() const;
     bool isEdited() const;
     int numFiles() const;
-    QImage getImage();
     QImage getPixmap();
-    bool dirtyTiff();
-
-    QStringList ignoreKeywords() const;
-    void setIgnoreKeywords(const QStringList &ignoreKeywords);
-    void appendIgnoreKeyword(const QString &keyword);
-
-    QStringList keywords() const;
-    void setKeywords(const QStringList &ignoreKeywords);
-    void appendKeyword(const QString &keyword);
-
-    static bool restoreFile(const QString &filePath);
 
 #ifdef WITH_QUAZIP
     bool loadZipArchive(const QString &zipPath);
@@ -165,9 +135,6 @@ public slots:
     bool deleteFile();
     QString saveTempFile(const QImage &img, const QString &name = "img", const QString &fileExt = ".png", bool force = false, bool threaded = true);
     void setFolderFilter(const QString &filter);
-    void setFolderFilters(const QStringList &filters);
-    QString getFolderFilter();
-    QStringList getFolderFilters();
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);
     void loadDirRecursive(const QString &newDirPath);
     void errorDialog(const QString &msg) const;
@@ -192,14 +159,25 @@ protected:
     QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void receiveUpdates(bool connectSignals);
 
-    QStringList mIgnoreKeywords;
-    QStringList mKeywords;
+    static QStringList getFoldersRecursive(const QString &dirPath);
+    QFileInfoList getFilteredFileInfoList(const QString &dirPath, QString folderKeywords = QString()) const;
+
+    void clearPath();
+
+    QString getCopyPath() const;
+
+    QSharedPointer<DkImageContainerT> findOrCreateFile(const QString &filePath) const;
+    QSharedPointer<DkImageContainerT> findFile(const QString &filePath) const;
+    int findFileIdx(const QString &filePath, const QVector<QSharedPointer<DkImageContainerT>> &images) const;
+
+    bool hasFile() const;
+    QString fileName() const;
+
     QString mFolderFilterString; // are deleted if a new folder is opened
 
     QTimer mDelayedUpdateTimer;
     bool mTimerBlockedUpdate = false;
     QString mCurrentDir;
-    QString mSaveDir;
     QString mCopyDir;
     QFileSystemWatcher *mDirWatcher = 0;
     QStringList mSubFolders;

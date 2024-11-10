@@ -1855,8 +1855,12 @@ void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader)
     mLoader = newLoader;
     connectLoader(newLoader);
 
-    if (mLoader)
+    if (mLoader) {
+        // The image loader can have a previous directory,
+        // so need to get the states from it.
+        mController->getFilePreview()->updateThumbs(mLoader->getImages());
         mLoader->activate();
+    }
 }
 
 void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals)
