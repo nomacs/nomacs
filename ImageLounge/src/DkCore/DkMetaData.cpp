@@ -1422,10 +1422,14 @@ bool DkMetaDataT::clearXMPRect()
     if (mExifState != loaded && mExifState != dirty)
         return false;
 
-    Exiv2::XmpData xmpData = mExifImg->xmpData();
-    setXMPValue(xmpData, "Xmp.crs.HasCrop", "False");
-    mExifImg->setXmpData(xmpData);
-    mExifState = dirty;
+    try {
+        Exiv2::XmpData xmpData = mExifImg->xmpData();
+        setXMPValue(xmpData, "Xmp.crs.HasCrop", "False");
+        mExifImg->setXmpData(xmpData);
+        mExifState = dirty;
+    } catch (...) {
+        return false;
+    }
 
     return true;
 }
