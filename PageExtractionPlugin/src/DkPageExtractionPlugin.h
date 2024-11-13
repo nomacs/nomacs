@@ -39,8 +39,8 @@ public:
     DkPageExtractionPlugin(QObject *parent = 0);
     ~DkPageExtractionPlugin();
 
-    QImage image() const;
-    QString name() const;
+    QImage image() const override;
+    QString name() const override;
 
     QList<QAction *> createActions(QWidget *parent) override;
     QList<QAction *> pluginActions() const override;
@@ -49,8 +49,8 @@ public:
                                                     const nmc::DkSaveInfo &saveInfo,
                                                     QSharedPointer<nmc::DkBatchInfo> &batchInfo) const override;
 
-    virtual void preLoadPlugin() const {}; // is called before batch processing
-    virtual void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>> &) const {}; // is called after batch processing
+    void preLoadPlugin() const override {}; // is called before batch processing
+    void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>> &) const override {}; // is called after batch processing
 
     enum {
         id_crop_to_page,
