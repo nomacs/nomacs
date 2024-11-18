@@ -557,11 +557,6 @@ void DkViewPort::repeatZoom()
     }
 }
 
-void DkViewPort::toggleResetMatrix()
-{
-    DkSettingsManager::param().display().keepZoom = !DkSettingsManager::param().display().keepZoom;
-}
-
 void DkViewPort::updateImageMatrix()
 {
     if (mImgStorage.isEmpty())
