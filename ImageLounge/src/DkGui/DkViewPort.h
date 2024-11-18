@@ -110,10 +110,6 @@ public:
     QSharedPointer<DkImageContainerT> imageContainer() const;
     void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
     DkControlWidget *getController();
-    bool isTestLoaded()
-    {
-        return mTestLoaded;
-    };
 
     QString getCurrentPixelHexValue();
     QPoint mapToImage(const QPoint &windowPos) const;
@@ -142,7 +138,6 @@ public slots:
     void deleteImage();
     void zoomToFit();
     void resizeEvent(QResizeEvent *event) override;
-    void toggleResetMatrix();
     void zoomTo(double zoomLevel);
 
     // tcp actions
