@@ -867,7 +867,15 @@ void DkViewPort::applyManipulator()
         auto l = imageContainer()->getLoader();
         l->setMinHistorySize(3); // increase the min history size to 3 for correctly popping back
         if (!l->history()->isEmpty() && l->lastEdit().editName() == mplExt->name()) {
-            imageContainer()->undo();
+            // This undo is only to merge the operations and is not meant to
+            // update the view.
+            // Directly call undo on the loader instead of the container
+            // so the imageUpdated signal does not fire.
+            l->undo();
+
+            // TODO: The design of the undo here is weird.
+            // This merges the two same operations, which might be beneficial for things like rotation.
+            // However, the next undo will be wrong.
         }
 
         img = imageContainer()->image();
