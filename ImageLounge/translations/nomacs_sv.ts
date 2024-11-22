@@ -2,6 +2,107 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="sv-SE" sourcelanguage="en">
   <context>
+    <name>DkCropToolBar</name>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="870"/>
+      <source>closes the crop view, and applies cropping to the image (ENTER)</source>
+      <translation>stänger beskärningsvyn och tillämpar beskärningen på bilden (RETUR)</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="869"/>
+      <source>Apply</source>
+      <translation>Tillämpa</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="875"/>
+      <source>Cancel</source>
+      <translation>Avbryt</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="876"/>
+      <source>closes the crop view, leaving the image unchanged (ESC)</source>
+      <translation>stänger beskärningsvyn och lämnar bilden oförändrad (ESC)</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="880"/>
+      <source>Rotate</source>
+      <translation>Rotera</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="894"/>
+      <source>Aspect Ratio</source>
+      <translation>Proportioner</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="895"/>
+      <source>Free</source>
+      <translation>Fritt</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="896"/>
+      <source>Original</source>
+      <translation>Ursprunglig</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="897"/>
+      <source>Square</source>
+      <translation>Fyrkant</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="898"/>
+      <source>16:9</source>
+      <translation>16:9</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="899"/>
+      <source>4:3</source>
+      <translation>4:3</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="900"/>
+      <source>3:2</source>
+      <translation>3:2</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="902"/>
+      <source>Flip</source>
+      <translation>Vänd</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="903"/>
+      <source>flips the crop rectangle (F)</source>
+      <translation>vänder beskärningsrektangeln</translation>
+    </message>
+  </context>
+  <context>
+    <name>DkCropViewPort</name>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="294"/>
+      <source>Crop Image</source>
+      <translation>Beskär bild</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="295"/>
+      <source>Do you want to apply cropping?</source>
+      <translation>Vill du tillämpa beskärningen?</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="297"/>
+      <source>&amp;Crop</source>
+      <translation>&amp;Beskär</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="298"/>
+      <source>&amp;Don&apos;t Crop</source>
+      <translation>Beskär &amp;inte</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="366"/>
+      <source>Rotated</source>
+      <translation>Roterad</translation>
+    </message>
+  </context>
+  <context>
     <name>QObject</name>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="184"/>
@@ -1361,7 +1462,8 @@
       <translation>Panorerar bilden åt höger vid zoomning.</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="140"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="149"/>
       <source>Cropped</source>
       <translation>Beskuren</translation>
     </message>
@@ -2442,29 +2544,34 @@ Starta om nomacs och försök igen.</translation>
       <translation>8-bitars alfa</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="229"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="232"/>
       <source>New Tab</source>
       <translation>Ny flik</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="232"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="235"/>
       <source>Thumbnail Preview</source>
       <translation>Miniatyrförhandsvisning</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="234"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="237"/>
       <source>Recent Files</source>
       <translation>Tidigare filer</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="236"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="239"/>
       <source>Settings</source>
       <translation>Inställningar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="238"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="241"/>
       <source>Batch</source>
       <translation>Batch</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="243"/>
+      <source>Crop</source>
+      <translation>Beskär</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.h" line="88"/>
@@ -2482,12 +2589,12 @@ Starta om nomacs och försök igen.</translation>
       <translation>Anonym</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1201"/>
+      <location filename="../../src/DkGui/DkToolbars.cpp" line="881"/>
       <source>Edit ToolBar</source>
       <translation>Redigera verktygsfält</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1245"/>
+      <location filename="../../src/DkGui/DkToolbars.cpp" line="925"/>
       <source>Movie ToolBar</source>
       <translation>Filmverktygsfält</translation>
     </message>
@@ -3401,77 +3508,77 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
   <context>
     <name>nmc::DkCentralWidget</name>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="284"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="289"/>
       <source>Go to Tab</source>
       <translation>Gå till flik</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="284"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="289"/>
       <source>Go to tab number: </source>
       <translation>Gå till flik nummer: </translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="509"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="518"/>
       <source>General</source>
       <translation>Allmänt</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="515"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="524"/>
       <source>Display</source>
       <translation>Visning</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="521"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="530"/>
       <source>File</source>
       <translation>Fil</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="527"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="536"/>
       <source>File Associations</source>
       <translation>Filassociationer</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="533"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="542"/>
       <source>Advanced</source>
       <translation>Avancerat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="539"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="548"/>
       <source>Editor</source>
       <translation>Redigerare</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1175"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1265"/>
       <source>I could not load &quot;%1&quot;</source>
       <translation>I could not load &quot;%1&quot;</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1230"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1320"/>
       <source>Unable to load file &quot;%1&quot;</source>
       <translation>Unable to load file &quot;%1&quot;</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1238"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1328"/>
       <source>&quot;%1&quot; cannot be loaded</source>
       <translation>&quot;%1&quot; cannot be loaded</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1248"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1338"/>
       <source>downloading &quot;%1&quot;</source>
       <translation>downloading &quot;%1&quot;</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1272"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1362"/>
       <source>Sorry, I could not drop the content.</source>
       <translation>Kunde inte släppa innehållet.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1394"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1484"/>
       <source>Save File</source>
       <translation>Spara fil</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1407"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1497"/>
       <source>%1 vec files merged</source>
       <translation>%1 filer sammanslagna</translation>
     </message>
@@ -3675,110 +3782,14 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
   <context>
     <name>nmc::DkControlWidget</name>
     <message>
-      <location filename="../../src/DkGui/DkControlWidget.cpp" line="558"/>
+      <location filename="../../src/DkGui/DkControlWidget.cpp" line="525"/>
       <source>Closing Plugin</source>
       <translation>Stänger insticksmodul</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkControlWidget.cpp" line="559"/>
+      <location filename="../../src/DkGui/DkControlWidget.cpp" line="526"/>
       <source>Apply plugin changes?</source>
       <translation>Vill du tillämpa insticksändringar?</translation>
-    </message>
-  </context>
-  <context>
-    <name>nmc::DkCropToolBar</name>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="937"/>
-      <source>Crop (ENTER)</source>
-      <translation>Beskär (ENTER)</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="941"/>
-      <source>Cancel (ESC)</source>
-      <translation>Avbryt (ESC)</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="945"/>
-      <source>Pan</source>
-      <translation>Panorera</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="953"/>
-      <source>User Defined</source>
-      <translation>Användardefinierad</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="954"/>
-      <source>No Aspect Ratio</source>
-      <translation>Fria proportioner</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="962"/>
-      <source>Horizontal Constraint</source>
-      <translation>Horisontell begränsning</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="965"/>
-      <source>Swap</source>
-      <translation>Växla</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="967"/>
-      <source>Swap Dimensions</source>
-      <translation>Växla dimensioner</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="973"/>
-      <source>Vertical Constraint</source>
-      <translation>Vertikal begränsning</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="987"/>
-      <source>Background Color</source>
-      <translation>Bakgrundsfärg</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
-      <source>Guides</source>
-      <translation>Stödlinjer</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
-      <source>Rule of Thirds</source>
-      <translation>Tredelat nät</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
-      <source>Grid</source>
-      <translation>Stödraster</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1000"/>
-      <source>Show Guides in the Preview</source>
-      <translation>Visa stödlinjer i förhandsgranskningen</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1003"/>
-      <source>Invert Crop Tool Color</source>
-      <translation>Invertera beskärningsverktygets färg</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1008"/>
-      <source>Show Info</source>
-      <translation>Visa information</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1013"/>
-      <source>Crop to Metadata</source>
-      <translation>Beskär till metadata</translation>
-    </message>
-  </context>
-  <context>
-    <name>nmc::DkCropWidget</name>
-    <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2130"/>
-      <source>Crop Toolbar</source>
-      <translation>Beskärningsverktyg</translation>
     </message>
   </context>
   <context>
@@ -3810,12 +3821,12 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
   <context>
     <name>nmc::DkDirectoryChooser</name>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2618"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2558"/>
       <source>...</source>
       <translation>...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2634"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2574"/>
       <source>Open an Image Directory</source>
       <translation>Öppna en bildmapp</translation>
     </message>
@@ -4670,32 +4681,32 @@ Vill du visa dem igen?</translation>
   <context>
     <name>nmc::DkGenericProfileWidget</name>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2852"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2792"/>
       <source>Set As Default</source>
       <translation>Ange som standard</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2910"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2850"/>
       <source>Profile Name</source>
       <translation>Profilnamn</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2911"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2851"/>
       <source>Profile Name:</source>
       <translation>Profilnamn:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2923"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2863"/>
       <source>Profile Already Exists</source>
       <translation>Profilen finns redan</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2924"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2864"/>
       <source>Do you want to overwrite %1?</source>
       <translation>Vill du skriva över %1?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2988"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2928"/>
       <source>No Profiles</source>
       <translation>Inga profiler</translation>
     </message>
@@ -4712,12 +4723,12 @@ Vill du visa dem igen?</translation>
   <context>
     <name>nmc::DkHistogram</name>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2192"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2132"/>
       <source>Show Statistics</source>
       <translation>Visa statistik</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2197"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2137"/>
       <source>Histogram Settings</source>
       <translation>Histograminställningar</translation>
     </message>
@@ -4756,48 +4767,48 @@ Vill du visa dem igen?</translation>
   <context>
     <name>nmc::DkImageContainerT</name>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="683"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="688"/>
       <source>Sorry, the file: %1 does not exist... </source>
       <translation>Filen: %1 Finns inte... </translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="690"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="695"/>
       <source>Sorry, you are not allowed to read: %1</source>
       <translation>Du har inte läsbehörighet för: %1</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="808"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="813"/>
       <source>updated...</source>
       <translation>uppdaterat...</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="816"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="821"/>
       <source>Sorry, I could not load: %1</source>
       <translation>Kunde inte läsa in: %1</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="872"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="877"/>
       <source>Sorry, I could not download:
 %1</source>
       <translation>Kunde inte ladda ner:
 %1</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="943"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="948"/>
       <source>I can&apos;t save an empty file, sorry...
 </source>
       <translation>Kan inte spara en tom fil...
 </translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="948"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="953"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
       <translation>Mappen: %1 finns inte
 </translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="953"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="958"/>
       <source>Sorry, I can&apos;t write to the file: %1</source>
       <translation>Kan inte skriva till filen: %1</translation>
     </message>
@@ -4910,12 +4921,12 @@ innehåller ingen bild</translation>
   <context>
     <name>nmc::DkImageStorage</name>
     <message>
-      <location filename="../../src/DkCore/DkImageStorage.cpp" line="1515"/>
+      <location filename="../../src/DkCore/DkImageStorage.cpp" line="1537"/>
       <source>Anti Aliasing Enabled</source>
       <translation>Kantutjämning aktiverad</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageStorage.cpp" line="1515"/>
+      <location filename="../../src/DkCore/DkImageStorage.cpp" line="1537"/>
       <source>Anti Aliasing Disabled</source>
       <translation>Kantutjämning inaktiverad</translation>
     </message>
@@ -4946,7 +4957,7 @@ innehåller ingen bild</translation>
   <context>
     <name>nmc::DkListWidget</name>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.h" line="900"/>
+      <location filename="../../src/DkGui/DkWidgets.h" line="875"/>
       <source>Drag Items Here</source>
       <translation>Dra objekt hit</translation>
     </message>
@@ -6877,83 +6888,83 @@ Kontakta din systemadministratör för vidare information.</translation>
   <context>
     <name>nmc::DkViewPort</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="275"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="272"/>
       <source>Original Image</source>
       <translation>Ursprunglig bild</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="717"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="714"/>
       <source>Resize</source>
       <translation>Ändra storlek</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="741"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="738"/>
       <source>Shall I move %1 to trash?</source>
       <translation>Skall %1 flyttas till papperskorgen?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="743"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="740"/>
       <source>Do you want to permanently delete %1?</source>
       <translation>Vi du ta bort %1 permanent?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="748"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="745"/>
       <source>Delete File</source>
       <translation>Ta bort filen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="819"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="816"/>
       <source>Error</source>
       <translation>Fel</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="819"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="816"/>
       <source>Sorry, I could not create a wallpaper...</source>
       <translation>Kunde inte skapa skrivbordsbakgrund...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="862"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="859"/>
       <source>Busy</source>
       <translation>Upptagen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1560"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1557"/>
       <source>Transparency Pattern Enabled</source>
       <translation>Transparensmönster aktiverat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1560"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1557"/>
       <source>Transparency Pattern Disabled</source>
       <translation>Transparensmönster inaktiverat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1595"/>
       <source>Lenna</source>
       <translation>Lenna</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1595"/>
       <source>A remarkable woman</source>
       <translation>En anmärkningsvärd kvinna</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1608"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1605"/>
       <source>you cannot cancel this</source>
       <translation>du kan inte avbryta detta</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1616"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1613"/>
       <source>did you understand the brainteaser?</source>
       <translation>förstod du hjärngymnastiken?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1618"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1615"/>
       <source>%1 is wrong...</source>
       <translation>%1 är fel...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1651"/>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1674"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1648"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1671"/>
       <source>Attempted to set NULL image</source>
       <translation>Försökte ange NULL-bild</translation>
     </message>
@@ -6961,7 +6972,7 @@ Kontakta din systemadministratör för vidare information.</translation>
   <context>
     <name>nmc::DkViewPortFrameless</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="2161"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="2144"/>
       <source>Press F10 to exit Frameless view</source>
       <translation>Tryck F10 för att avsluta ramlös visning</translation>
     </message>
