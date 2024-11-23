@@ -125,7 +125,6 @@ signals:
     void zoomSignal(double zoomLevel) const;
     void mouseClickSignal(QMouseEvent *event, QPoint imgPos) const;
     void showProgress(bool show, int time = -1) const;
-    void imageUpdatedSignal() const;
 
 public slots:
     void fullView() override;

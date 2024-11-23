@@ -272,8 +272,6 @@ void DkViewPort::updateImage(QSharedPointer<DkImageContainerT> image, bool loade
     if (mLoader->hasImage()) {
         setImage(mLoader->getPixmap()); // modified image (for view), may differ from lastImage after rotate
     }
-
-    emit imageUpdatedSignal();
 }
 
 void DkViewPort::setImageUpdated()
