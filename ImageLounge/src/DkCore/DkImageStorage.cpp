@@ -52,16 +52,6 @@ namespace nmc
 
 /**
  * Returns a string with the buffer size of an image.
- * @param img a QImage
- * @return QString a human readable string containing the buffer size
- **/
-QString DkImage::getBufferSize(const QImage &img)
-{
-    return getBufferSize(img.size(), img.depth());
-}
-
-/**
- * Returns a string with the buffer size of an image.
  * @param imgSize the image size
  * @param depth the image depth
  * @return QString a human readable string containing the buffer size
@@ -405,14 +395,6 @@ void DkImage::mapGammaTable(QImage &img, const QVector<uchar> &gammaTable)
     qDebug() << "gamma computation takes: " << dt;
 }
 
-QImage DkImage::normImage(const QImage &img)
-{
-    QImage imgN = img.copy();
-    normImage(imgN);
-
-    return imgN;
-}
-
 bool DkImage::normImage(QImage &img)
 {
     uchar maxVal = 0;
@@ -455,14 +437,6 @@ bool DkImage::normImage(QImage &img)
     }
 
     return true;
-}
-
-QImage DkImage::autoAdjustImage(const QImage &img)
-{
-    QImage imgA = img.copy();
-    autoAdjustImage(imgA);
-
-    return imgA;
 }
 
 bool DkImage::autoAdjustImage(QImage &img)
@@ -1133,30 +1107,6 @@ QImage DkImage::mat2QImage(cv::Mat img)
     return qImg;
 }
 
-cv::Mat DkImage::get1DGauss(double sigma)
-{
-    // correct -> checked with matlab reference
-    int kernelsize = qCeil(sigma * 3 * 2) + 1;
-    if (kernelsize < 3)
-        kernelsize = 3;
-    if ((kernelsize % 2) != 1)
-        kernelsize += 1;
-
-    cv::Mat gKernel = cv::Mat(1, kernelsize, CV_32F);
-    float *kernelPtr = gKernel.ptr<float>();
-
-    for (int idx = 0, x = -qFloor(kernelsize / 2); idx < kernelsize; idx++, x++) {
-        kernelPtr[idx] = (float)(exp(-(x * x) / (2 * sigma * sigma))); // 1/(sqrt(2pi)*sigma) -> discrete normalization
-    }
-
-    if (sum(gKernel).val[0] != 0)
-        gKernel *= 1.0f / sum(gKernel).val[0];
-    else
-        qWarning() << "The kernel sum is zero\n";
-
-    return gKernel;
-}
-
 void DkImage::linearToGamma(cv::Mat &img)
 {
     QVector<unsigned short> gt = getLinear2GammaTable<unsigned short>();
@@ -1361,88 +1311,6 @@ QImage DkImage::createThumb(const QImage &image, int maxSize)
     return thumb;
 }
 
-// NOTE: this is just for fun (all images in the world : )
-bool DkImage::addToImage(QImage &img, unsigned char val)
-{
-    // number of bytes per line used
-    int bpl = (img.width() * img.depth() + 7) / 8;
-    int pad = img.bytesPerLine() - bpl;
-    uchar *ptr = img.bits();
-    bool done = false;
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-        for (int cIdx = 0; cIdx < bpl; cIdx++) {
-            // add it & we're done
-            if (*ptr <= 255 - val) {
-                *ptr += val;
-                done = true;
-                break;
-            }
-
-            int ov = *ptr + (int)val; // compute the overflow
-            val = (char)(ov - 255);
-
-            *ptr = val;
-            ptr++;
-        }
-
-        if (done)
-            break;
-
-        ptr += pad;
-    }
-
-    return done;
-}
-
-QColor DkImage::getMeanColor(const QImage &img)
-{
-    // some speed-up params
-    int nC = qRound(img.depth() / 8.0f);
-    int rStep = qRound(img.height() / 100.0f) + 1;
-    int cStep = qRound(img.width() / 100.0f) + 1;
-    int numCols = 42;
-
-    int offset = (nC > 1) ? 1 : 0; // no offset for grayscale images
-    QMap<QRgb, int> colLookup;
-    int maxColCount = 0;
-    QRgb maxCol = 0;
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx += rStep) {
-        const unsigned char *pixel = img.constScanLine(rIdx);
-
-        for (int cIdx = 0; cIdx < img.width() * nC; cIdx += cStep * nC) {
-            QColor cColC(qRound(pixel[cIdx + 2 * offset] / 255.0f * numCols),
-                         qRound(pixel[cIdx + offset] / 255.0f * numCols),
-                         qRound(pixel[cIdx] / 255.0f * numCols));
-            QRgb cCol = cColC.rgb();
-
-            //// skip black
-            // if (cColC.saturation() < 10)
-            //	continue;
-            if (qRed(cCol) < 3 && qGreen(cCol) < 3 && qBlue(cCol) < 3)
-                continue;
-            if (qRed(cCol) > numCols - 3 && qGreen(cCol) > numCols - 3 && qBlue(cCol) > numCols - 3)
-                continue;
-
-            if (colLookup.contains(cCol)) {
-                colLookup[cCol]++;
-            } else
-                colLookup[cCol] = 1;
-
-            if (colLookup[cCol] > maxColCount) {
-                maxCol = cCol;
-                maxColCount = colLookup[cCol];
-            }
-        }
-    }
-
-    if (maxColCount > 0)
-        return QColor(qRound((float)qRed(maxCol) / numCols * 255), qRound((float)qGreen(maxCol) / numCols * 255), qRound((float)qBlue(maxCol) / numCols * 255));
-    else
-        return DkSettingsManager::param().display().hudBgColor;
-}
-
 // DkImageStorage --------------------------------------------------------------------
 DkImageStorage::DkImageStorage(const QImage &img)
 {
@@ -1514,11 +1382,6 @@ QImage DkImageStorage::image(const QSize &size)
 
     // currently no alternative is available
     return mImg;
-}
-
-void DkImageStorage::cancel()
-{
-    mComputeState = l_cancelled;
 }
 
 void DkImageStorage::compute()
