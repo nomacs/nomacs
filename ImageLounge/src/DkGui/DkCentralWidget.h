@@ -85,7 +85,6 @@ public:
     bool operator==(const DkTabInfo &o) const;
 
     QString getFilePath() const;
-    void setFilePath(const QString &filePath);
     bool setDirPath(const QString &dirPath);
 
     QSharedPointer<DkImageContainerT> getImage() const;
@@ -139,7 +138,6 @@ public:
     QVector<QSharedPointer<DkTabInfo>> getTabs() const;
     void loadSettings();
     void saveSettings(bool clearTabs = false) const;
-    int currentViewMode() const;
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
     QString getCurrentFilePath() const;
     QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
@@ -147,7 +145,6 @@ public:
 
 signals:
     void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
-    void imageLoadedSignal(QSharedPointer<DkImageContainerT>) const;
     void imageHasGPSSignal(bool) const;
 
 public slots:
@@ -170,7 +167,6 @@ public slots:
     void pasteImage();
     void loadFileToTab(const QString &filePath);
     void loadFile(const QString &filePath, bool newTab = false);
-    void loadDir(const QString &filePath);
     void loadDirToTab(const QString &dirPath);
     void loadUrl(const QUrl &urls, bool newTab = false);
     void loadUrls(const QList<QUrl> &urls, const int maxUrlsToLoad = 20);
