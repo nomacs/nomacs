@@ -1375,7 +1375,8 @@ QImage DkImageStorage::image(const QSize &size)
 
     if (mComputeState != l_computing) {
         // trigger a new computation
-        init();
+        mScaledImg = QImage();
+        mWaitTimer->stop();
         mSize = size;
         mWaitTimer->start();
     }
