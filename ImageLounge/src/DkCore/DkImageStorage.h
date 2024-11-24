@@ -171,7 +171,6 @@ public:
 public slots:
     void antiAliasingChanged(bool antiAliasing);
     void imageComputed();
-    void compute();
 
 signals:
     void imageUpdated() const;
@@ -180,14 +179,12 @@ signals:
 protected:
     QImage mImg;
     QImage mScaledImg;
-    QSize mSize;
 
-    QTimer *mWaitTimer = 0;
     QFutureWatcher<QImage> mFutureWatcher;
 
     ComputeState mComputeState = l_not_computed;
 
-    QImage computeIntern(const QImage &src, const QSize &size);
     void init();
+    void compute(const QSize &size);
 };
 }

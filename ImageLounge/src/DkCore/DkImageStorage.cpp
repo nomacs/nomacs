@@ -1316,13 +1316,8 @@ DkImageStorage::DkImageStorage(const QImage &img)
 {
     mImg = img;
 
-    mWaitTimer = new QTimer(this);
-    mWaitTimer->setSingleShot(true);
-    mWaitTimer->setInterval(100);
-
     init();
 
-    connect(mWaitTimer, &QTimer::timeout, this, &DkImageStorage::compute, Qt::UniqueConnection);
     connect(&mFutureWatcher, &QFutureWatcher<QImage>::finished, this, &DkImageStorage::imageComputed, Qt::UniqueConnection);
     connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing),
             &QAction::toggled,
@@ -1335,15 +1330,12 @@ void DkImageStorage::init()
 {
     mComputeState = l_not_computed;
     mScaledImg = QImage();
-    mWaitTimer->stop();
-    mSize = QSize();
 }
 
 void DkImageStorage::setImage(const QImage &img)
 {
-    init();
+    mScaledImg = QImage();
     mImg = img;
-
     mComputeState = l_cancelled;
 }
 
@@ -1376,16 +1368,16 @@ QImage DkImageStorage::image(const QSize &size)
     if (mComputeState != l_computing) {
         // trigger a new computation
         mScaledImg = QImage();
-        mWaitTimer->stop();
-        mSize = size;
-        mWaitTimer->start();
+        compute(size);
     }
 
     // currently no alternative is available
     return mImg;
 }
 
-void DkImageStorage::compute()
+QImage imageStorageScaleToSize(const QImage &src, const QSize &size);
+
+void DkImageStorage::compute(const QSize &size)
 {
     if (mComputeState == l_computed) {
         emit imageUpdated();
@@ -1398,20 +1390,17 @@ void DkImageStorage::compute()
 
     mComputeState = l_computing;
 
-    mFutureWatcher.setFuture(QtConcurrent::run([&] {
-        return computeIntern(mImg, mSize);
-    }));
+    mFutureWatcher.setFuture(QtConcurrent::run(imageStorageScaleToSize, mImg, size));
 }
 
-QImage DkImageStorage::computeIntern(const QImage &src, const QSize &size)
+QImage imageStorageScaleToSize(const QImage &src, const QSize &size)
 {
     // should not happen
-    if (size.width() >= mImg.width()) {
-        qWarning() << "DkImageStorage::computeIntern was called without a need...";
+    if (size.width() >= src.width()) {
+        qWarning() << "imageStorageScaleToSize was called without a need...";
         return src;
     }
 
-    DkTimer dt;
     QImage resizedImg = src;
 
     if (!DkSettingsManager::param().display().highQualityAntiAliasing) {
@@ -1423,12 +1412,12 @@ QImage DkImageStorage::computeIntern(const QImage &src, const QSize &size)
         }
 
         // for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply
-        if (cs != mImg.size()) {
+        if (cs != src.size()) {
             resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
         }
     }
 
-    QSize s = mSize;
+    QSize s = size;
 
     if (s.height() == 0)
         s.setHeight(1);
@@ -1442,7 +1431,7 @@ QImage DkImageStorage::computeIntern(const QImage &src, const QSize &size)
         cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
         resizedImg = DkImage::mat2QImage(tmp);
     } catch (...) {
-        qWarning() << "DkImageStorage: OpenCV exception caught while resizing...";
+        qWarning() << "imageStorageScaleToSize: OpenCV exception caught while resizing...";
     }
 #else
     resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
