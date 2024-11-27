@@ -194,7 +194,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../.git)
 	endif()
 endif()
 
-message("revision is " ${NOMACS_REVISION})
+message(STATUS "revision is " ${NOMACS_REVISION})
 
 
 # create version file
@@ -230,36 +230,46 @@ else()
 	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
 endif()
 
+# get the version stored in version.cache
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/utils/version.cache NOMACS_CACHED_VERSION)
+string(STRIP "${NOMACS_CACHED_VERSION}" NOMACS_CACHED_VERSION)
+string(REGEX MATCH "^version:(.*)$" HAS_MATCH ${NOMACS_CACHED_VERSION})
+if (HAS_MATCH)
+  set(NOMACS_CACHED_VERSION ${CMAKE_MATCH_1})
+else()
+  message(FATAL_ERROR "I could not parse version.cache")
+endif()
+
 # add build incrementer command if requested
 if (ENABLE_INCREMENTER AND Python_FOUND)
 
     add_custom_command(
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
         COMMAND ${Python_EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionincrement.py 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionincrement.py
         ${NOMACS_VERSION})
 
-    message(STATUS "build incrementer enabled...")
-
-endif()
-
-if (Python_FOUND)
-    
     add_custom_command(
-        TARGET ${DLL_CORE_NAME} PRE_BUILD 
+        TARGET ${DLL_CORE_NAME} PRE_BUILD
         COMMAND ${Python_EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py
         ${CMAKE_BINARY_DIR}/DkVersion.h)
 
     # I am having issues with the PRE_BUILD above
     # if version increment is off, we just need to run the update once (for version won't change)
     # so let's do that:
-    execute_process(COMMAND ${Python_EXECUTABLE}
-            ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
-            ${CMAKE_BINARY_DIR}/DkVersion.h)
+    execute_process(
+        COMMAND ${Python_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py
+        ${CMAKE_BINARY_DIR}/DkVersion.h)
 
+    message(WARNING "build incrementer enabled, using version.cache: \"${NOMACS_CACHED_VERSION}\"")
 else()
-    message(WARNING "Python not found: the version number will be incorrect!")
+  # NOTE: the appveyor windows builds rely on version.cache for the installer and msi version numbers
+  if (NOT NOMACS_CACHED_VERSION STREQUAL NOMACS_FULL_VERSION)
+    message(FATAL_ERROR "version.cache mismatch \"${NOMACS_CACHED_VERSION}\", it should be ${NOMACS_FULL_VERSION}")
+  endif()
+  message(STATUS "nomacs version is ${NOMACS_FULL_VERSION}")
 endif()
 
 
