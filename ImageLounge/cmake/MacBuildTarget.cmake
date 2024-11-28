@@ -18,7 +18,7 @@ set(NOMACS_ICON_FILE "${CMAKE_CURRENT_SOURCE_DIR}/macosx/nomacs.icns")
 # binary
 link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS} ${CMAKE_BINARY_DIR})
 add_executable(
-	${BINARY_NAME} MACOSX_BUNDLE 
+	${BINARY_NAME} MACOSX_BUNDLE
 	${NOMACS_EXE_SOURCES}
 	${NOMACS_EXE_HEADERS}
 	${NOMACS_QM}
@@ -70,6 +70,10 @@ add_dependencies(
 
 target_link_libraries(${BINARY_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg)
 target_link_libraries(${DLL_CORE_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg)
+
+# fix ld: warning: ignoring duplicate libraries: '-lc++' with the Xcode > 14
+target_link_options(${BINARY_NAME} PRIVATE LINKER:-no_warn_duplicate_libraries)
+target_link_options(${DLL_CORE_NAME} PRIVATE LINKER:-no_warn_duplicate_libraries)
 
 # core flags
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libs) # just create that it exists and we get no warning from linker
