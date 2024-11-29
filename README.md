@@ -166,7 +166,7 @@ $ make bundle
 
 If macdeployqt complains about `ERROR: Cannot resolve rpath "@rpath/QtGui.framework/Versions/A/QtGui"` [here](https://github.com/orgs/Homebrew/discussions/2823#discussioncomment-2010340) is the solution:
 ```console
-$ /usr/local/lib/QtGui.framework/Versions/A
+$ cd /usr/local/lib/QtGui.framework/Versions/A
 $ install_name_tool -id '@rpath/QtGui.framework/Versions/A/QtGui' QtGui
 % otool -L QtGui| head -2
 QtGui:
