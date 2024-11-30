@@ -71,10 +71,6 @@ add_dependencies(
 target_link_libraries(${BINARY_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg)
 target_link_libraries(${DLL_CORE_NAME} Qt::Widgets Qt::Gui Qt::Network Qt::PrintSupport Qt::Concurrent Qt::Svg)
 
-# fix ld: warning: ignoring duplicate libraries: '-lc++' with the Xcode > 14
-target_link_options(${BINARY_NAME} PRIVATE LINKER:-no_warn_duplicate_libraries)
-target_link_options(${DLL_CORE_NAME} PRIVATE LINKER:-no_warn_duplicate_libraries)
-
 # core flags
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libs) # just create that it exists and we get no warning from linker
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
