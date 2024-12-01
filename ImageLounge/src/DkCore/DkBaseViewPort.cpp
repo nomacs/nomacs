@@ -267,7 +267,6 @@ void DkBaseViewPort::setImage(QImage newImg)
 
     updateImageMatrix();
     update();
-    emit newImageSignal(&newImg);
 }
 
 void DkBaseViewPort::hideCursor()
