@@ -101,7 +101,6 @@ public:
 
     DkFilePreview *getFilePreview() const;
     DkFolderScrollBar *getScroller() const;
-    DkMetaDataHUD *getMetaDataWidget() const;
     DkCommentWidget *getCommentWidget() const;
     DkOverview *getOverview() const;
     DkZoomWidget *getZoomWidget() const;

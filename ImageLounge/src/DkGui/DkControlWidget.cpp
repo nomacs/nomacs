@@ -673,6 +673,8 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
     if (mPluginViewport)
         mPluginViewport->updateImageContainer(imgC);
 
+    mMetaDataInfo->updateMetaData(imgC);
+
     if (!imgC)
         return;
 
@@ -775,11 +777,6 @@ void DkControlWidget::setFullScreen(bool fullscreen)
 
     if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->isVisible())
         mPlayer->show(3000);
-}
-
-DkMetaDataHUD *DkControlWidget::getMetaDataWidget() const
-{
-    return mMetaDataInfo;
 }
 
 DkCommentWidget *DkControlWidget::getCommentWidget() const

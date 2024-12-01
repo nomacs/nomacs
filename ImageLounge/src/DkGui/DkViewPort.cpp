@@ -276,7 +276,6 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     updateLoadedImage();
 
     mController->updateImage(image);
-    mController->getMetaDataWidget()->updateMetaData(image);
 }
 
 void DkViewPort::setImageUpdated()
