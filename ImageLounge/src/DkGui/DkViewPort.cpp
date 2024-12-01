@@ -1660,7 +1660,7 @@ bool DkViewPort::unloadImage(bool fileChange)
         success = mLoader->unloadFile(); // returns false if the user cancels
 
     // notify controller
-    mController->updateImage(imageContainer());
+    mController->updateImage({});
 
     if (mMovie && success) {
         mMovie->stop();
