@@ -699,14 +699,6 @@ void DkControlWidget::setInfo(const QString &msg, int time, int location)
     update();
 }
 
-void DkControlWidget::setInfoDelayed(const QString &msg, bool start, int delayTime)
-{
-    if (start)
-        mDelayedInfo->setInfo(msg, delayTime);
-    else
-        mDelayedInfo->stop();
-}
-
 void DkControlWidget::changeMetaDataPosition(int pos)
 {
     if (pos == DkFadeWidget::pos_west) {
@@ -732,16 +724,6 @@ void DkControlWidget::changeThumbNailPosition(int pos)
         mHudLayout->addWidget(mFilePreview, bottom_thumbs, left_thumbs, 1, hor_pos_end);
     } else
         mFilePreview->hide();
-}
-
-void DkControlWidget::stopLabels()
-{
-    mBottomLeftLabel->stop();
-    mBottomLabel->stop();
-    // TODO
-    // mProgressBar->hide();
-
-    switchWidget();
 }
 
 void DkControlWidget::settingsChanged()
@@ -777,11 +759,6 @@ void DkControlWidget::setFullScreen(bool fullscreen)
 
     if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->isVisible())
         mPlayer->show(3000);
-}
-
-DkCommentWidget *DkControlWidget::getCommentWidget() const
-{
-    return mCommentWidget;
 }
 
 DkOverview *DkControlWidget::getOverview() const
