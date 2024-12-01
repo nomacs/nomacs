@@ -252,12 +252,20 @@ void DkViewPort::setImage(cv::Mat newImg)
 }
 #endif
 
-void DkViewPort::updateLoadedImage(QSharedPointer<DkImageContainerT> image)
+void DkViewPort::updateLoadedImage()
 {
-    updateImage(image, true);
+    // should not happen -> the mLoader should send this signal
+    if (!mLoader) {
+        return;
+    }
+
+    if (mLoader->hasImage()) {
+        // modified image (for view), may differ from lastImage after rotate
+        setImage(mLoader->getPixmap());
+    }
 }
 
-void DkViewPort::updateImage(QSharedPointer<DkImageContainerT> image, bool loaded)
+void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loaded)
 {
     // things todo if a file was not loaded...
     if (!loaded) {
@@ -265,13 +273,10 @@ void DkViewPort::updateImage(QSharedPointer<DkImageContainerT> image, bool loade
         return;
     }
 
-    // should not happen -> the mLoader should send this signal
-    if (!mLoader)
-        return;
+    updateLoadedImage();
 
-    if (mLoader->hasImage()) {
-        setImage(mLoader->getPixmap()); // modified image (for view), may differ from lastImage after rotate
-    }
+    mController->updateImage(image);
+    mController->getMetaDataWidget()->updateMetaData(image);
 }
 
 void DkViewPort::setImageUpdated()
@@ -1878,13 +1883,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
         return;
 
     if (connectSignals) {
-        connect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkViewPort::updateImage, Qt::UniqueConnection);
-        connect(loader.data(),
-                &DkImageLoader::imageLoadedSignal,
-                mController->getMetaDataWidget(),
-                QOverload<QSharedPointer<DkImageContainerT>>::of(&DkMetaDataHUD::updateMetaData),
-                Qt::UniqueConnection);
-        connect(loader.data(), &DkImageLoader::imageLoadedSignal, mController, &DkControlWidget::updateImage, Qt::UniqueConnection);
+        connect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkViewPort::onImageLoaded, Qt::UniqueConnection);
 
         connect(loader.data(),
                 QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
@@ -1913,12 +1912,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
         // TODO: this connect seems to have no corresponding disconnect
         connect(mController->getScroller(), &DkFolderScrollBar::valueChanged, loader.data(), &DkImageLoader::loadFileAt);
     } else {
-        disconnect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkViewPort::updateImage);
-        disconnect(loader.data(),
-                   &DkImageLoader::imageLoadedSignal,
-                   mController->getMetaDataWidget(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkMetaDataHUD::updateMetaData));
-        disconnect(loader.data(), &DkImageLoader::imageLoadedSignal, mController, &DkControlWidget::updateImage);
+        disconnect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkViewPort::onImageLoaded);
 
         disconnect(loader.data(), QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal), this, &DkViewPort::updateLoadedImage);
 
@@ -1935,20 +1929,6 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
         disconnect(loader.data(), &DkImageLoader::updateDirSignal, mController->getScroller(), &DkFolderScrollBar::updateDir);
 
         disconnect(loader.data(), QOverload<int>::of(&DkImageLoader::imageUpdatedSignal), mController->getScroller(), &DkFolderScrollBar::updateFile);
-
-        // TODO: this disconnect seems to have no corresponding connect
-        disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-                   mController->getMetaDataWidget(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkMetaDataHUD::updateMetaData));
-        // TODO: this disconnect seems to have no corresponding connect
-        disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-                   mController,
-                   &DkControlWidget::updateImage);
-
-        // TODO: setSpinnerDelayed does not exist
-        // disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, mController, &DkControlWidget::setSpinnerDelayed);
     }
 }
 
