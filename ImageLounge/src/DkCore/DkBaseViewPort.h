@@ -125,7 +125,6 @@ public:
     virtual bool imageInside() const;
 
 signals:
-    void newImageSignal(QImage *img) const;
     void keyReleaseSignal(QKeyEvent *event) const; // make key presses available
     void imageUpdated() const; // triggers on zoom/pan
 
