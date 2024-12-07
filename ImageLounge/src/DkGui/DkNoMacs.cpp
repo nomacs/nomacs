@@ -179,7 +179,6 @@ void DkNoMacs::init()
 {
     // assign icon -> in windows the 32px version
     QString iconPath = ":/nomacs/img/nomacs.svg";
-    loadStyleSheet();
 
     QIcon nmcIcon = QIcon(iconPath);
     setObjectName("DkNoMacs");
@@ -230,12 +229,6 @@ void DkNoMacs::init()
 void DkNoMacs::createStatusBar()
 {
     setStatusBar(DkStatusBarManager::instance().statusbar());
-}
-
-void DkNoMacs::loadStyleSheet()
-{
-    DkThemeManager tm;
-    tm.applyTheme();
 }
 
 void DkNoMacs::createMenu()

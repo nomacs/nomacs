@@ -148,7 +148,7 @@ void DkCompressDialog::loadSettings()
     if (cIdx >= 0 && cIdx < mCompressionCombo->count())
         mCompressionCombo->setCurrentIndex(cIdx);
     mColChooser->setColor(mBgCol);
-    newBgCol();
+    newBgCol(mBgCol);
     settings.endGroup();
 }
 
@@ -272,7 +272,7 @@ void DkCompressDialog::createLayout()
     mColChooser = new DkColorChooser(mBgCol, tr("Background Color"), this);
     mColChooser->setVisible(mHasAlpha);
     mColChooser->enableAlpha(false);
-    connect(mColChooser, &DkColorChooser::accepted, this, &DkCompressDialog::newBgCol);
+    connect(mColChooser, &DkColorChooser::colorChanged, this, &DkCompressDialog::newBgCol);
 
     QWidget *previewWidget = new QWidget(this);
     QGridLayout *previewLayout = new QGridLayout(previewWidget);
@@ -500,9 +500,9 @@ void DkCompressDialog::setVisible(bool visible)
     }
 }
 
-void DkCompressDialog::newBgCol()
+void DkCompressDialog::newBgCol(const QColor &color)
 {
-    mBgCol = mColChooser->getColor();
+    mBgCol = color;
     drawPreview();
 }
 

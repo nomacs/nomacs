@@ -145,7 +145,6 @@ public:
     DkGeneralPreference(QWidget *parent = 0);
 
 public slots:
-    void onThemeBoxCurrentTextChanged(const QString &text) const;
     void onShowRecentFilesToggled(bool checked) const;
     void onLogRecentFilesToggled(bool checked) const;
     void onCheckOpenDuplicatesToggled(bool checked) const;
@@ -164,11 +163,6 @@ public slots:
     void onExportSettingsClicked();
     void onLanguageComboCurrentIndexChanged(int index) const;
     void showRestartLabel() const;
-
-    void onBackgroundColorAccepted() const;
-    void onBackgroundColorResetClicked() const;
-    void onIconColorAccepted() const;
-    void onIconColorResetClicked() const;
 
 signals:
     void infoSignal(const QString &msg) const;

@@ -215,6 +215,7 @@ protected:
 
     bool mTestLoaded = false;
     bool mGestureStarted = false;
+    bool mDisabledBackground = false; // disables drawBackground() (frameless dialog)
 
     QRectF mOldImgRect;
 
