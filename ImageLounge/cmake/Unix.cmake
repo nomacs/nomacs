@@ -88,10 +88,11 @@ if(ENABLE_TIFF)
 endif(ENABLE_TIFF)
 
 #search for quazip
-unset(QUAZIP_SOURCE_DIRECTORY CACHE)
-unset(QUAZIP_INCLUDE_DIRECTORY CACHE)
+# be aware we are using the same variables defined in FindQuazip5.cmake
+unset(QUAZIP_SOURCE_DIR CACHE)
+unset(QUAZIP_INCLUDE_DIR CACHE)
 unset(QUAZIP_LIBS CACHE)
-unset(QUAZIP_BUILD_DIRECTORY CACHE)
+unset(QUAZIP_BUILD_DIR CACHE)
 unset(QUAZIP_DEPENDENCY CACHE)
 unset(QUAZIP_FOUND CACHE)
 unset(QUAZIP_LIBRARIES CACHE)
@@ -132,14 +133,23 @@ if(ENABLE_QUAZIP)
             endif (QuaZip-Qt${QT_VERSION_MAJOR}_FOUND)
         endif()
     else()
-        message(STATUS "QUAZIP: using 3rdparty/quazip-0.7")
-        find_package(ZLIB REQUIRED)
-        set(QUAZIP_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7/quazip ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7/)
+      get_filename_component(QUAZIP_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../3rd-party/quazip" ABSOLUTE)
+      set(QUAZIP_INCLUDE_DIR ${QUAZIP_SOURCE_DIR})
 
-        file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c" "3rdparty/quazip-0.7/quazip/*.cpp")
-        file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
+      message(STATUS "QUAZIP: using ${QUAZIP_SOURCE_DIR}")
+      find_package(ZLIB REQUIRED)
 
-        add_definitions(-DWITH_QUAZIP)
+      file(GLOB QUAZIP_SOURCES "${QUAZIP_SOURCE_DIR}/quazip/*.c" "${QUAZIP_SOURCE_DIR}/quazip/*.cpp")
+      file(GLOB QUAZIP_HEADERS "${QUAZIP_SOURCE_DIR}/quazip/*.h")
+
+      add_definitions(-DQUAZIP_STATIC)
+      add_definitions(-DWITH_QUAZIP)
+      add_definitions(-DWITH_QUAZIP1) # 3rdparty header is quazip/quazip.h
+
+      if (QT_VERSION_MAJOR VERSION_GREATER_EQUAL "6")
+        find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
+        set(QUAZIP_LIBRARIES Qt6::Core5Compat ${ZLIB_LIBRARIES})
+      endif()
     endif(USE_SYSTEM_QUAZIP)
 endif(ENABLE_QUAZIP)
 
