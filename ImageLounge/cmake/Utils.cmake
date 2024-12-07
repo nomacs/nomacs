@@ -54,12 +54,12 @@ endmacro(NMC_INSTALL)
 
 macro(NMC_COPY_FILES)
 
-# copy all themes
-add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/themes/\")
-
-foreach(CSS ${NOMACS_THEMES})
-	message(STATUS "${CSS} added...")
-	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${CSS}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/themes/\")
-endforeach()
+# copy themes so we can run from the build directory
+add_custom_target(
+    copy_css_files ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/themes/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NOMACS_THEMES} "${CMAKE_BINARY_DIR}/themes/"
+    SOURCES ${NOMACS_THEMES}
+)
 
 endmacro(NMC_COPY_FILES)
