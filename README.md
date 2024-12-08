@@ -11,6 +11,8 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 ```console
 git clone https://github.com/nomacs/nomacs.git
 cd nomacs
+
+# nomacs uses submodules for third party libraries
 git submodule init
 git submodule update
 ```
@@ -61,9 +63,9 @@ python scripts/make.py "qt/bin" --lib-path "nomacs/3rd-party/build"
 
 Before you build nomacs, please note the following:
 
-- We recommend using the Qt6 version of nomacs. However, you may want to match the Qt version of your desktop environment (e.g. KDE in 24.04 is Qt5-based).
-- [kimageformats-plugins](https://github.com/KDE/kimageformats) provides additional formats (AVIF,HEIC/HEIF) and is sometimes only available for the Qt5 version. Otherwise, you must compile it separately.
-- Zip file support requires Quazip, which has varied support in distributions. If the system package is missing or does not work, you can set `USE_SYSTEM_QUAZIP=NO` to use the version in nomacs/3rdparty. However, you may also need to remove the any system quazip development package temporarily. (`llibquazip*-dev`)
+- We recommend using the Qt6 version of nomacs. However, you may want to match the Qt version of your desktop environment (e.g. KDE in Ubuntu 24.04 is Qt5-based).
+- [kimageformats-plugins](https://github.com/KDE/kimageformats) is an optional dependency that provides additional formats such as AVIF and HEIC/HEIF. The Qt version of the plugins should match the Qt version when compiling nomacs.
+- Zip file support requires Quazip, which has varied support in distributions. If the system package is missing or does not work, you can set `USE_SYSTEM_QUAZIP=NO` to use the version in nomacs/3rdparty. However, you may also need to remove the any system quazip development package temporarily. (such as `llibquazip*-dev` for Ubuntu)
 
 ### Get the required packages
 
@@ -92,7 +94,7 @@ sudo apt install qtbase5-dev qttools5-dev libqt5svg5-dev qt5-image-formats-plugi
 
 ```console
 # qt6
-sudo pacman --sync qt6-base qt6-imageformats qt6-svg qt6-tools quazip-qt6 kimageformats exiv2 libraw libtiff opencv kimageformats git cmake gtest base-devel make
+sudo pacman -S qt6-base qt6-imageformats qt6-svg qt6-tools quazip-qt6 exiv2 libraw libtiff opencv kimageformats git cmake gtest base-devel
 ```
 
 #### Redhat/Fedora/CentOS (tested on Rocky 9.5)
@@ -134,7 +136,7 @@ Nomacs is configured with cmake. These cmake options are often needed:
 cd nomacs
 mkdir build
 cd build
-cmake -D QT_VERSION_MAJOR=5 -D ENABLE_QUAZIP=ON -D USE_SYSTEM_QUAZIP=ON ../ImageLounge
+cmake ../ImageLounge
 ```
 
 ### Compile nomacs
@@ -152,7 +154,7 @@ LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./nomacs
 
 ## Build and run tests
 
-Nomacs uses googletest (libgtest-dev), this is included in package lists above. A `check`target will be created if GoogleTest is present. To build and run tests:
+Nomacs uses [GoogleTest](https://github.com/google/googletest), which is included in the package lists above. A `check` target will be created if GoogleTest is present. To build and run tests:
 
 ```bash
 make check
@@ -173,7 +175,7 @@ sudo ldconfig
 
 ### For Package Maintainers
 
-- Recommended additional packages: kimageformats provides HEIF/HEIC and AVIF image loading, and many others
+- Recommended optional dependency: kimageformats provides HEIF/HEIC and AVIF image loading, and many others
 - Set `ENABLE_TRANSLATIONS` to `true` (default: `true`)
 - Build all officially supported [plugins](https://github.com/nomacs/nomacs-plugins/), enabled by default if `3rd-party/plugins` is present.
 
@@ -223,8 +225,7 @@ You will now have a binary (`nomacs.app`), which you can test (or use directly).
 sudo make install
 ```
 
-If you want to have an independent bundle image (`nomacs.dmg`) you c
-an create it by using
+If you want to have an independent bundle image (`nomacs.dmg`) you can create it by using
 
 ```console
 $ make bundle
