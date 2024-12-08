@@ -128,9 +128,9 @@ pkgman install qt6_base_devel qt6_tools_devel qt6_svg_devel qt6_5compat_devel qu
 
 Nomacs is configured with cmake. These cmake options are often needed:
 - QT_VERSION_MAJOR=[5|6] - Default 5, 6 recommended
-- ENABLE_QUAZIP=[ON|OFF] - Default OFF, ON recommended
-- USE_SYSTEM_QUAZIP=[ON|OFF] - Default ON, recommended
-- CMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo] - Debug builds have more logging as well as debug symbols.
+- ENABLE_QUAZIP=[ON|OFF] - Default OFF
+- USE_SYSTEM_QUAZIP=[ON|OFF] - Default ON
+- CMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo] - For normal usage, choose `RelWithDebInfo`. For development, `Debug` builds have more logging as well as debug symbols.
 
 ```console
 cd nomacs
