@@ -64,7 +64,7 @@ python scripts/make.py "qt/bin" --lib-path "nomacs/3rd-party/build"
 Before you build nomacs, please note the following:
 
 - We recommend using the Qt6 version of nomacs. However, you may want to match the Qt version of your desktop environment (e.g. KDE in Ubuntu 24.04 is Qt5-based).
-- [kimageformats-plugins](https://github.com/KDE/kimageformats) is an optional dependency that provides additional formats such as AVIF and HEIC/HEIF. The Qt version of the plugins should match the Qt version when compiling nomacs.
+- [kimageformats-plugins]([https://github.com/KDE/kimageformats](https://invent.kde.org/frameworks/kimageformats)) is an optional dependency that provides additional formats such as AVIF, HEIC/HEIF, and JPEG XL/JXL. The Qt version of the plugins should match the Qt version when compiling nomacs.
 - Zip file support requires Quazip, which has varied support in distributions. If the system package is missing or does not work, you can set `USE_SYSTEM_QUAZIP=NO` to use the version in nomacs/3rdparty. However, you may also need to remove the any system quazip development package temporarily. (such as `llibquazip*-dev` for Ubuntu)
 
 ### Get the required packages
@@ -98,6 +98,7 @@ sudo pacman -S qt6-base qt6-imageformats qt6-svg qt6-tools quazip-qt6 exiv2 libr
 ```
 
 #### Redhat/Fedora/CentOS (tested on Rocky 9.5)
+
 ```console
 # qt6
 sudo dnf install qt6-qtbase-devel qt6-qtimageformats qt6-qtsvg-devel qt6-qttools-devel qt6-qt5compat-devel LibRaw-devel opencv-devel exiv2-devel libtiff-devel git cmake lcov gtest-devel gcc-c++
@@ -108,11 +109,11 @@ sudo dnf install qt5-qtbase-devel qt5-qtimageformats qt5-qtsvg-devel qt5-qttools
 
 #### FreeBSD (14.2 release)
 
-```
+```console
 # qt6
 sudo pkg install qt6-base qt6-imageformats qt6-svg qt6-5compat qt6-tools quazip-qt6 tiff exiv2 kf6-kimageformats libraw opencv git cmake googletest gcc
 
-#qt5
+# qt5
 sudo pkg install qt5-gui qt5-imageformats
 qt5-svg qt5-linguisttools qt5-qmake qt5-buildtools qt5-uitools qt5-concurrent quazip-qt5 tiff exiv2 kf5-kimageformats libraw opencv git cmake googletest gcc
 ```
@@ -130,7 +131,6 @@ Nomacs is configured with cmake. These cmake options are often needed:
 - ENABLE_QUAZIP=[ON|OFF] - Default OFF, ON recommended
 - USE_SYSTEM_QUAZIP=[ON|OFF] - Default ON, recommended
 - CMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo] - Debug builds have more logging as well as debug symbols.
-
 
 ```console
 cd nomacs
@@ -160,7 +160,6 @@ Nomacs uses [GoogleTest](https://github.com/google/googletest), which is include
 make check
 ```
 
-
 ### Install nomacs
 
 By default nomacs is installed to /usr/local/ unless you set `CMAKE_INSTALL_PREFIX`
@@ -175,9 +174,12 @@ sudo ldconfig
 
 ### For Package Maintainers
 
-- Recommended optional dependency: kimageformats provides HEIF/HEIC and AVIF image loading, and many others
-- Set `ENABLE_TRANSLATIONS` to `true` (default: `true`)
-- Build all officially supported [plugins](https://github.com/nomacs/nomacs-plugins/), enabled by default if `3rd-party/plugins` is present.
+- Highly recommended optional dependency: nomacs officially supported [plugins](https://github.com/nomacs/nomacs-plugins/), provide core features like paint-on-image. Enabled by default if `3rd-party/plugins` is present.
+- Recommended optional dependency: qt-imageformats-plugins provides WEBP and many more formats
+- Recommended optional dependency: quazip provides support for reading images from zip files (with `ENABLE_QUAZIP=ON`). In the unlikely case there is a conflict with the quazip package, you may use 3rdparty/quazip with `USE_SYSTEM_QUAZIP=OFF`.
+- Recommended optional dependency: kimageformats provides AVIF, HEIF/HEIC, JXL and many more formats.
+- Recommended build dependency: gtest so you may run `make check` to validate the build
+- Ensure `ENABLE_TRANSLATIONS` is `ON` (default: `ON`)
 
 ## Build nomacs (MacOS)
 
