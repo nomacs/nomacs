@@ -174,7 +174,7 @@ sudo ldconfig
 
 ### For Package Maintainers
 
-- Highly recommended optional dependency: nomacs officially supported [plugins](https://github.com/nomacs/nomacs-plugins/), provide core features like paint-on-image. Enabled by default if `3rd-party/plugins` is present.
+- Highly recommended optional dependency: nomacs officially supported [plugins](https://github.com/nomacs/nomacs-plugins/), provide core features like paint-on-image. Enabled by default if `nomacs/ImageLounge/plugins` submodule is present.
 - Recommended optional dependency: qt-imageformats-plugins provides WEBP and many more formats
 - Recommended optional dependency: quazip provides support for reading images from zip files (with `ENABLE_QUAZIP=ON`). In the unlikely case there is a conflict with the quazip package, you may use 3rdparty/quazip with `USE_SYSTEM_QUAZIP=OFF`.
 - Recommended optional dependency: kimageformats provides AVIF, HEIF/HEIC, JXL and many more formats.
