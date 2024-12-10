@@ -69,6 +69,23 @@ Before you build nomacs, please note the following:
 
 ### Get the required packages
 
+The package lists and cmake configuration listed below enable all features in nomacs, which we recommend. However, if you do not want a particular feature you can omit certain packages.
+
+This is the list of configurable packages and what they provide in nomacs. If you want to be sure a feature is included/excluded set the cmake option for that feature. By default, all features are enabled if the dependencies are met**.
+
+| Package | Required | Depends | cmake | Description
+| -       | -        | -       | -     | -
+| Qt      |  Yes     |         | `QT_VERSION_MAJOR` | Qt components: Core, Concurrent, Network, PrintSupport, SVG, Widgets, Core5Compat
+| LibRAW  |  No      | OpenCV  | `ENABLE_RAW`       | Enables reading RAW images
+| LibTiff |  No      | OpenCV  | `ENABLE_TIFF`      | Enable reading multi-page TIFF
+| Quazip**|  No      |         | `ENABLE_QUAZIP`    | Enable reading from zip files
+| OpenCV  |  No      |         | `ENABLE_OPENCV`    | RAW, TIFF, Adjustments, High-quality thumbnails, DRIF files, histogram, fake miniatures, mosaic
+| googletest    | No |         | `ENABLE_TESTING`   | Enables `make check` target for unit testing
+| QImageFormats | No |         | n/a                | Enables reading ICNS, MNG, TGA, TIFF, WBMP, WEBP
+| KImageFormats | No |         | n/a                | Enables reading AVIF, HEIF, JXL, JXR, EXR, EPS and [more](https://github.com/KDE/kimageformats)
+
+(**) Quazip is not enabled by default as of nomacs 3.19.1, this may change in a future update.
+
 #### Ubuntu 24.04
 
 ```console
