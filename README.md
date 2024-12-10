@@ -79,7 +79,8 @@ This is the list of configurable packages and what they provide in nomacs. If yo
 | LibRAW  |  No      | OpenCV  | `ENABLE_RAW`       | Enables reading RAW images
 | LibTiff |  No      | OpenCV  | `ENABLE_TIFF`      | Enable reading multi-page TIFF
 | Quazip**|  No      |         | `ENABLE_QUAZIP`    | Enable reading from zip files
-| OpenCV  |  No      |         | `ENABLE_OPENCV`    | RAW, TIFF, Adjustments, High-quality thumbnails, DRIF files, histogram, fake miniatures, mosaic
+| OpenCV  |  No      |         | `ENABLE_OPENCV`    | RAW, TIFF, Adjustments, High-quality thumbnails, DRIF files, histogram, mosaic
+| nomacs/plugins| No | OpenCV  | `ENABLE_PLUGINS`   | Paint on image, Composite, Affine Transform, Fake Miniatures, Page Extraction
 | googletest    | No |         | `ENABLE_TESTING`   | Enables `make check` target for unit testing
 | QImageFormats | No |         | n/a                | Enables reading ICNS, MNG, TGA, TIFF, WBMP, WEBP
 | KImageFormats | No |         | n/a                | Enables reading AVIF, HEIF, JXL, JXR, EXR, EPS and [more](https://github.com/KDE/kimageformats)
