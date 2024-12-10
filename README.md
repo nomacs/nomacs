@@ -180,6 +180,7 @@ sudo ldconfig
 - Recommended optional dependency: kimageformats provides AVIF, HEIF/HEIC, JXL and many more formats.
 - Recommended build dependency: gtest so you may run `make check` to validate the build
 - Ensure `ENABLE_TRANSLATIONS` is `ON` (default: `ON`)
+- Nomacs only requires the opencv-core and opencv-imgproc components at runtime, not the full opencv suite. This will save substantial space when installing nomacs.
 
 ## Build nomacs (MacOS)
 
