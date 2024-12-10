@@ -1,5 +1,5 @@
 version: 3.19.1.{build}
-image: Visual Studio 2022
+image: Previous Visual Studio 2022
 configuration: Release
 skip_commits:
   files:
@@ -9,9 +9,9 @@ skip_commits:
 
 environment:
     matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - APPVEYOR_BUILD_WORKER_IMAGE: Previous Visual Studio 2022
       QT5: C:\Qt\5.15.2\msvc2019_64
-      QT6: C:\Qt\6.8.0\msvc2022_64
+      QT6: C:\Qt\6.7.2\msvc2019_64
       VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
