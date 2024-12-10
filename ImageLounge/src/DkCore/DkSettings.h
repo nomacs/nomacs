@@ -81,29 +81,6 @@ protected:
     QStringList getExtensions(const QString &filter, QString &friendlyName) const;
 };
 
-class DllCoreExport DkThemeManager
-{
-public:
-    DkThemeManager(){};
-
-    QStringList getAvailableThemes() const;
-    QString getCurrentThemeName() const;
-    QString themeDir() const;
-
-    void setCurrentTheme(const QString &themeName) const;
-    QString loadTheme(const QString &themeName) const;
-
-    QString loadStylesheet() const;
-    void applyTheme() const;
-
-    QString cleanThemeName(const QString &theme) const;
-    QStringList cleanThemeNames(const QStringList &themes) const;
-
-protected:
-    QString parseColors(const QString &styleSheet) const;
-    QString replaceColors(const QString &cssString) const;
-};
-
 class DllCoreExport DkSettings
 {
 public:
@@ -237,19 +214,25 @@ public:
         bool tpPattern;
         bool showNavigation;
         QString themeName;
+        QString stylePlugin;
         QColor highlightColor;
         QColor hudBgColor;
         QColor bgColor;
         QColor bgColorFrameless;
         QColor hudFgdColor;
         QColor iconColor;
+        QColor fgColor;
 
-        // theme colors
+        // theme colors, cannot be modified by user; only valid after applyTheme()
         QColor themeFgdColor;
         QColor themeBgdColor;
+        QColor themeIconColor;
 
+        // if false, the user has customized a color in prefs and we do not use the theme color
+        bool defaultForegroundColor;
         bool defaultBackgroundColor;
         bool defaultIconColor;
+
         int thumbSize;
         int iconSize;
         int thumbPreviewSize;
@@ -380,6 +363,11 @@ public:
     Sync &sync();
     MetaData &metaData();
     Resources &resources();
+
+    const Display &defaultDisplay() const
+    {
+        return display_d;
+    }
 
 protected:
     QStringList scamDataDesc;

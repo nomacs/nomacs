@@ -278,7 +278,6 @@ protected:
 
     virtual void init();
 
-    void loadStyleSheet();
     virtual void createActions();
     virtual void createMenu();
     virtual void createContextMenu();
