@@ -35,7 +35,7 @@ for x in imageformats platforms printsupport styles; do
 done
 
 echo "copying themes..."
-cp -auv "$BUILD/$DIST/themes" "$PKG_DIR/"
+cp -auv "$BUILD/themes" "$PKG_DIR/"
 
 echo "copying translations..."
 mkdir -p "$PKG_DIR/translations"
