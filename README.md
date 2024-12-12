@@ -83,7 +83,7 @@ This is the list of configurable packages and what they provide in nomacs. If yo
 | nomacs/plugins| No | OpenCV  | `ENABLE_PLUGINS`   | Paint on image, Composite, Affine Transform, Fake Miniatures, Page Extraction
 | googletest    | No |         | `ENABLE_TESTING`   | Enables `make check` target for unit testing
 | QImageFormats | No |         | n/a                | Enables reading ICNS, MNG, TGA, TIFF, WBMP, WEBP
-| KImageFormats | No |         | n/a                | Enables reading AVIF, HEIF, JXL, JXR, EXR, EPS and [more](https://github.com/KDE/kimageformats)
+| KImageFormats | No |         | n/a                | Enables reading AVIF, HEIF/HEIC, JXL, EXR, EPS and [more](https://github.com/KDE/kimageformats)
 
 (**) Quazip is not enabled by default as of nomacs 3.19.1, this may change in a future update.
 
