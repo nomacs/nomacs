@@ -32,7 +32,7 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include <cmath>
-#include <opencv2/core/mat.hpp>
+#include <opencv2/core.hpp>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitmap>
@@ -354,11 +354,11 @@ QImage rotateImageFast(const QImage &img, double angle)
         }
 
         if (angle == 90) {
-            return transposeImage(imgIn).mirrored();
+            return transposeImage(imgIn).mirrored(true, false);
         }
 
         if (angle == 270) {
-            return transposeImage(imgIn.mirrored());
+            return transposeImage(imgIn.mirrored(true, false));
         }
 #endif
     }
