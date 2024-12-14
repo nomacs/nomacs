@@ -31,8 +31,8 @@
 #include "DkSettings.h"
 #include "DkThumbs.h"
 #include "DkTimer.h"
-#include <algorithm>
 #include <cmath>
+#include <opencv2/core/mat.hpp>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitmap>
@@ -311,21 +311,6 @@ QImage transposeImage(const QImage &img)
     return imgOut;
 }
 
-void flipImageHor(QImage &img)
-{
-    if (img.depth() > 32) {
-        // Ensure the data is 32-bit aligned
-        img = img.convertToFormat(QImage::Format_ARGB32);
-    }
-
-    QRgb *data = reinterpret_cast<QRgb *>(img.bits());
-    const int h = img.height();
-    const int w = img.width();
-    for (int i = 0; i < h; i++) {
-        std::reverse(data + w * i, data + w * (i + 1));
-    }
-}
-
 QImage rotateImageFast(const QImage &img, double angle)
 {
     angle = std::fmod(angle, 360);
@@ -345,6 +330,22 @@ QImage rotateImageFast(const QImage &img, double angle)
             imgIn = imgIn.convertToFormat(QImage::Format_ARGB32);
         }
 
+#ifdef WITH_OPENCV
+        QSize size = angle == 180 ? imgIn.size() : imgIn.size().transposed();
+        QImage imgOut = QImage(size, imgIn.format());
+        const cv::Mat matIn = cv::Mat(imgIn.height(), imgIn.width(), CV_8UC4, (uchar *)imgIn.constBits(), imgIn.bytesPerLine());
+        cv::Mat matOut = cv::Mat(imgOut.height(), imgOut.width(), CV_8UC4, imgOut.bits(), imgOut.bytesPerLine());
+
+        if (angle == 180) {
+            cv::rotate(matIn, matOut, cv::ROTATE_180);
+        } else if (angle == 90) {
+            cv::rotate(matIn, matOut, cv::ROTATE_90_CLOCKWISE);
+        } else {
+            cv::rotate(matIn, matOut, cv::ROTATE_90_COUNTERCLOCKWISE);
+        }
+
+        return imgOut;
+#else
         if (angle == 180) {
             QRgb *outData = reinterpret_cast<QRgb *>(imgIn.bits());
             const int len = imgIn.width() * imgIn.height();
@@ -353,15 +354,13 @@ QImage rotateImageFast(const QImage &img, double angle)
         }
 
         if (angle == 90) {
-            QImage imgOut = transposeImage(imgIn);
-            flipImageHor(imgOut);
-            return imgOut;
+            return transposeImage(imgIn).mirrored();
         }
 
         if (angle == 270) {
-            flipImageHor(imgIn);
-            return transposeImage(imgIn);
+            return transposeImage(imgIn.mirrored());
         }
+#endif
     }
 
     return rotateImage(img, angle);
