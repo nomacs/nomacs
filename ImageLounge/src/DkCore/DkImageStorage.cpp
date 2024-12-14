@@ -32,7 +32,10 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include <cmath>
+
+#ifdef WITH_OPENCV
 #include <opencv2/core.hpp>
+#endif
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitmap>
