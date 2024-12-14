@@ -64,11 +64,6 @@ QAction *DkBaseManipulator::action() const
     return mAction;
 }
 
-QIcon DkBaseManipulator::icon() const
-{
-    return mAction->icon();
-}
-
 // DkManipulatorManager --------------------------------------------------------------------
 DkManipulatorManager::DkManipulatorManager()
 {
@@ -176,23 +171,9 @@ QVector<QAction *> DkManipulatorManager::actions() const
     return aVec;
 }
 
-QStringList DkManipulatorManager::names() const
-{
-    QStringList cNames;
-    for (auto mpl : mManipulators)
-        cNames << mpl->name();
-
-    return cNames;
-}
-
 QSharedPointer<DkBaseManipulatorExt> DkManipulatorManager::manipulatorExt(const ManipulatorExtId &mId) const
 {
     return qSharedPointerCast<DkBaseManipulatorExt>(mManipulators[mId]);
-}
-
-QSharedPointer<DkBaseManipulator> DkManipulatorManager::manipulator(const ManipulatorId &mId) const
-{
-    return mManipulators[mId];
 }
 
 QSharedPointer<DkBaseManipulator> DkManipulatorManager::manipulator(const QAction *action) const

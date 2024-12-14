@@ -67,7 +67,6 @@ public:
 
     QString name() const;
     QAction *action() const;
-    QIcon icon() const;
 
     void setSelected(bool select);
     bool isSelected() const;
@@ -141,10 +140,8 @@ public:
     void createManipulators(QWidget *parent);
 
     QVector<QAction *> actions() const;
-    QStringList names() const;
 
     QSharedPointer<DkBaseManipulatorExt> manipulatorExt(const ManipulatorExtId &mId) const;
-    QSharedPointer<DkBaseManipulator> manipulator(const ManipulatorId &mId) const;
     QSharedPointer<DkBaseManipulator> manipulator(const QAction *action) const;
     QSharedPointer<DkBaseManipulator> manipulator(const QString &name) const;
     QVector<QSharedPointer<DkBaseManipulator>> manipulators() const;
