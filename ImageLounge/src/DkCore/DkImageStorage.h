@@ -109,6 +109,10 @@ public:
     static bool unsharpMask(QImage &img, float sigma = 20.0f, float weight = 1.5f);
     static bool alphaChannelUsed(const QImage &img);
     static QImage thresholdImage(const QImage &img, double thr, bool color = false);
+
+    /**
+     * Rotates the image clockwise by angle. See rotateImageFast().
+     */
     static QImage rotateImage(const QImage &img, double angle);
     static QImage grayscaleImage(const QImage &img);
     static QPixmap colorizePixmap(const QPixmap &icon, const QColor &col, float opacity = 1.0f);
@@ -187,4 +191,23 @@ protected:
     void init();
     void compute(const QSize &size);
 };
+
+/**
+ * Rotates the image clockwise by angle.
+ *
+ * Returns the original image if angle is 0.
+ * Do matrix operations for angles 90, 180, or 270
+ * to speed up the process.
+ * Calls rotateImage() for other angles.
+ *
+ * The returned image might have a different format.
+ */
+QImage rotateImageFast(const QImage &img, double angle);
+
+/**
+ * Rotates the image clockwise by angle.
+ *
+ * Rotate the input image by painting on a new RGBA8888 QImage.
+ */
+QImage rotateImage(const QImage &img, double angle);
 }
