@@ -85,7 +85,6 @@ public:
 #ifdef WITH_OPENCV
     static cv::Mat qImage2Mat(const QImage &img);
     static QImage mat2QImage(cv::Mat img);
-    static cv::Mat get1DGauss(double sigma);
     static void mapGammaTable(cv::Mat &img, const QVector<unsigned short> &gammaTable);
     static void gammaToLinear(cv::Mat &img);
     static void linearToGamma(cv::Mat &img);
@@ -93,7 +92,6 @@ public:
     static void tinyPlanet(QImage &img, double scaleLog, double angle, QSize s, bool invert = false);
 #endif
 
-    static QString getBufferSize(const QImage &img);
     static QString getBufferSize(const QSize &imgSize, const int depth);
     static float getBufferSizeFloat(const QSize &imgSize, const int depth);
     static QImage resizeImage(const QImage &img, const QSize &newSize, double factor = 1.0, int interpolation = ipl_cubic, bool correctGamma = true);
@@ -105,14 +103,16 @@ public:
     static void gammaToLinear(QImage &img);
     static void linearToGamma(QImage &img);
     static void mapGammaTable(QImage &img, const QVector<uchar> &gammaTable);
-    static QImage normImage(const QImage &img);
     static bool normImage(QImage &img);
-    static QImage autoAdjustImage(const QImage &img);
     static bool autoAdjustImage(QImage &img);
     static bool gaussianBlur(QImage &img, float sigma = 20.0f);
     static bool unsharpMask(QImage &img, float sigma = 20.0f, float weight = 1.5f);
     static bool alphaChannelUsed(const QImage &img);
     static QImage thresholdImage(const QImage &img, double thr, bool color = false);
+
+    /**
+     * Rotates the image clockwise by angle. See rotateImageFast().
+     */
     static QImage rotateImage(const QImage &img, double angle);
     static QImage grayscaleImage(const QImage &img);
     static QPixmap colorizePixmap(const QPixmap &icon, const QColor &col, float opacity = 1.0f);
@@ -120,8 +120,6 @@ public:
     static QPixmap loadIcon(const QString &filePath, const QColor &col, const QSize &size = QSize());
     static QPixmap loadFromSvg(const QString &filePath, const QSize &size);
     static QImage createThumb(const QImage &img, const int maxSize = -1);
-    static bool addToImage(QImage &img, unsigned char val = 1);
-    static QColor getMeanColor(const QImage &img);
     static uchar findHistPeak(const int *hist, float quantile = 0.005f);
     static QPixmap makeSquare(const QPixmap &pm);
     static QPixmap merge(const QVector<QImage> &imgs);
@@ -173,12 +171,10 @@ public:
     void setImage(const QImage &img);
     QImage imageConst() const;
     QImage image(const QSize &size = QSize());
-    void cancel();
 
 public slots:
     void antiAliasingChanged(bool antiAliasing);
     void imageComputed();
-    void compute();
 
 signals:
     void imageUpdated() const;
@@ -187,52 +183,31 @@ signals:
 protected:
     QImage mImg;
     QImage mScaledImg;
-    QSize mSize;
 
-    QTimer *mWaitTimer = 0;
     QFutureWatcher<QImage> mFutureWatcher;
 
     ComputeState mComputeState = l_not_computed;
 
-    QImage computeIntern(const QImage &src, const QSize &size);
     void init();
+    void compute(const QSize &size);
 };
-//
-// class DllCoreExport DkImageStorage : public QObject {
-//	Q_OBJECT
-//
-// public:
-//	DkImageStorage(const QImage& img = QImage());
-//
-//	void setImage(const QImage& img);
-//	QImage getImageConst() const;
-//	QImage getImage(float factor = 1.0f);
-//	bool hasImage() const {
-//		return !mImg.isNull();
-//	}
-//
-// public slots:
-//	void antiAliasingChanged(bool antiAliasing);
-//	void computeImage(double scale);
-//
-// signals:
-//	void imageUpdated() const;
-//	void infoSignal(const QString& msg) const;
-//
-// protected:
-//	QImage mImg;
-//	QVector<QImage> mImgs;
-//
-//	QMutex mMutex;
-//	QThread* mComputeThread = 0;
-//	bool mBusy = false;
-//	bool mStop = true;
-//
-//	QTimer* mWaitTimer = 0;
-//
-//	void compute();
-//
-//	double mScaling = 1.0;
-//};
 
+/**
+ * Rotates the image clockwise by angle.
+ *
+ * Returns the original image if angle is 0.
+ * Do matrix operations for angles 90, 180, or 270
+ * to speed up the process.
+ * Calls rotateImage() for other angles.
+ *
+ * The returned image might have a different format.
+ */
+QImage rotateImageFast(const QImage &img, double angle);
+
+/**
+ * Rotates the image clockwise by angle.
+ *
+ * Rotate the input image by painting on a new RGBA8888 QImage.
+ */
+QImage rotateImage(const QImage &img, double angle);
 }

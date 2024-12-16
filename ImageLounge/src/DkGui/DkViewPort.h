@@ -125,7 +125,6 @@ signals:
     void zoomSignal(double zoomLevel) const;
     void mouseClickSignal(QMouseEvent *event, QPoint imgPos) const;
     void showProgress(bool show, int time = -1) const;
-    void imageUpdatedSignal() const;
 
 public slots:
     void fullView() override;
@@ -183,8 +182,8 @@ public slots:
     virtual void applyManipulator();
     void manipulatorApplied();
 
-    void updateLoadedImage(QSharedPointer<DkImageContainerT> image);
-    virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
+    void updateLoadedImage();
+    void onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loaded = true);
     virtual void setImageUpdated();
     virtual void loadImage(const QImage &newImg);
     virtual void loadImage(QSharedPointer<DkImageContainerT> img);
