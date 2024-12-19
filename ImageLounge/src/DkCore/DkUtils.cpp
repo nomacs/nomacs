@@ -29,6 +29,7 @@
 #include "DkMath.h"
 #include "DkNoMacs.h"
 #include "DkSettings.h"
+#include "DkVersion.h"
 #include "DkViewPort.h"
 
 #if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
@@ -65,6 +66,19 @@
 
 #include <QSystemSemaphore>
 #pragma warning(pop) // no warnings from includes - end
+
+#include <exiv2/version.hpp>
+
+#ifdef WITH_LIBRAW
+#include <libraw/libraw.h>
+#endif
+
+#ifdef WITH_LIBTIFF
+#ifdef Q_CC_MSVC
+#include <tif_config.h>
+#endif
+#include <tiffio.h>
+#endif
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
@@ -487,6 +501,84 @@ QSize DkUtils::getInitialDialogSize()
     QSize s(qRound(width), qRound(height));
 
     return s;
+}
+
+QString DkUtils::getBuildInfo()
+{
+    QString info;
+
+    // architecture
+    QString arch = QSysInfo::buildCpuArchitecture();
+
+    // version & build date
+    info += "nomacs " + QApplication::applicationVersion() + ", " + arch + "\n";
+    info += QString(nmc::revisionString) + "\n";
+
+// omit from Linux for reproducable builds (see #139)
+#ifdef Q_OS_WIN
+    info += QString(__DATE__);
+#endif
+
+    if (DkSettingsManager::param().isPortable())
+        info += " Portable"; // same line as __DATE__ (running out of room)
+
+    info += "\n\n";
+
+    QString memory = QString::number(int(DkMemory::getTotalMemory() / 1000)) + "GB";
+    info += QSysInfo::prettyProductName() + ", " + memory + "\n";
+
+    // library versions (dynamic version where possible)
+    info += "Qt " + QString(qVersion()) + ", " + qApp->platformName() + ", scale=" + QString::number(qApp->devicePixelRatio(), 10, 2) + "\n";
+    info += "Exiv2 " + QString(Exiv2::version()) + "\n";
+
+#ifdef WITH_LIBRAW
+#ifdef _MSC_VER
+    // FIXME: library call segfaults in appveyor build
+    info += "LibRAW " + QString(LIBRAW_VERSION_STR) + "\n";
+#else
+    info += "LibRAW " + QString(LibRaw::version()) + "\n";
+#endif
+#else
+    info += "No RAW Support\n";
+#endif
+
+#ifdef WITH_OPENCV
+    info += "OpenCV " + QString(cv::getVersionString().c_str()) + "\n";
+#else
+    info += "No CV Support\n";
+#endif
+
+#if WITH_LIBTIFF
+    {
+        // TIFFGetVersion has other stuff in it, but it doesn't fit here
+        QString version = "error";
+        QRegularExpression re("(\\d+\\.\\d+\\.\\d+)");
+        QRegularExpressionMatch match = re.match(TIFFGetVersion());
+        if (match.hasMatch())
+            version = match.captured(0);
+        info += "TIFF " + version + "\n";
+    }
+#else
+    info += "No TIFF Pages\n";
+#endif
+
+#ifdef WITH_QUAZIP
+#ifdef WITH_QUAZIP1
+    const char *quazip = "v1";
+#else
+    const char *quazip = "v0";
+#endif
+#ifdef QUAZIP_STATIC
+    const char *linkage = "(s)";
+#else
+    const char *linkage = "";
+#endif
+    info += QString("QuaZip ") + quazip + linkage + "\n";
+#else
+    info += "No Zip Support\n";
+#endif
+
+    return info;
 }
 
 void DkUtils::mSleep(int ms)
@@ -1338,5 +1430,4 @@ bool DkRunGuard::tryRunning()
 
     return !attached;
 }
-
 }

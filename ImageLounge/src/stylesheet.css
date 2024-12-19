@@ -243,7 +243,7 @@ QLabel#DkSplashInfoLabel {
     font-size: 12px;
 }
 
-QPushButton#cancelButtonSplash {
+QPushButton#DkSplashCloseButton {
     image: url(":/nomacs/img/close.svg");
     padding: 4px;
     margin: 8px;
@@ -251,10 +251,21 @@ QPushButton#cancelButtonSplash {
     max-height: 1em;
 }
 
-QPushButton#cancelButtonSplash:hover {
+QPushButton#DkSplashCloseButton:hover {
     image: url(":/nomacs/img/close-hover.svg");
 }
 
+QPushButton#DkSplashCopyInfoButton {
+  image: url(":nomacs/img/copy.svg");
+  padding: 2px;
+  margin: 0px;
+  max-width: 1em;
+  max-height: 1em;
+}
+
+QPushButton#DkSplashCopyInfoButton:hover {
+  background-color: #ddd;
+}
 
 QLineEdit#DkWarningEdit {
 	color: #000;

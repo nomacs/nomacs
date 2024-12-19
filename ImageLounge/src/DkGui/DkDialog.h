@@ -123,27 +123,20 @@ public:
 
 class DkSplashScreen : public QDialog
 {
-    Q_OBJECT
-
 public:
-    DkSplashScreen(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkSplashScreen(){};
+    DkSplashScreen(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkSplashScreen();
 
-protected:
+private:
+    QPoint mDragStart;
+    QTimer *mTimer;
+    QPushButton *mCloseButton;
+    QPushButton *mCopyButton;
+
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void showClose();
-
-private:
-    QPoint mouseGrab;
-    QString text;
-    QLabel *textLabel;
-    QLabel *imgLabel;
-    QTimer *showTimer;
-    QPushButton *exitButton;
-
-    QString versionText() const;
+    void showButtons();
 };
 
 class DkFileValidator : public QValidator

@@ -37,7 +37,6 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
-#include "DkVersion.h"
 #include "DkViewPort.h"
 #include "DkWidgets.h"
 
@@ -50,6 +49,7 @@
 #include <QApplication>
 #include <QBoxLayout>
 #include <QCheckBox>
+#include <QClipboard>
 #include <QColorDialog>
 #include <QComboBox>
 #include <QCompleter>
@@ -126,8 +126,8 @@ QFileDialog::Options DkDialog::fileDialogOptions()
 }
 
 // DkSplashScreen --------------------------------------------------------------------
-DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
-    : QDialog(0, flags)
+DkSplashScreen::DkSplashScreen(QWidget *parent, Qt::WindowFlags flags)
+    : QDialog(parent, flags)
 {
     QPixmap img(":/nomacs/img/splash-screen.png");
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -136,7 +136,7 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
     setObjectName("DkSplashScreen");
     setAttribute(Qt::WA_TranslucentBackground);
 
-    imgLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    auto *imgLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     imgLabel->setObjectName("DkSplashInfoLabel");
     imgLabel->setMouseTracking(true);
     imgLabel->setScaledContents(true);
@@ -146,17 +146,17 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
 
     setFixedSize(imgLabel->size());
 
-    exitButton = new QPushButton(this);
-    exitButton->setObjectName("cancelButtonSplash");
-    exitButton->setFlat(true);
-    exitButton->setToolTip(tr("Close (ESC)"));
-    exitButton->setShortcut(QKeySequence(Qt::Key_Escape));
-    exitButton->move(4, 474 - exitButton->height() - 20);
-    exitButton->hide();
-    connect(exitButton, &QPushButton::clicked, this, &DkSplashScreen::close);
+    mCloseButton = new QPushButton(this);
+    mCloseButton->setObjectName("DkSplashCloseButton");
+    mCloseButton->setFlat(true);
+    mCloseButton->setToolTip(tr("Close (ESC)"));
+    mCloseButton->setShortcut(QKeySequence(Qt::Key_Escape));
+    mCloseButton->move(4, 474 - mCloseButton->height() - 20);
+    mCloseButton->hide();
+    connect(mCloseButton, &QPushButton::clicked, this, &DkSplashScreen::close);
 
     // set the text
-    text = QString(
+    QString text = QString(
         "<p style=\"color: #333; margin: 0; padding: 0;\">"
         "Flo was here und w&uuml;nscht<br>"
         "Stefan fiel Spa&szlig; w&auml;hrend<br>"
@@ -165,12 +165,17 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
         "<a style=\"color: blue;\" href=\"https://github.com/nomacs/nomacs\">"
         "https://github.com/nomacs/nomacs</a><br>"
 
-        "This program is licensed under GNU General Public License v3<br>"
-        "&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011-2020<br><br>"
+        "This program is licensed under<br>"
+        "GNU General Public License v3<br>"
+        "&#169; Markus Diem, Stefan Fiel and Florian Kleber 2011-2020<br><br>"
 
-        "Press [ESC] to exit</p>");
+        "Press [ESC] to close</p>");
 
-    textLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    QString infoText = "<p style=\"color: #666; margin: 0; padding: 0;\">";
+    infoText += DkUtils::getBuildInfo().replace("\n", "<br>");
+    infoText += "</p>";
+
+    auto *textLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     textLabel->setObjectName("DkSplashInfoLabel");
     textLabel->setMouseTracking(true);
     textLabel->setScaledContents(true);
@@ -179,98 +184,68 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
     textLabel->move(48, 270); // aligned with logo text
     textLabel->setOpenExternalLinks(true);
 
-    QLabel *versionLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    auto *versionLabel = new QLabel(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     versionLabel->setObjectName("DkSplashInfoLabel");
     versionLabel->setTextFormat(Qt::RichText);
-    versionLabel->setText(versionText());
+    versionLabel->setText(infoText);
     versionLabel->setAlignment(Qt::AlignRight);
     versionLabel->move(478 - versionLabel->sizeHint().width(), 270); // aligned with martini glass stem
     versionLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    showTimer = new QTimer(this);
-    showTimer->setInterval(5000);
-    showTimer->setSingleShot(true);
-    connect(showTimer, &QTimer::timeout, exitButton, &QPushButton::hide);
+    mCopyButton = new QPushButton(this);
+    mCopyButton->setObjectName("DkSplashCopyInfoButton");
+    mCopyButton->setFlat(true);
+    mCopyButton->setToolTip(tr("Copy build information"));
+    mCopyButton->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
+    mCopyButton->move(478 + 4, 270);
+    mCopyButton->hide();
+    connect(mCopyButton, &QPushButton::clicked, this, [] {
+        qApp->clipboard()->setText(DkUtils::getBuildInfo());
+    });
+
+    mTimer = new QTimer(this);
+    mTimer->setInterval(5000);
+    mTimer->setSingleShot(true);
+    connect(mTimer, &QTimer::timeout, this, [this] {
+        mCloseButton->hide();
+        mCopyButton->hide();
+    });
+}
+
+DkSplashScreen::~DkSplashScreen()
+{
 }
 
 void DkSplashScreen::mousePressEvent(QMouseEvent *event)
 {
     setCursor(Qt::ClosedHandCursor);
-    mouseGrab = event->globalPos();
+    mDragStart = event->globalPos();
     QDialog::mousePressEvent(event);
 }
 
 void DkSplashScreen::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        move(pos() - (mouseGrab - event->globalPos()));
-        mouseGrab = event->globalPos();
+        move(pos() - (mDragStart - event->globalPos()));
+        mDragStart = event->globalPos();
     }
 
-    showClose();
+    showButtons();
     QDialog::mouseMoveEvent(event);
 }
 
 void DkSplashScreen::mouseReleaseEvent(QMouseEvent *event)
 {
     setCursor(Qt::ArrowCursor);
-    showClose();
+    showButtons();
     QDialog::mouseReleaseEvent(event);
 }
 
-void DkSplashScreen::showClose()
+void DkSplashScreen::showButtons()
 {
-    exitButton->show();
-    showTimer->start();
-}
-
-QString DkSplashScreen::versionText() const
-{
-    QString vt;
-
-    vt += "<p style=\"color: #333; margin: 0; padding: 0;\">";
-
-    // print out if the name is changed (e.g. READ build)
-    if (QApplication::applicationName() != "Image Lounge") {
-        vt += QApplication::applicationName() + "<br>";
-    }
-
-    // architecture
-    QString platform = " [" + QSysInfo::buildCpuArchitecture() + "]";
-
-    // version & build date
-    vt += QApplication::applicationVersion() + platform + "<br>";
-    vt += QString(nmc::revisionString) + "<br>";
-
-// reproducable builds for linux (see #139)
-#ifdef Q_OS_WIN
-    vt += QString(__DATE__) + "<br>";
-#endif
-    vt += "</p>";
-
-    // supplemental info
-    vt += "<p style=\"color: #666; margin: 0; padding: 0;\">";
-
-    // OpenCV
-#ifdef WITH_OPENCV
-    vt += "OpenCV " + QString(CV_VERSION) + "<br>";
-#else
-    vt += "No CV support<br>";
-#endif
-
-    // Qt
-    vt += "Qt " + QString(QT_VERSION_STR) + "<br>";
-
-    // LibRAW
-#ifndef WITH_LIBRAW
-    vt += "No RAW support<br>";
-#endif
-
-    // portable
-    vt += (DkSettingsManager::param().isPortable() ? tr("Portable") : "");
-    vt += "</p>";
-
-    return vt;
+    mCloseButton->show();
+    mCopyButton->show();
+    mTimer->start();
 }
 
 // file validator --------------------------------------------------------------------
