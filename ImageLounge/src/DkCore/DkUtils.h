@@ -162,6 +162,8 @@ public:
 
     static QSize getInitialDialogSize();
 
+    static QString getBuildInfo();
+
     /**
      * Sleeps n ms.
      * This function is based on the QTest::qSleep(int ms)
