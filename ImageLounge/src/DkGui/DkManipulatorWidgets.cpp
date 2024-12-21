@@ -117,29 +117,6 @@ void DkManipulatorWidget::createLayout()
     mPreview = new QLabel(this);
     mPreview->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
-    // undo
-    QPixmap pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/rotate-cc.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
-    QPushButton *undoButton = new QPushButton(pm, "", this);
-    undoButton->setFlat(true);
-    undoButton->setIconSize(QSize(32, 32));
-    undoButton->setObjectName("DkRestartButton");
-    undoButton->setStatusTip(tr("Undo"));
-    connect(undoButton, &QPushButton::clicked, am.action(DkActionManager::menu_edit_undo), &QAction::triggered);
-
-    pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/rotate-cw.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
-    QPushButton *redoButton = new QPushButton(pm, "", this);
-    redoButton->setFlat(true);
-    redoButton->setIconSize(QSize(32, 32));
-    redoButton->setObjectName("DkRestartButton");
-    redoButton->setStatusTip(tr("Redo"));
-    connect(redoButton, &QPushButton::clicked, am.action(DkActionManager::menu_edit_redo), &QAction::triggered);
-
-    QWidget *buttonWidget = new QWidget(this);
-    QHBoxLayout *buttonLayout = new QHBoxLayout(buttonWidget);
-    buttonLayout->setContentsMargins(0, 0, 0, 0);
-    buttonLayout->addWidget(undoButton);
-    buttonLayout->addWidget(redoButton);
-
     QWidget *mplWidget = new QWidget(this);
     QVBoxLayout *mplLayout = new QVBoxLayout(mplWidget);
     mplLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
@@ -147,7 +124,6 @@ void DkManipulatorWidget::createLayout()
     for (QWidget *w : mWidgets)
         mplLayout->addWidget(w);
     mplLayout->addWidget(mPreview);
-    mplLayout->addWidget(buttonWidget);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
