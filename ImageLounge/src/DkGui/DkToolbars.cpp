@@ -1205,6 +1205,9 @@ void DkToolBarManager::createDefaultToolBar()
     mToolBar->addAction(am.action(DkActionManager::menu_edit_crop));
     mToolBar->addAction(am.action(DkActionManager::menu_edit_transform));
     mToolBar->addSeparator();
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_undo));
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_redo));
+    mToolBar->addSeparator();
 
     // view
     mToolBar->addAction(am.action(DkActionManager::menu_view_fullscreen));
