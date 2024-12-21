@@ -345,6 +345,8 @@ public:
         icon_edit_copy,
         icon_edit_paste,
         icon_edit_delete,
+        icon_edit_undo,
+        icon_edit_redo,
 
         icon_edit_end, // nothing beyond this point
     };

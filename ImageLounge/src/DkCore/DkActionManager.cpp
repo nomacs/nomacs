@@ -976,6 +976,8 @@ void DkActionManager::createIcons()
     mEditIcons[icon_edit_copy] = DkImage::loadIcon(":/nomacs/img/copy.svg");
     mEditIcons[icon_edit_paste] = DkImage::loadIcon(":/nomacs/img/paste.svg");
     mEditIcons[icon_edit_delete] = DkImage::loadIcon(":/nomacs/img/trash.svg");
+    mEditIcons[icon_edit_undo] = DkImage::loadIcon(":/nomacs/img/edit-undo.svg");
+    mEditIcons[icon_edit_redo] = DkImage::loadIcon(":/nomacs/img/edit-redo.svg");
 
     mViewIcons.resize(icon_view_end);
     mViewIcons[icon_view_fullscreen] = DkImage::loadIcon(":/nomacs/img/fullscreen.svg");
@@ -1151,12 +1153,12 @@ void DkActionManager::createActions(QWidget *parent)
     mEditActions[menu_edit_rotate_180] = new QAction(QObject::tr("180%1").arg(dk_degree_str), parent);
     mEditActions[menu_edit_rotate_180]->setStatusTip(QObject::tr("rotate the image by 180%1").arg(dk_degree_str));
 
-    mEditActions[menu_edit_undo] = new QAction(QObject::tr("&Undo"), parent);
+    mEditActions[menu_edit_undo] = new QAction(mEditIcons[icon_edit_undo], QObject::tr("&Undo"), parent);
     mEditActions[menu_edit_undo]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_undo]->setShortcut(QKeySequence::Undo);
     mEditActions[menu_edit_undo]->setStatusTip(QObject::tr("Undo Last Action"));
 
-    mEditActions[menu_edit_redo] = new QAction(QObject::tr("&Redo"), parent);
+    mEditActions[menu_edit_redo] = new QAction(mEditIcons[icon_edit_redo], QObject::tr("&Redo"), parent);
     mEditActions[menu_edit_redo]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_redo]->setShortcut(QKeySequence::Redo);
     mEditActions[menu_edit_redo]->setStatusTip(QObject::tr("Redo Last Action"));
