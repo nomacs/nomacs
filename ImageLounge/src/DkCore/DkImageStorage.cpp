@@ -1448,17 +1448,16 @@ QImage DkImageStorage::image(const QSize &size)
 {
     if (size.isEmpty() || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing || // user disabled?
         mImg.size().width() < size.width() // scale factor > 1?
-    )
+    ) {
         return mImg;
-
-    if (mScaledImg.size() == size)
-        return mScaledImg;
-
-    if (mComputeState != l_computing) {
-        // trigger a new computation
-        mScaledImg = QImage();
-        compute(size);
     }
+
+    if (mScaledImg.size() == size) {
+        return mScaledImg;
+    }
+
+    // trigger a new computation
+    compute(size);
 
     // currently no alternative is available
     return mImg;
@@ -1468,15 +1467,13 @@ QImage imageStorageScaleToSize(const QImage &src, const QSize &size);
 
 void DkImageStorage::compute(const QSize &size)
 {
-    if (mComputeState == l_computed) {
-        emit imageUpdated();
-        qDebug() << "image is up-to-date in DkImageStorage::compute...";
+    // don't compute twice
+    if (mComputeState == l_computing) {
         return;
     }
 
-    if (mComputeState == l_computing) // don't compute twice
-        return;
-
+    // Reset state
+    mScaledImg = QImage();
     mComputeState = l_computing;
 
     mFutureWatcher.setFuture(QtConcurrent::run(imageStorageScaleToSize, mImg, size));
