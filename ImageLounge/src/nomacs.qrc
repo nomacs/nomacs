@@ -93,5 +93,7 @@
         <file>img/radio-checked.svg</file>
         <file>img/radio-checked-white.svg</file>
         <file>img/up-white.svg</file>
+        <file>img/edit-undo.svg</file>
+        <file>img/edit-redo.svg</file>
     </qresource>
 </RCC>
