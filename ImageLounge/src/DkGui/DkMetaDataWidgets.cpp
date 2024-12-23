@@ -470,7 +470,8 @@ void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC)
         // the imgC thumbnail might be created from the image
         mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(imgC->filePath()));
         connect(mThumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkMetaDataDock::thumbLoaded);
-        mThumb->fetchThumb(DkThumbNailT::force_exif_thumb);
+        if (!mThumb->fetchThumb(DkThumbNailT::require_exif))
+            thumbLoaded(false);
     }
 }
 
@@ -479,18 +480,18 @@ void DkMetaDataDock::thumbLoaded(bool loaded)
     if (loaded) {
         QImage thumbImg = mThumb->getImage();
 
-        // if (thumbImg.width() > width()) {
-        //	mThumbNailLabel->setFixedWidth(width()-20);
-        //	thumbImg = thumbImg.scaled(QSize(width(), thumbImg.height()), Qt::KeepAspectRatio);
-        // }
-        // else
-        //	mThumbNailLabel->setFixedHeight(thumbImg.height());
-
-        QSize tSize = thumbImg.size();
+        const QSize tSize = thumbImg.size();
         thumbImg = thumbImg.scaled(tSize.boundedTo(QSize(mTreeView->width(), mTreeView->width())), Qt::KeepAspectRatio);
 
-        mThumbNailLabel->setScaledContents(true);
+        // mThumbNailLabel->setScaledContents(true);
         mThumbNailLabel->setPixmap(QPixmap::fromImage(thumbImg));
+
+        QString toolTip = tr("Embedded Thumbnail");
+        toolTip += QString("\n%1: %2").arg(tr("Size")).arg(DkUtils::readableByte(thumbImg.text("Thumb.FileSize").toInt()));
+        toolTip += QString("\n%1: %2x%3").arg(tr("Resolution")).arg(tSize.width()).arg(tSize.height());
+        toolTip += QString("\n%1: %2").arg(tr("Rotated")).arg(thumbImg.text("Image.IsRotated") == "yes" ? tr("yes") : tr("no"));
+        mThumbNailLabel->setToolTip(toolTip);
+
         mThumbNailLabel->show();
     } else
         mThumbNailLabel->hide();

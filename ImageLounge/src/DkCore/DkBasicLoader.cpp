@@ -194,8 +194,6 @@ DkBasicLoader::DkBasicLoader(int mode)
     mPageIdxDirty = false;
     mNumPages = 1;
     mPageIdx = 1;
-    mLoader = no_loader;
-
     mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 }
 
@@ -203,210 +201,286 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, bool loadMetaData, bool
 {
     return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
 }
-/**
- * This function loads the images.
- * @param file the image file that should be loaded.
- * @return bool true if the image could be loaded.
- **/
+
 bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast)
 {
     DkTimer dt;
-    bool imgLoaded = false;
 
     mFile = DkUtils::resolveSymLink(filePath);
-    QFileInfo fInfo(mFile); // resolved lnk
-    QString newSuffix = fInfo.suffix();
+    const QFileInfo fileInfo(mFile); // resolved lnk
+    const QByteArray suffix = fileInfo.suffix().toLower().toLatin1();
 
+    // name of the load method for tracing and also indicates if we loaded successfully
+    const char *loader = nullptr;
+
+    // reset edit history and metadata
     release();
 
+    // tiff page handler
     if (mPageIdxDirty)
-        imgLoaded = loadPage();
+        if (loadPage())
+            loader = "page";
 
-    // identify raw images:
-    // newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
+    // mMetaData can never be null due to release()
+    Q_ASSERT(mMetaData);
 
     // this fixes an issue with the new jpg loader
     // Qt considers an orientation of 0 as wrong and fails to load these jpgs
     // however, the old nomacs wrote 0 if the orientation should be cleared
     // so we simply adopt the memory here
-    if (loadMetaData && mMetaData) {
-        try {
-            mMetaData->readMetaData(filePath, ba);
-        } catch (...) {
-        } // ignore if we cannot read the metadata
-    } else if (!mMetaData) {
-        qDebug() << "metaData is NULL!";
-    }
+    if (loadMetaData)
+        mMetaData->readMetaData(filePath, ba);
 
-    QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
-    qtFormats << "jpe"; // fixes #435 - thumbnail gets loaded in the RAW loader
-    QString suf = fInfo.suffix().toLower();
+    // "jpe" fixes #435 - thumbnail gets loaded in the RAW loader
+    static const QList<QByteArray> qtFormats = QImageReader::supportedImageFormats() << "jpe";
+    static const QList<QByteArray> drifFormats{"drif", "yuv", "raw"};
+    static const QList<QByteArray>
+        rawFormats{"nef", "nrw", "crw", "cr2", "cr3", "arw", "dng", "raw", "rw2", "mrw", "srw", "orf", "3fr", "x3f", "mos", "pef", "iiq", "raf"};
+    static const QList<QByteArray> tiffFormats{"tif", "tiff"};
+    static const QList<QByteArray> psdFormats{"psb", "psd"};
+    static const QList<QByteArray> jpegFormats{"jpg", "jpeg", "jpe"};
+
+    //
+    // loader precedence issues (unsolved problem)
+    // RAW must precede TIFF (RAW uses TIFF container)
+    // Qt has tiff loader, too
+    // Do we prefer our RAW loader rather that Qt’s plug-in kimg_raw from KImageFormats?
+    //
 
     QImage img;
 
     // load drif file
-    if (!imgLoaded && ("drif" == suf || "yuv" == suf || "raw" == suf))
-        imgLoaded = loadDrifFile(mFile, img, ba);
-
-    if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
-        imgLoaded = img.loadFromData(*ba.data());
-
-        if (imgLoaded)
-            mLoader = qt_loader;
+    if (!loader && drifFormats.contains(suffix)) {
+        if (loadDRIF(mFile, img, ba))
+            loader = "drif";
     }
 
-    // load large icons
-    if (!imgLoaded && suf == "ico") {
-        QIcon icon(mFile);
+    // what is this for...loaders *always* prefer byte array over file
+    // if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
+    //     imgLoaded = img.loadFromData(*ba.data());
+    //     if (imgLoaded)
+    //         mLoader = qt_loader;
+    // }
 
-        if (!icon.isNull()) {
-            img = icon.pixmap(QSize(256, 256)).toImage();
-            imgLoaded = true;
-        }
-    }
+    // this is supported by loadQt now
+    // ico loader (Microsoft icon container)
+    // if (!loader && suffix == "ico") {
+    //     if (ba && !ba->isEmpty()) {
+    //         qWarning() << "[Loader] loading .ico from buffer will pull the lowest-res icon";
+    //     } else {
+    //         QIcon icon(mFile);
+    //         if (!icon.isNull()) {
+    //             img = icon.pixmap(QSize(256, 256)).toImage(); // load large icons
+    //             loader = "qt-ico";
+    //         }
+    //     }
+    // }
 
 #ifdef WITH_LIBRAW
-    bool rawloaderused(false);
-
-    if (!imgLoaded
-        && newSuffix.contains(
-            QRegularExpression("(nef|nrw|crw|cr2|cr3|arw|dng|raw|rw2|mrw|srw|orf|3fr|x3f|mos|pef|iiq|raf)", QRegularExpression::CaseInsensitiveOption))) {
-        // prefer our RAW loader rather that Qt’s plug-in kimg_raw from KImageFormats
-        rawloaderused = true;
-        imgLoaded = loadRawFile(mFile, img, ba, fast);
-        if (imgLoaded)
-            mLoader = raw_loader;
+    bool libRawUsed = false;
+    if (!loader && rawFormats.contains(suffix)) {
+        libRawUsed = true;
+        if (loadRAW(mFile, img, ba, fast))
+            loader = "raw";
     }
 #endif
 
-    // default Qt loader
-    // here we just try those formats that are officially supported
-    if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str()) || suf.isEmpty()) {
+    // Qt loader (by file extension match)
+    // FIXME: qt plugins might support the same formats as other loaders,
+    //        which one should take priority
+    if (!loader && qtFormats.contains(suffix) || suffix.isEmpty()) {
         // if image has Indexed8 + alpha channel -> we crash... sorry for that
-        if (!ba || ba->isEmpty())
-            imgLoaded = img.load(mFile, suf.toStdString().c_str());
-        else
-            imgLoaded = img.loadFromData(*ba.data(), suf.toStdString().c_str()); // toStdString() in order get 1 byte per char
-
-        if (imgLoaded)
-            mLoader = qt_loader;
+        if (loadQt(mFile, img, ba, suffix))
+            loader = "qt";
     }
 
-    // OpenCV Tiff loader - supports jpg compressed tiffs
-    if (!imgLoaded && newSuffix.contains(QRegularExpression("(tif|tiff)", QRegularExpression::CaseInsensitiveOption))) {
-        imgLoaded = loadTIFFile(mFile, img, ba);
-
-        if (imgLoaded)
-            mLoader = tif_loader;
+    // Tiff loader - supports jpg compressed tiffs
+    if (!loader && tiffFormats.contains(suffix)) {
+        if (loadTIFF(mFile, img, ba))
+            loader = "tiff";
     }
 
     // PSD loader
-    if (!imgLoaded) {
-        imgLoaded = loadPSDFile(mFile, img, ba);
-        if (imgLoaded)
-            mLoader = psd_loader;
+    if (!loader && psdFormats.contains(suffix)) {
+        if (loadPSD(mFile, img, ba))
+            loader = "psd";
     }
 
 #ifdef WITH_LIBRAW
-    // RAW loader (try only formats not handled before)
-    if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str()) && !rawloaderused) {
+    // try RAW again, maybe we are missing an extension
+    if (!loader && !qtFormats.contains(suffix) && !libRawUsed) {
         // TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
         // load raw files
-        imgLoaded = loadRawFile(mFile, img, ba, fast);
-        if (imgLoaded)
-            mLoader = raw_loader;
+        if (loadRAW(mFile, img, ba, fast))
+            loader = "raw";
     }
 #endif
 
     // TGA loader
-    if (!imgLoaded && newSuffix.contains(QRegularExpression("(tga)", QRegularExpression::CaseInsensitiveOption))) {
-        imgLoaded = loadTgaFile(mFile, img, ba);
-
-        if (imgLoaded)
-            mLoader = tga_loader; // TODO: add tga loader
+    if (!loader && suffix == "tga") {
+        if (loadTGA(mFile, img, ba))
+            loader = "tga";
     }
 
-    QByteArray lba;
-
-    // default Qt loader
-    if (!imgLoaded && !newSuffix.contains(QRegularExpression("(roh)", QRegularExpression::CaseInsensitiveOption))) {
-        // if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
-        // TODO: add warning here
-        loadFileToBuffer(mFile, lba);
-        imgLoaded = img.loadFromData(lba);
-
-        if (imgLoaded)
+    // Qt loader, wrong file extension
+    if (!loader && suffix != "roh" && suffix != "vec") {
+        if (loadQt(mFile, img, ba)) {
+            loader = "qt-bycontent";
             qWarning() << "The image seems to have a wrong extension";
-
-        if (imgLoaded)
-            mLoader = qt_loader;
+        }
     }
 
-    // add marker to fix broken panorama images from SAMSUNG
+    // fix broken samsung panorama images
     // see: https://github.com/nomacs/nomacs/issues/254
-    if (!imgLoaded && newSuffix.contains(QRegularExpression("(jpg|jpeg|jpe)", QRegularExpression::CaseInsensitiveOption))) {
-        // prefer external buffer
-        QByteArray baf = DkImage::fixSamsungPanorama(ba && !ba->isEmpty() ? *ba : lba);
-
-        if (!baf.isEmpty())
-            imgLoaded = img.loadFromData(baf, suf.toStdString().c_str());
-
-        if (imgLoaded)
-            mLoader = qt_loader;
+    if (!loader && jpegFormats.contains(suffix)) {
+        if (!ba || ba->isEmpty()) {
+            qDebug() << "[Loader] loading file to buffer for samsung panorama hack...";
+            ba = loadFileToBuffer(filePath);
+        }
+        if (ba && !ba->isEmpty()) {
+            if (DkImage::fixSamsungPanorama(*ba))
+                if (loadQt(mFile, img, ba, suffix))
+                    loader = "qt-samsung";
+        }
     }
 
     // this loader is a bit buggy -> be carefull
-    if (!imgLoaded && newSuffix.contains(QRegularExpression("(roh)", QRegularExpression::CaseInsensitiveOption))) {
-        imgLoaded = loadRohFile(mFile, img, ba);
-        if (imgLoaded)
-            mLoader = roh_loader;
+    if (!loader && suffix == "roh") {
+        if (loadROH(mFile, img, ba))
+            loader = "roh";
     }
 
     // this loader is for OpenCV cascade training files
-    if (!imgLoaded && newSuffix.contains(QRegularExpression("(vec)", QRegularExpression::CaseInsensitiveOption))) {
-        imgLoaded = loadOpenCVVecFile(mFile, img, ba);
-        if (imgLoaded)
-            mLoader = roh_loader;
+    if (!loader && suffix == "vec") {
+        if (loadOpenCVVecFile(mFile, img, ba))
+            loader = "vec";
     }
 
     // tiff things
-    if (imgLoaded && !mPageIdxDirty)
+    if (loader && !mPageIdxDirty)
         indexPages(mFile, ba);
     mPageIdxDirty = false;
 
-    if (imgLoaded && loadMetaData && mMetaData) {
-        try {
-            mMetaData->setQtValues(img);
-            int orientation = mMetaData->getOrientationDegree();
+    // handle auto-rotate
+    int orientation = -2;
+    bool isRotated = false;
+    if (loader && !DkSettingsManager::param().metaData().ignoreExifOrientation && loadMetaData && mMetaData->hasMetaData()) {
+        orientation = mMetaData->getOrientationDegree();
 
-            if (orientation != -1 && !mMetaData->isTiff() && !mMetaData->isAVIF() && !mMetaData->isHEIF() && !mMetaData->isJXL()
-                && !DkSettingsManager::param().metaData().ignoreExifOrientation) {
-                img = DkImage::rotateImage(img, orientation);
-            }
-
-        } catch (...) {
-        } // ignore if we cannot read the metadata
-    } else if (!mMetaData) {
-        qDebug() << "metaData is NULL!";
+        // TODO: validate that avif,heif,jxl double-rotation is fixed
+        if (orientation != -1 && orientation != 0 // && !mMetaData->isTiff() && !mMetaData->isAVIF() && !mMetaData->isHEIF() && !mMetaData->isJXL()
+            && !DkSettingsManager::param().metaData().ignoreExifOrientation) {
+            qDebug() << img.textKeys();
+            img = DkImage::rotateImage(img, orientation);
+            isRotated = true;
+        }
     }
 
-    if (imgLoaded)
+    if (loader) {
+        img.setText("Exiv2.MimeType", mMetaData->getMimeType());
+        img.setText("Exiv2.HasMetadata", mMetaData->hasMetaData() ? "yes" : "no");
+        img.setText("Image.HasSidecar", mMetaData->useSidecar() ? "yes" : "no");
+        img.setText("Image.Loader", loader);
+        img.setText("Image.IsRotated", isRotated ? "yes" : "no");
+        img.setText("Image.LoadTimeMs", QString::number(dt.elapsed()));
+        img.setText("QImage.Depth", QString::number(img.depth()));
+        img.setText("QImage.HasAlpha", img.hasAlphaChannel() ? "yes" : "no");
+        img.setText("QImage.PixelFormat", DkUtils::formatToString(img.format()));
+        if (img.depth() <= 8)
+            img.setText("qimg.ColorCount", QString::number(img.colorCount()));
+#if QT_VERSION_MAJOR >= 6
+        img.setText("QImage.ColorSpace", img.colorSpace().description());
+#endif
+        mMetaData->setQtValues(img);
+
         setEditImage(img, tr("Original Image"));
+    }
 
-    if (imgLoaded)
-        qInfo() << "[Basic Loader]" << filePath << "loaded in" << dt;
+    const bool ignoredRotation = DkSettingsManager::param().metaData().ignoreExifOrientation;
+
+    QString info = QString("[Loader::%1] %5 metadata=%2 orientation=%3 rotated=%4")
+                       .arg(loader)
+                       .arg(mMetaData ? "yes" : "no")
+                       .arg(orientation)
+                       .arg(isRotated ? "yes" : (ignoredRotation ? "disabled" : "no"))
+                       .arg(fileInfo.fileName());
+    if (loader)
+        qInfo().noquote() << info << dt;
     else
-        qWarning() << "[Basic Loader] could not load" << filePath;
+        qWarning().noquote() << info << "failed to load";
 
-    return imgLoaded;
+    return loader != nullptr;
 }
 
-/**
- * Loads special RAW files that are generated by the Hamamatsu camera.
- * @param fileName the filename of the file to be loaded.
- * @return bool true if the file could be loaded.
- **/
-bool DkBasicLoader::loadRohFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
+bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba, const QByteArray &format)
+{
+    std::unique_ptr<QIODevice> device;
+    if (ba && !ba->isEmpty())
+        device.reset(new QBuffer(ba.get()));
+    else
+        device.reset(new QFile(filePath));
+
+    if (!device->open(QIODevice::ReadOnly)) {
+        qWarning() << "[loadQt] failed to  open file:" << device->errorString();
+        return false;
+    }
+
+    QImageReader qir(device.get());
+
+    qir.setAutoTransform(false);
+    qir.setAutoDetectImageFormat(format.isEmpty());
+    // qir.setDecideFormatFromContent(format.isEmpty());
+    qir.setFormat(format);
+
+    // load the largest icon (height*depth)
+    int index = -1;
+    if (format == "ico" || format == "icns") {
+        int maxIndex = 0, maxSize = 0;
+        index = 0;
+        const uchar data[32] = {0}; // enough for 1x1 64-bit pixels, and some padding for safety
+        do {
+            // we can avoid decompression of all sizes, but we need to construct a temporary image
+            int size = qir.size().height() * QImage(data, 1, 1, qir.imageFormat()).depth();
+            if (size <= 0) {
+                if (!qir.read(&img))
+                    break;
+                size = img.size().height() * img.depth();
+            }
+
+            if (size > maxSize) {
+                maxIndex = index;
+                maxSize = size;
+            }
+            index++;
+        } while (qir.jumpToNextImage());
+        qir.jumpToImage(maxIndex);
+    }
+
+    bool ok = qir.read(&img);
+
+    img.setText("QImageReader.Format", qir.format());
+    img.setText("QImageReader.SubType", qir.subType());
+    img.setText("QImageReader.Transform", "0x" + QString::number(qir.transformation(), 16));
+
+    if (!ok)
+        img.setText("QImageReader.Error", qir.errorString());
+
+    if (index >= 0)
+        img.setText("QImageReader.IconIndex", QString::number(index));
+
+    int imgCount = qir.imageCount();
+    if (imgCount > 1)
+        img.setText("QImageReader.ImageCount", QString::number(imgCount));
+
+    if (qir.supportsAnimation()) {
+        img.setText("QImageReader.Animation", "yes");
+        img.setText("QImageReader.LoopCount", QString::number(qir.loopCount()));
+    }
+
+    return ok;
+}
+
+bool DkBasicLoader::loadROH(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
     if (!ba)
         ba = loadFileToBuffer(filePath);
@@ -464,7 +538,7 @@ bool DkBasicLoader::loadRohFile(const QString &filePath, QImage &img, QSharedPoi
     return imgLoaded;
 }
 
-bool nmc::DkBasicLoader::loadTgaFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
+bool nmc::DkBasicLoader::loadTGA(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
     if (!ba || ba->isEmpty())
         ba = loadFileToBuffer(filePath);
@@ -477,14 +551,7 @@ bool nmc::DkBasicLoader::loadTgaFile(const QString &filePath, QImage &img, QShar
     return success;
 }
 
-/**
- * Loads the RAW file specified.
- * Note: nomacs needs to be compiled with OpenCV and LibRaw in
- * order to enable RAW file loading.
- * @param ba the file loaded into a bytearray.
- * @return bool true if the file could be loaded.
- **/
-bool DkBasicLoader::loadRawFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba, bool fast) const
+bool DkBasicLoader::loadRAW(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba, bool fast) const
 {
     DkRawLoader rawLoader(filePath, mMetaData);
     rawLoader.setLoadFast(fast);
@@ -498,10 +565,10 @@ bool DkBasicLoader::loadRawFile(const QString &filePath, QImage &img, QSharedPoi
 }
 
 #ifdef Q_OS_WIN
-bool DkBasicLoader::loadPSDFile(const QString &, QImage &, QSharedPointer<QByteArray>) const
+bool DkBasicLoader::loadPSD(const QString &, QImage &, QSharedPointer<QByteArray>) const
 {
 #else
-bool DkBasicLoader::loadPSDFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
+bool DkBasicLoader::loadPSD(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
     // load from file?
     if (!ba || ba->isEmpty()) {
@@ -543,7 +610,7 @@ bool DkBasicLoader::loadPSDFile(const QString &filePath, QImage &img, QSharedPoi
 bool DkBasicLoader::loadTIFFile(const QString &, QImage &, QSharedPointer<QByteArray>) const
 {
 #else
-bool DkBasicLoader::loadTIFFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
+bool DkBasicLoader::loadTIFF(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
     bool success = false;
 
@@ -566,6 +633,9 @@ bool DkBasicLoader::loadTIFFile(const QString &filePath, QImage &img, QSharedPoi
     // fallback to direct loading
     if (!tiff)
         tiff = TIFFOpen(filePath.toLatin1(), "r");
+
+    // FIXME: we could load without buffer if toLatin1()=>toUtf8() and on
+    // windows use wchar_t* version of TIFFOpen();
 
     // loading from buffer allows us to load files with non-latin names
     QSharedPointer<QByteArray> bal;
@@ -640,7 +710,7 @@ uint32_t drif2qtfmt(uint32_t f)
     return QImage::Format_Invalid;
 }
 
-bool DkBasicLoader::loadDrifFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
+bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
     bool success = false;
 
@@ -992,23 +1062,23 @@ void DkBasicLoader::setHistoryIndex(int idx)
     // TODO update mMetaData, see undo()
 }
 
-void DkBasicLoader::loadFileToBuffer(const QString &filePath, QByteArray &ba) const
-{
-    QFileInfo fi(filePath);
+// QByteArray DkBasicLoader::loadFileToBuffer(const QString &filePath) const
+// {
+//     QFileInfo fi(filePath);
 
-    if (!fi.exists())
-        return;
+//     if (!fi.exists())
+//         return;
 
-#ifdef WITH_QUAZIP
-    if (fi.dir().path().contains(DkZipContainer::zipMarker()))
-        DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath), ba);
-#endif
+// #ifdef WITH_QUAZIP
+//     if (fi.dir().path().contains(DkZipContainer::zipMarker()))
+//         DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath), ba);
+// #endif
 
-    QFile file(filePath);
-    file.open(QIODevice::ReadOnly);
+//     QFile file(filePath);
+//     file.open(QIODevice::ReadOnly);
 
-    ba = file.readAll();
-}
+//     ba = file.readAll();
+// }
 
 QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath) const
 {

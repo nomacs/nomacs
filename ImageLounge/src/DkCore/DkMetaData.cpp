@@ -98,6 +98,8 @@ void DkMetaDataT::update(const QSharedPointer<DkMetaDataT> &other)
 
 void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArray> ba)
 {
+    mExifState = no_data;
+
     if (mUseSidecar) {
         loadSidecar(filePath);
         return;
@@ -117,16 +119,15 @@ void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArra
         } else {
             mExifImg = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba->constData()), ba->size());
         }
+
     } catch (...) {
         // TODO: check crashes here
-        mExifState = no_data;
         // qDebug() << "[Exiv2] could not open file for exif data";
         qInfo() << "[Exiv2] could not load Exif data from file:" << filePath;
         return;
     }
 
     if (mExifImg.get() == 0) {
-        mExifState = no_data;
         qDebug() << "[Exiv2] image could not be opened for exif data extraction";
         return;
     }
@@ -136,17 +137,20 @@ void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArra
 
         if (!mExifImg->good()) {
             qDebug() << "[Exiv2] metadata could not be read";
-            mExifState = no_data;
             return;
         }
 
+        if (mExifImg->exifData().empty() && mExifImg->xmpData().empty() && mExifImg->iptcData().empty() && mExifImg->iptcData().empty()) {
+            qDebug() << "[Exiv2] metadata is empty";
+            return;
+        }
+        qDebug() << "[Exiv2] metadata loaded" << mExifImg->mimeType().c_str() << mExifImg->pixelWidth() << mExifImg->pixelHeight();
+
     } catch (...) {
-        mExifState = no_data;
-        qDebug() << "[Exiv2] could not read metadata (exception)";
+        qDebug() << "[Exiv2] could not read metadata";
         return;
     }
 
-    // qDebug() << "[Exiv2] metadata loaded";
     mExifState = loaded;
 
     // printMetaData();
@@ -726,11 +730,23 @@ QImage DkMetaDataT::getThumbnail() const
         QByteArray ba = QByteArray(reinterpret_cast<const char *>(buffer.pData_), buffer.size_);
 #endif
         qThumb.loadFromData(ba);
+        qThumb.setText("Thumb.FileSize", QString::number(ba.size()));
     } catch (...) {
         qDebug() << "Sorry, I could not load the thumb from the exif data...";
     }
 
     return qThumb;
+}
+
+QString DkMetaDataT::getMimeType() const
+{
+    QString type;
+    try {
+        if (mExifImg)
+            type = mExifImg->mimeType().c_str();
+    } catch (...) {
+    }
+    return type;
 }
 
 QImage DkMetaDataT::getPreviewImage(int minPreviewWidth) const
@@ -946,18 +962,19 @@ QStringList DkMetaDataT::getIptcValues() const
     return iptcValues;
 }
 
-void DkMetaDataT::setQtValues(const QImage &cImg)
+void DkMetaDataT::setQtValues(const QImage &img)
 {
-    QStringList qtKeysInit = cImg.textKeys();
+    const QStringList keys = img.textKeys();
+    for (const auto &key : keys) {
+        if (key.isEmpty())
+            continue; // || key == "Raw profile type exif") {
+        QString value = img.text(key);
+        if (value.length() >= 5000)
+            value = QObject::tr("<data too large to display>");
 
-    for (QString cKey : qtKeysInit) {
-        if (!cKey.isEmpty() && cKey != "Raw profile type exif") {
-            QString val = cImg.text(cKey).size() < 5000 ? cImg.text(cKey) : QObject::tr("<data too large to display>");
-
-            if (!val.isEmpty()) {
-                mQtValues.append(val);
-                mQtKeys.append(cKey);
-            }
+        if (!value.isEmpty()) {
+            mQtValues.append(value);
+            mQtKeys.append(key);
         }
     }
 }

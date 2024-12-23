@@ -568,9 +568,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
                     // if (fileLabel->height() < height())
                     //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
                     QFileInfo fileInfo(thumb->getFilePath());
-                    QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n"
-                        + tr("Created: ") + fileInfo.birthTime().toString();
-                    setToolTip(toolTipInfo);
+                    setToolTip(thumb->toolTip());
                     setStatusTip(fileInfo.fileName());
                 }
                 break;
@@ -859,11 +857,7 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb)
         return;
 
     connect(thumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbLabel::updateLabel);
-    QFileInfo fileInfo(thumb->getFilePath());
-    QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n" + tr("Created: ")
-        + fileInfo.birthTime().toString();
-
-    setToolTip(toolTipInfo);
+    setToolTip(thumb->toolTip());
 
     // style dummy
     mNoImagePen.setColor(QColor(150, 150, 150));
@@ -903,6 +897,8 @@ void DkThumbLabel::updateLabel()
 {
     if (mThumb.isNull())
         return;
+
+    setToolTip(mThumb->toolTip());
 
     QPixmap pm;
 
@@ -2063,7 +2059,7 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath, int thumbSize,
     QFileInfo fInfo(filePath);
     setToolTip(fInfo.fileName());
 
-    mThumb->fetchThumb(DkThumbNail::force_exif_thumb);
+    mThumb->fetchThumb(DkThumbNail::require_exif);
 }
 
 void DkThumbPreviewLabel::thumbLoaded()
