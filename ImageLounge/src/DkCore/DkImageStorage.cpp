@@ -31,6 +31,11 @@
 #include "DkSettings.h"
 #include "DkThumbs.h"
 #include "DkTimer.h"
+#include <cmath>
+
+#ifdef WITH_OPENCV
+#include <opencv2/core.hpp>
+#endif
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitmap>
@@ -49,16 +54,6 @@
 namespace nmc
 {
 // DkImage --------------------------------------------------------------------
-
-/**
- * Returns a string with the buffer size of an image.
- * @param img a QImage
- * @return QString a human readable string containing the buffer size
- **/
-QString DkImage::getBufferSize(const QImage &img)
-{
-    return getBufferSize(img.size(), img.depth());
-}
 
 /**
  * Returns a string with the buffer size of an image.
@@ -253,6 +248,11 @@ QImage DkImage::thresholdImage(const QImage &img, double thr, bool color)
 
 QImage DkImage::rotateImage(const QImage &img, double angle)
 {
+    return rotateImageFast(img, angle);
+}
+
+QImage rotateImage(const QImage &img, double angle)
+{
     // compute new image size
     DkVector nSl((float)img.width(), (float)img.height());
     DkVector nSr = nSl;
@@ -288,6 +288,85 @@ QImage DkImage::rotateImage(const QImage &img, double angle)
     p.drawImage(QPoint(), img);
 
     return imgR;
+}
+
+QImage transposeImage(const QImage &img)
+{
+    QImage imgIn = img;
+    if (img.depth() > 32) {
+        // Ensure the data is 32-bit aligned
+        imgIn = img.convertToFormat(QImage::Format_ARGB32);
+    }
+
+    QImage imgOut = QImage(imgIn.size().transposed(), imgIn.format());
+
+    const QRgb *dataIn = reinterpret_cast<const QRgb *>(imgIn.constBits());
+    QRgb *dataOut = reinterpret_cast<QRgb *>(imgOut.bits());
+
+    const int h = imgIn.height();
+    const int w = imgIn.width();
+    for (int i = 0; i < h; i++) {
+        for (int j = 0; j < w; j++) {
+            dataOut[j * h + i] = dataIn[i * w + j];
+        }
+    }
+
+    return imgOut;
+}
+
+QImage rotateImageFast(const QImage &img, double angle)
+{
+    angle = std::fmod(angle, 360);
+    if (angle < 0) {
+        angle += 360;
+    }
+
+    if (angle == 0) {
+        return img;
+    }
+
+    if (angle == 90 || angle == 180 || angle == 270) {
+        // Fast path
+        QImage imgIn = img;
+        if (imgIn.depth() > 32) {
+            // Ensure the data is 32-bit aligned
+            imgIn = imgIn.convertToFormat(QImage::Format_ARGB32);
+        }
+
+#ifdef WITH_OPENCV
+        QSize size = angle == 180 ? imgIn.size() : imgIn.size().transposed();
+        QImage imgOut = QImage(size, imgIn.format());
+        const cv::Mat matIn = cv::Mat(imgIn.height(), imgIn.width(), CV_8UC4, (uchar *)imgIn.constBits(), imgIn.bytesPerLine());
+        cv::Mat matOut = cv::Mat(imgOut.height(), imgOut.width(), CV_8UC4, imgOut.bits(), imgOut.bytesPerLine());
+
+        if (angle == 180) {
+            cv::rotate(matIn, matOut, cv::ROTATE_180);
+        } else if (angle == 90) {
+            cv::rotate(matIn, matOut, cv::ROTATE_90_CLOCKWISE);
+        } else {
+            cv::rotate(matIn, matOut, cv::ROTATE_90_COUNTERCLOCKWISE);
+        }
+
+        return imgOut;
+#else
+        if (angle == 180) {
+            QRgb *outData = reinterpret_cast<QRgb *>(imgIn.bits());
+            const int len = imgIn.width() * imgIn.height();
+            std::reverse(outData, outData + len);
+            return imgIn;
+        }
+
+        if (angle == 90) {
+            return transposeImage(imgIn).mirrored(true, false);
+        }
+
+        if (angle == 270) {
+            return transposeImage(imgIn.mirrored(true, false));
+        }
+#endif
+    }
+
+    return rotateImage(img, angle);
 }
 
 QImage DkImage::grayscaleImage(const QImage &img)
@@ -405,14 +484,6 @@ void DkImage::mapGammaTable(QImage &img, const QVector<uchar> &gammaTable)
     qDebug() << "gamma computation takes: " << dt;
 }
 
-QImage DkImage::normImage(const QImage &img)
-{
-    QImage imgN = img.copy();
-    normImage(imgN);
-
-    return imgN;
-}
-
 bool DkImage::normImage(QImage &img)
 {
     uchar maxVal = 0;
@@ -455,14 +526,6 @@ bool DkImage::normImage(QImage &img)
     }
 
     return true;
-}
-
-QImage DkImage::autoAdjustImage(const QImage &img)
-{
-    QImage imgA = img.copy();
-    autoAdjustImage(imgA);
-
-    return imgA;
 }
 
 bool DkImage::autoAdjustImage(QImage &img)
@@ -1133,30 +1196,6 @@ QImage DkImage::mat2QImage(cv::Mat img)
     return qImg;
 }
 
-cv::Mat DkImage::get1DGauss(double sigma)
-{
-    // correct -> checked with matlab reference
-    int kernelsize = qCeil(sigma * 3 * 2) + 1;
-    if (kernelsize < 3)
-        kernelsize = 3;
-    if ((kernelsize % 2) != 1)
-        kernelsize += 1;
-
-    cv::Mat gKernel = cv::Mat(1, kernelsize, CV_32F);
-    float *kernelPtr = gKernel.ptr<float>();
-
-    for (int idx = 0, x = -qFloor(kernelsize / 2); idx < kernelsize; idx++, x++) {
-        kernelPtr[idx] = (float)(exp(-(x * x) / (2 * sigma * sigma))); // 1/(sqrt(2pi)*sigma) -> discrete normalization
-    }
-
-    if (sum(gKernel).val[0] != 0)
-        gKernel *= 1.0f / sum(gKernel).val[0];
-    else
-        qWarning() << "The kernel sum is zero\n";
-
-    return gKernel;
-}
-
 void DkImage::linearToGamma(cv::Mat &img)
 {
     QVector<unsigned short> gt = getLinear2GammaTable<unsigned short>();
@@ -1361,100 +1400,13 @@ QImage DkImage::createThumb(const QImage &image, int maxSize)
     return thumb;
 }
 
-// NOTE: this is just for fun (all images in the world : )
-bool DkImage::addToImage(QImage &img, unsigned char val)
-{
-    // number of bytes per line used
-    int bpl = (img.width() * img.depth() + 7) / 8;
-    int pad = img.bytesPerLine() - bpl;
-    uchar *ptr = img.bits();
-    bool done = false;
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-        for (int cIdx = 0; cIdx < bpl; cIdx++) {
-            // add it & we're done
-            if (*ptr <= 255 - val) {
-                *ptr += val;
-                done = true;
-                break;
-            }
-
-            int ov = *ptr + (int)val; // compute the overflow
-            val = (char)(ov - 255);
-
-            *ptr = val;
-            ptr++;
-        }
-
-        if (done)
-            break;
-
-        ptr += pad;
-    }
-
-    return done;
-}
-
-QColor DkImage::getMeanColor(const QImage &img)
-{
-    // some speed-up params
-    int nC = qRound(img.depth() / 8.0f);
-    int rStep = qRound(img.height() / 100.0f) + 1;
-    int cStep = qRound(img.width() / 100.0f) + 1;
-    int numCols = 42;
-
-    int offset = (nC > 1) ? 1 : 0; // no offset for grayscale images
-    QMap<QRgb, int> colLookup;
-    int maxColCount = 0;
-    QRgb maxCol = 0;
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx += rStep) {
-        const unsigned char *pixel = img.constScanLine(rIdx);
-
-        for (int cIdx = 0; cIdx < img.width() * nC; cIdx += cStep * nC) {
-            QColor cColC(qRound(pixel[cIdx + 2 * offset] / 255.0f * numCols),
-                         qRound(pixel[cIdx + offset] / 255.0f * numCols),
-                         qRound(pixel[cIdx] / 255.0f * numCols));
-            QRgb cCol = cColC.rgb();
-
-            //// skip black
-            // if (cColC.saturation() < 10)
-            //	continue;
-            if (qRed(cCol) < 3 && qGreen(cCol) < 3 && qBlue(cCol) < 3)
-                continue;
-            if (qRed(cCol) > numCols - 3 && qGreen(cCol) > numCols - 3 && qBlue(cCol) > numCols - 3)
-                continue;
-
-            if (colLookup.contains(cCol)) {
-                colLookup[cCol]++;
-            } else
-                colLookup[cCol] = 1;
-
-            if (colLookup[cCol] > maxColCount) {
-                maxCol = cCol;
-                maxColCount = colLookup[cCol];
-            }
-        }
-    }
-
-    if (maxColCount > 0)
-        return QColor(qRound((float)qRed(maxCol) / numCols * 255), qRound((float)qGreen(maxCol) / numCols * 255), qRound((float)qBlue(maxCol) / numCols * 255));
-    else
-        return DkSettingsManager::param().display().hudBgColor;
-}
-
 // DkImageStorage --------------------------------------------------------------------
 DkImageStorage::DkImageStorage(const QImage &img)
 {
     mImg = img;
 
-    mWaitTimer = new QTimer(this);
-    mWaitTimer->setSingleShot(true);
-    mWaitTimer->setInterval(100);
-
     init();
 
-    connect(mWaitTimer, &QTimer::timeout, this, &DkImageStorage::compute, Qt::UniqueConnection);
     connect(&mFutureWatcher, &QFutureWatcher<QImage>::finished, this, &DkImageStorage::imageComputed, Qt::UniqueConnection);
     connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing),
             &QAction::toggled,
@@ -1467,15 +1419,12 @@ void DkImageStorage::init()
 {
     mComputeState = l_not_computed;
     mScaledImg = QImage();
-    mWaitTimer->stop();
-    mSize = QSize();
 }
 
 void DkImageStorage::setImage(const QImage &img)
 {
-    init();
+    mScaledImg = QImage();
     mImg = img;
-
     mComputeState = l_cancelled;
 }
 
@@ -1499,55 +1448,45 @@ QImage DkImageStorage::image(const QSize &size)
 {
     if (size.isEmpty() || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing || // user disabled?
         mImg.size().width() < size.width() // scale factor > 1?
-    )
+    ) {
         return mImg;
-
-    if (mScaledImg.size() == size)
-        return mScaledImg;
-
-    if (mComputeState != l_computing) {
-        // trigger a new computation
-        init();
-        mSize = size;
-        mWaitTimer->start();
     }
+
+    if (mScaledImg.size() == size) {
+        return mScaledImg;
+    }
+
+    // trigger a new computation
+    compute(size);
 
     // currently no alternative is available
     return mImg;
 }
 
-void DkImageStorage::cancel()
-{
-    mComputeState = l_cancelled;
-}
+QImage imageStorageScaleToSize(const QImage &src, const QSize &size);
 
-void DkImageStorage::compute()
+void DkImageStorage::compute(const QSize &size)
 {
-    if (mComputeState == l_computed) {
-        emit imageUpdated();
-        qDebug() << "image is up-to-date in DkImageStorage::compute...";
+    // don't compute twice
+    if (mComputeState == l_computing) {
         return;
     }
 
-    if (mComputeState == l_computing) // don't compute twice
-        return;
-
+    // Reset state
+    mScaledImg = QImage();
     mComputeState = l_computing;
 
-    mFutureWatcher.setFuture(QtConcurrent::run([&] {
-        return computeIntern(mImg, mSize);
-    }));
+    mFutureWatcher.setFuture(QtConcurrent::run(imageStorageScaleToSize, mImg, size));
 }
 
-QImage DkImageStorage::computeIntern(const QImage &src, const QSize &size)
+QImage imageStorageScaleToSize(const QImage &src, const QSize &size)
 {
     // should not happen
-    if (size.width() >= mImg.width()) {
-        qWarning() << "DkImageStorage::computeIntern was called without a need...";
+    if (size.width() >= src.width()) {
+        qWarning() << "imageStorageScaleToSize was called without a need...";
         return src;
     }
 
-    DkTimer dt;
     QImage resizedImg = src;
 
     if (!DkSettingsManager::param().display().highQualityAntiAliasing) {
@@ -1559,12 +1498,12 @@ QImage DkImageStorage::computeIntern(const QImage &src, const QSize &size)
         }
 
         // for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply
-        if (cs != mImg.size()) {
+        if (cs != src.size()) {
             resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
         }
     }
 
-    QSize s = mSize;
+    QSize s = size;
 
     if (s.height() == 0)
         s.setHeight(1);
@@ -1578,7 +1517,7 @@ QImage DkImageStorage::computeIntern(const QImage &src, const QSize &size)
         cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
         resizedImg = DkImage::mat2QImage(tmp);
     } catch (...) {
-        qWarning() << "DkImageStorage: OpenCV exception caught while resizing...";
+        qWarning() << "imageStorageScaleToSize: OpenCV exception caught while resizing...";
     }
 #else
     resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);

@@ -101,8 +101,6 @@ public:
 
     DkFilePreview *getFilePreview() const;
     DkFolderScrollBar *getScroller() const;
-    DkMetaDataHUD *getMetaDataWidget() const;
-    DkCommentWidget *getCommentWidget() const;
     DkOverview *getOverview() const;
     DkZoomWidget *getZoomWidget() const;
     DkPlayer *getPlayer() const;
@@ -110,7 +108,6 @@ public:
     DkHistogram *getHistogram() const;
     DkCropWidget *getCropWidget() const;
 
-    void stopLabels();
     void showWidgetsSettings();
     void setWidgetsVisible(bool visible, bool saveSettings = false);
 
@@ -139,7 +136,6 @@ public slots:
 
     void updateImage(QSharedPointer<DkImageContainerT> imgC);
     void setInfo(const QString &msg, int time = 3000, int location = bottom_left_label);
-    virtual void setInfoDelayed(const QString &msg, bool start = false, int delayTime = 1000);
     void updateRating(int rating);
 
     void imageLoaded(bool loaded);

@@ -126,13 +126,6 @@ void DkTabInfo::saveSettings(QSettings &settings) const
     settings.setValue("tabMode", mTabMode);
 }
 
-void DkTabInfo::setFilePath(const QString &filePath)
-{
-    mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath)));
-    setMode(tab_single_image);
-    mFilePath = filePath;
-}
-
 bool DkTabInfo::setDirPath(const QString &dirPath)
 {
     QFileInfo di(dirPath);
@@ -475,7 +468,6 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
                    QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
                    this,
                    &DkCentralWidget::imageUpdatedSignal);
-        disconnect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkCentralWidget::imageLoadedSignal);
         disconnect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal);
         disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress);
         disconnect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadFileToTab);
@@ -497,7 +489,6 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
             this,
             &DkCentralWidget::imageUpdatedSignal,
             Qt::UniqueConnection);
-    connect(loader.data(), &DkImageLoader::imageLoadedSignal, this, &DkCentralWidget::imageLoadedSignal, Qt::UniqueConnection);
     connect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal, Qt::UniqueConnection);
     connect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress, Qt::UniqueConnection);
     connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadFileToTab, Qt::UniqueConnection);
@@ -1027,14 +1018,6 @@ void DkCentralWidget::switchWidget(QWidget *widget)
     }
 }
 
-int DkCentralWidget::currentViewMode() const
-{
-    if (mTabInfos.empty())
-        return DkTabInfo::tab_empty;
-
-    return mTabInfos[mTabbar->currentIndex()]->getMode();
-}
-
 void DkCentralWidget::restart() const
 {
     // safe settings first - since the intention of a restart is often a global settings change
@@ -1124,17 +1107,6 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event)
         event->acceptProposedAction();
     }
     QWidget::dragEnterEvent(event);
-}
-
-void DkCentralWidget::loadDir(const QString &filePath)
-{
-    if (mTabInfos[mTabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview && getThumbScrollWidget())
-        getThumbScrollWidget()->setDir(filePath);
-    else {
-        if (!hasViewPort())
-            createViewPort();
-        getViewPort()->loadFile(filePath);
-    }
 }
 
 void DkCentralWidget::loadFileToTab(const QString &filePath)
