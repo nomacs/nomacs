@@ -28,12 +28,9 @@
 #pragma once
 
 #pragma warning(push, 0) // no warnings from includes - begin
-#include <QColor>
-#include <QDir>
 #include <QFutureWatcher>
 #include <QImage>
 #include <QSharedPointer>
-#include <QThread>
 #pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251) // TODO: remove
@@ -61,16 +58,24 @@ namespace nmc
 class DllCoreExport DkThumbNail
 {
 public:
-    enum {
+    enum Status {
         loading = -2,
         exists_not = -1,
         not_loaded,
         loaded,
     };
 
+    enum FetchMode {
+        prefer_exif, // try exif first, then load full image, always rescale
+        require_exif, // fail if exif is not present, never rescale, never load full image
+        // never_exif, // unused; always load full image
+        write_exif, // write a new thumbnail to file if there isn't one, load full image
+        write_exif_always // load full image; overwrite existing thumbnails
+    };
+
     /**
      * Default constructor.
-     * @param file the corresponding file
+     * @param filePath the corresponding file
      * @param img the thumbnail image
      **/
     DkThumbNail(const QString &filePath = QString(), const QImage &img = QImage());
@@ -87,11 +92,16 @@ public:
     };
 
     /**
-     * Sets the thumbnail image.
-     * @param img the thumbnail
+     * Creates a thumbnail from the image provided and stores it internally.
+     * @param img the image to be converted to a thumbnail
      **/
-    virtual void setImage(const QImage img);
+    virtual void setImage(const QImage &img);
 
+    /**
+     * Removes potential black borders.
+     * These borders can be found e.g. in Nikon One images (16:9 vs 4:3)
+     * @param img the image whose borders are removed.
+     **/
     static void removeBlackBorder(QImage &img);
 
     /**
@@ -105,14 +115,18 @@ public:
 
     /**
      * Returns the file information.
-     * @return QFileInfo the thumbnail file
+     * @return the thumbnail file
      **/
     QString getFilePath() const
     {
         return mFile;
     };
 
-    void compute(int forceLoad = do_not_force);
+    /**
+     * Loads the thumbnail.
+     * @param mode thumbnail loading options
+     **/
+    void compute(FetchMode mode = prefer_exif);
 
     /**
      * Returns whether the thumbnail was loaded, or does not exist.
@@ -138,29 +152,33 @@ public:
         return mMaxThumbSize;
     };
 
+    QString toolTip() const;
+
     /**
      * Manipulates the file loaded status.
      * @param exists a status (loaded | not loaded | exists not)
      **/
-    void setImgExists(bool exists)
-    {
-        mImgExists = exists;
-    };
-
-    enum {
-        do_not_force,
-        force_exif_thumb,
-        force_full_thumb,
-        save_thumb,
-        force_save_thumb,
-    };
+    // void setImgExists(bool exists)
+    // {
+    //     mImgExists = exists;
+    // };
 
 protected:
-    static QImage computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
+    /**
+     * Loads the thumbnail from the metadata.
+     * If no thumbnail is embedded, the whole image
+     * is loaded and downsampled in a fast manner.
+     * @param file the file to be loaded
+     * @param ba the file buffer (can be empty)
+     * @param mode the loading flag (e.g. exif only)
+     * @param maxThumbSize the maximal thumbnail size to be loaded
+     * @return QImage the loaded image, or null image
+     * @reentrant all parameters must be copies or thread-safe shared pointers
+     **/
+    static QImage computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, const int mode, const int maxThumbSize);
 
     QImage mImg;
     QString mFile;
-    // int s;
     bool mImgExists;
     int mMaxThumbSize;
 };
@@ -173,7 +191,7 @@ public:
     DkThumbNailT(const QString &mFile = QString(), const QImage &mImg = QImage());
     ~DkThumbNailT();
 
-    bool fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+    bool fetchThumb(DkThumbNail::FetchMode mode = prefer_exif, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 
     /**
      * Returns whether the thumbnail was loaded, or does not exist.
@@ -201,8 +219,8 @@ protected slots:
 
 protected:
     QFutureWatcher<QImage> mThumbWatcher;
-    bool mFetching;
-    int mForceLoad;
+    bool mFetching = false;
+    int mFetchMode = prefer_exif;
 };
 
 class DkThumbsThreadPool

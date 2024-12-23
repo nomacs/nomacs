@@ -131,7 +131,7 @@ public:
                                                  const QByteArray &beginSignature = "‰PNG",
                                                  const QByteArray &endSignature = "END®B`‚",
                                                  bool debugOutput = false);
-    static QByteArray fixSamsungPanorama(QByteArray &ba);
+    static bool fixSamsungPanorama(QByteArray &ba);
     static int intFromByteArray(const QByteArray &ba, int pos);
 
 #ifdef WITH_OPENCV

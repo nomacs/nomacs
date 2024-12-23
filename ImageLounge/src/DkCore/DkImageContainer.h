@@ -27,7 +27,10 @@
 
 #pragma once
 
+#include "DkThumbs.h"
+
 #pragma warning(push, 0) // no warnings from includes - begin
+#include <QFileInfo>
 #include <QFutureWatcher>
 #include <QSharedPointer>
 #include <QTimer>
@@ -44,8 +47,6 @@
 #define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
-
-#include "DkThumbs.h"
 
 namespace nmc
 {

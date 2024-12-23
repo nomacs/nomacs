@@ -333,11 +333,11 @@ void DkThumbsSaver::loadNext()
     if (mStop)
         return;
 
-    int force = (mForceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
+    auto mode = mForceSave ? DkThumbNail::write_exif_always : DkThumbNail::write_exif;
 
     for (int idx = 0; idx < mImages.size(); idx++) {
         connect(mImages.at(idx)->getThumb().data(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbsSaver::thumbLoaded);
-        mImages.at(idx)->getThumb()->fetchThumb(force);
+        mImages.at(idx)->getThumb()->fetchThumb(mode);
     }
 }
 
