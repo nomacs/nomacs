@@ -837,7 +837,10 @@ QString DkUtils::formatToString(int format)
 {
     QString msg;
 
-    switch (format) {
+    switch ((QImage::Format)format) {
+    case QImage::Format_Invalid:
+    case QImage::NImageFormats:
+        break;
     case QImage::Format_Mono:
     case QImage::Format_MonoLSB:
         msg = QObject::tr("Binary");
@@ -871,10 +874,12 @@ QString DkUtils::formatToString(int format)
     case QImage::Format_RGB666:
         msg = QObject::tr("RGB 24-bit");
         break;
+    case QImage::Format_BGR888:
+        msg = QObject::tr("BGR 24-bit");
+        break;
     case QImage::Format_ARGB4444_Premultiplied:
         msg = QObject::tr("ARGB 16-bit");
         break;
-
     case QImage::Format_BGR30:
         msg = QObject::tr("BGR 32-bit");
         break;
@@ -884,9 +889,34 @@ QString DkUtils::formatToString(int format)
     case QImage::Format_Grayscale8:
         msg = QObject::tr("Grayscale 8-bit");
         break;
+    case QImage::Format_Grayscale16:
+        msg = QObject::tr("Grayscale 8-bit");
+        break;
     case QImage::Format_Alpha8:
         msg = QObject::tr("Alpha 8-bit");
         break;
+    case QImage::Format_RGBX64: // all 64-bit int formats have 4 channels
+    case QImage::Format_RGBA64:
+    case QImage::Format_RGBA64_Premultiplied:
+        msg = QObject::tr("RGBA 64-bit");
+        break;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    case QImage::Format_RGBX16FPx4: // all formats have 4 channels
+    case QImage::Format_RGBA16FPx4:
+    case QImage::Format_RGBA16FPx4_Premultiplied:
+        msg = QObject::tr("RGBA FP16");
+        break;
+    case QImage::Format_RGBX32FPx4: // all formats have 4 channels
+    case QImage::Format_RGBA32FPx4:
+    case QImage::Format_RGBA32FPx4_Premultiplied:
+        msg = QObject::tr("RGBA FP32");
+        break;
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    case QImage::Format_CMYK8888:
+        msg = QObject::tr("CMYK 32-Bit");
+        break;
+#endif
     }
 
     return msg;

@@ -112,6 +112,7 @@ public:
     QString getIptcValue(const QString &key) const;
     QString getQtValue(const QString &key) const;
     QImage getThumbnail() const;
+    QString getMimeType() const;
     QImage getPreviewImage(int minPreviewWidth = 0) const;
     QStringList getExifKeys() const;
     QStringList getExifValues() const;

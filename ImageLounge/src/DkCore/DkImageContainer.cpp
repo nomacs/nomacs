@@ -490,7 +490,7 @@ DkImageContainer::loadImageIntern(const QString &filePath, QSharedPointer<DkBasi
     try {
         loader->loadGeneral(filePath, fileBuffer, true, false);
     } catch (...) {
-        qWarning() << "Unknown error in DkImageContainer::lfoadImageIntern";
+        qWarning() << "Unhandled exception in loadGeneral()";
     }
 
     return loader;
