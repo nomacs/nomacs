@@ -357,6 +357,7 @@ QImage DkImageContainer::imageScaledToWidth(int width)
 
 void DkImageContainer::setImage(const QImage &img, const QString &editName)
 {
+    scaledImages.clear();
     getLoader()->setEditImage(img, editName);
     mEdited = true;
 }
