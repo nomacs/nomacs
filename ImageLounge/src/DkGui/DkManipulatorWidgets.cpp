@@ -166,17 +166,6 @@ void DkManipulatorWidget::selectManipulator()
     QSharedPointer<DkBaseManipulator> mpl = am.manipulatorManager().manipulator(action);
     QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
 
-    // compute preview
-    if (mpl && mImgC) {
-        DkTimer dt;
-        QImage img = mpl->apply(mImgC->imageScaledToWidth(qMin(mPreview->width(), mMaxPreview)));
-        img = scaledPreview(img);
-
-        if (!img.isNull())
-            mPreview->setPixmap(QPixmap::fromImage(img));
-        qDebug() << "preview computed in " << dt;
-    }
-
     for (QWidget *w : mWidgets)
         w->hide();
 
