@@ -229,7 +229,7 @@ class DkManipulatorWidget : public DkFadeWidget
     Q_OBJECT
 
 public:
-    DkManipulatorWidget(QWidget *parent = 0);
+    DkManipulatorWidget(QWidget *parent = nullptr);
 
     void setImage(QSharedPointer<DkImageContainerT> imgC);
 
@@ -242,10 +242,9 @@ private:
 
     QVector<DkBaseManipulatorWidget *> mWidgets;
 
-    QSharedPointer<DkImageContainerT> mImgC;
-    QLabel *mPreview = 0;
-    QLabel *mTitleLabel = 0;
-    int mMaxPreview = 150;
+    QLabel *mPreview = nullptr;
+    QLabel *mTitleLabel = nullptr;
+    const int MaxPreview = 150;
 };
 
 class DkEditDock : public DkDockWidget
