@@ -239,6 +239,7 @@ public slots:
 private:
     void createLayout();
     QImage scaledPreview(const QImage &img) const;
+    void selectManipulatorInner(QSharedPointer<DkBaseManipulatorExt> mpl);
 
     QVector<DkBaseManipulatorWidget *> mWidgets;
 

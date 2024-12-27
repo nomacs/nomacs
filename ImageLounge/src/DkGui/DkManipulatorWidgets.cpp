@@ -85,12 +85,14 @@ void DkManipulatorWidget::createLayout()
     QButtonGroup *group = new QButtonGroup(this);
 
     DkActionManager &am = DkActionManager::instance();
-    // for (QAction* a : am.manipulatorActions()) {	// if you want to get all
     for (int idx = DkManipulatorManager::m_end; idx < DkManipulatorManager::m_ext_end; idx++) {
-        auto mpl = am.manipulatorManager().manipulatorExt((DkManipulatorManager::ManipulatorExtId)idx);
+        const auto extIdx = static_cast<DkManipulatorManager::ManipulatorExtId>(idx);
+        auto mpl = am.manipulatorManager().manipulatorExt(extIdx);
 
         DkTabEntryWidget *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
-        connect(entry, &DkTabEntryWidget::clicked, mpl->action(), &QAction::triggered, Qt::UniqueConnection);
+        connect(entry, &DkTabEntryWidget::clicked, this, [=]() {
+            selectManipulatorInner(mpl);
+        });
 
         aLayout->addWidget(entry);
         group->addButton(entry);
@@ -163,7 +165,11 @@ void DkManipulatorWidget::selectManipulator()
     DkActionManager &am = DkActionManager::instance();
     QSharedPointer<DkBaseManipulator> mpl = am.manipulatorManager().manipulator(action);
     QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
+    selectManipulatorInner(mplExt);
+}
 
+void DkManipulatorWidget::selectManipulatorInner(QSharedPointer<DkBaseManipulatorExt> mplExt)
+{
     for (auto w : mWidgets)
         w->hide();
 
@@ -173,12 +179,12 @@ void DkManipulatorWidget::selectManipulator()
     }
 
     if (!mplExt->widget()) {
-        qCritical() << action->text() << "does not have a corresponding UI";
+        qCritical() << mplExt->name() << "does not have a corresponding UI";
         return;
     }
 
     mplExt->widget()->show();
-    mTitleLabel->setText(mpl->name());
+    mTitleLabel->setText(mplExt->name());
 }
 
 // DkMainpulatorDoc --------------------------------------------------------------------
