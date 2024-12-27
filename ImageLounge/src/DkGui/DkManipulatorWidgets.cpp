@@ -66,7 +66,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
     setObjectName("DkPreferenceTabs");
     createLayout();
 
-    for (QWidget *w : mWidgets)
+    for (auto w : mWidgets)
         w->setObjectName("darkManipulator");
 
     for (QAction *a : am.manipulatorActions())
@@ -121,7 +121,7 @@ void DkManipulatorWidget::createLayout()
     QVBoxLayout *mplLayout = new QVBoxLayout(mplWidget);
     mplLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     mplLayout->addWidget(mTitleLabel);
-    for (QWidget *w : mWidgets)
+    for (auto w : mWidgets)
         mplLayout->addWidget(w);
     mplLayout->addWidget(mPreview);
 
@@ -137,19 +137,17 @@ QImage DkManipulatorWidget::scaledPreview(const QImage &img) const
     QImage imgR;
 
     if (img.height() > img.width())
-        imgR = img.scaledToHeight(qMin(img.height(), mMaxPreview));
+        imgR = img.scaledToHeight(qMin(img.height(), MaxPreview));
     else
-        imgR = img.scaledToWidth(qMin(img.width(), mMaxPreview));
+        imgR = img.scaledToWidth(qMin(img.width(), MaxPreview));
 
     return imgR;
 }
 
 void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC)
 {
-    mImgC = imgC;
-
-    if (mImgC) {
-        QImage img = mImgC->imageScaledToWidth(qMin(mPreview->width(), mMaxPreview));
+    if (imgC) {
+        QImage img = imgC->imageScaledToWidth(qMin(mPreview->width(), MaxPreview));
         img = scaledPreview(img);
 
         mPreview->setPixmap(QPixmap::fromImage(img));
@@ -166,7 +164,7 @@ void DkManipulatorWidget::selectManipulator()
     QSharedPointer<DkBaseManipulator> mpl = am.manipulatorManager().manipulator(action);
     QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
 
-    for (QWidget *w : mWidgets)
+    for (auto w : mWidgets)
         w->hide();
 
     if (!mplExt) {
