@@ -110,6 +110,7 @@ void DkManipulatorWidget::createLayout()
     actionScroller->setStyleSheet(scrollbarStyle + actionScroller->styleSheet());
     actionScroller->setWidgetResizable(true);
     actionScroller->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+    actionScroller->setMinimumWidth(300);
     actionScroller->setWidget(actionWidget);
     actionScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -126,6 +127,7 @@ void DkManipulatorWidget::createLayout()
     for (auto w : mWidgets)
         mplLayout->addWidget(w);
     mplLayout->addWidget(mPreview);
+    mplWidget->setMinimumHeight(350);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
