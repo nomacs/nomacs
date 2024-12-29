@@ -172,17 +172,26 @@ void DkManipulatorWidget::selectManipulator()
 
 void DkManipulatorWidget::selectManipulatorInner(QSharedPointer<DkBaseManipulatorExt> mplExt)
 {
-    for (auto w : mWidgets)
-        w->hide();
-
     if (!mplExt) {
         mTitleLabel->hide();
+        for (auto w : mWidgets) {
+            w->hide();
+        }
         return;
     }
 
     if (!mplExt->widget()) {
         qCritical() << mplExt->name() << "does not have a corresponding UI";
         return;
+    }
+
+    for (auto w : mWidgets) {
+        // Do not hide the target widget, otherwise we will lose focus
+        // if we are typing on the current widget.
+        if (w == mplExt->widget()) {
+            continue;
+        }
+        w->hide();
     }
 
     mplExt->widget()->show();
