@@ -290,29 +290,65 @@ QImage rotateImage(const QImage &img, double angle)
     return imgR;
 }
 
-QImage transposeImage(const QImage &img)
+template<typename T>
+QImage transposeImage(const QImage &imgIn)
 {
-    QImage imgIn = img;
-    if (img.depth() > 32) {
-        // Ensure the data is 32-bit aligned
-        imgIn = img.convertToFormat(QImage::Format_ARGB32);
-    }
-
     QImage imgOut = QImage(imgIn.size().transposed(), imgIn.format());
-
-    const QRgb *dataIn = reinterpret_cast<const QRgb *>(imgIn.constBits());
-    QRgb *dataOut = reinterpret_cast<QRgb *>(imgOut.bits());
 
     const int h = imgIn.height();
     const int w = imgIn.width();
+    const uchar *ptrIn = imgIn.constBits();
+    const int outBPL = imgOut.bytesPerLine();
+    const int inBPL = imgIn.bytesPerLine();
     for (int i = 0; i < h; i++) {
+        const T *lineIn = reinterpret_cast<const T *>(ptrIn);
+        uchar *ptrOut = const_cast<uchar *>(imgOut.constBits() + i * sizeof(T));
         for (int j = 0; j < w; j++) {
-            dataOut[j * h + i] = dataIn[i * w + j];
+            T *out = reinterpret_cast<T *>(ptrOut);
+            *out = lineIn[j];
+            ptrOut += outBPL;
+        }
+        ptrIn += inBPL;
+    }
+
+    return imgOut;
+}
+
+QImage transposeImage24(const QImage &imgIn)
+{
+    // NOTE: this implementation is more general (any depth that is multiple of 8 can be handled),
+    // but somehow several times slower than the above transposeImage.
+
+    QImage imgOut = QImage(imgIn.size().transposed(), imgIn.format());
+
+    const int h = imgIn.height();
+    const int w = imgIn.width();
+    const int outBPL = imgOut.bytesPerLine();
+    uchar *outBits = imgOut.bits();
+    const int charPerPixel = imgIn.depth() / CHAR_BIT;
+    for (int i = 0; i < h; i++) {
+        const uchar *ptrIn = imgIn.constScanLine(i);
+        uchar *ptrOut = outBits + i * charPerPixel;
+        for (int j = 0; j < w; j++) {
+            memcpy(ptrOut + outBPL * j, ptrIn + charPerPixel * j, charPerPixel);
         }
     }
 
     return imgOut;
 }
+
+#ifdef WITH_OPENCV
+QImage rotateImageCVMat(const QImage &imgIn, cv::RotateFlags rot, int type)
+{
+    QSize size = rot == cv::ROTATE_180 ? imgIn.size() : imgIn.size().transposed();
+    QImage imgOut = QImage(size, imgIn.format());
+    const cv::Mat matIn = cv::Mat(imgIn.height(), imgIn.width(), type, (uchar *)imgIn.constBits(), imgIn.bytesPerLine());
+    cv::Mat matOut = cv::Mat(imgOut.height(), imgOut.width(), type, imgOut.bits(), imgOut.bytesPerLine());
+
+    cv::rotate(matIn, matOut, rot);
+    return imgOut;
+}
+#endif
 
 QImage rotateImageFast(const QImage &img, double angle)
 {
@@ -327,41 +363,81 @@ QImage rotateImageFast(const QImage &img, double angle)
 
     if (angle == 90 || angle == 180 || angle == 270) {
         // Fast path
-        QImage imgIn = img;
-        if (imgIn.depth() > 32) {
-            // Ensure the data is 32-bit aligned
-            imgIn = imgIn.convertToFormat(QImage::Format_ARGB32);
-        }
 
 #ifdef WITH_OPENCV
-        QSize size = angle == 180 ? imgIn.size() : imgIn.size().transposed();
-        QImage imgOut = QImage(size, imgIn.format());
-        const cv::Mat matIn = cv::Mat(imgIn.height(), imgIn.width(), CV_8UC4, (uchar *)imgIn.constBits(), imgIn.bytesPerLine());
-        cv::Mat matOut = cv::Mat(imgOut.height(), imgOut.width(), CV_8UC4, imgOut.bits(), imgOut.bytesPerLine());
-
+        cv::RotateFlags rot{};
         if (angle == 180) {
-            cv::rotate(matIn, matOut, cv::ROTATE_180);
+            rot = cv::ROTATE_180;
         } else if (angle == 90) {
-            cv::rotate(matIn, matOut, cv::ROTATE_90_CLOCKWISE);
+            rot = cv::ROTATE_90_CLOCKWISE;
         } else {
-            cv::rotate(matIn, matOut, cv::ROTATE_90_COUNTERCLOCKWISE);
+            rot = cv::ROTATE_90_COUNTERCLOCKWISE;
         }
 
-        return imgOut;
+        // The pixel depth matters, but the color interpretation does not.
+        switch (img.depth()) {
+        case 1:
+            return rotateImageCVMat(img.convertToFormat(QImage::Format_Indexed8), rot, CV_8U);
+        case 8:
+            return rotateImageCVMat(img, rot, CV_8U);
+        case 16:
+            return rotateImageCVMat(img, rot, CV_16U);
+        case 24:
+            return rotateImageCVMat(img, rot, CV_8UC3);
+        case 32:
+            return rotateImageCVMat(img, rot, CV_32F);
+        case 64:
+            return rotateImageCVMat(img, rot, CV_64F);
+        default:
+            return rotateImageCVMat(img.convertToFormat(QImage::Format_ARGB32), rot, CV_32F);
+        }
 #else
         if (angle == 180) {
-            QRgb *outData = reinterpret_cast<QRgb *>(imgIn.bits());
-            const int len = imgIn.width() * imgIn.height();
-            std::reverse(outData, outData + len);
-            return imgIn;
+            return img.mirrored(true, true);
         }
 
+        QImage imgIn = img;
+
         if (angle == 90) {
-            return transposeImage(imgIn).mirrored(true, false);
+            switch (imgIn.depth()) {
+            case 1:
+                imgIn = img.convertToFormat(QImage::Format_Indexed8);
+                return transposeImage<uint8_t>(imgIn).mirrored(true, false);
+            case 8:
+                return transposeImage<uint8_t>(imgIn).mirrored(true, false);
+            case 16:
+                return transposeImage<uint16_t>(imgIn).mirrored(true, false);
+            case 24:
+                return transposeImage24(imgIn).mirrored(true, false);
+            case 32:
+                return transposeImage<uint32_t>(imgIn).mirrored(true, false);
+            case 64:
+                return transposeImage<uint64_t>(imgIn).mirrored(true, false);
+            default:
+                imgIn = img.convertToFormat(QImage::Format_ARGB32);
+                return transposeImage<uint32_t>(imgIn).mirrored(true, false);
+            }
         }
 
         if (angle == 270) {
-            return transposeImage(imgIn.mirrored(true, false));
+            switch (imgIn.depth()) {
+            case 1:
+                imgIn = img.convertToFormat(QImage::Format_Indexed8);
+                return transposeImage<uint8_t>(imgIn.mirrored(true, false));
+            case 8:
+                return transposeImage<uint8_t>(imgIn.mirrored(true, false));
+            case 16:
+                return transposeImage<uint16_t>(imgIn.mirrored(true, false));
+            case 24:
+                return transposeImage24(imgIn.mirrored(true, false));
+            case 32:
+                return transposeImage<uint32_t>(imgIn.mirrored(true, false));
+            case 64:
+                return transposeImage<uint64_t>(imgIn.mirrored(true, false));
+            default:
+                imgIn = img.convertToFormat(QImage::Format_ARGB32);
+                return transposeImage<uint32_t>(imgIn.mirrored(true, false));
+            }
         }
 #endif
     }
