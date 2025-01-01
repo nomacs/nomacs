@@ -100,6 +100,13 @@ public:
     bool saveMetaData(const QString &filePath, bool force = false);
     bool saveMetaData(QSharedPointer<QByteArray> &ba, bool force = false);
 
+    /**
+     * @brief Get rotation angle
+     * @return -2 == unknown/unset/invalid
+     *         -1 == unsupported (mirrored)
+     *          0 == no rotation
+     *         [-]90|180 angle in degrees, clockwise
+     */
     int getOrientationDegree() const;
     ExifOrientationState checkExifOrientation() const;
     int getRating() const;
