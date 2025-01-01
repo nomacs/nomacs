@@ -299,9 +299,9 @@ QString DkMetaDataT::getDescription() const
 int DkMetaDataT::getOrientationDegree() const
 {
     if (mExifState != loaded && mExifState != dirty)
-        return 0;
+        return -2;
 
-    int orientation = 0;
+    int orientation = -2;
 
     try {
         Exiv2::ExifData &exifData = mExifImg->exifData();
@@ -315,27 +315,22 @@ int DkMetaDataT::getOrientationDegree() const
                 orientation = (int)pos->toFloat();
 
                 switch (orientation) {
-                case 6:
-                    orientation = 90;
+                case 1:
+                    orientation = 0;
                     break;
-                case 7:
+                case 6:
                     orientation = 90;
                     break;
                 case 3:
                     orientation = 180;
                     break;
-                case 4:
-                    orientation = 180;
-                    break;
                 case 8:
                     orientation = -90;
                     break;
-                case 5:
-                    orientation = -90;
-                    break;
-                case 1:
-                    orientation = 0;
-                    break;
+                // case 2: // TODO: mirrored horizontally
+                // case 4: // TODO: mirrored vertically
+                // case 5: // TODO: mirrored horizontally + rotated 90 CW
+                // case 7: // TODO: mirrored vertically + rotated -90/270 CW
                 default:
                     orientation = -1;
                     break;
@@ -343,7 +338,6 @@ int DkMetaDataT::getOrientationDegree() const
             }
         }
     } catch (...) {
-        return 0;
     }
 
     return orientation;
