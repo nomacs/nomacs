@@ -202,6 +202,33 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, bool loadMetaData, bool
     return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
 }
 
+int DkBasicLoader::getQIROrientationDegree(const QImage &img)
+{
+    const QString value = img.text("QImageReader.Transform");
+
+    bool ok;
+    const int transform = value.toInt(&ok, 16);
+    if (!ok || value.isEmpty())
+        return -2;
+
+    switch ((QImageIOHandler::Transformation)transform) {
+    case QImageIOHandler::TransformationNone:
+        return 0;
+    case QImageIOHandler::TransformationRotate180:
+        return 180;
+    case QImageIOHandler::TransformationRotate90:
+        return 90;
+    case QImageIOHandler::TransformationRotate270:
+        return -90;
+    case QImageIOHandler::TransformationFlip:
+    case QImageIOHandler::TransformationMirror:
+    case QImageIOHandler::TransformationMirrorAndRotate90:
+    case QImageIOHandler::TransformationFlipAndRotate90:
+        return -1;
+    }
+    return -2;
+}
+
 bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast)
 {
     DkTimer dt;
@@ -244,7 +271,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // loader precedence issues (unsolved problem)
     // RAW must precede TIFF (RAW uses TIFF container)
     // Qt has tiff loader, too
-    // Do we prefer our RAW loader rather that Qt’s plug-in kimg_raw from KImageFormats?
+    //
+    // Do we prefer our RAW loader rather than KImageFormats?
     //
 
     QImage img;
@@ -326,7 +354,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     if (!loader && suffix != "roh" && suffix != "vec") {
         if (loadQt(mFile, img, ba)) {
             loader = "qt-bycontent";
-            qWarning() << "The image seems to have a wrong extension";
+            qWarning() << "[Loader] The image seems to have a wrong extension";
         }
     }
 
@@ -344,7 +372,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
         }
     }
 
-    // this loader is a bit buggy -> be carefull
+    // this loader is a bit buggy -> be careful
     if (!loader && suffix == "roh") {
         if (loadROH(mFile, img, ba))
             loader = "roh";
@@ -361,33 +389,59 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
         indexPages(mFile, ba);
     mPageIdxDirty = false;
 
-    // handle auto-rotate
+    // metadata rotation angle
+    //  0 == defined, no rotation
+    // -1 == defined, unsupported (mirrored)
+    // -2 == undefined/unknown
     int orientation = -2;
-    bool isRotated = false;
-    if (loader && !DkSettingsManager::param().metaData().ignoreExifOrientation && loadMetaData && mMetaData->hasMetaData()) {
+
+    if (loadMetaData && mMetaData->hasMetaData())
         orientation = mMetaData->getOrientationDegree();
 
-        // TODO: validate that avif,heif,jxl double-rotation is fixed
-        if (orientation != -1 && orientation != 0 // && !mMetaData->isTiff() && !mMetaData->isAVIF() && !mMetaData->isHEIF() && !mMetaData->isJXL()
-            && !DkSettingsManager::param().metaData().ignoreExifOrientation) {
-            qDebug() << img.textKeys();
-            img = DkImage::rotateImage(img, orientation);
-            isRotated = true;
-        }
+    // If the loader publishes a transform but metadata does not contain one, transform the image
+    // This is the case for JXL on the latest kimg_jxl plugin, but not for the older version of the plugin.
+    if (orientation == -2)
+        orientation = getQIROrientationDegree(img);
+
+    if (orientation == -1) // unsupported rotation
+        qWarning("[Loader] mirrored orientation is unsupported");
+
+    // TODO: validate that avif,heif,jxl double-rotation is fixed
+    // status: JXL wrapped JPEG==OK (old and new kimagformats)
+    //         JXL internal rotation=unknown
+    //         HEIC rotation=OK for iphone 12 photos
+    //         AVIF rotation=unknown
+    bool disableRotation = DkSettingsManager::param().metaData().ignoreExifOrientation;
+
+    // JXL, HEIC, and AVIF Qt plugins (from kimageformats), depending on version,
+    // may have already rotated the image, even though we asked QIR not to.
+    // In this case, do not rotate again using the exif orientation
+    bool maybeRotated = img.text("QImageReader.ForcedTransform") == "yes";
+    if (maybeRotated) {
+        if (disableRotation)
+            qWarning() << "[Loader] qt imageloader plugin does not support disabling rotation";
+    }
+
+    bool isRotated = false;
+    if (loader && !disableRotation && !maybeRotated && orientation != -2 && orientation != -1 && orientation != 0) {
+        img = DkImage::rotateImage(img, orientation);
+        isRotated = true;
     }
 
     if (loader) {
         img.setText("Exiv2.MimeType", mMetaData->getMimeType());
         img.setText("Exiv2.HasMetadata", mMetaData->hasMetaData() ? "yes" : "no");
-        img.setText("Image.HasSidecar", mMetaData->useSidecar() ? "yes" : "no");
-        img.setText("Image.Loader", loader);
-        img.setText("Image.IsRotated", isRotated ? "yes" : "no");
-        img.setText("Image.LoadTimeMs", QString::number(dt.elapsed()));
+        img.setText("Loader.UseSidecar", mMetaData->useSidecar() ? "yes" : "no");
+        img.setText("Loader.Name", loader);
+        img.setText("Loader.IsRotated", maybeRotated ? "unknown" : (isRotated ? "yes" : "no"));
+        img.setText("Loader.LoadTimeMs", QString::number(dt.elapsed()));
+        img.setText("Loader.Orientation", QString::number(orientation));
+        img.setText("Loader.DisableRotation", disableRotation ? "yes" : "no");
         img.setText("QImage.Depth", QString::number(img.depth()));
         img.setText("QImage.HasAlpha", img.hasAlphaChannel() ? "yes" : "no");
         img.setText("QImage.PixelFormat", DkUtils::formatToString(img.format()));
         if (img.depth() <= 8)
-            img.setText("qimg.ColorCount", QString::number(img.colorCount()));
+            img.setText("QImage.ColorCount", QString::number(img.colorCount()));
 #if QT_VERSION_MAJOR >= 6
         img.setText("QImage.ColorSpace", img.colorSpace().description());
 #endif
@@ -460,7 +514,20 @@ bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<
 
     img.setText("QImageReader.Format", qir.format());
     img.setText("QImageReader.SubType", qir.subType());
-    img.setText("QImageReader.Transform", "0x" + QString::number(qir.transformation(), 16));
+
+    bool supportsTransform = qir.supportsOption(QImageIOHandler::ImageTransformation);
+
+    if (supportsTransform)
+        img.setText("QImageReader.Transform", "0x" + QString::number(qir.transformation(), 16));
+    else
+        img.setText("QImageReader.Transform", "unsupported");
+
+    static const QList<QByteArray> brokenPlugins{"heic", "heif", "avif", "jxl"};
+    if (!supportsTransform && brokenPlugins.contains(qir.format())) {
+        // certain plugins are known to transform image regardless of QIR::setAutoTransform(),
+        // the implication is that we cannot also apply EXIF orientation to these
+        img.setText("QImageReader.ForcedTransform", "yes");
+    }
 
     if (!ok)
         img.setText("QImageReader.Error", qir.errorString());
