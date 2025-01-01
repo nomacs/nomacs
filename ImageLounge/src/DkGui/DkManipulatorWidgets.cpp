@@ -66,7 +66,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
     setObjectName("DkPreferenceTabs");
     createLayout();
 
-    for (QWidget *w : mWidgets)
+    for (auto w : mWidgets)
         w->setObjectName("darkManipulator");
 
     for (QAction *a : am.manipulatorActions())
@@ -85,12 +85,14 @@ void DkManipulatorWidget::createLayout()
     QButtonGroup *group = new QButtonGroup(this);
 
     DkActionManager &am = DkActionManager::instance();
-    // for (QAction* a : am.manipulatorActions()) {	// if you want to get all
     for (int idx = DkManipulatorManager::m_end; idx < DkManipulatorManager::m_ext_end; idx++) {
-        auto mpl = am.manipulatorManager().manipulatorExt((DkManipulatorManager::ManipulatorExtId)idx);
+        const auto extIdx = static_cast<DkManipulatorManager::ManipulatorExtId>(idx);
+        auto mpl = am.manipulatorManager().manipulatorExt(extIdx);
 
         DkTabEntryWidget *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
-        connect(entry, &DkTabEntryWidget::clicked, mpl->action(), &QAction::triggered, Qt::UniqueConnection);
+        connect(entry, &DkTabEntryWidget::clicked, this, [=]() {
+            selectManipulatorInner(mpl);
+        });
 
         aLayout->addWidget(entry);
         group->addButton(entry);
@@ -108,6 +110,7 @@ void DkManipulatorWidget::createLayout()
     actionScroller->setStyleSheet(scrollbarStyle + actionScroller->styleSheet());
     actionScroller->setWidgetResizable(true);
     actionScroller->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+    actionScroller->setMinimumWidth(300);
     actionScroller->setWidget(actionWidget);
     actionScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -121,9 +124,10 @@ void DkManipulatorWidget::createLayout()
     QVBoxLayout *mplLayout = new QVBoxLayout(mplWidget);
     mplLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     mplLayout->addWidget(mTitleLabel);
-    for (QWidget *w : mWidgets)
+    for (auto w : mWidgets)
         mplLayout->addWidget(w);
     mplLayout->addWidget(mPreview);
+    mplWidget->setMinimumHeight(350);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -137,19 +141,17 @@ QImage DkManipulatorWidget::scaledPreview(const QImage &img) const
     QImage imgR;
 
     if (img.height() > img.width())
-        imgR = img.scaledToHeight(qMin(img.height(), mMaxPreview));
+        imgR = img.scaledToHeight(qMin(img.height(), MaxPreview));
     else
-        imgR = img.scaledToWidth(qMin(img.width(), mMaxPreview));
+        imgR = img.scaledToWidth(qMin(img.width(), MaxPreview));
 
     return imgR;
 }
 
 void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC)
 {
-    mImgC = imgC;
-
-    if (mImgC) {
-        QImage img = mImgC->imageScaledToWidth(qMin(mPreview->width(), mMaxPreview));
+    if (imgC) {
+        QImage img = imgC->imageScaledToWidth(qMin(mPreview->width(), MaxPreview));
         img = scaledPreview(img);
 
         mPreview->setPixmap(QPixmap::fromImage(img));
@@ -165,33 +167,35 @@ void DkManipulatorWidget::selectManipulator()
     DkActionManager &am = DkActionManager::instance();
     QSharedPointer<DkBaseManipulator> mpl = am.manipulatorManager().manipulator(action);
     QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
+    selectManipulatorInner(mplExt);
+}
 
-    // compute preview
-    if (mpl && mImgC) {
-        DkTimer dt;
-        QImage img = mpl->apply(mImgC->imageScaledToWidth(qMin(mPreview->width(), mMaxPreview)));
-        img = scaledPreview(img);
-
-        if (!img.isNull())
-            mPreview->setPixmap(QPixmap::fromImage(img));
-        qDebug() << "preview computed in " << dt;
-    }
-
-    for (QWidget *w : mWidgets)
-        w->hide();
-
+void DkManipulatorWidget::selectManipulatorInner(QSharedPointer<DkBaseManipulatorExt> mplExt)
+{
     if (!mplExt) {
         mTitleLabel->hide();
+        for (auto w : mWidgets) {
+            w->hide();
+        }
         return;
     }
 
     if (!mplExt->widget()) {
-        qCritical() << action->text() << "does not have a corresponding UI";
+        qCritical() << mplExt->name() << "does not have a corresponding UI";
         return;
     }
 
+    for (auto w : mWidgets) {
+        // Do not hide the target widget, otherwise we will lose focus
+        // if we are typing on the current widget.
+        if (w == mplExt->widget()) {
+            continue;
+        }
+        w->hide();
+    }
+
     mplExt->widget()->show();
-    mTitleLabel->setText(mpl->name());
+    mTitleLabel->setText(mplExt->name());
 }
 
 // DkMainpulatorDoc --------------------------------------------------------------------
