@@ -211,6 +211,13 @@ public:
     };
 
     /**
+     * @brief get orientation value congruent with DkMetaData::getOrientationDegree()
+     * @param img Image loaded from loadGeneral()
+     * @return see DkMetaData::getOrientationDegree()
+     */
+    static int getQIROrientationDegree(const QImage &img);
+
+    /**
      * Load image from file.
      * @param loadMetaData
      **/
