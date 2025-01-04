@@ -234,7 +234,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     DkTimer dt;
 
     mFile = DkUtils::resolveSymLink(filePath);
-    const QFileInfo fileInfo(mFile); // resolved lnk
+    const QFileInfo fileInfo(mFile); // resolved windows shortcut(.lnk)
     const QByteArray suffix = fileInfo.suffix().toLower().toLatin1();
 
     // name of the load method for tracing and also indicates if we loaded successfully
@@ -258,23 +258,28 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     if (loadMetaData)
         mMetaData->readMetaData(filePath, ba);
 
-    // "jpe" fixes #435 - thumbnail gets loaded in the RAW loader
-    static const QList<QByteArray> qtFormats = QImageReader::supportedImageFormats() << "jpe";
+    static const QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
     static const QList<QByteArray> drifFormats{"drif", "yuv", "raw"};
     static const QList<QByteArray>
         rawFormats{"nef", "nrw", "crw", "cr2", "cr3", "arw", "dng", "raw", "rw2", "mrw", "srw", "orf", "3fr", "x3f", "mos", "pef", "iiq", "raf"};
     static const QList<QByteArray> tiffFormats{"tif", "tiff"};
     static const QList<QByteArray> psdFormats{"psb", "psd"};
-    static const QList<QByteArray> jpegFormats{"jpg", "jpeg", "jpe"};
+    static const QList<QByteArray> jpegFormats{"jpg", "jpeg"};
 
     //
-    // loader precedence issues (unsolved problem)
-    // RAW must precede TIFF (RAW uses TIFF container)
-    // Qt has tiff loader, too
+    // Loader precedence
     //
-    // Do we prefer our RAW loader rather than KImageFormats?
+    // - RAW must precede TIFF (most RAW formats use TIFF container)
+    // - Qt should get first attempt as it is more actively maintained (in case of future CVEs etc)
+    // - Qt 5.15 TGA plugin cannot read some TGAs correctly, and won't report an error, so try ours first
+    // - tiff after Qt as that also has support
+    // - psd after Qt as KIF has support
+    // - roh/vec go last since they are rarely used, I can't source a test file for either
     //
-
+    // We prefer our RAW loader over KIF
+    // - KIF always loads the jpeg preview, we have an option to disable it
+    // - ???
+    //
     QImage img;
 
     // load drif file
@@ -290,20 +295,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     //         mLoader = qt_loader;
     // }
 
-    // this is supported by loadQt now
-    // ico loader (Microsoft icon container)
-    // if (!loader && suffix == "ico") {
-    //     if (ba && !ba->isEmpty()) {
-    //         qWarning() << "[Loader] loading .ico from buffer will pull the lowest-res icon";
-    //     } else {
-    //         QIcon icon(mFile);
-    //         if (!icon.isNull()) {
-    //             img = icon.pixmap(QSize(256, 256)).toImage(); // load large icons
-    //             loader = "qt-ico";
-    //         }
-    //     }
-    // }
-
+    // RAW tries early otherwise Qt's TIFF plugin is used
 #ifdef WITH_LIBRAW
     bool libRawUsed = false;
     if (!loader && rawFormats.contains(suffix)) {
@@ -313,9 +305,17 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 #endif
 
-    // Qt loader (by file extension match)
-    // FIXME: qt plugins might support the same formats as other loaders,
-    //        which one should take priority
+    // TGA loader adds variants unsupported in QT
+    // ideally, this comes after Qt loader fails, however 5.15 will
+    // fail silently and produce a bad image in certain cases
+    if (!loader && suffix == "tga") {
+        if (loadTGA(mFile, img, ba))
+            loader = "tga";
+    }
+
+    // Qt loader (by file extension match or by content (no suffix))
+    // - if the extension has no match in Qt, this will fail
+    // - if the suffix is empty, plugins will check the file header
     if (!loader && qtFormats.contains(suffix) || suffix.isEmpty()) {
         // if image has Indexed8 + alpha channel -> we crash... sorry for that
         if (loadQt(mFile, img, ba, suffix))
@@ -335,40 +335,34 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
 #ifdef WITH_LIBRAW
-    // try RAW again, maybe we are missing an extension
-    if (!loader && !qtFormats.contains(suffix) && !libRawUsed) {
+    // try RAW again, for unknown extensions
+    // - we didn't try with libraw yet
+    // - kimageformats-plugins doesn't know it either
+    // - "image/jpeg" fixes #435 - thumbnail gets loaded in the RAW loader
+    if (!loader && !libRawUsed && !qtFormats.contains(suffix) && mMetaData->getMimeType() != "image/jpeg") {
         // TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
         // load raw files
         if (loadRAW(mFile, img, ba, fast))
-            loader = "raw";
+            loader = "raw-unknown-suffix";
     }
 #endif
 
-    // TGA loader
-    if (!loader && suffix == "tga") {
-        if (loadTGA(mFile, img, ba))
-            loader = "tga";
-    }
-
-    // Qt loader, wrong file extension
+    // Qt loader, unknown/wrong file extension
     if (!loader && suffix != "roh" && suffix != "vec") {
         if (loadQt(mFile, img, ba)) {
-            loader = "qt-bycontent";
-            qWarning() << "[Loader] The image seems to have a wrong extension";
+            loader = "qt-unknown-suffix";
+            qWarning().noquote() << "[Loader]" << fileInfo.fileName() << "seems to have the wrong extension, the content type is" << mMetaData->getMimeType();
         }
     }
 
-    // fix broken samsung panorama images
-    // see: https://github.com/nomacs/nomacs/issues/254
+    // fix broken samsung panorama images (see #254,#263)
     if (!loader && jpegFormats.contains(suffix)) {
-        if (!ba || ba->isEmpty()) {
-            qDebug() << "[Loader] loading file to buffer for samsung panorama hack...";
+        if (!ba || ba->isEmpty())
             ba = loadFileToBuffer(filePath);
-        }
         if (ba && !ba->isEmpty()) {
             if (DkImage::fixSamsungPanorama(*ba))
                 if (loadQt(mFile, img, ba, suffix))
-                    loader = "qt-samsung";
+                    loader = "qt-samsung-panorama";
         }
     }
 
@@ -395,22 +389,18 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // -2 == undefined/unknown
     int orientation = -2;
 
-    if (loadMetaData && mMetaData->hasMetaData())
-        orientation = mMetaData->getOrientationDegree();
+    // if the loader published a transform, it takes priority
+    // The theory is that either this is some non-exif transform (JXL/AVIF/HEIC), or
+    // it *is* the exif transform (JPG/TIFF); either way, the image loader is in control
+    // of that decision.
+    orientation = getQIROrientationDegree(img);
 
-    // If the loader publishes a transform but metadata does not contain one, transform the image
-    // This is the case for JXL on the latest kimg_jxl plugin, but not for the older version of the plugin.
-    if (orientation == -2)
-        orientation = getQIROrientationDegree(img);
+    if (orientation == -2 && loadMetaData && mMetaData->hasMetaData())
+        orientation = mMetaData->getOrientationDegree();
 
     if (orientation == -1) // unsupported rotation
         qWarning("[Loader] mirrored orientation is unsupported");
 
-    // TODO: validate that avif,heif,jxl double-rotation is fixed
-    // status: JXL wrapped JPEG==OK (old and new kimagformats)
-    //         JXL internal rotation=unknown
-    //         HEIC rotation=OK for iphone 12 photos
-    //         AVIF rotation=unknown
     bool disableRotation = DkSettingsManager::param().metaData().ignoreExifOrientation;
 
     // JXL, HEIC, and AVIF Qt plugins (from kimageformats), depending on version,
@@ -419,7 +409,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     bool maybeRotated = img.text("QImageReader.ForcedTransform") == "yes";
     if (maybeRotated) {
         if (disableRotation)
-            qWarning() << "[Loader] qt imageloader plugin does not support disabling rotation";
+            qWarning() << "[Loader] this qt plugin does not support disabling rotation";
     }
 
     bool isRotated = false;
@@ -483,7 +473,6 @@ bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<
 
     qir.setAutoTransform(false);
     qir.setAutoDetectImageFormat(format.isEmpty());
-    // qir.setDecideFormatFromContent(format.isEmpty());
     qir.setFormat(format);
 
     // load the largest icon (height*depth)
@@ -522,7 +511,7 @@ bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<
     else
         img.setText("QImageReader.Transform", "unsupported");
 
-    static const QList<QByteArray> brokenPlugins{"heic", "heif", "avif", "jxl"};
+    static const QList<QByteArray> brokenPlugins{"heic", "heif", "avif", "avifs", "jxl"};
     if (!supportsTransform && brokenPlugins.contains(qir.format())) {
         // certain plugins are known to transform image regardless of QIR::setAutoTransform(),
         // the implication is that we cannot also apply EXIF orientation to these
@@ -2208,6 +2197,7 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
         // try loading RAW preview
         if (mLoadFast) {
             mImg = loadPreviewRaw(iProcessor);
+            mImg.setText("RAW.IsPreview", mImg.isNull() ? "no" : "yes");
 
             // are we done already?
             if (!mImg.isNull())
@@ -2232,31 +2222,47 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
             mImg = mImg.copy(); // make a deep copy...
             mImg.setColorSpace(QColorSpace(QColorSpace::SRgb));
             LibRaw::dcraw_clear_mem(rimg);
-
+            mImg.setText("RAW.Loader", "Default");
+            mImg.setText("RAW.IsPreview", "no");
             return true;
         }
 
         // demosaic image
         cv::Mat rawMat;
 
-        if (iProcessor.imgdata.idata.filters)
+        QHash<QString, QString> info; // info for mImg.setText()
+        info.insert("RAW.Loader", "Nomacs");
+        info.insert("RAW.IsPreview", "no");
+
+        if (iProcessor.imgdata.idata.filters) {
             rawMat = demosaic(iProcessor);
-        else
+            info.insert("RAW.Processing", "Demosaic");
+        } else {
             rawMat = prepareImg(iProcessor);
+            info.insert("RAW.Processing", "Copy");
+        }
 
         // color correction + white balance
-        if (mIsChromatic) {
+        if (mIsChromatic)
             whiteBalance(iProcessor, rawMat);
-        }
+
+        info.insert("RAW.ColorCorrection", mIsChromatic ? "yes" : "no");
 
         // gamma correction
         gammaCorrection(iProcessor, rawMat);
 
         // reduce color noise
-        if (DkSettingsManager::param().resources().filterRawImages && mIsChromatic)
+        bool noiseReduced = false;
+        if (DkSettingsManager::param().resources().filterRawImages && mIsChromatic) {
             reduceColorNoise(iProcessor, rawMat);
+            noiseReduced = true;
+        }
+        info.insert("RAW.NoiseReduction", noiseReduced ? "yes" : "no");
 
         mImg = raw2Img(iProcessor, rawMat);
+
+        for (auto &key : qAsConst(info).keys())
+            mImg.setText(key, info.value(key));
 
         // qDebug() << "img size" << mImg.size();
         // qDebug() << "raw mat size" << rawMat.rows << "x" << rawMat.cols;
@@ -2710,24 +2716,24 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
 
     /* What can we handle */
     if (header.datatypecode != 2 && header.datatypecode != 10) {
-        qWarning() << "Can only handle image type 2 and 10";
+        qWarning() << "[TGA] Can only handle image type 2 and 10";
         return false;
     }
 
     if (header.bitsperpixel != 16 && header.bitsperpixel != 24 && header.bitsperpixel != 32) {
-        qWarning() << "Can only handle pixel depths of 16, 24, and 32";
+        qWarning() << "[TGA] Can only handle pixel depths of 16, 24, and 32";
         return false;
     }
 
     if (header.colourmaptype != 0 && header.colourmaptype != 1) {
-        qWarning() << "Can only handle colour map types of 0 and 1";
+        qWarning() << "[TGA] Can only handle colour map types of 0 and 1";
         return false;
     }
 
     Pixel *pixels = new Pixel[header.width * header.height * sizeof(Pixel)];
 
     if (!pixels) {
-        qWarning() << "TGA: could not allocate" << header.width * header.height * sizeof(Pixel) / 1024 << "KB";
+        qWarning() << "[TGA] could not allocate" << header.width * header.height * sizeof(Pixel) / 1024 << "KB";
         return false;
     }
 
