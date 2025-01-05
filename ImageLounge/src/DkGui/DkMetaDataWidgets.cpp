@@ -489,7 +489,7 @@ void DkMetaDataDock::thumbLoaded(bool loaded)
         QString toolTip = tr("Embedded Thumbnail");
         toolTip += QString("\n%1: %2").arg(tr("Size")).arg(DkUtils::readableByte(thumbImg.text("Thumb.FileSize").toInt()));
         toolTip += QString("\n%1: %2x%3").arg(tr("Resolution")).arg(tSize.width()).arg(tSize.height());
-        toolTip += QString("\n%1: %2").arg(tr("Rotated")).arg(thumbImg.text("Loader.IsRotated") == "yes" ? tr("yes") : tr("no"));
+        toolTip += QString("\n%1: %2").arg(tr("Transformed")).arg(thumbImg.text("Loader.Transformed") == "yes" ? tr("yes") : tr("no"));
         mThumbNailLabel->setToolTip(toolTip);
 
         mThumbNailLabel->show();

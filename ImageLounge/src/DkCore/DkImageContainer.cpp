@@ -35,6 +35,7 @@
 #include "DkUtils.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
+#include <QDir>
 #include <QImage>
 #include <QObject>
 #include <QRegularExpression>
