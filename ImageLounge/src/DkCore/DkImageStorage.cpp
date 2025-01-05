@@ -39,6 +39,7 @@
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitmap>
+#include <QColorSpace>
 #include <QDebug>
 #include <QPainter>
 #include <QPixmap>
@@ -294,6 +295,8 @@ template<typename T>
 QImage transposeImage(const QImage &imgIn)
 {
     QImage imgOut = QImage(imgIn.size().transposed(), imgIn.format());
+    imgOut.setColorTable(imgIn.colorTable());
+    imgOut.setColorSpace(imgIn.colorSpace());
 
     const int h = imgIn.height();
     const int w = imgIn.width();
@@ -320,6 +323,8 @@ QImage transposeImage24(const QImage &imgIn)
     // but somehow several times slower than the above transposeImage.
 
     QImage imgOut = QImage(imgIn.size().transposed(), imgIn.format());
+    imgOut.setColorTable(imgIn.colorTable());
+    imgOut.setColorSpace(imgIn.colorSpace());
 
     const int h = imgIn.height();
     const int w = imgIn.width();
@@ -342,6 +347,8 @@ QImage rotateImageCVMat(const QImage &imgIn, cv::RotateFlags rot, int type)
 {
     QSize size = rot == cv::ROTATE_180 ? imgIn.size() : imgIn.size().transposed();
     QImage imgOut = QImage(size, imgIn.format());
+    imgOut.setColorTable(imgIn.colorTable());
+    imgOut.setColorSpace(imgIn.colorSpace());
     const cv::Mat matIn = cv::Mat(imgIn.height(), imgIn.width(), type, (uchar *)imgIn.constBits(), imgIn.bytesPerLine());
     cv::Mat matOut = cv::Mat(imgOut.height(), imgOut.width(), type, imgOut.bits(), imgOut.bytesPerLine());
 
