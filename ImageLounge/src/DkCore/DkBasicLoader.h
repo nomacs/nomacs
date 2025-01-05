@@ -211,11 +211,16 @@ public:
     };
 
     /**
-     * @brief get orientation value congruent with DkMetaData::getOrientationDegree()
-     * @param img Image loaded from loadGeneral()
-     * @return see DkMetaData::getOrientationDegree()
+     * @brief Get rotation value
+     * @return see DkMetaData::getOrientationDegrees()
      */
-    static int getQIROrientationDegree(const QImage &img);
+    static int getOrientationDegrees(const QImageIOHandler::Transformation transform);
+
+    /**
+     * @brief Get mirror/horizontal flip
+     * @return see DkMetadata::isOrientationMirrored()
+     */
+    static bool isOrientationMirrored(const QImageIOHandler::Transformation transform);
 
     /**
      * Load image from file.

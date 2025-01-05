@@ -101,13 +101,18 @@ public:
     bool saveMetaData(QSharedPointer<QByteArray> &ba, bool force = false);
 
     /**
+     * @brief Test if flip is needed after rotation
+     * @return true if horizontal flip is needed
+     */
+    bool isOrientationMirrored() const;
+
+    /**
      * @brief Get rotation angle
      * @return -2 == unknown/unset/invalid
-     *         -1 == unsupported (mirrored)
      *          0 == no rotation
      *         [-]90|180 angle in degrees, clockwise
      */
-    int getOrientationDegree() const;
+    int getOrientationDegrees() const;
     ExifOrientationState checkExifOrientation() const;
     int getRating() const;
     QSize getImageSize() const;

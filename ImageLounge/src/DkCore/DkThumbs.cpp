@@ -86,9 +86,6 @@ QString DkThumbNail::toolTip() const
             (mImg.text("Thumb.IsExif") == "yes" ?
                        QObject::tr("Embedded ") :
                        "") %
-            (mImg.text("Loader.IsRotated") == "yes" ?
-                       QObject::tr("Rotated ") :
-                       "") %
             mImg.text("Loader.LoadTimeMs") % "ms";
     }
     // clang-format on
@@ -134,7 +131,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     removeBlackBorder(thumb);
 
     const bool isExif = !thumb.isNull();
-    const int orientation = metaData.getOrientationDegree();
+    const int rotation = metaData.getOrientationDegrees();
     const bool disableRotation = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
 
     // debug tool: tint embedded thumbs
@@ -149,15 +146,20 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     QString linkFilePath = fileInfo.isSymLink() ? fileInfo.symLinkTarget() : filePath;
     fileInfo = QFileInfo(linkFilePath);
 
-    bool isRotated = false;
+    bool transformed = false;
 
-    // rotate the exif thumbnail; do not attempt to rotate later as loadGeneral() *should* take care of that
-    if (!disableRotation && isExif && orientation != -2 && orientation != -1 && orientation != 0) {
-        // TODO: use DkUtils rotation as in loadGeneral()
-        QTransform rotationMatrix;
-        rotationMatrix.rotate((double)orientation);
-        thumb = thumb.transformed(rotationMatrix);
-        isRotated = true;
+    // transform the exif thumbnail; do not attempt later as loadGeneral() *should* take care of that
+    if (!disableRotation && isExif && rotation != -2 && rotation != -1) {
+        if (rotation != 0) {
+            // TODO: use DkUtils rotation as in loadGeneral()
+            QTransform rotationMatrix;
+            rotationMatrix.rotate((double)rotation);
+            thumb = thumb.transformed(rotationMatrix);
+        }
+        if (metaData.isOrientationMirrored())
+            thumb = thumb.mirrored(true, false);
+
+        transformed = true;
     }
 
     if (mode == require_exif && thumb.isNull()) {
@@ -213,12 +215,12 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     if (mode == write_exif_always || (mode == write_exif && !isExif)) {
         try {
             QImage rotatedThumb = thumb;
-            if (orientation != -2 && orientation != -1 && orientation != 0) {
+            if (rotation != -2 && rotation != -1 && rotation != 0) {
                 // TODO: Use DkUtils rotation
                 QTransform rotationMatrix;
-                rotationMatrix.rotate(-(double)orientation);
+                rotationMatrix.rotate(-(double)rotation);
                 rotatedThumb = rotatedThumb.transformed(rotationMatrix);
-                isRotated = true;
+                transformed = true;
             }
 
             metaData.updateImageMetaData(rotatedThumb);
@@ -236,14 +238,14 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     thumb.setText("Thumb.IsScaled", isScaled ? "yes" : "no");
     thumb.setText("Thumb.IsExif", isExif ? "yes" : "no");
     thumb.setText("Thumb.Size", QString("%1x%2").arg(origSize.width()).arg(origSize.height()));
-    thumb.setText("Loader.IsRotated", isRotated ? "yes" : "no");
+    thumb.setText("Loader.Transformed", transformed ? "yes" : "no");
     thumb.setText("Loader.LoadTimeMs", QString::number(dt.elapsed()));
 
     QString info = QString("[Thumbnail] %1 exif=%2 orientation=%3 rotated=%4 size=%5x%6 scaled=%7x%8")
                        .arg(fileInfo.fileName())
                        .arg(isExif ? "yes" : "no")
-                       .arg(orientation)
-                       .arg(isRotated ? "yes" : (disableRotation ? "disabled" : "no"))
+                       .arg(rotation)
+                       .arg(transformed ? "yes" : (disableRotation ? "disabled" : "no"))
                        .arg(origSize.width())
                        .arg(origSize.height())
                        .arg(thumb.width())

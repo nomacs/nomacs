@@ -39,6 +39,7 @@
 #include <QBuffer>
 #include <QColorSpace>
 #include <QDebug>
+#include <QDir>
 #include <QFileInfo>
 #include <QIcon>
 #include <QImage>
@@ -202,16 +203,9 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, bool loadMetaData, bool
     return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
 }
 
-int DkBasicLoader::getQIROrientationDegree(const QImage &img)
+int DkBasicLoader::getOrientationDegrees(const QImageIOHandler::Transformation transform)
 {
-    const QString value = img.text("QImageReader.Transform");
-
-    bool ok;
-    const int transform = value.toInt(&ok, 16);
-    if (!ok || value.isEmpty())
-        return -2;
-
-    switch ((QImageIOHandler::Transformation)transform) {
+    switch (transform) {
     case QImageIOHandler::TransformationNone:
         return 0;
     case QImageIOHandler::TransformationRotate180:
@@ -220,13 +214,33 @@ int DkBasicLoader::getQIROrientationDegree(const QImage &img)
         return 90;
     case QImageIOHandler::TransformationRotate270:
         return -90;
-    case QImageIOHandler::TransformationFlip:
-    case QImageIOHandler::TransformationMirror:
     case QImageIOHandler::TransformationMirrorAndRotate90:
+        return -90;
     case QImageIOHandler::TransformationFlipAndRotate90:
-        return -1;
+        return 90;
+    case QImageIOHandler::TransformationFlip:
+        return 180;
+    case QImageIOHandler::TransformationMirror:
+        return 0;
     }
     return -2;
+}
+
+bool DkBasicLoader::isOrientationMirrored(const QImageIOHandler::Transformation transform)
+{
+    switch (transform) {
+    case QImageIOHandler::TransformationNone:
+    case QImageIOHandler::TransformationRotate180:
+    case QImageIOHandler::TransformationRotate90:
+    case QImageIOHandler::TransformationRotate270:
+        return false;
+    case QImageIOHandler::TransformationMirrorAndRotate90:
+    case QImageIOHandler::TransformationFlipAndRotate90:
+    case QImageIOHandler::TransformationFlip:
+    case QImageIOHandler::TransformationMirror:
+        return true;
+    }
+    return false;
 }
 
 bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast)
@@ -387,35 +401,47 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     //  0 == defined, no rotation
     // -1 == defined, unsupported (mirrored)
     // -2 == undefined/unknown
-    int orientation = -2;
+    int rotation = -2;
+    bool mirrored = false;
 
     // if the loader published a transform, it takes priority
     // The theory is that either this is some non-exif transform (JXL/AVIF/HEIC), or
     // it *is* the exif transform (JPG/TIFF); either way, the image loader is in control
     // of that decision.
-    orientation = getQIROrientationDegree(img);
+    {
+        const QString value = img.text("QImageReader.Transform");
 
-    if (orientation == -2 && loadMetaData && mMetaData->hasMetaData())
-        orientation = mMetaData->getOrientationDegree();
+        bool ok;
+        const auto transform = (QImageIOHandler::Transformation)value.toInt(&ok, 16);
+        if (ok && !value.isEmpty()) {
+            rotation = getOrientationDegrees(transform);
+            mirrored = isOrientationMirrored(transform);
+        }
+    }
 
-    if (orientation == -1) // unsupported rotation
-        qWarning("[Loader] mirrored orientation is unsupported");
+    if (rotation == -2 && loadMetaData && mMetaData->hasMetaData()) {
+        rotation = mMetaData->getOrientationDegrees();
+        mirrored = mMetaData->isOrientationMirrored();
+    }
 
-    bool disableRotation = DkSettingsManager::param().metaData().ignoreExifOrientation;
+    bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation;
 
     // JXL, HEIC, and AVIF Qt plugins (from kimageformats), depending on version,
     // may have already rotated the image, even though we asked QIR not to.
     // In this case, do not rotate again using the exif orientation
-    bool maybeRotated = img.text("QImageReader.ForcedTransform") == "yes";
-    if (maybeRotated) {
-        if (disableRotation)
-            qWarning() << "[Loader] this qt plugin does not support disabling rotation";
+    bool maybeTransformed = img.text("QImageReader.ForcedTransform") == "yes";
+    if (maybeTransformed) {
+        if (disableTransform)
+            qWarning() << "[Loader] this qt plugin does not support disabling orientation/transform";
     }
 
-    bool isRotated = false;
-    if (loader && !disableRotation && !maybeRotated && orientation != -2 && orientation != -1 && orientation != 0) {
-        img = DkImage::rotateImage(img, orientation);
-        isRotated = true;
+    bool transformed = false;
+    if (loader && !disableTransform && !maybeTransformed && rotation != -2 && rotation != -1) {
+        if (rotation != 0)
+            img = DkImage::rotateImage(img, rotation);
+        if (mirrored)
+            img = img.mirrored(true, false);
+        transformed = true;
     }
 
     if (loader) {
@@ -423,10 +449,11 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
         img.setText("Exiv2.HasMetadata", mMetaData->hasMetaData() ? "yes" : "no");
         img.setText("Loader.UseSidecar", mMetaData->useSidecar() ? "yes" : "no");
         img.setText("Loader.Name", loader);
-        img.setText("Loader.IsRotated", maybeRotated ? "unknown" : (isRotated ? "yes" : "no"));
+        img.setText("Loader.Transformed", maybeTransformed ? "unknown" : (transformed ? "yes" : "no"));
         img.setText("Loader.LoadTimeMs", QString::number(dt.elapsed()));
-        img.setText("Loader.Orientation", QString::number(orientation));
-        img.setText("Loader.DisableRotation", disableRotation ? "yes" : "no");
+        img.setText("Loader.Rotation", QString::number(rotation));
+        img.setText("Loader.Mirrored", mirrored ? "yes" : "no");
+        img.setText("Loader.DisableOrientation", disableTransform ? "yes" : "no");
         img.setText("QImage.Depth", QString::number(img.depth()));
         img.setText("QImage.HasAlpha", img.hasAlphaChannel() ? "yes" : "no");
         img.setText("QImage.PixelFormat", DkUtils::formatToString(img.format()));
@@ -445,8 +472,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     QString info = QString("[Loader::%1] %5 metadata=%2 orientation=%3 rotated=%4")
                        .arg(loader)
                        .arg(mMetaData ? "yes" : "no")
-                       .arg(orientation)
-                       .arg(isRotated ? "yes" : (ignoredRotation ? "disabled" : "no"))
+                       .arg(rotation)
+                       .arg(transformed ? "yes" : (ignoredRotation ? "disabled" : "no"))
                        .arg(fileInfo.fileName());
     if (loader)
         qInfo().noquote() << info << dt;
@@ -663,7 +690,7 @@ bool DkBasicLoader::loadPSD(const QString &filePath, QImage &img, QSharedPointer
 }
 
 #ifndef WITH_LIBTIFF
-bool DkBasicLoader::loadTIFFile(const QString &, QImage &, QSharedPointer<QByteArray>) const
+bool DkBasicLoader::loadTIFF(const QString &, QImage &, QSharedPointer<QByteArray>) const
 {
 #else
 bool DkBasicLoader::loadTIFF(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
