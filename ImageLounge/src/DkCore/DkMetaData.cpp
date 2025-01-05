@@ -296,51 +296,69 @@ QString DkMetaDataT::getDescription() const
     return description;
 }
 
-int DkMetaDataT::getOrientationDegree() const
+bool DkMetaDataT::isOrientationMirrored() const
 {
-    if (mExifState != loaded && mExifState != dirty)
-        return -2;
+    QString value = getExifValue("Orientation");
 
-    int orientation = -2;
+    bool ok;
+    int orientation = value.toInt(&ok);
+    if (value.isEmpty() || !ok)
+        return false;
 
-    try {
-        Exiv2::ExifData &exifData = mExifImg->exifData();
-
-        if (!exifData.empty()) {
-            Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
-            Exiv2::ExifData::iterator pos = exifData.findKey(key);
-
-            if (pos != exifData.end() && pos->count() != 0) {
-                auto v = pos->getValue();
-                orientation = (int)pos->toFloat();
-
-                switch (orientation) {
-                case 1:
-                    orientation = 0;
-                    break;
-                case 6:
-                    orientation = 90;
-                    break;
-                case 3:
-                    orientation = 180;
-                    break;
-                case 8:
-                    orientation = -90;
-                    break;
-                // case 2: // TODO: mirrored horizontally
-                // case 4: // TODO: mirrored vertically
-                // case 5: // TODO: mirrored horizontally + rotated 90 CW
-                // case 7: // TODO: mirrored vertically + rotated -90/270 CW
-                default:
-                    orientation = -1;
-                    break;
-                }
-            }
-        }
-    } catch (...) {
+    if (orientation < 1 || orientation > 8) {
+        qWarning() << "[EXIF] Bogus orientation:" << orientation;
+        return false;
     }
 
-    return orientation;
+    switch (orientation) {
+    case 1:
+    case 3:
+    case 6:
+    case 8:
+        return false;
+    case 2:
+    case 4:
+    case 5:
+    case 7:
+        return true;
+    }
+    return false;
+}
+
+int DkMetaDataT::getOrientationDegrees() const
+{
+    QString value = getExifValue("Orientation");
+
+    bool ok;
+    int orientation = value.toInt(&ok);
+    if (value.isEmpty() || !ok)
+        return -2;
+
+    if (orientation < 1 || orientation > 8) {
+        qWarning() << "[EXIF] Bogus orientation:" << orientation;
+        return -2;
+    }
+
+    switch (orientation) {
+    case 1:
+        return 0;
+    case 6:
+        return 90;
+    case 3:
+        return 180;
+    case 8:
+        return -90;
+    case 2:
+        return 0;
+    case 4:
+        return 180;
+    case 5:
+        return 90;
+    case 7:
+        return -90;
+    default:
+        return -2;
+    }
 }
 
 DkMetaDataT::ExifOrientationState DkMetaDataT::checkExifOrientation() const
