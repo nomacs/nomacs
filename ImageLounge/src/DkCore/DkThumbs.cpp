@@ -241,16 +241,15 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     thumb.setText("Loader.Transformed", transformed ? "yes" : "no");
     thumb.setText("Loader.LoadTimeMs", QString::number(dt.elapsed()));
 
-    QString info = QString("[Thumbnail] %1 exif=%2 orientation=%3 rotated=%4 size=%5x%6 scaled=%7x%8")
+    QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 scaled=%5x%6 %8ms")
                        .arg(fileInfo.fileName())
                        .arg(isExif ? "yes" : "no")
-                       .arg(rotation)
-                       .arg(transformed ? "yes" : (disableRotation ? "disabled" : "no"))
                        .arg(origSize.width())
                        .arg(origSize.height())
                        .arg(thumb.width())
-                       .arg(thumb.height());
-    qInfo().noquote() << info << dt;
+                       .arg(thumb.height())
+                       .arg(dt.elapsed());
+    qInfo().noquote() << info;
 
     return thumb;
 }

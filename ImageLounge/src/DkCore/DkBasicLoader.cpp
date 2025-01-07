@@ -42,8 +42,6 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QIcon>
-#include <QImage>
-#include <QImageReader>
 #include <QImageWriter>
 #include <QNetworkProxyFactory>
 #include <QNetworkReply>
@@ -328,10 +326,9 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     // Qt loader (by file extension match or by content (no suffix))
-    // - if the extension has no match in Qt, this will fail
+    // - if the suffix has no match in Qt, this will fail
     // - if the suffix is empty, plugins will check the file header
     if (!loader && qtFormats.contains(suffix) || suffix.isEmpty()) {
-        // if image has Indexed8 + alpha channel -> we crash... sorry for that
         if (loadQt(mFile, img, ba, suffix))
             loader = "qt";
     }
@@ -355,7 +352,6 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // - "image/jpeg" fixes #435 - thumbnail gets loaded in the RAW loader
     if (!loader && !libRawUsed && !qtFormats.contains(suffix) && mMetaData->getMimeType() != "image/jpeg") {
         // TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
-        // load raw files
         if (loadRAW(mFile, img, ba, fast))
             loader = "raw-unknown-suffix";
     }
@@ -437,11 +433,14 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 
     bool transformed = false;
     if (loader && !disableTransform && !maybeTransformed && rotation != -2 && rotation != -1) {
-        if (rotation != 0)
+        if (rotation != 0) {
             img = DkImage::rotateImage(img, rotation);
-        if (mirrored)
+            transformed = true;
+        }
+        if (mirrored) {
             img = img.mirrored(true, false);
-        transformed = true;
+            transformed = true;
+        }
     }
 
     if (loader) {
@@ -467,16 +466,15 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
         setEditImage(img, tr("Original Image"));
     }
 
-    const bool ignoredRotation = DkSettingsManager::param().metaData().ignoreExifOrientation;
-
-    QString info = QString("[Loader::%1] %5 metadata=%2 orientation=%3 rotated=%4")
+    QString info = QString("[Loader::%1] %2 rotation=%3 mirror=%4 transformed=%5 %6ms")
                        .arg(loader)
-                       .arg(mMetaData ? "yes" : "no")
+                       .arg(fileInfo.fileName())
                        .arg(rotation)
-                       .arg(transformed ? "yes" : (ignoredRotation ? "disabled" : "no"))
-                       .arg(fileInfo.fileName());
+                       .arg(mirrored ? "yes" : "no")
+                       .arg(transformed ? "yes" : (disableTransform ? "disabled" : "no"))
+                       .arg(dt.elapsed());
     if (loader)
-        qInfo().noquote() << info << dt;
+        qInfo().noquote() << info;
     else
         qWarning().noquote() << info << "failed to load";
 
