@@ -29,7 +29,7 @@
 
 #pragma warning(push, 0)
 #include <QFutureWatcher>
-#include <QImage>
+#include <QImageReader>
 #include <QNetworkAccessManager>
 #include <QSharedPointer>
 #include <QUrl>
