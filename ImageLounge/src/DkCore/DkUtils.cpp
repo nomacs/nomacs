@@ -77,8 +77,17 @@
 #ifdef Q_CC_MSVC
 #include <tif_config.h>
 #endif
+
+//  here we clash (typedef redefinition with different types ('long' vs 'int64_t' (aka 'long long')))
+//  so we simply define our own int64 before including tiffio
+#define uint64 uint64_hack_
+#define int64 int64_hack_
+
 #include <tiffio.h>
-#endif
+
+#undef uint64
+#undef int64
+#endif // WITH_LIBTIFF
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
