@@ -431,6 +431,10 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
             qWarning() << "[Loader] this qt plugin does not support disabling orientation/transform";
     }
 
+    // #1174 kif_raw silently transforms raw files (and does not set TransformedByDefault)
+    if (rawFormats.contains(suffix) && QString(loader).startsWith("qt"))
+        maybeTransformed = true;
+
     bool transformed = false;
     if (loader && !disableTransform && !maybeTransformed && rotation != -2 && rotation != -1) {
         if (rotation != 0) {
@@ -530,14 +534,20 @@ bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<
     img.setText("QImageReader.SubType", qir.subType());
 
     bool supportsTransform = qir.supportsOption(QImageIOHandler::ImageTransformation);
-
+    bool forcedTransform = false;
     if (supportsTransform)
         img.setText("QImageReader.Transform", "0x" + QString::number(qir.transformation(), 16));
-    else
-        img.setText("QImageReader.Transform", "unsupported");
-
+    else {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if (qir.supportsOption(QImageIOHandler::TransformedByDefault)) {
+            img.setText("QImageReader.Transform", "bydefault");
+            forcedTransform = true;
+        } else
+#endif
+            img.setText("QImageReader.Transform", "unsupported");
+    }
     static const QList<QByteArray> brokenPlugins{"heic", "heif", "avif", "avifs", "jxl"};
-    if (!supportsTransform && brokenPlugins.contains(qir.format())) {
+    if (!supportsTransform && (forcedTransform || brokenPlugins.contains(qir.format()))) {
         // certain plugins are known to transform image regardless of QIR::setAutoTransform(),
         // the implication is that we cannot also apply EXIF orientation to these
         img.setText("QImageReader.ForcedTransform", "yes");
