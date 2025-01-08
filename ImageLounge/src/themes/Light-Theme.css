@@ -180,7 +180,7 @@ QLineEdit,
 QDoubleSpinBox,
 QSpinBox,
 QComboBox {
-    background-color: rgba(255,255,255,128);
+    background-color: nomacsBlend(BACKGROUND_COLOR,255,255,255,128);
     border: 1px solid rgba(0,0,0,60);
 }
 
