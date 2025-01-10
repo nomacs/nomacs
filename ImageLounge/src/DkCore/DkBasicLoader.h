@@ -201,9 +201,7 @@ class DllCoreExport DkBasicLoader : public QObject
     Q_OBJECT
 
 public:
-    enum mode { mode_default, mode_mat_preferred, mode_end };
-
-    DkBasicLoader(int mode = mode_default);
+    DkBasicLoader();
 
     ~DkBasicLoader()
     {
@@ -224,24 +222,31 @@ public:
 
     /**
      * Load image from file.
-     * @param loadMetaData
      **/
     bool loadGeneral(const QString &filePath, bool loadMetaData = false, bool fast = true);
 
     /**
      * Loads the image for the given file
-     * @param file an image file
-     * @param skipIdx the number of (internal) pages to be skipped
-     * @return bool true if the image was loaded
+     * @param filePath path to the file; provides suffix to find the right loader
+     * @param ba byteArray of the file contents; always used first
+     * @param loadMetadata load exif metadata
+     * @param fast use fast-but-less-accurate loader (e.g. RAW preview JPG)
+     * @note if the image is multipage, the next page is loaded
+     * @return true if image was loaded and assigned to the edit history
      **/
     bool loadGeneral(const QString &filePath, const QSharedPointer<QByteArray> ba, bool loadMetaData = false, bool fast = true);
 
     /**
      * Loads the page requested (with respect to the current page)
-     * @param skipIdx number of pages to skip
-     * @return bool true if we could load the page requested
+     * @param skipIdx number of pages to skip (+/- current page index)
+     * @return true if image was loaded
      **/
     bool loadPage(int skipIdx = 0);
+
+    /**
+     * Loads the absolute page number
+     * @return true if image was loaded
+     */
     bool loadPageAt(int pageIdx = 0);
 
     int getNumPages() const
@@ -254,7 +259,17 @@ public:
         return mPageIdx;
     };
 
+    /**
+     * Set page index but do not load anything (loadGeneral() is required)
+     */
     bool setPageIdx(int skipIdx);
+
+    /**
+     * Set page index to 1 but do not set the dirty flag (loadGeneral() will not call loadPage())
+     * FIXME: it is not clear why this should exist, it can be removed with no apparent effect,
+     *        it could be attempt to correct navigation errors when multiple multi-page tiffs are
+     *        in the same directory (see TIFF in formats_testset)
+     */
     void resetPageIdx();
 
     QString save(const QString &filePath, const QImage &img, int compression = -1);
@@ -264,6 +279,9 @@ public:
     void saveThumbToMetaData(const QString &filePath);
     void saveMetaData(const QString &filePath);
 
+    /**
+     * Check if file suffix should be treated as a container/folder
+     */
     static bool isContainer(const QString &filePath);
 
     /**
@@ -278,36 +296,47 @@ public:
     void setEditMetaData(const QSharedPointer<DkMetaDataT> &metaData, const QString &editName = "");
     void setEditMetaData(const QString &editName);
 
-    void setTraining(bool training)
-    {
-        training = true;
-    };
+    // void setTraining(bool training)
+    // {
+    //     mTraining = true;
+    // };
 
-    bool getTraining()
-    {
-        return mTraining;
-    };
+    // bool getTraining()
+    // {
+    //     return mTraining;
+    // };
 
     QSharedPointer<DkMetaDataT> getMetaData() const;
 
     /**
-     * Returns the 8-bit image, which is rendered.
-     * @return QImage an 8bit image
-     **/
-    QImage image() const;
+     * Return the last edit image (most recent edit), excluding metadata edits
+     */
     QImage lastImage() const;
+
+    /**
+     * Return the current edit image
+     */
     QImage pixmap() const;
+
+    QImage image() const
+    {
+        return pixmap();
+    }
 
     QSharedPointer<DkMetaDataT> lastMetaDataEdit(bool return_nullptr = true, bool return_orig = false) const;
 
     bool isImageEdited();
     bool isMetaDataEdited();
 
-    QString getFile() const
-    {
-        return mFile;
-    };
+    // QString getFile() const
+    // {
+    //     return mFile;
+    // };
 
+    /**
+     * Get if loadGeneral() should be called again to fetch the image.
+     * FIXME: this should be renamed since it doesn't have anything to do with file being modified
+     */
     bool isDirty() const
     {
         return mPageIdxDirty;
@@ -346,7 +375,7 @@ public:
     void release();
 
 #ifdef WITH_OPENCV
-    cv::Mat getImageCv();
+    // cv::Mat getImageCv();
     bool loadOpenCVVecFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize()) const;
     cv::Mat getPatch(const unsigned char **dataPtr, QSize patchSize) const;
     int mergeVecFiles(const QStringList &vecFilePaths, QString &saveFileInfo) const;
@@ -374,17 +403,8 @@ public:
     bool loadDRIF(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 
 #ifdef Q_OS_WIN
-    bool saveWindowsIcon(const QString &filePath, const QImage &img) const;
+    // bool saveWindowsIcon(const QString &filePath, const QImage &img) const;
     bool saveWindowsIcon(const QImage &img, QSharedPointer<QByteArray> &ba) const;
-#else
-    bool saveWindowsIcon(const QString &filePath, const QImage &img) const
-    {
-        return false;
-    };
-    bool saveWindowsIcon(const QImage &img, QSharedPointer<QByteArray> &ba) const
-    {
-        return false;
-    };
 #endif
 
 signals:
@@ -396,16 +416,31 @@ signals:
 
 protected:
     /**
-     * Loads special RAW files that are generated by the Hamamatsu camera.
-     **/
+     * Loads special RAW files that are generated by the Hamamatsu scientific camera.
+     */
     bool loadROH(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
+
+    /**
+     * TGA image loader for Qt unsupported variants
+     */
     bool loadTGA(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
+
+    /**
+     * LibRAW image loader
+     */
     bool loadRAW(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false) const;
+
+    /**
+     * Get page count for multi-page files (currently TIFF)
+     */
     void indexPages(const QString &filePath, const QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+
+    /**
+     * Convert ARGB buffer to ARGB
+     */
     void convert32BitOrder(void *buffer, int width) const;
 
-    bool mTraining;
-    int mMode;
+    // bool mTraining;
 
     QString mFile;
     int mNumPages;
