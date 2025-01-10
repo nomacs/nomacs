@@ -376,7 +376,7 @@ void DkTrainDialog::loadFile(const QString &filePath)
     mFileValidator.setLastFile(lFilePath);
 
     DkBasicLoader basicLoader;
-    basicLoader.setTraining(true);
+    // basicLoader.setTraining(true);
 
     // TODO: archives cannot be trained currently
     bool imgLoaded = basicLoader.loadGeneral(lFilePath, true);
