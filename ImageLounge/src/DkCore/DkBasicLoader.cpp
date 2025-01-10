@@ -186,19 +186,13 @@ int DkEditImage::size() const
 }
 
 // Basic loader and image edit class --------------------------------------------------------------------
-DkBasicLoader::DkBasicLoader(int mode)
+DkBasicLoader::DkBasicLoader()
 {
-    mMode = mode;
-    mTraining = false;
+    // mTraining = false;
     mPageIdxDirty = false;
     mNumPages = 1;
     mPageIdx = 1;
     mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
-}
-
-bool DkBasicLoader::loadGeneral(const QString &filePath, bool loadMetaData, bool fast)
-{
-    return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
 }
 
 int DkBasicLoader::getOrientationDegrees(const QImageIOHandler::Transformation transform)
@@ -239,6 +233,11 @@ bool DkBasicLoader::isOrientationMirrored(const QImageIOHandler::Transformation 
         return true;
     }
     return false;
+}
+
+bool DkBasicLoader::loadGeneral(const QString &filePath, bool loadMetaData, bool fast)
+{
+    return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
 }
 
 bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast)
@@ -290,11 +289,11 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     //
     // We prefer our RAW loader over KIF
     // - KIF always loads the jpeg preview, we have an option to disable it
-    // - ???
+    // - We have other options for raw loading (denoise etc)
     //
     QImage img;
 
-    // load drif file
+    // "Developers Raw Image File" -> https://github.com/ovidiuvio/drif_image
     if (!loader && drifFormats.contains(suffix)) {
         if (loadDRIF(mFile, img, ba))
             loader = "drif";
@@ -382,7 +381,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
             loader = "roh";
     }
 
-    // this loader is for OpenCV cascade training files
+    // this loader is for OpenCV cascade training files created with opencv_createsamples
     if (!loader && suffix == "vec") {
         if (loadOpenCVVecFile(mFile, img, ba))
             loader = "vec";
@@ -622,14 +621,10 @@ bool DkBasicLoader::loadROH(const QString &filePath, QImage &img, QSharedPointer
         imgLoaded = false;
     }
 
-    // if (imgLoaded) {
-    //	setEditImage(img, tr("Original Image"));
-    //}
-
     return imgLoaded;
 }
 
-bool nmc::DkBasicLoader::loadTGA(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
+bool DkBasicLoader::loadTGA(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
     if (!ba || ba->isEmpty())
         ba = loadFileToBuffer(filePath);
@@ -658,6 +653,7 @@ bool DkBasicLoader::loadRAW(const QString &filePath, QImage &img, QSharedPointer
 #ifdef Q_OS_WIN
 bool DkBasicLoader::loadPSD(const QString &, QImage &, QSharedPointer<QByteArray>) const
 {
+    qWarning() << "built-in PSD loader unsupported on Windows, you will need a Qt plugin";
 #else
 bool DkBasicLoader::loadPSD(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
@@ -700,6 +696,7 @@ bool DkBasicLoader::loadPSD(const QString &filePath, QImage &img, QSharedPointer
 #ifndef WITH_LIBTIFF
 bool DkBasicLoader::loadTIFF(const QString &, QImage &, QSharedPointer<QByteArray>) const
 {
+    qWarning() << "built-in TIFF loader is not included in this build and may be able to load this file";
 #else
 bool DkBasicLoader::loadTIFF(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
@@ -1011,11 +1008,6 @@ QImage DkBasicLoader::lastImage() const
     }
 
     return QImage();
-}
-
-QImage DkBasicLoader::image() const
-{
-    return pixmap();
 }
 
 QImage DkBasicLoader::pixmap() const
@@ -1459,9 +1451,12 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath, const QImage &img, QSh
 
     QFileInfo fInfo(filePath);
 
-    if (fInfo.suffix().contains("ico", Qt::CaseInsensitive)) {
+#ifdef Q_OS_WIN
+    if (0 == fInfo.suffix().compare("ico", Qt::CaseInsensitive)) {
         saved = saveWindowsIcon(img, ba);
-    } else {
+    } else
+#endif
+    {
         bool hasAlpha = DkImage::alphaChannelUsed(img);
         QImage sImg = img;
 
@@ -1642,17 +1637,17 @@ void DkBasicLoader::release()
 }
 
 #ifdef Q_OS_WIN
-bool DkBasicLoader::saveWindowsIcon(const QString &filePath, const QImage &img) const
-{
-    QSharedPointer<QByteArray> ba;
+// bool DkBasicLoader::saveWindowsIcon(const QString &filePath, const QImage &img) const
+// {
+//     QSharedPointer<QByteArray> ba;
 
-    if (saveWindowsIcon(img, ba) && ba && !ba->isEmpty()) {
-        writeBufferToFile(filePath, ba);
-        return true;
-    }
+//     if (saveWindowsIcon(img, ba) && ba && !ba->isEmpty()) {
+//         writeBufferToFile(filePath, ba);
+//         return true;
+//     }
 
-    return false;
-}
+//     return false;
+// }
 
 struct ICONDIRENTRY {
     UCHAR nWidth;
@@ -1773,10 +1768,10 @@ bool DkBasicLoader::saveWindowsIcon(const QImage &img, QSharedPointer<QByteArray
 
 #ifdef WITH_OPENCV
 
-cv::Mat DkBasicLoader::getImageCv()
-{
-    return cv::Mat();
-}
+// cv::Mat DkBasicLoader::getImageCv()
+// {
+//     return cv::Mat();
+// }
 
 bool DkBasicLoader::loadOpenCVVecFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba, QSize s) const
 {
