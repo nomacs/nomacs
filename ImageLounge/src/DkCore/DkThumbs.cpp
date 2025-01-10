@@ -162,10 +162,8 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
         transformed = true;
     }
 
-    if (mode == require_exif && thumb.isNull()) {
-        qInfo() << "[Thumbnail]" << fileInfo.fileName() << "no exif thumbnail";
+    if (mode == require_exif && thumb.isNull())
         return thumb;
-    }
 
     // read the full image
     if ((mode != require_exif /*|| fInfo.size() < 1e5*/) && (thumb.isNull() || mode == write_exif_always)) {

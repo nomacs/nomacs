@@ -209,13 +209,13 @@ public:
     };
 
     /**
-     * @brief Get rotation value
+     * Get rotation value
      * @return see DkMetaData::getOrientationDegrees()
      */
     static int getOrientationDegrees(const QImageIOHandler::Transformation transform);
 
     /**
-     * @brief Get mirror/horizontal flip
+     * Get mirror/horizontal flip
      * @return see DkMetadata::isOrientationMirrored()
      */
     static bool isOrientationMirrored(const QImageIOHandler::Transformation transform);
@@ -436,7 +436,7 @@ protected:
     void indexPages(const QString &filePath, const QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 
     /**
-     * Convert ARGB buffer to ARGB
+     * Convert ARGB buffer to ABGR
      */
     void convert32BitOrder(void *buffer, int width) const;
 
