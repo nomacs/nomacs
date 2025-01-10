@@ -890,7 +890,7 @@ QString DkUtils::formatToString(int format)
         msg = QObject::tr("Grayscale 8-bit");
         break;
     case QImage::Format_Grayscale16:
-        msg = QObject::tr("Grayscale 8-bit");
+        msg = QObject::tr("Grayscale 16-bit");
         break;
     case QImage::Format_Alpha8:
         msg = QObject::tr("Alpha 8-bit");
