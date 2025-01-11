@@ -119,6 +119,8 @@ void DkManipulatorWidget::createLayout()
     mTitleLabel->setObjectName("DkManipulatorSettingsTitle");
     mPreview = new QLabel(this);
     mPreview->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    mPreview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mPreview->setContentsMargins(8, 8, 8, 8);
 
     QWidget *mplWidget = new QWidget(this);
     QVBoxLayout *mplLayout = new QVBoxLayout(mplWidget);
@@ -136,28 +138,17 @@ void DkManipulatorWidget::createLayout()
     layout->addWidget(mplWidget);
 }
 
-QImage DkManipulatorWidget::scaledPreview(const QImage &img) const
-{
-    QImage imgR;
-
-    if (img.height() > img.width())
-        imgR = img.scaledToHeight(qMin(img.height(), MaxPreview));
-    else
-        imgR = img.scaledToWidth(qMin(img.width(), MaxPreview));
-
-    return imgR;
-}
-
 void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC)
 {
     if (imgC) {
-        QImage img = imgC->imageScaledToWidth(qMin(mPreview->width(), MaxPreview));
-        img = scaledPreview(img);
-
+        QImage img = imgC->image();
+        QSize newSize = img.size().scaled(mPreview->contentsRect().size(), Qt::KeepAspectRatio);
+        img = img.scaledToWidth(newSize.width(), Qt::SmoothTransformation);
         mPreview->setPixmap(QPixmap::fromImage(img));
         mPreview->show();
-    } else
+    } else {
         mPreview->hide();
+    }
 }
 
 void DkManipulatorWidget::selectManipulator()

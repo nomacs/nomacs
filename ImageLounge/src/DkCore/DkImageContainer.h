@@ -74,7 +74,6 @@ public:
     QImage image();
     QImage pixmap();
     QImage imageScaledToHeight(int height);
-    QImage imageScaledToWidth(int width);
 
     bool hasImage() const;
     bool hasSvg() const;
