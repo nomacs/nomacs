@@ -188,6 +188,7 @@ public:
     static QFileInfo urlToLocalFile(const QUrl &url);
     static QString fileNameFromUrl(const QUrl &url);
     static QString nowString();
+    static QString colorToCssHex(const QColor &color, bool alpha);
     static QString colorToString(const QColor &col);
     static QString readableByte(float bytes);
     static QStringList filterStringList(const QString &query, const QStringList &list);
