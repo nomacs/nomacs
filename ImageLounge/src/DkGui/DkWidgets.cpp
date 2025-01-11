@@ -408,8 +408,6 @@ DkBrowseExplorer::DkBrowseExplorer(const QString &title, QWidget *parent, Qt::Wi
 {
     createLayout();
     readSettings();
-
-    connect(mRootPathBrowseButton, &QPushButton::clicked, this, &DkBrowseExplorer::browseClicked);
 }
 
 DkBrowseExplorer::~DkBrowseExplorer()
@@ -423,6 +421,11 @@ void DkBrowseExplorer::browseClicked()
 
     if (root != "")
         setRootPath(root);
+}
+
+void DkBrowseExplorer::scrollToCurrentClicked()
+{
+    mFileTree->scrollTo(mFileTree->currentIndex());
 }
 
 void DkBrowseExplorer::setRootPath(const QString &root)
@@ -439,10 +442,19 @@ void DkBrowseExplorer::createLayout()
     QWidget *rootPathWidget = new QWidget(this);
     QHBoxLayout *rpLayout = new QHBoxLayout(rootPathWidget);
     mRootPathLabel = new DkElidedLabel(rootPathWidget, "");
-    mRootPathBrowseButton = new QPushButton(tr("Browse"));
+
+    auto browseButton = new QPushButton(tr("Browse"));
+    connect(browseButton, &QPushButton::clicked, this, &DkBrowseExplorer::browseClicked);
+
+    auto scrollButton = new QToolButton();
+    scrollButton->setIcon(DkImage::loadIcon(":/nomacs/img/scroll-to-current.svg"));
+    scrollButton->setToolTip(tr("Scroll to current file"));
+    connect(scrollButton, &QPushButton::clicked, this, &DkBrowseExplorer::scrollToCurrentClicked);
+
     rpLayout->setContentsMargins(4, 2, 2, 2);
     rpLayout->addWidget(mRootPathLabel, 1);
-    rpLayout->addWidget(mRootPathBrowseButton);
+    rpLayout->addWidget(browseButton);
+    rpLayout->addWidget(scrollButton);
 
     mLayout->insertWidget(0, rootPathWidget);
 }

@@ -452,6 +452,7 @@ public:
 
 public slots:
     void browseClicked();
+    void scrollToCurrentClicked();
     void setRootPath(const QString &root);
 
 protected:
@@ -460,7 +461,6 @@ protected:
     void writeSettings() override;
 
     QString mRootPath;
-    QPushButton *mRootPathBrowseButton;
     DkElidedLabel *mRootPathLabel;
 };
 

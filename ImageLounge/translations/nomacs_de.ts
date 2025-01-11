@@ -3395,6 +3395,11 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
       <source>Browse</source>
       <translation>Durchsuchen</translation>
     </message>
+    <message>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="452"/>
+      <source>Scroll file explorer to currently open element</source>
+      <translation>Dateimanager zu aktuell offenem Element scrollen</translation>
+    </message>
   </context>
   <context>
     <name>nmc::DkCentralWidget</name>

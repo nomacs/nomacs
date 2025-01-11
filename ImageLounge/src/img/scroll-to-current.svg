@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#231F20;}
+	.st0-stroke{stroke:#231F20; stroke-width: 10px; fill: none;}
+</style>
+<circle class="st0-stroke" cx="80" cy="80" r="70" />
+<polygon id="inward-pointer" class="st0" points="10,60 10,100 50,80" />
+<use href="#inward-pointer" transform="rotate(90 80 80)" />
+<use href="#inward-pointer" transform="rotate(180 80 80)" />
+<use href="#inward-pointer" transform="rotate(270 80 80)" />
+</svg>
