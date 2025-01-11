@@ -892,6 +892,22 @@ QString DkUtils::formatToString(int format)
     return msg;
 }
 
+QString DkUtils::colorToCssHex(const QColor &color, bool alpha)
+{
+    // CSS Color Module 4 hex color
+    // https://www.w3.org/TR/css-color-4/#hex-notation
+
+    // NOTE: css hex colors are 8-bpc sRgb
+    //       QColor::rgba() converts to ARGB-8888 for wider formats
+    if (color.spec() != QColor::Rgb)
+        return "";
+
+    QString hex = color.name(); // also uses color.rgba()
+    if (alpha)
+        hex += QString::number(qAlpha(color.rgba()) | 0x100, 16).right(2);
+    return hex.toUpper();
+}
+
 QString DkUtils::colorToString(const QColor &col)
 {
     return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + ","

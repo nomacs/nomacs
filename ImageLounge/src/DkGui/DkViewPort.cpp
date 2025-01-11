@@ -1405,19 +1405,24 @@ void DkViewPort::getPixelInfo(const QPoint &pos)
         return;
 
     QPoint xy = mapToImage(pos);
-
-    if (xy.x() == -1 || xy.y() == -1)
+    if (xy.x() < 0)
         return;
 
-    QColor col = getImage().pixel(xy);
+    // TODO: This is rgb now, but we could display native pixel values too, even CMYK in Qt 6.8.0
+    const QImage img = getImage();
+    const QColor color = img.pixelColor(xy);
 
-    QString msg = "x: " + QString::number(xy.x()) + " y: " + QString::number(xy.y()) + " | r: " + QString::number(col.red())
-        + " g: " + QString::number(col.green()) + " b: " + QString::number(col.blue());
+    const QRgb rgba = color.rgba(); // converts higher depths to ARGB-8888
+    QString msg;
+    msg.reserve(64);
+    msg = msg + "x: " + QString::number(xy.x()) + " y: " + QString::number(xy.y()) + " | r: " + QString::number(qRed(rgba))
+        + " g: " + QString::number(qGreen(rgba)) + " b: " + QString::number(qBlue(rgba));
 
-    if (mImgStorage.image().hasAlphaChannel())
-        msg += " a: " + QString::number(col.alpha());
+    if (img.hasAlphaChannel())
+        msg = msg + " a: " + QString::number(qAlpha(rgba));
 
-    msg += " | " + col.name().toUpper();
+    // TODO: convert color to sRgb colorspace
+    msg = msg + " | " + DkUtils::colorToCssHex(color, img.hasAlphaChannel());
 
     DkStatusBarManager::instance().setMessage(msg, DkStatusBar::status_pixel_info);
 }
@@ -1427,17 +1432,12 @@ QString DkViewPort::getCurrentPixelHexValue()
     if (mImgStorage.isEmpty() || mCurrentPixelPos.isNull())
         return QString();
 
-    QPointF imgPos = mWorldMatrix.inverted().map(QPointF(mCurrentPixelPos));
-    imgPos = mImgMatrix.inverted().map(imgPos);
-
-    QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
-
-    if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
+    QPoint xy = mapToImage(mCurrentPixelPos);
+    if (xy.x() < 0)
         return QString();
 
-    QColor col = getImage().pixel(xy);
-
-    return col.name().toUpper().remove(0, 1);
+    const QImage img = getImage();
+    return DkUtils::colorToCssHex(img.pixelColor(xy), img.hasAlphaChannel()).remove(0, 1);
 }
 
 // Copy & Paste --------------------------------------------------------
