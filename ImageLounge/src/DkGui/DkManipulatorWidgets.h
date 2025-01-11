@@ -238,14 +238,12 @@ public slots:
 
 private:
     void createLayout();
-    QImage scaledPreview(const QImage &img) const;
     void selectManipulatorInner(QSharedPointer<DkBaseManipulatorExt> mpl);
 
     QVector<DkBaseManipulatorWidget *> mWidgets;
 
     QLabel *mPreview = nullptr;
     QLabel *mTitleLabel = nullptr;
-    const int MaxPreview = 150;
 };
 
 class DkEditDock : public DkDockWidget
