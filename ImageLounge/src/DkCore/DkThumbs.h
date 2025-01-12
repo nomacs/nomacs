@@ -154,15 +154,6 @@ public:
 
     QString toolTip() const;
 
-    /**
-     * Manipulates the file loaded status.
-     * @param exists a status (loaded | not loaded | exists not)
-     **/
-    // void setImgExists(bool exists)
-    // {
-    //     mImgExists = exists;
-    // };
-
 protected:
     /**
      * Loads the thumbnail from the metadata.

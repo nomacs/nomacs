@@ -249,10 +249,7 @@ QImage DkImage::thresholdImage(const QImage &img, double thr, bool color)
 
 QImage DkImage::rotateImage(const QImage &img, double angle)
 {
-    QImage rotated = rotateImageFast(img, angle);
-    for (auto &key : img.textKeys())
-        rotated.setText(key, img.text(key));
-    return rotated;
+    return rotateImageFast(img, angle);
 }
 
 QImage rotateImage(const QImage &img, double angle)
@@ -352,6 +349,12 @@ QImage rotateImageCVMat(const QImage &imgIn, cv::RotateFlags rot, int type)
     QImage imgOut = QImage(size, imgIn.format());
     imgOut.setColorTable(imgIn.colorTable());
     imgOut.setColorSpace(imgIn.colorSpace());
+    imgOut.setDotsPerMeterX(imgIn.dotsPerMeterX());
+    imgOut.setDotsPerMeterY(imgIn.dotsPerMeterY());
+    imgOut.setDevicePixelRatio(imgIn.devicePixelRatio());
+    for (auto &key : imgIn.textKeys())
+        imgOut.setText(key, imgIn.text(key));
+
     const cv::Mat matIn = cv::Mat(imgIn.height(), imgIn.width(), type, (uchar *)imgIn.constBits(), imgIn.bytesPerLine());
     cv::Mat matOut = cv::Mat(imgOut.height(), imgOut.width(), type, imgOut.bits(), imgOut.bytesPerLine());
 

@@ -83,10 +83,7 @@ QString DkThumbNail::toolTip() const
         str = str % "\n" %
             QObject::tr("Thumb: ") %
             QString::number(mImg.size().width()) % "x" % QString::number(mImg.size().height()) % " " %
-            (mImg.text("Thumb.IsExif") == "yes" ?
-                       QObject::tr("Embedded ") :
-                       "") %
-            mImg.text("Loader.LoadTimeMs") % "ms";
+            (mImg.text("Thumb.IsExif") == "yes" ? QObject::tr("Embedded ") : "");
     }
     // clang-format on
 
@@ -132,7 +129,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
 
     const bool isExif = !thumb.isNull();
     const int rotation = metaData.getOrientationDegrees();
-    const bool disableRotation = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
+    const bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
 
     // debug tool: tint embedded thumbs
     if (isExif && qEnvironmentVariableIsSet("NOMACS_THUMB_TINT")) {
@@ -149,7 +146,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     bool transformed = false;
 
     // transform the exif thumbnail; do not attempt later as loadGeneral() *should* take care of that
-    if (!disableRotation && isExif && rotation != -2 && rotation != -1) {
+    if (!disableTransform && isExif && rotation != DkMetaDataT::or_invalid && rotation != DkMetaDataT::or_not_set) {
         if (rotation != 0) {
             // TODO: use DkUtils rotation as in loadGeneral()
             QTransform rotationMatrix;
@@ -213,7 +210,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     if (mode == write_exif_always || (mode == write_exif && !isExif)) {
         try {
             QImage rotatedThumb = thumb;
-            if (rotation != -2 && rotation != -1 && rotation != 0) {
+            if (rotation != DkMetaDataT::or_invalid && rotation != DkMetaDataT::or_not_set && rotation != 0) {
                 // TODO: Use DkUtils rotation
                 QTransform rotationMatrix;
                 rotationMatrix.rotate(-(double)rotation);
@@ -233,11 +230,13 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
         }
     }
 
-    thumb.setText("Thumb.IsScaled", isScaled ? "yes" : "no");
+    // NOTE: setText() should not be used, since values could end up in saved metadata
+    // It is OK here since it isn't something a user would save; if it was used
+    // for the EXIF thumb we explicitly strip all metadata there
+    // thumb.setText("Thumb.IsScaled", isScaled ? "yes" : "no");
     thumb.setText("Thumb.IsExif", isExif ? "yes" : "no");
     thumb.setText("Thumb.Size", QString("%1x%2").arg(origSize.width()).arg(origSize.height()));
-    thumb.setText("Loader.Transformed", transformed ? "yes" : "no");
-    thumb.setText("Loader.LoadTimeMs", QString::number(dt.elapsed()));
+    thumb.setText("Thumb.Transformed", transformed ? "yes" : "no");
 
     QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 scaled=%5x%6 %8ms")
                        .arg(fileInfo.fileName())
