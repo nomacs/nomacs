@@ -91,9 +91,9 @@ public:
     void update(const QSharedPointer<DkMetaDataT> &other);
 
     enum ExifOrientationState {
-        or_illegal = -1,
-        or_not_set,
-        or_valid,
+        or_invalid = -2,
+        or_not_set = -1,
+        or_valid = 0,
     };
 
     void readMetaData(const QString &filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
@@ -108,12 +108,12 @@ public:
 
     /**
      * @brief Get rotation angle
-     * @return -2 == unknown/unset/invalid
+     * @return angle_invalid == invalid EXIF orientation
+     *         angle_not_set == no orientation tag present
      *          0 == no rotation
      *         [-]90|180 angle in degrees, clockwise
      */
     int getOrientationDegrees() const;
-    ExifOrientationState checkExifOrientation() const;
     int getRating() const;
     QSize getImageSize() const;
     QString getDescription() const;
@@ -148,6 +148,7 @@ public:
     void setQtValues(const QImage &cImg);
     static QString exiv2ToQString(std::string exifString);
     void setUseSidecar(bool useSideCar = false);
+    QImage cleanImage(const QImage &img);
 
     bool hasMetaData() const;
     bool isLoaded() const;
