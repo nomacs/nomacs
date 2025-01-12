@@ -328,15 +328,15 @@ bool DkMetaDataT::isOrientationMirrored() const
 int DkMetaDataT::getOrientationDegrees() const
 {
     QString value = getExifValue("Orientation");
+    if (value.isEmpty())
+        return or_not_set;
 
     bool ok;
     int orientation = value.toInt(&ok);
-    if (value.isEmpty() || !ok)
-        return -2;
 
-    if (orientation < 1 || orientation > 8) {
+    if (!ok || orientation < 1 || orientation > 8) {
         qWarning() << "[EXIF] Bogus orientation:" << orientation;
-        return -2;
+        return or_invalid;
     }
 
     switch (orientation) {
@@ -357,32 +357,8 @@ int DkMetaDataT::getOrientationDegrees() const
     case 7:
         return -90;
     default:
-        return -2;
+        return or_invalid;
     }
-}
-
-DkMetaDataT::ExifOrientationState DkMetaDataT::checkExifOrientation() const
-{
-    if (mExifState != loaded && mExifState != dirty)
-        return or_not_set;
-
-    QString orStr = getNativeExifValue("Exif.Image.Orientation", false);
-
-    if (orStr.isEmpty())
-        return or_not_set;
-
-    bool ok = false;
-    int orientation = orStr.toInt(&ok);
-
-    // orientation must be integer
-    if (!ok)
-        return or_illegal;
-
-    // according to the specs only values between 0 and 8 are valid
-    if (orientation > 0 && orientation <= 8)
-        return or_valid;
-
-    return or_illegal;
 }
 
 int DkMetaDataT::getRating() const
@@ -976,10 +952,12 @@ QStringList DkMetaDataT::getIptcValues() const
 
 void DkMetaDataT::setQtValues(const QImage &img)
 {
+    // Omit "Raw profile type exif" set by ???, presumably it would conflict when saving file
+    // This is a known unregistered tag in PNG: https://exiftool.org/TagNames/PNG.html
     const QStringList keys = img.textKeys();
     for (const auto &key : keys) {
-        if (key.isEmpty())
-            continue; // || key == "Raw profile type exif") {
+        if (key.isEmpty() || key == "Raw profile type exif")
+            continue;
         QString value = img.text(key);
         if (value.length() >= 5000)
             value = QObject::tr("<data too large to display>");

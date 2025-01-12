@@ -212,13 +212,13 @@ public:
      * Get rotation value
      * @return see DkMetaData::getOrientationDegrees()
      */
-    static int getOrientationDegrees(const QImageIOHandler::Transformation transform);
+    static int getOrientationDegrees(const QImageIOHandler::Transformations transform);
 
     /**
      * Get mirror/horizontal flip
      * @return see DkMetadata::isOrientationMirrored()
      */
-    static bool isOrientationMirrored(const QImageIOHandler::Transformation transform);
+    static bool isOrientationMirrored(const QImageIOHandler::Transformations transform);
 
     /**
      * Load image from file.
@@ -374,6 +374,16 @@ public:
 
     void release();
 
+    // TODO: return this type from all load* functions instead of bool
+    struct LoaderResult {
+        bool ok = false;
+        // QString error;
+        // QString name;
+        QImage img;
+        bool supportsTransform = false;
+        QImageIOHandler::Transformations transform = QImageIOHandler::TransformationNone;
+    };
+
 #ifdef WITH_OPENCV
     // cv::Mat getImageCv();
     bool loadOpenCVVecFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize()) const;
@@ -397,7 +407,8 @@ public:
     void getPatchSizeFromFileName(const QString &, int &, int &) const {};
 
 #endif
-    bool loadQt(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), const QByteArray &format = QByteArray());
+    LoaderResult loadQt(const QString &filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), const QByteArray &format = QByteArray());
+
     bool loadPSD(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
     bool loadTIFF(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
     bool loadDRIF(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;

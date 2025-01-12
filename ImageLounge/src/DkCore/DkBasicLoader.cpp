@@ -195,7 +195,7 @@ DkBasicLoader::DkBasicLoader()
     mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 }
 
-int DkBasicLoader::getOrientationDegrees(const QImageIOHandler::Transformation transform)
+int DkBasicLoader::getOrientationDegrees(const QImageIOHandler::Transformations transform)
 {
     switch (transform) {
     case QImageIOHandler::TransformationNone:
@@ -215,10 +215,10 @@ int DkBasicLoader::getOrientationDegrees(const QImageIOHandler::Transformation t
     case QImageIOHandler::TransformationMirror:
         return 0;
     }
-    return -2;
+    return DkMetaDataT::or_invalid;
 }
 
-bool DkBasicLoader::isOrientationMirrored(const QImageIOHandler::Transformation transform)
+bool DkBasicLoader::isOrientationMirrored(const QImageIOHandler::Transformations transform)
 {
     switch (transform) {
     case QImageIOHandler::TransformationNone:
@@ -249,7 +249,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     const QByteArray suffix = fileInfo.suffix().toLower().toLatin1();
 
     // name of the load method for tracing and also indicates if we loaded successfully
-    const char *loader = nullptr;
+    QString loader;
 
     // reset edit history and metadata
     release();
@@ -284,17 +284,17 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // - Qt should get first attempt as it is more actively maintained (in case of future CVEs etc)
     // - Qt 5.15 TGA plugin cannot read some TGAs correctly, and won't report an error, so try ours first
     // - tiff after Qt as that also has support
-    // - psd after Qt as KIF has support
+    // - psd after Qt as KImageFormats has support
     // - roh/vec go last since they are rarely used, I can't source a test file for either
     //
-    // We prefer our RAW loader over KIF
-    // - KIF always loads the jpeg preview, we have an option to disable it
+    // We prefer our RAW loader over KImageFormats
+    // - We have an option to disable/enable jpeg preview
     // - We have other options for raw loading (denoise etc)
     //
     QImage img;
 
     // "Developers Raw Image File" -> https://github.com/ovidiuvio/drif_image
-    if (!loader && drifFormats.contains(suffix)) {
+    if (loader.isNull() && drifFormats.contains(suffix)) {
         if (loadDRIF(mFile, img, ba))
             loader = "drif";
     }
@@ -309,7 +309,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // RAW tries early otherwise Qt's TIFF plugin is used
 #ifdef WITH_LIBRAW
     bool libRawUsed = false;
-    if (!loader && rawFormats.contains(suffix)) {
+    if (loader.isNull() && rawFormats.contains(suffix)) {
         libRawUsed = true;
         if (loadRAW(mFile, img, ba, fast))
             loader = "raw";
@@ -319,7 +319,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // TGA loader adds variants unsupported in QT
     // ideally, this comes after Qt loader fails, however 5.15 will
     // fail silently and produce a bad image in certain cases
-    if (!loader && suffix == "tga") {
+    if (loader.isNull() && suffix == "tga") {
         if (loadTGA(mFile, img, ba))
             loader = "tga";
     }
@@ -327,19 +327,23 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // Qt loader (by file extension match or by content (no suffix))
     // - if the suffix has no match in Qt, this will fail
     // - if the suffix is empty, plugins will check the file header
-    if (!loader && qtFormats.contains(suffix) || suffix.isEmpty()) {
-        if (loadQt(mFile, img, ba, suffix))
+    LoaderResult result;
+    if (loader.isNull() && qtFormats.contains(suffix) || suffix.isEmpty()) {
+        result = loadQt(mFile, ba, suffix);
+        if (result.ok) {
             loader = "qt";
+            img = result.img;
+        }
     }
 
     // Tiff loader - supports jpg compressed tiffs
-    if (!loader && tiffFormats.contains(suffix)) {
+    if (loader.isNull() && tiffFormats.contains(suffix)) {
         if (loadTIFF(mFile, img, ba))
             loader = "tiff";
     }
 
     // PSD loader
-    if (!loader && psdFormats.contains(suffix)) {
+    if (loader.isNull() && psdFormats.contains(suffix)) {
         if (loadPSD(mFile, img, ba))
             loader = "psd";
     }
@@ -349,7 +353,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // - we didn't try with libraw yet
     // - kimageformats-plugins doesn't know it either
     // - "image/jpeg" fixes #435 - thumbnail gets loaded in the RAW loader
-    if (!loader && !libRawUsed && !qtFormats.contains(suffix) && mMetaData->getMimeType() != "image/jpeg") {
+    if (loader.isNull() && !libRawUsed && !qtFormats.contains(suffix) && mMetaData->getMimeType() != "image/jpeg") {
         // TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
         if (loadRAW(mFile, img, ba, fast))
             loader = "raw-unknown-suffix";
@@ -357,85 +361,86 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 #endif
 
     // Qt loader, unknown/wrong file extension
-    if (!loader && suffix != "roh" && suffix != "vec") {
-        if (loadQt(mFile, img, ba)) {
+    if (loader.isNull() && suffix != "roh" && suffix != "vec") {
+        result = loadQt(mFile, ba);
+        if (result.ok) {
             loader = "qt-unknown-suffix";
+            img = result.img;
             qWarning().noquote() << "[Loader]" << fileInfo.fileName() << "seems to have the wrong extension, the content type is" << mMetaData->getMimeType();
         }
     }
 
     // fix broken samsung panorama images (see #254,#263)
-    if (!loader && jpegFormats.contains(suffix)) {
+    if (loader.isNull() && jpegFormats.contains(suffix)) {
         if (!ba || ba->isEmpty())
             ba = loadFileToBuffer(filePath);
         if (ba && !ba->isEmpty()) {
-            if (DkImage::fixSamsungPanorama(*ba))
-                if (loadQt(mFile, img, ba, suffix))
+            if (DkImage::fixSamsungPanorama(*ba)) {
+                result = loadQt(mFile, ba, suffix);
+                if (result.ok) {
                     loader = "qt-samsung-panorama";
+                    img = result.img;
+                }
+            }
         }
     }
 
     // this loader is a bit buggy -> be careful
-    if (!loader && suffix == "roh") {
+    if (loader.isNull() && suffix == "roh") {
         if (loadROH(mFile, img, ba))
             loader = "roh";
     }
 
     // this loader is for OpenCV cascade training files created with opencv_createsamples
-    if (!loader && suffix == "vec") {
+    if (loader.isNull() && suffix == "vec") {
         if (loadOpenCVVecFile(mFile, img, ba))
             loader = "vec";
     }
 
     // tiff things
-    if (loader && !mPageIdxDirty)
+    if (!loader.isNull() && !mPageIdxDirty)
         indexPages(mFile, ba);
     mPageIdxDirty = false;
 
-    // metadata rotation angle
-    //  0 == defined, no rotation
-    // -1 == defined, unsupported (mirrored)
-    // -2 == undefined/unknown
-    int rotation = -2;
+    int rotation = DkMetaDataT::or_invalid;
     bool mirrored = false;
 
     // if the loader published a transform, it takes priority
     // The theory is that either this is some non-exif transform (JXL/AVIF/HEIC), or
     // it *is* the exif transform (JPG/TIFF); either way, the image loader is in control
     // of that decision.
-    {
-        const QString value = img.text("QImageReader.Transform");
-
-        bool ok;
-        const auto transform = (QImageIOHandler::Transformation)value.toInt(&ok, 16);
-        if (ok && !value.isEmpty()) {
-            rotation = getOrientationDegrees(transform);
-            mirrored = isOrientationMirrored(transform);
-        }
+    if (loader.startsWith("qt") && result.supportsTransform) {
+        auto transform = result.transform;
+        rotation = getOrientationDegrees(transform);
+        mirrored = isOrientationMirrored(transform);
     }
 
-    if (rotation == -2 && loadMetaData && mMetaData->hasMetaData()) {
+    if (rotation == DkMetaDataT::or_invalid && loadMetaData && mMetaData->hasMetaData()) {
         rotation = mMetaData->getOrientationDegrees();
         mirrored = mMetaData->isOrientationMirrored();
     }
 
-    bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation;
+    bool maybeTransformed = false;
+    if (!result.supportsTransform) {
+        // JXL, HEIC, and AVIF Qt plugins (from kimageformats), depending on version,
+        // may have already rotated the image, even though we asked QIR not to.
+        // In this case, do not rotate again using the exif orientation
+        static const QList<QByteArray> transformingFormats{"heic", "heif", "avif", "avifs", "jxl"};
 
-    // JXL, HEIC, and AVIF Qt plugins (from kimageformats), depending on version,
-    // may have already rotated the image, even though we asked QIR not to.
-    // In this case, do not rotate again using the exif orientation
-    bool maybeTransformed = img.text("QImageReader.ForcedTransform") == "yes";
-    if (maybeTransformed) {
-        if (disableTransform)
-            qWarning() << "[Loader] this qt plugin does not support disabling orientation/transform";
+        if (transformingFormats.contains(suffix))
+            maybeTransformed = true;
+
+        // #1174 kif_raw silently transforms raw files (and does not set TransformedByDefault)
+        if (rawFormats.contains(suffix) && QString(loader).startsWith("qt"))
+            maybeTransformed = true;
     }
 
-    // #1174 kif_raw silently transforms raw files (and does not set TransformedByDefault)
-    if (rawFormats.contains(suffix) && QString(loader).startsWith("qt"))
-        maybeTransformed = true;
+    bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation;
+    if (maybeTransformed && disableTransform)
+        qWarning() << "[Loader] the plugin for" << suffix << "does not support disabling orientation/transform";
 
     bool transformed = false;
-    if (loader && !disableTransform && !maybeTransformed && rotation != -2 && rotation != -1) {
+    if (!loader.isNull() && !disableTransform && !maybeTransformed && rotation != DkMetaDataT::or_invalid && rotation != DkMetaDataT::or_not_set) {
         if (rotation != 0) {
             img = DkImage::rotateImage(img, rotation);
             transformed = true;
@@ -446,46 +451,58 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
         }
     }
 
-    if (loader) {
-        img.setText("Exiv2.MimeType", mMetaData->getMimeType());
-        img.setText("Exiv2.HasMetadata", mMetaData->hasMetaData() ? "yes" : "no");
-        img.setText("Loader.UseSidecar", mMetaData->useSidecar() ? "yes" : "no");
-        img.setText("Loader.Name", loader);
-        img.setText("Loader.Transformed", maybeTransformed ? "unknown" : (transformed ? "yes" : "no"));
-        img.setText("Loader.LoadTimeMs", QString::number(dt.elapsed()));
-        img.setText("Loader.Rotation", QString::number(rotation));
-        img.setText("Loader.Mirrored", mirrored ? "yes" : "no");
-        img.setText("Loader.DisableOrientation", disableTransform ? "yes" : "no");
-        img.setText("QImage.Depth", QString::number(img.depth()));
-        img.setText("QImage.HasAlpha", img.hasAlphaChannel() ? "yes" : "no");
-        img.setText("QImage.PixelFormat", DkUtils::formatToString(img.format()));
-        if (img.depth() <= 8)
-            img.setText("QImage.ColorCount", QString::number(img.colorCount()));
-#if QT_VERSION_MAJOR >= 6
-        img.setText("QImage.ColorSpace", img.colorSpace().description());
-#endif
-        mMetaData->setQtValues(img);
-
+    if (!loader.isNull()) {
         setEditImage(img, tr("Original Image"));
-    }
 
-    QString info = QString("[Loader::%1] %2 rotation=%3 mirror=%4 transformed=%5 %6ms")
-                       .arg(loader)
-                       .arg(fileInfo.fileName())
-                       .arg(rotation)
-                       .arg(mirrored ? "yes" : "no")
-                       .arg(transformed ? "yes" : (disableTransform ? "disabled" : "no"))
-                       .arg(dt.elapsed());
-    if (loader)
+        // log some details, this is formatted to make parsing easier
+        // e.g. nomacs 2>&1 | grep Loader::  | column -t
+        QString formatString;
+        {
+            QDebug fmt(&formatString); // convert format enum to string
+            fmt = fmt.nospace().noquote();
+            fmt << img.format();
+            if (img.colorCount() > 0)
+                fmt << ':' + QString::number(img.colorCount());
+
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+            fmt << ' ' << '"' << img.colorSpace().description().replace(' ', '_') << '"';
+#endif
+        }
+
+        QString transformType = "none";
+        if (maybeTransformed)
+            transformType = "forced"; // image loader passively transforms
+        else if (disableTransform)
+            transformType = "disabled";
+        else if (transformed) {
+            if (result.supportsTransform)
+                transformType = "loader"; // transform defined by image loader
+            else
+                transformType = "exif"; // transform from our exif parser
+
+            transformType += ':' + QString::number(rotation);
+            transformType += ':' + QString::number(mirrored);
+        }
+
+        // animation /  loop count
+        QString info = QStringLiteral("[Loader::%1] %2 \"%3\" %4 transform:%5 %6ms")
+                           .arg(loader)
+                           .arg(fileInfo.fileName())
+                           .arg(mMetaData->getMimeType())
+                           .arg(formatString)
+                           .arg(transformType)
+                           .arg(dt.elapsed());
         qInfo().noquote() << info;
-    else
-        qWarning().noquote() << info << "failed to load";
+    } else
+        qWarning().noquote() << "[Loader]" << fileInfo.fileName() << mMetaData->getMimeType() << "failed to load";
 
-    return loader != nullptr;
+    return !loader.isNull();
 }
 
-bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba, const QByteArray &format)
+DkBasicLoader::LoaderResult DkBasicLoader::loadQt(const QString &filePath, QSharedPointer<QByteArray> ba, const QByteArray &format)
 {
+    LoaderResult result;
+
     std::unique_ptr<QIODevice> device;
     if (ba && !ba->isEmpty())
         device.reset(new QBuffer(ba.get()));
@@ -494,7 +511,7 @@ bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<
 
     if (!device->open(QIODevice::ReadOnly)) {
         qWarning() << "[loadQt] failed to  open file:" << device->errorString();
-        return false;
+        return result;
     }
 
     QImageReader qir(device.get());
@@ -510,6 +527,7 @@ bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<
         index = 0;
         const uchar data[32] = {0}; // enough for 1x1 64-bit pixels, and some padding for safety
         do {
+            QImage img;
             // we can avoid decompression of all sizes, but we need to construct a temporary image
             int size = qir.size().height() * QImage(data, 1, 1, qir.imageFormat()).depth();
             if (size <= 0) {
@@ -527,47 +545,17 @@ bool DkBasicLoader::loadQt(const QString &filePath, QImage &img, QSharedPointer<
         qir.jumpToImage(maxIndex);
     }
 
-    bool ok = qir.read(&img);
+    result.ok = qir.read(&result.img);
 
-    img.setText("QImageReader.Format", qir.format());
-    img.setText("QImageReader.SubType", qir.subType());
-
-    bool supportsTransform = qir.supportsOption(QImageIOHandler::ImageTransformation);
-    bool forcedTransform = false;
-    if (supportsTransform)
-        img.setText("QImageReader.Transform", "0x" + QString::number(qir.transformation(), 16));
-    else {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        if (qir.supportsOption(QImageIOHandler::TransformedByDefault)) {
-            img.setText("QImageReader.Transform", "bydefault");
-            forcedTransform = true;
-        } else
-#endif
-            img.setText("QImageReader.Transform", "unsupported");
-    }
-    static const QList<QByteArray> brokenPlugins{"heic", "heif", "avif", "avifs", "jxl"};
-    if (!supportsTransform && (forcedTransform || brokenPlugins.contains(qir.format()))) {
-        // certain plugins are known to transform image regardless of QIR::setAutoTransform(),
-        // the implication is that we cannot also apply EXIF orientation to these
-        img.setText("QImageReader.ForcedTransform", "yes");
+    if (result.ok) {
+        result.supportsTransform = qir.supportsOption(QImageIOHandler::ImageTransformation);
+        result.transform = qir.transformation();
     }
 
-    if (!ok)
-        img.setText("QImageReader.Error", qir.errorString());
+    if (!result.ok)
+        qWarning() << "[loadQt]" << QFileInfo(filePath).fileName() << qir.errorString();
 
-    if (index >= 0)
-        img.setText("QImageReader.IconIndex", QString::number(index));
-
-    int imgCount = qir.imageCount();
-    if (imgCount > 1)
-        img.setText("QImageReader.ImageCount", QString::number(imgCount));
-
-    if (qir.supportsAnimation()) {
-        img.setText("QImageReader.Animation", "yes");
-        img.setText("QImageReader.LoopCount", QString::number(qir.loopCount()));
-    }
-
-    return ok;
+    return result;
 }
 
 bool DkBasicLoader::loadROH(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
@@ -1458,6 +1446,7 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath, const QImage &img, QSh
 #endif
     {
         bool hasAlpha = DkImage::alphaChannelUsed(img);
+
         QImage sImg = img;
 
         // JPEG 2000 can only handle 32 or 8bit images
