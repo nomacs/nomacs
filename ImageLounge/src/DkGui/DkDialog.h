@@ -123,6 +123,8 @@ public:
 
 class DkSplashScreen : public QDialog
 {
+    Q_OBJECT
+
 public:
     DkSplashScreen(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkSplashScreen();
