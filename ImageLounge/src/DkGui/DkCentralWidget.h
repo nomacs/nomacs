@@ -177,6 +177,7 @@ public slots:
     void showProgress(bool show, int time = -1);
     void startSlideshow(bool start = true) const;
     void setInfo(const QString &msg) const;
+    void renameFile();
 
 protected:
     QTabBar *mTabbar = 0;

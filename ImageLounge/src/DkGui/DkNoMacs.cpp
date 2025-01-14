@@ -270,7 +270,7 @@ void DkNoMacs::createActions()
     connect(am.action(DkActionManager::menu_file_quick_launch), &QAction::triggered, this, &DkNoMacs::openQuickLaunch);
     connect(am.action(DkActionManager::menu_file_open_list), &QAction::triggered, this, &DkNoMacs::openFileList);
     connect(am.action(DkActionManager::menu_file_save_list), &QAction::triggered, this, &DkNoMacs::saveFileList);
-    connect(am.action(DkActionManager::menu_file_rename), &QAction::triggered, this, &DkNoMacs::renameFile);
+    connect(am.action(DkActionManager::menu_file_rename), &QAction::triggered, getTabWidget(), &DkCentralWidget::renameFile);
     connect(am.action(DkActionManager::menu_file_goto), &QAction::triggered, this, &DkNoMacs::goTo);
 
     connect(am.action(DkActionManager::menu_file_show_recent), &QAction::triggered, getTabWidget(), &DkCentralWidget::showRecentFiles);
@@ -1313,77 +1313,6 @@ void DkNoMacs::loadFile(const QString &filePath)
         getTabWidget()->loadFile(filePath, false);
 }
 
-// TODO: move this
-void DkNoMacs::renameFile()
-{
-    // TODO:ref move!
-    QString filePath = getTabWidget()->getCurrentFilePath();
-    QFileInfo file(filePath);
-
-    if (!file.absoluteDir().exists()) {
-        getTabWidget()->setInfo(tr("Sorry, the directory: %1 does not exist\n").arg(file.absolutePath()));
-        return;
-    }
-    if (file.exists() && !file.isWritable()) {
-        getTabWidget()->setInfo(tr("Sorry, I can't write to the fileInfo: %1").arg(file.fileName()));
-        return;
-    }
-
-    QString fileName = file.fileName();
-    int dotIdx = fileName.lastIndexOf(".");
-    QString baseName = dotIdx != -1 ? fileName.left(dotIdx) : fileName;
-
-    bool ok = false;
-    QString newFileName = QInputDialog::getText(this, baseName, tr("Rename:"), QLineEdit::Normal, baseName, &ok);
-
-    if (ok && !newFileName.isEmpty() && newFileName != baseName) {
-        if (!file.suffix().isEmpty())
-            newFileName.append("." + file.suffix());
-
-        qDebug() << "renaming: " << file.fileName() << " -> " << newFileName;
-        QFileInfo renamedFile = QFileInfo(file.absoluteDir(), newFileName);
-
-        // overwrite file?
-        // the second comparison is important for windows (case insensitive filenames)
-        if (renamedFile.exists() && renamedFile.absoluteFilePath().compare(file.absoluteFilePath(), Qt::CaseInsensitive) != 0) {
-            QMessageBox infoDialog(this);
-            infoDialog.setWindowTitle(tr("Question"));
-            infoDialog.setText(tr("The fileInfo: %1  already exists.\n Do you want to replace it?").arg(newFileName));
-            infoDialog.setIcon(QMessageBox::Question);
-            infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            infoDialog.setDefaultButton(QMessageBox::No);
-            infoDialog.show();
-            int choice = infoDialog.exec();
-
-            if (choice == QMessageBox::Yes) {
-                QFile oldFile(renamedFile.absoluteFilePath());
-                bool removed = oldFile.remove();
-
-                // tell user that deleting went wrong, and stop the renaming
-                if (!removed) {
-                    getTabWidget()->setInfo(tr("Sorry, I can't delete: %1").arg(file.fileName()));
-                    return;
-                }
-            } else
-                return; // cancel renaming
-        }
-
-        if (getTabWidget()->getViewPort())
-            getTabWidget()->getViewPort()->unloadImage();
-
-        QFile newFile(file.absoluteFilePath());
-        bool renamed = newFile.rename(renamedFile.absoluteFilePath());
-
-        // tell user that deleting went wrong, and stop the renaming
-        if (!renamed)
-            getTabWidget()->setInfo(tr("Sorry, I can't rename: %1").arg(file.fileName()));
-        else if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load)
-            getTabWidget()->loadFile(renamedFile.absoluteFilePath());
-        else if (getTabWidget()->getViewPort())
-            getTabWidget()->getViewPort()->loadNextFileFast();
-    }
-}
-
 void DkNoMacs::find(bool filterAction)
 {
     if (!getTabWidget()->getCurrentImageLoader())
@@ -1392,7 +1321,6 @@ void DkNoMacs::find(bool filterAction)
     if (filterAction) {
         int db = (QObject::sender() == DkActionManager::instance().action(DkActionManager::menu_tools_filter)) ? DkSearchDialog::filter_button
                                                                                                                : DkSearchDialog::find_button;
-
         qDebug() << "default button: " << db;
         DkSearchDialog *searchDialog = new DkSearchDialog(this);
         searchDialog->setDefaultButton(db);

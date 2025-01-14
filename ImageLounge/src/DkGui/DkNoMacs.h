@@ -152,7 +152,6 @@ public slots:
     void openQuickLaunch();
     void openFileList();
     void saveFileList();
-    void renameFile();
     void changeSorting(bool change);
     void goTo();
     void find(bool filterAction = true);
