@@ -166,6 +166,7 @@ public slots:
     void applyPlugin(DkPluginContainer *plugin, const QString &key);
 
     // image saving
+    bool isEdited() const;
     QImage getImage() const override;
     void saveFile();
     void saveFileAs(bool silent = false);

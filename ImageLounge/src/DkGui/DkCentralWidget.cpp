@@ -59,6 +59,12 @@
 #include <QStackedLayout>
 #include <QStandardPaths>
 #include <QTabBar>
+
+#ifdef Q_OS_WIN
+#include <QNtfsPermissionCheckGuard>
+#include <QStorageInfo>
+#endif
+
 #pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
@@ -1371,6 +1377,106 @@ bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls)
         }
     }
     return false;
+}
+
+void DkCentralWidget::renameFile()
+{
+    // TODO:ref move! ??
+    if (!hasViewPort())
+        return;
+
+    if (getViewPort()->isEdited()) {
+        setInfo(tr("Sorry, there are unsaved changes"));
+        return;
+    }
+
+    // temporarily enable slow NTFS permission checks (isWritable() etc)
+#if defined(Q_OS_WIN) && QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    QNtfsPermissionCheckGuard permissionGuard;
+#endif
+
+    const QString filePath = getCurrentFilePath();
+    const QFileInfo fileInfo(filePath);
+
+    if (!fileInfo.absoluteDir().exists()) {
+        setInfo(tr("Sorry, the directory: %1 does not exist").arg(fileInfo.absolutePath()));
+        return;
+    }
+
+    if (fileInfo.exists() && !fileInfo.isWritable()) {
+        setInfo(tr("Sorry, I can't write to the file: %1").arg(fileInfo.fileName()));
+        return;
+    }
+
+    // edit the filename without changing the file suffix
+    const QString baseName = fileInfo.completeBaseName();
+
+    bool ok = false;
+    QString newFileName = QInputDialog::getText(this, tr("Rename: %1").arg(fileInfo.fileName()), tr("New File Name:"), QLineEdit::Normal, baseName, &ok);
+
+    if (!ok || newFileName.isEmpty() || newFileName == baseName)
+        return;
+
+    if (!fileInfo.suffix().isEmpty())
+        newFileName.append("." + fileInfo.suffix());
+
+    qDebug() << "renaming: " << fileInfo.fileName() << " -> " << newFileName;
+
+    const QFileInfo renamedInfo(fileInfo.absoluteDir(), newFileName);
+
+    // the new file name could be the same file as the old file name, even if they have a different name,
+    // on case-insensitive filesystems (windows).
+    bool isOldFile = renamedInfo == fileInfo;
+
+#ifdef Q_OS_WIN
+    // There is a Qt bug (QTBUG-132785) with NFS mounts on Windows where a case-insensitive rename will delete
+    // the original file. We'll do the same thing as Windows Explorer and refuse to rename the file.
+    // If the share is mounted with "-o casesensitive=yes", then isOldFile will always be false
+    if (isOldFile && "NFS" == QStorageInfo(fileInfo.absoluteFilePath()).fileSystemType()) {
+        setInfo(tr("Sorry, I can't rename: NFS mount is case-insensitive"));
+        qInfo() << "Ensure the filesystem is mounted case-sensitive, for example\n"
+                << "mount -o anon casesensitive=yes \\192.168.0.2:/mnt/dir N:";
+        return;
+    }
+#endif
+
+    if (renamedInfo.exists() && !isOldFile) {
+        QMessageBox infoDialog(this);
+        infoDialog.setWindowTitle(tr("Overwrite: %1?").arg(newFileName));
+        infoDialog.setText(tr("The file: %1 already exists.\nDo you want to replace it?").arg(newFileName));
+        infoDialog.setIcon(QMessageBox::Question);
+        infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        infoDialog.setDefaultButton(QMessageBox::No);
+
+        if (infoDialog.exec() != QMessageBox::Yes)
+            return;
+
+        QFile oldFile(renamedInfo.absoluteFilePath());
+        if (!oldFile.remove()) {
+            setInfo(tr("Sorry, I can't delete: \"%1\" : %2").arg(renamedInfo.fileName()).arg(oldFile.errorString()));
+            return;
+        }
+    }
+
+    bool unloaded = true;
+    if (getViewPort())
+        unloaded = getViewPort()->unloadImage();
+
+    if (!unloaded)
+        return; // user canceled the unload (probably modified file)
+
+    // NOTE: this permits moving the file to another directory or volume,
+    //       if there are otherwise illegal characters in the name the move will fail
+    QFile newFile(fileInfo.absoluteFilePath());
+    bool renamed = newFile.rename(renamedInfo.absoluteFilePath());
+
+    if (!renamed) {
+        setInfo(tr("Sorry, I can't rename: \"%1\" : %2").arg(fileInfo.fileName()).arg(newFile.errorString()));
+        loadFile(fileInfo.absoluteFilePath());
+        return;
+    }
+
+    loadFile(renamedInfo.absoluteFilePath());
 }
 
 } // namespace nmc

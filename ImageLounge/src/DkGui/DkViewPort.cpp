@@ -676,6 +676,11 @@ void DkViewPort::applyPlugin(DkPluginContainer *plugin, const QString &key)
 #endif
 }
 
+bool DkViewPort::isEdited() const
+{
+    return mLoader->isEdited();
+}
+
 QImage DkViewPort::getImage() const
 {
     if (imageContainer() && (!mSvg || !mSvg->isValid()) && (!mMovie || !mMovie->isValid()))
