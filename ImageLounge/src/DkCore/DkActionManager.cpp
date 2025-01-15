@@ -1656,10 +1656,8 @@ void DkActionManager::createActions(QWidget *parent)
     assignCustomShortcuts(allActions());
 
     // automatically add status tip as tool tip
-    for (QAction *a : allActions()) {
+    for (QAction *a : allActions())
         a->setToolTip(a->statusTip());
-        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    }
 
     // trivial connects
     QObject::connect(action(menu_panel_toggle), &QAction::triggered, [](bool hide) {
@@ -1716,9 +1714,6 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction *> actions) const
 
         if (val != "no-shortcut")
             a->setShortcut(val);
-
-        // assign widget shortcuts to all of them
-        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     }
 
     settings.endGroup();
