@@ -2457,7 +2457,6 @@ DkBatchWidget::DkBatchWidget(const QString &currentDirectory, QWidget *parent /*
 
     QAction *previousAction = new QAction(tr("previous"), this);
     previousAction->setShortcut(Qt::Key_PageUp);
-    previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(previousAction, &QAction::triggered, this, &DkBatchWidget::previousTab);
     addAction(previousAction);
 }
