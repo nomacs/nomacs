@@ -1011,7 +1011,6 @@ void DkActionManager::createActions(QWidget *parent)
     mFileActions[menu_file_open_list]->setStatusTip(QObject::tr("Open a texfile containing a list of filepaths, and open tabs for them"));
 
     mFileActions[menu_file_quick_launch] = new QAction(QObject::tr("&Quick Launch"), parent);
-    mFileActions[menu_file_quick_launch]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 #ifdef Q_OS_WIN
     mFileActions[menu_file_quick_launch]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 #else
@@ -1022,7 +1021,6 @@ void DkActionManager::createActions(QWidget *parent)
     mFileActions[menu_file_app_manager]->setShortcut(QKeySequence(shortcut_app_manager));
 
     mFileActions[menu_file_rename] = new QAction(QObject::tr("Re&name"), parent);
-    mFileActions[menu_file_rename]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mFileActions[menu_file_rename]->setShortcut(QKeySequence(shortcut_rename));
     mFileActions[menu_file_rename]->setStatusTip(QObject::tr("Rename an image"));
 
@@ -1058,17 +1056,14 @@ void DkActionManager::createActions(QWidget *parent)
     mFileActions[menu_file_show_recent]->setStatusTip(QObject::tr("Show Recent Files"));
 
     mFileActions[menu_file_reload] = new QAction(QObject::tr("&Reload File"), parent);
-    mFileActions[menu_file_reload]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mFileActions[menu_file_reload]->setShortcut(QKeySequence(shortcut_reload));
     mFileActions[menu_file_reload]->setStatusTip(QObject::tr("Reload File"));
 
     mFileActions[menu_file_next] = new QAction(mFileIcons[icon_file_next], QObject::tr("Ne&xt File"), parent);
-    mFileActions[menu_file_next]->setShortcutContext(Qt::WidgetShortcut);
     mFileActions[menu_file_next]->setShortcut(QKeySequence(shortcut_next_file));
     mFileActions[menu_file_next]->setStatusTip(QObject::tr("Load next image"));
 
     mFileActions[menu_file_prev] = new QAction(mFileIcons[icon_file_prev], QObject::tr("Pre&vious File"), parent);
-    mFileActions[menu_file_prev]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mFileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
     mFileActions[menu_file_prev]->setStatusTip(QObject::tr("Load previous file"));
 
@@ -1141,12 +1136,10 @@ void DkActionManager::createActions(QWidget *parent)
     mEditActions.resize(menu_edit_end);
 
     mEditActions[menu_edit_rotate_cw] = new QAction(mEditIcons[icon_edit_rotate_cw], QObject::tr("9&0%1 Clockwise").arg(dk_degree_str), parent);
-    mEditActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_rotate_cw]->setShortcut(QKeySequence(shortcut_rotate_cw));
     mEditActions[menu_edit_rotate_cw]->setStatusTip(QObject::tr("rotate the image 90%1 clockwise").arg(dk_degree_str));
 
     mEditActions[menu_edit_rotate_ccw] = new QAction(mEditIcons[icon_edit_rotate_ccw], QObject::tr("&90%1 Counter Clockwise").arg(dk_degree_str), parent);
-    mEditActions[menu_edit_rotate_ccw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_rotate_ccw]->setShortcut(QKeySequence(shortcut_rotate_ccw));
     mEditActions[menu_edit_rotate_ccw]->setStatusTip(QObject::tr("rotate the image 90%1 counter clockwise").arg(dk_degree_str));
 
@@ -1154,27 +1147,22 @@ void DkActionManager::createActions(QWidget *parent)
     mEditActions[menu_edit_rotate_180]->setStatusTip(QObject::tr("rotate the image by 180%1").arg(dk_degree_str));
 
     mEditActions[menu_edit_undo] = new QAction(mEditIcons[icon_edit_undo], QObject::tr("&Undo"), parent);
-    mEditActions[menu_edit_undo]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_undo]->setShortcut(QKeySequence::Undo);
     mEditActions[menu_edit_undo]->setStatusTip(QObject::tr("Undo Last Action"));
 
     mEditActions[menu_edit_redo] = new QAction(mEditIcons[icon_edit_redo], QObject::tr("&Redo"), parent);
-    mEditActions[menu_edit_redo]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_redo]->setShortcut(QKeySequence::Redo);
     mEditActions[menu_edit_redo]->setStatusTip(QObject::tr("Redo Last Action"));
 
     mEditActions[menu_edit_copy] = new QAction(mEditIcons[icon_edit_copy], QObject::tr("&Copy"), parent);
-    mEditActions[menu_edit_copy]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_copy]->setShortcut(QKeySequence::Copy);
     mEditActions[menu_edit_copy]->setStatusTip(QObject::tr("copy image"));
 
     mEditActions[menu_edit_copy_buffer] = new QAction(QObject::tr("Copy &Buffer"), parent);
-    mEditActions[menu_edit_copy_buffer]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
     mEditActions[menu_edit_copy_buffer]->setStatusTip(QObject::tr("copy image"));
 
     mEditActions[menu_edit_copy_color] = new QAction(QObject::tr("Copy Co&lor"), parent);
-    mEditActions[menu_edit_copy_color]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_copy_color]->setShortcut(shortcut_copy_color);
     mEditActions[menu_edit_copy_color]->setStatusTip(QObject::tr("copy pixel color value as HEX"));
 
@@ -1182,12 +1170,10 @@ void DkActionManager::createActions(QWidget *parent)
     pastScs.append(QKeySequence::Paste);
     pastScs.append(shortcut_paste);
     mEditActions[menu_edit_paste] = new QAction(mEditIcons[icon_edit_paste], QObject::tr("&Paste"), parent);
-    mEditActions[menu_edit_paste]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_paste]->setShortcuts(pastScs);
     mEditActions[menu_edit_paste]->setStatusTip(QObject::tr("paste image"));
 
     mEditActions[menu_edit_delete] = new QAction(mEditIcons[icon_edit_delete], QObject::tr("&Delete"), parent);
-    mEditActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
     mEditActions[menu_edit_delete]->setStatusTip(QObject::tr("delete current fileInfo"));
 
@@ -1201,18 +1187,15 @@ void DkActionManager::createActions(QWidget *parent)
 
     // image adjustments menu
     mEditActions[menu_edit_image] = new QAction(mEditIcons[icon_edit_image], QObject::tr("Image &Adjustments"), parent);
-    mEditActions[menu_edit_image]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_image]->setShortcut(QKeySequence(shortcut_edit_image));
     mEditActions[menu_edit_image]->setStatusTip(QObject::tr("open image manipulation toolbox"));
     mEditActions[menu_edit_image]->setCheckable(true);
 
     mEditActions[menu_edit_transform] = new QAction(mEditIcons[icon_edit_resize], QObject::tr("R&esize Image"), parent);
-    mEditActions[menu_edit_transform]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_transform]->setShortcut(shortcut_transform);
     mEditActions[menu_edit_transform]->setStatusTip(QObject::tr("resize the current image"));
 
     mEditActions[menu_edit_crop] = new QAction(mEditIcons[icon_edit_crop], QObject::tr("Cr&op Image"), parent);
-    mEditActions[menu_edit_crop]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditActions[menu_edit_crop]->setShortcut(shortcut_crop);
     mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("cut the current image"));
     mEditActions[menu_edit_crop]->setCheckable(true);
@@ -1502,7 +1485,6 @@ void DkActionManager::createActions(QWidget *parent)
     mSyncActions[menu_sync_arrange]->setEnabled(false);
 
     mSyncActions[menu_sync_connect_all] = new QAction(QObject::tr("Connect &All"), parent);
-    mSyncActions[menu_sync_connect_all]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mSyncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
     mSyncActions[menu_sync_connect_all]->setStatusTip(QObject::tr("connect all instances"));
 
@@ -1656,10 +1638,8 @@ void DkActionManager::createActions(QWidget *parent)
     assignCustomShortcuts(allActions());
 
     // automatically add status tip as tool tip
-    for (QAction *a : allActions()) {
+    for (QAction *a : allActions())
         a->setToolTip(a->statusTip());
-        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    }
 
     // trivial connects
     QObject::connect(action(menu_panel_toggle), &QAction::triggered, [](bool hide) {
@@ -1716,9 +1696,6 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction *> actions) const
 
         if (val != "no-shortcut")
             a->setShortcut(val);
-
-        // assign widget shortcuts to all of them
-        a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     }
 
     settings.endGroup();
