@@ -1329,11 +1329,8 @@ void DkActionManager::createActions(QWidget *parent)
     mViewActions[menu_view_last_tab] = new QAction(QObject::tr("La&st Tab"), parent);
     mViewActions[menu_view_last_tab]->setStatusTip(QObject::tr("Switch to last tab"));
 
-    QList<QKeySequence> scs;
-    scs.append(shortcut_full_screen_ff);
-    scs.append(shortcut_full_screen_ad);
     mViewActions[menu_view_fullscreen] = new QAction(mViewIcons[icon_view_fullscreen], QObject::tr("Fu&ll Screen"), parent);
-    mViewActions[menu_view_fullscreen]->setShortcuts(scs);
+    mViewActions[menu_view_fullscreen]->setShortcut(QKeySequence(shortcut_full_screen_ff));
     mViewActions[menu_view_fullscreen]->setStatusTip(QObject::tr("Full Screen"));
 
     mViewActions[menu_view_reset] = new QAction(mViewIcons[icon_view_reset], QObject::tr("&Fit Image to Window"), parent);
