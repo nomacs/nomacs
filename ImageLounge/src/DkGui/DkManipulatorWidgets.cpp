@@ -136,6 +136,10 @@ void DkManipulatorWidget::createLayout()
     layout->setSpacing(0);
     layout->addWidget(actionScroller);
     layout->addWidget(mplWidget);
+
+    // I couldn't find the focus widget so just get them all
+    for (QWidget *w : this->findChildren<QWidget *>())
+        w->setFocusPolicy(Qt::ClickFocus);
 }
 
 void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC)
