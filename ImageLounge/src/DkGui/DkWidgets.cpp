@@ -440,6 +440,7 @@ void DkBrowseExplorer::createLayout()
     QHBoxLayout *rpLayout = new QHBoxLayout(rootPathWidget);
     mRootPathLabel = new DkElidedLabel(rootPathWidget, "");
     mRootPathBrowseButton = new QPushButton(tr("Browse"));
+    mRootPathBrowseButton->setFocusPolicy(Qt::ClickFocus);
     rpLayout->setContentsMargins(4, 2, 2, 2);
     rpLayout->addWidget(mRootPathLabel, 1);
     rpLayout->addWidget(mRootPathBrowseButton);
@@ -504,6 +505,7 @@ void DkExplorer::createLayout()
     mFileTree->setModel(mSortModel);
     mFileTree->setDragEnabled(true);
     mFileTree->setAcceptDrops(true);
+    mFileTree->setFocusPolicy(Qt::ClickFocus);
 
     // by default descendingOrder is set
     mFileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
