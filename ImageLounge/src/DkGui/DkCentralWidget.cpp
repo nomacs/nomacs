@@ -511,15 +511,8 @@ void DkCentralWidget::paintEvent(QPaintEvent *)
 DkPreferenceWidget *DkCentralWidget::createPreferences()
 {
     // add preference widget ------------------------------
-    DkActionManager &am = DkActionManager::instance();
     DkPreferenceWidget *pw = new DkPreferenceWidget(this);
     connect(pw, &DkPreferenceWidget::restartSignal, this, &DkCentralWidget::restart, Qt::UniqueConnection);
-
-    // add actions
-    pw->addActions(am.viewActions().toList());
-    pw->addActions(am.editActions().toList());
-    pw->addActions(am.helpActions().toList());
-    pw->addActions(am.hiddenActions().toList());
 
     QSize s(22, 22);
 
@@ -572,21 +565,8 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
 
 DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 {
-    DkActionManager &am = DkActionManager::instance();
     DkRecentFilesWidget *rw = new DkRecentFilesWidget(this);
     rw->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
-
-    // add actions
-    rw->addActions(am.fileActions().toList());
-    rw->addActions(am.viewActions().toList());
-    rw->addActions(am.editActions().toList());
-    rw->addActions(am.sortActions().toList());
-    rw->addActions(am.toolsActions().toList());
-    rw->addActions(am.panelActions().toList());
-    rw->addActions(am.syncActions().toList());
-    rw->addActions(am.pluginActions().toList());
-    rw->addActions(am.helpActions().toList());
-    rw->addActions(am.hiddenActions().toList());
 
     connect(rw, &DkRecentFilesWidget::loadFileSignal, this, &DkCentralWidget::loadFile);
     connect(rw, &DkRecentFilesWidget::loadDirSignal, this, &DkCentralWidget::loadDirToTab);
@@ -599,18 +579,6 @@ DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
     DkThumbScrollWidget *thumbScrollWidget = new DkThumbScrollWidget(this);
     // thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettingsManager::param().slideShow().backgroundColor);
     thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
-
-    DkActionManager &am = DkActionManager::instance();
-    thumbScrollWidget->addActions(am.fileActions().toList());
-    thumbScrollWidget->addActions(am.viewActions().toList());
-    thumbScrollWidget->addActions(am.editActions().toList());
-    thumbScrollWidget->addActions(am.sortActions().toList());
-    thumbScrollWidget->addActions(am.toolsActions().toList());
-    thumbScrollWidget->addActions(am.panelActions().toList());
-    // thumbScrollWidget->addActions(am.syncActions().toList());
-    thumbScrollWidget->addActions(am.pluginActions().toList());
-    thumbScrollWidget->addActions(am.helpActions().toList());
-    thumbScrollWidget->addActions(am.hiddenActions().toList());
 
     // thumbnail preview widget
     connect(thumbScrollWidget->getThumbWidget(), &DkThumbScene::loadFileSignal, this, &DkCentralWidget::loadFile);
@@ -827,6 +795,8 @@ void DkCentralWidget::showThumbView(bool show)
 
     QSharedPointer<DkTabInfo> tabInfo = mTabInfos[mTabbar->currentIndex()];
 
+    showViewPort(!show);
+
     if (show) {
         if (!getThumbScrollWidget()) {
             mWidgets[thumbs_widget] = createThumbScrollWidget();
@@ -836,7 +806,6 @@ void DkCentralWidget::showThumbView(bool show)
         tabInfo->setMode(DkTabInfo::tab_thumb_preview);
         switchWidget(thumbs_widget);
         tabInfo->activate();
-        showViewPort(false);
 
         // should be definitely true
         if (auto tw = getThumbScrollWidget()) {
@@ -856,8 +825,6 @@ void DkCentralWidget::showThumbView(bool show)
             disconnect(tw, &DkThumbScrollWidget::updateDirSignal, tabInfo->getImageLoader().data(), &DkImageLoader::loadDirRecursive);
             disconnect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter);
         }
-        // mViewport->connectLoader(tabInfo->getImageLoader(), true);
-        showViewPort(true); // TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
     }
 }
 
@@ -876,6 +843,7 @@ void DkCentralWidget::showViewPort(bool show /* = true */)
 
 void DkCentralWidget::showRecentFiles(bool show)
 {
+    showViewPort(!show);
     if (show) {
         // create the preferences...
         if (!mWidgets[recent_files_widget]) {
@@ -884,9 +852,6 @@ void DkCentralWidget::showRecentFiles(bool show)
         }
 
         switchWidget(mWidgets[recent_files_widget]);
-    } else {
-        // toggle back to image
-        showViewPort();
     }
 }
 
@@ -906,6 +871,7 @@ void DkCentralWidget::openPreferences()
 
 void DkCentralWidget::showPreferences(bool show)
 {
+    showViewPort(!show);
     if (show) {
         // create the preferences...
         if (!mWidgets[preference_widget]) {
@@ -921,14 +887,7 @@ void DkCentralWidget::showPreferences(bool show)
 
 DkBatchWidget *DkCentralWidget::createBatch()
 {
-    auto bw = new DkBatchWidget(getCurrentDir(), this);
-
-    // add actions
-    DkActionManager &am = DkActionManager::instance();
-    bw->addActions(am.viewActions().toList());
-    bw->addActions(am.panelActions().toList());
-
-    return bw;
+    return new DkBatchWidget(getCurrentDir(), this);
 }
 
 void DkCentralWidget::openBatch(const QStringList &selectedFiles)
@@ -962,6 +921,7 @@ void DkCentralWidget::openBatch(const QStringList &selectedFiles)
 
 void DkCentralWidget::showBatch(bool show)
 {
+    showViewPort(!show);
     if (show) {
         if (!mWidgets[batch_widget]) {
             mWidgets[batch_widget] = createBatch();
