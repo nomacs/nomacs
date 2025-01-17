@@ -1674,6 +1674,10 @@ QVector<QAction *> DkActionManager::allActions() const
 
     all += hiddenActions();
 
+#ifdef WITH_PLUGINS
+    all += pluginActionManager()->pluginDummyActions();
+#endif
+
     return all;
 }
 
