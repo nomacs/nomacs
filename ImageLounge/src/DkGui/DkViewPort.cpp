@@ -119,24 +119,10 @@ DkViewPort::DkViewPort(QWidget *parent)
     mPaintLayout->addWidget(mNavigationWidget);
     // TODO: if visible, currently mNavigationWidget eats all mouse events that are supposed for control widget
 
-    // add actions
+    // add actions that cannot be found in the main menu
     DkActionManager &am = DkActionManager::instance();
-    addActions(am.fileActions().toList());
-    addActions(am.viewActions().toList());
-    addActions(am.editActions().toList());
-    addActions(am.manipulatorActions().toList());
-    addActions(am.sortActions().toList());
-    addActions(am.toolsActions().toList());
-    addActions(am.panelActions().toList());
-    addActions(am.syncActions().toList());
-    addActions(am.pluginActions().toList());
-    addActions(am.helpActions().toList());
     addActions(am.hiddenActions().toList());
-
     addActions(am.openWithActions().toList());
-#ifdef WITH_PLUGINS
-    addActions(am.pluginActionManager()->pluginDummyActions().toList());
-#endif
 
     connect(&mImgStorage, &DkImageStorage::infoSignal, this, &DkViewPort::infoSignal);
 

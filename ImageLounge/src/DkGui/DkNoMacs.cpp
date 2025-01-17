@@ -262,6 +262,9 @@ void DkNoMacs::createMenu()
 #endif // WITH_PLUGINS
 
     mMenu->addMenu(am.helpMenu());
+
+    // makes menu actions available even if menu bar is hidden
+    addActions(mMenu->actions());
 }
 
 void DkNoMacs::createContextMenu()
