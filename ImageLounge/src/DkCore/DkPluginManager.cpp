@@ -1347,8 +1347,6 @@ void DkPluginActionManager::assignCustomPluginShortcuts()
             if (val != "no-shortcut")
                 action->setShortcut(val);
             connect(action, &QAction::triggered, this, &DkPluginActionManager::runPluginFromShortcut);
-            // assign widget shortcuts to all of them
-            action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
             mPluginDummyActions.append(action);
         }
 
@@ -1360,6 +1358,9 @@ void DkPluginActionManager::setMenu(QMenu *menu)
 {
     mMenu = menu;
     connect(mMenu, &QMenu::aboutToShow, this, &DkPluginActionManager::updateMenu);
+
+    // allow shortcuts to invoke plugins that haven't been loaded yet
+    menu->addActions(pluginDummyActions().toList());
 }
 
 QMenu *DkPluginActionManager::menu() const
