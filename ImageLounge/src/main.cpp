@@ -364,6 +364,8 @@ int main(int argc, char *argv[])
     QObject::connect(osxEventFilter, &nmc::DkNomacsOSXEventFilter::loadFile, w, &nmc::DkNoMacs::loadFile);
 #endif
 
+    app.installEventFilter(new nmc::DkShortcutEventFilter());
+
     int rVal = -1;
     try {
         rVal = app.exec();

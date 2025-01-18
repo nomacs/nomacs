@@ -1868,6 +1868,7 @@ void DkThumbScrollWidget::createActions()
     // add a shortcut to open the selected image
     QAction *loadFile = new QAction(tr("Open Image"), this);
     loadFile->setShortcut(Qt::Key_Return);
+
     connect(loadFile, &QAction::triggered, this, &DkThumbScrollWidget::onLoadFileTriggered);
 
     addAction(loadFile);
