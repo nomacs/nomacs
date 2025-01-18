@@ -137,7 +137,7 @@ public:
     };
 
 protected:
-    static QImage computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
+    static QImage computeIntern(const QString &filePath, int forceLoad, int maxThumbSize);
 
     QImage mImg;
     QString mFile;
@@ -153,7 +153,7 @@ public:
     DkThumbNailT(const QString &mFile = QString(), const QImage &mImg = QImage());
     ~DkThumbNailT();
 
-    bool fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+    bool fetchThumb(int forceLoad = do_not_force);
 
     /**
      * Returns whether the thumbnail was loaded, or does not exist.

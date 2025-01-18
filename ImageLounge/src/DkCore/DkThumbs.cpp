@@ -72,7 +72,7 @@ void DkThumbNail::compute(int forceLoad)
 {
     // this is so complicated to be thread-safe
     // if we use member vars in the thread and the object gets deleted during thread execution we crash...
-    mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), forceLoad, mMaxThumbSize);
+    mImg = computeIntern(mFile, forceLoad, mMaxThumbSize);
     mImg = DkImage::createThumb(mImg);
 }
 
@@ -81,7 +81,6 @@ void DkThumbNail::compute(int forceLoad)
  * If no thumbnail is embedded, the whole image
  * is loaded and downsampled in a fast manner.
  * @param file the file to be loaded
- * @param ba the file buffer (can be empty)
  * @param forceLoad the loading flag (e.g. exiv only)
  * @param maxThumbSize the maximal thumbnail size to be loaded
  * @param minThumbSize the minimal thumbnail size to be loaded
@@ -90,7 +89,7 @@ void DkThumbNail::compute(int forceLoad)
  * @reentrant all parameters must be copies or thread-safe shared pointers,
  *            no class members are allowed
  **/
-QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize)
+QImage DkThumbNail::computeIntern(const QString &filePath, int forceLoad, int maxThumbSize)
 {
     DkTimer dt;
     // qDebug() << "[thumb] file: " << filePath;
@@ -106,12 +105,11 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
 #endif
     try {
         // [DIEM] READ  build crashed here 09.06.2016
-        if (baZip && !baZip->isEmpty())
+        if (baZip && !baZip->isEmpty()) {
             metaData.readMetaData(filePath, baZip);
-        else if (!ba || ba->isEmpty())
+        } else {
             metaData.readMetaData(filePath);
-        else
-            metaData.readMetaData(filePath, ba);
+        }
 
         // read the full image if we want to create new thumbnails
         if (forceLoad != force_save_thumb)
@@ -147,7 +145,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
             if (loader.loadGeneral(lFilePath, baZip, true, true))
                 thumb = loader.image();
         } else {
-            if (loader.loadGeneral(lFilePath, ba, true, true))
+            if (loader.loadGeneral(lFilePath, true, true))
                 thumb = loader.image();
         }
     }
@@ -195,11 +193,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
             }
 
             metaData.updateImageMetaData(sThumb);
-
-            if (!ba || ba->isEmpty())
-                metaData.saveMetaData(lFilePath);
-            else
-                metaData.saveMetaData(ba);
+            metaData.saveMetaData(lFilePath);
 
             qDebug() << "[thumb] saved to exif data";
         } catch (...) {
@@ -293,7 +287,7 @@ DkThumbNailT::~DkThumbNailT()
     mThumbWatcher.cancel();
 }
 
-bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteArray> ba)
+bool DkThumbNailT::fetchThumb(int forceLoad /* = false */)
 {
     if (forceLoad == force_full_thumb || forceLoad == force_save_thumb || forceLoad == save_thumb)
         mImg = QImage();
@@ -318,8 +312,8 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
     QString filePath = getFilePath(); // not a copy, but will detach (COW) if string is modified
     int maxThumbSize = mMaxThumbSize;
     mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              [filePath, ba, forceLoad, maxThumbSize] {
-                                                  QImage thumb = DkThumbNail::computeIntern(filePath, ba, forceLoad, maxThumbSize);
+                                              [filePath, forceLoad, maxThumbSize] {
+                                                  QImage thumb = DkThumbNail::computeIntern(filePath, forceLoad, maxThumbSize);
                                                   return DkImage::createThumb(thumb);
                                               }));
 
