@@ -128,25 +128,6 @@ public:
             return exists_not;
     };
 
-    void setMaxThumbSize(int maxSize)
-    {
-        mMaxThumbSize = maxSize;
-    };
-
-    int getMaxThumbSize() const
-    {
-        return mMaxThumbSize;
-    };
-
-    /**
-     * Manipulates the file loaded status.
-     * @param exists a status (loaded | not loaded | exists not)
-     **/
-    void setImgExists(bool exists)
-    {
-        mImgExists = exists;
-    };
-
     enum {
         do_not_force,
         force_exif_thumb,
@@ -160,7 +141,6 @@ protected:
 
     QImage mImg;
     QString mFile;
-    // int s;
     bool mImgExists;
     int mMaxThumbSize;
 };
