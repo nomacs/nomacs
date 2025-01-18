@@ -113,7 +113,6 @@ public:
 
 public slots:
     void moveImages();
-    void updateFileIdx(int fileIdx);
     void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs);
     void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
     void newPosition();
@@ -150,11 +149,8 @@ private:
 
     QLinearGradient leftGradient;
     QLinearGradient rightGradient;
-    // QPixmap selectedImg;
-    // QPixmap currentImg;
 
     int mouseTrace;
-    QFileInfo currentFile;
     int currentFileIdx;
     int oldFileIdx;
     float currentDx;
