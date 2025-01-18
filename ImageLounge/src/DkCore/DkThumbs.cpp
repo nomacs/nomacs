@@ -66,7 +66,7 @@ void DkThumbNail::compute(FetchMode mode)
         return;
     }
 
-    mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), mode, mMaxThumbSize);
+    mImg = computeIntern(mFile, mode, mMaxThumbSize);
     mImg = DkImage::createThumb(mImg);
 }
 
@@ -90,7 +90,7 @@ QString DkThumbNail::toolTip() const
     return str;
 }
 
-QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, const int mode, const int maxThumbSize)
+QImage DkThumbNail::computeIntern(const QString &filePath, const int mode, const int maxThumbSize)
 {
     DkTimer dt;
 
@@ -98,6 +98,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     DkMetaDataT metaData;
     QSize origSize;
 
+    QSharedPointer<QByteArray> ba{};
 #ifdef WITH_QUAZIP
     if (QFileInfo(filePath).dir().path().contains(DkZipContainer::zipMarker()))
         ba = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
@@ -105,10 +106,11 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
 
     // read the thumbnail from the exif data
     try {
-        if (!ba || ba->isEmpty())
+        if (!ba || ba->isEmpty()) {
             metaData.readMetaData(filePath);
-        else
+        } else {
             metaData.readMetaData(filePath, ba);
+        }
 
         // read the full image if we want to recreate thumbnails
         if (mode != write_exif_always) {
@@ -119,7 +121,6 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
         // debug tool: force loading full image
         if (qEnvironmentVariableIsSet("NOMACS_THUMB_NO_EXIF"))
             thumb = QImage();
-
     } catch (...) {
         // this should never happen since we handle exceptions in metaData
         qWarning() << "[Thumbnail] unexpected exception when reading exif thumbnail";
@@ -320,7 +321,7 @@ DkThumbNailT::~DkThumbNailT()
     mThumbWatcher.cancel();
 }
 
-bool DkThumbNailT::fetchThumb(DkThumbNail::FetchMode mode /* = false */, QSharedPointer<QByteArray> ba)
+bool DkThumbNailT::fetchThumb(DkThumbNail::FetchMode mode)
 {
     if (mode == write_exif_always || mode == write_exif)
         mImg = QImage();
@@ -345,8 +346,8 @@ bool DkThumbNailT::fetchThumb(DkThumbNail::FetchMode mode /* = false */, QShared
     QString filePath = getFilePath(); // not a copy, but will detach (COW) if string is modified
     int maxThumbSize = mMaxThumbSize;
     mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              [filePath, ba, mode, maxThumbSize] {
-                                                  QImage thumb = DkThumbNail::computeIntern(filePath, ba, mode, maxThumbSize);
+                                              [filePath, mode, maxThumbSize] {
+                                                  QImage thumb = DkThumbNail::computeIntern(filePath, mode, maxThumbSize);
                                                   return DkImage::createThumb(thumb);
                                               }));
 
@@ -388,5 +389,4 @@ void DkThumbsThreadPool::clear()
 {
     pool()->clear();
 }
-
 }

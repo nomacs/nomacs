@@ -156,7 +156,7 @@ protected:
      * @return QImage the loaded image, or null image
      * @reentrant all parameters must be copies or thread-safe shared pointers
      **/
-    static QImage computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, const int mode, const int maxThumbSize);
+    static QImage computeIntern(const QString &filePath, const int mode, const int maxThumbSize);
 
     QImage mImg;
     QString mFile;
@@ -172,7 +172,7 @@ public:
     DkThumbNailT(const QString &mFile = QString(), const QImage &mImg = QImage());
     ~DkThumbNailT();
 
-    bool fetchThumb(DkThumbNail::FetchMode mode = prefer_exif, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+    bool fetchThumb(DkThumbNail::FetchMode mode = prefer_exif);
 
     /**
      * Returns whether the thumbnail was loaded, or does not exist.
