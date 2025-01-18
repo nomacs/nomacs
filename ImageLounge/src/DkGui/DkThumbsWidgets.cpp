@@ -779,17 +779,6 @@ void DkFilePreview::moveImages()
     update();
 }
 
-void DkFilePreview::updateFileIdx(int idx)
-{
-    if (idx == currentFileIdx)
-        return;
-
-    currentFileIdx = idx;
-    if (currentFileIdx >= 0)
-        scrollToCurrentImage = true;
-    update();
-}
-
 void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 {
     if (!cImage)
