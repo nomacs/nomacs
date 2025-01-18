@@ -142,16 +142,6 @@ public:
             return exists_not;
     };
 
-    void setMaxThumbSize(int maxSize)
-    {
-        mMaxThumbSize = maxSize;
-    };
-
-    int getMaxThumbSize() const
-    {
-        return mMaxThumbSize;
-    };
-
     QString toolTip() const;
 
 protected:
