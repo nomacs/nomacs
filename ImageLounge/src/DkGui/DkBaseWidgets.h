@@ -285,4 +285,47 @@ protected:
     bool eventFilter(QObject *o, QEvent *e);
 };
 
+/**
+ * Stops shortcuts from messing up widgets
+ * Should be installed on the application object
+ */
+class DllCoreExport DkShortcutEventFilter : public QObject
+{
+public:
+    DkShortcutEventFilter(QObject *parent = nullptr)
+        : QObject(parent)
+    {
+    }
+
+protected:
+    bool eventFilter(QObject *target, QEvent *e);
+};
+
+/**
+ * Stops other shortcuts from messing up a widget that
+ * wants to have its own action-based shortcuts.
+ */
+class DllCoreExport DkActionEventFilter : public QObject
+{
+public:
+    DkActionEventFilter(QObject *parent = nullptr)
+        : QObject(parent)
+    {
+    }
+
+    void addAction(QAction *action)
+    {
+        mActions.append(action);
+    }
+
+    void clearActions()
+    {
+        mActions.clear();
+    }
+
+protected:
+    bool eventFilter(QObject *target, QEvent *e) override;
+
+    QList<QAction *> mActions;
+};
 }
