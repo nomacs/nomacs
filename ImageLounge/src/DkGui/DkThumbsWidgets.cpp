@@ -40,6 +40,7 @@
 
 #include "DkBasicLoader.h"
 #include "DkDialog.h"
+#include <memory>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
@@ -226,7 +227,7 @@ void DkFilePreview::createContextMenu()
 void DkFilePreview::paintEvent(QPaintEvent *)
 {
     // render nothing if there are no thumbs
-    if (mThumbs.isEmpty())
+    if (mThumbPtrs.empty())
         return;
 
     if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
@@ -255,7 +256,7 @@ void DkFilePreview::paintEvent(QPaintEvent *)
     painter.setWorldTransform(worldMatrix);
     painter.setWorldMatrixEnabled(true);
 
-    if (mThumbs.empty()) {
+    if (mThumbPtrs.empty()) {
         thumbRects.clear();
         return;
     }
@@ -283,8 +284,8 @@ void DkFilePreview::drawThumbs(QPainter *painter)
     // mouse over effect
     QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
 
-    for (int idx = 0; idx < mThumbs.size(); idx++) {
-        QSharedPointer<DkThumbNailT> thumb = mThumbs.at(idx)->getThumb();
+    for (int idx = 0; idx < mThumbPtrs.size(); idx++) {
+        DkThumbNailT *thumb = mThumbPtrs.at(idx).get();
         QImage img;
 
         // if the image is loaded draw that (it might be edited)
@@ -350,7 +351,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         // only fetch thumbs if we are not moving too fast...
         if (thumb->hasImage() == DkThumbNail::not_loaded && fabs(currentDx) < 40) {
             thumb->fetchThumb();
-            connect(thumb.data(), &DkThumbNailT::thumbLoadedSignal, this, QOverload<>::of(&DkFilePreview::update));
+            connect(thumb, &DkThumbNailT::thumbLoadedSignal, this, QOverload<>::of(&DkFilePreview::update));
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
@@ -560,8 +561,8 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
             if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
                 selected = idx;
 
-                if (selected <= mThumbs.size() && selected >= 0) {
-                    QSharedPointer<DkThumbNailT> thumb = mThumbs.at(selected)->getThumb();
+                if (selected <= mThumbPtrs.size() && selected >= 0) {
+                    DkThumbNailT *thumb = mThumbPtrs.at(selected).get();
                     // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettingsManager::param().display().highlightColor, 0.3f);
 
                     // important: setText shows the label - if you then hide it here again you'll get a stack overflow
@@ -732,7 +733,7 @@ void DkFilePreview::moveImages()
     if (scrollToCurrentImage) {
         float cDist = limit / 2.0f - center;
 
-        if (mThumbs.size() < 2000) {
+        if (mThumbPtrs.size() < 2000) {
             if (fabs(cDist) < limit) {
                 currentDx = sqrt(fabs(cDist)) / 1.3f;
                 if (cDist < 0)
@@ -785,8 +786,8 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
     int tIdx = -1;
 
-    for (int idx = 0; idx < mThumbs.size(); idx++) {
-        if (mThumbs.at(idx)->filePath() == cImage->filePath()) {
+    for (int idx = 0; idx < mThumbPtrs.size(); idx++) {
+        if (mThumbPtrs.at(idx)->getFilePath() == cImage->filePath()) {
             tIdx = idx;
             break;
         }
@@ -801,11 +802,12 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
 {
     mThumbs = thumbs;
+    mThumbPtrs = std::vector<std::unique_ptr<DkThumbNailT>>(thumbs.size());
 
     for (int idx = 0; idx < thumbs.size(); idx++) {
+        mThumbPtrs[idx] = thumbs[idx]->createThumb();
         if (thumbs.at(idx)->isSelected()) {
             currentFileIdx = idx;
-            break;
         }
     }
 
@@ -1118,7 +1120,11 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
         }
     }
 
-    this->mThumbs = thumbs;
+    mThumbs.clear();
+    mThumbs.reserve(thumbs.size());
+    for (const auto &img : thumbs) {
+        mThumbs.push_back(QSharedPointer<DkThumbNailT>(img->createThumb().release()));
+    }
     updateThumbLabels();
 
     if (selectedIdx >= 0) {
@@ -1135,16 +1141,14 @@ void DkThumbScene::updateThumbLabels()
 
     mThumbLabels.clear();
 
-    for (int idx = 0; idx < mThumbs.size(); idx++) {
-        DkThumbLabel *thumb = new DkThumbLabel(mThumbs.at(idx)->getThumb());
+    for (const auto &thumbPtr : mThumbs) {
+        DkThumbLabel *thumb = new DkThumbLabel(thumbPtr);
         connect(thumb, &DkThumbLabel::loadFileSignal, this, &DkThumbScene::loadFileSignal);
         connect(thumb, &DkThumbLabel::showFileSignal, this, &DkThumbScene::showFile);
-        connect(mThumbs.at(idx).data(), &DkImageContainerT::thumbLoadedSignal, this, &DkThumbScene::thumbLoadedSignal);
+        connect(thumbPtr.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbScene::thumbLoadedSignal);
 
-        // thumb->show();
         addItem(thumb);
         mThumbLabels.append(thumb);
-        // thumbsNotLoaded.append(thumb);
     }
 
     showFile();
@@ -1239,13 +1243,10 @@ void DkThumbScene::showFile(const QString &filePath)
     }
 }
 
-void DkThumbScene::ensureVisible(QSharedPointer<DkImageContainerT> img) const
+void DkThumbScene::ensureVisible(const QString &path) const
 {
-    if (!img)
-        return;
-
     for (DkThumbLabel *label : mThumbLabels) {
-        if (label->getThumb()->getFilePath() == img->filePath()) {
+        if (label->getThumb()->getFilePath() == path) {
             label->ensureVisible();
             break;
         }
@@ -1262,7 +1263,7 @@ QString DkThumbScene::currentDir() const
         }
     }
 
-    return mThumbs[0]->fileInfo().absolutePath();
+    return QFileInfo(mThumbs[0]->getFilePath()).absolutePath();
 }
 
 int DkThumbScene::selectedThumbIndex(bool first)
@@ -1373,7 +1374,9 @@ void DkThumbScene::selectThumb(int idx, bool select)
 
     emit selectionChanged();
     showFile(); // update selection label
-    ensureVisible(mThumbs[idx]);
+
+    Q_ASSERT(mThumbLabels.size() > idx && mThumbLabels[idx]);
+    mThumbLabels[idx]->ensureVisible();
 }
 
 void DkThumbScene::copySelected() const
