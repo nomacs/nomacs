@@ -268,7 +268,6 @@ public slots:
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;
-    void statusInfoSignal(const QString &msg, int pos = 0) const;
     void thumbLoadedSignal() const;
 
 protected:
@@ -278,7 +277,6 @@ protected:
     int mXOffset = 0;
     int mNumRows = 0;
     int mNumCols = 0;
-    bool mFirstLayout = true;
     int mLastSelectedIdx = -1; // last selected item to restore on updateThumbs()
 
     QVector<DkThumbLabel *> mThumbLabels;
