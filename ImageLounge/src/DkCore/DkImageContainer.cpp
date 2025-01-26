@@ -33,6 +33,7 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
+#include <memory>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QDir>
@@ -204,17 +205,20 @@ QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData()
 QSharedPointer<DkThumbNailT> DkImageContainer::getThumb()
 {
     if (!mThumb) {
-#ifdef WITH_QUAZIP
-        if (isFromZip())
-            mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(getZipData()->getEncodedFilePath()));
-        else
-            mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
-#else
-        mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
-#endif
+        mThumb = QSharedPointer<DkThumbNailT>(createThumb().release());
     }
 
     return mThumb;
+}
+
+std::unique_ptr<DkThumbNailT> DkImageContainer::createThumb()
+{
+#ifdef WITH_QUAZIP
+    if (isFromZip()) {
+        return std::make_unique<DkThumbNailT>(getZipData()->getEncodedFilePath());
+    }
+#endif
+    return std::make_unique<DkThumbNailT>(mFilePath);
 }
 
 QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedPointer<DkImageContainer> imgC)
