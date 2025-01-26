@@ -1117,8 +1117,6 @@ void DkThumbScene::updateLayout()
         if (mThumbLabels.at(idx)->isSelected())
             mThumbLabels.at(idx)->ensureVisible();
     }
-
-    mFirstLayout = false;
 }
 
 void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
