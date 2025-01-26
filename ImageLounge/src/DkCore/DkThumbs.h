@@ -124,9 +124,8 @@ public:
 
     /**
      * Loads the thumbnail.
-     * @param mode thumbnail loading options
      **/
-    void compute(FetchMode mode = prefer_exif);
+    void compute();
 
     /**
      * Returns whether the thumbnail was loaded, or does not exist.
