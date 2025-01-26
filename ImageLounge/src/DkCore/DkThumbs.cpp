@@ -58,15 +58,14 @@ DkThumbNail::~DkThumbNail()
 {
 }
 
-void DkThumbNail::compute(FetchMode mode)
+void DkThumbNail::compute()
 {
     if (!DkUtils::isValid(QFileInfo(mFile))) {
         qWarning() << "[Thumbnail] compute: file does not exist or is not readable" << mFile;
         return;
     }
 
-    mImg = computeIntern(mFile, mode);
-    mImg = DkImage::createThumb(mImg);
+    mImg = computeIntern(mFile, prefer_exif);
 }
 
 QString DkThumbNail::toolTip() const
@@ -231,7 +230,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, const int mode)
                        .arg(dt.elapsed());
     qInfo().noquote() << info;
 
-    return thumb;
+    return DkImage::createThumb(thumb);
 }
 
 void DkThumbNail::removeBlackBorder(QImage &img)
@@ -323,14 +322,8 @@ bool DkThumbNailT::fetchThumb(DkThumbNail::FetchMode mode)
     mFetchMode = mode;
     connect(&mThumbWatcher, &QFutureWatcherBase::finished, this, &DkThumbNailT::thumbLoaded, Qt::UniqueConnection);
 
-    // add work to the thread pool
-    // note: arguments to lambda must be thread-safe or copies (no "&", "this") to prevent race conditions
-    QString filePath = getFilePath(); // not a copy, but will detach (COW) if string is modified
-    mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              [filePath, mode] {
-                                                  QImage thumb = DkThumbNail::computeIntern(filePath, mode);
-                                                  return DkImage::createThumb(thumb);
-                                              }));
+    // Load thumbnails on their dedicated thread pool
+    mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), DkThumbNail::computeIntern, mFile, mode));
 
     return true;
 }
