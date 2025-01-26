@@ -28,6 +28,8 @@
 #pragma once
 
 #include "DkQt5Compat.h"
+#include <memory>
+#include <vector>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QDrag>
@@ -137,6 +139,7 @@ protected:
 
 private:
     QVector<QSharedPointer<DkImageContainerT>> mThumbs;
+    std::vector<std::unique_ptr<DkThumbNailT>> mThumbPtrs;
     QTransform worldMatrix;
 
     QPoint lastMousePos;
@@ -245,7 +248,7 @@ public:
     void copyImages(const QMimeData *mimeData, const Qt::DropAction &da = Qt::CopyAction) const;
     int findThumb(DkThumbLabel *thumb) const;
     bool allThumbsSelected() const;
-    void ensureVisible(QSharedPointer<DkImageContainerT> img) const;
+    void ensureVisible(const QString &path) const;
     QString currentDir() const;
 
 public slots:
@@ -281,7 +284,7 @@ protected:
 
     QVector<DkThumbLabel *> mThumbLabels;
     QSharedPointer<DkImageLoader> mLoader;
-    QVector<QSharedPointer<DkImageContainerT>> mThumbs;
+    QVector<QSharedPointer<DkThumbNailT>> mThumbs;
 };
 
 class DkThumbsView : public QGraphicsView
