@@ -815,7 +815,7 @@ void DkCentralWidget::showThumbView(bool show)
             tw->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
 
             if (tabInfo->getImage())
-                tw->getThumbWidget()->ensureVisible(tabInfo->getImage());
+                tw->getThumbWidget()->ensureVisible(tabInfo->getImage()->filePath());
 
             connect(tw, &DkThumbScrollWidget::updateDirSignal, tabInfo->getImageLoader().data(), &DkImageLoader::loadDirRecursive, Qt::UniqueConnection);
             connect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter, Qt::UniqueConnection);
