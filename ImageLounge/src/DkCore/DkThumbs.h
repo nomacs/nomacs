@@ -137,12 +137,11 @@ public:
     };
 
 protected:
-    static QImage computeIntern(const QString &filePath, int forceLoad, int maxThumbSize);
+    static QImage computeIntern(const QString &filePath, int forceLoad);
 
     QImage mImg;
     QString mFile;
     bool mImgExists;
-    int mMaxThumbSize;
 };
 
 class DllCoreExport DkThumbNailT : public QObject, public DkThumbNail

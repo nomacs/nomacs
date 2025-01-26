@@ -56,7 +56,6 @@ DkThumbNail::DkThumbNail(const QString &filePath, const QImage &img)
 {
     mImg = DkImage::createThumb(img);
     mFile = filePath;
-    mMaxThumbSize = qRound(max_thumb_size * DkSettingsManager::param().dpiScaleFactor());
     mImgExists = true;
 }
 
@@ -72,7 +71,7 @@ void DkThumbNail::compute(int forceLoad)
 {
     // this is so complicated to be thread-safe
     // if we use member vars in the thread and the object gets deleted during thread execution we crash...
-    mImg = computeIntern(mFile, forceLoad, mMaxThumbSize);
+    mImg = computeIntern(mFile, forceLoad);
     mImg = DkImage::createThumb(mImg);
 }
 
@@ -82,14 +81,12 @@ void DkThumbNail::compute(int forceLoad)
  * is loaded and downsampled in a fast manner.
  * @param file the file to be loaded
  * @param forceLoad the loading flag (e.g. exiv only)
- * @param maxThumbSize the maximal thumbnail size to be loaded
- * @param minThumbSize the minimal thumbnail size to be loaded
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
  * @reentrant all parameters must be copies or thread-safe shared pointers,
  *            no class members are allowed
  **/
-QImage DkThumbNail::computeIntern(const QString &filePath, int forceLoad, int maxThumbSize)
+QImage DkThumbNail::computeIntern(const QString &filePath, int forceLoad)
 {
     DkTimer dt;
     // qDebug() << "[thumb] file: " << filePath;
@@ -133,9 +130,6 @@ QImage DkThumbNail::computeIntern(const QString &filePath, int forceLoad, int ma
     QString lFilePath = fInfo.isSymLink() ? fInfo.symLinkTarget() : filePath;
     fInfo = QFileInfo(lFilePath);
 
-    // diem: do_not_force is the generic load - so also rescale these
-    bool rescale = forceLoad == do_not_force;
-
     if ((forceLoad != force_exif_thumb || fInfo.size() < 1e5) && (thumb.isNull() || forceLoad == force_full_thumb || forceLoad == force_save_thumb)) { // braces
 
         // try to read the image
@@ -154,26 +148,9 @@ QImage DkThumbNail::computeIntern(const QString &filePath, int forceLoad, int ma
         return QImage();
 
     // the image is not scaled correctly yet
-    if (rescale && !thumb.isNull()) {
-        int w = thumb.width();
-        int h = thumb.height();
-
-        if (w > maxThumbSize || h > maxThumbSize) {
-            if (w > h) {
-                h = qRound((double)maxThumbSize / w * h);
-                w = maxThumbSize;
-            } else if (w < h) {
-                w = qRound((double)maxThumbSize / h * w);
-                h = maxThumbSize;
-            } else {
-                w = maxThumbSize;
-                h = maxThumbSize;
-            }
-        }
-
-        // scale
-        thumb = thumb.scaled(QSize(w * 2, h * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
-        thumb = thumb.scaled(QSize(w, h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    // diem: do_not_force is the generic load - so also rescale these
+    if (forceLoad == do_not_force && !thumb.isNull()) {
+        thumb = DkImage::createThumb(thumb);
     }
 
     if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
@@ -310,10 +287,9 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */)
     // add work to the thread pool
     // note: arguments to lambda must be thread-safe or copies (no "&", "this") to prevent race conditions
     QString filePath = getFilePath(); // not a copy, but will detach (COW) if string is modified
-    int maxThumbSize = mMaxThumbSize;
     mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              [filePath, forceLoad, maxThumbSize] {
-                                                  QImage thumb = DkThumbNail::computeIntern(filePath, forceLoad, maxThumbSize);
+                                              [filePath, forceLoad] {
+                                                  QImage thumb = DkThumbNail::computeIntern(filePath, forceLoad);
                                                   return DkImage::createThumb(thumb);
                                               }));
 
