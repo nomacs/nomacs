@@ -1461,24 +1461,26 @@ bool DkImage::unsharpMask(QImage &img, float sigma, float weight)
 
 QImage DkImage::createThumb(const QImage &image, int maxSize)
 {
-    if (image.isNull())
+    if (image.isNull()) {
         return image;
-
-    int maxThumbSize = maxSize == -1 ? (int)(max_thumb_size * DkSettingsManager::param().dpiScaleFactor()) : maxSize;
+    }
+    const double maxThumbSize = maxSize == -1 ? max_thumb_size * DkSettingsManager::param().dpiScaleFactor() : maxSize;
     int imgW = image.width();
     int imgH = image.height();
 
-    if (imgW > maxThumbSize || imgH > maxThumbSize) {
-        if (imgW > imgH) {
-            imgH = qRound((float)maxThumbSize / imgW * imgH);
-            imgW = maxThumbSize;
-        } else if (imgW < imgH) {
-            imgW = qRound((float)maxThumbSize / imgH * imgW);
-            imgH = maxThumbSize;
-        } else {
-            imgW = maxThumbSize;
-            imgH = maxThumbSize;
-        }
+    if (imgW <= maxThumbSize && imgH <= maxThumbSize) {
+        return image;
+    }
+
+    if (imgW > imgH) {
+        imgH = qRound(maxThumbSize / imgW * imgH);
+        imgW = maxThumbSize;
+    } else if (imgW < imgH) {
+        imgW = qRound(maxThumbSize / imgH * imgW);
+        imgH = maxThumbSize;
+    } else {
+        imgW = maxThumbSize;
+        imgH = maxThumbSize;
     }
 
     // fast downscaling
