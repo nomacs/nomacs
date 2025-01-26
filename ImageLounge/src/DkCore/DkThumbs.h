@@ -156,12 +156,11 @@ protected:
      * @return QImage the loaded image, or null image
      * @reentrant all parameters must be copies or thread-safe shared pointers
      **/
-    static QImage computeIntern(const QString &filePath, const int mode, const int maxThumbSize);
+    static QImage computeIntern(const QString &filePath, const int mode);
 
     QImage mImg;
     QString mFile;
     bool mImgExists;
-    int mMaxThumbSize;
 };
 
 class DllCoreExport DkThumbNailT : public QObject, public DkThumbNail
