@@ -51,7 +51,6 @@ DkThumbNail::DkThumbNail(const QString &filePath, const QImage &img)
 {
     mImg = DkImage::createThumb(img);
     mFile = filePath;
-    mMaxThumbSize = qRound(max_thumb_size * DkSettingsManager::param().dpiScaleFactor());
     mImgExists = true;
 }
 
@@ -66,7 +65,7 @@ void DkThumbNail::compute(FetchMode mode)
         return;
     }
 
-    mImg = computeIntern(mFile, mode, mMaxThumbSize);
+    mImg = computeIntern(mFile, mode);
     mImg = DkImage::createThumb(mImg);
 }
 
@@ -90,7 +89,7 @@ QString DkThumbNail::toolTip() const
     return str;
 }
 
-QImage DkThumbNail::computeIntern(const QString &filePath, const int mode, const int maxThumbSize)
+QImage DkThumbNail::computeIntern(const QString &filePath, const int mode)
 {
     DkTimer dt;
 
@@ -175,28 +174,11 @@ QImage DkThumbNail::computeIntern(const QString &filePath, const int mode, const
     // rescale only in the default mode
     bool isScaled = false;
     if (mode == prefer_exif && !thumb.isNull()) {
-        int w = thumb.width();
-        int h = thumb.height();
-
-        if (w > maxThumbSize || h > maxThumbSize) {
-            if (w > h) {
-                h = qRound((double)maxThumbSize / w * h);
-                w = maxThumbSize;
-            } else if (w < h) {
-                w = qRound((double)maxThumbSize / h * w);
-                h = maxThumbSize;
-            } else {
-                w = maxThumbSize;
-                h = maxThumbSize;
-            }
-        }
-
         // simple antialasing but could use a lot of memory
         // FIXME: use opencv area scaler
         // FIXME: this runs even if w/h did not change
+        thumb = DkImage::createThumb(thumb);
         isScaled = true;
-        thumb = thumb.scaled(QSize(w * 2, h * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
-        thumb = thumb.scaled(QSize(w, h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
 
     // this was a bug; if the JPG does not have a thumbnail, but was rotated, we get a double rotation
@@ -344,10 +326,9 @@ bool DkThumbNailT::fetchThumb(DkThumbNail::FetchMode mode)
     // add work to the thread pool
     // note: arguments to lambda must be thread-safe or copies (no "&", "this") to prevent race conditions
     QString filePath = getFilePath(); // not a copy, but will detach (COW) if string is modified
-    int maxThumbSize = mMaxThumbSize;
     mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              [filePath, mode, maxThumbSize] {
-                                                  QImage thumb = DkThumbNail::computeIntern(filePath, mode, maxThumbSize);
+                                              [filePath, mode] {
+                                                  QImage thumb = DkThumbNail::computeIntern(filePath, mode);
                                                   return DkImage::createThumb(thumb);
                                               }));
 
