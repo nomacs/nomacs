@@ -112,7 +112,7 @@ public:
         return mFile;
     };
 
-    void compute(int forceLoad = do_not_force);
+    void compute();
 
     /**
      * Returns whether the thumbnail was loaded, or does not exist.

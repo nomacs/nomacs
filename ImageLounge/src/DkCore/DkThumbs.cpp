@@ -65,14 +65,10 @@ DkThumbNail::~DkThumbNail()
 
 /**
  * Loads the thumbnail.
- * @param forceLoad flag for loading/saving the thumbnail from exif only.
  **/
-void DkThumbNail::compute(int forceLoad)
+void DkThumbNail::compute()
 {
-    // this is so complicated to be thread-safe
-    // if we use member vars in the thread and the object gets deleted during thread execution we crash...
-    mImg = computeIntern(mFile, forceLoad);
-    mImg = DkImage::createThumb(mImg);
+    mImg = computeIntern(mFile, do_not_force);
 }
 
 /**
@@ -181,7 +177,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, int forceLoad)
     // 	qInfoClean() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from
     // EXIV" : " from File");
 
-    return thumb;
+    return DkImage::createThumb(thumb);
 }
 
 /**
@@ -284,14 +280,8 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */)
 
     connect(&mThumbWatcher, &QFutureWatcherBase::finished, this, &DkThumbNailT::thumbLoaded, Qt::UniqueConnection);
 
-    // add work to the thread pool
-    // note: arguments to lambda must be thread-safe or copies (no "&", "this") to prevent race conditions
-    QString filePath = getFilePath(); // not a copy, but will detach (COW) if string is modified
-    mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              [filePath, forceLoad] {
-                                                  QImage thumb = DkThumbNail::computeIntern(filePath, forceLoad);
-                                                  return DkImage::createThumb(thumb);
-                                              }));
+    // Load thumbnails on their dedicated thread pool
+    mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), DkThumbNail::computeIntern, mFile, forceLoad));
 
     return true;
 }
