@@ -300,16 +300,24 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
     mPd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), DkUtils::getMainWindow());
     mPd->setWindowTitle(tr("Thumbnails"));
 
-    // pd->setWindowModality(Qt::WindowModal);
-
     connect(this, &DkThumbsSaver::numFilesSignal, mPd, &QProgressDialog::setValue);
     connect(mPd, &QProgressDialog::canceled, this, &DkThumbsSaver::stopProgress);
 
     mPd->show();
 
     this->mForceSave = forceSave;
-    this->mImages = images;
-    loadNext();
+
+    const int force = (mForceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
+
+    // Use pointer here because QObject copy constructor is removed
+    mThumbs = std::vector<std::unique_ptr<DkThumbNailT>>(images.size());
+
+    for (int idx = 0; idx < mThumbs.size(); idx++) {
+        const auto img = images[idx];
+        mThumbs[idx] = img->createThumb();
+        connect(mThumbs[idx].get(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbsSaver::thumbLoaded);
+        mThumbs[idx]->fetchThumb(force);
+    }
 }
 
 void DkThumbsSaver::thumbLoaded(bool)
@@ -317,27 +325,16 @@ void DkThumbsSaver::thumbLoaded(bool)
     mNumSaved++;
     emit numFilesSignal(mNumSaved);
 
-    if (mNumSaved == mImages.size() || mStop) {
+    if (mNumSaved == mThumbs.size() || mStop) {
         if (mPd) {
             mPd->close();
             mPd->deleteLater();
             mPd = 0;
         }
         mStop = true;
-    } else
-        loadNext();
-}
 
-void DkThumbsSaver::loadNext()
-{
-    if (mStop)
-        return;
-
-    int force = (mForceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
-
-    for (int idx = 0; idx < mImages.size(); idx++) {
-        connect(mImages.at(idx)->getThumb().data(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbsSaver::thumbLoaded);
-        mImages.at(idx)->getThumb()->fetchThumb(force);
+        // Release all the thumbnails when we are done
+        mThumbs.clear();
     }
 }
 

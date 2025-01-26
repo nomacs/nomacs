@@ -364,7 +364,6 @@ signals:
 public slots:
     void stopProgress();
     void thumbLoaded(bool loaded);
-    void loadNext();
 
 protected:
     QFileInfo mCurrentDir;
@@ -372,7 +371,7 @@ protected:
     bool mStop = false;
     bool mForceSave = false;
     int mNumSaved = false;
-    QVector<QSharedPointer<DkImageContainerT>> mImages;
+    std::vector<std::unique_ptr<DkThumbNailT>> mThumbs{};
 };
 
 class DkFileSystemModel : public QFileSystemModel
