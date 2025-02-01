@@ -199,31 +199,32 @@ QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const
 
 QIcon DkTabInfo::getIcon()
 {
-    QIcon icon;
-
-    if (mTabMode == tab_thumb_preview)
+    if (mTabMode == tab_thumb_preview) {
         return DkImage::loadIcon(":/nomacs/img/rects.svg");
-    else if (mTabMode == tab_recent_files)
+    } else if (mTabMode == tab_recent_files) {
         return DkImage::loadIcon(":/nomacs/img/bars.svg");
-    else if (mTabMode == tab_preferences)
+    } else if (mTabMode == tab_preferences) {
         return DkImage::loadIcon(":/nomacs/img/settings.svg");
-    else if (mTabMode == tab_batch)
+    } else if (mTabMode == tab_batch) {
         return DkImage::loadIcon(":/nomacs/img/batch-processing.svg");
+    }
 
-    if (!mImageLoader->getCurrentImage())
-        return icon;
+    if (!mImageLoader->getCurrentImage()) {
+        return {};
+    }
 
     QSharedPointer<DkThumbNailT> thumb = mImageLoader->getCurrentImage()->getThumb();
 
-    if (!thumb)
-        return icon;
+    if (!thumb) {
+        return {};
+    }
 
     QImage img = thumb->getImage();
 
-    if (!img.isNull())
-        icon = QPixmap::fromImage(img);
-
-    return icon;
+    if (img.isNull()) {
+        return {};
+    }
+    return QPixmap::fromImage(img);
 }
 
 QString DkTabInfo::getTabText() const
