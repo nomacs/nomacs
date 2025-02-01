@@ -197,7 +197,7 @@ QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const
     return mImageLoader->getCurrentImage();
 }
 
-QIcon DkTabInfo::getIcon()
+QIcon DkTabInfo::getIcon(const QSize &size)
 {
     if (mTabMode == tab_thumb_preview) {
         return DkImage::loadIcon(":/nomacs/img/rects.svg");
@@ -209,22 +209,14 @@ QIcon DkTabInfo::getIcon()
         return DkImage::loadIcon(":/nomacs/img/batch-processing.svg");
     }
 
-    if (!mImageLoader->getCurrentImage()) {
+    const QSharedPointer<DkImageContainerT> img = mImageLoader->getCurrentImage();
+
+    if (!img) {
         return {};
     }
 
-    QSharedPointer<DkThumbNailT> thumb = mImageLoader->getCurrentImage()->getThumb();
-
-    if (!thumb) {
-        return {};
-    }
-
-    QImage img = thumb->getImage();
-
-    if (img.isNull()) {
-        return {};
-    }
-    return QPixmap::fromImage(img);
+    // TODO: better scaling that consider aspect ratio
+    return QPixmap::fromImage(img->imageScaledToHeight(size.height()));
 }
 
 QString DkTabInfo::getTabText() const
@@ -728,7 +720,7 @@ void DkCentralWidget::updateTab(QSharedPointer<DkTabInfo> tabInfo)
 {
     // qDebug() << tabInfo->getTabText() << " set at tab location: " << tabInfo->getTabIdx();
     mTabbar->setTabText(tabInfo->getTabIdx(), tabInfo->getTabText());
-    mTabbar->setTabIcon(tabInfo->getTabIdx(), tabInfo->getIcon());
+    mTabbar->setTabIcon(tabInfo->getTabIdx(), tabInfo->getIcon(mTabbar->iconSize()));
 }
 
 void DkCentralWidget::updateTabIdx()
