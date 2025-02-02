@@ -201,15 +201,6 @@ QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData()
     return getLoader()->getMetaData();
 }
 
-QSharedPointer<DkThumbNailT> DkImageContainer::getThumb()
-{
-    if (!mThumb) {
-        mThumb = QSharedPointer<DkThumbNailT>(createThumb().release());
-    }
-
-    return mThumb;
-}
-
 std::unique_ptr<DkThumbNailT> DkImageContainer::createThumb()
 {
 #ifdef WITH_QUAZIP
@@ -230,7 +221,6 @@ QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedP
     imgCT->mLoader = imgC->getLoader();
     imgCT->mEdited = imgC->isEdited();
     imgCT->mSelected = imgC->isSelected();
-    imgCT->mThumb = imgC->getThumb();
     imgCT->mLoadState = imgC->getLoadState();
     imgCT->mFileBuffer = imgC->getFileBuffer();
 
@@ -647,7 +637,6 @@ bool DkImageContainerT::loadImageThreaded(bool force)
 
     if (force || fileInfo.lastModified() != modifiedBefore || getLoader()->isDirty()) {
         qDebug() << "updating image...";
-        getThumb()->setImage(QImage());
         clear();
     }
 
@@ -788,8 +777,6 @@ void DkImageContainerT::loadingFinished()
         emit fileLoadedSignal(false);
         mLoadState = exists_not;
         return;
-    } else if (!getThumb()->hasImage()) {
-        getThumb()->setImage(getLoader()->image());
     }
 
     // clear file buffer if it exceeds a certain size?! e.g. psd files
@@ -989,16 +976,6 @@ QSharedPointer<DkBasicLoader> DkImageContainerT::getLoader()
     }
 
     return mLoader;
-}
-
-QSharedPointer<DkThumbNailT> DkImageContainerT::getThumb()
-{
-    if (!mThumb) {
-        DkImageContainer::getThumb();
-        connect(mThumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkImageContainerT::thumbLoadedSignal);
-    }
-
-    return mThumb;
 }
 
 bool DkImageContainerT::isFileDownloaded() const
