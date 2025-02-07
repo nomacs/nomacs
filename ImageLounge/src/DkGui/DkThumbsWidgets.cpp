@@ -1177,6 +1177,7 @@ void DkThumbScene::setImageLoader(QSharedPointer<DkImageLoader> loader)
     connectLoader(mLoader, false); // disconnect
     mLoader = loader;
     connectLoader(loader);
+    showFile(""); // if we don't do this, then if the FIRST directory opened after startup is empty, no directory will be displayed in the status bar
 }
 
 void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals)
@@ -1222,21 +1223,37 @@ void DkThumbScene::keyPressEvent(QKeyEvent *event)
     }
 }
 
+void displayFileInfoInStatusbar(const QString &filePath)
+{
+    QFileInfo fInfo(filePath);
+    DkStatusBar *bar = DkStatusBarManager::instance().statusbar();
+    if (fInfo.exists()) {
+        bar->setMessage(DkUtils::readableByte(fInfo.size()), DkStatusBar::status_filesize_info);
+        bar->setMessage(filePath);
+    } else {
+        bar->setMessage("", DkStatusBar::status_filesize_info);
+    }
+}
+
 void DkThumbScene::showFile(const QString &filePath)
 {
-    if (filePath == QDir::currentPath() || filePath.isEmpty()) {
-        int sf = getSelectedFiles().size();
-
-        QString info;
-
-        if (sf > 1)
-            info = QString::number(sf) + tr(" selected");
-        else
-            info = QString::number(mThumbLabels.size()) + tr(" images");
-
-        DkStatusBarManager::instance().setMessage(tr("%1 | %2").arg(info, currentDir()));
-    } else
-        DkStatusBarManager::instance().setMessage(QFileInfo(filePath).fileName());
+    int sf = getSelectedFiles().size();
+    DkStatusBar *bar = DkStatusBarManager::instance().statusbar();
+    if (filePath == QDir::currentPath() || filePath.isEmpty()) { // i.e. user is NO LONGER hovering over a file
+        if (sf == 0) {
+            QString info = QString::number(mThumbLabels.size()) + tr(" images");
+            bar->setMessage(tr("%1 | %2").arg(info, currentDir()));
+            bar->setMessage("", DkStatusBar::status_filesize_info);
+        } else if (sf == 1) {
+            displayFileInfoInStatusbar(getSelectedFiles()[0]);
+        } else {
+            QString info = QString::number(sf) + tr(" selected");
+            bar->setMessage(tr("%1 | %2").arg(info, currentDir()));
+            bar->setMessage("", DkStatusBar::status_filesize_info);
+        }
+    } else { // i.e. user STARTED hovering over a file
+        displayFileInfoInStatusbar(filePath);
+    }
 }
 
 void DkThumbScene::ensureVisible(QSharedPointer<DkImageContainerT> img) const
@@ -1254,8 +1271,13 @@ void DkThumbScene::ensureVisible(QSharedPointer<DkImageContainerT> img) const
 
 QString DkThumbScene::currentDir() const
 {
-    if (mThumbs.empty() || !mThumbs[0])
-        return "";
+    if (mThumbs.empty() || !mThumbs[0]) {
+        if (mLoader) {
+            return mLoader->getDirPath();
+        } else { // should never happen
+            return "";
+        }
+    }
 
     return mThumbs[0]->fileInfo().absolutePath();
 }
@@ -1638,6 +1660,10 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
     // otherwise so we just don't propagate this event
     if (itemClicked || event->modifiers() == Qt::NoModifier)
         QGraphicsView::mousePressEvent(event);
+
+    if (!itemClicked) {
+        scene->showFile("");
+    }
 }
 
 void DkThumbsView::mouseMoveEvent(QMouseEvent *event)

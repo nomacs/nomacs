@@ -436,11 +436,12 @@ void DkMetaDataDock::updateEntries()
     for (int idx = 0; idx < nr; idx++)
         getExpandedItemNames(mProxyModel->index(idx, 0, QModelIndex()), mExpandedNames);
 
-    if (!mImgC)
-        return;
-
     mModel->deleteLater();
     mModel = new DkMetaDataModel(this);
+    if (!mImgC) {
+        mProxyModel->setSourceModel(mModel);
+        return;
+    }
     mModel->addMetaData(mImgC->getMetaData());
     mProxyModel->setSourceModel(mModel);
 

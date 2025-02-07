@@ -276,11 +276,6 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
             files = getFilteredFileInfoList(mCurrentDir,
                                             mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
 
-        if (files.empty()) {
-            emit showInfoSignal(tr("%1 \n does not contain any image").arg(mCurrentDir), 4000); // stop showing
-            return false;
-        }
-
         // ok new folder, this should speed-up loading
         mImages.clear();
 
