@@ -146,6 +146,7 @@ public:
 signals:
     void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
     void imageHasGPSSignal(bool) const;
+    void thumbViewLoadedSignal(const QString &) const;
 
 public slots:
     void imageLoaded(QSharedPointer<DkImageContainerT> img);

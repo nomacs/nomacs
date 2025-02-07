@@ -211,6 +211,7 @@ void DkNoMacs::init()
 
     // connections to the image loader
     connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, this, QOverload<QSharedPointer<DkImageContainerT>>::of(&DkNoMacs::setWindowTitle));
+    connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, this, &DkNoMacs::setWindowTitleDirectory);
 
     DkActionManager::instance().enableMovieActions(false);
 
@@ -988,6 +989,7 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings)
         });
         connect(mExplorer, &DkExplorer::openDir, getTabWidget(), &DkCentralWidget::loadDirToTab);
         connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mExplorer, &DkExplorer::setCurrentImage);
+        connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, mExplorer, &DkExplorer::setCurrentPath);
     }
 
     mExplorer->setVisible(show, saveSettings);
@@ -1014,6 +1016,9 @@ void DkNoMacs::showMetaDataDock(bool show, bool saveSettings)
         addDockWidget(mMetaDataDock->getDockLocationSettings(Qt::RightDockWidgetArea), mMetaDataDock);
 
         connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mMetaDataDock, &DkMetaDataDock::setImage);
+        connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, mMetaDataDock, [this]() {
+            mMetaDataDock->setImage(nullptr);
+        });
     }
 
     mMetaDataDock->setVisible(show, saveSettings);
@@ -1786,6 +1791,11 @@ void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC)
     setWindowTitle(imgC->filePath(), imgC->image().size(), imgC->isEdited(), imgC->getTitleAttribute());
 }
 
+void DkNoMacs::setWindowTitleDirectory(const QString &directory)
+{
+    setWindowTitle(directory, QSize(), false, QString());
+}
+
 void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool edited, const QString &attr)
 {
     QString title;
@@ -1831,21 +1841,27 @@ void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool e
     // TODO: move!
     DkStatusBar *bar = DkStatusBarManager::instance().statusbar();
 
-    if (((vp && !vp->getController()->getFileInfoLabel()->isVisible())
-         || !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date))
-        && getTabWidget()->getCurrentImage()) {
-        // create statusbar info
-        QSharedPointer<DkMetaDataT> metaData = getTabWidget()->getCurrentImage()->getMetaData();
-        QString dateString = metaData->getExifValue("DateTimeOriginal");
-        dateString = DkUtils::convertDateString(dateString, fInfo);
-        bar->setMessage(dateString, DkStatusBar::status_time_info);
-    } else
+    if (fInfo.isDir()) {
         bar->setMessage("", DkStatusBar::status_time_info); // hide label
-
-    if (fInfo.exists())
-        bar->setMessage(DkUtils::readableByte((float)fInfo.size()), DkStatusBar::status_filesize_info);
-    else
         bar->setMessage("", DkStatusBar::status_filesize_info);
+        bar->setMessage("", DkStatusBar::status_filenumber_info);
+    } else {
+        if (((vp && !vp->getController()->getFileInfoLabel()->isVisible())
+             || !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date))
+            && getTabWidget()->getCurrentImage()) {
+            // create statusbar info
+            QSharedPointer<DkMetaDataT> metaData = getTabWidget()->getCurrentImage()->getMetaData();
+            QString dateString = metaData->getExifValue("DateTimeOriginal");
+            dateString = DkUtils::convertDateString(dateString, fInfo);
+            bar->setMessage(dateString, DkStatusBar::status_time_info);
+        } else
+            bar->setMessage("", DkStatusBar::status_time_info); // hide label
+
+        if (fInfo.exists())
+            bar->setMessage(DkUtils::readableByte((float)fInfo.size()), DkStatusBar::status_filesize_info);
+        else
+            bar->setMessage("", DkStatusBar::status_filesize_info);
+    }
 }
 
 void DkNoMacs::settingsChanged()
