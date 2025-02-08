@@ -167,7 +167,6 @@ public slots:
     void bugReport();
     void loadRecursion();
     void setWindowTitle(QSharedPointer<DkImageContainerT> imgC);
-    void setWindowTitleDirectory(const QString &directory);
     void setWindowTitle(const QString &filePath, const QSize &size = QSize(), bool edited = false, const QString &attr = QString());
     void showOpacityDialog();
     void opacityUp();
