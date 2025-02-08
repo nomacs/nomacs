@@ -1858,7 +1858,7 @@ void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool e
             bar->setMessage("", DkStatusBar::status_time_info); // hide label
 
         if (fInfo.exists())
-            bar->setMessage(DkUtils::readableByte((float)fInfo.size()), DkStatusBar::status_filesize_info);
+            bar->setMessage(DkUtils::readableByte(fInfo.size()), DkStatusBar::status_filesize_info);
         else
             bar->setMessage("", DkStatusBar::status_filesize_info);
     }
