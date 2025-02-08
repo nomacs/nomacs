@@ -211,7 +211,9 @@ void DkNoMacs::init()
 
     // connections to the image loader
     connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, this, QOverload<QSharedPointer<DkImageContainerT>>::of(&DkNoMacs::setWindowTitle));
-    connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, this, &DkNoMacs::setWindowTitleDirectory);
+    connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, this, [this](const QString &path) {
+        setWindowTitle(path);
+    });
 
     DkActionManager::instance().enableMovieActions(false);
 
@@ -1789,11 +1791,6 @@ void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC)
     }
 
     setWindowTitle(imgC->filePath(), imgC->image().size(), imgC->isEdited(), imgC->getTitleAttribute());
-}
-
-void DkNoMacs::setWindowTitleDirectory(const QString &directory)
-{
-    setWindowTitle(directory, QSize(), false, QString());
 }
 
 void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool edited, const QString &attr)
