@@ -63,19 +63,6 @@ DkThumbNail::~DkThumbNail()
 {
 }
 
-/**
- * Loads the thumbnail.
- **/
-void DkThumbNail::compute()
-{
-    std::optional<LoadThumbnailResult> res = loadThumbnail(mFile, LoadThumbnailOption::none);
-    if (!res) {
-        mImg = {};
-        return;
-    }
-    mImg = DkImage::createThumb(res->thumb);
-}
-
 std::optional<QImage> loadThumbnailFromMetadata(const DkMetaDataT &metaData)
 {
     QImage thumb = metaData.getThumbnail();

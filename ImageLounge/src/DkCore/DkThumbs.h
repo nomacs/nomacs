@@ -114,8 +114,6 @@ public:
         return mFile;
     };
 
-    void compute();
-
     /**
      * Returns whether the thumbnail was loaded, or does not exist.
      * @return int a status (loaded | not loaded | exists not)
