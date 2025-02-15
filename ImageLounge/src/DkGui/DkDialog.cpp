@@ -3170,8 +3170,10 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
         }
 
         try {
-            DkThumbNail thumb = DkThumbNail(imgPath);
-            thumb.compute();
+            std::optional<LoadThumbnailResult> thumb = loadThumbnail(imgPath, LoadThumbnailOption::none);
+            if (thumb) {
+                thumb->thumb = DkImage::createThumb(thumb->thumb);
+            }
 
             cv::Mat ccTmp(cc.size(), cc.depth());
 
@@ -3180,7 +3182,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
             else
                 ccTmp = cc.clone();
 
-            cv::Mat thumbPatch = createPatch(thumb, patchResO);
+            cv::Mat thumbPatch = createPatch(thumb ? thumb->thumb : QImage(), imgPath, patchResO);
 
             if (thumbPatch.rows != patchResO || thumbPatch.cols != patchResO) {
                 iDidNothing++;
@@ -3222,8 +3224,8 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
                 }
 
                 // compute it now if we already have the full image loaded
-                if (thumb.getImage().width() > patchResD && thumb.getImage().height() > patchResD) {
-                    thumbPatch = createPatch(thumb, patchResD);
+                if (thumb && thumb->thumb.width() > patchResD && thumb->thumb.height() > patchResD) {
+                    thumbPatch = createPatch(thumb->thumb, imgPath, patchResD);
 
                     cv::Mat dPatch =
                         dImg.rowRange(maxIdx.y * patchResD, maxIdx.y * patchResD + patchResD).colRange(maxIdx.x * patchResD, maxIdx.x * patchResD + patchResD);
@@ -3235,7 +3237,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
                 // update cc
                 ccPtr[maxIdx.x] = (float)maxVal;
 
-                mFilesUsed[maxIdx.y * numPatchesH + maxIdx.x] = QFileInfo(thumb.getFilePath()); // replaces additionally the old file
+                mFilesUsed[maxIdx.y * numPatchesH + maxIdx.x] = QFileInfo(imgPath); // replaces additionally the old file
                 iDidNothing = 0;
             } else
                 iDidNothing++;
@@ -3271,7 +3273,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
                 continue;
             }
 
-            cv::Mat thumbPatch = createPatch(DkThumbNail(cFile.absoluteFilePath()), patchResD);
+            cv::Mat thumbPatch = createPatch({}, cFile.absoluteFilePath(), patchResD);
 
             cv::Mat dPatch = dImg.rowRange(rIdx * patchResD, rIdx * patchResD + patchResD).colRange(cIdx * patchResD, cIdx * patchResD + patchResD);
             thumbPatch.copyTo(dPatch);
@@ -3314,17 +3316,17 @@ void DkMosaicDialog::matchPatch(const cv::Mat &img, const cv::Mat &thumb, int pa
     }
 }
 
-cv::Mat DkMosaicDialog::createPatch(const DkThumbNail &thumb, int patchRes)
+cv::Mat DkMosaicDialog::createPatch(const QImage &thumb, const QString &filePath, int patchRes)
 {
     QImage img;
 
     // load full image if we have not enough resolution
-    if (thumb.getImage().isNull() || qMin(thumb.getImage().width(), thumb.getImage().height()) < patchRes) {
+    if (thumb.isNull() || qMin(thumb.width(), thumb.height()) < patchRes) {
         DkBasicLoader loader;
-        loader.loadGeneral(thumb.getFilePath(), true, true);
+        loader.loadGeneral(filePath, true, true);
         img = loader.image();
     } else
-        img = thumb.getImage();
+        img = thumb;
 
     cv::Mat cvThumb = DkImage::qImage2Mat(img);
     cv::cvtColor(cvThumb, cvThumb, CV_RGB2Lab);
