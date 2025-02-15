@@ -58,16 +58,6 @@ DkThumbNail::~DkThumbNail()
 {
 }
 
-void DkThumbNail::compute()
-{
-    if (!DkUtils::isValid(QFileInfo(mFile))) {
-        qWarning() << "[Thumbnail] compute: file does not exist or is not readable" << mFile;
-        return;
-    }
-
-    mImg = computeIntern(mFile, prefer_exif);
-}
-
 QString DkThumbNail::toolTip() const
 {
     const QFileInfo fileInfo(getFilePath());
