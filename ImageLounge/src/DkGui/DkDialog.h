@@ -68,7 +68,6 @@ class DkBaseViewPort;
 class TreeItem;
 class DkSlider;
 class DkButton;
-class DkThumbNail;
 class DkAppManager;
 class DkDisplayWidget;
 class DkCentralWidget;
@@ -721,7 +720,7 @@ protected:
     void enableAll(bool enable);
     QString getRandomImagePath(const QString &cPath, const QString &ignore, const QString &suffix);
     void matchPatch(const cv::Mat &img, const cv::Mat &thumb, int patchRes, cv::Mat &cc);
-    cv::Mat createPatch(const DkThumbNail &thumb, int patchRes);
+    cv::Mat createPatch(const QImage &thumb, const QString &filePath, int patchRes);
 
     void dropEvent(QDropEvent *event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
