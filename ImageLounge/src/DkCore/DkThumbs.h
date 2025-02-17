@@ -33,6 +33,7 @@
 #include <QSharedPointer>
 #pragma warning(pop) // no warnings from includes - end
 #include "DkMetaData.h"
+#include <QThread>
 #include <optional>
 
 #pragma warning(disable : 4251) // TODO: remove
@@ -230,4 +231,31 @@ enum class LoadThumbnailOption {
 
 std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt);
 
+class DkThumbLoaderWorker : public QObject
+{
+    Q_OBJECT
+public:
+    DkThumbLoaderWorker();
+    void requestThumbnail(const QString &filePath, LoadThumbnailOption opt);
+signals:
+    void thumbnailLoaded(const QString &filePath, const QImage &thumb);
+    void thumbnailLoadFailed(const QString &filePath);
+    void requestFullThumbnail(const QString &filePath, LoadThumbnailOption opt);
+};
+
+class DkThumbLoader : public QObject
+{
+    Q_OBJECT
+    QThread mWorkerThread{};
+
+public:
+    DkThumbLoader();
+    ~DkThumbLoader();
+    void requestThumbnail(const QString &filePath);
+
+signals:
+    void thumbnailLoaded(const QString &filePath, const QImage &thumb);
+    void thumbnailLoadFailed(const QString &filePath);
+    void thumbnailRequested(const QString &filePath, LoadThumbnailOption opt = LoadThumbnailOption::force_exif);
+};
 }

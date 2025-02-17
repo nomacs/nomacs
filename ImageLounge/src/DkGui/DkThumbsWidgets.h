@@ -191,20 +191,18 @@ class DkThumbLabel : public QGraphicsObject
     Q_OBJECT
 
 public:
-    DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QGraphicsItem *parent = 0);
+    DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGraphicsItem *parent = 0);
     ~DkThumbLabel();
 
-    void setThumb(QSharedPointer<DkThumbNailT> thumb);
-    QSharedPointer<DkThumbNailT> getThumb()
-    {
-        return mThumb;
-    };
+    void setThumb();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void updateSize();
     void setVisible(bool visible);
     QPixmap pixmap() const;
     void cancelLoading();
+    QString filePath() const;
+    QImage image() const;
 
 public slots:
     void updateLabel();
@@ -219,10 +217,8 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
-    QSharedPointer<DkThumbNailT> mThumb;
     QGraphicsPixmapItem mIcon;
     QGraphicsTextItem mText;
-    bool mThumbInitialized = false;
     bool mFetchingThumb = false;
     QPen mNoImagePen;
     QBrush mNoImageBrush;
@@ -230,6 +226,13 @@ protected:
     QBrush mSelectBrush;
     bool mIsHovered = false;
     QPointF mLastMove;
+    QString mFilePath;
+    QImage mThumbImage;
+    bool mThumbNotExist;
+    DkThumbLoader *mThumbLoader;
+
+private:
+    void updateTooltip();
 };
 
 class DllCoreExport DkThumbScene : public QGraphicsScene
@@ -237,7 +240,7 @@ class DllCoreExport DkThumbScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    DkThumbScene(QWidget *parent = 0);
+    DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent = 0);
 
     void updateLayout();
     QStringList getSelectedFiles() const;
@@ -284,7 +287,8 @@ private:
 
     QVector<DkThumbLabel *> mThumbLabels;
     QSharedPointer<DkImageLoader> mLoader;
-    QVector<QSharedPointer<DkThumbNailT>> mThumbs;
+    QVector<QString> mThumbs;
+    DkThumbLoader *mThumbLoader;
 };
 
 class DkThumbsView : public QGraphicsView
@@ -296,9 +300,6 @@ public:
 
 signals:
     void updateDirSignal(const QString &dir) const;
-
-public slots:
-    void fetchThumbs();
 
 protected:
     void wheelEvent(QWheelEvent *event) override;
@@ -319,7 +320,7 @@ class DllCoreExport DkThumbScrollWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkThumbScrollWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkThumbScrollWidget(DkThumbLoader *thumbLoader, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkThumbScrollWidget();
 
     DkThumbScene *getThumbWidget()
