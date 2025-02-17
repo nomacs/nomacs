@@ -328,15 +328,15 @@ QString DkInputTextEdit::firstDirPath() const
 }
 
 // File Selection --------------------------------------------------------------------
-DkBatchInput::DkBatchInput(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+DkBatchInput::DkBatchInput(DkThumbLoader *thumbLoader, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
     : DkBatchContent(parent, f)
 {
     setObjectName("DkBatchInput");
-    createLayout();
+    createLayout(thumbLoader);
     setMinimumHeight(300);
 }
 
-void DkBatchInput::createLayout()
+void DkBatchInput::createLayout(DkThumbLoader *thumbLoader)
 {
     mDirectoryEdit = new DkDirectoryEdit(this);
 
@@ -351,7 +351,7 @@ void DkBatchInput::createLayout()
     mResultTextEdit->setReadOnly(true);
     mResultTextEdit->setVisible(false);
 
-    mThumbScrollWidget = new DkThumbScrollWidget(this);
+    mThumbScrollWidget = new DkThumbScrollWidget(thumbLoader, this);
     mThumbScrollWidget->getThumbWidget()->setImageLoader(mLoader);
 
     // add explorer
@@ -2422,7 +2422,7 @@ void DkBatchInfoWidget::setInfo(const QString &message, const InfoMode &mode)
 }
 
 // Batch Widget --------------------------------------------------------------------
-DkBatchWidget::DkBatchWidget(const QString &currentDirectory, QWidget *parent /* = 0 */)
+DkBatchWidget::DkBatchWidget(DkThumbLoader *thumbLoader, const QString &currentDirectory, QWidget *parent /* = 0 */)
     : DkWidget(parent)
 {
     mCurrentDirectory = currentDirectory;
@@ -2431,7 +2431,7 @@ DkBatchWidget::DkBatchWidget(const QString &currentDirectory, QWidget *parent /*
     connect(mBatchProcessing, &DkBatchProcessing::progressValueChanged, this, &DkBatchWidget::updateProgress);
     connect(mBatchProcessing, &DkBatchProcessing::finished, this, &DkBatchWidget::processingFinished);
 
-    createLayout();
+    createLayout(thumbLoader);
 
     connect(inputWidget(), &DkBatchInput::updateInputDir, outputWidget(), &DkBatchOutput::setInputDir);
     connect(&mLogUpdateTimer, &QTimer::timeout, this, &DkBatchWidget::updateLog);
@@ -2461,7 +2461,7 @@ DkBatchWidget::~DkBatchWidget()
         mBatchProcessing->waitForFinished();
 }
 
-void DkBatchWidget::createLayout()
+void DkBatchWidget::createLayout(DkThumbLoader *thumbLoader)
 {
     // setStyleSheet("QWidget{border: 1px solid #000000;}");
 
@@ -2469,7 +2469,7 @@ void DkBatchWidget::createLayout()
 
     // Input Directory
     mWidgets[batch_input] = new DkBatchContainer(tr("Input"), tr("no files selected"), this);
-    const auto bi = new DkBatchInput(this);
+    const auto bi = new DkBatchInput(thumbLoader, this);
     mWidgets[batch_input]->setContentWidget(bi);
     inputWidget()->setDir(mCurrentDirectory);
     connect(bi, &DkBatchInput::changed, this, &DkBatchWidget::widgetChanged);

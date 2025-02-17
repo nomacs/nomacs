@@ -359,4 +359,51 @@ void DkThumbsThreadPool::clear()
 {
     pool()->clear();
 }
+
+DkThumbLoaderWorker::DkThumbLoaderWorker()
+{
+    connect(this, &DkThumbLoaderWorker::requestFullThumbnail, this, &DkThumbLoaderWorker::requestThumbnail, Qt::QueuedConnection);
+}
+
+void DkThumbLoaderWorker::requestThumbnail(const QString &filePath, LoadThumbnailOption opt)
+{
+    const std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
+    if (res) {
+        emit thumbnailLoaded(filePath, res->thumb);
+        return;
+    }
+
+    if (opt == LoadThumbnailOption::force_exif) {
+        // By default we can use force_exif to try loading those that have EXIF thumbnails first,
+        // which should be fast.
+        // If this failed, push the filePath to the back of the queue, via the QueuedConnection,
+        // so we prioritize loading all the EXIF thumbnails.
+        emit requestFullThumbnail(filePath, LoadThumbnailOption::force_full);
+    } else {
+        // We have tried loading the full thumbnail
+        emit thumbnailLoadFailed(filePath);
+    }
+}
+
+DkThumbLoader::DkThumbLoader()
+{
+    auto *worker = new DkThumbLoaderWorker;
+    worker->moveToThread(&mWorkerThread);
+    connect(&mWorkerThread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(this, &DkThumbLoader::thumbnailRequested, worker, &DkThumbLoaderWorker::requestThumbnail);
+    connect(worker, &DkThumbLoaderWorker::thumbnailLoaded, this, &DkThumbLoader::thumbnailLoaded);
+    connect(worker, &DkThumbLoaderWorker::thumbnailLoadFailed, this, &DkThumbLoader::thumbnailLoadFailed);
+    mWorkerThread.start();
+}
+
+DkThumbLoader::~DkThumbLoader()
+{
+    mWorkerThread.quit();
+    mWorkerThread.wait();
+}
+
+void DkThumbLoader::requestThumbnail(const QString &filePath)
+{
+    emit thumbnailRequested(filePath);
+}
 }

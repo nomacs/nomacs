@@ -215,6 +215,9 @@ protected:
 
         widget_end
     };
+
+private:
+    DkThumbLoader mThumbLoader{};
 };
 
 }
