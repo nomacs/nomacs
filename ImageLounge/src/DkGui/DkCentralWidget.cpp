@@ -195,33 +195,26 @@ QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const
     return mImageLoader->getCurrentImage();
 }
 
-QIcon DkTabInfo::getIcon()
+QIcon DkTabInfo::getIcon(const QSize &size)
 {
-    QIcon icon;
-
-    if (mTabMode == tab_thumb_preview)
+    if (mTabMode == tab_thumb_preview) {
         return DkImage::loadIcon(":/nomacs/img/rects.svg");
-    else if (mTabMode == tab_recent_files)
+    } else if (mTabMode == tab_recent_files) {
         return DkImage::loadIcon(":/nomacs/img/bars.svg");
-    else if (mTabMode == tab_preferences)
+    } else if (mTabMode == tab_preferences) {
         return DkImage::loadIcon(":/nomacs/img/settings.svg");
-    else if (mTabMode == tab_batch)
+    } else if (mTabMode == tab_batch) {
         return DkImage::loadIcon(":/nomacs/img/batch-processing.svg");
+    }
 
-    if (!mImageLoader->getCurrentImage())
-        return icon;
+    const QSharedPointer<DkImageContainerT> img = mImageLoader->getCurrentImage();
 
-    QSharedPointer<DkThumbNailT> thumb = mImageLoader->getCurrentImage()->getThumb();
+    if (!img) {
+        return {};
+    }
 
-    if (!thumb)
-        return icon;
-
-    QImage img = thumb->getImage();
-
-    if (!img.isNull())
-        icon = QPixmap::fromImage(img);
-
-    return icon;
+    // TODO: better scaling that consider aspect ratio
+    return QPixmap::fromImage(img->imageScaledToHeight(size.height()));
 }
 
 QString DkTabInfo::getTabText() const
@@ -596,7 +589,7 @@ DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 
 DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
 {
-    DkThumbScrollWidget *thumbScrollWidget = new DkThumbScrollWidget(this);
+    DkThumbScrollWidget *thumbScrollWidget = new DkThumbScrollWidget(&mThumbLoader, this);
     // thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettingsManager::param().slideShow().backgroundColor);
     thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 
@@ -757,7 +750,7 @@ void DkCentralWidget::updateTab(QSharedPointer<DkTabInfo> tabInfo)
 {
     // qDebug() << tabInfo->getTabText() << " set at tab location: " << tabInfo->getTabIdx();
     mTabbar->setTabText(tabInfo->getTabIdx(), tabInfo->getTabText());
-    mTabbar->setTabIcon(tabInfo->getTabIdx(), tabInfo->getIcon());
+    mTabbar->setTabIcon(tabInfo->getTabIdx(), tabInfo->getIcon(mTabbar->iconSize()));
 }
 
 void DkCentralWidget::updateTabIdx()
@@ -844,7 +837,7 @@ void DkCentralWidget::showThumbView(bool show)
             tw->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
 
             if (tabInfo->getImage())
-                tw->getThumbWidget()->ensureVisible(tabInfo->getImage());
+                tw->getThumbWidget()->ensureVisible(tabInfo->getImage()->filePath());
 
             connect(tw, &DkThumbScrollWidget::updateDirSignal, tabInfo->getImageLoader().data(), &DkImageLoader::loadDirRecursive, Qt::UniqueConnection);
             connect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter, Qt::UniqueConnection);
@@ -920,7 +913,7 @@ void DkCentralWidget::showPreferences(bool show)
 
 DkBatchWidget *DkCentralWidget::createBatch()
 {
-    auto bw = new DkBatchWidget(getCurrentDir(), this);
+    auto bw = new DkBatchWidget(&mThumbLoader, getCurrentDir(), this);
 
     // add actions
     DkActionManager &am = DkActionManager::instance();

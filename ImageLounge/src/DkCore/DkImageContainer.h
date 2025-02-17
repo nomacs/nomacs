@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <memory>
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QFutureWatcher>
 #include <QSharedPointer>
@@ -94,7 +95,7 @@ public:
 
     virtual QSharedPointer<DkBasicLoader> getLoader();
     virtual QSharedPointer<DkMetaDataT> getMetaData();
-    virtual QSharedPointer<DkThumbNailT> getThumb();
+    std::unique_ptr<DkThumbNailT> createThumb();
     virtual QSharedPointer<QByteArray> getFileBuffer();
 #ifdef WITH_QUAZIP
     QSharedPointer<DkZipContainer> getZipData();
@@ -140,7 +141,6 @@ protected:
 
     QSharedPointer<QByteArray> mFileBuffer;
     QSharedPointer<DkBasicLoader> mLoader;
-    QSharedPointer<DkThumbNailT> mThumb;
 
     int mLoadState = not_loaded;
     bool mEdited = false;
@@ -182,7 +182,6 @@ public:
     bool isFileDownloaded() const;
 
     virtual QSharedPointer<DkBasicLoader> getLoader() override;
-    virtual QSharedPointer<DkThumbNailT> getThumb() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
     virtual void undo() override;

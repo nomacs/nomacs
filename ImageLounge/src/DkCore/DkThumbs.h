@@ -35,6 +35,8 @@
 #include <QSharedPointer>
 #include <QThread>
 #pragma warning(pop) // no warnings from includes - end
+#include "DkMetaData.h"
+#include <optional>
 
 #pragma warning(disable : 4251) // TODO: remove
 
@@ -112,8 +114,6 @@ public:
         return mFile;
     };
 
-    void compute(int forceLoad = do_not_force);
-
     /**
      * Returns whether the thumbnail was loaded, or does not exist.
      * @return int a status (loaded | not loaded | exists not)
@@ -128,25 +128,6 @@ public:
             return exists_not;
     };
 
-    void setMaxThumbSize(int maxSize)
-    {
-        mMaxThumbSize = maxSize;
-    };
-
-    int getMaxThumbSize() const
-    {
-        return mMaxThumbSize;
-    };
-
-    /**
-     * Manipulates the file loaded status.
-     * @param exists a status (loaded | not loaded | exists not)
-     **/
-    void setImgExists(bool exists)
-    {
-        mImgExists = exists;
-    };
-
     enum {
         do_not_force,
         force_exif_thumb,
@@ -156,13 +137,11 @@ public:
     };
 
 protected:
-    static QImage computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
+    static QImage computeIntern(const QString &filePath, int forceLoad);
 
     QImage mImg;
     QString mFile;
-    // int s;
     bool mImgExists;
-    int mMaxThumbSize;
 };
 
 class DllCoreExport DkThumbNailT : public QObject, public DkThumbNail
@@ -173,7 +152,7 @@ public:
     DkThumbNailT(const QString &mFile = QString(), const QImage &mImg = QImage());
     ~DkThumbNailT();
 
-    bool fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+    bool fetchThumb(int forceLoad = do_not_force);
 
     /**
      * Returns whether the thumbnail was loaded, or does not exist.
@@ -218,6 +197,49 @@ private:
     DkThumbsThreadPool(const DkThumbsThreadPool &);
 
     QThreadPool *mPool;
+};
+
+struct LoadThumbnailResult {
+    QImage thumb{};
+    bool fromExif{};
+    std::unique_ptr<DkMetaDataT> metaData{};
+    QString filePath{};
+};
+
+enum class LoadThumbnailOption {
+    none,
+    force_exif,
+    force_full,
+};
+
+std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt);
+
+class DkThumbLoaderWorker : public QObject
+{
+    Q_OBJECT
+public:
+    DkThumbLoaderWorker();
+    void requestThumbnail(const QString &filePath, LoadThumbnailOption opt);
+signals:
+    void thumbnailLoaded(const QString &filePath, const QImage &thumb);
+    void thumbnailLoadFailed(const QString &filePath);
+    void requestFullThumbnail(const QString &filePath, LoadThumbnailOption opt);
+};
+
+class DkThumbLoader : public QObject
+{
+    Q_OBJECT
+    QThread mWorkerThread{};
+
+public:
+    DkThumbLoader();
+    ~DkThumbLoader();
+    void requestThumbnail(const QString &filePath);
+
+signals:
+    void thumbnailLoaded(const QString &filePath, const QImage &thumb);
+    void thumbnailLoadFailed(const QString &filePath);
+    void thumbnailRequested(const QString &filePath, LoadThumbnailOption opt = LoadThumbnailOption::force_exif);
 };
 
 }

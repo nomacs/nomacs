@@ -1475,7 +1475,6 @@ void DkImageLoader::rotateImage(double angle)
     QImage img = DkImage::rotateImage(mCurrentImage->pixmap(), qRound(angle));
 
     QImage thumb = DkImage::createThumb(mCurrentImage->pixmap());
-    mCurrentImage->getThumb()->setImage(thumb);
 
     QSharedPointer<DkMetaDataT> metaData = mCurrentImage->getMetaData(); // via ImageContainer, BasicLoader
     bool metaDataSet = false;
