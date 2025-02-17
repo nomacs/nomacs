@@ -589,7 +589,7 @@ DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 
 DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
 {
-    DkThumbScrollWidget *thumbScrollWidget = new DkThumbScrollWidget(this);
+    DkThumbScrollWidget *thumbScrollWidget = new DkThumbScrollWidget(&mThumbLoader, this);
     // thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettingsManager::param().slideShow().backgroundColor);
     thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 
@@ -914,7 +914,7 @@ void DkCentralWidget::showPreferences(bool show)
 
 DkBatchWidget *DkCentralWidget::createBatch()
 {
-    auto bw = new DkBatchWidget(getCurrentDir(), this);
+    auto bw = new DkBatchWidget(&mThumbLoader, getCurrentDir(), this);
 
     // add actions
     DkActionManager &am = DkActionManager::instance();
