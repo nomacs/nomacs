@@ -272,6 +272,7 @@ class FormatsConfig(Config):
             self.qtpath,
             "-DENABLE_QOI=ON",
             "-DENABLE_WEBP=OFF",
+            "-DENABLE_DDS=ON",
             "-B" + self.builddir,
             self.srcpath
         ]
