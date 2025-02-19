@@ -98,6 +98,8 @@ void DkMetaDataT::update(const QSharedPointer<DkMetaDataT> &other)
 
 void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArray> ba)
 {
+    mExifState = no_data;
+
     if (mUseSidecar) {
         loadSidecar(filePath);
         return;
@@ -117,16 +119,15 @@ void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArra
         } else {
             mExifImg = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba->constData()), ba->size());
         }
+
     } catch (...) {
         // TODO: check crashes here
-        mExifState = no_data;
         // qDebug() << "[Exiv2] could not open file for exif data";
         qInfo() << "[Exiv2] could not load Exif data from file:" << filePath;
         return;
     }
 
     if (mExifImg.get() == 0) {
-        mExifState = no_data;
         qDebug() << "[Exiv2] image could not be opened for exif data extraction";
         return;
     }
@@ -136,17 +137,20 @@ void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArra
 
         if (!mExifImg->good()) {
             qDebug() << "[Exiv2] metadata could not be read";
-            mExifState = no_data;
             return;
         }
 
+        if (mExifImg->exifData().empty() && mExifImg->xmpData().empty() && mExifImg->iptcData().empty() && mExifImg->iptcData().empty()) {
+            qDebug() << "[Exiv2] metadata is empty";
+            return;
+        }
+        qDebug() << "[Exiv2] metadata loaded" << mExifImg->mimeType().c_str() << mExifImg->pixelWidth() << mExifImg->pixelHeight();
+
     } catch (...) {
-        mExifState = no_data;
-        qDebug() << "[Exiv2] could not read metadata (exception)";
+        qDebug() << "[Exiv2] could not read metadata";
         return;
     }
 
-    // qDebug() << "[Exiv2] metadata loaded";
     mExifState = loaded;
 
     // printMetaData();
@@ -292,81 +296,69 @@ QString DkMetaDataT::getDescription() const
     return description;
 }
 
-int DkMetaDataT::getOrientationDegree() const
+bool DkMetaDataT::isOrientationMirrored() const
 {
-    if (mExifState != loaded && mExifState != dirty)
-        return 0;
+    QString value = getExifValue("Orientation");
 
-    int orientation = 0;
+    bool ok;
+    int orientation = value.toInt(&ok);
+    if (value.isEmpty() || !ok)
+        return false;
 
-    try {
-        Exiv2::ExifData &exifData = mExifImg->exifData();
-
-        if (!exifData.empty()) {
-            Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
-            Exiv2::ExifData::iterator pos = exifData.findKey(key);
-
-            if (pos != exifData.end() && pos->count() != 0) {
-                auto v = pos->getValue();
-                orientation = (int)pos->toFloat();
-
-                switch (orientation) {
-                case 6:
-                    orientation = 90;
-                    break;
-                case 7:
-                    orientation = 90;
-                    break;
-                case 3:
-                    orientation = 180;
-                    break;
-                case 4:
-                    orientation = 180;
-                    break;
-                case 8:
-                    orientation = -90;
-                    break;
-                case 5:
-                    orientation = -90;
-                    break;
-                case 1:
-                    orientation = 0;
-                    break;
-                default:
-                    orientation = -1;
-                    break;
-                }
-            }
-        }
-    } catch (...) {
-        return 0;
+    if (orientation < 1 || orientation > 8) {
+        qWarning() << "[EXIF] Bogus orientation:" << orientation;
+        return false;
     }
 
-    return orientation;
+    switch (orientation) {
+    case 1:
+    case 3:
+    case 6:
+    case 8:
+        return false;
+    case 2:
+    case 4:
+    case 5:
+    case 7:
+        return true;
+    }
+    return false;
 }
 
-DkMetaDataT::ExifOrientationState DkMetaDataT::checkExifOrientation() const
+int DkMetaDataT::getOrientationDegrees() const
 {
-    if (mExifState != loaded && mExifState != dirty)
+    QString value = getExifValue("Orientation");
+    if (value.isEmpty())
         return or_not_set;
 
-    QString orStr = getNativeExifValue("Exif.Image.Orientation", false);
+    bool ok;
+    int orientation = value.toInt(&ok);
 
-    if (orStr.isEmpty())
-        return or_not_set;
+    if (!ok || orientation < 1 || orientation > 8) {
+        qWarning() << "[EXIF] Bogus orientation:" << orientation;
+        return or_invalid;
+    }
 
-    bool ok = false;
-    int orientation = orStr.toInt(&ok);
-
-    // orientation must be integer
-    if (!ok)
-        return or_illegal;
-
-    // according to the specs only values between 0 and 8 are valid
-    if (orientation > 0 && orientation <= 8)
-        return or_valid;
-
-    return or_illegal;
+    switch (orientation) {
+    case 1:
+        return 0;
+    case 6:
+        return 90;
+    case 3:
+        return 180;
+    case 8:
+        return -90;
+    case 2:
+        return 0;
+    case 4:
+        return 180;
+    case 5:
+        return 90;
+    case 7:
+        return -90;
+    default:
+        return or_invalid;
+    }
 }
 
 int DkMetaDataT::getRating() const
@@ -726,11 +718,23 @@ QImage DkMetaDataT::getThumbnail() const
         QByteArray ba = QByteArray(reinterpret_cast<const char *>(buffer.pData_), buffer.size_);
 #endif
         qThumb.loadFromData(ba);
+        qThumb.setText("Thumb.FileSize", QString::number(ba.size()));
     } catch (...) {
         qDebug() << "Sorry, I could not load the thumb from the exif data...";
     }
 
     return qThumb;
+}
+
+QString DkMetaDataT::getMimeType() const
+{
+    QString type;
+    try {
+        if (mExifImg)
+            type = mExifImg->mimeType().c_str();
+    } catch (...) {
+    }
+    return type;
 }
 
 QImage DkMetaDataT::getPreviewImage(int minPreviewWidth) const
@@ -946,18 +950,21 @@ QStringList DkMetaDataT::getIptcValues() const
     return iptcValues;
 }
 
-void DkMetaDataT::setQtValues(const QImage &cImg)
+void DkMetaDataT::setQtValues(const QImage &img)
 {
-    QStringList qtKeysInit = cImg.textKeys();
+    // Omit "Raw profile type exif" set by ???, presumably it would conflict when saving file
+    // This is a known unregistered tag in PNG: https://exiftool.org/TagNames/PNG.html
+    const QStringList keys = img.textKeys();
+    for (const auto &key : keys) {
+        if (key.isEmpty() || key == "Raw profile type exif")
+            continue;
+        QString value = img.text(key);
+        if (value.length() >= 5000)
+            value = QObject::tr("<data too large to display>");
 
-    for (QString cKey : qtKeysInit) {
-        if (!cKey.isEmpty() && cKey != "Raw profile type exif") {
-            QString val = cImg.text(cKey).size() < 5000 ? cImg.text(cKey) : QObject::tr("<data too large to display>");
-
-            if (!val.isEmpty()) {
-                mQtValues.append(val);
-                mQtKeys.append(cKey);
-            }
+        if (!value.isEmpty()) {
+            mQtValues.append(value);
+            mQtKeys.append(key);
         }
     }
 }

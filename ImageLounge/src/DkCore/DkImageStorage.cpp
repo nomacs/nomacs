@@ -349,6 +349,12 @@ QImage rotateImageCVMat(const QImage &imgIn, cv::RotateFlags rot, int type)
     QImage imgOut = QImage(size, imgIn.format());
     imgOut.setColorTable(imgIn.colorTable());
     imgOut.setColorSpace(imgIn.colorSpace());
+    imgOut.setDotsPerMeterX(imgIn.dotsPerMeterX());
+    imgOut.setDotsPerMeterY(imgIn.dotsPerMeterY());
+    imgOut.setDevicePixelRatio(imgIn.devicePixelRatio());
+    for (auto &key : imgIn.textKeys())
+        imgOut.setText(key, imgIn.text(key));
+
     const cv::Mat matIn = cv::Mat(imgIn.height(), imgIn.width(), type, (uchar *)imgIn.constBits(), imgIn.bytesPerLine());
     cv::Mat matOut = cv::Mat(imgOut.height(), imgOut.width(), type, imgOut.bits(), imgOut.bytesPerLine());
 
@@ -976,7 +982,7 @@ QByteArray DkImage::extractImageFromDataStream(const QByteArray &ba, const QByte
     return bac;
 }
 
-QByteArray DkImage::fixSamsungPanorama(QByteArray &ba)
+bool DkImage::fixSamsungPanorama(QByteArray &ba)
 {
     // this code is based on python code from bcyrill
     // see: https://gist.github.com/bcyrill/e59fda6c7ffe23c7c4b08a990804b269
@@ -984,13 +990,13 @@ QByteArray DkImage::fixSamsungPanorama(QByteArray &ba)
     // see also: https://github.com/nomacs/nomacs/issues/254
 
     if (ba.size() < 8)
-        return QByteArray();
+        return false;
 
     QByteArray trailer = ba.right(4);
 
     // is it a samsung panorama jpg?
     if (trailer != QByteArray("SEFT"))
-        return QByteArray();
+        return false;
 
     // TODO saveify:
     int sefhPos = intFromByteArray(ba, ba.size() - 8) + 8;
@@ -998,7 +1004,7 @@ QByteArray DkImage::fixSamsungPanorama(QByteArray &ba)
 
     // trailer starts with "SEFH"?
     if (trailer.left(4) != QByteArray("SEFH"))
-        return QByteArray();
+        return false;
 
     int endPos = ba.size();
     int dirPos = endPos - sefhPos;
@@ -1027,7 +1033,7 @@ QByteArray DkImage::fixSamsungPanorama(QByteArray &ba)
     }
 
     if (!isPano)
-        return QByteArray();
+        return false;
 
     int dataPos = dirPos - firstBlock;
 
@@ -1038,7 +1044,8 @@ QByteArray DkImage::fixSamsungPanorama(QByteArray &ba)
     nb.append(ba.right(dataPos));
     qDebug() << "SAMSUNG panorma fix: EOI marker injected";
 
-    return nb;
+    ba = nb;
+    return true;
 }
 
 int DkImage::intFromByteArray(const QByteArray &ba, int pos)
