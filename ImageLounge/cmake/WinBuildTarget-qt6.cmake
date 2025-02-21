@@ -137,6 +137,10 @@ if (ENABLE_HEIF)
     file(DOWNLOAD "https://github.com/novomesk/qt-jp2-image-plugin/releases/latest/download/kimg_jp2.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/kimg_jp2.dll)
 endif()
 
+if (ENABLE_JXR)
+    file(DOWNLOAD "https://github.com/novomesk/qt-jxr-image-plugin/releases/latest/download/kimg_jxr.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/kimg_jxr.dll)
+endif()
+
 # copy Qt libs
 file(COPY ${QT_QMAKE_PATH}/Qt6Widgets.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 file(COPY ${QT_QMAKE_PATH}/Qt6Gui.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
