@@ -82,7 +82,7 @@ public:
         cm_end,
     };
 
-    DkFilePreview(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkFilePreview(DkThumbLoader *loader, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
     ~DkFilePreview()
     {
@@ -138,7 +138,6 @@ protected:
     void saveSettings();
 
 private:
-    std::vector<std::unique_ptr<DkThumbNailT>> mThumbPtrs;
     QTransform worldMatrix;
 
     QPoint lastMousePos;
@@ -174,6 +173,16 @@ private:
 
     QMenu *contextMenu;
     QVector<QAction *> contextMenuActions;
+
+    std::vector<QString> mFilePaths{};
+
+    struct Thumb {
+        QImage image;
+        bool notExist;
+    };
+
+    QHash<QString, Thumb> mThumbs;
+    DkThumbLoader *mThumbLoader;
 
     void init();
     void initOrientations();
