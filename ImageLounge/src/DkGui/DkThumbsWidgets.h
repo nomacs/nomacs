@@ -138,7 +138,6 @@ protected:
     void saveSettings();
 
 private:
-    QVector<QSharedPointer<DkImageContainerT>> mThumbs;
     std::vector<std::unique_ptr<DkThumbNailT>> mThumbPtrs;
     QTransform worldMatrix;
 
