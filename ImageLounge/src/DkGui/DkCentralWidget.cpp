@@ -568,7 +568,7 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
 DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 {
     DkActionManager &am = DkActionManager::instance();
-    DkRecentFilesWidget *rw = new DkRecentFilesWidget(this);
+    DkRecentFilesWidget *rw = new DkRecentFilesWidget(&mThumbLoader, this);
     rw->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
 
     // add actions

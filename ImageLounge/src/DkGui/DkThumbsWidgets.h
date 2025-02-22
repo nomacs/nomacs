@@ -409,19 +409,20 @@ class DkThumbPreviewLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkThumbPreviewLabel(const QString &filePath, int thumbSize = 100, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    DkThumbPreviewLabel(const QString &filePath, DkThumbLoader *thumbLoader, int thumbSize = 100, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
 
 public slots:
-    void thumbLoaded();
+    void thumbLoaded(const QString &filePath, const QImage &img);
 
 protected:
     void mousePressEvent(QMouseEvent *ev) override;
 
-    QSharedPointer<DkThumbNailT> mThumb;
     int mThumbSize = 100;
+    DkThumbLoader *mLoader;
+    QString mFilePath;
 };
 
 class DllCoreExport DkRecentDirWidget : public DkFadeWidget
@@ -429,7 +430,7 @@ class DllCoreExport DkRecentDirWidget : public DkFadeWidget
     Q_OBJECT
 
 public:
-    DkRecentDirWidget(const DkRecentDir &rde, QWidget *parent = 0);
+    DkRecentDirWidget(const DkRecentDir &rde, DkThumbLoader *thumbLoader, QWidget *parent = 0);
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
@@ -455,7 +456,7 @@ protected:
 
     QVector<QPushButton *> mButtons;
 
-    void createLayout();
+    void createLayout(DkThumbLoader *);
     void mousePressEvent(QMouseEvent *event) override;
     void enterEvent(DkEnterEvent *event) override;
     void leaveEvent(QEvent *event) override;
@@ -466,7 +467,7 @@ class DllCoreExport DkRecentFilesWidget : public DkFadeWidget
     Q_OBJECT
 
 public:
-    DkRecentFilesWidget(QWidget *parent = 0);
+    DkRecentFilesWidget(DkThumbLoader *thumbLoader, QWidget *parent = 0);
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
@@ -481,6 +482,7 @@ protected:
     void updateList();
 
     QScrollArea *mScrollArea;
+    DkThumbLoader *mThumbLoader;
 };
 
 }
