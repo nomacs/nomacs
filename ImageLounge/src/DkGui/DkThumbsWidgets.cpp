@@ -289,18 +289,13 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         DkThumbNailT *thumb = mThumbPtrs.at(idx).get();
         QImage img;
 
-        // if the image is loaded draw that (it might be edited)
-        if (mThumbs.at(idx)->hasImage()) {
-            img = mThumbs.at(idx)->imageScaledToHeight(DkSettingsManager::param().effectiveThumbSize(this));
-        } else {
-            if (thumb->hasImage() == DkThumbNail::exists_not) {
-                thumbRects.push_back(QRectF());
-                continue;
-            }
-
-            if (thumb->hasImage() == DkThumbNail::loaded)
-                img = thumb->getImage();
+        if (thumb->hasImage() == DkThumbNail::exists_not) {
+            thumbRects.push_back(QRectF());
+            continue;
         }
+
+        if (thumb->hasImage() == DkThumbNail::loaded)
+            img = thumb->getImage();
 
         // if (img.width() > max_thumb_size * DkSettingsManager::param().dpiScaleFactor())
         //	qDebug() << thumb->getFilePath() << "size:" << img.size();
@@ -617,11 +612,9 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event)
     if (mouseTrace < 20) {
         // find out where the mouse did click
         for (int idx = 0; idx < thumbRects.size(); idx++) {
-            if (idx < mThumbs.size() && worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
-                if (mThumbs.at(idx)->isFromZip())
-                    emit changeFileSignal(idx - currentFileIdx);
-                else
-                    emit loadFileSignal(mThumbs.at(idx)->filePath() /*, event->modifiers() == Qt::ControlModifier*/);
+            if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
+                emit changeFileSignal(idx - currentFileIdx);
+                return;
             }
         }
     } else
@@ -802,7 +795,6 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
 void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
 {
-    mThumbs = thumbs;
     mThumbPtrs = std::vector<std::unique_ptr<DkThumbNailT>>(thumbs.size());
 
     for (int idx = 0; idx < thumbs.size(); idx++) {
