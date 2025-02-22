@@ -41,7 +41,6 @@
 
 #include "DkBasicLoader.h"
 #include "DkDialog.h"
-#include <memory>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
@@ -71,8 +70,9 @@ namespace nmc
 {
 
 // DkFilePreview --------------------------------------------------------------------
-DkFilePreview::DkFilePreview(QWidget *parent, Qt::WindowFlags flags)
+DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowFlags flags)
     : DkFadeWidget(parent, flags)
+    , mThumbLoader{loader}
 {
     orientation = Qt::Horizontal;
     windowPosition = pos_north;
@@ -84,6 +84,22 @@ DkFilePreview::DkFilePreview(QWidget *parent, Qt::WindowFlags flags)
     initOrientations();
 
     createContextMenu();
+
+    connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, [this](const QString &filePath, const QImage &thumb) {
+        if (!mThumbs.contains(filePath)) {
+            return;
+        }
+        mThumbs[filePath].image = DkImage::createThumb(thumb);
+        update();
+    });
+
+    connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &filePath) {
+        if (!mThumbs.contains(filePath)) {
+            return;
+        }
+        mThumbs[filePath].notExist = true;
+        update();
+    });
 }
 
 void DkFilePreview::init()
@@ -228,7 +244,7 @@ void DkFilePreview::createContextMenu()
 void DkFilePreview::paintEvent(QPaintEvent *)
 {
     // render nothing if there are no thumbs
-    if (mThumbPtrs.empty())
+    if (mFilePaths.empty())
         return;
 
     if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
@@ -257,11 +273,6 @@ void DkFilePreview::paintEvent(QPaintEvent *)
     painter.setWorldTransform(worldMatrix);
     painter.setWorldMatrixEnabled(true);
 
-    if (mThumbPtrs.empty()) {
-        thumbRects.clear();
-        return;
-    }
-
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
     drawThumbs(&painter);
 
@@ -285,17 +296,18 @@ void DkFilePreview::drawThumbs(QPainter *painter)
     // mouse over effect
     QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
 
-    for (int idx = 0; idx < mThumbPtrs.size(); idx++) {
-        DkThumbNailT *thumb = mThumbPtrs.at(idx).get();
+    for (int idx = 0; idx < mFilePaths.size(); idx++) {
         QImage img;
 
-        if (thumb->hasImage() == DkThumbNail::exists_not) {
+        bool existsInTable = mThumbs.contains(mFilePaths[idx]);
+        if (existsInTable && mThumbs[mFilePaths[idx]].notExist) {
             thumbRects.push_back(QRectF());
             continue;
         }
 
-        if (thumb->hasImage() == DkThumbNail::loaded)
-            img = thumb->getImage();
+        if (existsInTable && !mThumbs[mFilePaths[idx]].image.isNull()) {
+            img = mThumbs[mFilePaths[idx]].image;
+        }
 
         // if (img.width() > max_thumb_size * DkSettingsManager::param().dpiScaleFactor())
         //	qDebug() << thumb->getFilePath() << "size:" << img.size();
@@ -345,9 +357,9 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         }
 
         // only fetch thumbs if we are not moving too fast...
-        if (thumb->hasImage() == DkThumbNail::not_loaded && fabs(currentDx) < 40) {
-            thumb->fetchThumb();
-            connect(thumb, &DkThumbNailT::thumbLoadedSignal, this, QOverload<>::of(&DkFilePreview::update));
+        if (!existsInTable && fabs(currentDx) < 40) {
+            mThumbLoader->requestThumbnail(mFilePaths[idx]);
+            mThumbs[mFilePaths[idx]] = {};
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
@@ -557,15 +569,22 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
             if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
                 selected = idx;
 
-                if (selected <= mThumbPtrs.size() && selected >= 0) {
-                    DkThumbNailT *thumb = mThumbPtrs.at(selected).get();
+                if (selected < mFilePaths.size() && selected >= 0) {
                     // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettingsManager::param().display().highlightColor, 0.3f);
 
                     // important: setText shows the label - if you then hide it here again you'll get a stack overflow
                     // if (fileLabel->height() < height())
                     //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
-                    QFileInfo fileInfo(thumb->getFilePath());
-                    setToolTip(thumb->toolTip());
+                    QFileInfo fileInfo(mFilePaths[selected]);
+
+                    QString str = QObject::tr("Name: ") % fileInfo.fileName() % "\n" % QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size())
+                        % "\n" % QObject::tr("Created: ") % fileInfo.birthTime().toString();
+                    if (!mThumbs[mFilePaths[selected]].notExist) {
+                        const QImage &img{mThumbs[mFilePaths[selected]].image};
+                        str = str % "\n" % QObject::tr("Thumb: ") % QString::number(img.size().width()) % "x" % QString::number(img.size().height()) % " "
+                            % (img.text("Thumb.IsExif") == "yes" ? QObject::tr("Embedded ") : "");
+                    }
+                    setToolTip(str);
                     setStatusTip(fileInfo.fileName());
                 }
                 break;
@@ -727,7 +746,7 @@ void DkFilePreview::moveImages()
     if (scrollToCurrentImage) {
         float cDist = limit / 2.0f - center;
 
-        if (mThumbPtrs.size() < 2000) {
+        if (mFilePaths.size() < 2000) {
             if (fabs(cDist) < limit) {
                 currentDx = sqrt(fabs(cDist)) / 1.3f;
                 if (cDist < 0)
@@ -780,8 +799,8 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
     int tIdx = -1;
 
-    for (int idx = 0; idx < mThumbPtrs.size(); idx++) {
-        if (mThumbPtrs.at(idx)->getFilePath() == cImage->filePath()) {
+    for (int idx = 0; idx < mFilePaths.size(); idx++) {
+        if (mFilePaths.at(idx) == cImage->filePath()) {
             tIdx = idx;
             break;
         }
@@ -795,10 +814,10 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
 void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
 {
-    mThumbPtrs = std::vector<std::unique_ptr<DkThumbNailT>>(thumbs.size());
-
+    mThumbs.clear();
+    mFilePaths = std::vector<QString>(thumbs.size());
     for (int idx = 0; idx < thumbs.size(); idx++) {
-        mThumbPtrs[idx] = thumbs[idx]->createThumb();
+        mFilePaths[idx] = thumbs[idx]->filePath();
         if (thumbs.at(idx)->isSelected()) {
             currentFileIdx = idx;
         }
