@@ -2085,13 +2085,28 @@ void DkThumbScrollWidget::enableSelectionActions()
 }
 
 // DkThumbPreviewLabel --------------------------------------------------------------------
-DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath, int thumbSize, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
+                                         DkThumbLoader *thumbLoader,
+                                         int thumbSize,
+                                         QWidget *parent /* = 0 */,
+                                         Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
+    , mFilePath{filePath}
+    , mLoader{thumbLoader}
+
 {
     mThumbSize = thumbSize;
 
-    mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath));
-    connect(mThumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbPreviewLabel::thumbLoaded);
+    connect(mLoader, &DkThumbLoader::thumbnailLoaded, this, &DkThumbPreviewLabel::thumbLoaded);
+    connect(mLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &filePath) {
+        if (filePath != mFilePath) {
+            return;
+        }
+        setProperty("empty", true); // apply empty style
+        style()->unpolish(this);
+        style()->polish(this);
+        update();
+    });
 
     setFixedSize(mThumbSize, mThumbSize);
     setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -2100,21 +2115,16 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath, int thumbSize,
     QFileInfo fInfo(filePath);
     setToolTip(fInfo.fileName());
 
-    mThumb->fetchThumb(DkThumbNail::require_exif);
+    mLoader->requestThumbnail(filePath);
 }
 
-void DkThumbPreviewLabel::thumbLoaded()
+void DkThumbPreviewLabel::thumbLoaded(const QString &filePath, const QImage &img)
 {
-    if (mThumb->getImage().isNull()) {
-        setProperty("empty", true); // apply empty style
-        style()->unpolish(this);
-        style()->polish(this);
-        update();
-
+    if (filePath != mFilePath) {
         return;
     }
 
-    QPixmap pm = QPixmap::fromImage(mThumb->getImage());
+    QPixmap pm = QPixmap::fromImage(img);
     pm = DkImage::makeSquare(pm);
 
     if (pm.width() > width())
@@ -2125,22 +2135,22 @@ void DkThumbPreviewLabel::thumbLoaded()
 
 void DkThumbPreviewLabel::mousePressEvent(QMouseEvent *ev)
 {
-    emit loadFileSignal(mThumb->getFilePath(), ev->modifiers() == Qt::ControlModifier);
+    emit loadFileSignal(mFilePath, ev->modifiers() == Qt::ControlModifier);
 
     // do not propagate
     // QLabel::mousePressEvent(ev);
 }
 
 // -------------------------------------------------------------------- DkRecentFilesEntry
-DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir &rde, QWidget *parent)
+DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir &rde, DkThumbLoader *thumbLoader, QWidget *parent)
     : DkWidget(parent)
 {
     mRecentDir = rde;
 
-    createLayout();
+    createLayout(thumbLoader);
 }
 
-void DkRecentDirWidget::createLayout()
+void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
 {
     QLabel *dirNameLabel = new QLabel(mRecentDir.dirName(), this);
     dirNameLabel->setAlignment(Qt::AlignBottom);
@@ -2182,7 +2192,7 @@ void DkRecentDirWidget::createLayout()
     // this should fix issues with disconnected samba drives on windows
     if (DkUtils::exists(QFileInfo(mRecentDir.firstFilePath()), 30)) {
         for (auto tp : mRecentDir.filePaths(4)) {
-            auto tpl = new DkThumbPreviewLabel(tp, 42, this);
+            auto tpl = new DkThumbPreviewLabel(tp, thumbLoader, 42, this);
             connect(tpl, &DkThumbPreviewLabel::loadFileSignal, this, &DkRecentDirWidget::loadFileSignal);
             tls << tpl;
         }
@@ -2260,8 +2270,9 @@ void DkRecentDirWidget::leaveEvent(QEvent *event)
 }
 
 // -------------------------------------------------------------------- DkRecentFilesEntry
-DkRecentFilesWidget::DkRecentFilesWidget(QWidget *parent)
+DkRecentFilesWidget::DkRecentFilesWidget(DkThumbLoader *thumbLoader, QWidget *parent)
     : DkWidget(parent)
+    , mThumbLoader{thumbLoader}
 {
     createLayout();
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -2305,7 +2316,7 @@ void DkRecentFilesWidget::updateList()
     int idx = 0;
 
     for (auto rd : fm.recentDirs()) {
-        DkRecentDirWidget *rf = new DkRecentDirWidget(rd, dummy);
+        DkRecentDirWidget *rf = new DkRecentDirWidget(rd, mThumbLoader, dummy);
         rf->setMaximumWidth(500);
         connect(rf, &DkRecentDirWidget::loadFileSignal, this, &DkRecentFilesWidget::loadFileSignal);
         connect(rf, &DkRecentDirWidget::loadDirSignal, this, &DkRecentFilesWidget::loadDirSignal);
