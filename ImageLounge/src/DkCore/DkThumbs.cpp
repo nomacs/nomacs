@@ -58,26 +58,6 @@ DkThumbNail::~DkThumbNail()
 {
 }
 
-QString DkThumbNail::toolTip() const
-{
-    const QFileInfo fileInfo(getFilePath());
-
-    // clang-format off
-    QString str =
-        QObject::tr("Name: ") % fileInfo.fileName() % "\n" %
-        QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size()) % "\n" %
-        QObject::tr("Created: ") % fileInfo.birthTime().toString();
-    if (hasImage()) {
-        str = str % "\n" %
-            QObject::tr("Thumb: ") %
-            QString::number(mImg.size().width()) % "x" % QString::number(mImg.size().height()) % " " %
-            (mImg.text("Thumb.IsExif") == "yes" ? QObject::tr("Embedded ") : "");
-    }
-    // clang-format on
-
-    return str;
-}
-
 struct ThumbnailFromMetadata {
     QImage thumb;
     bool transformed;
