@@ -139,8 +139,6 @@ public:
             return exists_not;
     };
 
-    QString toolTip() const;
-
 protected:
     /**
      * Loads the thumbnail from the metadata.

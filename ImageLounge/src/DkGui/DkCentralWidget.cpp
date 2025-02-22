@@ -592,11 +592,11 @@ void DkCentralWidget::createViewPort()
     DkViewPort *vp = 0;
 
     if (parent() && parent()->objectName() == "DkNoMacsFrameless")
-        vp = new DkViewPortFrameless(this);
+        vp = new DkViewPortFrameless(&mThumbLoader, this);
     else if (parent() && parent()->objectName() == "DkNoMacsContrast")
-        vp = new DkViewPortContrast(this);
+        vp = new DkViewPortContrast(&mThumbLoader, this);
     else
-        vp = new DkViewPort(this);
+        vp = new DkViewPort(&mThumbLoader, this);
 
     if (mTabbar->currentIndex() != -1)
         vp->setImageLoader(mTabInfos[mTabbar->currentIndex()]->getImageLoader());
