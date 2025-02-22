@@ -560,7 +560,7 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
 
 DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 {
-    DkRecentFilesWidget *rw = new DkRecentFilesWidget(this);
+    DkRecentFilesWidget *rw = new DkRecentFilesWidget(&mThumbLoader, this);
     rw->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
 
     connect(rw, &DkRecentFilesWidget::loadFileSignal, this, &DkCentralWidget::loadFile);
