@@ -71,13 +71,16 @@ void DkLogWidget::createLayout()
 {
     mTextEdit = new QTextEdit(this);
     mTextEdit->setReadOnly(true);
+    mTextEdit->setFocusPolicy(Qt::ClickFocus);
 
     // we can't change text colors in qss so also fix the background color
     mTextEdit->setStyleSheet("QTextEdit { font-family: monospace; background-color: #000; }");
 
+    // invisible clear button ?!
     QPushButton *clearButton = new QPushButton(this);
     clearButton->setFlat(true);
     clearButton->setFixedSize(QSize(32, 32));
+    clearButton->setFocusPolicy(Qt::NoFocus);
     connect(clearButton, &QPushButton::clicked, this, &DkLogWidget::onClearButtonPressed);
 
     QGridLayout *layout = new QGridLayout(this);
@@ -114,6 +117,7 @@ DkLogDock::DkLogDock(const QString &title, QWidget *parent, Qt::WindowFlags flag
 void DkLogDock::createLayout()
 {
     DkLogWidget *logWidget = new DkLogWidget(this);
+    logWidget->setFocusPolicy(Qt::ClickFocus);
     setWidget(logWidget);
 }
 
