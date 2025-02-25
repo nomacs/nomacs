@@ -35,6 +35,7 @@
 #include "DkUtils.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
+#include <QDir>
 #include <QImage>
 #include <QObject>
 #include <QRegularExpression>
@@ -472,7 +473,7 @@ DkImageContainer::loadImageIntern(const QString &filePath, QSharedPointer<DkBasi
     try {
         loader->loadGeneral(filePath, fileBuffer, true, false);
     } catch (...) {
-        qWarning() << "Unknown error in DkImageContainer::lfoadImageIntern";
+        qWarning() << "Unhandled exception in loadGeneral()";
     }
 
     return loader;

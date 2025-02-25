@@ -91,17 +91,29 @@ public:
     void update(const QSharedPointer<DkMetaDataT> &other);
 
     enum ExifOrientationState {
-        or_illegal = -1,
-        or_not_set,
-        or_valid,
+        or_invalid = -2,
+        or_not_set = -1,
+        or_valid = 0,
     };
 
     void readMetaData(const QString &filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
     bool saveMetaData(const QString &filePath, bool force = false);
     bool saveMetaData(QSharedPointer<QByteArray> &ba, bool force = false);
 
-    int getOrientationDegree() const;
-    ExifOrientationState checkExifOrientation() const;
+    /**
+     * @brief Test if flip is needed after rotation
+     * @return true if horizontal flip is needed
+     */
+    bool isOrientationMirrored() const;
+
+    /**
+     * @brief Get rotation angle
+     * @return angle_invalid == invalid EXIF orientation
+     *         angle_not_set == no orientation tag present
+     *          0 == no rotation
+     *         [-]90|180 angle in degrees, clockwise
+     */
+    int getOrientationDegrees() const;
     int getRating() const;
     QSize getImageSize() const;
     QString getDescription() const;
@@ -112,6 +124,7 @@ public:
     QString getIptcValue(const QString &key) const;
     QString getQtValue(const QString &key) const;
     QImage getThumbnail() const;
+    QString getMimeType() const;
     QImage getPreviewImage(int minPreviewWidth = 0) const;
     QStringList getExifKeys() const;
     QStringList getExifValues() const;
@@ -135,6 +148,7 @@ public:
     void setQtValues(const QImage &cImg);
     static QString exiv2ToQString(std::string exifString);
     void setUseSidecar(bool useSideCar = false);
+    QImage cleanImage(const QImage &img);
 
     bool hasMetaData() const;
     bool isLoaded() const;

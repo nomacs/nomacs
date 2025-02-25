@@ -1479,7 +1479,7 @@ void DkImageLoader::rotateImage(double angle)
         try {
             // Set orientation in exif data
             if (!metaData->isJpg())
-                metaData->setThumbnail(thumb);
+                metaData->setThumbnail(thumb); // FIXME: creates wrong thumb for non-JPG formats supporting EXIF! (PNG)
             metaData->setOrientation(qRound(angle));
             metaDataSet = true;
 
