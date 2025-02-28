@@ -46,6 +46,7 @@ macro(NMC_INSTALL)
 		# dependencies
 		set(CMAKE_INSTALL_MFC_LIBRARIES 0)
 		set(CMAKE_INSTALL_DEBUG_LIBRARIES 0)
+		set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
 		set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${PACKAGE_DIR})
 		include(${CMAKE_ROOT}/Modules/InstallRequiredSystemLibraries.cmake)
 	endif (MSVC)
