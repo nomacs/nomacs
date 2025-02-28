@@ -32,6 +32,8 @@
 #include <QImage>
 #include <QSharedPointer>
 #pragma warning(pop) // no warnings from includes - end
+#include "DkMetaData.h"
+#include <optional>
 
 #pragma warning(disable : 4251) // TODO: remove
 
@@ -216,5 +218,21 @@ private:
 
     QThreadPool *mPool;
 };
+
+struct LoadThumbnailResult {
+    QImage thumb{};
+    QString filePath{};
+    std::unique_ptr<DkMetaDataT> metaData{};
+    bool fromExif{};
+    bool transformed{};
+};
+
+enum class LoadThumbnailOption {
+    none,
+    force_exif,
+    force_full,
+};
+
+std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt);
 
 }
