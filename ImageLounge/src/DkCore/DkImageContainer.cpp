@@ -33,6 +33,7 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
+#include <memory>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QDir>
@@ -201,20 +202,14 @@ QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData()
     return getLoader()->getMetaData();
 }
 
-QSharedPointer<DkThumbNailT> DkImageContainer::getThumb()
+std::unique_ptr<DkThumbNailT> DkImageContainer::createThumb()
 {
-    if (!mThumb) {
 #ifdef WITH_QUAZIP
-        if (isFromZip())
-            mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(getZipData()->getEncodedFilePath()));
-        else
-            mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
-#else
-        mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
-#endif
+    if (isFromZip()) {
+        return std::make_unique<DkThumbNailT>(getZipData()->getEncodedFilePath());
     }
-
-    return mThumb;
+#endif
+    return std::make_unique<DkThumbNailT>(mFilePath);
 }
 
 QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedPointer<DkImageContainer> imgC)
@@ -227,7 +222,6 @@ QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedP
     imgCT->mLoader = imgC->getLoader();
     imgCT->mEdited = imgC->isEdited();
     imgCT->mSelected = imgC->isSelected();
-    imgCT->mThumb = imgC->getThumb();
     imgCT->mLoadState = imgC->getLoadState();
     imgCT->mFileBuffer = imgC->getFileBuffer();
 
@@ -644,7 +638,6 @@ bool DkImageContainerT::loadImageThreaded(bool force)
 
     if (force || fileInfo.lastModified() != modifiedBefore || getLoader()->isDirty()) {
         qDebug() << "updating image...";
-        getThumb()->setImage(QImage());
         clear();
     }
 
@@ -785,8 +778,6 @@ void DkImageContainerT::loadingFinished()
         emit fileLoadedSignal(false);
         mLoadState = exists_not;
         return;
-    } else if (!getThumb()->hasImage()) {
-        getThumb()->setImage(getLoader()->image());
     }
 
     // clear file buffer if it exceeds a certain size?! e.g. psd files
@@ -986,16 +977,6 @@ QSharedPointer<DkBasicLoader> DkImageContainerT::getLoader()
     }
 
     return mLoader;
-}
-
-QSharedPointer<DkThumbNailT> DkImageContainerT::getThumb()
-{
-    if (!mThumb) {
-        DkImageContainer::getThumb();
-        connect(mThumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkImageContainerT::thumbLoadedSignal);
-    }
-
-    return mThumb;
 }
 
 bool DkImageContainerT::isFileDownloaded() const
