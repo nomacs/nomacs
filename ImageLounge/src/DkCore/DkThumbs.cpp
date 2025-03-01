@@ -58,11 +58,6 @@ DkThumbNail::~DkThumbNail()
 {
 }
 
-struct ThumbnailFromMetadata {
-    QImage thumb;
-    bool transformed;
-};
-
 std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData)
 {
     QImage thumb = metaData.getThumbnail();
@@ -204,7 +199,6 @@ QImage DkThumbNail::computeIntern(const QString &filePath, const int mode)
     // for the EXIF thumb we explicitly strip all metadata there
     // thumb.setText("Thumb.IsScaled", isScaled ? "yes" : "no");
     scaled.setText("Thumb.IsExif", res->fromExif ? "yes" : "no");
-    scaled.setText("Thumb.Transformed", res->transformed ? "yes" : "no");
 
     return scaled;
 }
