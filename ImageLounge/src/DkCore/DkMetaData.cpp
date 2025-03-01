@@ -718,7 +718,6 @@ QImage DkMetaDataT::getThumbnail() const
         QByteArray ba = QByteArray(reinterpret_cast<const char *>(buffer.pData_), buffer.size_);
 #endif
         qThumb.loadFromData(ba);
-        qThumb.setText("Thumb.FileSize", QString::number(ba.size()));
     } catch (...) {
         qDebug() << "Sorry, I could not load the thumb from the exif data...";
     }

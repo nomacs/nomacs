@@ -229,6 +229,13 @@ enum class LoadThumbnailOption {
 
 std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt);
 
+struct ThumbnailFromMetadata {
+    QImage thumb{};
+    bool transformed{};
+};
+
+std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData);
+
 class DkThumbLoaderWorker : public QObject
 {
     Q_OBJECT
