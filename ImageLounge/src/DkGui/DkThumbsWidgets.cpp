@@ -66,6 +66,8 @@
 #include <qmath.h>
 #pragma warning(pop) // no warnings from includes - end
 
+#include <QStringBuilder>
+
 namespace nmc
 {
 
