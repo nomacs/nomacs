@@ -105,25 +105,22 @@ public:
 
 public slots:
     void setImage(QSharedPointer<DkImageContainerT> imgC);
-    void thumbLoaded(bool loaded);
     void onFilterTextChanged(const QString &filterText);
 
 protected:
     void createLayout();
-    void updateEntries();
+    void updateEntries(QSharedPointer<DkMetaDataT> metadata);
     void writeSettings();
     void readSettings();
 
     void getExpandedItemNames(const QModelIndex &index, QStringList &expandedNames);
     void expandRows(const QModelIndex &index, const QStringList &expandedNames);
 
-    QSharedPointer<DkImageContainerT> mImgC;
     QTreeView *mTreeView = 0;
     DkMetaDataProxyModel *mProxyModel = 0;
     QLineEdit *mFilterEdit = 0;
     DkMetaDataModel *mModel = 0;
     QLabel *mThumbNailLabel = 0;
-    QSharedPointer<DkThumbNailT> mThumb;
     QStringList mExpandedNames;
 };
 
