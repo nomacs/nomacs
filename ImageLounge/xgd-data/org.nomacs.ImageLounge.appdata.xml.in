@@ -32,11 +32,16 @@
         <content_attribute id="language-profanity">mild</content_attribute>
     </content_rating>
 
-    <!-- TODO: new screenshots -->
-    <!-- <screenshots> -->
-    <!--     <screenshot type="default">https://nomacs.org/wp-content/uploads/2020/03/img-2020-03-18-11.49.26-1.png</screenshot> -->
-    <!--     <screenshot type="default">https://nomacs.org/wp-content/uploads/2020/03/img-2020-03-18-11.59.10.png</screenshot> -->
-    <!-- </screenshots> -->
+    <screenshots>
+        <screenshot type="default">
+            <image>https://github.com/nomacs/nomacs/raw/refs/heads/master/ImageLounge/screenshots/nomacs_3_21-thumbnails.png</image>
+            <caption>Image thumbnails in nomacs viewer</caption>
+        </screenshot>
+        <screenshot type="default">
+            <image>https://github.com/nomacs/nomacs/raw/refs/heads/master/ImageLounge/screenshots/nomacs_3_21-raw_metadata.png</image>
+            <caption>RAW image with metadata in nomacs viewer</caption>
+        </screenshot>
+    </screenshots>
 
     <releases>
         <release version="@NOMACS_VERSION@" date="@TODAY@"/>
