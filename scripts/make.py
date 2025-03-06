@@ -59,7 +59,7 @@ class ExpatConfig(Config):
 
         super().defaults()
 
-        self.binaryfile = os.path.join(self.builddir, "Release", "expat.dll")
+        self.binaryfile = os.path.join(self.builddir, "Release", "libexpat.dll")
 
     def cmake_args(self):
 
@@ -68,7 +68,7 @@ class ExpatConfig(Config):
             "-DBUILD_examples=OFF",
             "-DBUILD_tests=OFF",
             "-B" + self.builddir,
-            self.srcpath
+            self.srcpath + "/expat"
         ]
 
         return args
@@ -100,7 +100,7 @@ class ExifConfig(Config):
         # tune cmake parameters here
         args = self.additional_cmake_args + [
             "-DEXPAT_BUILD_PATH=" + self.libpath + "/expat",
-            "-DEXPAT_INCLUDE_DIR=" + self.repopath + "/expat/lib",
+            "-DEXPAT_INCLUDE_DIR=" + self.repopath + "/expat/expat/lib",
             "-DEXIV2_ENABLE_BMFF=ON",
             "-DEXIV2_ENABLE_BROTLI=OFF",
             "-DEXIV2_ENABLE_INIH=OFF",
