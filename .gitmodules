@@ -1,6 +1,6 @@
 [submodule "3rd-party/expat"]
 	path = 3rd-party/expat
-	url = https://github.com/nomacs/expat.git
+	url = https://github.com/libexpat/libexpat.git
 [submodule "3rd-party/opencv"]
 	path = 3rd-party/opencv
 	url = https://github.com/opencv/opencv.git

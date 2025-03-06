@@ -113,10 +113,10 @@ file(COPY ${NOMACS_THEMES} DESTINATION ${CMAKE_BINARY_DIR}/Release/themes/)
 
 # copy DLL files
 file(COPY ${EXIV2_BUILD_PATH}/Release/bin/exiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${EXPAT_BUILD_PATH}/Release/expat.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${EXPAT_BUILD_PATH}/Release/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 file(COPY ${LIBRAW_BUILD_PATH}/Release/raw.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${OpenCV_DIR}/bin/Release/opencv_core4100.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${OpenCV_DIR}/bin/Release/opencv_imgproc4100.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${OpenCV_DIR}/bin/Release/opencv_core4110.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${OpenCV_DIR}/bin/Release/opencv_imgproc4110.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 if(ENABLE_QUAZIP)
 	file(COPY "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt6.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 endif(ENABLE_QUAZIP)
