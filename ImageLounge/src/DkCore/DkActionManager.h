@@ -406,7 +406,6 @@ public:
         shortcut_close_tab = Qt::CTRL | Qt::Key_W,
         shortcut_show_toolbar = Qt::CTRL | Qt::Key_B,
         shortcut_show_statusbar = Qt::CTRL | Qt::Key_I,
-        shortcut_full_screen_ad = Qt::CTRL | Qt::Key_L,
         shortcut_show_transfer = Qt::CTRL | Qt::Key_U,
 #ifdef Q_OS_MAC
         shortcut_next_tab = Qt::META | Qt::Key_Tab,
@@ -546,8 +545,14 @@ public:
 
     void assignCustomShortcuts(QVector<QAction *> actions) const;
 
+    /// Enable actions when an image is loaded in the viewport
     void enableImageActions(bool enable = true) const;
+
+    /// Enable actions for animations in the viewport
     void enableMovieActions(bool enable = true) const;
+
+    /// Enable actions for viewport plugins
+    void enableViewPortPluginActions(bool enable) const;
 
 protected:
     DkActionManager();

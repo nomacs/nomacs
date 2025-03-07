@@ -38,12 +38,16 @@
 #include <QGraphicsEffect>
 #include <QHBoxLayout>
 #include <QInputDialog>
+#include <QKeyEvent>
+#include <QMainWindow>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
 #include <QScrollBar>
+#include <QSpinBox>
 #include <QStyleOption>
 #include <QTimer>
+#include <QTreeView>
 #pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
@@ -680,4 +684,152 @@ QSize DkResizableScrollArea::minimumSizeHint() const
     return s;
 }
 
+bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
+{
+    // reject shortcuts that would interfere with widgets, this allows
+    // shortcuts to bind to more keys than would normally be possible,
+    // e.g. arrow keys, space bar, home/end, pgup/pgdown, letters w/o modifiers
+
+    // to test this, bind one of the keys below to a shortcut; you should
+    // not be able to activate the shortcut when the associated widget is focused
+
+    // note: be performance-minded (try not to allocate memory, etc),
+    // since all application events and keypress events need to be handled,
+    // not just ones the ones bound to shortcuts
+
+    if (Q_LIKELY(e->type() != QEvent::ShortcutOverride))
+        return false;
+
+    const QWidget *widget = dynamic_cast<QWidget *>(target);
+    if (Q_UNLIKELY(!widget))
+        return false;
+
+    // only shortcuts of concern are bound in the main window
+    if (Q_UNLIKELY(!widget->window()->metaObject()->inherits(&QMainWindow::staticMetaObject)))
+        return false;
+
+    const QKeyEvent *keyEvent = static_cast<QKeyEvent *>(e);
+    const QKeySequence keySeq(keyEvent->modifiers() | keyEvent->key());
+
+    // widget needs to to allow its own shortcuts, for example, on the "Enter" key of DkExplorer
+    for (QAction *a : widget->actions())
+        if (QKeySequence::ExactMatch == a->shortcut().matches(keySeq)) {
+            qDebug() << "[DkShortcutEventFilter] " << target->metaObject()->className() << target->objectName() << "allowing own shortcut:" << keySeq;
+            return false;
+        }
+
+    // Override the keys/widgets that conflict
+    // - To verify the keys, look up the widget override of keyPressEvent(), event() (https://codebrowser.dev)
+    // - Do not reserve left/right generally; for viewport shortcuts
+    // - Widgets with text input already override keys if when they gain keyboard focus
+    // - Some widget keys use QKeySequence::StandardKey instead of Qt::Key
+    bool reserved = false;
+    const QMetaObject *reservedType = nullptr;
+
+    static const struct {
+        const QMetaObject *type;
+        const QVector<QKeySequence> keys;
+    } reservedKeys[] = {
+        // this comes before QAbstractItemView or else - as a subclass - it is never checked
+        {&QTreeView::staticMetaObject,
+         {
+             // omit left/right
+             Qt::Key_Up,
+             Qt::Key_Down,
+             Qt::SHIFT | Qt::Key_Right, // expand
+             Qt::SHIFT | Qt::Key_Left, // collapse
+             Qt::Key_PageUp,
+             Qt::Key_PageDown,
+             Qt::Key_Home,
+             Qt::Key_End,
+             Qt::Key_Asterisk, // expand recursive
+             Qt::Key_Plus, // expand (alt)
+             Qt::Key_Minus, // collapse (alt)
+         }},
+        {&QAbstractItemView::staticMetaObject,
+         {
+             // omit left/right
+             Qt::Key_Up,
+             Qt::Key_Down,
+             Qt::Key_PageUp,
+             Qt::Key_PageDown,
+             Qt::Key_Home,
+             Qt::Key_End,
+         }},
+
+        {&QAbstractSpinBox::staticMetaObject,
+         {
+             Qt::Key_Up,
+             Qt::Key_Down,
+         }},
+        {&QAbstractScrollArea::staticMetaObject,
+         {
+             // omit left/right
+             Qt::Key_Up,
+             Qt::Key_Down,
+             QKeySequence::MoveToNextPage,
+             QKeySequence::MoveToPreviousPage,
+         }},
+        {&QAbstractSlider::staticMetaObject,
+         {
+             Qt::Key_Left,
+             Qt::Key_Right,
+             Qt::Key_Up,
+             Qt::Key_Down,
+             Qt::Key_PageUp,
+             Qt::Key_PageDown,
+             Qt::Key_Home,
+             Qt::Key_End,
+         }},
+    };
+
+    for (auto &r : reservedKeys)
+        if (widget->metaObject()->inherits(r.type)) {
+            reservedType = r.type;
+            if (r.keys.contains(keySeq))
+                reserved = true;
+            break;
+        }
+
+    // filename characters can be used to jump around in item views
+    if (!reserved && (reservedType == &QTreeView::staticMetaObject || reservedType == &QAbstractItemView::staticMetaObject)) {
+        const QString text = keyEvent->text();
+        if (!text.isEmpty() && keyEvent->modifiers() == Qt::NoModifier) {
+            if (text[0].isLower() || text[0].isNumber())
+                reserved = true;
+        }
+    }
+
+    if (reserved) {
+        qDebug() << "[DkShortcutEventFilter] " << reservedType->className() << target->metaObject()->className() << target->objectName()
+                 << "blocking shortcut:" << keySeq << reserved;
+        e->accept();
+        return true;
+    }
+
+    return false;
+}
+
+bool DkActionEventFilter::eventFilter(QObject *target, QEvent *event)
+{
+    if (event->type() == QEvent::ShortcutOverride) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        int key = keyEvent->modifiers() | keyEvent->key();
+        for (auto *a : mActions)
+            if (a->isEnabled() && QKeySequence::ExactMatch == a->shortcut().matches(key)) {
+                event->accept();
+                return true;
+            }
+    } else if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        int key = keyEvent->modifiers() | keyEvent->key();
+        for (auto *a : mActions)
+            if (a->isEnabled() && QKeySequence::ExactMatch == a->shortcut().matches(key)) {
+                a->trigger();
+                return true;
+            }
+    }
+
+    return false;
+}
 }
