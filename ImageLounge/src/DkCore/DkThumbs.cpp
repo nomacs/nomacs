@@ -262,4 +262,9 @@ void DkThumbLoader::requestThumbnail(const QString &filePath)
 {
     emit thumbnailRequested(filePath);
 }
+
+void DkThumbLoader::dispatchFullImage(const QString &filePath, const QImage &img)
+{
+    emit thumbnailLoaded(filePath, img, false);
+}
 }
