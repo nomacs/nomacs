@@ -30,6 +30,7 @@
 #include "DkBaseViewPort.h"
 #include "DkImageContainer.h"
 #include "DkMath.h"
+#include "DkThumbs.h"
 #include "DkTimer.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin

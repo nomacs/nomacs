@@ -33,6 +33,7 @@
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
+#include "DkThumbs.h"
 
 #pragma warning(disable : 4251) // TODO: remove
 
