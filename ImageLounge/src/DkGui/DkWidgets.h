@@ -282,15 +282,14 @@ signals:
 
 public slots:
     void stopProgress();
-    void thumbLoaded(bool loaded);
+    void thumbLoaded();
 
 protected:
     QFileInfo mCurrentDir;
     QProgressDialog *mPd = 0;
     bool mStop = false;
-    bool mForceSave = false;
     int mNumSaved = false;
-    std::vector<std::unique_ptr<DkThumbNailT>> mThumbs{};
+    std::vector<std::unique_ptr<QFutureWatcher<void>>> mWatchers{};
 };
 
 class DkFileSystemModel : public QFileSystemModel
