@@ -184,27 +184,53 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
 
     mPd->show();
 
-    this->mForceSave = forceSave;
-
-    const auto mode = mForceSave ? DkThumbNail::write_exif_always : DkThumbNail::write_exif;
-
     // Use pointer here because QObject copy constructor is removed
-    mThumbs = std::vector<std::unique_ptr<DkThumbNailT>>(images.size());
+    mWatchers = std::vector<std::unique_ptr<QFutureWatcher<void>>>(images.size());
 
-    for (int idx = 0; idx < mThumbs.size(); idx++) {
+    for (int idx = 0; idx < images.size(); idx++) {
         const auto img = images[idx];
-        mThumbs[idx] = img->createThumb();
-        connect(mThumbs[idx].get(), &DkThumbNailT::thumbLoadedSignal, this, &DkThumbsSaver::thumbLoaded);
-        mThumbs[idx]->fetchThumb(mode);
+        mWatchers[idx] = std::make_unique<QFutureWatcher<void>>();
+        mWatchers[idx]->setFuture(QtConcurrent::run(
+            [](const QString &filePath, const bool forceSave) {
+                LoadThumbnailOption opt = LoadThumbnailOption::none;
+                if (forceSave) {
+                    opt = LoadThumbnailOption::force_full;
+                }
+
+                std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
+                if (!res || (!forceSave && res->fromExif)) {
+                    return;
+                }
+
+                // save the thumbnail
+                try {
+                    int orientation = res->metaData->getOrientationDegrees();
+                    QImage rotatedThumb = res->thumb;
+                    if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set && orientation != 0) {
+                        // TODO: Use DkUtils rotation
+                        QTransform rotationMatrix;
+                        rotationMatrix.rotate(-orientation);
+                        rotatedThumb = rotatedThumb.transformed(rotationMatrix);
+                    }
+
+                    res->metaData->updateImageMetaData(rotatedThumb);
+                    res->metaData->saveMetaData(res->filePath);
+                } catch (...) {
+                    qWarning() << "Sorry, I could not save the metadata";
+                }
+            },
+            img->filePath(),
+            forceSave));
+        connect(mWatchers[idx].get(), &QFutureWatcherBase::finished, this, &DkThumbsSaver::thumbLoaded);
     }
 }
 
-void DkThumbsSaver::thumbLoaded(bool)
+void DkThumbsSaver::thumbLoaded()
 {
     mNumSaved++;
     emit numFilesSignal(mNumSaved);
 
-    if (mNumSaved == mThumbs.size() || mStop) {
+    if (mNumSaved == mWatchers.size() || mStop) {
         if (mPd) {
             mPd->close();
             mPd->deleteLater();
@@ -212,8 +238,7 @@ void DkThumbsSaver::thumbLoaded(bool)
         }
         mStop = true;
 
-        // Release all the thumbnails when we are done
-        mThumbs.clear();
+        mWatchers.clear();
     }
 }
 
