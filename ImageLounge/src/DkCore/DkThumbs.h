@@ -120,6 +120,10 @@ public:
     ~DkThumbLoader();
     void requestThumbnail(const QString &filePath);
 
+    // When we have full image loaded in the viewport,
+    // create a side effect to update the thumbnail.
+    void dispatchFullImage(const QString &filePath, const QImage &img);
+
 signals:
     void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
     void thumbnailLoadFailed(const QString &filePath);

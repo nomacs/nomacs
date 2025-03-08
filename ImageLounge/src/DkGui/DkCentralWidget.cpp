@@ -776,6 +776,10 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
         updateTab(tabInfo);
         switchWidget(tabInfo->getMode());
     }
+
+    if (img && !img->isEdited()) {
+        mThumbLoader.dispatchFullImage(img->filePath(), img->pixmap());
+    }
 }
 
 QVector<QSharedPointer<DkTabInfo>> DkCentralWidget::getTabs() const
