@@ -30,10 +30,8 @@
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
-#include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
-#include <memory>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QDir>
@@ -200,16 +198,6 @@ QSharedPointer<DkBasicLoader> DkImageContainer::getLoader()
 QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData()
 {
     return getLoader()->getMetaData();
-}
-
-std::unique_ptr<DkThumbNailT> DkImageContainer::createThumb()
-{
-#ifdef WITH_QUAZIP
-    if (isFromZip()) {
-        return std::make_unique<DkThumbNailT>(getZipData()->getEncodedFilePath());
-    }
-#endif
-    return std::make_unique<DkThumbNailT>(mFilePath);
 }
 
 QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedPointer<DkImageContainer> imgC)

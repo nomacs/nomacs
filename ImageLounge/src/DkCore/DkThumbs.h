@@ -55,149 +55,6 @@ namespace nmc
 
 #define max_thumb_size 400
 
-/**
- * This class holds thumbnails.
- **/
-class DllCoreExport DkThumbNail
-{
-public:
-    enum Status {
-        loading = -2,
-        exists_not = -1,
-        not_loaded,
-        loaded,
-    };
-
-    enum FetchMode {
-        prefer_exif, // try exif first, then load full image, always rescale
-        require_exif, // fail if exif is not present, never rescale, never load full image
-        // never_exif, // unused; always load full image
-        write_exif, // write a new thumbnail to file if there isn't one, load full image
-        write_exif_always // load full image; overwrite existing thumbnails
-    };
-
-    /**
-     * Default constructor.
-     * @param filePath the corresponding file
-     * @param img the thumbnail image
-     **/
-    DkThumbNail(const QString &filePath = QString(), const QImage &img = QImage());
-
-    /**
-     * Default destructor.
-     * @return
-     **/
-    virtual ~DkThumbNail();
-
-    friend bool operator==(const DkThumbNail &lt, const DkThumbNail &rt)
-    {
-        return lt.mFile == rt.mFile;
-    };
-
-    /**
-     * Creates a thumbnail from the image provided and stores it internally.
-     * @param img the image to be converted to a thumbnail
-     **/
-    virtual void setImage(const QImage &img);
-
-    /**
-     * Removes potential black borders.
-     * These borders can be found e.g. in Nikon One images (16:9 vs 4:3)
-     * @param img the image whose borders are removed.
-     **/
-    static void removeBlackBorder(QImage &img);
-
-    /**
-     * Returns the thumbnail.
-     * @return QImage the thumbnail.
-     **/
-    QImage getImage() const
-    {
-        return mImg;
-    };
-
-    /**
-     * Returns the file information.
-     * @return the thumbnail file
-     **/
-    QString getFilePath() const
-    {
-        return mFile;
-    };
-
-    /**
-     * Returns whether the thumbnail was loaded, or does not exist.
-     * @return int a status (loaded | not loaded | exists not)
-     **/
-    int hasImage() const
-    {
-        if (!mImg.isNull())
-            return loaded;
-        else if (mImg.isNull() && mImgExists)
-            return not_loaded;
-        else
-            return exists_not;
-    };
-
-protected:
-    /**
-     * Loads the thumbnail from the metadata.
-     * If no thumbnail is embedded, the whole image
-     * is loaded and downsampled in a fast manner.
-     * @param file the file to be loaded
-     * @param ba the file buffer (can be empty)
-     * @param mode the loading flag (e.g. exif only)
-     * @param maxThumbSize the maximal thumbnail size to be loaded
-     * @return QImage the loaded image, or null image
-     * @reentrant all parameters must be copies or thread-safe shared pointers
-     **/
-    static QImage computeIntern(const QString &filePath, const int mode);
-
-    QImage mImg;
-    QString mFile;
-    bool mImgExists;
-};
-
-class DllCoreExport DkThumbNailT : public QObject, public DkThumbNail
-{
-    Q_OBJECT
-
-public:
-    DkThumbNailT(const QString &mFile = QString(), const QImage &mImg = QImage());
-    ~DkThumbNailT();
-
-    bool fetchThumb(DkThumbNail::FetchMode mode = prefer_exif);
-
-    /**
-     * Returns whether the thumbnail was loaded, or does not exist.
-     * @return int a status (loaded | not loaded | exists not | loading)
-     **/
-    int hasImage() const
-    {
-        if (mThumbWatcher.isRunning())
-            return loading;
-        else
-            return DkThumbNail::hasImage();
-    };
-
-    void setImage(const QImage img)
-    {
-        DkThumbNail::setImage(img);
-        emit thumbLoadedSignal(true);
-    };
-
-signals:
-    void thumbLoadedSignal(bool loaded = true);
-
-protected slots:
-    void thumbLoaded();
-
-protected:
-    QFutureWatcher<QImage> mThumbWatcher;
-    bool mFetching = false;
-    int mFetchMode = prefer_exif;
-};
-
 class DkThumbsThreadPool
 {
 public:
@@ -222,8 +79,13 @@ struct LoadThumbnailResult {
 };
 
 enum class LoadThumbnailOption {
+    // Try to load EXIF thumbnail first, and fall back to full image if not exist.
     none,
+
+    // Only load EXIF thumbnail.
     force_exif,
+
+    // Only load full image.
     force_full,
 };
 
