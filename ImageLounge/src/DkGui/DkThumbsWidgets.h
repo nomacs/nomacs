@@ -28,7 +28,6 @@
 #pragma once
 
 #include "DkQt5Compat.h"
-#include <memory>
 #include <vector>
 
 #pragma warning(push, 0) // no warnings from includes - begin
@@ -44,6 +43,7 @@
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
+#include "DkThumbs.h"
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
