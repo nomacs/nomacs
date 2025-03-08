@@ -29,6 +29,7 @@
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
+#include "DkThumbs.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QSharedPointer>

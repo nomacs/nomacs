@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include "DkThumbs.h"
-#include <memory>
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QFileInfo>
 #include <QFutureWatcher>
@@ -95,7 +93,6 @@ public:
 
     virtual QSharedPointer<DkBasicLoader> getLoader();
     virtual QSharedPointer<DkMetaDataT> getMetaData();
-    std::unique_ptr<DkThumbNailT> createThumb();
     virtual QSharedPointer<QByteArray> getFileBuffer();
 #ifdef WITH_QUAZIP
     QSharedPointer<DkZipContainer> getZipData();

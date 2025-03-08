@@ -31,7 +31,6 @@
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-#include "DkUtils.h"
 #include "qpainter.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
@@ -47,16 +46,7 @@
 namespace nmc
 {
 
-DkThumbNail::DkThumbNail(const QString &filePath, const QImage &img)
-{
-    mImg = DkImage::createThumb(img);
-    mFile = filePath;
-    mImgExists = true;
-}
-
-DkThumbNail::~DkThumbNail()
-{
-}
+void removeBlackBorder(QImage &img);
 
 std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData)
 {
@@ -65,7 +55,7 @@ std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT
         return std::nullopt;
     }
 
-    DkThumbNail::removeBlackBorder(thumb);
+    removeBlackBorder(thumb);
 
     int orientation = metaData.getOrientationDegrees();
 
@@ -97,6 +87,8 @@ std::optional<QImage> loadThumbnailFromFullImage(const QString &filePath, QShare
 
 std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt)
 {
+    DkTimer dt{};
+
     auto metaData = std::make_unique<DkMetaDataT>();
     QSharedPointer<QByteArray> ba{};
 #ifdef WITH_QUAZIP
@@ -135,75 +127,25 @@ std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadTh
         return std::nullopt;
     }
 
-    return LoadThumbnailResult{
+    LoadThumbnailResult res = {
         exifThumb ? exifThumb.value().thumb : fullThumb.value(),
         linkFilePath,
         std::move(metaData),
         exifThumb.has_value(),
         exifThumb && exifThumb->transformed,
     };
-}
 
-QImage DkThumbNail::computeIntern(const QString &filePath, const int mode)
-{
-    DkTimer dt{};
-
-    LoadThumbnailOption opt = LoadThumbnailOption::none;
-    if (mode == write_exif || mode == write_exif_always) {
-        opt = LoadThumbnailOption::force_full;
-    }
-    if (mode == require_exif) {
-        opt = LoadThumbnailOption::force_exif;
-    }
-    std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
-    if (!res) {
-        return {};
-    }
-
-    // save the thumbnail
-    if (mode == write_exif_always || (mode == write_exif && !res->fromExif)) {
-        try {
-            int orientation = res->metaData->getOrientationDegrees();
-            QImage rotatedThumb = res->thumb;
-            if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set && orientation != 0) {
-                // TODO: Use DkUtils rotation
-                QTransform rotationMatrix;
-                rotationMatrix.rotate(-(double)orientation);
-                rotatedThumb = rotatedThumb.transformed(rotationMatrix);
-            }
-
-            res->metaData->updateImageMetaData(rotatedThumb);
-            res->metaData->saveMetaData(res->filePath);
-        } catch (...) {
-            qWarning() << "Sorry, I could not save the metadata";
-        }
-    }
-
-    QSize origSize = res->thumb.size();
-
-    QImage scaled = DkImage::createThumb(res->thumb);
-
-    QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 scaled=%5x%6 %8ms")
-                       .arg(res->filePath)
-                       .arg(res->fromExif ? "yes" : "no")
-                       .arg(origSize.width())
-                       .arg(origSize.height())
-                       .arg(scaled.width())
-                       .arg(scaled.height())
+    QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 %8ms")
+                       .arg(linkFilePath)
+                       .arg(exifThumb ? "yes" : "no")
+                       .arg(res.thumb.width())
+                       .arg(res.thumb.height())
                        .arg(dt.elapsed());
     qInfo().noquote() << info;
-
-    // TODO: replace these with passed struct
-    // NOTE: setText() should not be used, since values could end up in saved metadata
-    // It is OK here since it isn't something a user would save; if it was used
-    // for the EXIF thumb we explicitly strip all metadata there
-    // thumb.setText("Thumb.IsScaled", isScaled ? "yes" : "no");
-    scaled.setText("Thumb.IsExif", res->fromExif ? "yes" : "no");
-
-    return scaled;
+    return res;
 }
 
-void DkThumbNail::removeBlackBorder(QImage &img)
+void removeBlackBorder(QImage &img)
 {
     int rIdx = 0;
     bool nonblack = false;
@@ -249,66 +191,6 @@ void DkThumbNail::removeBlackBorder(QImage &img)
     // remove black borders
     if (rIdx < rIdxB)
         img = img.copy(0, rIdx, img.width(), rIdxB - rIdx);
-}
-
-void DkThumbNail::setImage(const QImage &img)
-{
-    mImg = DkImage::createThumb(img);
-}
-
-/**
- * This class provides threaded access to image thumbnails.
- * @param file the thumbnail's file
- * @param img optional: a thumb image.
- **/
-DkThumbNailT::DkThumbNailT(const QString &filePath, const QImage &img)
-    : DkThumbNail(filePath, img)
-{
-}
-
-DkThumbNailT::~DkThumbNailT()
-{
-    mThumbWatcher.blockSignals(true);
-    mThumbWatcher.cancel();
-}
-
-bool DkThumbNailT::fetchThumb(DkThumbNail::FetchMode mode)
-{
-    if (mode == write_exif_always || mode == write_exif)
-        mImg = QImage();
-
-    if (!mImg.isNull() || !mImgExists || mFetching)
-        return false;
-
-    // check if we can load the file
-    // though if it might seem over engineered: it is much faster cascading it here
-    // FIXME: hasValidSuffix() bypasses exists/readable check presumably to workaround ZIP support issues
-    if (!DkUtils::hasValidSuffix(getFilePath()) && !DkUtils::isValid(QFileInfo(getFilePath())))
-        return false;
-
-    // we have to do our own bool here
-    // watcher.isRunning() returns false if the thread is waiting in the pool
-    mFetching = true;
-    mFetchMode = mode;
-    connect(&mThumbWatcher, &QFutureWatcherBase::finished, this, &DkThumbNailT::thumbLoaded, Qt::UniqueConnection);
-
-    // Load thumbnails on their dedicated thread pool
-    mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), DkThumbNail::computeIntern, mFile, mode));
-
-    return true;
-}
-
-void DkThumbNailT::thumbLoaded()
-{
-    QFuture<QImage> future = mThumbWatcher.future();
-
-    mImg = future.result();
-
-    if (mImg.isNull() && mFetchMode != require_exif)
-        mImgExists = false;
-
-    mFetching = false;
-    emit thumbLoadedSignal(!mImg.isNull());
 }
 
 // DkThumbsThreadPool --------------------------------------------------------------------
