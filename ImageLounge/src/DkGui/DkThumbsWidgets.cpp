@@ -86,11 +86,12 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
 
     createContextMenu();
 
-    connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, [this](const QString &filePath, const QImage &thumb) {
+    connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, [this](const QString &filePath, const QImage &thumb, const bool fromExif) {
         if (!mThumbs.contains(filePath)) {
             return;
         }
         mThumbs[filePath].image = DkImage::createThumb(thumb);
+        mThumbs[filePath].fromExif = fromExif;
         update();
     });
 
@@ -581,9 +582,10 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
                     QString str = QObject::tr("Name: ") % fileInfo.fileName() % "\n" % QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size())
                         % "\n" % QObject::tr("Created: ") % fileInfo.birthTime().toString();
                     if (!mThumbs[mFilePaths[selected]].notExist) {
-                        const QImage &img{mThumbs[mFilePaths[selected]].image};
+                        const Thumb &thumb{mThumbs[mFilePaths[selected]]};
+                        const QImage &img{thumb.image};
                         str = str % "\n" % QObject::tr("Thumb: ") % QString::number(img.size().width()) % "x" % QString::number(img.size().height()) % " "
-                            % (img.text("Thumb.IsExif") == "yes" ? QObject::tr("Embedded ") : "");
+                            % (thumb.fromExif ? QObject::tr("Embedded ") : "");
                     }
                     setToolTip(str);
                     setStatusTip(fileInfo.fileName());
@@ -849,12 +851,13 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGra
     setFlag(ItemIsSelectable, true);
 
     setAcceptHoverEvents(true);
-    connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, [this](const QString &filePath, const QImage &thumb) {
+    connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, [this](const QString &filePath, const QImage &thumb, const bool fromExif) {
         if (filePath != mFilePath) {
             return;
         }
 
         mThumbImage = DkImage::createThumb(thumb);
+        mThumbFromExif = fromExif;
         updateLabel();
         update();
     });
@@ -883,7 +886,7 @@ void DkThumbLabel::updateTooltip()
         str = str % "\n" %
             QObject::tr("Thumb: ") %
             QString::number(mThumbImage.size().width()) % "x" % QString::number(mThumbImage.size().height()) % " " %
-            (mThumbImage.text("Thumb.IsExif") == "yes" ? QObject::tr("Embedded ") : "");
+            (mThumbFromExif ? QObject::tr("Embedded ") : "");
     }
     // clang-format on
 
