@@ -243,7 +243,7 @@ public:
     DkThumbLoaderWorker();
     void requestThumbnail(const QString &filePath, LoadThumbnailOption opt);
 signals:
-    void thumbnailLoaded(const QString &filePath, const QImage &thumb);
+    void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
     void thumbnailLoadFailed(const QString &filePath);
     void requestFullThumbnail(const QString &filePath, LoadThumbnailOption opt);
 };
@@ -259,7 +259,7 @@ public:
     void requestThumbnail(const QString &filePath);
 
 signals:
-    void thumbnailLoaded(const QString &filePath, const QImage &thumb);
+    void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
     void thumbnailLoadFailed(const QString &filePath);
     void thumbnailRequested(const QString &filePath, LoadThumbnailOption opt = LoadThumbnailOption::force_exif);
 };
