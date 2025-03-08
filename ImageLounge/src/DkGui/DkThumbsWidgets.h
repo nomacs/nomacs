@@ -179,6 +179,7 @@ private:
     struct Thumb {
         QImage image;
         bool notExist;
+        bool fromExif;
     };
 
     QHash<QString, Thumb> mThumbs;
@@ -237,6 +238,7 @@ protected:
     QString mFilePath;
     QImage mThumbImage;
     bool mThumbNotExist;
+    bool mThumbFromExif;
     DkThumbLoader *mThumbLoader;
 
 private:

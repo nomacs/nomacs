@@ -341,7 +341,7 @@ void DkThumbLoaderWorker::requestThumbnail(const QString &filePath, LoadThumbnai
 {
     const std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
     if (res) {
-        emit thumbnailLoaded(filePath, res->thumb);
+        emit thumbnailLoaded(filePath, res->thumb, res->fromExif);
         return;
     }
 
