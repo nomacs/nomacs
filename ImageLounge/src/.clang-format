@@ -47,6 +47,9 @@ AllowAllParametersOfDeclarationOnNextLine: false
 # no single line functions
 AllowShortFunctionsOnASingleLine: None
 
+# no single line enums
+AllowShortEnumsOnASingleLine: false
+
 # always break before you encounter multi line strings
 AlwaysBreakBeforeMultilineStrings: true
 
