@@ -1018,6 +1018,8 @@ void DkViewPort::leaveEvent(QEvent *event)
 // drawing functions --------------------------------------------------------------------
 void DkViewPort::drawBackground(QPainter &painter)
 {
+    DkBaseViewPort::drawBackground(painter);
+
     // fit to mViewport
     QSize s = mImgBg.size();
     if (s.width() > (float)(size().width() * 0.5))

@@ -507,17 +507,7 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event)
 // protected functions --------------------------------------------------------------------
 void DkBaseViewPort::draw(QPainter &painter, double opacity)
 {
-    if (DkUtils::getMainWindow()->isFullScreen()) {
-        painter.setWorldMatrixEnabled(false);
-        painter.fillRect(QRect(QPoint(), size()), DkSettingsManager::param().slideShow().backgroundColor);
-        painter.setWorldMatrixEnabled(true);
-    }
-
-    if (backgroundBrush() != Qt::NoBrush) {
-        painter.setWorldMatrixEnabled(false);
-        painter.fillRect(QRect(QPoint(), size()), backgroundBrush());
-        painter.setWorldMatrixEnabled(true);
-    }
+    drawBackground(painter);
 
     QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
     QImage img = mImgStorage.image(displayRect.size());
@@ -562,6 +552,19 @@ void DkBaseViewPort::drawPattern(QPainter &painter) const
     painter.setPen(QPen(Qt::NoPen)); // no border
     painter.setBrush(pt);
     painter.drawRect(mImgViewRect);
+}
+
+void DkBaseViewPort::drawBackground(QPainter &painter)
+{
+    if (DkUtils::getMainWindow()->isFullScreen()) {
+        painter.setWorldMatrixEnabled(false);
+        painter.fillRect(QRect(QPoint(), size()), DkSettingsManager::param().slideShow().backgroundColor);
+        painter.setWorldMatrixEnabled(true);
+    } else if (backgroundBrush() != Qt::NoBrush) {
+        painter.setWorldMatrixEnabled(false);
+        painter.fillRect(QRect(QPoint(), size()), backgroundBrush());
+        painter.setWorldMatrixEnabled(true);
+    }
 }
 
 bool DkBaseViewPort::imageInside() const
