@@ -1,5 +1,5 @@
 # Change following line to force rebuild of AppVeyor cache:
-# Last rebuild: 2025-02-28
+# Last rebuild: 2025-03-17
 
 import os
 from utils.config import Config

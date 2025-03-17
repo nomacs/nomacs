@@ -30,7 +30,11 @@ cache:
 #    - 3rd-party/build/imageformats -> scripts/make.py
 
 install:
-    - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+    - appveyor DownloadFile "https://github.com/novomesk/downloads/raw/main/nasm-2.16.03-win64.zip" -FileName "nasm.zip"
+    - 7z x "nasm.zip"
+    - move nasm-* NASM
+    - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%;%CD%\NASM;
+    - nasm -v
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
