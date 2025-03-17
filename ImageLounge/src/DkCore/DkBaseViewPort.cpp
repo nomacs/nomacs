@@ -556,13 +556,14 @@ void DkBaseViewPort::drawPattern(QPainter &painter) const
 
 void DkBaseViewPort::drawBackground(QPainter &painter)
 {
-    if (DkUtils::getMainWindow()->isFullScreen()) {
+    QBrush bgBrush = backgroundBrush();
+
+    if (DkUtils::getMainWindow()->isFullScreen())
+        bgBrush = DkSettingsManager::param().slideShow().backgroundColor;
+
+    if (bgBrush != Qt::NoBrush) {
         painter.setWorldMatrixEnabled(false);
-        painter.fillRect(QRect(QPoint(), size()), DkSettingsManager::param().slideShow().backgroundColor);
-        painter.setWorldMatrixEnabled(true);
-    } else if (backgroundBrush() != Qt::NoBrush) {
-        painter.setWorldMatrixEnabled(false);
-        painter.fillRect(QRect(QPoint(), size()), backgroundBrush());
+        painter.fillRect(QRect(QPoint(), size()), bgBrush);
         painter.setWorldMatrixEnabled(true);
     }
 }
