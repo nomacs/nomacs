@@ -253,8 +253,8 @@ protected:
     virtual void createShortcuts();
 
     void drawPolygon(QPainter &painter, const QPolygon &polygon);
-    virtual void drawBackground(QPainter &painter);
-    virtual void updateImageMatrix() override;
+    void drawBackground(QPainter &painter) override;
+    void updateImageMatrix() override;
     void showZoom();
     void toggleLena(bool fullscreen);
     void getPixelInfo(const QPoint &pos);
