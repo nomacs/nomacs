@@ -2065,6 +2065,20 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     setMouseTracking(true); // receive mouse event everytime
 }
 
+void DkNoMacsIpl::paintEvent(QPaintEvent *event)
+{
+    // prevent visual glitch where initial fullscreen window is filled
+    // with normal window bg color. Once the viewport comes up it takes over
+    // drawing the background and dock widgets get the default bg color
+    bool hasViewPort = getTabWidget() && getTabWidget()->hasViewPort();
+    if (isFullScreen() && !hasViewPort) {
+        QColor bgColor = nmc::DkSettingsManager::param().slideShow().backgroundColor;
+        QPainter painter(this);
+        painter.fillRect(rect(), bgColor);
+    } else
+        QMainWindow::paintEvent(event);
+}
+
 // FramelessNoMacs --------------------------------------------------------------------
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     : DkNoMacs(parent, flags)
