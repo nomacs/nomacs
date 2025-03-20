@@ -813,12 +813,22 @@ QString DkThemeManager::themeDir() const
     paths << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
 
     QDir themeDir;
+    bool themes_found = false;
 
     for (const QString &p : paths) {
         themeDir = QDir(p + QDir::separator() + "themes");
         qDebug() << "[theme] checking" << themeDir.absolutePath();
-        if (themeDir.exists())
-            break;
+        if (themeDir.exists()) {
+            QFileInfo system_theme(themeDir, "System.css");
+            if (system_theme.exists()) {
+                themes_found = true;
+                break;
+            }
+        }
+    }
+
+    if (!themes_found) {
+        qWarning() << "[theme] Directory with themes was not found! Report the issue to package maintainer(s).";
     }
 
     return themeDir.absolutePath();
@@ -956,7 +966,15 @@ QString DkThemeManager::preprocess(const QString &cssString) const
         return result;
     };
 
-    enum Token { NONE = 0, INCLUDE, COLOR, IF, ELIF, ELSE, ENDIF };
+    enum Token {
+        NONE = 0,
+        INCLUDE,
+        COLOR,
+        IF,
+        ELIF,
+        ELSE,
+        ENDIF
+    };
 
     constexpr const struct {
         const char *symbol;
