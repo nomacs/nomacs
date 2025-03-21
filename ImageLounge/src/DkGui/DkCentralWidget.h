@@ -33,6 +33,7 @@
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
+#include "DkThumbs.h"
 
 #pragma warning(disable : 4251) // TODO: remove
 
@@ -101,7 +102,7 @@ public:
     void loadSettings(const QSettings &settings);
     void saveSettings(QSettings &settings) const;
 
-    QIcon getIcon();
+    QIcon getIcon(const QSize &size);
     QString getTabText() const;
 
     TabMode getMode() const;
@@ -215,6 +216,9 @@ protected:
 
         widget_end
     };
+
+private:
+    DkThumbLoader mThumbLoader{};
 };
 
 }
