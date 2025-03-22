@@ -360,7 +360,7 @@ ELSE()
     MESSAGE(STATUS " nomacs will be compiled with plugin support .................. NO")
 ENDIF()
 
-IF(libheif_FOUND)
+IF(LIBHEIF_FOUND)
     MESSAGE(STATUS " nomacs will be compiled with HEIF support .................... YES")
 ELSE()
     MESSAGE(STATUS " nomacs will be compiled with HEIF support .................... NO")

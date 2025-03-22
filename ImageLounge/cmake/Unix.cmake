@@ -71,6 +71,19 @@ if(ENABLE_RAW)
     endif()
 endif(ENABLE_RAW)
 
+# Search for HEIF support
+unset(LIBHEIF_FOUND CACHE)
+if(ENABLE_HEIF)
+    pkg_check_modules(LIBHEIF libheif>=1.3.0)
+
+    if(NOT LIBHEIF_FOUND)
+        message(FATAL_ERROR "libheif not found. It's mandatory when ENABLE_HEIF is enabled.")
+    else()
+        add_definitions(-DWITH_LIBHEIF)
+    endif()
+endif(ENABLE_HEIF)
+
+
 #search for multi-layer tiff
 unset(TIFF_INCLUDE_DIR CACHE)
 unset(TIFF_LIBRARY CACHE)
