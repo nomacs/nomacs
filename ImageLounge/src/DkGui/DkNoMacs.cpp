@@ -610,6 +610,8 @@ void DkNoMacs::toggleFullScreen()
 
 void DkNoMacs::enterFullScreen()
 {
+    setUpdatesEnabled(false);
+
     int appMode = DkSettingsManager::param().app().currentAppMode;
     appMode = DkSettings::fullscreenMode(appMode);
     DkSettingsManager::param().app().currentAppMode = appMode;
@@ -624,13 +626,16 @@ void DkNoMacs::enterFullScreen()
             << "windowState:" << windowState();
 
     mWasMaximized = isMaximized();
+
+    if (getTabWidget()->getViewPort())
+        getTabWidget()->getViewPort()->setFullScreen(true);
+
+    setUpdatesEnabled(true);
+
     showFullScreen();
 
     qInfo() << "after enter fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
             << "windowState:" << windowState();
-
-    if (getTabWidget()->getViewPort())
-        getTabWidget()->getViewPort()->setFullScreen(true);
 
     update();
 }
@@ -638,6 +643,8 @@ void DkNoMacs::enterFullScreen()
 void DkNoMacs::exitFullScreen()
 {
     if (isFullScreen()) {
+        setUpdatesEnabled(false);
+
         int appMode = DkSettingsManager::param().app().currentAppMode;
         if (!DkSettings::modeIsFullscreen(appMode))
             qWarning() << "expected fullscreen app mode, but got" << appMode;
@@ -655,6 +662,14 @@ void DkNoMacs::exitFullScreen()
         DkToolBarManager::inst().restore();
         restoreDocks();
 
+        if (getTabWidget())
+            getTabWidget()->showTabs(true);
+
+        if (getTabWidget()->getViewPort())
+            getTabWidget()->getViewPort()->setFullScreen(false);
+
+        setUpdatesEnabled(true);
+
         qInfo() << "before exit fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
                 << "windowState:" << windowState();
 
@@ -666,14 +681,8 @@ void DkNoMacs::exitFullScreen()
         qInfo() << "after exit fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
                 << "windowState:" << windowState();
 
-        if (getTabWidget())
-            getTabWidget()->showTabs(true);
-
         update(); // if no resize is triggered, the viewport won't change its color
     }
-
-    if (getTabWidget()->getViewPort())
-        getTabWidget()->getViewPort()->setFullScreen(false);
 }
 
 void DkNoMacs::toggleDocks(bool hide)
@@ -2063,6 +2072,20 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     init();
     setAcceptDrops(true);
     setMouseTracking(true); // receive mouse event everytime
+}
+
+void DkNoMacsIpl::paintEvent(QPaintEvent *event)
+{
+    // prevent visual glitch where initial fullscreen window is filled
+    // with normal window bg color. Once the viewport comes up it takes over
+    // drawing the background and dock widgets get the default bg color
+    bool hasViewPort = getTabWidget() && getTabWidget()->hasViewPort();
+    if (isFullScreen() && !hasViewPort) {
+        QColor bgColor = nmc::DkSettingsManager::param().slideShow().backgroundColor;
+        QPainter painter(this);
+        painter.fillRect(rect(), bgColor);
+    } else
+        QMainWindow::paintEvent(event);
 }
 
 // FramelessNoMacs --------------------------------------------------------------------
