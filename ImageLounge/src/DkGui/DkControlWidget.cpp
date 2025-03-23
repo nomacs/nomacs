@@ -79,8 +79,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags)
     mDelayedInfo = new DkDelayedMessage(this); // TODO: make a nice constructor
 
     // info labels
-    mBottomLabel = new DkLabelBg(this, "");
-    mBottomLeftLabel = new DkLabelBg(this, "");
+    mBottomLabel = new DkLabelBg("", this);
+    mBottomLeftLabel = new DkLabelBg("", this);
 
     // wheel label
     QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.svg");

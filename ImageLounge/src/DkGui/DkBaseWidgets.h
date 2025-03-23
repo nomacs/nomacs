@@ -222,7 +222,7 @@ class DllCoreExport DkLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkLabel(QWidget *parent = 0, const QString &text = QString());
+    DkLabel(const QString &text = QString(), QWidget *parent = 0);
     virtual ~DkLabel();
 
     virtual void showTimed(int time = 3000);
@@ -298,7 +298,7 @@ class DkLabelBg : public DkLabel
     Q_OBJECT
 
 public:
-    DkLabelBg(QWidget *parent = 0, const QString &text = QString());
+    DkLabelBg(const QString &text = QString(), QWidget *parent = 0);
     virtual ~DkLabelBg(){};
 };
 
@@ -313,7 +313,7 @@ class DkFadeLabel : public DkFadeMixin<DkLabel>
     Q_OBJECT
 
 public:
-    DkFadeLabel(QWidget *parent = 0, const QString &text = QString());
+    DkFadeLabel(const QString &text = QString(), QWidget *parent = 0);
 };
 
 class DllCoreExport DkDockWidget : public QDockWidget
