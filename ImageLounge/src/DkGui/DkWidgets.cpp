@@ -103,45 +103,16 @@ namespace nmc
 
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget *parent)
-    : QSlider(Qt::Horizontal, parent)
+    : DkFadeMixin<QSlider>(parent)
 {
     setObjectName("DkFolderScrollBar");
+    setOrientation(Qt::Horizontal);
     init();
     mMouseDown = false;
 }
 
 DkFolderScrollBar::~DkFolderScrollBar()
 {
-}
-
-// DkFadeWidget stuff
-void DkFolderScrollBar::registerAction(QAction *action)
-{
-    connect(this, &DkFolderScrollBar::visibleSignal, action, &QAction::setChecked);
-}
-
-void DkFolderScrollBar::block(bool blocked)
-{
-    this->mBlocked = blocked;
-    setVisible(false);
-}
-
-void DkFolderScrollBar::setDisplaySettings(QBitArray *displayBits)
-{
-    mDisplaySettingsBits = displayBits;
-}
-
-bool DkFolderScrollBar::getCurrentDisplaySetting()
-{
-    if (!mDisplaySettingsBits)
-        return false;
-
-    if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= mDisplaySettingsBits->size()) {
-        qDebug() << "[WARNING] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
-        return false;
-    }
-
-    return mDisplaySettingsBits->testBit(DkSettingsManager::param().app().currentAppMode);
 }
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> images)
@@ -186,99 +157,6 @@ void DkFolderScrollBar::init()
 
     mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ? DkSettingsManager::param().display().bgColorFrameless
                                                                                       : DkSettingsManager::param().display().hudBgColor;
-
-    mShowing = false;
-    mHiding = false;
-    mBlocked = false;
-    mDisplaySettingsBits = 0;
-    mOpacityEffect = 0;
-
-    // painter problems if the widget is a child of another that has the same graphicseffect
-    // widget starts on hide
-    mOpacityEffect = new QGraphicsOpacityEffect(this);
-    mOpacityEffect->setOpacity(0);
-    mOpacityEffect->setEnabled(false);
-    setGraphicsEffect(mOpacityEffect);
-
-    setVisible(false);
-}
-
-void DkFolderScrollBar::show(bool saveSettings)
-{
-    // here is a strange problem if you add a DkFadeWidget to another DkFadeWidget -> painters crash
-    if (!mBlocked && !mShowing) {
-        mHiding = false;
-        mShowing = true;
-        setVisible(true, saveSettings);
-        animateOpacityUp();
-    }
-}
-
-void DkFolderScrollBar::hide(bool saveSettings)
-{
-    if (!mHiding) {
-        mHiding = true;
-        mShowing = false;
-        animateOpacityDown();
-
-        // set display bit here too -> since the final call to setVisible takes a few seconds
-        if (saveSettings && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-            mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, false);
-        }
-    }
-}
-
-void DkFolderScrollBar::setVisible(bool visible, bool saveSettings)
-{
-    if (mBlocked) {
-        QWidget::setVisible(false);
-        return;
-    }
-
-    if (visible && !isVisible() && !mShowing)
-        mOpacityEffect->setOpacity(100);
-
-    QWidget::setVisible(visible);
-    emit visibleSignal(visible); // if this gets slow -> put it into hide() or show()
-
-    if (saveSettings && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-        mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, visible);
-    }
-}
-
-void DkFolderScrollBar::animateOpacityUp()
-{
-    if (!mShowing)
-        return;
-
-    mOpacityEffect->setEnabled(true);
-    if (mOpacityEffect->opacity() >= 1.0f || !mShowing) {
-        mOpacityEffect->setOpacity(1.0f);
-        mShowing = false;
-        mOpacityEffect->setEnabled(false);
-        return;
-    }
-
-    QTimer::singleShot(20, this, &DkFolderScrollBar::animateOpacityUp);
-    mOpacityEffect->setOpacity(mOpacityEffect->opacity() + 0.05);
-}
-
-void DkFolderScrollBar::animateOpacityDown()
-{
-    if (!mHiding)
-        return;
-
-    mOpacityEffect->setEnabled(true);
-    if (mOpacityEffect->opacity() <= 0.0f) {
-        mOpacityEffect->setOpacity(0.0f);
-        mHiding = false;
-        setVisible(false, false); // finally hide the widget
-        mOpacityEffect->setEnabled(false);
-        return;
-    }
-
-    QTimer::singleShot(20, this, &DkFolderScrollBar::animateOpacityDown);
-    mOpacityEffect->setOpacity(mOpacityEffect->opacity() - 0.05);
 }
 
 // DkThumbsSaver --------------------------------------------------------------------
@@ -978,7 +856,7 @@ void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */)
     if (!visible)
         autoHide = false;
 
-    DkFadeLabel::setVisible(visible);
+    DkFadeLabel::setVisible(visible, true);
 }
 
 bool DkZoomWidget::isAutoHide() const
@@ -1490,14 +1368,14 @@ void DkPlayer::show(int ms)
         hideTimer->start();
     }
 
-    bool showPlayer = getCurrentDisplaySetting();
-
-    DkFadeWidget::show();
+    // bool showPlayer = getCurrentDisplaySetting();
 
     // automatic showing, don't store it in the display bits
-    if (ms > 0 && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-        mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, showPlayer);
-    }
+    DkFadeWidget::show(false);
+
+    // if (ms > 0 && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
+    // mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, showPlayer);
+    // }
 }
 
 // -------------------------------------------------------------------- DkHudNavigation

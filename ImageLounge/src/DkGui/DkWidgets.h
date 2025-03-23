@@ -301,7 +301,7 @@ protected:
     QPushButton *mNextButton;
 };
 
-class DkFolderScrollBar : public QSlider
+class DkFolderScrollBar : public DkFadeMixin<QSlider>
 {
     Q_OBJECT
 
@@ -311,20 +311,8 @@ public:
 
     virtual void setValue(int i);
 
-    void registerAction(QAction *action);
-    void block(bool blocked);
-    void setDisplaySettings(QBitArray *displayBits);
-    bool getCurrentDisplaySetting();
-
 public slots:
     void updateDir(QVector<QSharedPointer<DkImageContainerT>> images);
-
-    virtual void show(bool saveSettings = true);
-    virtual void hide(bool saveSettings = true);
-    virtual void setVisible(bool visible, bool saveSettings = true);
-
-    void animateOpacityUp();
-    void animateOpacityDown();
 
     void updateFile(int idx);
 
@@ -337,13 +325,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
     QColor mBgCol;
-    bool mBlocked = false;
-    bool mHiding = false;
-    bool mShowing = false;
     bool mMouseDown = false;
-
-    QGraphicsOpacityEffect *mOpacityEffect = 0;
-    QBitArray *mDisplaySettingsBits = 0;
 
     void init();
 };
