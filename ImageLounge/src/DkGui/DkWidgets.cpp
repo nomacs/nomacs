@@ -764,7 +764,7 @@ QTransform DkOverview::getScaledImageMatrix()
 
 // DkZoomWidget --------------------------------------------------------------------
 DkZoomWidget::DkZoomWidget(QWidget *parent)
-    : DkFadeLabel(parent)
+    : DkFadeLabel("", parent)
 {
     mAutoHide = false;
     setObjectName("DkZoomWidget");
@@ -1084,7 +1084,7 @@ void DkRatingLabelBg::paintEvent(QPaintEvent *event)
 
 // title info --------------------------------------------------------------------
 DkFileInfoLabel::DkFileInfoLabel(QWidget *parent)
-    : DkFadeLabel(parent)
+    : DkFadeLabel("", parent)
 {
     setObjectName("DkFileInfoLabel");
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);

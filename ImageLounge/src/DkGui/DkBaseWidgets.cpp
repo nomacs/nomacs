@@ -203,7 +203,7 @@ QString DkNamedWidget::name() const
 }
 
 // DkLabel --------------------------------------------------------------------
-DkLabel::DkLabel(QWidget *parent, const QString &text)
+DkLabel::DkLabel(const QString &text, QWidget *parent)
     : QLabel(text, parent)
 {
     setMouseTracking(true);
@@ -338,8 +338,8 @@ void DkLabel::setTextToLabel()
     }
 }
 
-DkLabelBg::DkLabelBg(QWidget *parent, const QString &text)
-    : DkLabel(parent, text)
+DkLabelBg::DkLabelBg(const QString &text, QWidget *parent)
+    : DkLabel(text, parent)
 {
     setAttribute(Qt::WA_TransparentForMouseEvents); // labels should forward mouse events
     setObjectName("DkLabelBg");
