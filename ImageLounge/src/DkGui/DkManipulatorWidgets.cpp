@@ -214,9 +214,10 @@ void DkEditDock::setImage(QSharedPointer<DkImageContainerT> imgC)
 
 // DkManipulatorWidget --------------------------------------------------------------------
 DkBaseManipulatorWidget::DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     mBaseManipulator = manipulator;
+    setVisible(false);
 }
 
 QSharedPointer<DkBaseManipulatorExt> DkBaseManipulatorWidget::baseManipulator() const
