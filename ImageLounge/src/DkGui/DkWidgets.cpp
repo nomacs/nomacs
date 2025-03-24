@@ -769,7 +769,6 @@ QTransform DkOverview::getScaledImageMatrix()
 DkZoomWidget::DkZoomWidget(QWidget *parent)
     : DkFadeLabel("", parent)
 {
-    mAutoHide = false;
     setObjectName("DkZoomWidget");
     createLayout();
 
@@ -817,7 +816,6 @@ void DkZoomWidget::createLayout()
 void DkZoomWidget::onSbZoomValueChanged(double zoomLevel)
 {
     updateZoom((float)zoomLevel);
-    mAutoHide = false;
     emit zoomSignal(zoomLevel / 100.0);
 }
 
@@ -826,7 +824,6 @@ void DkZoomWidget::onSlZoomValueChanged(int zoomLevel)
     double level = (zoomLevel > 50) ? (zoomLevel - 50.0) / 50.0 * mSbZoom->maximum() + 200.0 : zoomLevel * 4.0;
     if (level < 0.2)
         level = 0.2;
-    mAutoHide = false;
     updateZoom(level);
     emit zoomSignal(level / 100.0);
 }
@@ -846,22 +843,6 @@ void DkZoomWidget::updateZoom(double zoomLevel)
 DkOverview *DkZoomWidget::getOverview() const
 {
     return mOverview;
-}
-
-void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */)
-{
-    if (!isVisible() && visible)
-        this->mAutoHide = autoHide;
-
-    if (!visible)
-        autoHide = false;
-
-    DkFadeLabel::setVisible(visible, true);
-}
-
-bool DkZoomWidget::isAutoHide() const
-{
-    return mAutoHide;
 }
 
 // DkButton --------------------------------------------------------------------

@@ -505,14 +505,10 @@ public:
 
     DkOverview *getOverview() const;
 
-    bool isAutoHide() const;
-
 signals:
     void zoomSignal(double zoomLevel);
 
 public slots:
-    virtual void setVisible(bool visible, bool autoHide = false);
-
     void updateZoom(double zoomLevel);
     void onSbZoomValueChanged(double zoomLevel);
     void onSlZoomValueChanged(int zoomLevel);
@@ -523,7 +519,6 @@ protected:
     DkOverview *mOverview = 0;
     QSlider *mSlZoom = 0;
     QDoubleSpinBox *mSbZoom = 0;
-    bool mAutoHide = false;
 };
 
 class DkTransformRect : public DkWidget
