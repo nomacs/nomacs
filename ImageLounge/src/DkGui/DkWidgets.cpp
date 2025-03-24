@@ -1279,7 +1279,7 @@ void DkPlayer::init()
     hideTimer->setInterval(timeToDisplayPlayer);
     hideTimer->setSingleShot(true);
     connect(hideTimer, &QTimer::timeout, this, [this]() {
-        this->hide();
+        this->hide(false); // do not save setting when showing/hiding temporarily
     });
 
     connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow), &QAction::triggered, this, &DkPlayer::togglePlay);
@@ -1294,14 +1294,15 @@ void DkPlayer::play(bool play)
 
     if (play) {
         displayTimer->start();
-        hideTimer->start();
+        showTemporarily();
     } else
         displayTimer->stop();
 }
 
 void DkPlayer::togglePlay()
 {
-    show();
+    hideTimer->stop();
+    showTemporarily(!playing);
     playing = !playing;
     playButton->click();
 }
@@ -1342,21 +1343,13 @@ void DkPlayer::setTimeToDisplay(int ms)
     displayTimer->setInterval(ms);
 }
 
-void DkPlayer::show(int ms)
+void DkPlayer::showTemporarily(bool autoHide)
 {
-    if (ms > 0 && !hideTimer->isActive()) {
-        hideTimer->setInterval(ms);
+    if (autoHide)
         hideTimer->start();
-    }
 
-    // bool showPlayer = getCurrentDisplaySetting();
-
-    // automatic showing, don't store it in the display bits
+    // automatic showing, don't save visibility setting
     DkFadeWidget::show(false);
-
-    // if (ms > 0 && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-    // mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, showPlayer);
-    // }
 }
 
 // -------------------------------------------------------------------- DkHudNavigation
