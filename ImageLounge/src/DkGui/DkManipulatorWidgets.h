@@ -53,7 +53,7 @@ namespace nmc
 
 // nomacs defines
 
-class DkBaseManipulatorWidget : public DkFadeWidget
+class DkBaseManipulatorWidget : public DkWidget
 {
     Q_OBJECT
 
