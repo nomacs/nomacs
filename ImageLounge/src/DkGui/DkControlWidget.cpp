@@ -748,7 +748,7 @@ void DkControlWidget::updateRating(int rating)
     metaDataInfo->setRating(rating);
 }
 
-void DkControlWidget::imageLoaded(bool)
+void DkControlWidget::imagePresenceChanged(bool imagePresent)
 {
     showWidgetsSettings();
 }
