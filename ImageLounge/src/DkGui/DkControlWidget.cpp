@@ -376,6 +376,10 @@ void DkControlWidget::showWidgetsSettings()
     showHistogram(mHistogram->getCurrentDisplaySetting());
     showCommentWidget(mCommentWidget->getCurrentDisplaySetting());
     showScroller(mFolderScroll->getCurrentDisplaySetting());
+
+    // don't show player while playing and switching modes
+    if (!mPlayer->isPlaying())
+        showPlayer(mPlayer->getCurrentDisplaySetting());
 }
 
 void DkControlWidget::toggleHUD(bool hide)
@@ -767,8 +771,8 @@ void DkControlWidget::setFullScreen(bool fullscreen)
 {
     showWidgetsSettings();
 
-    if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->isVisible())
-        mPlayer->show(3000);
+    if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->getCurrentDisplaySetting() && !mPlayer->isPlaying())
+        mPlayer->showTemporarily();
 }
 
 DkOverview *DkControlWidget::getOverview() const
