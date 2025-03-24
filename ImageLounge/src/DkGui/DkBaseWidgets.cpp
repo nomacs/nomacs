@@ -90,14 +90,6 @@ void DkFadeHelper::fade(bool show, bool saveSetting)
         return;
     }
 
-    if (show && mShowing)
-        return;
-    if (!show && mHiding)
-        return;
-
-    if (!show && mWidget->isHidden())
-        return;
-
     if (mDisplayBits && saveSetting) {
         int bit = DkSettingsManager::param().app().currentAppMode;
         mDisplayBits->setBit(bit, show);
@@ -111,6 +103,18 @@ void DkFadeHelper::fade(bool show, bool saveSetting)
     }
 
     bool inProgress = mShowing | mHiding;
+
+    // no-op conditions
+    if (!show && mWidget->isHidden())
+        return;
+    if (show && mWidget->isVisible() && !inProgress)
+        return;
+
+    // skip if we are going in the right direction
+    if (show && mShowing)
+        return;
+    if (!show && mHiding)
+        return;
 
     if (show) {
         mShowing = true;
