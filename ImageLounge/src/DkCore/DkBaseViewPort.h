@@ -197,6 +197,7 @@ protected:
     // functions
     virtual void draw(QPainter &painter, double opacity = 1.0);
     virtual void drawPattern(QPainter &painter) const;
+    virtual void drawBackground(QPainter &painter);
     virtual void updateImageMatrix();
     virtual QTransform getScaledImageMatrix() const;
     virtual QTransform getScaledImageMatrix(const QSize &size) const;
