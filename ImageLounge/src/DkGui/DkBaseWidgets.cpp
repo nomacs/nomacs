@@ -110,15 +110,19 @@ void DkFadeHelper::fade(bool show, bool saveSetting)
         mAction->blockSignals(false);
     }
 
+    bool inProgress = mShowing | mHiding;
+
     if (show) {
         mShowing = true;
         mHiding = false;
         if (mWidget->isHidden()) {
             mOpacityEffect->setEnabled(true);
-            mOpacityEffect->setOpacity(0);
+            mOpacityEffect->setOpacity(0.0);
             setWidgetVisible(true);
         }
-        animateOpacity();
+
+        if (!inProgress)
+            animateOpacity();
     } else {
         mShowing = false;
         mHiding = true;
@@ -127,7 +131,9 @@ void DkFadeHelper::fade(bool show, bool saveSetting)
             mOpacityEffect->setEnabled(true);
             mOpacityEffect->setOpacity(1.0);
         }
-        animateOpacity();
+
+        if (!inProgress)
+            animateOpacity();
     }
 }
 
