@@ -318,6 +318,8 @@ void DkViewPort::setImage(QImage newImg)
 
     mController->getOverview()->setImage(QImage()); // clear overview
 
+    bool wasImageLoaded = !mImgStorage.isEmpty();
+    bool isImageLoaded = !newImg.isNull();
     mImgStorage.setImage(newImg);
 
     if (mLoader->hasMovie() && !mLoader->isEdited())
@@ -328,7 +330,9 @@ void DkViewPort::setImage(QImage newImg)
     mImgRect = QRectF(QPoint(), getImageSize());
 
     DkActionManager::instance().enableImageActions(!newImg.isNull());
-    mController->imageLoaded(!newImg.isNull());
+
+    if (wasImageLoaded ^ isImageLoaded)
+        mController->imagePresenceChanged(isImageLoaded);
 
     double oldZoom = mWorldMatrix.m11(); // *mImgMatrix.m11();
 
