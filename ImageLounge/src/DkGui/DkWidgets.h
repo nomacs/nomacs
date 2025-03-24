@@ -259,7 +259,7 @@ public slots:
     void autoNext();
     void next();
     void previous();
-    virtual void show(int ms = 0);
+    void showTemporarily(bool autoHide = true);
     bool isPlaying() const;
 
 protected:
