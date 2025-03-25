@@ -130,14 +130,16 @@ public:
     }
 
     // overload for text widgets
-    DkFadeMixin(const QString &text, QWidget *parent, Qt::WindowFlags flags)
-        : QWidgetBase(text, parent, flags)
+    template<typename T>
+    DkFadeMixin(const T &arg0, QWidget *parent, Qt::WindowFlags flags)
+        : QWidgetBase(arg0, parent, flags)
         , DkFadeHelper(this)
     {
     }
 
-    DkFadeMixin(const QString &text, QWidget *parent)
-        : QWidgetBase(text, parent)
+    template<typename T>
+    DkFadeMixin(const T &arg0, QWidget *parent)
+        : QWidgetBase(arg0, parent)
         , DkFadeHelper(this)
     {
     }
