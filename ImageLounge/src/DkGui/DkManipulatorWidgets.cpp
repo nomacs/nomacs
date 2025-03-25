@@ -49,7 +49,7 @@ namespace nmc
 {
 // DkManipulatorWidget --------------------------------------------------------------------
 DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     // create widgets
     DkActionManager &am = DkActionManager::instance();
