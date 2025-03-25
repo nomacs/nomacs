@@ -1012,61 +1012,7 @@ void DkRatingLabel::init()
     connect(mStars[rating_5], &DkButton::released, this, &DkRatingLabel::rating5);
 }
 
-// DkRatingLabelBg --------------------------------------------------------------------
-DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget *parent, Qt::WindowFlags flags)
-    : DkRatingLabel(rating, parent, flags)
-{
-    setCursor(Qt::ArrowCursor);
-
-    mHideTimer = new QTimer(this);
-    mHideTimer->setInterval(mTimeToDisplay);
-    mHideTimer->setSingleShot(true);
-
-    // we want a margin
-    mLayout->setContentsMargins(10, 4, 10, 4);
-    mLayout->setSpacing(4);
-
-    DkActionManager &am = DkActionManager::instance();
-
-    // TODO: replace this with a for loop?
-    connect(am.action(DkActionManager::sc_star_rating_0), &QAction::triggered, this, &DkRatingLabel::rating0);
-    mStars[rating_1]->addAction(am.action(DkActionManager::sc_star_rating_1));
-    connect(am.action(DkActionManager::sc_star_rating_1), &QAction::triggered, this, &DkRatingLabel::rating1);
-    mStars[rating_2]->addAction(am.action(DkActionManager::sc_star_rating_2));
-    connect(am.action(DkActionManager::sc_star_rating_2), &QAction::triggered, this, &DkRatingLabel::rating2);
-    mStars[rating_3]->addAction(am.action(DkActionManager::sc_star_rating_3));
-    connect(am.action(DkActionManager::sc_star_rating_3), &QAction::triggered, this, &DkRatingLabel::rating3);
-    mStars[rating_4]->addAction(am.action(DkActionManager::sc_star_rating_4));
-    connect(am.action(DkActionManager::sc_star_rating_4), &QAction::triggered, this, &DkRatingLabel::rating4);
-    mStars[rating_5]->addAction(am.action(DkActionManager::sc_star_rating_5));
-    connect(am.action(DkActionManager::sc_star_rating_5), &QAction::triggered, this, &DkRatingLabel::rating5);
-
-    connect(mHideTimer, &QTimer::timeout, this, [this]() {
-        this->hide();
-    });
-}
-
-DkRatingLabelBg::~DkRatingLabelBg()
-{
-}
-
-void DkRatingLabelBg::changeRating(int newRating)
-{
-    DkRatingLabel::changeRating(newRating);
-    show();
-    mHideTimer->start();
-}
-
-void DkRatingLabelBg::paintEvent(QPaintEvent *event)
-{
-    QPainter painter(this);
-    painter.fillRect(QRect(QPoint(), this->size()), DkSettingsManager::param().display().hudBgColor);
-    painter.end();
-
-    DkRatingLabel::paintEvent(event);
-}
-
-// title info --------------------------------------------------------------------
+// title info + star label -------------------------------------------------------
 DkFileInfoLabel::DkFileInfoLabel(QWidget *parent)
     : DkFadeLabel("", parent)
 {

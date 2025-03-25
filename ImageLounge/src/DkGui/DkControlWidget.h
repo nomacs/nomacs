@@ -185,7 +185,6 @@ protected:
 
     DkFolderScrollBar *mFolderScroll;
     DkFileInfoLabel *mFileInfoLabel;
-    DkRatingLabelBg *mRatingLabel;
 
     DkDelayedMessage *mDelayedInfo;
 
