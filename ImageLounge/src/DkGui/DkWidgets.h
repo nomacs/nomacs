@@ -331,7 +331,7 @@ protected:
 };
 
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future
-class DkThumbsSaver : public DkFadeWidget
+class DkThumbsSaver : public DkWidget
 {
     Q_OBJECT
 
