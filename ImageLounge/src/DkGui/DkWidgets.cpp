@@ -161,7 +161,7 @@ void DkFolderScrollBar::init()
 
 // DkThumbsSaver --------------------------------------------------------------------
 DkThumbsSaver::DkThumbsSaver(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     mStop = false;
     mNumSaved = 0;
