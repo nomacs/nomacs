@@ -85,11 +85,6 @@ void DkFadeHelper::fade(bool show, bool saveSetting)
     qDebug().nospace() << "[fade] " << mWidget->metaObject()->className() << " show=" << show << " save=" << saveSetting << " showing=" << mShowing
                        << " hiding=" << mHiding << " visible=" << mWidget->isVisible();
 
-    if (mBlocked) {
-        qDebug() << "[fade]" << mWidget->metaObject()->className() << "visibility is blocked";
-        return;
-    }
-
     if (mDisplayBits && saveSetting) {
         int bit = DkSettingsManager::param().app().currentAppMode;
         mDisplayBits->setBit(bit, show);
