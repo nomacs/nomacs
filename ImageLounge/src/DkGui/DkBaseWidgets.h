@@ -76,13 +76,6 @@ public:
         mAction = action;
     }
 
-    // prevents fade() from having any effect or visibility change (TODO: what for?)
-    void block(bool blocked)
-    {
-        mBlocked = blocked;
-        setWidgetVisible(false);
-    }
-
     // binds a per-appmode setting to visibility changes
     void setDisplaySettings(QBitArray *displayBits)
     {
