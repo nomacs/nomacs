@@ -236,8 +236,7 @@ public:
         updateStyleSheet();
     };
 
-public slots:
-    virtual void hide();
+    void setVisible(bool) override;
 
 protected:
     QWidget *mParent;
