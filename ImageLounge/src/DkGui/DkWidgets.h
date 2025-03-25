@@ -187,23 +187,6 @@ protected:
     virtual void init();
 };
 
-class DkRatingLabelBg : public DkRatingLabel
-{
-    Q_OBJECT
-
-public:
-    DkRatingLabelBg(int rating = 0, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkRatingLabelBg();
-
-    void changeRating(int newRating) override;
-
-protected:
-    QTimer *mHideTimer;
-    int mTimeToDisplay = 4000;
-
-    virtual void paintEvent(QPaintEvent *event) override;
-};
-
 class DkFileInfoLabel : public DkFadeLabel
 {
     Q_OBJECT
