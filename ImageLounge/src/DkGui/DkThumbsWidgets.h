@@ -455,12 +455,17 @@ protected:
     void leaveEvent(QEvent *event) override;
 };
 
-class DllCoreExport DkRecentFilesWidget : public DkFadeWidget
+class DllCoreExport DkRecentFilesWidget : public DkWidget
 {
     Q_OBJECT
 
 public:
     DkRecentFilesWidget(QWidget *parent = 0);
+
+    void registerAction(QAction *action)
+    {
+        mAction = action;
+    }
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
@@ -474,7 +479,10 @@ protected:
     void createLayout();
     void updateList();
 
-    QScrollArea *mScrollArea;
+    QScrollArea *mScrollArea = nullptr;
+
+private:
+    QAction *mAction = nullptr;
 };
 
 }
