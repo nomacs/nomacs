@@ -2220,7 +2220,7 @@ void DkRecentDirWidget::leaveEvent(QEvent *event)
 
 // -------------------------------------------------------------------- DkRecentFilesEntry
 DkRecentFilesWidget::DkRecentFilesWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     createLayout();
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -2230,8 +2230,13 @@ void DkRecentFilesWidget::setVisible(bool visible)
 {
     if (visible)
         updateList();
+    if (mAction) {
+        mAction->blockSignals(true);
+        mAction->setChecked(visible);
+        mAction->blockSignals(false);
+    }
 
-    DkFadeWidget::setVisible(visible);
+    DkWidget::setVisible(visible);
 }
 
 void DkRecentFilesWidget::createLayout()
