@@ -248,12 +248,6 @@ void DkLabel::init()
     updateStyleSheet();
 }
 
-void DkLabel::hide()
-{
-    mTime = 0;
-    QLabel::hide();
-}
-
 void DkLabel::setText(const QString &msg, int time)
 {
     mText = msg;
@@ -286,6 +280,13 @@ void DkLabel::showTimed(int time)
         mTimer.start(time);
 }
 
+void DkLabel::setVisible(bool visible)
+{
+    if (!visible)
+        mTimer.stop();
+    QLabel::setVisible(visible);
+}
+
 QString DkLabel::getText()
 {
     return mText;
@@ -303,7 +304,6 @@ void DkLabel::setFontSize(int fontSize)
 */
 void DkLabel::stop()
 {
-    mTimer.stop();
     hide();
 }
 
