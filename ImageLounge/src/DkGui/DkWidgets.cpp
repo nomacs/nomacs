@@ -2878,7 +2878,7 @@ void DkTabEntryWidget::paintEvent(QPaintEvent *event)
 
 // -------------------------------------------------------------------- DkDisplayWidget
 DkDisplayWidget::DkDisplayWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     createLayout();
     updateLayout();
@@ -2919,7 +2919,7 @@ void DkDisplayWidget::setCurrentIndex(int index)
 
 void DkDisplayWidget::resizeEvent(QResizeEvent *event)
 {
-    DkFadeWidget::resizeEvent(event);
+    DkWidget::resizeEvent(event);
     updateLayout();
 }
 
