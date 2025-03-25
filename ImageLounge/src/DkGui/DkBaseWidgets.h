@@ -99,7 +99,6 @@ private:
     QWidget *mWidget; // widget we are showing/hiding
     QGraphicsOpacityEffect *mOpacityEffect;
 
-    bool mBlocked = false;
     bool mShowing = false;
     bool mHiding = false;
 
