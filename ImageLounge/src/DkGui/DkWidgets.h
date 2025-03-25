@@ -103,7 +103,7 @@ protected:
     QPixmap createSelectedEffect(QPixmap *pm);
 };
 
-class DkRatingLabel : public DkFadeWidget
+class DkRatingLabel : public DkWidget
 {
     Q_OBJECT
 
