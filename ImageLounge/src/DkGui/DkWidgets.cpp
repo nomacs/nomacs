@@ -962,7 +962,7 @@ void DkButton::leaveEvent(QEvent *)
 
 // star label --------------------------------------------------------------------
 DkRatingLabel::DkRatingLabel(int rating, QWidget *parent, Qt::WindowFlags flags)
-    : DkFadeWidget(parent, flags)
+    : DkWidget(parent, flags)
 {
     setObjectName("DkRatingLabel");
     mRating = rating;
