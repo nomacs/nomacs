@@ -981,7 +981,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 };
 
-class DllCoreExport DkDisplayWidget : public DkFadeWidget
+class DllCoreExport DkDisplayWidget : public DkWidget
 {
     Q_OBJECT
 
