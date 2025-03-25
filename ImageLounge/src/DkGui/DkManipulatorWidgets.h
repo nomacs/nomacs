@@ -224,7 +224,7 @@ private:
 };
 
 // dock --------------------------------------------------------------------
-class DkManipulatorWidget : public DkFadeWidget
+class DkManipulatorWidget : public DkWidget
 {
     Q_OBJECT
 
