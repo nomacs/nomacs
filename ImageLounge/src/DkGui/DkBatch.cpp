@@ -352,7 +352,7 @@ void DkBatchInput::createLayout()
     mResultTextEdit->setVisible(false);
 
     mThumbScrollWidget = new DkThumbScrollWidget(this);
-    mThumbScrollWidget->setVisible(true);
+    mThumbScrollWidget->setFadeEnabled(false);
     mThumbScrollWidget->getThumbWidget()->setImageLoader(mLoader);
 
     // add explorer
