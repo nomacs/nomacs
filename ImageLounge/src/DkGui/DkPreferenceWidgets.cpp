@@ -448,6 +448,13 @@ void DkGeneralPreference::createLayout()
     cbShowBgImage->setChecked(DkSettingsManager::param().global().showBgImage);
     connect(cbShowBgImage, &QCheckBox::toggled, this, &DkGeneralPreference::onShowBgImageToggled);
 
+    QCheckBox *cbEnableAnimation = new QCheckBox(tr("Enable Animations"), this);
+    cbEnableAnimation->setToolTip(tr("If checked, enable animations on user interface components."));
+    cbEnableAnimation->setChecked(DkSettingsManager::param().display().animateWidgets);
+    connect(cbEnableAnimation, &QCheckBox::toggled, [](bool enabled) {
+        DkSettingsManager::param().display().animateWidgets = enabled;
+    });
+
     QCheckBox *cbSwitchModifier = new QCheckBox(tr("Switch CTRL with ALT"), this);
     cbSwitchModifier->setToolTip(tr("If checked, CTRL + Mouse is switched with ALT + Mouse."));
     cbSwitchModifier->setChecked(DkSettingsManager::param().sync().switchModifier);
@@ -483,6 +490,7 @@ void DkGeneralPreference::createLayout()
     generalGroup->addWidget(cbCloseOnMiddleMouse);
     generalGroup->addWidget(cbCheckForUpdates);
     generalGroup->addWidget(cbShowBgImage);
+    generalGroup->addWidget(cbEnableAnimation);
 
     // language
     QComboBox *languageCombo = new QComboBox(this);

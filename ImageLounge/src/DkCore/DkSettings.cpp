@@ -467,6 +467,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.defaultForegroundColor = settings.value("defaultForegroundColor", display_p.defaultForegroundColor).toBool();
     display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
     display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
+    display_p.animateWidgets = settings.value("animateWidgets", display_p.animateWidgets).toBool();
 
     settings.endGroup();
     // MetaData Settings --------------------------------------------------------------------
@@ -738,6 +739,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("defaultIconColor", display_p.defaultIconColor);
     if (force || display_p.interpolateZoomLevel != display_d.interpolateZoomLevel)
         settings.setValue("interpolateZoomlevel", display_p.interpolateZoomLevel);
+    if (force || display_p.animateWidgets != display_d.animateWidgets)
+        settings.setValue("animateWidgets", display_p.animateWidgets);
 
     settings.endGroup();
     // MetaData Settings --------------------------------------------------------------------
