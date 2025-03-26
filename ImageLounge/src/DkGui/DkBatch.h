@@ -101,7 +101,7 @@ class DkSettingsWidget;
 class DkBatchPluginInterface;
 class DkRectWidget;
 
-class DkBatchContent : public DkWidget
+class DkBatchContent : public DkFadeWidget
 {
     Q_OBJECT
 

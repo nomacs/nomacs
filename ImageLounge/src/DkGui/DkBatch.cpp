@@ -414,6 +414,7 @@ void DkBatchInput::setVisible(bool visible)
 {
     QWidget::setVisible(visible);
     mThumbScrollWidget->getThumbWidget()->updateLayout();
+    DkBatchContent::setVisible(visible);
 }
 
 void DkBatchInput::browse()
@@ -3043,7 +3044,7 @@ void DkBatchWidget::widgetChanged()
 }
 
 DkBatchContent::DkBatchContent(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
-    : DkWidget(parent, f)
+    : DkFadeWidget(parent, f)
 {
 }
 }
