@@ -3007,8 +3007,11 @@ void DkBatchWidget::loadProfile(const QString &profilePath)
 
 void DkBatchWidget::applyDefault()
 {
-    for (DkBatchContainer *bc : mWidgets)
-        bc->batchContent()->applyDefault();
+    for (DkBatchContainer *w : mWidgets) {
+        if (!w)
+            continue;
+        w->batchContent()->applyDefault();
+    }
 }
 
 void DkBatchWidget::widgetChanged()
