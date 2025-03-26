@@ -228,7 +228,6 @@ public slots:
     void setDir(const QString &dirPath);
     void browse();
     void updateDir(QVector<QSharedPointer<DkImageContainerT>>);
-    void setVisible(bool visible) override;
     void parameterChanged();
     void selectionChanged();
     void setFileInfo(QFileInfo file);

@@ -80,6 +80,13 @@ bool DkFadeHelper::getCurrentDisplaySetting()
     return mDisplayBits->testBit(DkSettingsManager::param().app().currentAppMode);
 }
 
+bool DkFadeHelper::isFadeEnabled() const
+{
+    if (!DkSettingsManager::param().display().animateWidgets)
+        return false;
+    return mEnabled;
+}
+
 void DkFadeHelper::fade(bool show, bool saveSetting)
 {
     qDebug().nospace() << "[fade] " << mWidget->metaObject()->className() << " show=" << show << " save=" << saveSetting << " showing=" << mShowing
