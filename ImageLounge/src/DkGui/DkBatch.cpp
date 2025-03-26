@@ -2325,7 +2325,7 @@ QRect DkBatchTransformWidget::cropRect() const
 
 // Batch Buttons --------------------------------------------------------------------
 DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     createLayout();
     setPaused();
