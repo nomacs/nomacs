@@ -97,7 +97,20 @@ void DkFadeHelper::fade(bool show, bool saveSetting)
         mAction->blockSignals(false);
     }
 
-    bool inProgress = mShowing | mHiding;
+    bool inProgress = isAnimating();
+    Q_ASSERT((inProgress && (mShowing | mHiding)) || (!inProgress && !(mShowing | mHiding)));
+
+    // show or hide immediately
+    if (!isFadeEnabled() || isParentAnimating()) {
+        if (inProgress)
+            stopAnimation();
+        mShowing = false;
+        mHiding = false;
+        mOpacityEffect->setEnabled(false);
+        mOpacityEffect->setOpacity(show ? 1.0 : 0.0);
+        setWidgetVisible(show);
+        return;
+    }
 
     // no-op conditions
     if (!show && mWidget->isHidden())
@@ -114,26 +127,22 @@ void DkFadeHelper::fade(bool show, bool saveSetting)
     if (show) {
         mShowing = true;
         mHiding = false;
-        if (mWidget->isHidden()) {
+        if (!inProgress) {
             mOpacityEffect->setEnabled(true);
             mOpacityEffect->setOpacity(0.0);
             setWidgetVisible(true);
         }
-
-        if (!inProgress)
-            animateOpacity();
     } else {
         mShowing = false;
         mHiding = true;
-
-        if (!mOpacityEffect->isEnabled()) {
+        if (!inProgress) {
             mOpacityEffect->setEnabled(true);
             mOpacityEffect->setOpacity(1.0);
         }
-
-        if (!inProgress)
-            animateOpacity();
     }
+
+    if (!inProgress)
+        startAnimation();
 }
 
 void DkFadeHelper::setWidgetVisible(bool visible)
@@ -148,8 +157,11 @@ void DkFadeHelper::setWidgetVisible(bool visible)
     mSetWidgetVisible = false;
 }
 
-void DkFadeHelper::animateOpacity()
+void DkFadeHelper::animateFade(const QTimerEvent *event)
 {
+    if (event->timerId() != mTimerId) // we will receive events from QTimer etc
+        return;
+
     qreal step = mShowing ? 0.05 : -0.05;
     qreal opacity = mOpacityEffect->opacity() + step;
     opacity = qBound(0.0, opacity, 1.0);
@@ -163,13 +175,23 @@ void DkFadeHelper::animateOpacity()
         mOpacityEffect->setEnabled(false);
         mHiding = false;
         mShowing = false;
-        return;
-    }
 
-    // timer will not fire if mWidget is deleted
-    QTimer::singleShot(20, mWidget, [this] {
-        animateOpacity();
-    });
+        stopAnimation();
+    }
+}
+
+bool DkFadeHelper::isParentAnimating() const
+{
+    // we do not want to animate widgets if the parent is already animating
+    // note: QObject::inherits() would be slightly better here but we do not derive QObject
+    QWidget *w = mWidget->parentWidget();
+    while (w) {
+        auto *helper = dynamic_cast<DkFadeHelper *>(w);
+        if (helper && helper->isAnimating())
+            return true;
+        w = w->parentWidget();
+    }
+    return false;
 }
 
 // -------------------------------------------------------------------- DkFadeWidget
