@@ -85,6 +85,19 @@ public:
     // returns the setting value for current app mode
     bool getCurrentDisplaySetting();
 
+    // check if animation is currently enabled (may consider user settings)
+    bool isFadeEnabled() const
+    {
+        return mEnabled;
+    }
+
+    // disable/enable animation of this widget, regardless of any user settings
+    // will not affect fades that are in progress (call show/hide/etc for that)
+    void setFadeEnabled(bool enable)
+    {
+        mEnabled = enable;
+    }
+
 protected:
     // if true, overrides of of setVisible() should directly call QWidget::setVisible()
     bool mSetWidgetVisible = false;
@@ -92,16 +105,36 @@ protected:
     // fade in or fade out, set QWidget visibility, action checkstate, settings
     void fade(bool show, bool saveSetting = true);
 
+    // step the animation, stop it when completed
+    void animateFade(const QTimerEvent *event);
+
 private:
     void setWidgetVisible(bool visible);
-    void animateOpacity();
+    bool isParentAnimating() const;
+
+    bool isAnimating() const
+    {
+        return mTimerId != 0;
+    }
+
+    void stopAnimation()
+    {
+        mWidget->killTimer(mTimerId);
+        mTimerId = 0;
+    }
+
+    void startAnimation()
+    {
+        mTimerId = mWidget->startTimer(20);
+    }
 
     QWidget *mWidget; // widget we are showing/hiding
     QGraphicsOpacityEffect *mOpacityEffect;
 
+    bool mEnabled = true;
     bool mShowing = false;
     bool mHiding = false;
-
+    int mTimerId = 0; // from mWidget->startTimer()
     QAction *mAction = nullptr; // hide/show action for widget
     QBitArray *mDisplayBits = nullptr; // pointer to DkSettings visiblity bits for widget
 };
@@ -171,6 +204,13 @@ public:
     void hide(bool saveSetting = true)
     {
         setVisible(false, saveSetting);
+    }
+
+protected:
+    // not possible to have cancelable QTimer from FadeHelper so use startTimer()/killTimer()
+    void timerEvent(QTimerEvent *event) override
+    {
+        animateFade(event);
     }
 };
 
