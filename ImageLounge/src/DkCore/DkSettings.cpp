@@ -929,6 +929,7 @@ void DkSettings::setToDefaultSettings()
     display_p.defaultForegroundColor = true;
     display_p.defaultIconColor = true;
     display_p.interpolateZoomLevel = 200;
+    display_p.animateWidgets = true;
 
     slideShow_p.filter = 0;
     slideShow_p.time = 3.0;

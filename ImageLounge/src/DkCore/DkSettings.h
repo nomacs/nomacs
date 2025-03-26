@@ -253,6 +253,7 @@ public:
         float animationDuration;
 
         int histogramStyle;
+        bool animateWidgets; // animate hide/show of widgets/panels/etc
     };
 
     struct Global {
