@@ -410,13 +410,6 @@ void DkBatchInput::updateDir(QVector<QSharedPointer<DkImageContainerT>> thumbs)
     emit updateDirSignal(thumbs);
 }
 
-void DkBatchInput::setVisible(bool visible)
-{
-    QWidget::setVisible(visible);
-    mThumbScrollWidget->getThumbWidget()->updateLayout();
-    DkBatchContent::setVisible(visible);
-}
-
 void DkBatchInput::browse()
 {
     // load system default open dialog
