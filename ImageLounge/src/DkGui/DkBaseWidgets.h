@@ -86,10 +86,7 @@ public:
     bool getCurrentDisplaySetting();
 
     // check if animation is currently enabled (may consider user settings)
-    bool isFadeEnabled() const
-    {
-        return mEnabled;
-    }
+    bool isFadeEnabled() const;
 
     // disable/enable animation of this widget, regardless of any user settings
     // will not affect fades that are in progress (call show/hide/etc for that)
