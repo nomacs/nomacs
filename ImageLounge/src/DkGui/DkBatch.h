@@ -561,7 +561,7 @@ protected:
     QDoubleSpinBox *mResizeSbPercent;
 };
 
-class DkBatchButtonsWidget : public DkFadeWidget
+class DkBatchButtonsWidget : public DkWidget
 {
     Q_OBJECT
 
