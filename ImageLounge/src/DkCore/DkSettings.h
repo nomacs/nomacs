@@ -252,6 +252,7 @@ public:
 
         int histogramStyle;
         bool animateWidgets; // animate hide/show of widgets/panels/etc
+        bool suspendWidgetAnimation; // temporarily stop animation globally
     };
 
     struct Global {
