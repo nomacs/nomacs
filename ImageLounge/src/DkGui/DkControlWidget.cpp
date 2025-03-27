@@ -752,7 +752,14 @@ void DkControlWidget::updateRating(int rating)
 
 void DkControlWidget::imagePresenceChanged(bool imagePresent)
 {
+    (void)imagePresent;
+
+    // disable animations while building initial view or image is lost
+    DkSettingsManager::param().display().suspendWidgetAnimation = true;
+
     showWidgetsSettings();
+
+    DkSettingsManager::param().display().suspendWidgetAnimation = false;
 }
 
 void DkControlWidget::setFullScreen(bool fullscreen)
