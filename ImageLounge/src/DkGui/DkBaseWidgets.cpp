@@ -204,6 +204,8 @@ bool DkFadeHelper::isParentAnimating() const
 }
 
 // -------------------------------------------------------------------- DkFadeWidget
+template class DkFadeMixin<DkWidget>;
+
 DkFadeWidget::DkFadeWidget(QWidget *parent, Qt::WindowFlags flags)
     : DkFadeMixin<DkWidget>(parent, flags)
 {
@@ -424,6 +426,8 @@ int DkElidedLabel::minimumWidth()
 }
 
 // DkFadeLabel --------------------------------------------------------------------
+template class DkFadeMixin<DkLabel>;
+
 DkFadeLabel::DkFadeLabel(const QString &text, QWidget *parent)
     : DkFadeMixin(text, parent)
 {
