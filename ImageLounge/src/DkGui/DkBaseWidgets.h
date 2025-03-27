@@ -372,8 +372,11 @@ public:
     static bool testDisplaySettings(const QBitArray &displaySettingsBits);
     Qt::DockWidgetArea getDockLocationSettings(const Qt::DockWidgetArea &defaultArea) const;
 
-public slots:
-    virtual void setVisible(bool visible, bool saveSetting = true);
+    void setVisible(bool visible) override
+    {
+        setVisible(visible, true);
+    }
+    virtual void setVisible(bool visible, bool saveSetting);
 
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
