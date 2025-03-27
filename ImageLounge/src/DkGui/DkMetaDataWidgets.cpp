@@ -1054,6 +1054,8 @@ void DkMetaDataHUD::contextMenuEvent(QContextMenuEvent *event)
 void DkMetaDataHUD::setVisible(bool visible, bool saveSetting /* = true */)
 {
     DkFadeWidget::setVisible(visible, saveSetting);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
 
     updateMetaData(mMetaData);
 }

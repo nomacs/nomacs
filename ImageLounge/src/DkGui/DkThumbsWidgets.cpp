@@ -826,9 +826,11 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thum
 
 void DkFilePreview::setVisible(bool visible, bool saveSettings)
 {
-    emit showThumbsDockSignal(visible);
-
     DkFadeWidget::setVisible(visible, saveSettings);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
+    emit showThumbsDockSignal(visible);
 }
 
 // DkThumbLabel --------------------------------------------------------------------
@@ -1976,9 +1978,11 @@ void DkThumbScrollWidget::setDir(const QString &dirPath)
 
 void DkThumbScrollWidget::setVisible(bool visible)
 {
-    connectToActions(visible);
-
     DkFadeWidget::setVisible(visible);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
+    connectToActions(visible);
 
     if (visible) {
         mThumbsScene->updateThumbLabels();

@@ -1045,33 +1045,41 @@ void DkFileInfoLabel::createLayout()
 
 void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
 {
-    // nothing to display??
-    if (!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name)
-        && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)
-        && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating) && visible) {
-        QMessageBox infoDialog(DkUtils::getMainWindow());
-        infoDialog.setWindowTitle(tr("Info Box"));
-        infoDialog.setText(tr("All information fields are currently hidden.\nDo you want to show them again?"));
-        infoDialog.setIcon(QMessageBox::Information);
-        infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        infoDialog.setDefaultButton(QMessageBox::Yes);
-        infoDialog.show();
-        int choice = infoDialog.exec();
-
-        if (choice == QMessageBox::No) {
-            DkFadeLabel::setVisible(false);
-            return;
-        } else {
-            DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_file_name, true);
-            DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_creation_date, true);
-            DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_file_rating, true);
-        }
-    }
-
     DkFadeLabel::setVisible(visible, saveSettings);
-    mTitleLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name));
-    mDateLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date));
-    mRatingLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating));
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
+    // FIXME: this block is disabled because if you answer NO it would just keep recursing
+    //        through setVisible(). Also the setting is not saved to file and no UI for it exists.
+    //        To fix this it should have a context menu like other panels
+    if (0) {
+        // nothing to display??
+        if (!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name)
+            && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)
+            && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating) && visible) {
+            QMessageBox infoDialog(DkUtils::getMainWindow());
+            infoDialog.setWindowTitle(tr("Info Box"));
+            infoDialog.setText(tr("All information fields are currently hidden.\nDo you want to show them again?"));
+            infoDialog.setIcon(QMessageBox::Information);
+            infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            infoDialog.setDefaultButton(QMessageBox::Yes);
+            infoDialog.show();
+            int choice = infoDialog.exec();
+
+            if (choice == QMessageBox::No) {
+                DkFadeLabel::setVisible(false);
+                return;
+            } else {
+                DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_file_name, true);
+                DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_creation_date, true);
+                DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_file_rating, true);
+            }
+        }
+
+        mTitleLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name));
+        mDateLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date));
+        mRatingLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating));
+    }
 
     int height = 32;
     if (mTitleLabel->isVisible())
@@ -1935,6 +1943,10 @@ void DkEditableRect::setAngle(double angle, bool apply)
 
 void DkEditableRect::setVisible(bool visible)
 {
+    DkFadeWidget::setVisible(visible);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
     if (!visible) {
         mRect = DkRotatingRect();
         for (int idx = 0; idx < mCtrlPoints.size(); idx++)
@@ -1943,8 +1955,6 @@ void DkEditableRect::setVisible(bool visible)
         // setFocus(Qt::ActiveWindowFocusReason);
         setCursor(Qt::CrossCursor);
     }
-
-    DkFadeWidget::setVisible(visible);
 }
 
 // DkEditableRect --------------------------------------------------------------------
@@ -2007,11 +2017,14 @@ void DkCropWidget::crop(bool cropToMetadata)
 
 void DkCropWidget::setVisible(bool visible)
 {
+    DkEditableRect::setVisible(visible);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
     if (visible && !cropToolbar)
         createToolbar();
 
     DkToolBarManager::inst().showToolBar(cropToolbar, visible);
-    DkEditableRect::setVisible(visible);
 }
 
 // Image histogram  -------------------------------------------------------------------
