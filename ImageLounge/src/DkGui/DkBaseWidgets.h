@@ -145,30 +145,24 @@ class DkFadeMixin : public QWidgetBase, public DkFadeHelper
 public:
     DkFadeMixin() = delete;
 
-    // we need a few constructors for different widget types
-    DkFadeMixin(QWidget *parent, Qt::WindowFlags flags)
-        : QWidgetBase(parent, flags)
+    // handle 1-3 argument widget constructors
+    template<typename T, typename U, typename V>
+    DkFadeMixin(T arg0, U arg1, V arg2)
+        : QWidgetBase(arg0, arg1, arg2)
         , DkFadeHelper(this)
     {
     }
 
-    DkFadeMixin(QWidget *parent)
-        : QWidgetBase(parent)
-        , DkFadeHelper(this)
-    {
-    }
-
-    // overload for text widgets
-    template<typename T>
-    DkFadeMixin(const T &arg0, QWidget *parent, Qt::WindowFlags flags)
-        : QWidgetBase(arg0, parent, flags)
+    template<typename T, typename U>
+    DkFadeMixin(T arg0, U arg1)
+        : QWidgetBase(arg0, arg1)
         , DkFadeHelper(this)
     {
     }
 
     template<typename T>
-    DkFadeMixin(const T &arg0, QWidget *parent)
-        : QWidgetBase(arg0, parent)
+    DkFadeMixin(T arg0)
+        : QWidgetBase(arg0)
         , DkFadeHelper(this)
     {
     }
@@ -246,6 +240,8 @@ protected:
     void init();
     void paintEvent(QPaintEvent *event) override;
 };
+
+extern template class DkFadeMixin<DkWidget>; // speed up compilation/linking
 
 class DllCoreExport DkNamedWidget : public DkFadeWidget
 {
@@ -384,6 +380,8 @@ protected:
     QBitArray *displaySettingsBits;
     QAction *mAction = 0;
 };
+
+extern template class DkFadeMixin<DkLabel>;
 
 class DllCoreExport DkResizableScrollArea : public QScrollArea
 {
