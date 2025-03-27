@@ -52,6 +52,7 @@ option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
 option(ENABLE_TESTING "Run tests" ON)
 option(ENABLE_BENCHMARK "Run benchmark" OFF)
 option(USE_SYSTEM_QUAZIP "QuaZip will not be compiled from source" ON) # ignored by MSVC
+option(ENABLE_PCH "Enable precompiled headers" OFF)
 
 # Codecov
 if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
@@ -253,6 +254,11 @@ if (HAS_MATCH)
   set(NOMACS_CACHED_VERSION ${CMAKE_MATCH_1})
 else()
   message(FATAL_ERROR "I could not parse version.cache")
+endif()
+
+if (ENABLE_PCH)
+	target_precompile_headers(${DLL_CORE_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:prefix.h>)
+	message(WARNING "!!Precompiled header should only be used for development!!")
 endif()
 
 # add build incrementer command if requested
