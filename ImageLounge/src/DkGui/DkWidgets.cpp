@@ -100,48 +100,20 @@
 
 namespace nmc
 {
+template class DkFadeMixin<QSlider>;
 
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget *parent)
-    : QSlider(Qt::Horizontal, parent)
+    : DkFadeMixin<QSlider>(parent)
 {
     setObjectName("DkFolderScrollBar");
+    setOrientation(Qt::Horizontal);
     init();
     mMouseDown = false;
 }
 
 DkFolderScrollBar::~DkFolderScrollBar()
 {
-}
-
-// DkFadeWidget stuff
-void DkFolderScrollBar::registerAction(QAction *action)
-{
-    connect(this, &DkFolderScrollBar::visibleSignal, action, &QAction::setChecked);
-}
-
-void DkFolderScrollBar::block(bool blocked)
-{
-    this->mBlocked = blocked;
-    setVisible(false);
-}
-
-void DkFolderScrollBar::setDisplaySettings(QBitArray *displayBits)
-{
-    mDisplaySettingsBits = displayBits;
-}
-
-bool DkFolderScrollBar::getCurrentDisplaySetting()
-{
-    if (!mDisplaySettingsBits)
-        return false;
-
-    if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= mDisplaySettingsBits->size()) {
-        qDebug() << "[WARNING] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
-        return false;
-    }
-
-    return mDisplaySettingsBits->testBit(DkSettingsManager::param().app().currentAppMode);
 }
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> images)
@@ -186,104 +158,11 @@ void DkFolderScrollBar::init()
 
     mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ? DkSettingsManager::param().display().bgColorFrameless
                                                                                       : DkSettingsManager::param().display().hudBgColor;
-
-    mShowing = false;
-    mHiding = false;
-    mBlocked = false;
-    mDisplaySettingsBits = 0;
-    mOpacityEffect = 0;
-
-    // painter problems if the widget is a child of another that has the same graphicseffect
-    // widget starts on hide
-    mOpacityEffect = new QGraphicsOpacityEffect(this);
-    mOpacityEffect->setOpacity(0);
-    mOpacityEffect->setEnabled(false);
-    setGraphicsEffect(mOpacityEffect);
-
-    setVisible(false);
-}
-
-void DkFolderScrollBar::show(bool saveSettings)
-{
-    // here is a strange problem if you add a DkFadeWidget to another DkFadeWidget -> painters crash
-    if (!mBlocked && !mShowing) {
-        mHiding = false;
-        mShowing = true;
-        setVisible(true, saveSettings);
-        animateOpacityUp();
-    }
-}
-
-void DkFolderScrollBar::hide(bool saveSettings)
-{
-    if (!mHiding) {
-        mHiding = true;
-        mShowing = false;
-        animateOpacityDown();
-
-        // set display bit here too -> since the final call to setVisible takes a few seconds
-        if (saveSettings && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-            mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, false);
-        }
-    }
-}
-
-void DkFolderScrollBar::setVisible(bool visible, bool saveSettings)
-{
-    if (mBlocked) {
-        QWidget::setVisible(false);
-        return;
-    }
-
-    if (visible && !isVisible() && !mShowing)
-        mOpacityEffect->setOpacity(100);
-
-    QWidget::setVisible(visible);
-    emit visibleSignal(visible); // if this gets slow -> put it into hide() or show()
-
-    if (saveSettings && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-        mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, visible);
-    }
-}
-
-void DkFolderScrollBar::animateOpacityUp()
-{
-    if (!mShowing)
-        return;
-
-    mOpacityEffect->setEnabled(true);
-    if (mOpacityEffect->opacity() >= 1.0f || !mShowing) {
-        mOpacityEffect->setOpacity(1.0f);
-        mShowing = false;
-        mOpacityEffect->setEnabled(false);
-        return;
-    }
-
-    QTimer::singleShot(20, this, &DkFolderScrollBar::animateOpacityUp);
-    mOpacityEffect->setOpacity(mOpacityEffect->opacity() + 0.05);
-}
-
-void DkFolderScrollBar::animateOpacityDown()
-{
-    if (!mHiding)
-        return;
-
-    mOpacityEffect->setEnabled(true);
-    if (mOpacityEffect->opacity() <= 0.0f) {
-        mOpacityEffect->setOpacity(0.0f);
-        mHiding = false;
-        setVisible(false, false); // finally hide the widget
-        mOpacityEffect->setEnabled(false);
-        return;
-    }
-
-    QTimer::singleShot(20, this, &DkFolderScrollBar::animateOpacityDown);
-    mOpacityEffect->setOpacity(mOpacityEffect->opacity() - 0.05);
 }
 
 // DkThumbsSaver --------------------------------------------------------------------
 DkThumbsSaver::DkThumbsSaver(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     mStop = false;
     mNumSaved = 0;
@@ -886,9 +765,8 @@ QTransform DkOverview::getScaledImageMatrix()
 
 // DkZoomWidget --------------------------------------------------------------------
 DkZoomWidget::DkZoomWidget(QWidget *parent)
-    : DkFadeLabel(parent)
+    : DkFadeLabel("", parent)
 {
-    mAutoHide = false;
     setObjectName("DkZoomWidget");
     createLayout();
 
@@ -936,7 +814,6 @@ void DkZoomWidget::createLayout()
 void DkZoomWidget::onSbZoomValueChanged(double zoomLevel)
 {
     updateZoom((float)zoomLevel);
-    mAutoHide = false;
     emit zoomSignal(zoomLevel / 100.0);
 }
 
@@ -945,7 +822,6 @@ void DkZoomWidget::onSlZoomValueChanged(int zoomLevel)
     double level = (zoomLevel > 50) ? (zoomLevel - 50.0) / 50.0 * mSbZoom->maximum() + 200.0 : zoomLevel * 4.0;
     if (level < 0.2)
         level = 0.2;
-    mAutoHide = false;
     updateZoom(level);
     emit zoomSignal(level / 100.0);
 }
@@ -965,22 +841,6 @@ void DkZoomWidget::updateZoom(double zoomLevel)
 DkOverview *DkZoomWidget::getOverview() const
 {
     return mOverview;
-}
-
-void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */)
-{
-    if (!isVisible() && visible)
-        this->mAutoHide = autoHide;
-
-    if (!visible)
-        autoHide = false;
-
-    DkFadeLabel::setVisible(visible);
-}
-
-bool DkZoomWidget::isAutoHide() const
-{
-    return mAutoHide;
 }
 
 // DkButton --------------------------------------------------------------------
@@ -1100,7 +960,7 @@ void DkButton::leaveEvent(QEvent *)
 
 // star label --------------------------------------------------------------------
 DkRatingLabel::DkRatingLabel(int rating, QWidget *parent, Qt::WindowFlags flags)
-    : DkFadeWidget(parent, flags)
+    : DkWidget(parent, flags)
 {
     setObjectName("DkRatingLabel");
     mRating = rating;
@@ -1150,63 +1010,9 @@ void DkRatingLabel::init()
     connect(mStars[rating_5], &DkButton::released, this, &DkRatingLabel::rating5);
 }
 
-// DkRatingLabelBg --------------------------------------------------------------------
-DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget *parent, Qt::WindowFlags flags)
-    : DkRatingLabel(rating, parent, flags)
-{
-    setCursor(Qt::ArrowCursor);
-
-    mHideTimer = new QTimer(this);
-    mHideTimer->setInterval(mTimeToDisplay);
-    mHideTimer->setSingleShot(true);
-
-    // we want a margin
-    mLayout->setContentsMargins(10, 4, 10, 4);
-    mLayout->setSpacing(4);
-
-    DkActionManager &am = DkActionManager::instance();
-
-    // TODO: replace this with a for loop?
-    connect(am.action(DkActionManager::sc_star_rating_0), &QAction::triggered, this, &DkRatingLabel::rating0);
-    mStars[rating_1]->addAction(am.action(DkActionManager::sc_star_rating_1));
-    connect(am.action(DkActionManager::sc_star_rating_1), &QAction::triggered, this, &DkRatingLabel::rating1);
-    mStars[rating_2]->addAction(am.action(DkActionManager::sc_star_rating_2));
-    connect(am.action(DkActionManager::sc_star_rating_2), &QAction::triggered, this, &DkRatingLabel::rating2);
-    mStars[rating_3]->addAction(am.action(DkActionManager::sc_star_rating_3));
-    connect(am.action(DkActionManager::sc_star_rating_3), &QAction::triggered, this, &DkRatingLabel::rating3);
-    mStars[rating_4]->addAction(am.action(DkActionManager::sc_star_rating_4));
-    connect(am.action(DkActionManager::sc_star_rating_4), &QAction::triggered, this, &DkRatingLabel::rating4);
-    mStars[rating_5]->addAction(am.action(DkActionManager::sc_star_rating_5));
-    connect(am.action(DkActionManager::sc_star_rating_5), &QAction::triggered, this, &DkRatingLabel::rating5);
-
-    connect(mHideTimer, &QTimer::timeout, this, [this]() {
-        this->hide();
-    });
-}
-
-DkRatingLabelBg::~DkRatingLabelBg()
-{
-}
-
-void DkRatingLabelBg::changeRating(int newRating)
-{
-    DkRatingLabel::changeRating(newRating);
-    show();
-    mHideTimer->start();
-}
-
-void DkRatingLabelBg::paintEvent(QPaintEvent *event)
-{
-    QPainter painter(this);
-    painter.fillRect(QRect(QPoint(), this->size()), DkSettingsManager::param().display().hudBgColor);
-    painter.end();
-
-    DkRatingLabel::paintEvent(event);
-}
-
-// title info --------------------------------------------------------------------
+// title info + star label -------------------------------------------------------
 DkFileInfoLabel::DkFileInfoLabel(QWidget *parent)
-    : DkFadeLabel(parent)
+    : DkFadeLabel("", parent)
 {
     setObjectName("DkFileInfoLabel");
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
@@ -1237,33 +1043,41 @@ void DkFileInfoLabel::createLayout()
 
 void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
 {
-    // nothing to display??
-    if (!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name)
-        && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)
-        && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating) && visible) {
-        QMessageBox infoDialog(DkUtils::getMainWindow());
-        infoDialog.setWindowTitle(tr("Info Box"));
-        infoDialog.setText(tr("All information fields are currently hidden.\nDo you want to show them again?"));
-        infoDialog.setIcon(QMessageBox::Information);
-        infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        infoDialog.setDefaultButton(QMessageBox::Yes);
-        infoDialog.show();
-        int choice = infoDialog.exec();
-
-        if (choice == QMessageBox::No) {
-            DkFadeLabel::setVisible(false);
-            return;
-        } else {
-            DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_file_name, true);
-            DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_creation_date, true);
-            DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_file_rating, true);
-        }
-    }
-
     DkFadeLabel::setVisible(visible, saveSettings);
-    mTitleLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name));
-    mDateLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date));
-    mRatingLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating));
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
+    // FIXME: this block is disabled because if you answer NO it would just keep recursing
+    //        through setVisible(). Also the setting is not saved to file and no UI for it exists.
+    //        To fix this it should have a context menu like other panels
+    if (0) {
+        // nothing to display??
+        if (!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name)
+            && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)
+            && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating) && visible) {
+            QMessageBox infoDialog(DkUtils::getMainWindow());
+            infoDialog.setWindowTitle(tr("Info Box"));
+            infoDialog.setText(tr("All information fields are currently hidden.\nDo you want to show them again?"));
+            infoDialog.setIcon(QMessageBox::Information);
+            infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            infoDialog.setDefaultButton(QMessageBox::Yes);
+            infoDialog.show();
+            int choice = infoDialog.exec();
+
+            if (choice == QMessageBox::No) {
+                DkFadeLabel::setVisible(false);
+                return;
+            } else {
+                DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_file_name, true);
+                DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_creation_date, true);
+                DkSettingsManager::param().slideShow().display.setBit(DkSettings::display_file_rating, true);
+            }
+        }
+
+        mTitleLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name));
+        mDateLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date));
+        mRatingLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating));
+    }
 
     int height = 32;
     if (mTitleLabel->isVisible())
@@ -1417,7 +1231,7 @@ void DkPlayer::init()
     hideTimer->setInterval(timeToDisplayPlayer);
     hideTimer->setSingleShot(true);
     connect(hideTimer, &QTimer::timeout, this, [this]() {
-        this->hide();
+        this->hide(false); // do not save setting when showing/hiding temporarily
     });
 
     connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow), &QAction::triggered, this, &DkPlayer::togglePlay);
@@ -1432,14 +1246,15 @@ void DkPlayer::play(bool play)
 
     if (play) {
         displayTimer->start();
-        hideTimer->start();
+        showTemporarily();
     } else
         displayTimer->stop();
 }
 
 void DkPlayer::togglePlay()
 {
-    show();
+    hideTimer->stop();
+    showTemporarily(!playing);
     playing = !playing;
     playButton->click();
 }
@@ -1480,21 +1295,13 @@ void DkPlayer::setTimeToDisplay(int ms)
     displayTimer->setInterval(ms);
 }
 
-void DkPlayer::show(int ms)
+void DkPlayer::showTemporarily(bool autoHide)
 {
-    if (ms > 0 && !hideTimer->isActive()) {
-        hideTimer->setInterval(ms);
+    if (autoHide)
         hideTimer->start();
-    }
 
-    bool showPlayer = getCurrentDisplaySetting();
-
-    DkFadeWidget::show();
-
-    // automatic showing, don't store it in the display bits
-    if (ms > 0 && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-        mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, showPlayer);
-    }
+    // automatic showing, don't save visibility setting
+    DkFadeWidget::show(false);
 }
 
 // -------------------------------------------------------------------- DkHudNavigation
@@ -2134,6 +1941,10 @@ void DkEditableRect::setAngle(double angle, bool apply)
 
 void DkEditableRect::setVisible(bool visible)
 {
+    DkFadeWidget::setVisible(visible);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
     if (!visible) {
         mRect = DkRotatingRect();
         for (int idx = 0; idx < mCtrlPoints.size(); idx++)
@@ -2142,8 +1953,6 @@ void DkEditableRect::setVisible(bool visible)
         // setFocus(Qt::ActiveWindowFocusReason);
         setCursor(Qt::CrossCursor);
     }
-
-    DkFadeWidget::setVisible(visible);
 }
 
 // DkEditableRect --------------------------------------------------------------------
@@ -2202,11 +2011,14 @@ void DkCropWidget::crop(bool cropToMetadata)
 
 void DkCropWidget::setVisible(bool visible)
 {
+    DkEditableRect::setVisible(visible);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
     if (visible && !cropToolbar)
         createToolbar();
 
     DkToolBarManager::inst().showToolBar(cropToolbar, visible);
-    DkEditableRect::setVisible(visible);
 }
 
 // Image histogram  -------------------------------------------------------------------
@@ -3026,7 +2838,7 @@ void DkTabEntryWidget::paintEvent(QPaintEvent *event)
 
 // -------------------------------------------------------------------- DkDisplayWidget
 DkDisplayWidget::DkDisplayWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     createLayout();
     updateLayout();
@@ -3067,7 +2879,7 @@ void DkDisplayWidget::setCurrentIndex(int index)
 
 void DkDisplayWidget::resizeEvent(QResizeEvent *event)
 {
-    DkFadeWidget::resizeEvent(event);
+    DkWidget::resizeEvent(event);
     updateLayout();
 }
 

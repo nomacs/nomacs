@@ -103,7 +103,7 @@ protected:
     QPixmap createSelectedEffect(QPixmap *pm);
 };
 
-class DkRatingLabel : public DkFadeWidget
+class DkRatingLabel : public DkWidget
 {
     Q_OBJECT
 
@@ -187,23 +187,6 @@ protected:
     virtual void init();
 };
 
-class DkRatingLabelBg : public DkRatingLabel
-{
-    Q_OBJECT
-
-public:
-    DkRatingLabelBg(int rating = 0, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkRatingLabelBg();
-
-    void changeRating(int newRating) override;
-
-protected:
-    QTimer *mHideTimer;
-    int mTimeToDisplay = 4000;
-
-    virtual void paintEvent(QPaintEvent *event) override;
-};
-
 class DkFileInfoLabel : public DkFadeLabel
 {
     Q_OBJECT
@@ -259,7 +242,7 @@ public slots:
     void autoNext();
     void next();
     void previous();
-    virtual void show(int ms = 0);
+    void showTemporarily(bool autoHide = true);
     bool isPlaying() const;
 
 protected:
@@ -301,7 +284,7 @@ protected:
     QPushButton *mNextButton;
 };
 
-class DkFolderScrollBar : public QSlider
+class DkFolderScrollBar : public DkFadeMixin<QSlider>
 {
     Q_OBJECT
 
@@ -311,20 +294,8 @@ public:
 
     virtual void setValue(int i);
 
-    void registerAction(QAction *action);
-    void block(bool blocked);
-    void setDisplaySettings(QBitArray *displayBits);
-    bool getCurrentDisplaySetting();
-
 public slots:
     void updateDir(QVector<QSharedPointer<DkImageContainerT>> images);
-
-    virtual void show(bool saveSettings = true);
-    virtual void hide(bool saveSettings = true);
-    virtual void setVisible(bool visible, bool saveSettings = true);
-
-    void animateOpacityUp();
-    void animateOpacityDown();
 
     void updateFile(int idx);
 
@@ -337,19 +308,15 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
     QColor mBgCol;
-    bool mBlocked = false;
-    bool mHiding = false;
-    bool mShowing = false;
     bool mMouseDown = false;
-
-    QGraphicsOpacityEffect *mOpacityEffect = 0;
-    QBitArray *mDisplaySettingsBits = 0;
 
     void init();
 };
 
+extern template class DkFadeMixin<QSlider>;
+
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future
-class DkThumbsSaver : public DkFadeWidget
+class DkThumbsSaver : public DkWidget
 {
     Q_OBJECT
 
@@ -523,14 +490,10 @@ public:
 
     DkOverview *getOverview() const;
 
-    bool isAutoHide() const;
-
 signals:
     void zoomSignal(double zoomLevel);
 
 public slots:
-    virtual void setVisible(bool visible, bool autoHide = false);
-
     void updateZoom(double zoomLevel);
     void onSbZoomValueChanged(double zoomLevel);
     void onSlZoomValueChanged(int zoomLevel);
@@ -541,7 +504,6 @@ protected:
     DkOverview *mOverview = 0;
     QSlider *mSlZoom = 0;
     QDoubleSpinBox *mSbZoom = 0;
-    bool mAutoHide = false;
 };
 
 class DkTransformRect : public DkWidget
@@ -1004,7 +966,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 };
 
-class DllCoreExport DkDisplayWidget : public DkFadeWidget
+class DllCoreExport DkDisplayWidget : public DkWidget
 {
     Q_OBJECT
 

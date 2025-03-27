@@ -53,9 +53,161 @@ DkWidget::DkWidget(QWidget *parent, Qt::WindowFlags flags)
 {
 }
 
+DkFadeHelper::DkFadeHelper(QWidget *widget)
+    : mWidget(widget)
+{
+    mOpacityEffect = new QGraphicsOpacityEffect(mWidget);
+    mOpacityEffect->setOpacity(0);
+    mOpacityEffect->setEnabled(false);
+
+    mWidget->setGraphicsEffect(mOpacityEffect);
+
+    setWidgetVisible(false);
+}
+
+bool DkFadeHelper::getCurrentDisplaySetting()
+{
+    if (!mDisplayBits) {
+        qWarning() << "[fade] no display settings available";
+        return false;
+    }
+
+    if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= mDisplayBits->size()) {
+        qWarning() << "[fade] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
+        return false;
+    }
+
+    return mDisplayBits->testBit(DkSettingsManager::param().app().currentAppMode);
+}
+
+bool DkFadeHelper::isFadeEnabled() const
+{
+    if (!DkSettingsManager::param().display().animateWidgets) // permanent setting
+        return false;
+    if (DkSettingsManager::param().display().suspendWidgetAnimation) // temporary setting
+        return false;
+    return mEnabled;
+}
+
+void DkFadeHelper::fade(bool show, bool saveSetting)
+{
+    qDebug().nospace() << "[fade] " << mWidget->metaObject()->className() << " show=" << show << " save=" << saveSetting << " showing=" << mShowing
+                       << " hiding=" << mHiding << " visible=" << mWidget->isVisible();
+
+    if (mDisplayBits && saveSetting) {
+        int bit = DkSettingsManager::param().app().currentAppMode;
+        mDisplayBits->setBit(bit, show);
+    }
+
+    if (mAction) {
+        // assuming the action toggles visibility, it will probably end up back here
+        mAction->blockSignals(true);
+        mAction->setChecked(show);
+        mAction->blockSignals(false);
+    }
+
+    bool inProgress = isAnimating();
+    Q_ASSERT((inProgress && (mShowing | mHiding)) || (!inProgress && !(mShowing | mHiding)));
+
+    // show or hide immediately
+    if (!isFadeEnabled() || isParentAnimating()) {
+        if (inProgress)
+            stopAnimation();
+        mShowing = false;
+        mHiding = false;
+        mOpacityEffect->setEnabled(false);
+        mOpacityEffect->setOpacity(show ? 1.0 : 0.0);
+        setWidgetVisible(show);
+        return;
+    }
+
+    // no-op conditions
+    if (!show && mWidget->isHidden())
+        return;
+    if (show && mWidget->isVisible() && !inProgress)
+        return;
+
+    // skip if we are going in the right direction
+    if (show && mShowing)
+        return;
+    if (!show && mHiding)
+        return;
+
+    if (show) {
+        mShowing = true;
+        mHiding = false;
+        if (!inProgress) {
+            mOpacityEffect->setEnabled(true);
+            mOpacityEffect->setOpacity(0.0);
+            setWidgetVisible(true);
+        }
+    } else {
+        mShowing = false;
+        mHiding = true;
+        if (!inProgress) {
+            mOpacityEffect->setEnabled(true);
+            mOpacityEffect->setOpacity(1.0);
+        }
+    }
+
+    if (!inProgress)
+        startAnimation();
+}
+
+void DkFadeHelper::setWidgetVisible(bool visible)
+{
+    if (mSetWidgetVisible) {
+        qCritical() << "[fade] unexpected recursion, probably incorrect usage of FadeMixin";
+        return;
+    }
+
+    mSetWidgetVisible = true;
+    mWidget->setVisible(visible);
+    mSetWidgetVisible = false;
+}
+
+void DkFadeHelper::animateFade(const QTimerEvent *event)
+{
+    if (event->timerId() != mTimerId) // we will receive events from QTimer etc
+        return;
+
+    qreal step = mShowing ? 0.05 : -0.05;
+    qreal opacity = mOpacityEffect->opacity() + step;
+    opacity = qBound(0.0, opacity, 1.0);
+
+    mOpacityEffect->setOpacity(opacity);
+
+    if (opacity == 0.0)
+        setWidgetVisible(false);
+
+    if (opacity == 1.0 || opacity == 0.0) {
+        mOpacityEffect->setEnabled(false);
+        mHiding = false;
+        mShowing = false;
+
+        stopAnimation();
+    }
+}
+
+bool DkFadeHelper::isParentAnimating() const
+{
+    // we do not want to animate widgets if the parent is already animating
+    // note: QObject::inherits() would be slightly better here but we do not derive QObject
+    QWidget *w = mWidget->parentWidget();
+    while (w) {
+        auto *helper = dynamic_cast<DkFadeHelper *>(w);
+        if (helper && helper->isAnimating())
+            return true;
+        w = w->parentWidget();
+    }
+    return false;
+}
+
 // -------------------------------------------------------------------- DkFadeWidget
+template class DkFadeMixin<DkWidget>;
+
 DkFadeWidget::DkFadeWidget(QWidget *parent, Qt::WindowFlags flags)
-    : DkWidget(parent, flags)
+    : DkFadeMixin<DkWidget>(parent, flags)
 {
     init();
 }
@@ -63,21 +215,6 @@ DkFadeWidget::DkFadeWidget(QWidget *parent, Qt::WindowFlags flags)
 void DkFadeWidget::init()
 {
     setMouseTracking(true);
-
-    mShowing = false;
-    mHiding = false;
-    mBlocked = false;
-    mDisplaySettingsBits = 0;
-    mOpacityEffect = 0;
-
-    // painter problems if the widget is a child of another that has the same graphicseffect
-    // widget starts on hide
-    mOpacityEffect = new QGraphicsOpacityEffect(this);
-    mOpacityEffect->setOpacity(0);
-    mOpacityEffect->setEnabled(false);
-    setGraphicsEffect(mOpacityEffect);
-
-    setVisible(false);
 }
 
 void DkFadeWidget::paintEvent(QPaintEvent *event)
@@ -89,123 +226,6 @@ void DkFadeWidget::paintEvent(QPaintEvent *event)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     QWidget::paintEvent(event);
-}
-
-void DkFadeWidget::registerAction(QAction *action)
-{
-    mAction = action;
-}
-
-void DkFadeWidget::block(bool blocked)
-{
-    mBlocked = blocked;
-    setVisible(false);
-}
-
-void DkFadeWidget::setDisplaySettings(QBitArray *displayBits)
-{
-    mDisplaySettingsBits = displayBits;
-}
-
-bool DkFadeWidget::getCurrentDisplaySetting()
-{
-    if (!mDisplaySettingsBits)
-        return false;
-
-    if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= mDisplaySettingsBits->size()) {
-        qDebug() << "[WARNING] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
-        return false;
-    }
-
-    return mDisplaySettingsBits->testBit(DkSettingsManager::param().app().currentAppMode);
-}
-
-bool DkFadeWidget::isHiding() const
-{
-    return mHiding;
-}
-
-void DkFadeWidget::show(bool saveSetting)
-{
-    // here is a strange problem if you add a DkFadeWidget to another DkFadeWidget -> painters crash
-    if (!mBlocked && !mShowing) {
-        mHiding = false;
-        mShowing = true;
-        setVisible(true, saveSetting);
-        animateOpacityUp();
-    }
-}
-
-void DkFadeWidget::hide(bool saveSetting)
-{
-    if (!mHiding) {
-        mHiding = true;
-        mShowing = false;
-        animateOpacityDown();
-
-        // set display bit here too -> since the final call to setVisible takes a few seconds
-        if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-            mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, false);
-        }
-    }
-}
-
-void DkFadeWidget::setVisible(bool visible, bool saveSetting)
-{
-    if (mBlocked) {
-        QWidget::setVisible(false);
-        return;
-    }
-
-    if (visible && !isVisible() && !mShowing)
-        mOpacityEffect->setOpacity(100);
-
-    QWidget::setVisible(visible);
-
-    if (mAction) {
-        mAction->blockSignals(true);
-        mAction->setChecked(visible);
-        mAction->blockSignals(false);
-    }
-
-    if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-        mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, true);
-    }
-}
-
-void DkFadeWidget::animateOpacityUp()
-{
-    if (!mShowing)
-        return;
-
-    mOpacityEffect->setEnabled(true);
-    if (mOpacityEffect->opacity() >= 1.0f || !mShowing) {
-        mOpacityEffect->setOpacity(1.0f);
-        mShowing = false;
-        mOpacityEffect->setEnabled(false);
-        return;
-    }
-
-    QTimer::singleShot(20, this, &DkFadeWidget::animateOpacityUp);
-    mOpacityEffect->setOpacity(mOpacityEffect->opacity() + 0.05);
-}
-
-void DkFadeWidget::animateOpacityDown()
-{
-    if (!mHiding)
-        return;
-
-    mOpacityEffect->setEnabled(true);
-    if (mOpacityEffect->opacity() <= 0.0f) {
-        mOpacityEffect->setOpacity(0.0f);
-        mHiding = false;
-        setVisible(false, false); // finally hide the widget
-        mOpacityEffect->setEnabled(false);
-        return;
-    }
-
-    QTimer::singleShot(20, this, &DkFadeWidget::animateOpacityDown);
-    mOpacityEffect->setOpacity(mOpacityEffect->opacity() - 0.05);
 }
 
 // DkNamedWidget --------------------------------------------------------------------
@@ -221,7 +241,7 @@ QString DkNamedWidget::name() const
 }
 
 // DkLabel --------------------------------------------------------------------
-DkLabel::DkLabel(QWidget *parent, const QString &text)
+DkLabel::DkLabel(const QString &text, QWidget *parent)
     : QLabel(text, parent)
 {
     setMouseTracking(true);
@@ -256,12 +276,6 @@ void DkLabel::init()
     updateStyleSheet();
 }
 
-void DkLabel::hide()
-{
-    mTime = 0;
-    QLabel::hide();
-}
-
 void DkLabel::setText(const QString &msg, int time)
 {
     mText = msg;
@@ -294,6 +308,13 @@ void DkLabel::showTimed(int time)
         mTimer.start(time);
 }
 
+void DkLabel::setVisible(bool visible)
+{
+    if (!visible)
+        mTimer.stop();
+    QLabel::setVisible(visible);
+}
+
 QString DkLabel::getText()
 {
     return mText;
@@ -311,7 +332,6 @@ void DkLabel::setFontSize(int fontSize)
 */
 void DkLabel::stop()
 {
-    mTimer.stop();
     hide();
 }
 
@@ -356,8 +376,8 @@ void DkLabel::setTextToLabel()
     }
 }
 
-DkLabelBg::DkLabelBg(QWidget *parent, const QString &text)
-    : DkLabel(parent, text)
+DkLabelBg::DkLabelBg(const QString &text, QWidget *parent)
+    : DkLabel(text, parent)
 {
     setAttribute(Qt::WA_TransparentForMouseEvents); // labels should forward mouse events
     setObjectName("DkLabelBg");
@@ -406,136 +426,12 @@ int DkElidedLabel::minimumWidth()
 }
 
 // DkFadeLabel --------------------------------------------------------------------
-DkFadeLabel::DkFadeLabel(QWidget *parent, const QString &text)
-    : DkLabel(parent, text)
+template class DkFadeMixin<DkLabel>;
+
+DkFadeLabel::DkFadeLabel(const QString &text, QWidget *parent)
+    : DkFadeMixin(text, parent)
 {
     init();
-}
-
-void DkFadeLabel::init()
-{
-    showing = false;
-    hiding = false;
-    mBlocked = false;
-    displaySettingsBits = 0;
-
-    // widget starts on hide
-    opacityEffect = new QGraphicsOpacityEffect(this);
-    opacityEffect->setOpacity(0);
-    opacityEffect->setEnabled(false); // default disabled -> otherwise we get problems with children having the same effect
-    setGraphicsEffect(opacityEffect);
-
-    setVisible(false);
-}
-
-void DkFadeLabel::block(bool blocked)
-{
-    mBlocked = blocked;
-    setVisible(false);
-}
-
-void DkFadeLabel::registerAction(QAction *action)
-{
-    mAction = action;
-}
-
-void DkFadeLabel::setDisplaySettings(QBitArray *displayBits)
-{
-    displaySettingsBits = displayBits;
-}
-
-bool DkFadeLabel::getCurrentDisplaySetting()
-{
-    if (!displaySettingsBits)
-        return false;
-
-    if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= displaySettingsBits->size()) {
-        qDebug() << "[WARNING] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
-        return false;
-    }
-
-    return displaySettingsBits->testBit(DkSettingsManager::param().app().currentAppMode);
-}
-
-void DkFadeLabel::show(bool saveSettings)
-{
-    if (!mBlocked && !showing) {
-        hiding = false;
-        showing = true;
-        setVisible(true, saveSettings);
-        animateOpacityUp();
-    }
-}
-
-void DkFadeLabel::hide(bool saveSettings)
-{
-    if (!hiding) {
-        hiding = true;
-        showing = false;
-        animateOpacityDown();
-    }
-
-    if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-        displaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, false);
-    }
-}
-
-void DkFadeLabel::setVisible(bool visible, bool saveSettings)
-{
-    if (mBlocked) {
-        DkLabel::setVisible(false);
-        return;
-    }
-
-    if (visible && !isVisible() && !showing)
-        opacityEffect->setOpacity(100);
-
-    if (mAction) {
-        mAction->blockSignals(true);
-        mAction->setChecked(visible);
-        mAction->blockSignals(false);
-    }
-
-    DkLabel::setVisible(visible);
-
-    if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
-        displaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, visible);
-    }
-}
-
-void DkFadeLabel::animateOpacityUp()
-{
-    if (!showing)
-        return;
-
-    opacityEffect->setEnabled(true);
-    if (opacityEffect->opacity() >= 1.0f || !showing) {
-        opacityEffect->setOpacity(1.0f);
-        opacityEffect->setEnabled(false);
-        showing = false;
-        return;
-    }
-
-    QTimer::singleShot(20, this, &DkFadeLabel::animateOpacityUp);
-    opacityEffect->setOpacity(opacityEffect->opacity() + 0.05);
-}
-
-void DkFadeLabel::animateOpacityDown()
-{
-    if (!hiding)
-        return;
-
-    opacityEffect->setEnabled(true);
-    if (opacityEffect->opacity() <= 0.0f) {
-        opacityEffect->setOpacity(0.0f);
-        hiding = false;
-        opacityEffect->setEnabled(false);
-        setVisible(false, false); // finally hide the widget
-        return;
-    }
-
-    QTimer::singleShot(20, this, &DkFadeLabel::animateOpacityDown);
-    opacityEffect->setOpacity(opacityEffect->opacity() - 0.05);
 }
 
 // DkDockWidget --------------------------------------------------------------------

@@ -70,17 +70,18 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags)
 
     mFolderScroll = new DkFolderScrollBar(this);
 
-    // file info - overview
+    // brief file info + ratingR
     mFileInfoLabel = new DkFileInfoLabel(this);
-    mRatingLabel = new DkRatingLabelBg(2, this, flags);
+
+    // notes
     mCommentWidget = new DkCommentWidget(this);
 
     // delayed info
     mDelayedInfo = new DkDelayedMessage(this); // TODO: make a nice constructor
 
     // info labels
-    mBottomLabel = new DkLabelBg(this, "");
-    mBottomLeftLabel = new DkLabelBg(this, "");
+    mBottomLabel = new DkLabelBg("", this);
+    mBottomLeftLabel = new DkLabelBg("", this);
 
     // wheel label
     QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.svg");
@@ -124,7 +125,6 @@ void DkControlWidget::init()
     // some adjustments
     mBottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mBottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    mRatingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mZoomWidget->setContentsMargins(10, 10, 0, 0);
     mCropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     mCommentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -186,7 +186,6 @@ void DkControlWidget::init()
     rw->setMinimumSize(0, 0);
     QBoxLayout *rLayout = new QBoxLayout(QBoxLayout::RightToLeft, rw);
     rLayout->setContentsMargins(0, 0, 0, 17);
-    rLayout->addWidget(mRatingLabel);
     rLayout->addStretch();
 
     // file info
@@ -288,7 +287,6 @@ void DkControlWidget::connectWidgets()
 
     // rating
     connect(mFileInfoLabel->getRatingLabel(), &DkRatingLabel::newRatingSignal, this, &DkControlWidget::updateRating);
-    connect(mRatingLabel, &DkRatingLabelBg::newRatingSignal, this, &DkControlWidget::updateRating);
 
     // playing
     connect(mPlayer, &DkPlayer::previousSignal, mViewport, &DkViewPort::loadPrevFileFast);
@@ -372,10 +370,13 @@ void DkControlWidget::showWidgetsSettings()
     showPreview(mFilePreview->getCurrentDisplaySetting());
     showMetaData(mMetaDataInfo->getCurrentDisplaySetting());
     showFileInfo(mFileInfoLabel->getCurrentDisplaySetting());
-    showPlayer(mPlayer->getCurrentDisplaySetting());
     showHistogram(mHistogram->getCurrentDisplaySetting());
     showCommentWidget(mCommentWidget->getCurrentDisplaySetting());
     showScroller(mFolderScroll->getCurrentDisplaySetting());
+
+    // don't show player while playing and switching modes
+    if (!mPlayer->isPlaying())
+        showPlayer(mPlayer->getCurrentDisplaySetting());
 }
 
 void DkControlWidget::toggleHUD(bool hide)
@@ -437,13 +438,10 @@ void DkControlWidget::showFileInfo(bool visible)
     if (!mFileInfoLabel)
         return;
 
-    if (visible && !mFileInfoLabel->isVisible()) {
+    if (visible && !mFileInfoLabel->isVisible())
         mFileInfoLabel->show();
-        mRatingLabel->block(mFileInfoLabel->isVisible());
-    } else if (!visible && mFileInfoLabel->isVisible()) {
+    else if (!visible && mFileInfoLabel->isVisible())
         mFileInfoLabel->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
-        mRatingLabel->block(false);
-    }
 }
 
 void DkControlWidget::showPlayer(bool visible)
@@ -540,6 +538,26 @@ void DkControlWidget::switchWidget(QWidget *widget)
     }
 }
 
+void DkControlWidget::pluginClosed(bool askForSaving)
+{
+    (void)closePlugin(askForSaving);
+}
+
+void DkControlWidget::pluginMessage(const QString &msg)
+{
+    setInfo(msg);
+}
+
+void DkControlWidget::pluginLoadFile(const QString &path)
+{
+    mViewport->loadFile(path);
+}
+
+void DkControlWidget::pluginLoadImage(const QImage &img)
+{
+    mViewport->setImage(img);
+}
+
 bool DkControlWidget::closePlugin(bool askForSaving, bool force)
 {
 #ifdef WITH_PLUGINS
@@ -628,28 +646,13 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
         mPluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
         mPluginViewport->updateImageContainer(mViewport->imageContainer());
 
-        connect(
-            mPluginViewport,
-            &DkPluginViewPort::closePlugin,
-            this,
-            [this](bool askForSaving) {
-                closePlugin(askForSaving);
-            },
-            Qt::UniqueConnection);
-        connect(mPluginViewport, &DkPluginViewPort::loadFile, mViewport, QOverload<const QString &>::of(&DkViewPort::loadFile), Qt::UniqueConnection);
-        connect(mPluginViewport,
-                &DkPluginViewPort::loadImage,
-                mViewport,
-                QOverload<QImage>::of(&DkViewPort::setImage), // TODO: will this copy without using reference?
-                Qt::UniqueConnection);
-        connect(
-            mPluginViewport,
-            &DkPluginViewPort::showInfo,
-            this,
-            [this](const QString &msg) {
-                setInfo(msg);
-            },
-            Qt::UniqueConnection);
+        // NOTE: unique connections cannot safely use lamba as it has no metaobject
+        connect(mPluginViewport, &DkPluginViewPort::closePlugin, this, &DkControlWidget::pluginClosed, Qt::UniqueConnection);
+        connect(mPluginViewport, &DkPluginViewPort::loadFile, this, &DkControlWidget::pluginLoadFile, Qt::UniqueConnection);
+
+        // TODO: will this copy without using reference?
+        connect(mPluginViewport, &DkPluginViewPort::loadImage, this, &DkControlWidget::pluginLoadImage, Qt::UniqueConnection);
+        connect(mPluginViewport, &DkPluginViewPort::showInfo, this, &DkControlWidget::pluginMessage, Qt::UniqueConnection);
     }
 
     setAttribute(Qt::WA_TransparentForMouseEvents, !removeWidget && pluginWidget->hideHUD());
@@ -739,8 +742,6 @@ void DkControlWidget::updateRating(int rating)
     if (!mImgC)
         return;
 
-    mRatingLabel->setRating(rating);
-
     if (mFileInfoLabel)
         mFileInfoLabel->updateRating(rating);
 
@@ -748,17 +749,24 @@ void DkControlWidget::updateRating(int rating)
     metaDataInfo->setRating(rating);
 }
 
-void DkControlWidget::imageLoaded(bool)
+void DkControlWidget::imagePresenceChanged(bool imagePresent)
 {
+    (void)imagePresent;
+
+    // disable animations while building initial view or image is lost
+    DkSettingsManager::param().display().suspendWidgetAnimation = true;
+
     showWidgetsSettings();
+
+    DkSettingsManager::param().display().suspendWidgetAnimation = false;
 }
 
 void DkControlWidget::setFullScreen(bool fullscreen)
 {
     showWidgetsSettings();
 
-    if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->isVisible())
-        mPlayer->show(3000);
+    if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->getCurrentDisplaySetting() && !mPlayer->isPlaying())
+        mPlayer->showTemporarily();
 }
 
 DkOverview *DkControlWidget::getOverview() const
