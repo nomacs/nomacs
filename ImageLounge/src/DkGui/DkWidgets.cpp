@@ -100,6 +100,7 @@
 
 namespace nmc
 {
+template class DkFadeMixin<QSlider>;
 
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget *parent)
