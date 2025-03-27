@@ -313,6 +313,8 @@ protected:
     void init();
 };
 
+extern template class DkFadeMixin<QSlider>;
+
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future
 class DkThumbsSaver : public DkWidget
 {
