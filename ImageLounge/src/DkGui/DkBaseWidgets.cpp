@@ -82,7 +82,9 @@ bool DkFadeHelper::getCurrentDisplaySetting()
 
 bool DkFadeHelper::isFadeEnabled() const
 {
-    if (!DkSettingsManager::param().display().animateWidgets)
+    if (!DkSettingsManager::param().display().animateWidgets) // permanent setting
+        return false;
+    if (DkSettingsManager::param().display().suspendWidgetAnimation) // temporary setting
         return false;
     return mEnabled;
 }
