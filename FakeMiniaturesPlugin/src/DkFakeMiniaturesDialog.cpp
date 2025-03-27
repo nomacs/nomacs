@@ -438,7 +438,7 @@ DkPreviewLabel::DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *pa
     selectionStarted = false;
 };
 
-DkPreviewLabel::~DkPreviewLabel(){
+DkPreviewLabel::~DkPreviewLabel() {
 
 };
 
@@ -538,7 +538,7 @@ DkFakeMiniaturesToolWidget::DkFakeMiniaturesToolWidget(QWidget *parent, DkFakeMi
     connect(this, SIGNAL(redrawImgPreview()), parentDialog, SLOT(redrawImgPreview()));
 };
 
-DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget(){
+DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget() {
 
 };
 
@@ -642,7 +642,7 @@ DkKernelSize::DkKernelSize(QWidget *parent, DkFakeMiniaturesDialog *parentDialog
     maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
 };
 
-DkKernelSize::~DkKernelSize(){
+DkKernelSize::~DkKernelSize() {
 
 };
 
@@ -693,7 +693,7 @@ DkSaturation::DkSaturation(QWidget *parent, DkFakeMiniaturesDialog *parentDialog
     maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
 };
 
-DkSaturation::~DkSaturation(){
+DkSaturation::~DkSaturation() {
 
 };
 

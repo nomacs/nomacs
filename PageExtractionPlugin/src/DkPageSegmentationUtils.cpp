@@ -35,7 +35,7 @@ namespace nmp
 {
 
 // DkIntersectPoly --------------------------------------------------------------------
-DkIntersectPoly::DkIntersectPoly(){};
+DkIntersectPoly::DkIntersectPoly() { };
 
 DkIntersectPoly::DkIntersectPoly(std::vector<nmc::DkVector> vecA, std::vector<nmc::DkVector> vecB)
 {

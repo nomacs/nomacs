@@ -49,8 +49,8 @@ public:
                                                     const nmc::DkSaveInfo &saveInfo,
                                                     QSharedPointer<nmc::DkBatchInfo> &batchInfo) const override;
 
-    void preLoadPlugin() const override {}; // is called before batch processing
-    void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>> &) const override {}; // is called after batch processing
+    void preLoadPlugin() const override { }; // is called before batch processing
+    void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>> &) const override { }; // is called after batch processing
 
     enum {
         id_crop_to_page,

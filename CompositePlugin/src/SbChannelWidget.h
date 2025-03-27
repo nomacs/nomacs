@@ -69,7 +69,11 @@ class SbChannelWidget : public QWidget
     Q_OBJECT
 
 public:
-    enum Channel { R, G, B };
+    enum Channel {
+        R,
+        G,
+        B
+    };
 
     static const int THUMB_MAX_SIZE = 150;
 

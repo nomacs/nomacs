@@ -68,7 +68,7 @@ class SbViewPort : public DkPluginViewPort
     Q_OBJECT
 public:
     SbViewPort(QWidget *parent = 0)
-        : DkPluginViewPort(parent){};
+        : DkPluginViewPort(parent) { };
     void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) override
     {
         if (!imgC)

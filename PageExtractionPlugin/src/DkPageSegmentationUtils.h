@@ -47,7 +47,7 @@ public:
      **/
     DkBox()
         : uc()
-        , lc(){};
+        , lc() { };
 
     /**
      * Constructor.
@@ -111,7 +111,7 @@ public:
     /**
      * Default destructor.
      **/
-    ~DkBox(){};
+    ~DkBox() { };
 
     void getStorageBuffer(char **buffer, size_t &length) const
     {
@@ -368,7 +368,7 @@ public:
 
     DkIPoint()
         : x(0)
-        , y(0){};
+        , y(0) { };
 
     DkIPoint(int x, int y)
     {
@@ -390,7 +390,7 @@ public:
     DkIPoint ry;
     int in;
 
-    DkVertex(){};
+    DkVertex() { };
 
     DkVertex(DkIPoint ip, DkIPoint rx, DkIPoint ry)
     {
@@ -535,7 +535,10 @@ protected:
         std::vector<cv::Point2f> corners;
     };
 
-    enum class LineFindingMode { Horizontal, Vertical };
+    enum class LineFindingMode {
+        Horizontal,
+        Vertical
+    };
 
     static double angleDiff(double a, double b);
     static std::pair<bool, cv::Point2f> findLineIntersection(const LineSegment &ls1, const LineSegment &ls2);
