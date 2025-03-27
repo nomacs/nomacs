@@ -179,6 +179,18 @@ public:
     //
 
     // if saveSetting=true then set the bound setting
+    //
+    // NOTE: when subclasses of DkFadeMixin override setVisible, they should *normally*:
+    //   1) call the superclass setVisible() immediately
+    //   2) check for recursive call with mSetWidgetVisible and skip the function body,
+    //      this indicates a recursion that is trying to bubble up to QWidget::setVisible()
+    //
+    // failure to do this may have unexpected behavior as the function body will
+    // be repeated on every call to setVisible()
+    //
+    // to avoid these pitfalls, override showEvent()/hideEvent() instead of setVisible()
+    // where possible
+    //
     virtual void setVisible(bool visible, bool saveSetting)
     {
         if (mSetWidgetVisible)
