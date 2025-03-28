@@ -61,7 +61,9 @@
 #include <QTabBar>
 
 #ifdef Q_OS_WIN
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
 #include <QNtfsPermissionCheckGuard>
+#endif
 #include <QStorageInfo>
 #endif
 
