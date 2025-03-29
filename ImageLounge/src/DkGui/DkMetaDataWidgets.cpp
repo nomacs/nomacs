@@ -31,6 +31,7 @@
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
+#include "DkShortcuts.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
 
@@ -1153,7 +1154,6 @@ void DkCommentTextEdit::paintEvent(QPaintEvent *e)
         QPainter p(viewport());
         p.setOpacity(0.5);
         p.drawText(QRect(QPoint(), viewport()->size()), Qt::AlignHCenter | Qt::AlignVCenter, tr("Click here to add notes"));
-        // qDebug() << "painting placeholder...";
     }
 
     QTextEdit::paintEvent(e);
@@ -1173,6 +1173,7 @@ void DkCommentWidget::createLayout()
     QLabel *titleLabel = new QLabel(tr("NOTES"), this);
     titleLabel->setObjectName("commentTitleLabel");
 
+    // TODO: move to stylesheet.css
     QString scrollbarStyle = QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
                                      + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
         + QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
@@ -1188,19 +1189,30 @@ void DkCommentWidget::createLayout()
     connect(mCommentLabel, &DkCommentTextEdit::textChanged, this, &DkCommentWidget::onCommentLabelTextChanged);
     connect(mCommentLabel, &DkCommentTextEdit::focusLost, this, &DkCommentWidget::onCommentLabelFocusLost);
 
-    QPushButton *saveButton = new QPushButton(this);
-    saveButton->setFlat(true);
-    saveButton->setIcon(DkImage::loadIcon(":/nomacs/img/save.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
-    saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
-    saveButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return));
-    connect(saveButton, &QPushButton::clicked, this, &DkCommentWidget::onSaveButtonClicked);
-
-    QPushButton *cancelButton = new QPushButton(this);
+    auto *cancelButton = new QPushButton(this);
     cancelButton->setFlat(true);
     cancelButton->setIcon(DkImage::loadIcon(":/nomacs/img/trash.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
     cancelButton->setToolTip(tr("Discard Changes (ESC)"));
-    cancelButton->setShortcut(QKeySequence(Qt::Key_Escape));
     connect(cancelButton, &QPushButton::clicked, this, &DkCommentWidget::onCancelButtonClicked);
+
+    auto *saveButton = new QPushButton(this);
+    saveButton->setFlat(true);
+    saveButton->setIcon(DkImage::loadIcon(":/nomacs/img/save.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
+    saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
+    connect(saveButton, &QPushButton::clicked, this, &DkCommentWidget::onSaveButtonClicked);
+
+    auto *cancelAction = new QAction(this);
+    cancelAction->setShortcut(Qt::Key_Escape);
+    connect(cancelAction, &QAction::triggered, cancelButton, &QPushButton::animateClick);
+
+    auto *saveAction = new QAction(this);
+    saveAction->setShortcut(Qt::CTRL | Qt::Key_Return);
+    connect(saveAction, &QAction::triggered, saveButton, &QPushButton::animateClick);
+
+    auto *actionFilter = new DkActionEventFilter(this);
+    actionFilter->addAction(cancelAction);
+    actionFilter->addAction(saveAction);
+    mCommentLabel->installEventFilter(actionFilter);
 
     QWidget *titleWidget = new QWidget(this);
     QHBoxLayout *titleLayout = new QHBoxLayout(titleWidget);
@@ -1213,7 +1225,6 @@ void DkCommentWidget::createLayout()
     titleLayout->addWidget(saveButton, 0, Qt::AlignVCenter);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    // layout->setContentsMargins(0,0,0,0);
     layout->addWidget(titleWidget);
     layout->addWidget(mCommentLabel);
 
@@ -1285,5 +1296,4 @@ void DkCommentWidget::onCancelButtonClicked()
 {
     resetComment();
 }
-
 }
