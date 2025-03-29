@@ -270,10 +270,9 @@ signals:
 protected:
     void createLayout();
 
-    DkCommentTextEdit *mCommentLabel;
+    DkCommentTextEdit *mCommentLabel = nullptr;
     QSharedPointer<DkMetaDataT> mMetaData;
     bool mTextEdited = false;
     QString mOldText;
 };
-
 }
