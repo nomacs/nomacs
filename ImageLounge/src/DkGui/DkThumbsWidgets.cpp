@@ -33,6 +33,7 @@
 #include "DkMessageBox.h"
 #include "DkNoMacs.h"
 #include "DkSettings.h"
+#include "DkShortcuts.h"
 #include "DkStatusBar.h"
 #include "DkThumbs.h"
 #include "DkTimer.h"
@@ -1065,6 +1066,18 @@ DkThumbScene::DkThumbScene(QWidget *parent /* = 0 */)
     : QGraphicsScene(parent)
 {
     setObjectName("DkThumbWidget");
+
+    DkShortcutEventFilter::reserveKeys(parent,
+                                       {
+                                           Qt::Key_Up,
+                                           Qt::Key_Down,
+                                           Qt::Key_Left,
+                                           Qt::Key_Right,
+                                           Qt::SHIFT | Qt::Key_Up,
+                                           Qt::SHIFT | Qt::Key_Down,
+                                           Qt::SHIFT | Qt::Key_Left,
+                                           Qt::SHIFT | Qt::Key_Right,
+                                       });
 }
 
 void DkThumbScene::updateLayout()
