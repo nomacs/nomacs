@@ -28,6 +28,7 @@
 #include "DkBaseViewPort.h"
 #include "DkActionManager.h"
 #include "DkSettings.h"
+#include "DkShortcuts.h"
 #include "DkStatusBar.h"
 #include "DkUtils.h"
 
@@ -87,6 +88,15 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent)
 
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setMinimumSize(10, 10);
+
+    // disable Qt default keys, prevent keyPressEvent() keys from being broken by shortcuts
+    DkShortcutEventFilter::reserveKeys(this,
+                                       {
+                                           DkActionManager::shortcut_zoom_in,
+                                           DkActionManager::shortcut_zoom_out,
+                                           DkActionManager::shortcut_zoom_in_alt,
+                                           DkActionManager::shortcut_zoom_out_alt,
+                                       });
 
     // connect pan actions
     const DkActionManager &am = DkActionManager::instance();
