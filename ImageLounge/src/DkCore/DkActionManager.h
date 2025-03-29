@@ -545,8 +545,14 @@ public:
 
     void assignCustomShortcuts(QVector<QAction *> actions) const;
 
+    /// Enable actions when an image is loaded in the viewport
     void enableImageActions(bool enable = true) const;
+
+    /// Enable actions for animations in the viewport
     void enableMovieActions(bool enable = true) const;
+
+    /// Enable actions for viewport plugins
+    void enableViewPortPluginActions(bool enable) const;
 
 protected:
     DkActionManager();
