@@ -68,6 +68,7 @@
 #include "DkPong.h"
 #include "DkProcess.h"
 #include "DkSettings.h"
+#include "DkShortcuts.h"
 #include "DkThemeManager.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
@@ -406,6 +407,8 @@ int main(int argc, char *argv[])
     app.installEventFilter(osxEventFilter);
     QObject::connect(osxEventFilter, &nmc::DkNomacsOSXEventFilter::loadFile, w, &nmc::DkNoMacs::loadFile);
 #endif
+
+    app.installEventFilter(nmc::DkShortcutEventFilter::instance());
 
     int rVal = -1;
     try {
