@@ -135,6 +135,7 @@ public slots:
     bool applyPluginChanges(bool askForSaving);
 
     void updateImage(QSharedPointer<DkImageContainerT> imgC);
+
     void setInfo(const QString &msg, int time = 3000, int location = bottom_left_label);
     void updateRating(int rating);
 
@@ -147,6 +148,12 @@ signals:
 
 protected slots:
     void setCommentSaved();
+
+    // signals from viewport plugins
+    void pluginClosed(bool askForSaving);
+    void pluginMessage(const QString &msg);
+    void pluginLoadFile(const QString &path);
+    void pluginLoadImage(const QImage &img);
 
 protected:
     // events
@@ -193,5 +200,4 @@ protected:
 
     QPointF mEnterPos;
 };
-
 }

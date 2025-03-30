@@ -540,6 +540,26 @@ void DkControlWidget::switchWidget(QWidget *widget)
     }
 }
 
+void DkControlWidget::pluginClosed(bool askForSaving)
+{
+    (void)closePlugin(askForSaving);
+}
+
+void DkControlWidget::pluginMessage(const QString &msg)
+{
+    setInfo(msg);
+}
+
+void DkControlWidget::pluginLoadFile(const QString &path)
+{
+    mViewport->loadFile(path);
+}
+
+void DkControlWidget::pluginLoadImage(const QImage &img)
+{
+    mViewport->setImage(img);
+}
+
 bool DkControlWidget::closePlugin(bool askForSaving, bool force)
 {
 #ifdef WITH_PLUGINS
@@ -628,28 +648,14 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
         mPluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
         mPluginViewport->updateImageContainer(mViewport->imageContainer());
 
-        connect(
-            mPluginViewport,
-            &DkPluginViewPort::closePlugin,
-            this,
-            [this](bool askForSaving) {
-                closePlugin(askForSaving);
-            },
-            Qt::UniqueConnection);
-        connect(mPluginViewport, &DkPluginViewPort::loadFile, mViewport, QOverload<const QString &>::of(&DkViewPort::loadFile), Qt::UniqueConnection);
-        connect(mPluginViewport,
-                &DkPluginViewPort::loadImage,
-                mViewport,
-                QOverload<QImage>::of(&DkViewPort::setImage), // TODO: will this copy without using reference?
-                Qt::UniqueConnection);
-        connect(
-            mPluginViewport,
-            &DkPluginViewPort::showInfo,
-            this,
-            [this](const QString &msg) {
-                setInfo(msg);
-            },
-            Qt::UniqueConnection);
+        // NOTE: unique connections can no longer use lambdas, this was unreliable
+        // in practice and is now a fatal error in debug builds of nomacs
+        connect(mPluginViewport, &DkPluginViewPort::closePlugin, this, &DkControlWidget::pluginClosed, Qt::UniqueConnection);
+        connect(mPluginViewport, &DkPluginViewPort::loadFile, this, &DkControlWidget::pluginLoadFile, Qt::UniqueConnection);
+
+        // TODO: will this copy without using reference?
+        connect(mPluginViewport, &DkPluginViewPort::loadImage, this, &DkControlWidget::pluginLoadImage, Qt::UniqueConnection);
+        connect(mPluginViewport, &DkPluginViewPort::showInfo, this, &DkControlWidget::pluginMessage, Qt::UniqueConnection);
     }
 
     setAttribute(Qt::WA_TransparentForMouseEvents, !removeWidget && pluginWidget->hideHUD());
