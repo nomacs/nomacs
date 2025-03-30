@@ -68,13 +68,16 @@ static bool resolveShortcut(const QWidget *target, const QSet<const QWidget *> &
 
     // breadth-first resolution descending into children
     // qDebug().noquote() << "[shortcut] resolving:" << keySeq << QString(' ').repeated(depth * 2) << target->metaObject()->className() << target->objectName();
-    for (auto *a : target->actions())
-        if (QKeySequence::ExactMatch == a->shortcut().matches(keySeq)) {
-            a->trigger();
-            return true;
-        }
+    for (QAction *a : target->actions())
+        if (a->isEnabled())
+            for (QKeySequence &s : a->shortcuts())
+                if (QKeySequence::ExactMatch == s.matches(keySeq)) {
+                    qDebug() << "[shortcuts] resolved ambiguous" << keySeq << "=>" << target->metaObject()->className() << target->objectName() << a->text();
+                    a->trigger();
+                    return true;
+                }
 
-    for (auto *o : target->children()) {
+    for (QObject *o : target->children()) {
         if (!o->metaObject()->inherits(&QWidget::staticMetaObject))
             continue;
         bool found = resolveShortcut(static_cast<QWidget *>(o), skip, keySeq, depth++);
@@ -117,7 +120,6 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
         while (w) {
             bool found = resolveShortcut(w, skip, evt->key());
             if (found) {
-                qDebug() << "[shortcuts] resolved ambiguous" << evt->key() << "in" << dt;
                 return true;
             }
 
@@ -125,6 +127,9 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
             skip.insert(w);
 
             auto *o = w->parent();
+            if (!o)
+                break;
+
             if (!o->metaObject()->inherits(&QWidget::staticMetaObject))
                 break;
             w = static_cast<QWidget *>(o);
@@ -151,12 +156,13 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
     const QKeySequence keySeq(keyEvent->modifiers() | keyEvent->key());
 
     // widget needs to to allow its own shortcuts, for example, on the "Enter" key of DkExplorer
-    for (QAction *a : widget->actions()) {
-        if (QKeySequence::ExactMatch == a->shortcut().matches(keySeq)) {
-            qDebug() << "[shortcuts] " << target->metaObject()->className() << "allowing own action:" << a->text() << keySeq;
-            return false;
-        }
-    }
+    for (const QAction *a : widget->actions())
+        if (a->isEnabled())
+            for (QKeySequence &s : a->shortcuts())
+                if (QKeySequence::ExactMatch == s.matches(keySeq)) {
+                    qDebug() << "[shortcuts] " << target->metaObject()->className() << "allowing own action:" << a->text() << keySeq;
+                    return false;
+                }
 
     // Override the keys/widgets that conflict
     // - To verify the keys, look up the widget source code in Qt (https://codebrowser.dev)
@@ -283,14 +289,16 @@ bool DkActionEventFilter::eventFilter(QObject *target, QEvent *event)
     QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 
     int key = keyEvent->modifiers() | keyEvent->key();
-    for (auto *a : qAsConst(mActions)) // TODO: c++17 std::as_const()
-        if (a->isEnabled() && QKeySequence::ExactMatch == a->shortcut().matches(key)) {
-            if (event->type() == QEvent::ShortcutOverride)
-                event->accept();
-            else if (event->type() == QEvent::KeyPress)
-                a->trigger();
-            return true;
-        }
+    for (QAction *a : qAsConst(mActions)) // TODO: c++17 std::as_const()
+        if (a->isEnabled())
+            for (QKeySequence &s : a->shortcuts())
+                if (QKeySequence::ExactMatch == s.matches(key)) {
+                    if (event->type() == QEvent::ShortcutOverride)
+                        event->accept();
+                    else // KeyPress
+                        a->trigger();
+                    return true;
+                }
 
     return false;
 }
