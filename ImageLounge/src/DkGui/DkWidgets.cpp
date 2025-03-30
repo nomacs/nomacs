@@ -2160,6 +2160,10 @@ void DkCropWidget::createToolbar()
 {
     cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
 
+    // crop toolbar will be reparented, which messes up shortcut resolution
+    for (QAction *a : cropToolbar->actions())
+        this->addAction(a);
+
     connect(cropToolbar, &DkCropToolBar::updateRectSignal, this, &DkCropWidget::setRect);
 
     connect(cropToolbar, &DkCropToolBar::cropSignal, this, &DkCropWidget::crop);
