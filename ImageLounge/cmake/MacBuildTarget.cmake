@@ -98,9 +98,8 @@ set_source_files_properties(${NOMACS_QM} PROPERTIES MACOSX_PACKAGE_LOCATION Reso
 #install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(TARGETS ${BINARY_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
 
-# create a "transportable" bundle - all libs into the bundle: "make bundle" after make install
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/macosx/bundle.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake @ONLY)
-#add_custom_target(bundle ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake)
+# install plugins in the bundle, note this path is hardcoded in nomacs as well
+set(PLUGINS_BUNDLE_DIR "${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}.app/Contents/PlugIns/nomacs")
 
 # generate configuration file
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -117,4 +116,35 @@ find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 add_custom_target(bundle
 	COMMAND ${MACDEPLOYQT_EXECUTABLE} ${BINARY_NAME}.app -always-overwrite -dmg
 	DEPENDS ${BINARY_NAME}
-	COMMENT "Execute ${MACDEPLOYQT_EXECUTABLE} to create macOS bundle")
+	COMMENT "Building portable bundle and dmg")
+
+# this macro must appear after add_subdirectory(<plugins-path>)
+macro(NMC_BUNDLE_COPY_PLUGINS)
+
+	# find plugin targets, not exposed in any cmake variable I could find
+	# so use this helper
+	set_property(GLOBAL PROPERTY COLLECTED_TARGETS "")
+	collect_dir_targets("${PLUGINS_DIR}")
+	get_property(PLUGINS_TARGETS GLOBAL PROPERTY COLLECTED_TARGETS)
+
+	# naming convention for plugins output is "libxxx.dylib"
+	set(PLUGINS_FILES "")
+	foreach(plugin_target ${PLUGINS_TARGETS})
+		list(APPEND PLUGINS_FILES "${CMAKE_CURRENT_BINARY_DIR}/plugins/lib${plugin_target}.dylib")
+	endforeach()
+
+	# use rsync to deref the symlink and keep the same filename
+	add_custom_target(
+		  copy_bundle_plugins ALL
+			COMMAND ${CMAKE_COMMAND} -E make_directory "${PLUGINS_BUNDLE_DIR}"
+			COMMAND rsync -aL ${PLUGINS_FILES} "${PLUGINS_BUNDLE_DIR}")
+
+	# make our target run last, after compiling plugins
+	add_dependencies(copy_bundle_plugins ${BINARY_NAME})
+	add_dependencies(copy_bundle_plugins ${DLL_CORE_NAME})
+
+	foreach(plugin_target ${PLUGINS_TARGETS})
+		add_dependencies(copy_bundle_plugins ${plugin_target})
+	endforeach()
+
+endmacro()
