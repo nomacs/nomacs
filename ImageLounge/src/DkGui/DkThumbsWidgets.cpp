@@ -1826,6 +1826,14 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget *parent /* = 0 */, Qt::WindowFl
     enableSelectionActions();
 }
 
+DkThumbScrollWidget::~DkThumbScrollWidget()
+{
+    // ~QGraphicsScene will emit selectionChanged() while being destructed.
+    // this gives a segfault or assertion failure (debug builds) and seems
+    // to be a Qt bug IMO.
+    mThumbsScene->disconnect();
+}
+
 void DkThumbScrollWidget::createToolbar()
 {
     mToolbar = new QToolBar(tr("Thumb Preview Toolbar"), this);
