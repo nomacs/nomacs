@@ -7,6 +7,9 @@ endif()
 set(MACOSX_RPATH TRUE)
 set(INSTALL_NAME_DIR "@executable_path/../Frameworks")
 
+# /usr/local is occupied by homebrew usually, not a good default
+set(CMAKE_INSTALL_PREFIX "/Applications")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 
 # create the targets
@@ -95,6 +98,7 @@ set_source_files_properties(${NOMACS_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATI
 set_source_files_properties(${NOMACS_THEMES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/themes)
 set_source_files_properties(${NOMACS_QM} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations)
 
+# FIXME: to install nomacs requires "make bundle" before "make install", libraries won't be found otherwise
 #install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(TARGETS ${BINARY_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
 
