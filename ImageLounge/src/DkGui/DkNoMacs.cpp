@@ -252,8 +252,12 @@ void DkNoMacs::createMenu()
         mMenu->addMenu(am.syncMenu());
 
 #ifdef WITH_PLUGINS
-    // plugin menu
+    // empty menu, populated on first click
     mPluginsMenu = mMenu->addMenu(tr("Pl&ugins"));
+
+    // we need a dummy action or else QPA might hide the menu (Mac)
+    mPluginsMenu->addAction(new QAction("<Plugins Loaded Here>"));
+
     am.pluginActionManager()->setMenu(mPluginsMenu);
 #endif // WITH_PLUGINS
 
