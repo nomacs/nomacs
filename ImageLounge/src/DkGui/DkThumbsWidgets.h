@@ -323,6 +323,7 @@ class DllCoreExport DkThumbScrollWidget : public DkFadeWidget
 
 public:
     DkThumbScrollWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkThumbScrollWidget();
 
     DkThumbScene *getThumbWidget()
     {
