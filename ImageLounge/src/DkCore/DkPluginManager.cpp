@@ -1299,8 +1299,13 @@ void DkPluginManager::createPluginsPath()
 {
 #ifdef WITH_PLUGINS
     // initialize plugin paths -----------------------------------------
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     QDir pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
+#elif defined(Q_OS_MAC)
+    // .app/Contents/PlugIns contains Qt plugins so make our own subdirectory here.
+    // This dir is treated differently by macdeployqt, dylibs here are not
+    // not copied into .app/Contents/Frameworks as is the usual case
+    QDir pluginsDir = QCoreApplication::applicationDirPath() + "/../PlugIns/nomacs";
 #else
     QDir pluginsDir = QLibraryInfo::location(QLibraryInfo::LibrariesPath) + "/nomacs-plugins/";
 #endif // Q_OS_WIN
