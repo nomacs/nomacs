@@ -88,12 +88,9 @@ void DkMessageBox::createLayout(const QMessageBox::Icon &userIcon, const QString
 
     textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     textLabel->setOpenExternalLinks(true);
-#if defined(Q_OS_MAC)
-    textLabel->setContentsMargins(16, 0, 0, 0);
-#else
     textLabel->setContentsMargins(2, 0, 0, 0);
     textLabel->setIndent(9);
-#endif
+
     icon = userIcon;
     iconLabel = new QLabel;
     iconLabel->setPixmap(QMessageBox::standardIcon((QMessageBox::Icon)icon));
@@ -111,7 +108,7 @@ void DkMessageBox::createLayout(const QMessageBox::Icon &userIcon, const QString
     buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
 
     QGridLayout *grid = new QGridLayout;
-#ifndef Q_OS_MAC
+#if 1
     grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
     grid->addWidget(textLabel, 0, 1, 1, 1);
     grid->addWidget(showAgain, 2, 1, 1, 2);
@@ -136,12 +133,6 @@ void DkMessageBox::createLayout(const QMessageBox::Icon &userIcon, const QString
     setLayout(grid);
 
     setModal(true);
-
-#ifdef Q_OS_MAC
-    QFont f = font();
-    f.setBold(true);
-    textLabel->setFont(f);
-#endif
 }
 
 void DkMessageBox::setVisible(bool visible)
