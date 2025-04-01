@@ -64,3 +64,19 @@ add_custom_target(
 )
 
 endmacro(NMC_COPY_FILES)
+
+# find all targets in dir, copying into global property COLLECTED_TARGETS
+# note: only finds targets after the previous add_subdirectory()'s
+function(collect_dir_targets dir)
+	get_directory_property(DIR_TARGETS DIRECTORY ${dir} BUILDSYSTEM_TARGETS)
+
+	if (DIR_TARGETS)
+		set_property(GLOBAL APPEND PROPERTY COLLECTED_TARGETS ${DIR_TARGETS})
+	endif()
+
+	get_directory_property(SUBDIRS DIRECTORY ${dir} SUBDIRECTORIES)
+
+	foreach(subdir ${SUBDIRS})
+		collect_dir_targets(${subdir})
+	endforeach()
+endfunction()
