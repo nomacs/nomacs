@@ -255,6 +255,14 @@ You will now have a binary (`nomacs.app`), which you can test (or use directly).
 sudo make install
 ```
 
+Nomacs registers supported file types with MacOS via the Info.plist file in the app bundle. Supported types vary depending on what options to cmake, Qt and OS version, homebrew configuration, and even nomacs user-specified custom file types (via `Tools/Add Image Format`). 
+
+To ensure it is correct for the current build, run
+```console
+$ make filetypes
+$ make
+```
+
 If you want to have an independent bundle image (`nomacs.dmg`) you can create it by using
 
 ```console
