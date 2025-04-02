@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <queue>
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QFutureWatcher>
 #include <QImage>
@@ -98,27 +99,25 @@ struct ThumbnailFromMetadata {
 
 std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData);
 
-class DkThumbLoaderWorker : public QObject
-{
-    Q_OBJECT
-public:
-    DkThumbLoaderWorker();
-    void requestThumbnail(const QString &filePath, LoadThumbnailOption opt);
-signals:
-    void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
-    void thumbnailLoadFailed(const QString &filePath);
-    void requestFullThumbnail(const QString &filePath, LoadThumbnailOption opt);
-};
-
 class DkThumbLoader : public QObject
 {
     Q_OBJECT
-    QThread mWorkerThread{};
+
+    struct LoadThumbnailResultLocal {
+        QImage thumb{};
+        QString filePath{};
+        bool valid{};
+        bool fromExif{};
+    };
+    std::vector<QFutureWatcher<LoadThumbnailResultLocal>> mWatchers{};
+    std::vector<QFutureWatcher<LoadThumbnailResultLocal> *> mIdleWatchers{};
+    std::queue<QString> mQueue{};
+    QHash<QString, int> mCounts{};
 
 public:
     DkThumbLoader();
-    ~DkThumbLoader();
     void requestThumbnail(const QString &filePath);
+    void cancelThumbnailRequest(const QString &filePath);
 
     // When we have full image loaded in the viewport,
     // create a side effect to update the thumbnail.
@@ -128,5 +127,10 @@ signals:
     void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
     void thumbnailLoadFailed(const QString &filePath);
     void thumbnailRequested(const QString &filePath, LoadThumbnailOption opt = LoadThumbnailOption::force_exif);
+
+private:
+    void onThumbnailLoadFinished();
+    static LoadThumbnailResultLocal loadThumbnailLocal(const QString &filePath);
+    void handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w);
 };
 }
