@@ -216,55 +216,85 @@ void DkThumbsThreadPool::clear()
     pool()->clear();
 }
 
-DkThumbLoaderWorker::DkThumbLoaderWorker()
-{
-    connect(this, &DkThumbLoaderWorker::requestFullThumbnail, this, &DkThumbLoaderWorker::requestThumbnail, Qt::QueuedConnection);
-}
-
-void DkThumbLoaderWorker::requestThumbnail(const QString &filePath, LoadThumbnailOption opt)
-{
-    const std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
-    if (res) {
-        emit thumbnailLoaded(filePath, res->thumb, res->fromExif);
-        return;
-    }
-
-    if (opt == LoadThumbnailOption::force_exif) {
-        // By default we can use force_exif to try loading those that have EXIF thumbnails first,
-        // which should be fast.
-        // If this failed, push the filePath to the back of the queue, via the QueuedConnection,
-        // so we prioritize loading all the EXIF thumbnails.
-        emit requestFullThumbnail(filePath, LoadThumbnailOption::force_full);
-    } else {
-        // We have tried loading the full thumbnail
-        emit thumbnailLoadFailed(filePath);
-    }
-}
-
 DkThumbLoader::DkThumbLoader()
+    : mWatchers(qMax(QThread::idealThreadCount() - 2, 1))
 {
-    auto *worker = new DkThumbLoaderWorker;
-    worker->moveToThread(&mWorkerThread);
-    connect(&mWorkerThread, &QThread::finished, worker, &QObject::deleteLater);
-    connect(this, &DkThumbLoader::thumbnailRequested, worker, &DkThumbLoaderWorker::requestThumbnail);
-    connect(worker, &DkThumbLoaderWorker::thumbnailLoaded, this, &DkThumbLoader::thumbnailLoaded);
-    connect(worker, &DkThumbLoaderWorker::thumbnailLoadFailed, this, &DkThumbLoader::thumbnailLoadFailed);
-    mWorkerThread.start();
+    mIdleWatchers.reserve(mWatchers.size());
+    for (auto &ele : mWatchers) {
+        mIdleWatchers.push_back(&ele);
+        connect(&ele, &QFutureWatcher<LoadThumbnailResultLocal>::finished, this, &DkThumbLoader::onThumbnailLoadFinished);
+    }
 }
 
-DkThumbLoader::~DkThumbLoader()
+DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const QString &filePath)
 {
-    mWorkerThread.quit();
-    mWorkerThread.wait();
+    const auto res = loadThumbnail(filePath, LoadThumbnailOption::none);
+    if (!res) {
+        return {QImage(), filePath, false, false};
+    }
+    return {DkImage::createThumb(res->thumb), filePath, true, res->fromExif};
 }
 
 void DkThumbLoader::requestThumbnail(const QString &filePath)
 {
-    emit thumbnailRequested(filePath);
+    if (mIdleWatchers.size() == 0) {
+        const int count = mCounts.value(filePath, 0);
+        if (count == 0) {
+            mQueue.push(filePath);
+        }
+        mCounts.insert(filePath, count + 1);
+        return;
+    }
+
+    if (mIdleWatchers.size() > 0) {
+        auto *w = mIdleWatchers.back();
+        mIdleWatchers.pop_back();
+        w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
+    }
+}
+
+void DkThumbLoader::cancelThumbnailRequest(const QString &filePath)
+{
+    auto it = mCounts.find(filePath);
+    if (it == mCounts.end()) {
+        return;
+    }
+    it.value() -= 1;
 }
 
 void DkThumbLoader::dispatchFullImage(const QString &filePath, const QImage &img)
 {
     emit thumbnailLoaded(filePath, img, false);
+}
+
+void DkThumbLoader::onThumbnailLoadFinished()
+{
+    const auto w = dynamic_cast<QFutureWatcher<LoadThumbnailResultLocal> *>(sender());
+    Q_ASSERT(w != nullptr);
+
+    LoadThumbnailResultLocal res = w->result();
+
+    handleFinishedWatcher(w);
+
+    if (!res.valid) {
+        emit thumbnailLoadFailed(res.filePath);
+        return;
+    }
+
+    emit thumbnailLoaded(res.filePath, res.thumb, res.fromExif);
+}
+
+void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w)
+{
+    while (mQueue.size() > 0) {
+        const QString filePath = mQueue.front();
+        mQueue.pop();
+        if (mCounts.value(filePath, 0) > 0) {
+            mCounts.remove(filePath);
+            w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
+            return;
+        }
+    }
+    mIdleWatchers.push_back(w);
 }
 }
