@@ -49,6 +49,7 @@
 #endif
 
 class QFileInfo;
+class QTextStream;
 class QTranslator;
 
 namespace nmc
@@ -69,6 +70,7 @@ public:
     void showDefaultSoftware() const;
 
     static void registerFileAssociations();
+    static void printFormats(QTextStream &out, const QString &outFormat);
 
 protected:
     QString registerProgID(const QString &ext, const QString &friendlyName, bool add);

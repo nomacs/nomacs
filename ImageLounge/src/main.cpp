@@ -178,6 +178,10 @@ int main(int argc, char *argv[])
     QCommandLineOption registerFilesOpt(QStringList() << "register-files", QObject::tr("Register file associations (Windows only)."));
     parser.addOption(registerFilesOpt);
 
+    QCommandLineOption listFormatsOpt(QStringList("list-formats"), QObject::tr("List available image formats"), "csv | plist | xdg");
+    listFormatsOpt.setFlags(QCommandLineOption::ShortOptionStyle);
+    parser.addOption(listFormatsOpt);
+
     parser.process(app);
 
     // CMD parser --------------------------------------------------------------------
@@ -208,6 +212,26 @@ int main(int argc, char *argv[])
     if (parser.isSet(registerFilesOpt)) {
         nmc::DkFileFilterHandling::registerFileAssociations();
         noUI = true;
+    }
+
+    // extract file type information for builds/documentation/etc
+    if (parser.isSet(listFormatsOpt)) {
+        noUI = true;
+        const QString outputFormat = parser.value(listFormatsOpt);
+        QFile file;
+        if (parser.positionalArguments().count()) {
+            file.setFileName(parser.positionalArguments().first());
+            file.open(QFile::WriteOnly | QFile::Truncate);
+            qInfo() << "[list-formats] writing metadata to" << file.fileName();
+        } else
+            file.open(stdout, QFile::WriteOnly);
+
+        if (!file.isOpen()) {
+            qCritical() << "open failed:" << file.errorString();
+            return 1;
+        }
+        QTextStream out(&file);
+        nmc::DkFileFilterHandling::printFormats(out, outputFormat);
     }
 
     if (noUI)
