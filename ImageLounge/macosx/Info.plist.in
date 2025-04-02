@@ -37,24 +37,7 @@
     <key>CFBundleDocumentTypes</key>
     <array>
       <dict>
-        <key>CFBundleTypeExtensions</key>
-        <array>
-          <string>png</string>
-          <string>jpg</string>
-          <string>jpeg</string>
-          <string>tiff</string>
-          <string>heic</string>
-        </array>
-        <key>CFBundleTypeMIMETypes</key>
-        <array>
-          <string>image/x-xpm</string>
-          <string>image/jpeg</string>
-          <string>image/gif</string>
-          <string>image/tiff</string>
-          <string>image/tiff-fx</string>
-          <string>image/png</string>
-          <string>image/heic</string>
-        </array>
+        ${MACOSX_BUNDLE_FILETYPES_XML}
         <key>CFBundleTypeIconFile</key>
         <string>nomacs</string>
         <key>CFBundleTypeRole</key>

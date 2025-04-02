@@ -18,6 +18,8 @@ set(DLL_CORE_NAME ${PROJECT_NAME}Core-${NOMACS_FULL_VERSION})
 
 set(NOMACS_ICON_FILE "${CMAKE_CURRENT_SOURCE_DIR}/macosx/nomacs.icns")
 
+set(MACOSX_FILETYPES_FILE "${CMAKE_CURRENT_SOURCE_DIR}/macosx/filetypes.xml")
+
 # binary
 link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS} ${CMAKE_BINARY_DIR})
 add_executable(
@@ -84,6 +86,7 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_CORE_N
 set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE_NAME})
 
 # mac's bundle install
+
 set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_BUNDLE ON)
 set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/macosx/Info.plist.in")
 set(MACOSX_BUNDLE_ICON_FILE "nomacs.icns")
@@ -94,6 +97,8 @@ set(MACOSX_BUNDLE_BUNDLE_NAME "${BINARY_NAME}")
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_COPYRIGHT "(c) Nomacs team")
+file(READ ${MACOSX_FILETYPES_FILE} MACOSX_BUNDLE_FILETYPES_XML) # refresh with "make filetypes" on the guest system
+
 set_source_files_properties(${NOMACS_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 set_source_files_properties(${NOMACS_THEMES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/themes)
 set_source_files_properties(${NOMACS_QM} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations)
@@ -121,6 +126,14 @@ add_custom_target(bundle
 	COMMAND ${MACDEPLOYQT_EXECUTABLE} ${BINARY_NAME}.app -always-overwrite -dmg
 	DEPENDS ${BINARY_NAME}
 	COMMENT "Building portable bundle and dmg")
+
+add_custom_target(
+	filetypes
+	COMMAND ./${BINARY_NAME}.app/Contents/MacOS/nomacs --list-formats plist "${MACOSX_FILETYPES_FILE}"
+	COMMAND rm -r ./${BINARY_NAME}.app/Contents/Info.plist
+	COMMAND echo filetypes updated, re-run \"make\" to update Info.plist
+	DEPENDS ${BINARY_NAME}
+	COMMENT "Generating filetypes.xml")
 
 # this macro must appear after add_subdirectory(<plugins-path>)
 macro(NMC_BUNDLE_COPY_PLUGINS)
