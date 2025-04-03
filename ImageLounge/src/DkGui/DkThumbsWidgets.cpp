@@ -861,6 +861,7 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGra
 
         mThumbImage = DkImage::createThumb(thumb);
         mThumbFromExif = fromExif;
+        mFetchingThumb = false;
         updateLabel();
         update();
     });
@@ -869,6 +870,7 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGra
             return;
         }
         mThumbNotExist = true;
+        mFetchingThumb = false;
         update();
     });
 }
@@ -917,6 +919,10 @@ QPixmap DkThumbLabel::pixmap() const
 
 void DkThumbLabel::cancelLoading()
 {
+    if (!mFetchingThumb) {
+        return;
+    }
+    mThumbLoader->cancelThumbnailRequest(mFilePath);
     mFetchingThumb = false;
 }
 
@@ -1675,6 +1681,26 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
     setAcceptDrops(true);
 
     lastShiftIdx = -1;
+
+    connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
+    connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
+}
+
+void DkThumbsView::onScroll()
+{
+    const QRectF portRect = mapToScene(viewport()->rect()).boundingRect();
+
+    for (const auto item : items()) {
+        auto it = dynamic_cast<DkThumbLabel *>(item);
+        if (it == nullptr) {
+            continue;
+        }
+
+        const bool intesects = portRect.intersects(it->sceneBoundingRect());
+        if (!intesects) {
+            it->cancelLoading();
+        }
+    }
 }
 
 void DkThumbsView::wheelEvent(QWheelEvent *event)
