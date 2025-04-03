@@ -135,6 +135,21 @@ add_custom_target(
 	DEPENDS ${BINARY_NAME}
 	COMMENT "Generating filetypes.xml")
 
+# get plugins path for kimageformats build script
+get_target_property(QJPEG_LINK Qt${QT_VERSION_MAJOR}::QJpegPlugin LOCATION_${CMAKE_BUILD_TYPE})
+get_filename_component(QT_PLUGINS_DIR ${QJPEG_LINK} DIRECTORY)
+get_filename_component(QT_PLUGINS_DIR ${QT_PLUGINS_DIR} DIRECTORY)
+if (EXISTS ${QT_PLUGINS_DIR})
+	message(STATUS "Found Qt plugins path: ${QT_PLUGINS_DIR}")
+else()
+	message(FATAL_ERROR "Could not find Qt plugins path @ ${QT_PLUGINS_DIR}")
+endif()
+
+add_custom_target(
+	kimageformats
+	COMMAND ${CMAKE_SOURCE_DIR}/macosx/build-kif.sh "${QT_PLUGINS_DIR}/imageformats"
+	COMMENT "Building kimageformats")
+
 # this macro must appear after add_subdirectory(<plugins-path>)
 macro(NMC_BUNDLE_COPY_PLUGINS)
 
