@@ -180,6 +180,7 @@ private:
         QImage image;
         bool notExist;
         bool fromExif;
+        bool loading;
     };
 
     QHash<QString, Thumb> mThumbs;

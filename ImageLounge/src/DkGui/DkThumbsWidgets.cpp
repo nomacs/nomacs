@@ -93,6 +93,7 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
         }
         mThumbs[filePath].image = DkImage::createThumb(thumb);
         mThumbs[filePath].fromExif = fromExif;
+        mThumbs[filePath].loading = false;
         update();
     });
 
@@ -101,6 +102,7 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
             return;
         }
         mThumbs[filePath].notExist = true;
+        mThumbs[filePath].loading = false;
         update();
     });
 }
@@ -348,21 +350,26 @@ void DkFilePreview::drawThumbs(QPainter *painter)
             newFileRect = imgWorldRect;
 
         // is the current image within the canvas?
-        if ((orientation == Qt::Horizontal && imgWorldRect.right() < 0) || (orientation == Qt::Vertical && imgWorldRect.bottom() < 0)) {
-            continue;
-        }
+        const bool oobStart = (orientation == Qt::Horizontal && imgWorldRect.right() < 0) || (orientation == Qt::Vertical && imgWorldRect.bottom() < 0);
+        const bool oobEnd = (orientation == Qt::Horizontal && imgWorldRect.left() > width()) || (orientation == Qt::Vertical && imgWorldRect.top() > height());
 
-        if (((orientation == Qt::Horizontal && imgWorldRect.left() > width()) || (orientation == Qt::Vertical && imgWorldRect.top() > height()))
-            && scrollToCurrentImage) {
+        if (oobStart || oobEnd) {
+            if (existsInTable && mThumbs[mFilePaths[idx]].loading) {
+                mThumbLoader->cancelThumbnailRequest(mFilePaths[idx]);
+                mThumbs.remove(mFilePaths[idx]);
+            }
+
+            if (oobEnd && !scrollToCurrentImage) {
+                break;
+            }
             continue;
-        } else if ((orientation == Qt::Horizontal && imgWorldRect.left() > width()) || (orientation == Qt::Vertical && imgWorldRect.top() > height())) {
-            break;
         }
 
         // only fetch thumbs if we are not moving too fast...
-        if (!existsInTable && fabs(currentDx) < 40) {
+        if (!existsInTable) {
             mThumbLoader->requestThumbnail(mFilePaths[idx]);
             mThumbs[mFilePaths[idx]] = {};
+            mThumbs[mFilePaths[idx]].loading = true;
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
