@@ -1,25 +1,43 @@
 <!-- begin list-formats -->
-        <!-- b85eabff, 2025-04-01, custom, macOS Ventura (13.7) -->
+        <!-- ea280888, 2025-04-02, macOS Ventura (13.7) -->
         <key>CFBundleTypeExtensions</key>
         <array>
           <string>3fr</string>
+          <string>ani</string>
           <string>arw</string>
+          <string>avif</string>
+          <string>avifs</string>
           <string>bmp</string>
+          <string>bw</string>
           <string>cbz</string>
           <string>cr2</string>
           <string>cr3</string>
           <string>crw</string>
           <string>cur</string>
+          <string>dcr</string>
+          <string>dds</string>
           <string>dng</string>
           <string>docx</string>
           <string>drif</string>
+          <string>eps</string>
+          <string>epsf</string>
+          <string>epsi</string>
+          <string>erf</string>
           <string>exif</string>
+          <string>exr</string>
+          <string>fff</string>
           <string>gif</string>
+          <string>hdp</string>
+          <string>hdr</string>
           <string>heic</string>
           <string>heif</string>
           <string>icns</string>
           <string>ico</string>
           <string>iiq</string>
+          <string>im1</string>
+          <string>im24</string>
+          <string>im32</string>
+          <string>im8</string>
           <string>j2k</string>
           <string>jfif</string>
           <string>jp2</string>
@@ -31,28 +49,53 @@
           <string>jpm</string>
           <string>jps</string>
           <string>jpx</string>
+          <string>jxl</string>
+          <string>jxr</string>
+          <string>k25</string>
+          <string>kdc</string>
           <string>kra</string>
+          <string>mdc</string>
+          <string>mef</string>
           <string>mng</string>
           <string>mos</string>
           <string>mpo</string>
           <string>mrw</string>
           <string>nef</string>
           <string>nrw</string>
+          <string>ora</string>
           <string>orf</string>
           <string>pbm</string>
+          <string>pcx</string>
+          <string>pdd</string>
           <string>pef</string>
+          <string>pfm</string>
           <string>pgm</string>
+          <string>phm</string>
+          <string>pic</string>
           <string>png</string>
           <string>pns</string>
           <string>ppm</string>
           <string>pptx</string>
           <string>psb</string>
           <string>psd</string>
+          <string>psdt</string>
+          <string>pxr</string>
+          <string>qoi</string>
           <string>raf</string>
+          <string>ras</string>
           <string>raw</string>
+          <string>rgb</string>
+          <string>rgba</string>
           <string>roh</string>
           <string>rw2</string>
+          <string>rwl</string>
+          <string>sct</string>
+          <string>sgi</string>
+          <string>sr2</string>
+          <string>srf</string>
           <string>srw</string>
+          <string>sti</string>
+          <string>sun</string>
           <string>svg</string>
           <string>svgz</string>
           <string>tga</string>
@@ -60,20 +103,29 @@
           <string>tiff</string>
           <string>vec</string>
           <string>wbmp</string>
+          <string>wdp</string>
           <string>webp</string>
           <string>x3f</string>
           <string>xbm</string>
+          <string>xcf</string>
           <string>xlsx</string>
           <string>xpm</string>
           <string>zip</string>
         </array>
         <key>CFBundleTypeMIMETypes</key>
         <array>
+          <string>application/envi.hdr</string>
+          <string>application/postscript</string>
           <string>application/vnd.3gpp.pic-bw-small</string>
           <string>application/vnd.openxmlformats-officedocument.presentationml.presentation</string>
           <string>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</string>
           <string>application/vnd.openxmlformats-officedocument.wordprocessingml.document</string>
+          <string>application/vnd.sun.xml.impress.template</string>
+          <string>application/x-director</string>
+          <string>application/x-font-printer-metric</string>
           <string>application/zip</string>
+          <string>image/aces</string>
+          <string>image/avif</string>
           <string>image/bmp</string>
           <string>image/gif</string>
           <string>image/heic</string>
@@ -83,23 +135,31 @@
           <string>image/jpeg</string>
           <string>image/jpm</string>
           <string>image/jpx</string>
+          <string>image/jxl</string>
           <string>image/png</string>
           <string>image/svg+xml</string>
           <string>image/tiff</string>
           <string>image/vnd.adobe.photoshop</string>
           <string>image/vnd.microsoft.icon</string>
           <string>image/vnd.wap.wbmp</string>
+          <string>image/vnd.zbrush.pcx</string>
           <string>image/webp</string>
           <string>image/x-canon-cr2</string>
           <string>image/x-canon-cr3</string>
+          <string>image/x-cmu-raster</string>
+          <string>image/x-pict</string>
           <string>image/x-portable-bitmap</string>
           <string>image/x-portable-graymap</string>
           <string>image/x-portable-pixmap</string>
           <string>image/x-raw-adobe</string>
           <string>image/x-raw-canon</string>
+          <string>image/x-raw-epson</string>
           <string>image/x-raw-fuji</string>
           <string>image/x-raw-hasselblad</string>
+          <string>image/x-raw-imacon</string>
+          <string>image/x-raw-kodak</string>
           <string>image/x-raw-leaf</string>
+          <string>image/x-raw-mamiya</string>
           <string>image/x-raw-minolta</string>
           <string>image/x-raw-nikon</string>
           <string>image/x-raw-olympus</string>
@@ -108,8 +168,10 @@
           <string>image/x-raw-phaseone</string>
           <string>image/x-raw-sigma</string>
           <string>image/x-raw-sony</string>
+          <string>image/x-rgb</string>
           <string>image/x-tga</string>
           <string>image/x-xbitmap</string>
+          <string>image/x-xcf</string>
           <string>image/x-xpixmap</string>
           <string>video/x-mng</string>
         </array>
