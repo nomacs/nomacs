@@ -1,8 +1,5 @@
-if(CMAKE_HOST_WIN32) # ubuntu 14.04 has cmake 2.8.12
-    CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-else()
-    CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-endif()
+# check cmake requirements
+cmake_minimum_required (VERSION 3.10)
 
 PROJECT(nomacs-plugins)
 
