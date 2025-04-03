@@ -218,29 +218,22 @@ Install required dependencies:
 brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
-Go to the `nomacs` directory and run cmake to get the Makefiles:
+Go to the `nomacs` directory and run the correct cmake for your hardware and Qt version. We recommend Qt6.
 
 ```console
-cd nomacs
-mkdir build
-cd build
-```
+cd nomacs; mkdir build; cd build
 
-For Homebrew on Intel models:
+# Qt5 / Intel
+CMAKE_PREFIX_PATH=/usr/local/opt/qt@5/lib/cmake cmake -D QT_VERSION_MAJOR=5 -D ENABLE_QUAZIP=on -D USE_SYSTEM_QUAZIP=OFF ../ImageLounge
 
-```console
-# qt5
-$ export CPLUS_INCLUDE_PATH=/usr/local/include
-$ Qt5_DIR=/usr/local/opt/qt5/ cmake -D QT_VERSION_MAJOR=5 --install-prefix /Applications ../ImageLounge/.
+# Qt5 / Apple Silicon
+CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt@5/lib/cmake cmake -D QT_VERSION_MAJOR=5 -D ENABLE_QUAZIP=ON -D USE_SYSTEM_QUAZIP=OFF ../ImageLounge
 
-# qt6
-$ cmake -D QT_VERSION_MAJOR=6 -D ENABLE_QUAZIP=ON --install-prefix /Applications ../ImageLounge/.
-```
+# Qt6 / Intel 
+CMAKE_PREFIX_PATH=/usr/local/opt/qt6/lib/cmake cmake -D QT_VERSION_MAJOR=6 -D ENABLE_QUAZIP=ON ../ImageLounge
 
-For Homebrew on Apple Silicon models:
-
-```console
-$ Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake --install-prefix /Applications ../ImageLounge/.
+# Qt6 / Apple Silicon
+CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt6/lib/cmake cmake -D QT_VERSION_MAJOR=6 -D ENABLE_QUAZIP=ON ../ImageLounge
 ```
 
 Run make:
@@ -249,31 +242,49 @@ Run make:
 $ make
 ```
 
-You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/Applications`, use
+You will now have a binary (`nomacs.app`), which you can test (or use directly):
+
+```console
+# simulate opening from Finder
+open nomacs.app
+
+# to see logging
+./nomacs.app/Contents/MacOS/nomacs
+```
+
+Homebrew seems to be missing kimageformats so we haves this option until that happens:
+
+```console
+make kimageformats
+```
+
+Nomacs registers supported file types via the Info.plist file in the app bundle. This is essential for open-with, drag-and-drop, etc features of the Finder. Supported types vary depending on what options to cmake, Qt and OS version, homebrew configuration, and even nomacs user-specified custom file types (via `Tools/Add Image Format`). 
+
+Note that nomacs does not automatically make itself the default application for any supported types at this time, you will need to you use the open-with function in "Get Info" etc.
+
+To ensure it is correct for the current build, run
+```console
+make filetypes
+make
+```
+
+When you are satisfied and want to install it to `/Applications`, use:
 
 ```console
 sudo make install
 ```
 
-Nomacs registers supported file types with MacOS via the Info.plist file in the app bundle. Supported types vary depending on what options to cmake, Qt and OS version, homebrew configuration, and even nomacs user-specified custom file types (via `Tools/Add Image Format`). 
-
-To ensure it is correct for the current build, run
-```console
-$ make filetypes
-$ make
-```
-
-If you want to have an independent bundle image (`nomacs.dmg`) you can create it by using
+If you want a self-contained bundle (`nomacs.app`) and dmg file (`nomacs.dmg`) that can't be broken by homebrew updates, use:
 
 ```console
-$ make bundle
+make bundle
 ```
 
 If macdeployqt complains about `ERROR: Cannot resolve rpath "@rpath/QtGui.framework/Versions/A/QtGui"` [here](https://github.com/orgs/Homebrew/discussions/2823#discussioncomment-2010340) is the solution:
 ```console
-$ cd /usr/local/lib/QtGui.framework/Versions/A
-$ install_name_tool -id '@rpath/QtGui.framework/Versions/A/QtGui' QtGui
-% otool -L QtGui| head -2
+cd /usr/local/lib/QtGui.framework/Versions/A
+install_name_tool -id '@rpath/QtGui.framework/Versions/A/QtGui' QtGui
+otool -L QtGui | head -2
 QtGui:
         @rpath/QtGui.framework/Versions/A/QtGui (compatibility version 6.0.0, current version 6.7.0)
 ```
