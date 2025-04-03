@@ -444,11 +444,13 @@ void DkBrowseExplorer::createLayout()
     mRootPathLabel = new DkElidedLabel(rootPathWidget, "");
 
     auto browseButton = new QPushButton(tr("Browse"));
+    browseButton->setFocusPolicy(Qt::ClickFocus);
     connect(browseButton, &QPushButton::clicked, this, &DkBrowseExplorer::browseClicked);
 
     auto scrollButton = new QToolButton();
     scrollButton->setIcon(DkImage::loadIcon(":/nomacs/img/scroll-to-current.svg"));
     scrollButton->setToolTip(tr("Scroll to current file"));
+    scrollButton->setFocusPolicy(Qt::ClickFocus);
     connect(scrollButton, &QPushButton::clicked, this, &DkBrowseExplorer::scrollToCurrentClicked);
 
     rpLayout->setContentsMargins(4, 2, 2, 2);
@@ -516,6 +518,7 @@ void DkExplorer::createLayout()
     mFileTree->setModel(mSortModel);
     mFileTree->setDragEnabled(true);
     mFileTree->setAcceptDrops(true);
+    mFileTree->setFocusPolicy(Qt::ClickFocus);
 
     // by default descendingOrder is set
     mFileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
@@ -2156,6 +2159,10 @@ DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget *parent /* = 0*/, 
 void DkCropWidget::createToolbar()
 {
     cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
+
+    // crop toolbar will be reparented, which messes up shortcut resolution
+    for (QAction *a : cropToolbar->actions())
+        this->addAction(a);
 
     connect(cropToolbar, &DkCropToolBar::updateRectSignal, this, &DkCropWidget::setRect);
 
