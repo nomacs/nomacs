@@ -323,6 +323,9 @@ protected:
     DkThumbScene *scene;
     QPointF mousePos;
     int lastShiftIdx;
+
+private:
+    void onScroll();
 };
 
 class DllCoreExport DkThumbScrollWidget : public DkWidget
