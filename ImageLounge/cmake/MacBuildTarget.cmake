@@ -122,6 +122,22 @@ get_target_property(_qmake_executable Qt::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 
+# check for known issues
+set(QJP2_TARGET Qt${QT_VERSION_MAJOR}::QJp2Plugin)
+if (TARGET ${QJP2_TARGET})
+	get_target_property(QJP2_LINK ${QJP2_TARGET} LOCATION_${CMAKE_BUILD_TYPE})
+	get_filename_component(QJP2_ACTUAL "${QJP2_LINK}" REALPATH)
+	set(QJP2_CMAKE ${Qt${QT_VERSION_MAJOR}Gui_DIR}/Qt${QT_VERSION_MAJOR}QJp2Plugin)
+	if (EXISTS ${QJP2_ACTUAL})
+		message(WARNING "Qt jpeg2000 plugin installed, this is known to crash nomacs (#1307)\n"
+			"We recommend disabling this in homebrew. For jpeg2000 "
+			"support you may install kimageformats package or "
+			"run 'make kimageformats' to build from source.\n"
+			"To disable you may delete: ${QJP2_LINK} and ${QJP2_CMAKE}*.cmake\n"
+		)
+endif()
+endif()
+
 add_custom_target(bundle
 	COMMAND ${MACDEPLOYQT_EXECUTABLE} ${BINARY_NAME}.app -always-overwrite -dmg
 	DEPENDS ${BINARY_NAME}
