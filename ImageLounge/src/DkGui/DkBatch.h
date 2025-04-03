@@ -101,7 +101,7 @@ class DkSettingsWidget;
 class DkBatchPluginInterface;
 class DkRectWidget;
 
-class DkBatchContent : public DkWidget
+class DkBatchContent : public DkFadeWidget
 {
     Q_OBJECT
 
@@ -228,7 +228,6 @@ public slots:
     void setDir(const QString &dirPath);
     void browse();
     void updateDir(QVector<QSharedPointer<DkImageContainerT>>);
-    void setVisible(bool visible) override;
     void parameterChanged();
     void selectionChanged();
     void setFileInfo(QFileInfo file);
@@ -561,7 +560,7 @@ protected:
     QDoubleSpinBox *mResizeSbPercent;
 };
 
-class DkBatchButtonsWidget : public DkFadeWidget
+class DkBatchButtonsWidget : public DkWidget
 {
     Q_OBJECT
 

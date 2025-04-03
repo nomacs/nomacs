@@ -825,9 +825,11 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thum
 
 void DkFilePreview::setVisible(bool visible, bool saveSettings)
 {
-    emit showThumbsDockSignal(visible);
-
     DkFadeWidget::setVisible(visible, saveSettings);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
+    emit showThumbsDockSignal(visible);
 }
 
 // DkThumbLabel --------------------------------------------------------------------
@@ -1963,9 +1965,11 @@ void DkThumbScrollWidget::setDir(const QString &dirPath)
 
 void DkThumbScrollWidget::setVisible(bool visible)
 {
-    connectToActions(visible);
-
     DkFadeWidget::setVisible(visible);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
+    connectToActions(visible);
 
     if (visible) {
         mThumbsScene->updateThumbLabels();
@@ -2228,7 +2232,7 @@ void DkRecentDirWidget::leaveEvent(QEvent *event)
 
 // -------------------------------------------------------------------- DkRecentFilesEntry
 DkRecentFilesWidget::DkRecentFilesWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     createLayout();
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -2238,8 +2242,13 @@ void DkRecentFilesWidget::setVisible(bool visible)
 {
     if (visible)
         updateList();
+    if (mAction) {
+        mAction->blockSignals(true);
+        mAction->setChecked(visible);
+        mAction->blockSignals(false);
+    }
 
-    DkFadeWidget::setVisible(visible);
+    DkWidget::setVisible(visible);
 }
 
 void DkRecentFilesWidget::createLayout()
