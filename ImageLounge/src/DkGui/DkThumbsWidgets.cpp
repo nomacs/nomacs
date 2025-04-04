@@ -476,7 +476,7 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
         imgGradient.setFinalStop(0, wm.map(gradient.finalStop()).y());
     }
 
-    QImage mask = *img;
+    QImage mask = QImage(img->size(), QImage::Format_Grayscale8);
     QPainter painter(&mask);
     painter.fillRect(img->rect(), Qt::black);
     painter.fillRect(img->rect(), imgGradient);
