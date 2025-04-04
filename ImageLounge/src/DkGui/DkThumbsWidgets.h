@@ -189,7 +189,7 @@ private:
     void init();
     void initOrientations();
     void drawThumbs(QPainter *painter);
-    void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
+    QImage applyFadeOut(const QLinearGradient &gradient, const QRectF &imgRect, const QImage &img);
     void drawSelectedEffect(QPainter *painter, const QRectF &r);
     void drawCurrentImgEffect(QPainter *painter, const QRectF &r);
     void drawNoImgEffect(QPainter *painter, const QRectF &r);

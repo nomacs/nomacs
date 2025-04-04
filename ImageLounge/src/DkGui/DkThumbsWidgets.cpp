@@ -378,9 +378,9 @@ void DkFilePreview::drawThumbs(QPainter *painter)
             || (orientation == Qt::Vertical && imgWorldRect.bottom() > rightGradient.start().y());
         // show that there are more images...
         if (isLeftGradient && !img.isNull())
-            drawFadeOut(leftGradient, imgWorldRect, &img);
+            img = applyFadeOut(leftGradient, imgWorldRect, img);
         if (isRightGradient && !img.isNull())
-            drawFadeOut(rightGradient, imgWorldRect, &img);
+            img = applyFadeOut(rightGradient, imgWorldRect, img);
 
         if (!img.isNull())
             painter->drawImage(r, img, QRect(QPoint(), img.size()));
@@ -451,13 +451,13 @@ void DkFilePreview::drawCurrentImgEffect(QPainter *painter, const QRectF &r)
     painter->setPen(oldPen);
 }
 
-void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img)
+QImage DkFilePreview::applyFadeOut(const QLinearGradient &gradient, const QRectF &imgRect, const QImage &img)
 {
-    if (img && img->format() == QImage::Format_Indexed8)
-        return;
+    if (img.format() == QImage::Format_Indexed8)
+        return img;
 
     // compute current scaling
-    QPointF scale(img->width() / imgRect.width(), img->height() / imgRect.height());
+    QPointF scale(img.width() / imgRect.width(), img.height() / imgRect.height());
     QTransform wm;
     wm.scale(scale.x(), scale.y());
 
@@ -476,13 +476,15 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
         imgGradient.setFinalStop(0, wm.map(gradient.finalStop()).y());
     }
 
-    QImage mask = QImage(img->size(), QImage::Format_Grayscale8);
+    QImage mask = QImage(img.size(), QImage::Format_Grayscale8);
     QPainter painter(&mask);
-    painter.fillRect(img->rect(), Qt::black);
-    painter.fillRect(img->rect(), imgGradient);
+    painter.fillRect(mask.rect(), Qt::black);
+    painter.fillRect(mask.rect(), imgGradient);
     painter.end();
 
-    img->setAlphaChannel(mask);
+    QImage newImage = img;
+    newImage.setAlphaChannel(mask);
+    return newImage;
 }
 
 void DkFilePreview::resizeEvent(QResizeEvent *event)
