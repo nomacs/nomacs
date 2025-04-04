@@ -65,6 +65,7 @@ QString DkZipContainer::mZipMarker = "dIrChAr";
  * @param fileInfo the file of the given
  **/
 DkImageContainer::DkImageContainer(const QString &filePath)
+    : mOriginalFilePath{filePath}
 {
     setFilePath(filePath);
     init();
@@ -521,6 +522,11 @@ std::wstring DkImageContainer::getFileNameWStr() const
     return mFileNameStr;
 }
 #endif
+
+QString DkImageContainer::originalFilePath() const
+{
+    return mOriginalFilePath;
+}
 
 // DkImageContainerT --------------------------------------------------------------------
 DkImageContainerT::DkImageContainerT(const QString &filePath)
