@@ -90,6 +90,7 @@ public:
     QString getTitleAttribute() const;
     float getMemoryUsage() const;
     float getFileSize() const;
+    QString originalFilePath() const;
 
     virtual QSharedPointer<DkBasicLoader> getLoader();
     virtual QSharedPointer<DkMetaDataT> getMetaData();
@@ -155,6 +156,9 @@ protected:
 
 private:
     QString mFilePath;
+
+    // File path before processing zip file
+    QString mOriginalFilePath;
 };
 
 class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
