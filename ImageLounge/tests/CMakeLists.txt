@@ -4,7 +4,7 @@ add_executable(core_tests DkUtils_test.cpp)
 
 target_link_libraries(
     core_tests
-    nomacsCore
+    ${DLL_CORE_NAME}
     ${OpenCV_LIBS}
     GTest::gtest_main
     Qt${QT_MAJOR_VERSION}::Core
