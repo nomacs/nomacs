@@ -1299,8 +1299,10 @@ void DkPluginManager::createPluginsPath()
 {
 #ifdef WITH_PLUGINS
     // initialize plugin paths -----------------------------------------
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     QDir pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
+#elif defined(Q_OS_MAC)
+    QDir pluginsDir = QCoreApplication::applicationDirPath() + "/../nomacs-plugins";
 #else
     QDir pluginsDir = QLibraryInfo::location(QLibraryInfo::LibrariesPath) + "/nomacs-plugins/";
 #endif // Q_OS_WIN

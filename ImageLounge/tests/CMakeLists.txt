@@ -4,7 +4,7 @@ add_executable(core_tests DkUtils_test.cpp)
 
 target_link_libraries(
     core_tests
-    nomacsCore
+    ${DLL_CORE_NAME}
     ${OpenCV_LIBS}
     GTest::gtest_main
     Qt${QT_MAJOR_VERSION}::Core
@@ -13,7 +13,10 @@ target_link_libraries(
 
 add_custom_target(
     check
-    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+    COMMAND
+        LD_LIBRARY_PATH=../:$ENV{LD_LIBRARY_PATH}
+        DYLD_LIBRARY_PATH=../:$ENV{DYLD_LIBRARY_PATH}
+        ${CMAKE_CTEST_COMMAND} --output-on-failure
     DEPENDS core_tests
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )

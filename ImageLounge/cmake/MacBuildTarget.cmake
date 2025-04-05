@@ -7,6 +7,9 @@ endif()
 set(MACOSX_RPATH TRUE)
 set(INSTALL_NAME_DIR "@executable_path/../Frameworks")
 
+# /usr/local is occupied by homebrew usually, not a good default
+set(CMAKE_INSTALL_PREFIX "/Applications")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 
 # create the targets
@@ -14,6 +17,8 @@ set(BINARY_NAME ${PROJECT_NAME})
 set(DLL_CORE_NAME ${PROJECT_NAME}Core-${NOMACS_FULL_VERSION})
 
 set(NOMACS_ICON_FILE "${CMAKE_CURRENT_SOURCE_DIR}/macosx/nomacs.icns")
+
+set(MACOSX_FILETYPES_FILE "${CMAKE_CURRENT_SOURCE_DIR}/macosx/filetypes.xml")
 
 # binary
 link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS} ${CMAKE_BINARY_DIR})
@@ -81,6 +86,7 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_CORE_N
 set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE_NAME})
 
 # mac's bundle install
+
 set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_BUNDLE ON)
 set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/macosx/Info.plist.in")
 set(MACOSX_BUNDLE_ICON_FILE "nomacs.icns")
@@ -91,16 +97,18 @@ set(MACOSX_BUNDLE_BUNDLE_NAME "${BINARY_NAME}")
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_COPYRIGHT "(c) Nomacs team")
+file(READ ${MACOSX_FILETYPES_FILE} MACOSX_BUNDLE_FILETYPES_XML) # refresh with "make filetypes" on the guest system
+
 set_source_files_properties(${NOMACS_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 set_source_files_properties(${NOMACS_THEMES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/themes)
 set_source_files_properties(${NOMACS_QM} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations)
 
+# FIXME: to install nomacs requires "make bundle" before "make install", libraries won't be found otherwise
 #install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(TARGETS ${BINARY_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
 
-# create a "transportable" bundle - all libs into the bundle: "make bundle" after make install
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/macosx/bundle.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake @ONLY)
-#add_custom_target(bundle ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake)
+# install plugins in the bundle
+set(PLUGINS_BUNDLE_DIR "${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}.app/Contents/nomacs-plugins")
 
 # generate configuration file
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -114,7 +122,77 @@ get_target_property(_qmake_executable Qt::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 
+# check for known issues
+set(QJP2_TARGET Qt${QT_VERSION_MAJOR}::QJp2Plugin)
+if (TARGET ${QJP2_TARGET})
+	get_target_property(QJP2_LINK ${QJP2_TARGET} LOCATION_${CMAKE_BUILD_TYPE})
+	get_filename_component(QJP2_ACTUAL "${QJP2_LINK}" REALPATH)
+	set(QJP2_CMAKE ${Qt${QT_VERSION_MAJOR}Gui_DIR}/Qt${QT_VERSION_MAJOR}QJp2Plugin)
+	if (EXISTS ${QJP2_ACTUAL})
+		message(WARNING "Qt jpeg2000 plugin installed, this is known to crash nomacs (#1307)\n"
+			"We recommend disabling this in homebrew. For jpeg2000 "
+			"support you may install kimageformats package or "
+			"run 'make kimageformats' to build from source.\n"
+			"To disable you may delete: ${QJP2_LINK} and ${QJP2_CMAKE}*.cmake\n"
+		)
+endif()
+endif()
+
 add_custom_target(bundle
 	COMMAND ${MACDEPLOYQT_EXECUTABLE} ${BINARY_NAME}.app -always-overwrite -dmg
 	DEPENDS ${BINARY_NAME}
-	COMMENT "Execute ${MACDEPLOYQT_EXECUTABLE} to create macOS bundle")
+	COMMENT "Building portable bundle and dmg")
+
+add_custom_target(
+	filetypes
+	COMMAND ./${BINARY_NAME}.app/Contents/MacOS/nomacs --list-formats plist "${MACOSX_FILETYPES_FILE}"
+	COMMAND rm -r ./${BINARY_NAME}.app/Contents/Info.plist
+	COMMAND echo filetypes updated, re-run \"make\" to update Info.plist
+	DEPENDS ${BINARY_NAME}
+	COMMENT "Generating filetypes.xml")
+
+# get plugins path for kimageformats build script
+get_target_property(QJPEG_LINK Qt${QT_VERSION_MAJOR}::QJpegPlugin LOCATION_${CMAKE_BUILD_TYPE})
+get_filename_component(QT_PLUGINS_DIR ${QJPEG_LINK} DIRECTORY)
+get_filename_component(QT_PLUGINS_DIR ${QT_PLUGINS_DIR} DIRECTORY)
+if (EXISTS ${QT_PLUGINS_DIR})
+	message(STATUS "Found Qt plugins path: ${QT_PLUGINS_DIR}")
+else()
+	message(FATAL_ERROR "Could not find Qt plugins path @ ${QT_PLUGINS_DIR}")
+endif()
+
+add_custom_target(
+	kimageformats
+	COMMAND ${CMAKE_SOURCE_DIR}/macosx/build-kif.sh "${QT_PLUGINS_DIR}/imageformats"
+	COMMENT "Building kimageformats")
+
+# this macro must appear after add_subdirectory(<plugins-path>)
+macro(NMC_BUNDLE_COPY_PLUGINS)
+
+	# find plugin targets, not exposed in any cmake variable I could find
+	# so use this helper
+	set_property(GLOBAL PROPERTY COLLECTED_TARGETS "")
+	collect_dir_targets("${PLUGINS_DIR}")
+	get_property(PLUGINS_TARGETS GLOBAL PROPERTY COLLECTED_TARGETS)
+
+	# naming convention for plugins output is "libxxx.dylib"
+	set(PLUGINS_FILES "")
+	foreach(plugin_target ${PLUGINS_TARGETS})
+		list(APPEND PLUGINS_FILES "${CMAKE_CURRENT_BINARY_DIR}/plugins/lib${plugin_target}.dylib")
+	endforeach()
+
+	# use rsync to deref the symlink and keep the same filename
+	add_custom_target(
+		  copy_bundle_plugins ALL
+			COMMAND ${CMAKE_COMMAND} -E make_directory "${PLUGINS_BUNDLE_DIR}"
+			COMMAND rsync -aL ${PLUGINS_FILES} "${PLUGINS_BUNDLE_DIR}")
+
+	# make our target run last, after compiling plugins
+	add_dependencies(copy_bundle_plugins ${BINARY_NAME})
+	add_dependencies(copy_bundle_plugins ${DLL_CORE_NAME})
+
+	foreach(plugin_target ${PLUGINS_TARGETS})
+		add_dependencies(copy_bundle_plugins ${plugin_target})
+	endforeach()
+
+endmacro()
