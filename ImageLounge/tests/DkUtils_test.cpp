@@ -1,6 +1,14 @@
 #include "../src/DkCore/DkUtils.h"
+#include "DkVersion.h"
 #include <gtest/gtest.h>
 #include <string>
+
+TEST(LinkedVersionTest, Test)
+{
+    // If this test fails the test executable has loaded the wrong nomacsCore shared library
+    // This can be caused by LD_LIBRARY_PATH containing another installation of nomacsCore.
+    EXPECT_EQ(std::string(NOMACS_REVISION_STR), std::string(nmc::revisionString));
+}
 
 TEST(DkFileNameConverterTest, Test) {
   nmc::DkFileNameConverter base("<c:0><d:2:0>.<old>");
