@@ -18,6 +18,12 @@
 INSTALL_DIR="$1"
 if [ ! -d "$INSTALL_DIR" ]; then echo "plugins/imageformats location invalid: \"$INSTALL_DIR\""; exit 99; fi
 
+if [ ! -d "$CMAKE_PREFIX_PATH" ]; then
+  echo !! CMAKE_PREFIX_PATH is not set, If cmake is unable to find Qt
+  echo !! you must add Qt cmake files to this path with
+  echo !! export CMAKE_PREFIX_PATH=/path/to/qt/cmake
+fi
+
 # highly annoying auto-update behavior potentially breaking things
 export HOMEBREW_NO_AUTO_UPDATE=1
 
@@ -41,9 +47,9 @@ if [ ! -d $SRC_DIR ]; then git clone https://invent.kde.org/frameworks/kimagefor
 ) || exit 4
 
 (cd $BUILD_DIR &&
- cmake -D CMAKE_TOOLCHAIN_FILE=/usr/local/lib/cmake/Qt6/qt.toolchain.cmake \
-       -D CMAKE_BUILD_TYPE=Release \
+ cmake -D CMAKE_BUILD_TYPE=Release \
        -D CMAKE_INSTALL_PREFIX=./install \
+       -D BUILD_TESTING=OFF \
        -D KIMAGEFORMATS_JP2=ON \
        -D KIMAGEFORMATS_JXR=ON \
        -D KIMAGEFORMATS_JXL=ON \
