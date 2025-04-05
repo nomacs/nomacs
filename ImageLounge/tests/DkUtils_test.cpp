@@ -1,6 +1,15 @@
 #include "../src/DkCore/DkUtils.h"
+#include "DkVersion.h"
 #include <gtest/gtest.h>
 #include <string>
+
+TEST(LinkedVersionTest, Test)
+{
+    // if these don't match, we definitely have an invalid test environment
+    // if they do, we may or may not...a build serial number would be required,
+    // but that is not something package maintainers like.
+    EXPECT_EQ(std::string(NOMACS_REVISION_STR), std::string(nmc::revisionString));
+}
 
 TEST(DkFileNameConverterTest, Test) {
   nmc::DkFileNameConverter base("<c:0><d:2:0>.<old>");
