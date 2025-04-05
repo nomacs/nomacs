@@ -13,7 +13,10 @@ target_link_libraries(
 
 add_custom_target(
     check
-    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+    COMMAND
+        LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/:$ENV{LD_LIBRARY_PATH}
+        DYLD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/:$ENV{DYLD_LIBRARY_PATH}
+        ${CMAKE_CTEST_COMMAND} --output-on-failure
     DEPENDS core_tests
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
