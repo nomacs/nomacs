@@ -116,7 +116,7 @@ public:
 protected:
     bool eventFilter(QObject *target, QEvent *e) override;
 
-    QList<QAction *> mActions;
+    QVector<QAction *> mActions;
 };
 
 }
