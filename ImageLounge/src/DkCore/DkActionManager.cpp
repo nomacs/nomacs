@@ -1786,30 +1786,33 @@ void DkActionManager::enableMovieActions(bool enable) const
 
 void DkActionManager::enableViewPortPluginActions(bool enable) const
 {
+    // actions to disable when a viewport plugin is activated,
+    // and disable when de-activated
+
 #ifdef WITH_PLUGINS
     // opening another plugin is currently broken
     // fixme: for some reason these don't disable in the menu ?!
     for (auto *a : mPluginManager->pluginActions())
-        a->setEnabled(!enable);
+        a->setEnabled(enable);
 
     for (auto *a : mPluginManager->pluginDummyActions())
-        a->setEnabled(!enable);
+        a->setEnabled(enable);
 
     // this is a partial workaround; quick launch will continue to launch plugins
-    mPluginManager->menu()->setEnabled(!enable);
+    mPluginManager->menu()->setEnabled(enable);
 #endif
 
     constexpr EditMenuActions disabledEditActions[] = {
-        menu_edit_undo, // paint plugin has its own undo
+        menu_edit_undo, // plugins have their own undo/redo, do not interface directly with history/imageloader
         menu_edit_redo,
-        menu_edit_copy, // copy/paste work on the original image
+        menu_edit_copy, // plugins have their own copy/paste, should not copy from underlying imageloader
         menu_edit_paste,
         menu_edit_copy_buffer,
         menu_edit_copy_color,
         menu_edit_preferences, // tabs do not work with plugins
     };
     for (auto i : disabledEditActions)
-        action(i)->setEnabled(!enable);
+        action(i)->setEnabled(enable);
 
     constexpr ViewMenuActions disabledViewActions[] = {
         menu_view_new_tab, // tabs
@@ -1824,9 +1827,9 @@ void DkActionManager::enableViewPortPluginActions(bool enable) const
         menu_view_slideshow,
     };
     for (auto i : disabledViewActions)
-        action(i)->setEnabled(!enable);
+        action(i)->setEnabled(enable);
 
-    action(menu_tools_batch)->setEnabled(!enable); // tabs
+    action(menu_tools_batch)->setEnabled(enable); // tabs
 }
 
 // DkGlobalProgress --------------------------------------------------------------------

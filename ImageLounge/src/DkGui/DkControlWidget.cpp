@@ -645,7 +645,7 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
 
     // workaround some plugin bugs by disabling actions while the plugin is open
     // TODO: this belongs in central widget as action enablement is tied to tabs
-    DkActionManager::instance().enableViewPortPluginActions(!removeWidget);
+    DkActionManager::instance().enableViewPortPluginActions(removeWidget);
 
     if (!removeWidget) {
         mPluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
