@@ -217,7 +217,7 @@ void DkThumbsThreadPool::clear()
 }
 
 DkThumbLoader::DkThumbLoader()
-    : mWatchers(4)
+    : mWatchers(qMax(QThread::idealThreadCount() - 2, 1))
 {
     mIdleWatchers.reserve(mWatchers.size());
     for (auto &ele : mWatchers) {
