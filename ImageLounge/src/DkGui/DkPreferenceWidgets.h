@@ -90,7 +90,7 @@ protected:
     QIcon mIcon;
 };
 
-class DllCoreExport DkPreferenceWidget : public DkFadeWidget
+class DllCoreExport DkPreferenceWidget : public DkWidget
 {
     Q_OBJECT
 
