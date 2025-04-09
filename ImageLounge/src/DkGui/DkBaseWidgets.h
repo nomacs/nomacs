@@ -59,6 +59,9 @@ class DllCoreExport DkWidget : public QWidget
 
 public:
     DkWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
 };
 
 // non-specialized functions for the mixin
@@ -238,7 +241,6 @@ public:
 protected:
     // functions
     void init();
-    void paintEvent(QPaintEvent *event) override;
 };
 
 extern template class DkFadeMixin<DkWidget>; // speed up compilation/linking
