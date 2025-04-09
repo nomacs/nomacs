@@ -47,6 +47,7 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
+#include <QImageReader>
 #include <QMessageBox>
 #include <QObject>
 #include <QProcess>
@@ -182,6 +183,9 @@ int main(int argc, char *argv[])
     listFormatsOpt.setFlags(QCommandLineOption::ShortOptionStyle);
     parser.addOption(listFormatsOpt);
 
+    QCommandLineOption aboutOpt(QStringList("about"), QObject::tr("Print build information"));
+    parser.addOption(aboutOpt);
+
     parser.process(app);
 
     // CMD parser --------------------------------------------------------------------
@@ -232,6 +236,20 @@ int main(int argc, char *argv[])
         }
         QTextStream out(&file);
         nmc::DkFileFilterHandling::printFormats(out, outputFormat);
+    }
+
+    if (parser.isSet(aboutOpt)) {
+        noUI = true;
+        // attempts to load all runtime dependencies without showing the UI,
+        // this is used on macOS and cross-compiled windows version
+        // to discover what dylibs/dlls are being used
+        QTextStream out(stdout);
+        out << nmc::DkUtils::getBuildInfo();
+        out << "qt-imageformats:" << QImageReader::supportedImageFormats().join(",") << "\n";
+
+        nmc::DkPluginManager::instance().loadPlugins();
+        for (auto &plugin : nmc::DkPluginManager::instance().getPlugins())
+            out << "plugin:" << plugin->pluginPath() << "\n";
     }
 
     if (noUI)
