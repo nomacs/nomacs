@@ -175,6 +175,11 @@ add_custom_target(
 	COMMAND ${CMAKE_SOURCE_DIR}/macosx/build-kif.sh "${QT_PLUGINS_DIR}/imageformats"
 	COMMENT "Building kimageformats")
 
+add_custom_target(
+	portable
+	COMMAND ${CMAKE_SOURCE_DIR}/macosx/make-portable.sh "${QT_PLUGINS_DIR}"
+	COMMENT "Building portable bundle")
+
 # this macro must appear after add_subdirectory(<plugins-path>)
 macro(NMC_BUNDLE_COPY_PLUGINS)
 
