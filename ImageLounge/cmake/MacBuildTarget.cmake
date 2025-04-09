@@ -2,10 +2,15 @@ if(ENABLE_PLUGINS)
 	add_definitions(-DWITH_PLUGINS)
 endif()
 
-# macOS install names for dylibs will include @rpath/ prefix.
-# https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling#default-rpath-settings
+# enable default RPATH linking, this should be more stable when homebrew is updated
 set(MACOSX_RPATH TRUE)
-set(INSTALL_NAME_DIR "@executable_path/../Frameworks")
+
+# don't drop homebrew rpaths from installed binaries, should be more resiliant to homebrew updates
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# linked libraries copied to the bundle will be found relative to the executable,
+# located in nomacs.app/Contents/Frameworks
+set(MACOSX_BUNDLE_RPATH "@executable_path/../Frameworks")
 
 # /usr/local is occupied by homebrew usually, not a good default
 set(CMAKE_INSTALL_PREFIX "/Applications")
@@ -46,6 +51,7 @@ target_link_libraries(
 
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 set_target_properties(${BINARY_NAME} PROPERTIES IMPORTED_IMPLIB "")
+set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_RPATH ON)
 
 # add core dll
 add_library(
@@ -84,11 +90,14 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEA
 set_target_properties(${DLL_CORE_NAME} PROPERTIES COMPILE_FLAGS "-DDK_CORE_DLL_EXPORT -DNOMINMAX")
 set_target_properties(${DLL_CORE_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_CORE_NAME}d)
 set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE_NAME})
+set_target_properties(${DLL_CORE_NAME} PROPERTIES MACOSX_RPATH ON)
+set_target_properties(${DLL_CORE_NAME} PROPERTIES INSTALL_NAME_DIR "@rpath")
 
 # mac's bundle install
-
 set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_BUNDLE ON)
 set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/macosx/Info.plist.in")
+set_target_properties(${BINARY_NAME} PROPERTIES INSTALL_RPATH ${MACOSX_BUNDLE_RPATH})
+
 set(MACOSX_BUNDLE_ICON_FILE "nomacs.icns")
 set(MACOSX_BUNDLE_INFO_STRING "${BINARY_NAME} ${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.nomacs")
@@ -99,16 +108,16 @@ set(MACOSX_BUNDLE_BUNDLE_VERSION "${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_COPYRIGHT "(c) Nomacs team")
 file(READ ${MACOSX_FILETYPES_FILE} MACOSX_BUNDLE_FILETYPES_XML) # refresh with "make filetypes" on the guest system
 
+set(MACOSX_BUNDLE_BINARY "${BINARY_NAME}.app/Contents/MacOS/${BINARY_NAME}")
+set(MACOSX_BUNDLE_PLUGINS "${BINARY_NAME}.app/Contents/PlugIns")
+set(MACOSX_BUNDLE_LIBS "${BINARY_NAME}.app/Contents/Frameworks")
+
 set_source_files_properties(${NOMACS_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 set_source_files_properties(${NOMACS_THEMES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/themes)
 set_source_files_properties(${NOMACS_QM} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations)
 
-# FIXME: to install nomacs requires "make bundle" before "make install", libraries won't be found otherwise
-#install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(TARGETS ${BINARY_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
-
-# install plugins in the bundle, note this path is hardcoded in nomacs as well
-set(PLUGINS_BUNDLE_DIR "${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}.app/Contents/PlugIns/nomacs")
+install(TARGETS ${DLL_CORE_NAME} LIBRARY DESTINATION ${MACOSX_BUNDLE_LIBS})
 
 # generate configuration file
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -184,8 +193,8 @@ macro(NMC_BUNDLE_COPY_PLUGINS)
 	# use rsync to deref the symlink and keep the same filename
 	add_custom_target(
 		  copy_bundle_plugins ALL
-			COMMAND ${CMAKE_COMMAND} -E make_directory "${PLUGINS_BUNDLE_DIR}"
-			COMMAND rsync -aL ${PLUGINS_FILES} "${PLUGINS_BUNDLE_DIR}")
+			COMMAND ${CMAKE_COMMAND} -E make_directory "${MACOSX_BUNDLE_PLUGINS}/nomacs"
+			COMMAND rsync -aL ${PLUGINS_FILES} "${MACOSX_BUNDLE_PLUGINS}/nomacs")
 
 	# make our target run last, after compiling plugins
 	add_dependencies(copy_bundle_plugins ${BINARY_NAME})
@@ -193,6 +202,15 @@ macro(NMC_BUNDLE_COPY_PLUGINS)
 
 	foreach(plugin_target ${PLUGINS_TARGETS})
 		add_dependencies(copy_bundle_plugins ${plugin_target})
-	endforeach()
+
+		# this works but also copies symlinks, so we have the following workaround
+		# install(TARGETS ${plugin_target} LIBRARY DESTINATION ${MACOSX_BUNDLE_PLUGINS}/nomacs)
+
+		# remove build paths from rpath on the installed plugin
+		set(PLUGIN_FILE "${CMAKE_INSTALL_PREFIX}/${MACOSX_BUNDLE_PLUGINS}/nomacs/lib${plugin_target}.dylib")
+		install(CODE "execute_process(
+			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/macosx/strip_rpath.sh ${PLUGIN_FILE}
+		)")
+  endforeach()
 
 endmacro()
