@@ -37,13 +37,15 @@ jobs:
           #   packages: googletest exiv2 quazip libraw opencv
           #   flags: "-DENABLE_QUAZIP=ON"
           #   kimageformats: true # compile kimageformats, currently requires qt6
-          #   bundle: true # build portable bundle
+          #   portable: false # use the new portable bundle script
+          #   bundle: true # build portable bundle using macdeployqt
           #   artifacts: true # upload artifacts
           #   release: true # TODO: publish release
           - type: minimum
             packages: googletest exiv2
             flags: "-DENABLE_PLUGINS=OFF -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF -DENABLE_QUAZIP=OFF"
             kimageformats: true
+            portable: true
             bundle: false
             artifacts: false
             release: false
@@ -95,6 +97,12 @@ jobs:
           cd ${GITHUB_WORKSPACE}/build
           export CMAKE_PREFIX_PATH="${{ matrix.runner.homebrew-opt }}/${{ matrix.qt.cmakefiles }}"
           make kimageformats
+
+      - name: Make Portable Bundle (Fast)
+        if: matrix.config.portable
+        run: |
+          cd ${GITHUB_WORKSPACE}/build
+          make portable
 
       - name: Make Portable Bundle
         if: matrix.config.bundle
