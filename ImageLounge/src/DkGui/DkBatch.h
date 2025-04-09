@@ -607,7 +607,7 @@ protected:
     QLabel *mIcon = 0;
 };
 
-class DkBatchWidget : public DkFadeWidget
+class DkBatchWidget : public DkWidget
 {
     Q_OBJECT
 
