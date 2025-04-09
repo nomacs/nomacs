@@ -47,6 +47,7 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
+#include <QImageReader>
 #include <QMessageBox>
 #include <QObject>
 #include <QProcess>
@@ -178,6 +179,13 @@ int main(int argc, char *argv[])
     QCommandLineOption registerFilesOpt(QStringList() << "register-files", QObject::tr("Register file associations (Windows only)."));
     parser.addOption(registerFilesOpt);
 
+    QCommandLineOption listFormatsOpt(QStringList("list-formats"), QObject::tr("List available image formats"), "csv | plist | xdg");
+    listFormatsOpt.setFlags(QCommandLineOption::ShortOptionStyle);
+    parser.addOption(listFormatsOpt);
+
+    QCommandLineOption aboutOpt(QStringList("about"), QObject::tr("Print build information"));
+    parser.addOption(aboutOpt);
+
     parser.process(app);
 
     // CMD parser --------------------------------------------------------------------
@@ -208,6 +216,40 @@ int main(int argc, char *argv[])
     if (parser.isSet(registerFilesOpt)) {
         nmc::DkFileFilterHandling::registerFileAssociations();
         noUI = true;
+    }
+
+    // extract file type information for builds/documentation/etc
+    if (parser.isSet(listFormatsOpt)) {
+        noUI = true;
+        const QString outputFormat = parser.value(listFormatsOpt);
+        QFile file;
+        if (parser.positionalArguments().count()) {
+            file.setFileName(parser.positionalArguments().first());
+            file.open(QFile::WriteOnly | QFile::Truncate);
+            qInfo() << "[list-formats] writing metadata to" << file.fileName();
+        } else
+            file.open(stdout, QFile::WriteOnly);
+
+        if (!file.isOpen()) {
+            qCritical() << "open failed:" << file.errorString();
+            return 1;
+        }
+        QTextStream out(&file);
+        nmc::DkFileFilterHandling::printFormats(out, outputFormat);
+    }
+
+    if (parser.isSet(aboutOpt)) {
+        noUI = true;
+        // attempts to load all runtime dependencies without showing the UI,
+        // this is used on macOS and cross-compiled windows version
+        // to discover what dylibs/dlls are being used
+        QTextStream out(stdout);
+        out << nmc::DkUtils::getBuildInfo();
+        out << "qt-imageformats:" << QImageReader::supportedImageFormats().join(",") << "\n";
+
+        nmc::DkPluginManager::instance().loadPlugins();
+        for (auto &plugin : nmc::DkPluginManager::instance().getPlugins())
+            out << "plugin:" << plugin->pluginPath() << "\n";
     }
 
     if (noUI)
