@@ -243,7 +243,7 @@ protected:
 
 extern template class DkFadeMixin<DkWidget>; // speed up compilation/linking
 
-class DllCoreExport DkNamedWidget : public DkFadeWidget
+class DllCoreExport DkNamedWidget : public DkWidget
 {
     Q_OBJECT
 
