@@ -352,7 +352,6 @@ void DkBatchInput::createLayout()
     mResultTextEdit->setVisible(false);
 
     mThumbScrollWidget = new DkThumbScrollWidget(this);
-    mThumbScrollWidget->setFadeEnabled(false);
     mThumbScrollWidget->getThumbWidget()->setImageLoader(mLoader);
 
     // add explorer
@@ -2424,7 +2423,7 @@ void DkBatchInfoWidget::setInfo(const QString &message, const InfoMode &mode)
 
 // Batch Widget --------------------------------------------------------------------
 DkBatchWidget::DkBatchWidget(const QString &currentDirectory, QWidget *parent /* = 0 */)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     mCurrentDirectory = currentDirectory;
     mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);

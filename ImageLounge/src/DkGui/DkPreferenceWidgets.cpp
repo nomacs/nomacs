@@ -67,7 +67,7 @@ namespace nmc
 {
 
 DkPreferenceWidget::DkPreferenceWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     createLayout();
 
