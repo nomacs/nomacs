@@ -53,6 +53,17 @@ DkWidget::DkWidget(QWidget *parent, Qt::WindowFlags flags)
 {
 }
 
+void DkWidget::paintEvent(QPaintEvent *event)
+{
+    // fixes stylesheets which are not applied to custom widgets
+    QStyleOption opt;
+    opt.initFrom(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+    QWidget::paintEvent(event);
+}
+
 DkFadeHelper::DkFadeHelper(QWidget *widget)
     : mWidget(widget)
 {
@@ -215,17 +226,6 @@ DkFadeWidget::DkFadeWidget(QWidget *parent, Qt::WindowFlags flags)
 void DkFadeWidget::init()
 {
     setMouseTracking(true);
-}
-
-void DkFadeWidget::paintEvent(QPaintEvent *event)
-{
-    // fixes stylesheets which are not applied to custom widgets
-    QStyleOption opt;
-    opt.initFrom(this);
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-
-    QWidget::paintEvent(event);
 }
 
 // DkNamedWidget --------------------------------------------------------------------
