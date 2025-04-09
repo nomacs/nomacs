@@ -230,7 +230,7 @@ void DkFadeWidget::paintEvent(QPaintEvent *event)
 
 // DkNamedWidget --------------------------------------------------------------------
 DkNamedWidget::DkNamedWidget(const QString &name, QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     mName = name;
 }
