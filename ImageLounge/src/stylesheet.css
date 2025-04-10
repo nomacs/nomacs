@@ -745,8 +745,10 @@ QPushButton#displayButton:checked {
 	border: 1px solid HIGHLIGHT_COLOR;
 }
 
-/* picks the wrong color on system theme; doesn't seem to be needed anymore
+/* fix background showing through if thumbs ribbon pinned to top and
+   activating one of these widgets whilst thumbs grid is visible */
+nmc--DkPreferenceWidget,
+nmc--DkBatchWidget,
 QToolBar {
-    background-color: BACKGROUND_COLOR;
+    background-color: palette(window);
 }
-*/
