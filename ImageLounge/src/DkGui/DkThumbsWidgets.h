@@ -317,7 +317,7 @@ protected:
     int lastShiftIdx;
 };
 
-class DllCoreExport DkThumbScrollWidget : public DkFadeWidget
+class DllCoreExport DkThumbScrollWidget : public DkWidget
 {
     Q_OBJECT
 
@@ -331,6 +331,10 @@ public:
     };
 
     void clear();
+    void registerAction(QAction *action)
+    {
+        mAction = action;
+    }
 
 public slots:
     virtual void setVisible(bool visible) override;
@@ -360,6 +364,7 @@ protected:
     QMenu *mContextMenu = 0;
     QToolBar *mToolbar = 0;
     QLineEdit *mFilterEdit = 0;
+    QAction *mAction = 0;
 };
 
 class DkRecentDir
@@ -418,7 +423,7 @@ protected:
     int mThumbSize = 100;
 };
 
-class DllCoreExport DkRecentDirWidget : public DkFadeWidget
+class DllCoreExport DkRecentDirWidget : public DkWidget
 {
     Q_OBJECT
 
@@ -455,12 +460,17 @@ protected:
     void leaveEvent(QEvent *event) override;
 };
 
-class DllCoreExport DkRecentFilesWidget : public DkFadeWidget
+class DllCoreExport DkRecentFilesWidget : public DkWidget
 {
     Q_OBJECT
 
 public:
     DkRecentFilesWidget(QWidget *parent = 0);
+
+    void registerAction(QAction *action)
+    {
+        mAction = action;
+    }
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
@@ -474,7 +484,10 @@ protected:
     void createLayout();
     void updateList();
 
-    QScrollArea *mScrollArea;
+    QScrollArea *mScrollArea = nullptr;
+
+private:
+    QAction *mAction = nullptr;
 };
 
 }

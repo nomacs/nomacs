@@ -352,7 +352,6 @@ void DkBatchInput::createLayout()
     mResultTextEdit->setVisible(false);
 
     mThumbScrollWidget = new DkThumbScrollWidget(this);
-    mThumbScrollWidget->setVisible(true);
     mThumbScrollWidget->getThumbWidget()->setImageLoader(mLoader);
 
     // add explorer
@@ -408,12 +407,6 @@ void DkBatchInput::changeTab(int tabIdx) const
 void DkBatchInput::updateDir(QVector<QSharedPointer<DkImageContainerT>> thumbs)
 {
     emit updateDirSignal(thumbs);
-}
-
-void DkBatchInput::setVisible(bool visible)
-{
-    QWidget::setVisible(visible);
-    mThumbScrollWidget->getThumbWidget()->updateLayout();
 }
 
 void DkBatchInput::browse()
@@ -2325,7 +2318,7 @@ QRect DkBatchTransformWidget::cropRect() const
 
 // Batch Buttons --------------------------------------------------------------------
 DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     createLayout();
     setPaused();
@@ -2430,7 +2423,7 @@ void DkBatchInfoWidget::setInfo(const QString &message, const InfoMode &mode)
 
 // Batch Widget --------------------------------------------------------------------
 DkBatchWidget::DkBatchWidget(const QString &currentDirectory, QWidget *parent /* = 0 */)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     mCurrentDirectory = currentDirectory;
     mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
@@ -3013,8 +3006,11 @@ void DkBatchWidget::loadProfile(const QString &profilePath)
 
 void DkBatchWidget::applyDefault()
 {
-    for (DkBatchContainer *bc : mWidgets)
-        bc->batchContent()->applyDefault();
+    for (DkBatchContainer *w : mWidgets) {
+        if (!w)
+            continue;
+        w->batchContent()->applyDefault();
+    }
 }
 
 void DkBatchWidget::widgetChanged()
