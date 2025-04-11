@@ -1035,7 +1035,7 @@ void DkThumbLabel::setVisible(bool visible)
 
 void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if (!mFetchingThumb && mThumbImage.isNull()) {
+    if (!mFetchingThumb && mThumbImage.isNull() && !mThumbNotExist) {
         mThumbLoader->requestThumbnail(mFilePath);
         mFetchingThumb = true;
     }
