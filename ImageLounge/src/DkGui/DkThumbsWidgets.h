@@ -177,10 +177,10 @@ private:
     std::vector<QString> mFilePaths{};
 
     struct Thumb {
-        QImage image;
-        bool notExist;
-        bool fromExif;
-        bool loading;
+        QImage image{};
+        bool notExist{};
+        bool fromExif{};
+        bool loading{};
     };
 
     QHash<QString, Thumb> mThumbs;
@@ -238,9 +238,9 @@ protected:
     QPointF mLastMove;
     QString mFilePath;
     QImage mThumbImage;
-    bool mThumbNotExist;
-    bool mThumbFromExif;
-    DkThumbLoader *mThumbLoader;
+    bool mThumbNotExist{};
+    bool mThumbFromExif{};
+    DkThumbLoader *mThumbLoader{};
 
 private:
     void updateTooltip();
