@@ -843,6 +843,10 @@ void DkFilePreview::setVisible(bool visible, bool saveSettings)
     emit showThumbsDockSignal(visible);
 
     DkFadeWidget::setVisible(visible, saveSettings);
+
+    if (!visible) {
+        mThumbs.clear();
+    }
 }
 
 // DkThumbLabel --------------------------------------------------------------------
@@ -2022,8 +2026,10 @@ void DkThumbScrollWidget::setVisible(bool visible)
     if (visible) {
         mThumbsScene->updateThumbLabels();
         mFilterEdit->setText("");
-    } else
+    } else {
         mThumbsScene->cancelLoading();
+        mThumbsScene->updateThumbs({});
+    }
 }
 
 void DkThumbScrollWidget::connectToActions(bool activate)
