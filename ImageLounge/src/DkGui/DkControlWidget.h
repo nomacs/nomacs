@@ -65,7 +65,6 @@ class DkCropWidget;
 class DkZoomWidget;
 class DkPlayer;
 class DkFolderScrollBar;
-class DkRatingLabelBg;
 class DkDelayedMessage;
 class DkFileInfoLabel;
 class DkHistogram;
@@ -139,7 +138,7 @@ public slots:
     void setInfo(const QString &msg, int time = 3000, int location = bottom_left_label);
     void updateRating(int rating);
 
-    void imageLoaded(bool loaded);
+    void imagePresenceChanged(bool imagePresent);
 
     void update();
 
@@ -185,7 +184,6 @@ protected:
 
     DkFolderScrollBar *mFolderScroll;
     DkFileInfoLabel *mFileInfoLabel;
-    DkRatingLabelBg *mRatingLabel;
 
     DkDelayedMessage *mDelayedInfo;
 

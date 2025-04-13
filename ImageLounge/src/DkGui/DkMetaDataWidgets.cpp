@@ -1051,6 +1051,8 @@ void DkMetaDataHUD::contextMenuEvent(QContextMenuEvent *event)
 void DkMetaDataHUD::setVisible(bool visible, bool saveSetting /* = true */)
 {
     DkFadeWidget::setVisible(visible, saveSetting);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
 
     updateMetaData(mMetaData);
 }
@@ -1159,7 +1161,7 @@ void DkCommentTextEdit::paintEvent(QPaintEvent *e)
 
 // DkCommentWidget --------------------------------------------------------------------
 DkCommentWidget::DkCommentWidget(QWidget *parent /* = 0 */, Qt::WindowFlags /* = 0 */)
-    : DkFadeLabel(parent)
+    : DkFadeLabel("", parent)
 {
     createLayout();
 }
