@@ -2187,7 +2187,8 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
 
     try {
         // open the buffer
-        LibRaw iProcessor;
+        auto libRawPtr = std::make_unique<LibRaw>(); // huge stack allocation crashes MacOS
+        auto &iProcessor = *libRawPtr;
 
         iProcessor.imgdata.params.use_camera_wb = 1;
         iProcessor.imgdata.params.output_color = 1;

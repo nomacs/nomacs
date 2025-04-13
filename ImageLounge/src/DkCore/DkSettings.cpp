@@ -27,6 +27,7 @@
 
 #include "DkSettings.h"
 #include "DkUtils.h"
+#include "DkVersion.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <cassert>
@@ -39,6 +40,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QImageReader>
+#include <QMimeDatabase>
 #include <QRandomGenerator>
 #include <QScreen>
 #include <QStandardItem>
@@ -1139,6 +1141,62 @@ void DkFileFilterHandling::registerFileAssociations()
     }
 
     qInfo() << "files registered...";
+}
+
+void DkFileFilterHandling::printFormats(QTextStream &out, const QString &outFormat)
+{
+    QMimeDatabase db;
+    QStringList fileFilters = nmc::DkSettingsManager::param().app().fileFilters;
+    std::sort(fileFilters.begin(), fileFilters.end());
+
+    QVector<QStringList> rows; // collect all data on each extension
+    QStringList mimeNames; // unique names
+    for (QString ext : fileFilters) { // "*.jpg"
+        ext = ext.mid(2); // "jpg"
+        const auto mimeTypes = db.mimeTypesForFileName("file." + ext);
+
+        QStringList columns(ext);
+        columns.append(mimeTypes.count() ? mimeTypes[0].comment() : "n/a");
+        // TODO: nomacs filter name
+        // TODO: add column if type is writeable
+        for (const QMimeType &mime : mimeTypes) {
+            auto name = mime.name(); // "image/jpeg"
+            columns.append(name);
+            if (!mimeNames.contains(name))
+                mimeNames.append(name);
+            // in practice is always <2 so just skip the others
+        }
+        rows.append(columns);
+    }
+    std::sort(mimeNames.begin(), mimeNames.end());
+
+    if (outFormat == "plist") {
+        // filetype metadata for macos Info.plist, used by "make filetypes"
+        auto indent = QString(' ').repeated(8); // matches Info.plist.in
+
+        out << "<!-- begin list-formats -->\n";
+        out << indent << "<!-- " << nmc::revisionString << ", " << QSysInfo().prettyProductName() << " -->\n";
+        out << indent << "<key>CFBundleTypeExtensions</key>\n";
+        out << indent << "<array>\n";
+        for (auto &row : rows)
+            out << indent << "  <string>" << row[0] << "</string>\n";
+        out << indent << "</array>\n";
+        out << indent << "<key>CFBundleTypeMIMETypes</key>\n";
+        out << indent << "<array>\n";
+        for (auto &mime : mimeNames)
+            out << indent << "  <string>" << mime << "</string>\n";
+        out << indent << "</array>\n";
+        out << indent << "<!-- end list-formats -->";
+
+    } else if (outFormat == "xdg") {
+        // for .desktop file
+        out << "MimeType=" << mimeNames.join(';');
+    } else if (outFormat == "csv") {
+        for (auto &row : rows)
+            out << row.join(',') << "\n";
+    } else {
+        qCritical() << "invalid output format (see --help for usage)";
+    }
 }
 
 void DkFileFilterHandling::registerNomacs(bool showDefaultApps)
