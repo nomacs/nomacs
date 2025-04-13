@@ -65,7 +65,6 @@ class DkCropWidget;
 class DkZoomWidget;
 class DkPlayer;
 class DkFolderScrollBar;
-class DkRatingLabelBg;
 class DkDelayedMessage;
 class DkFileInfoLabel;
 class DkHistogram;
