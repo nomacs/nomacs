@@ -613,7 +613,7 @@ void DkNoMacs::enterFullScreen()
     setUpdatesEnabled(false);
 
     // disable animations for panels to stop layout change immediately after switch
-    DkSettingsManager::param().display().suspendWidgetAnimation = true;
+    DkFadeHelper::enableAnimations(false);
 
     int appMode = DkSettingsManager::param().app().currentAppMode;
     appMode = DkSettings::fullscreenMode(appMode);
@@ -633,7 +633,7 @@ void DkNoMacs::enterFullScreen()
     if (getTabWidget()->getViewPort())
         getTabWidget()->getViewPort()->setFullScreen(true);
 
-    DkSettingsManager::param().display().suspendWidgetAnimation = false;
+    DkFadeHelper::enableAnimations(true);
     setUpdatesEnabled(true);
 
     showFullScreen();
@@ -648,8 +648,7 @@ void DkNoMacs::exitFullScreen()
 {
     if (isFullScreen()) {
         setUpdatesEnabled(false);
-
-        DkSettingsManager::param().display().suspendWidgetAnimation = true;
+        DkFadeHelper::enableAnimations(false);
 
         int appMode = DkSettingsManager::param().app().currentAppMode;
         if (!DkSettings::modeIsFullscreen(appMode))
@@ -674,7 +673,7 @@ void DkNoMacs::exitFullScreen()
         if (getTabWidget()->getViewPort())
             getTabWidget()->getViewPort()->setFullScreen(false);
 
-        DkSettingsManager::param().display().suspendWidgetAnimation = false;
+        DkFadeHelper::enableAnimations(true);
         setUpdatesEnabled(true);
 
         qInfo() << "before exit fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
