@@ -64,6 +64,8 @@ void DkWidget::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 }
 
+bool DkFadeHelper::mGloballyEnabled = true;
+
 DkFadeHelper::DkFadeHelper(QWidget *widget)
     : mWidget(widget)
 {
@@ -95,7 +97,7 @@ bool DkFadeHelper::isFadeEnabled() const
 {
     if (!DkSettingsManager::param().display().animateWidgets) // permanent setting
         return false;
-    if (DkSettingsManager::param().display().suspendWidgetAnimation) // temporary setting
+    if (!mGloballyEnabled) // temporary setting
         return false;
     return mEnabled;
 }

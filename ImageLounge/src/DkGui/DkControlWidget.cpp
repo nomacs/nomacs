@@ -759,11 +759,11 @@ void DkControlWidget::imagePresenceChanged(bool imagePresent)
     (void)imagePresent;
 
     // disable animations while building initial view or image is lost
-    DkSettingsManager::param().display().suspendWidgetAnimation = true;
+    DkFadeHelper::enableAnimations(false);
 
     showWidgetsSettings();
 
-    DkSettingsManager::param().display().suspendWidgetAnimation = false;
+    DkFadeHelper::enableAnimations(true);
 }
 
 void DkControlWidget::setFullScreen(bool fullscreen)

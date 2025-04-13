@@ -70,6 +70,17 @@ class DllCoreExport DkFadeHelper
     Q_DISABLE_COPY_MOVE(DkFadeHelper);
 
 public:
+    // globally disable animations, independent of user setting
+    static void enableAnimations(bool enable)
+    {
+        mGloballyEnabled = enable;
+    }
+
+    static bool animationsEnabled()
+    {
+        return mGloballyEnabled;
+    }
+
     DkFadeHelper() = delete;
     DkFadeHelper(QWidget *w);
 
@@ -127,6 +138,8 @@ private:
     {
         mTimerId = mWidget->startTimer(20);
     }
+
+    static bool mGloballyEnabled;
 
     QWidget *mWidget; // widget we are showing/hiding
     QGraphicsOpacityEffect *mOpacityEffect;
