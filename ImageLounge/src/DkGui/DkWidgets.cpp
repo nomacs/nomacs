@@ -971,17 +971,23 @@ DkRatingLabel::DkRatingLabel(int rating, QWidget *parent, Qt::WindowFlags flags)
 
     int iconSize = 16;
 
-    mLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-    mLayout->setContentsMargins(0, 0, 0, 0);
-    mLayout->setSpacing(3);
-    mLayout->addStretch();
+    auto *layout = new QBoxLayout(QBoxLayout::LeftToRight);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(3);
+    layout->addStretch();
 
     for (int idx = 0; idx < mStars.size(); idx++) {
         mStars[idx]->setFixedSize(QSize(iconSize, iconSize));
-        mLayout->addWidget(mStars[idx]);
+        layout->addWidget(mStars[idx]);
     }
 
-    setLayout(mLayout);
+    setLayout(layout);
+}
+
+void DkRatingLabel::updateRating()
+{
+    for (int idx = 0; idx < mStars.size(); idx++)
+        mStars[idx]->setChecked(idx < mRating);
 }
 
 void DkRatingLabel::init()
@@ -989,28 +995,38 @@ void DkRatingLabel::init()
     QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg", QSize(), DkSettingsManager::param().display().hudFgdColor);
     QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg", QSize(), DkSettingsManager::param().display().hudFgdColor);
 
-    mStars.resize(5);
+    DkActionManager &am = DkActionManager::instance();
 
-    // TODO: make this into a for loop?
-    mStars[rating_1] = new DkButton(starWhite, starDark, tr("one star"), this);
-    mStars[rating_1]->setCheckable(true);
-    connect(mStars[rating_1], &DkButton::released, this, &DkRatingLabel::rating1);
+    const struct {
+        DkActionManager::HiddenActions action;
+        QString toolTip;
+    } stars[] = {
+        {DkActionManager::sc_star_rating_1, tr("one star")},
+        {DkActionManager::sc_star_rating_2, tr("two stars")},
+        {DkActionManager::sc_star_rating_3, tr("three star")},
+        {DkActionManager::sc_star_rating_4, tr("four stars")},
+        {DkActionManager::sc_star_rating_5, tr("five stars")},
+    };
 
-    mStars[rating_2] = new DkButton(starWhite, starDark, tr("two stars"), this);
-    mStars[rating_2]->setCheckable(true);
-    connect(mStars[rating_2], &DkButton::released, this, &DkRatingLabel::rating2);
+    int rating = 0;
+    for (auto &star : stars) {
+        auto *button = new DkButton(starWhite, starDark, star.toolTip, this);
+        button->setCheckable(true);
 
-    mStars[rating_3] = new DkButton(starWhite, starDark, tr("three star"), this);
-    mStars[rating_3]->setCheckable(true);
-    connect(mStars[rating_3], &DkButton::released, this, &DkRatingLabel::rating3);
+        rating++;
+        auto changeFunc = [this, rating] {
+            changeRating(rating);
+        };
 
-    mStars[rating_4] = new DkButton(starWhite, starDark, tr("four star"), this);
-    mStars[rating_4]->setCheckable(true);
-    connect(mStars[rating_4], &DkButton::released, this, &DkRatingLabel::rating4);
+        connect(button, &DkButton::released, this, changeFunc);
+        connect(am.action(star.action), &QAction::triggered, this, changeFunc);
 
-    mStars[rating_5] = new DkButton(starWhite, starDark, tr("five star"), this);
-    mStars[rating_5]->setCheckable(true);
-    connect(mStars[rating_5], &DkButton::released, this, &DkRatingLabel::rating5);
+        mStars.append(button);
+    }
+
+    connect(am.action(DkActionManager::sc_star_rating_0), &QAction::triggered, this, [this] {
+        changeRating(0);
+    });
 }
 
 // title info + star label -------------------------------------------------------
