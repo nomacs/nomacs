@@ -108,17 +108,7 @@ class DkRatingLabel : public DkWidget
     Q_OBJECT
 
 public:
-    enum {
-        rating_1,
-        rating_2,
-        rating_3,
-        rating_4,
-        rating_5,
-        rating_0, // no image for that one
-    };
-
     DkRatingLabel(int rating = 0, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkRatingLabel(){};
 
     void setRating(int rating)
     {
@@ -126,7 +116,7 @@ public:
         updateRating();
     };
 
-    virtual void changeRating(int newRating)
+    void changeRating(int newRating)
     {
         mRating = newRating;
         updateRating();
@@ -139,52 +129,14 @@ public:
     };
 
 signals:
-    void newRatingSignal(int rating = 0);
-
-public slots:
-    void rating0()
-    {
-        changeRating(0);
-    };
-
-    void rating1()
-    {
-        changeRating(1);
-    };
-
-    void rating2()
-    {
-        changeRating(2);
-    };
-
-    void rating3()
-    {
-        changeRating(3);
-    };
-
-    void rating4()
-    {
-        changeRating(4);
-    };
-
-    void rating5()
-    {
-        changeRating(5);
-    };
+    void newRatingSignal(int rating);
 
 protected:
     QVector<DkButton *> mStars;
-    QBoxLayout *mLayout = 0;
     int mRating = 0;
 
-    void updateRating()
-    {
-        for (int idx = 0; idx < mStars.size(); idx++) {
-            mStars[idx]->setChecked(idx < mRating);
-        }
-    };
-
-    virtual void init();
+    void updateRating();
+    void init();
 };
 
 class DkFileInfoLabel : public DkFadeLabel
