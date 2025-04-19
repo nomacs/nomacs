@@ -201,15 +201,12 @@ class DkThumbLabel : public QGraphicsObject
     Q_OBJECT
 
 public:
-    DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGraphicsItem *parent = 0);
+    DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGraphicsItem *parent = nullptr);
     ~DkThumbLabel();
 
-    void setThumb();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void updateSize();
-    void setVisible(bool visible);
-    QPixmap pixmap() const;
     void cancelLoading();
     QString filePath() const;
     QImage image() const;
@@ -227,23 +224,22 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
-    QGraphicsPixmapItem mIcon;
     QGraphicsTextItem mText;
-    bool mFetchingThumb = false;
-    QPen mNoImagePen;
-    QBrush mNoImageBrush;
-    QPen mSelectPen;
-    QBrush mSelectBrush;
-    bool mIsHovered = false;
-    QPointF mLastMove;
     QString mFilePath;
     QImage mThumbImage;
-    bool mThumbNotExist{};
-    bool mThumbFromExif{};
-    DkThumbLoader *mThumbLoader{};
+    QGraphicsPixmapItem mIcon;
+    QPen mSelectPen;
+    QBrush mSelectBrush;
+    DkThumbLoader *mThumbLoader = nullptr;
+    bool mThumbNotExist = false;
+    bool mThumbFromExif = false;
+    bool mFetchingThumb = false;
+    bool mIsHovered = false;
 
 private:
     void updateTooltip();
+    static constexpr QColor sNoImagePen = QColor(150, 150, 150);
+    static constexpr QColor sNoImageBrush = QColor(100, 100, 100, 50);
 };
 
 class DllCoreExport DkThumbScene : public QGraphicsScene

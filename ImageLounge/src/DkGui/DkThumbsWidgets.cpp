@@ -856,10 +856,13 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGra
     , mFilePath{path}
 
 {
-    mFetchingThumb = false;
-    mIsHovered = false;
+    updateTooltip();
 
-    setThumb();
+    QColor col = DkSettingsManager::param().display().highlightColor;
+    col.setAlpha(90);
+    mSelectBrush = col;
+    mSelectPen.setColor(DkSettingsManager::param().display().highlightColor);
+
     setFlag(ItemIsSelectable, true);
 
     setAcceptHoverEvents(true);
@@ -905,25 +908,6 @@ void DkThumbLabel::updateTooltip()
     // clang-format on
 
     setToolTip(str);
-}
-
-void DkThumbLabel::setThumb()
-{
-    updateTooltip();
-
-    // style dummy
-    mNoImagePen.setColor(QColor(150, 150, 150));
-    mNoImageBrush = QColor(100, 100, 100, 50);
-
-    QColor col = DkSettingsManager::param().display().highlightColor;
-    col.setAlpha(90);
-    mSelectBrush = col;
-    mSelectPen.setColor(DkSettingsManager::param().display().highlightColor);
-}
-
-QPixmap DkThumbLabel::pixmap() const
-{
-    return mIcon.pixmap();
 }
 
 void DkThumbLabel::cancelLoading()
@@ -1027,12 +1011,6 @@ void DkThumbLabel::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
     update();
 }
 
-void DkThumbLabel::setVisible(bool visible)
-{
-    mIcon.setVisible(visible);
-    mText.setVisible(visible);
-}
-
 void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     if (!mFetchingThumb && mThumbImage.isNull() && !mThumbNotExist) {
@@ -1041,13 +1019,13 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     }
 
     if (mIcon.pixmap().isNull() && mThumbNotExist) {
-        painter->setPen(mNoImagePen);
-        painter->setBrush(mNoImageBrush);
+        painter->setPen(sNoImagePen);
+        painter->setBrush(sNoImageBrush);
         painter->drawRect(boundingRect());
     } else if (mIcon.pixmap().isNull()) {
         QColor c = DkSettingsManager::param().display().highlightColor;
         c.setAlpha(30);
-        painter->setPen(mNoImagePen);
+        painter->setPen(sNoImagePen);
         painter->setBrush(c);
 
         QRectF r = boundingRect();
@@ -1092,7 +1070,7 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     // render hovered
     if (mIsHovered) {
         painter->setBrush(QColor(255, 255, 255, 60));
-        painter->setPen(mNoImagePen);
+        painter->setPen(sNoImagePen);
         // painter->setPen(Qt::NoPen);
         painter->drawRect(boundingRect());
     }
