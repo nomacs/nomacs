@@ -235,6 +235,11 @@ DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const 
     return {DkImage::createThumb(res->thumb), filePath, true, res->fromExif};
 }
 
+DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const QString &filePath, const QImage &img)
+{
+    return {DkImage::createThumb(img), filePath, true, false};
+}
+
 void DkThumbLoader::requestThumbnail(const QString &filePath)
 {
     if (mIdleWatchers.size() == 0) {
@@ -246,11 +251,9 @@ void DkThumbLoader::requestThumbnail(const QString &filePath)
         return;
     }
 
-    if (mIdleWatchers.size() > 0) {
-        auto *w = mIdleWatchers.back();
-        mIdleWatchers.pop_back();
-        w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
-    }
+    auto *w = mIdleWatchers.back();
+    mIdleWatchers.pop_back();
+    w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
 }
 
 void DkThumbLoader::cancelThumbnailRequest(const QString &filePath)
@@ -264,7 +267,16 @@ void DkThumbLoader::cancelThumbnailRequest(const QString &filePath)
 
 void DkThumbLoader::dispatchFullImage(const QString &filePath, const QImage &img)
 {
-    emit thumbnailLoaded(filePath, img, false);
+    if (mIdleWatchers.size() == 0) {
+        // Full image takes priority, so we can skip the pending requests
+        mCounts.remove(filePath);
+        mFullImageQueue.push({img, filePath, true, false});
+        return;
+    }
+
+    auto *w = mIdleWatchers.back();
+    mIdleWatchers.pop_back();
+    w->setFuture(QtConcurrent::run(scaleFullThumbnail, filePath, img));
 }
 
 void DkThumbLoader::onThumbnailLoadFinished()
@@ -286,6 +298,13 @@ void DkThumbLoader::onThumbnailLoadFinished()
 
 void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w)
 {
+    if (mFullImageQueue.size() > 0) {
+        const LoadThumbnailResultLocal &item = mFullImageQueue.front();
+        w->setFuture(QtConcurrent::run(scaleFullThumbnail, item.filePath, item.thumb));
+        mFullImageQueue.pop();
+        return;
+    }
+
     while (mQueue.size() > 0) {
         const QString filePath = mQueue.front();
         mQueue.pop();

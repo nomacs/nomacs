@@ -112,6 +112,7 @@ class DkThumbLoader : public QObject
     std::vector<QFutureWatcher<LoadThumbnailResultLocal>> mWatchers{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal> *> mIdleWatchers{};
     std::queue<QString> mQueue{};
+    std::queue<LoadThumbnailResultLocal> mFullImageQueue{};
     QHash<QString, int> mCounts{};
 
 public:
@@ -131,6 +132,7 @@ signals:
 private:
     void onThumbnailLoadFinished();
     static LoadThumbnailResultLocal loadThumbnailLocal(const QString &filePath);
+    static LoadThumbnailResultLocal scaleFullThumbnail(const QString &filePath, const QImage &img);
     void handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w);
 };
 }
