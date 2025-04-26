@@ -367,9 +367,9 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         // only fetch thumbs if we are not moving too fast...
         if (!existsInTable) {
-            mThumbLoader->requestThumbnail(mFilePaths[idx]);
             mThumbs[mFilePaths[idx]] = {};
             mThumbs[mFilePaths[idx]].loading = true;
+            mThumbLoader->requestThumbnail(mFilePaths[idx]);
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())

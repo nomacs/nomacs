@@ -34,6 +34,7 @@
 #include <QSharedPointer>
 #pragma warning(pop) // no warnings from includes - end
 #include "DkMetaData.h"
+#include <QCache>
 #include <QThread>
 #include <optional>
 
@@ -109,6 +110,8 @@ class DkThumbLoader : public QObject
         bool valid{};
         bool fromExif{};
     };
+
+    QCache<QString, LoadThumbnailResultLocal> mThumbnailCache{100000000}; // 100 MB
     std::vector<QFutureWatcher<LoadThumbnailResultLocal>> mWatchers{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal> *> mIdleWatchers{};
     std::queue<QString> mQueue{};

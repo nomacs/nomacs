@@ -242,6 +242,17 @@ DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const 
 
 void DkThumbLoader::requestThumbnail(const QString &filePath)
 {
+    const auto *cached = mThumbnailCache.object(filePath);
+    if (cached) {
+        if (!cached->valid) {
+            emit thumbnailLoadFailed(cached->filePath);
+            return;
+        }
+
+        emit thumbnailLoaded(cached->filePath, cached->thumb, cached->fromExif);
+        return;
+    }
+
     if (mIdleWatchers.size() == 0) {
         const int count = mCounts.value(filePath, 0);
         if (count == 0) {
@@ -284,16 +295,21 @@ void DkThumbLoader::onThumbnailLoadFinished()
     const auto w = dynamic_cast<QFutureWatcher<LoadThumbnailResultLocal> *>(sender());
     Q_ASSERT(w != nullptr);
 
-    LoadThumbnailResultLocal res = w->result();
+    auto *res = new LoadThumbnailResultLocal{w->result()};
 
     handleFinishedWatcher(w);
 
-    if (!res.valid) {
-        emit thumbnailLoadFailed(res.filePath);
+    if (!res->valid) {
+        emit thumbnailLoadFailed(res->filePath);
+        mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size());
         return;
     }
 
-    emit thumbnailLoaded(res.filePath, res.thumb, res.fromExif);
+    emit thumbnailLoaded(res->filePath, res->thumb, res->fromExif);
+
+    // Add cache after finished using res because the cache takes ownership.
+    // Add 1 to avoid zero cost.
+    mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size() + res->thumb.sizeInBytes());
 }
 
 void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w)
