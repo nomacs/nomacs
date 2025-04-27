@@ -4055,7 +4055,7 @@ void DkDialogManager::openMosaicDialog() const
     if (response == QDialog::Accepted && !mosaicDialog->getImage().isNull()) {
         QImage editedImage = mosaicDialog->getImage();
 
-        QSharedPointer<DkImageContainerT> imgC(new DkImageContainerT(""));
+        QSharedPointer<DkImageContainerT> imgC(new DkImageContainerT());
         imgC->setImage(mosaicDialog->getImage(), tr("Mosaic"));
 
         mCentralWidget->addTab(imgC);

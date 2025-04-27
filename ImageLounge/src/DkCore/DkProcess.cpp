@@ -813,7 +813,7 @@ bool DkBatchProcess::process()
 {
     mLogStrings.append(QObject::tr("processing %1").arg(mSaveInfo.inputFilePath()));
 
-    QSharedPointer<DkImageContainer> imgC(new DkImageContainer(mSaveInfo.inputFilePath()));
+    QSharedPointer<DkImageContainer> imgC(new DkImageContainer(QFileInfo(mSaveInfo.inputFilePath())));
 
     if (!imgC->loadImage() || imgC->image().isNull()) {
         mLogStrings.append(QObject::tr("Error while loading..."));
