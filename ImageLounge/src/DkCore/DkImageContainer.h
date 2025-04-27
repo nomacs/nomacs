@@ -110,7 +110,6 @@ public:
     QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath);
     bool loadImage();
     void setImage(const QImage &img, const QString &editName);
-    void setImage(const QImage &img, const QString &editName, const QString &filePath);
     void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName);
     void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString &editName);
     void setMetaData(const QString &editName);
