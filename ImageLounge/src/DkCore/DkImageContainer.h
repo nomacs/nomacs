@@ -206,11 +206,6 @@ protected slots:
 protected:
     void fetchImage();
 
-    QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath);
-    QSharedPointer<DkBasicLoader> loadImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
-    QString saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-    void saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer);
-
     QFutureWatcher<QSharedPointer<QByteArray>> mBufferWatcher;
     QFutureWatcher<QSharedPointer<DkBasicLoader>> mImageWatcher;
     QFutureWatcher<QString> mSaveImageWatcher;

@@ -892,27 +892,6 @@ void DkImageContainerT::savingFinished()
     }
 }
 
-QSharedPointer<QByteArray> DkImageContainerT::loadFileToBuffer(const QString &filePath)
-{
-    return DkImageContainer::loadFileToBuffer(filePath);
-}
-
-QSharedPointer<DkBasicLoader>
-DkImageContainerT::loadImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer)
-{
-    return DkImageContainer::loadImageIntern(filePath, loader, fileBuffer);
-}
-
-QString DkImageContainerT::saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression)
-{
-    return DkImageContainer::saveImageIntern(filePath, loader, saveImg, compression);
-}
-
-void DkImageContainerT::saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer)
-{
-    return DkImageContainer::saveMetaDataIntern(filePath, loader, fileBuffer);
-}
-
 QSharedPointer<DkBasicLoader> DkImageContainerT::getLoader()
 {
     if (!mLoader) {
