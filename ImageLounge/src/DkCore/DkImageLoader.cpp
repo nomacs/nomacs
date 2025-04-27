@@ -1991,22 +1991,21 @@ void DkImageLoader::setDir(const QString &dir)
 }
 
 /**
+ * Sets the current image to a new image buffer (e.g. pasted image)
+ * @param img the loader's new image.
+ * @param editName the name in the edit history
+ **/
+QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage &img, const QString &editName)
+{
+    QSharedPointer<DkImageContainerT> newImg(new DkImageContainerT(""));
+    newImg->setImage(img, editName);
+    return setImage(newImg);
+}
+
+/**
  * Sets the current image to a new image container.
  * @param img the loader's new image.
  **/
-QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage &img, const QString &editName, const QString &editFilePath)
-{
-    qDebug() << "edited file: " << editFilePath;
-
-    QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(editFilePath);
-    newImg->setImage(img, editName, editFilePath);
-
-    setCurrentImage(newImg);
-    emit imageUpdatedSignal(mCurrentImage);
-
-    return newImg;
-}
-
 QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QSharedPointer<DkImageContainerT> img)
 {
     setCurrentImage(img);
