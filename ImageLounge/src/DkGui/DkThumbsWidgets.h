@@ -28,6 +28,7 @@
 #pragma once
 
 #include "DkQt5Compat.h"
+#include <optional>
 #include <vector>
 
 #pragma warning(push, 0) // no warnings from includes - begin
@@ -44,6 +45,7 @@
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 #include "DkThumbs.h"
+#include <QPixmapCache>
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -201,43 +203,43 @@ class DkThumbLabel : public QGraphicsObject
     Q_OBJECT
 
 public:
-    DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGraphicsItem *parent = nullptr);
+    DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, bool fillSquare, QGraphicsItem *parent = nullptr);
     ~DkThumbLabel();
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
-    void updateSize();
     void cancelLoading();
     QString filePath() const;
     QImage image() const;
-
-public slots:
-    void updateLabel();
+    void setFillSquare(bool value);
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;
     void showFileSignal(const QString &filePath = QString()) const;
 
-protected:
+private:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    void updateTooltip(const QImage &thumb, bool fromExif);
+    void generatePixmap(const QImage &thumb);
+    void onThumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
+    void onThumbnailLoadFailed(const QString &filePath);
+    std::optional<QPixmap> pixmap() const;
 
     QGraphicsTextItem mText;
     QString mFilePath;
-    QImage mThumbImage;
-    QGraphicsPixmapItem mIcon;
+    QString mTooltip;
+    std::optional<QPixmapCache::Key> mPixmapKey = std::nullopt;
     QPen mSelectPen;
     QBrush mSelectBrush;
     DkThumbLoader *mThumbLoader = nullptr;
     bool mThumbNotExist = false;
-    bool mThumbFromExif = false;
     bool mFetchingThumb = false;
     bool mIsHovered = false;
+    bool mFillSquare = false;
 
-private:
-    void updateTooltip();
     static constexpr QColor sNoImagePen = QColor(150, 150, 150);
     static constexpr QColor sNoImageBrush = QColor(100, 100, 100, 50);
 };
