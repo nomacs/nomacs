@@ -107,7 +107,6 @@ public:
     QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath);
     bool loadImage();
     void setImage(const QImage &img, const QString &editName);
-    void setImage(const QImage &img, const QString &editName, const QString &filePath);
     bool saveImage(const QString &filePath, const QImage saveImg, int compression = -1);
     bool saveImage(const QString &filePath, int compression = -1);
     void saveMetaData();
