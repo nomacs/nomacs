@@ -68,7 +68,7 @@ public:
         loaded,
     };
 
-    DkImageContainer(const QString &filePath);
+    DkImageContainer(const QFileInfo &fileInfo);
     virtual ~DkImageContainer();
     bool operator==(const DkImageContainer &ric) const;
 
@@ -135,7 +135,7 @@ protected:
     void
     saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
     QString saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-    void setFilePath(const QString &filePath);
+    void setFile(const QFileInfo &fileInfo);
     void init();
 
     QSharedPointer<QByteArray> mFileBuffer;
@@ -155,9 +155,6 @@ protected:
 #ifdef Q_OS_WIN
     std::wstring mFileNameStr; // speeds up sorting of filenames on windows
 #endif
-
-private:
-    QString mFilePath;
 };
 
 class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
@@ -165,7 +162,7 @@ class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
     Q_OBJECT
 
 public:
-    DkImageContainerT(const QString &filePath);
+    DkImageContainerT(const QFileInfo &fileInfo = {});
     virtual ~DkImageContainerT();
 
     void fetchFile();

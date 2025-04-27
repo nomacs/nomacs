@@ -1634,7 +1634,7 @@ void DkViewPort::setEditedImage(const QImage &newImg, const QString &editName)
     QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 
     if (!imgC)
-        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(""));
+        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT());
 
     if (!imgC)
         imgC = QSharedPointer<DkImageContainerT>();
