@@ -65,9 +65,9 @@ QString DkZipContainer::mZipMarker = "dIrChAr";
  * This class is the basic image management class.
  * @param fileInfo the file of the given
  **/
-DkImageContainer::DkImageContainer(const QString &filePath)
+DkImageContainer::DkImageContainer(const QFileInfo &fileInfo)
 {
-    setFilePath(filePath);
+    setFile(fileInfo);
     init();
 }
 
@@ -87,7 +87,7 @@ void DkImageContainer::init()
 
 bool DkImageContainer::operator==(const DkImageContainer &ric) const
 {
-    return mFilePath == ric.filePath();
+    return mFileInfo == ric.fileInfo();
 }
 
 void DkImageContainer::clear()
@@ -131,7 +131,7 @@ QFileInfo DkImageContainer::fileInfo() const
 
 QString DkImageContainer::filePath() const
 {
-    return mFilePath;
+    return mFileInfo.absoluteFilePath();
 }
 
 QString DkImageContainer::dirPath() const
@@ -169,7 +169,7 @@ bool DkImageContainer::exists()
         return true;
 #endif
 
-    return QFileInfo(mFilePath).exists();
+    return mFileInfo.exists();
 }
 
 QString DkImageContainer::getTitleAttribute() const
@@ -208,9 +208,9 @@ QSharedPointer<DkThumbNailT> DkImageContainer::getThumb()
         if (isFromZip())
             mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(getZipData()->getEncodedFilePath()));
         else
-            mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
+            mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath()));
 #else
-        mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
+        mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath()));
 #endif
     }
 
@@ -222,7 +222,7 @@ QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedP
     if (!imgC)
         return QSharedPointer<DkImageContainerT>();
 
-    QSharedPointer<DkImageContainerT> imgCT = QSharedPointer<DkImageContainerT>(new DkImageContainerT(imgC->filePath()));
+    QSharedPointer<DkImageContainerT> imgCT = QSharedPointer<DkImageContainerT>(new DkImageContainerT(imgC->fileInfo()));
 
     imgCT->mLoader = imgC->getLoader();
     imgCT->mEdited = imgC->isEdited();
@@ -256,7 +256,7 @@ float DkImageContainer::getMemoryUsage() const
 
 float DkImageContainer::getFileSize() const
 {
-    return QFileInfo(mFilePath).size() / (1024.0f * 1024.0f);
+    return mFileInfo.size() / (1024.0f * 1024.0f);
 }
 
 DkRotatingRect DkImageContainer::cropRect()
@@ -370,10 +370,9 @@ void DkImageContainer::setMetaData(const QString &editName)
     mEdited = true;
 }
 
-void DkImageContainer::setFilePath(const QString &filePath)
+void DkImageContainer::setFile(const QFileInfo &fileInfo)
 {
-    mFilePath = filePath;
-    mFileInfo = QFileInfo(filePath);
+    mFileInfo = fileInfo;
 
 #ifdef Q_OS_WIN
     mFileNameStr = DkUtils::qStringToStdWString(fileName());
@@ -407,13 +406,13 @@ int DkImageContainer::getLoadState() const
 
 bool DkImageContainer::loadImage()
 {
-    if (!QFileInfo(mFileInfo).exists())
+    if (!mFileInfo.exists())
         return false;
 
     if (getFileBuffer()->isEmpty())
-        mFileBuffer = loadFileToBuffer(mFilePath);
+        mFileBuffer = loadFileToBuffer(filePath());
 
-    mLoader = loadImageIntern(mFilePath, getLoader(), mFileBuffer);
+    mLoader = loadImageIntern(filePath(), getLoader(), mFileBuffer);
 
     return mLoader->hasImage();
 }
@@ -480,7 +479,7 @@ void DkImageContainer::saveMetaData()
     if (!mLoader)
         return;
 
-    saveMetaDataIntern(mFilePath, mLoader, mFileBuffer);
+    saveMetaDataIntern(filePath(), mLoader, mFileBuffer);
 }
 
 void DkImageContainer::saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer)
@@ -532,8 +531,8 @@ std::wstring DkImageContainer::getFileNameWStr() const
 #endif
 
 // DkImageContainerT --------------------------------------------------------------------
-DkImageContainerT::DkImageContainerT(const QString &filePath)
-    : DkImageContainer(filePath)
+DkImageContainerT::DkImageContainerT(const QFileInfo &fileInfo)
+    : DkImageContainer(fileInfo)
 {
     // our file watcher
     mFileUpdateTimer.setSingleShot(false);
@@ -832,9 +831,9 @@ void DkImageContainerT::fileDownloaded(const QString &filePath)
     mDownloaded = true;
 
     if (filePath.isEmpty())
-        setFilePath(mFileDownloader->getUrl().toString().split("/").last());
+        setFile(QFileInfo(mFileDownloader->getUrl().toString().split("/").last()));
     else
-        setFilePath(filePath);
+        setFile(QFileInfo(filePath));
 
     fetchImage();
 }
@@ -932,7 +931,7 @@ void DkImageContainerT::savingFinished()
             mFileBuffer->clear(); // do a complete clear?
 
         if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty() || dirPath() == sInfo.absolutePath()) {
-            setFilePath(savePath);
+            setFile(QFileInfo(savePath));
 
             emit fileSavedSignal(savePath, true, false);
         } else {
