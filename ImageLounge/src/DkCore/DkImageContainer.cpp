@@ -323,15 +323,6 @@ void DkImageContainer::setImage(const QImage &img, const QString &editName)
     mEdited = true;
 }
 
-void DkImageContainer::setImage(const QImage &img, const QString &editName, const QString &filePath)
-{
-    scaledImages.clear(); // invalid now
-
-    setFilePath(mFilePath);
-    getLoader()->setImage(img, editName, filePath); // set new image
-    mEdited = true;
-}
-
 void DkImageContainer::setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName)
 {
     // Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
