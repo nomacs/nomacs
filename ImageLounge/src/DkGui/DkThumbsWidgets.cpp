@@ -41,6 +41,9 @@
 
 #include "DkBasicLoader.h"
 #include "DkDialog.h"
+#include <optional>
+#include <qpixmap.h>
+#include <qpixmapcache.h>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
@@ -849,62 +852,82 @@ void DkFilePreview::setVisible(bool visible, bool saveSettings)
 }
 
 // DkThumbLabel --------------------------------------------------------------------
-DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, QGraphicsItem *parent)
+DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, bool fillSquare, QGraphicsItem *parent)
     : QGraphicsObject(parent)
     , mText(this)
     , mThumbLoader{thumbLoader}
     , mFilePath{path}
+    , mFillSquare{fillSquare}
 
 {
-    updateTooltip();
+    const QFileInfo fileInfo(mFilePath);
+    // clang-format off
+    mTooltip =
+        QObject::tr("Name: ") % fileInfo.fileName() % "\n" %
+        QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size()) % "\n" %
+        QObject::tr("Created: ") % fileInfo.birthTime().toString();
+    // clang-format on
+    setToolTip(mTooltip);
 
     QColor col = DkSettingsManager::param().display().highlightColor;
     col.setAlpha(90);
     mSelectBrush = col;
     mSelectPen.setColor(DkSettingsManager::param().display().highlightColor);
 
-    setFlag(ItemIsSelectable, true);
+    QFont font;
+    font.setBold(false);
+    font.setPointSize(9); // two sizes smaller than default font see:stylesheet.css
+    mText.setFont(font);
+    mText.setPlainText(fileInfo.fileName());
+    mText.setDefaultTextColor(QColor(255, 255, 255));
+    mText.hide();
+
+    // Not loaded -> disable selection
+    setFlag(ItemIsSelectable, false);
 
     setAcceptHoverEvents(true);
-    connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, [this](const QString &filePath, const QImage &thumb, const bool fromExif) {
-        if (filePath != mFilePath) {
-            return;
-        }
+    connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, &DkThumbLabel::onThumbnailLoaded);
+    connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, &DkThumbLabel::onThumbnailLoadFailed);
+}
 
-        mThumbImage = DkImage::createThumb(thumb);
-        mThumbFromExif = fromExif;
-        mFetchingThumb = false;
-        updateLabel();
-        update();
-    });
-    connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &filePath) {
-        if (filePath != mFilePath) {
-            return;
-        }
-        mThumbNotExist = true;
-        mFetchingThumb = false;
-        update();
-    });
+void DkThumbLabel::onThumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif)
+{
+    if (filePath != mFilePath) {
+        return;
+    }
+
+    mFetchingThumb = false;
+    // update label
+    mText.setPos(0, DkSettingsManager::param().effectiveThumbPreviewSize());
+
+    prepareGeometryChange();
+    generatePixmap(thumb);
+    updateTooltip(thumb, fromExif);
+    update();
+    setFlag(ItemIsSelectable, true);
+}
+
+void DkThumbLabel::onThumbnailLoadFailed(const QString &filePath)
+{
+    if (filePath != mFilePath) {
+        return;
+    }
+    mThumbNotExist = true;
+    mFetchingThumb = false;
+    update();
 }
 
 DkThumbLabel::~DkThumbLabel()
 {
 }
 
-void DkThumbLabel::updateTooltip()
+void DkThumbLabel::updateTooltip(const QImage &thumb, bool fromExif)
 {
-    const QFileInfo fileInfo(mFilePath);
     // clang-format off
-    QString str =
-        QObject::tr("Name: ") % fileInfo.fileName() % "\n" %
-        QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size()) % "\n" %
-        QObject::tr("Created: ") % fileInfo.birthTime().toString();
-    if (!mThumbImage.isNull()) {
-        str = str % "\n" %
+    const QString str = mTooltip % "\n" %
             QObject::tr("Thumb: ") %
-            QString::number(mThumbImage.size().width()) % "x" % QString::number(mThumbImage.size().height()) % " " %
-            (mThumbFromExif ? QObject::tr("Embedded ") : "");
-    }
+            QString::number(thumb.size().width()) % "x" % QString::number(thumb.size().height()) % " " %
+            (fromExif ? QObject::tr("Embedded ") : "");
     // clang-format on
 
     setToolTip(str);
@@ -933,63 +956,35 @@ QPainterPath DkThumbLabel::shape() const
     return path;
 }
 
-void DkThumbLabel::updateLabel()
+void DkThumbLabel::generatePixmap(const QImage &thumb)
 {
-    updateTooltip();
-    QPixmap pm;
+    QRectF br = boundingRect();
+    QSizeF imgSize = thumb.size();
 
-    if (!mThumbImage.isNull()) {
-        pm = QPixmap::fromImage(mThumbImage);
+    QRectF srcRect;
+    QRectF targetRect;
 
-        if (DkSettingsManager::param().display().displaySquaredThumbs) {
-            pm = DkImage::makeSquare(pm);
-        }
-    } else
-        qDebug() << "update called on empty thumb label!";
-
-    if (!pm.isNull()) {
-        mIcon.setTransformationMode(Qt::SmoothTransformation);
-        mIcon.setPixmap(pm);
-        mIcon.setFlag(ItemIsSelectable, true);
-    }
-    if (pm.isNull())
-        setFlag(ItemIsSelectable, false); // if we cannot load it -> disable selection
-
-    // update label
-    mText.setPos(0, pm.height());
-    mText.setDefaultTextColor(QColor(255, 255, 255));
-
-    QFont font;
-    font.setBold(false);
-    font.setPointSize(9); // two sizes smaller than default font see:stylesheet.css
-    mText.setFont(font);
-    mText.setPlainText(QFileInfo(mFilePath).fileName());
-    mText.hide();
-
-    prepareGeometryChange();
-    updateSize();
-}
-
-void DkThumbLabel::updateSize()
-{
-    if (mIcon.pixmap().isNull())
-        return;
-
-    prepareGeometryChange();
-
-    // resize pixmap label
-    int maxSize = qMax(mIcon.pixmap().width(), mIcon.pixmap().height());
-    int ps = DkSettingsManager::param().effectiveThumbPreviewSize();
-
-    if ((float)ps / maxSize != mIcon.scale()) {
-        mIcon.setScale(1.0f);
-        mIcon.setPos(0, 0);
-
-        mIcon.setScale((float)ps / maxSize);
-        mIcon.moveBy((ps - mIcon.pixmap().width() * mIcon.scale()) * 0.5f, (ps - mIcon.pixmap().height() * mIcon.scale()) * 0.5);
+    if (mFillSquare) {
+        srcRect = QRectF(QPoint(), br.size().scaled(imgSize, Qt::KeepAspectRatio));
+        targetRect = br;
+        srcRect.moveCenter(thumb.rect().center());
+    } else {
+        srcRect = thumb.rect();
+        targetRect = QRectF(QPoint(), imgSize.scaled(br.size(), Qt::KeepAspectRatio));
+        targetRect.moveCenter(br.center());
     }
 
-    // update();
+    const int w = DkSettingsManager::param().effectiveThumbPreviewSize();
+    QPixmap pm(w, w);
+    pm.fill(Qt::transparent);
+    QPainter painter(&pm);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+    painter.drawImage(targetRect, thumb, srcRect);
+
+    if (mPixmapKey) {
+        QPixmapCache::remove(mPixmapKey.value());
+    }
+    mPixmapKey = QPixmapCache::insert(pm);
 }
 
 void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -1011,18 +1006,38 @@ void DkThumbLabel::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
     update();
 }
 
+std::optional<QPixmap> DkThumbLabel::pixmap() const
+{
+    if (!mPixmapKey) {
+        return std::nullopt;
+    }
+    QPixmap pm;
+    bool found = QPixmapCache::find(mPixmapKey.value(), &pm);
+    if (!found) {
+        return std::nullopt;
+    }
+    return pm;
+}
+
 void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if (!mFetchingThumb && mThumbImage.isNull() && !mThumbNotExist) {
-        mThumbLoader->requestThumbnail(mFilePath);
+    std::optional<QPixmap> pm = pixmap();
+
+    if (!mFetchingThumb && (!pm || pm->size() != boundingRect().size()) && !mThumbNotExist) {
+        // setting fetching flag first, because requestThumbnail might return thumbnail immediately
+        // This avoids stucking infinitely in fetching thumb state
         mFetchingThumb = true;
+        mThumbLoader->requestThumbnail(mFilePath);
+
+        // It is possible we have pixmap now (from cache), check again.
+        pm = pixmap();
     }
 
-    if (mIcon.pixmap().isNull() && mThumbNotExist) {
+    if (mThumbNotExist) {
         painter->setPen(sNoImagePen);
         painter->setBrush(sNoImageBrush);
         painter->drawRect(boundingRect());
-    } else if (mIcon.pixmap().isNull()) {
+    } else if (!pm) {
         QColor c = DkSettingsManager::param().display().highlightColor;
         c.setAlpha(30);
         painter->setPen(sNoImagePen);
@@ -1030,41 +1045,31 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
         QRectF r = boundingRect();
         painter->drawRect(r);
+    } else {
+        painter->drawPixmap(boundingRect(), pm.value(), pm->rect());
     }
-
-    // this is the Qt idea of how to fix the dashed border:
-    // http://www.qtcentre.org/threads/23087-How-to-hide-the-dashed-frame-outside-the-QGraphicsItem
-    // I don't think it's beautiful...
-    QStyleOptionGraphicsItem noSelOption;
-    if (option) {
-        noSelOption = *option;
-        noSelOption.state &= ~QStyle::State_Selected;
-    }
-
-    // painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-
-    QTransform mt = painter->worldTransform();
-    QTransform it = mt;
-    it.translate(mIcon.pos().x(), mIcon.pos().y());
-    it.scale(mIcon.scale(), mIcon.scale());
-
-    painter->setTransform(it);
-    mIcon.paint(painter, &noSelOption, widget);
-    painter->setTransform(mt);
 
     // draw text
     if (boundingRect().width() > 50 && DkSettingsManager::param().display().showThumbLabel) {
-        QTransform tt = mt;
-        tt.translate(0, boundingRect().height() - mText.boundingRect().height());
+        // this is the Qt idea of how to fix the dashed border:
+        // http://www.qtcentre.org/threads/23087-How-to-hide-the-dashed-frame-outside-the-QGraphicsItem
+        // I don't think it's beautiful...
+        QStyleOptionGraphicsItem noSelOption;
+        if (option) {
+            noSelOption = *option;
+            noSelOption.state &= ~QStyle::State_Selected;
+        }
+        painter->save();
+
+        painter->translate(0, boundingRect().height() - mText.boundingRect().height());
 
         QRectF r = mText.boundingRect();
         r.setWidth(boundingRect().width());
         painter->setPen(Qt::NoPen);
-        painter->setWorldTransform(tt);
         painter->setBrush(DkSettingsManager::param().display().hudBgColor);
         painter->drawRect(r);
         mText.paint(painter, &noSelOption, widget);
-        painter->setWorldTransform(mt);
+        painter->restore();
     }
 
     // render hovered
@@ -1090,7 +1095,24 @@ QString DkThumbLabel::filePath() const
 
 QImage DkThumbLabel::image() const
 {
-    return mThumbImage;
+    const std::optional<QPixmap> pm = pixmap();
+    if (!pm) {
+        return {};
+    }
+    return pm->toImage();
+}
+
+void DkThumbLabel::setFillSquare(bool value)
+{
+    mFillSquare = value;
+    // Instead of requesting thumbnail right away,
+    // we reset the pixmap and call update,
+    // so only the visible ones get loaded.
+    if (mPixmapKey) {
+        QPixmapCache::remove(mPixmapKey.value());
+    }
+    mPixmapKey = std::nullopt;
+    update();
 }
 
 // DkThumbWidget --------------------------------------------------------------------
@@ -1146,8 +1168,6 @@ void DkThumbScene::updateLayout()
 
             DkThumbLabel *cLabel = mThumbLabels.at(tIdx);
             cLabel->setPos(cXOffset, cYOffset);
-            cLabel->updateSize();
-
             cXOffset += psz + mXOffset;
         }
 
@@ -1159,6 +1179,7 @@ void DkThumbScene::updateLayout()
         if (mThumbLabels.at(idx)->isSelected())
             mThumbLabels.at(idx)->ensureVisible();
     }
+    update();
 }
 
 void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
@@ -1197,7 +1218,7 @@ void DkThumbScene::updateThumbLabels()
     mThumbLabels.clear();
 
     for (const auto &filePath : mThumbs) {
-        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader, filePath);
+        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader, filePath, DkSettingsManager::param().display().displaySquaredThumbs);
         connect(thumb, &DkThumbLabel::loadFileSignal, this, &DkThumbScene::loadFileSignal);
         connect(thumb, &DkThumbLabel::showFileSignal, this, &DkThumbScene::showFile);
 
@@ -1345,12 +1366,9 @@ void DkThumbScene::toggleSquaredThumbs(bool squares)
 {
     DkSettingsManager::param().display().displaySquaredThumbs = squares;
 
-    for (const auto t : mThumbLabels)
-        t->updateLabel();
-
-    // well, that's not too beautiful
-    if (DkSettingsManager::param().display().displaySquaredThumbs)
-        updateLayout();
+    for (const auto t : mThumbLabels) {
+        t->setFillSquare(squares);
+    }
 }
 
 void DkThumbScene::increaseThumbs()
