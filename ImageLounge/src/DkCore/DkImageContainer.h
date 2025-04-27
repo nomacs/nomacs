@@ -68,7 +68,6 @@ public:
 
     DkImageContainer(const QFileInfo &fileInfo);
     virtual ~DkImageContainer();
-    bool operator==(const DkImageContainer &ric) const;
 
     QImage image();
     QImage pixmap();

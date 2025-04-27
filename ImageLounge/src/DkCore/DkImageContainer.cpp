@@ -81,11 +81,6 @@ void DkImageContainer::init()
         mLoadState = not_loaded;
 }
 
-bool DkImageContainer::operator==(const DkImageContainer &ric) const
-{
-    return mFileInfo == ric.fileInfo();
-}
-
 void DkImageContainer::clear()
 {
     if (mLoader)
