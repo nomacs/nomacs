@@ -354,7 +354,7 @@ void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
 
         // NOTE: we had this here: oIdx != -1 && QFileInfo(oldImages.at(oIdx)->filePath()).lastModified() == f.lastModified())
         // however, that did not detect file changes & slowed down the process - so I removed it...
-        mImages << ((oIdx != -1) ? oldImages.at(oIdx) : QSharedPointer<DkImageContainerT>(new DkImageContainerT(fp)));
+        mImages << ((oIdx != -1) ? oldImages.at(oIdx) : QSharedPointer<DkImageContainerT>(new DkImageContainerT(f)));
     }
     qInfo() << "[DkImageLoader]" << mImages.size() << "containers created in" << dt;
 
@@ -619,7 +619,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findOrCreateFile(const QString 
     QSharedPointer<DkImageContainerT> imgC = findFile(filePath);
 
     if (!imgC)
-        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath));
+        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(QFileInfo(filePath)));
 
     return imgC;
 }
@@ -1999,7 +1999,7 @@ void DkImageLoader::setDir(const QString &dir)
  **/
 QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage &img, const QString &editName)
 {
-    QSharedPointer<DkImageContainerT> newImg(new DkImageContainerT(""));
+    QSharedPointer<DkImageContainerT> newImg(new DkImageContainerT());
     newImg->setImage(img, editName);
     return setImage(newImg);
 }
