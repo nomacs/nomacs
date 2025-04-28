@@ -575,22 +575,23 @@ bool DkImageContainerT::loadImageThreaded(bool force)
 #endif
 
     // check file for updates
-    QFileInfo fileInfo = QFileInfo(filePath());
-    QDateTime modifiedBefore = fileInfo.lastModified();
-    fileInfo.refresh();
+    // without this, checkForFileUpdates() will see the modification and
+    // reload the image; all this does is prevent the old image from showing
+    // for a moment before that happens
+    QDateTime modifiedBefore = mFileInfo.lastModified();
+    mFileInfo.refresh();
 
-    if (force || fileInfo.lastModified() != modifiedBefore || getLoader()->isDirty()) {
-        qDebug() << "updating image...";
+    if (force || mFileInfo.lastModified() != modifiedBefore || getLoader()->isDirty()) {
         clear();
     }
 
     // null file?
-    if (fileInfo.fileName().isEmpty() || !fileInfo.exists()) {
+    if (mFileInfo.fileName().isEmpty() || !mFileInfo.exists()) {
         QString msg = tr("Sorry, the file: %1 does not exist... ").arg(fileName());
         emit showInfoSignal(msg);
         mLoadState = exists_not;
         return false;
-    } else if (!fileInfo.permission(QFile::ReadUser)) {
+    } else if (!mFileInfo.permission(QFile::ReadUser)) {
         QString msg = tr("Sorry, you are not allowed to read: %1").arg(fileName());
         emit showInfoSignal(msg);
         mLoadState = exists_not;
