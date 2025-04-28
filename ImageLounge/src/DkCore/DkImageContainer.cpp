@@ -384,13 +384,13 @@ bool DkImageContainer::hasImage() const
 
 bool DkImageContainer::hasMovie() const
 {
-    QString newSuffix = QFileInfo(filePath()).suffix();
+    QString newSuffix = mFileInfo.suffix();
     return newSuffix.contains(QRegularExpression("(apng|avif|gif|jxl|mng|webp)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkImageContainer::hasSvg() const
 {
-    QString newSuffix = QFileInfo(filePath()).suffix();
+    QString newSuffix = mFileInfo.suffix();
     return newSuffix.contains(QRegularExpression("(svg)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
@@ -419,9 +419,8 @@ bool DkImageContainer::saveImage(const QString &filePath, int compression /* = -
 
 bool DkImageContainer::saveImage(const QString &filePath, const QImage saveImg, int compression /* = -1 */)
 {
-    QFileInfo saveFile = QFileInfo(saveImageIntern(filePath, getLoader(), saveImg, compression));
+    QFileInfo saveFile(saveImageIntern(filePath, getLoader(), saveImg, compression));
 
-    saveFile.refresh();
     qDebug() << "save file: " << saveFile.absoluteFilePath();
 
     return saveFile.exists() && saveFile.isFile();
@@ -912,8 +911,7 @@ void DkImageContainerT::savingFinished()
 {
     QString savePath = mSaveImageWatcher.result();
 
-    QFileInfo sInfo = QFileInfo(savePath);
-    sInfo.refresh();
+    QFileInfo sInfo(savePath);
     qDebug() << "save file: " << savePath;
 
     if (!sInfo.exists() || !sInfo.isFile())
@@ -926,8 +924,7 @@ void DkImageContainerT::savingFinished()
             mFileBuffer->clear(); // do a complete clear?
 
         if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty() || dirPath() == sInfo.absolutePath()) {
-            setFile(QFileInfo(savePath));
-
+            setFile(sInfo);
             emit fileSavedSignal(savePath, true, false);
         } else {
             emit fileSavedSignal(savePath);
