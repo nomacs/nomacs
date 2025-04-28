@@ -2374,44 +2374,44 @@ void DkHistogram::mouseReleaseEvent(QMouseEvent *event)
 }
 
 // DkFileInfo --------------------------------------------------------------------
-DkFileInfo::DkFileInfo()
+DkFileInfoWrapper::DkFileInfoWrapper()
 {
     mFileExists = false;
     mUsed = false;
 }
 
-DkFileInfo::DkFileInfo(const QFileInfo &fileInfo)
+DkFileInfoWrapper::DkFileInfoWrapper(const QFileInfo &fileInfo)
 {
     mFileInfo = fileInfo;
 }
 
-bool DkFileInfo::exists() const
+bool DkFileInfoWrapper::exists() const
 {
     return mFileExists;
 }
 
-void DkFileInfo::setExists(bool fileExists)
+void DkFileInfoWrapper::setExists(bool fileExists)
 {
     mFileExists = fileExists;
 }
 
-bool DkFileInfo::inUse() const
+bool DkFileInfoWrapper::inUse() const
 {
     return mUsed;
 }
 
-void DkFileInfo::setInUse(bool inUse)
+void DkFileInfoWrapper::setInUse(bool inUse)
 {
     mUsed = inUse;
 }
 
-QString DkFileInfo::getFilePath() const
+QString DkFileInfoWrapper::getFilePath() const
 {
     return mFileInfo.absoluteFilePath();
 }
 
 // DkFileLabel --------------------------------------------------------------------
-DkFolderLabel::DkFolderLabel(const DkFileInfo &fileInfo, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+DkFolderLabel::DkFolderLabel(const DkFileInfoWrapper &fileInfo, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
 {
     // we don't use the file labels anymore
