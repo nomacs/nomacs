@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "DkFileInfo.h"
 #include "DkThumbs.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
@@ -68,7 +69,7 @@ public:
         loaded,
     };
 
-    DkImageContainer(const QFileInfo &fileInfo);
+    DkImageContainer(const DkFileInfo &fileInfo);
     virtual ~DkImageContainer();
 
     QImage image();
@@ -80,7 +81,7 @@ public:
     bool hasMovie() const;
 
     int getLoadState() const;
-    QFileInfo fileInfo() const;
+    DkFileInfo fileInfo() const;
     QString filePath() const;
     QString dirPath() const;
     QString fileName() const;
@@ -134,7 +135,7 @@ protected:
     void
     saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
     QString saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-    void setFile(const QFileInfo &fileInfo);
+    void setFile(const DkFileInfo &fileInfo);
     void init();
 
     QSharedPointer<QByteArray> mFileBuffer;
@@ -145,7 +146,7 @@ protected:
     bool mEdited = false;
     bool mSelected = false;
 
-    QFileInfo mFileInfo;
+    DkFileInfo mFileInfo;
     QVector<QImage> scaledImages;
 
 #ifdef WITH_QUAZIP
@@ -161,7 +162,7 @@ class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
     Q_OBJECT
 
 public:
-    DkImageContainerT(const QFileInfo &fileInfo = {});
+    DkImageContainerT(const DkFileInfo &fileInfo = {});
     virtual ~DkImageContainerT();
 
     void fetchFile();
