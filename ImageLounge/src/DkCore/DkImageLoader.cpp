@@ -233,8 +233,9 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     // folder changed signal was emitted
     if (mFolderUpdated && newDirPath == mCurrentDir) {
         mFolderUpdated = false;
-        QFileInfoList files = getFilteredFileInfoList(newDirPath,
-                                                      mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+        QFileInfoList files =
+            DkFileInfo::readDirectory(newDirPath,
+                                      mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
 
         // might get empty too (e.g. someone deletes all images)
         if (files.empty()) {
@@ -270,8 +271,8 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
         if (scanRecursive && DkSettingsManager::param().global().scanSubFolders)
             files = updateSubFolders(mCurrentDir);
         else
-            files = getFilteredFileInfoList(mCurrentDir,
-                                            mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+            files = DkFileInfo::readDirectory(mCurrentDir,
+                                              mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
 
         // ok new folder, this should speed-up loading
         mImages.clear();
@@ -1626,7 +1627,7 @@ QFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
     // find the first subfolder that has images
     for (int idx = 0; idx < mSubFolders.size(); idx++) {
         mCurrentDir = mSubFolders[idx];
-        files = getFilteredFileInfoList(mCurrentDir); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+        files = DkFileInfo::readDirectory(mCurrentDir); // this line takes seconds if you have lots of files and slow loading (e.g. network)
         if (!files.empty())
             break;
     }
@@ -1664,8 +1665,7 @@ int DkImageLoader::getSubFolderIdx(int fromIdx, bool forward) const
             return -1;
 
         QDir cDir = mSubFolders[checkIdx];
-        QFileInfoList cFiles =
-            getFilteredFileInfoList(cDir.absolutePath()); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+        QFileInfoList cFiles = DkFileInfo::readDirectory(cDir.absolutePath());
         if (!cFiles.empty()) {
             idx = checkIdx;
             break;
@@ -1749,135 +1749,6 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC)
     }
 
     qDebug() << "[Cacher] created in" << dt << "(" << mem + totalMem << "MB)";
-}
-
-/**
- * Returns the file list of the directory dir.
- * Note: this function might get slow if lots of files (> 10000) are in the
- * directory or if the directory is in the net.
- * Currently the file list is sorted according to the system specification.
- * @param dir the directory to load the file list from.
- * @return QStringList all filtered files of the current directory.
- **/
-QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QString folderKeywords) const
-{
-    DkTimer dt;
-
-    if (dirPath.isEmpty())
-        return QFileInfoList();
-
-#ifdef Q_OS_WIN
-
-    QString winPath = QDir::toNativeSeparators(dirPath) + "\\*.*";
-
-    const wchar_t *fname = reinterpret_cast<const wchar_t *>(winPath.utf16());
-
-    WIN32_FIND_DATAW findFileData;
-    HANDLE MyHandle = FindFirstFileW(fname, &findFileData);
-
-    std::vector<std::wstring> fileNameList;
-    std::wstring fileName;
-
-    if (MyHandle != INVALID_HANDLE_VALUE) {
-        do {
-            fileName = findFileData.cFileName;
-            fileNameList.push_back(fileName); // TODO: sort correct according to numbers
-        } while (FindNextFileW(MyHandle, &findFileData) != 0);
-    }
-
-    FindClose(MyHandle);
-
-    // remove the * in fileFilters
-    QStringList fileFiltersClean = DkSettingsManager::param().app().browseFilters;
-    for (QString &filter : fileFiltersClean)
-        filter.replace("*", "");
-
-    // qDebug() << "browse filters: " << DkSettingsManager::param().app().browseFilters;
-
-    QStringList fileList;
-    std::vector<std::wstring>::iterator lIter = fileNameList.begin();
-
-    // convert to QStringList
-    for (unsigned int idx = 0; idx < fileNameList.size(); idx++, lIter++) {
-        QString qFilename = DkUtils::stdWStringToQString(*lIter);
-
-        // believe it or not, but this is 10 times faster than QRegExp
-        // drawback: we also get files that contain *.jpg*
-        for (int i = 0; i < fileFiltersClean.size(); i++) {
-            if (qFilename.contains(fileFiltersClean[i], Qt::CaseInsensitive)) {
-                fileList.append(qFilename);
-                break;
-            }
-        }
-    }
-
-    qInfoClean() << "WinAPI, indexed (" << fileList.size() << ") files in: " << dt;
-#else
-
-    // true file list
-    QDir tmpDir(dirPath);
-    tmpDir.setSorting(QDir::LocaleAware);
-    QStringList fileList = tmpDir.entryList(DkSettingsManager::param().app().browseFilters);
-
-#endif
-
-    // append files with no suffix
-    QDir cDir(dirPath);
-    QStringList allFiles = cDir.entryList();
-    QStringList noSuffixFiles;
-
-    for (const QString &name : allFiles) {
-        if (!name.contains(".") && DkUtils::isValid(QFileInfo(dirPath, name))) {
-            fileList << name;
-        }
-    }
-
-    if (folderKeywords != "") {
-        QStringList filterList = fileList;
-        fileList = DkUtils::filterStringList(folderKeywords, filterList);
-    }
-
-    if (DkSettingsManager::param().resources().filterDuplicats) {
-        QString preferredExtension = DkSettingsManager::param().resources().preferredExtension;
-        preferredExtension = preferredExtension.replace("*.", "");
-        qDebug() << "preferred extension: " << preferredExtension;
-
-        QStringList resultList = fileList;
-        fileList.clear();
-
-        for (int idx = 0; idx < resultList.size(); idx++) {
-            QFileInfo cFName = QFileInfo(resultList.at(idx));
-
-            if (preferredExtension.compare(cFName.suffix(), Qt::CaseInsensitive) == 0) {
-                fileList.append(resultList.at(idx));
-                continue;
-            }
-
-            QString cFBase = cFName.baseName();
-            bool remove = false;
-
-            for (int cIdx = 0; cIdx < resultList.size(); cIdx++) {
-                QString ccBase = QFileInfo(resultList.at(cIdx)).baseName();
-
-                if (cIdx != idx && ccBase == cFBase && resultList.at(cIdx).contains(preferredExtension, Qt::CaseInsensitive)) {
-                    remove = true;
-                    break;
-                }
-            }
-
-            if (!remove)
-                fileList.append(resultList.at(idx));
-        }
-    }
-
-    // fileList = sort(fileList, dir);
-
-    QFileInfoList fileInfoList;
-
-    for (int idx = 0; idx < fileList.size(); idx++)
-        fileInfoList.append(QFileInfo(mCurrentDir, fileList.at(idx)));
-
-    return fileInfoList;
 }
 
 void DkImageLoader::sort()

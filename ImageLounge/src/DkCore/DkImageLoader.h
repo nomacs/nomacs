@@ -160,7 +160,6 @@ protected:
     void receiveUpdates(bool connectSignals);
 
     static QStringList getFoldersRecursive(const QString &dirPath);
-    QFileInfoList getFilteredFileInfoList(const QString &dirPath, QString folderKeywords = QString()) const;
 
     void clearPath();
 
