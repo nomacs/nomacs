@@ -23,6 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  *******************************************************************************************************/
 #include "DkFileInfo.h"
+#include "DkSettings.h"
+#include "DkTimer.h"
+#include "DkUtils.h"
 
 #ifdef WITH_QUAZIP
 #include "DkBasicLoader.h"
@@ -32,6 +35,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #else
 #include <quazip5/JlCompress.h>
 #endif
+#endif
+
+#include <QDir>
+
+#ifdef Q_OS_WIN
+#include <windows.h>
 #endif
 
 namespace nmc
@@ -192,4 +201,125 @@ const QFileInfo &DkFileInfo::containerInfo() const
         return d->mContainerInfo;
     return d->mFileInfo;
 }
+
+QFileInfoList DkFileInfo::readDirectory(const QString &dirPath, QString folderKeywords)
+{
+    DkTimer dt;
+
+    if (dirPath.isEmpty())
+        return QFileInfoList();
+
+#ifdef Q_OS_WIN
+
+    QString winPath = QDir::toNativeSeparators(dirPath) + "\\*.*";
+
+    const wchar_t *fname = reinterpret_cast<const wchar_t *>(winPath.utf16());
+
+    WIN32_FIND_DATAW findFileData;
+    HANDLE MyHandle = FindFirstFileW(fname, &findFileData);
+
+    std::vector<std::wstring> fileNameList;
+    std::wstring fileName;
+
+    if (MyHandle != INVALID_HANDLE_VALUE) {
+        do {
+            fileName = findFileData.cFileName;
+            fileNameList.push_back(fileName); // TODO: sort correct according to numbers
+        } while (FindNextFileW(MyHandle, &findFileData) != 0);
+    }
+
+    FindClose(MyHandle);
+
+    // remove the * in fileFilters
+    QStringList fileFiltersClean = DkSettingsManager::param().app().browseFilters;
+    for (QString &filter : fileFiltersClean)
+        filter.replace("*", "");
+
+    // qDebug() << "browse filters: " << DkSettingsManager::param().app().browseFilters;
+
+    QStringList fileList;
+    std::vector<std::wstring>::iterator lIter = fileNameList.begin();
+
+    // convert to QStringList
+    for (unsigned int idx = 0; idx < fileNameList.size(); idx++, lIter++) {
+        QString qFilename = DkUtils::stdWStringToQString(*lIter);
+
+        // believe it or not, but this is 10 times faster than QRegExp
+        // drawback: we also get files that contain *.jpg*
+        for (int i = 0; i < fileFiltersClean.size(); i++) {
+            if (qFilename.contains(fileFiltersClean[i], Qt::CaseInsensitive)) {
+                fileList.append(qFilename);
+                break;
+            }
+        }
+    }
+
+    qInfoClean() << "WinAPI, indexed (" << fileList.size() << ") files in: " << dt;
+#else
+    // true file list
+    QDir tmpDir(dirPath);
+    tmpDir.setSorting(QDir::LocaleAware);
+    QStringList fileList = tmpDir.entryList(DkSettingsManager::param().app().browseFilters);
+
+#endif
+
+    // append files with no suffix
+    QDir cDir(dirPath);
+    QStringList allFiles = cDir.entryList();
+    QStringList noSuffixFiles;
+
+    for (const QString &name : allFiles) {
+        if (!name.contains(".") && DkUtils::isValid(QFileInfo(dirPath, name))) {
+            fileList << name;
+        }
+    }
+
+    if (folderKeywords != "") {
+        QStringList filterList = fileList;
+        fileList = DkUtils::filterStringList(folderKeywords, filterList);
+    }
+
+    if (DkSettingsManager::param().resources().filterDuplicats) {
+        QString preferredExtension = DkSettingsManager::param().resources().preferredExtension;
+        preferredExtension = preferredExtension.replace("*.", "");
+        qDebug() << "preferred extension: " << preferredExtension;
+
+        QStringList resultList = fileList;
+        fileList.clear();
+
+        for (int idx = 0; idx < resultList.size(); idx++) {
+            QFileInfo cFName = QFileInfo(resultList.at(idx));
+
+            if (preferredExtension.compare(cFName.suffix(), Qt::CaseInsensitive) == 0) {
+                fileList.append(resultList.at(idx));
+                continue;
+            }
+
+            QString cFBase = cFName.baseName();
+            bool remove = false;
+
+            for (int cIdx = 0; cIdx < resultList.size(); cIdx++) {
+                QString ccBase = QFileInfo(resultList.at(cIdx)).baseName();
+
+                if (cIdx != idx && ccBase == cFBase && resultList.at(cIdx).contains(preferredExtension, Qt::CaseInsensitive)) {
+                    remove = true;
+                    break;
+                }
+            }
+
+            if (!remove)
+                fileList.append(resultList.at(idx));
+        }
+    }
+
+    // fileList = sort(fileList, dir);
+
+    QFileInfoList fileInfoList;
+
+    for (int idx = 0; idx < fileList.size(); idx++)
+        fileInfoList.append(QFileInfo(dirPath, fileList.at(idx)));
+
+    return fileInfoList;
+}
+
 }
