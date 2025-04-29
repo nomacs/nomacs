@@ -103,10 +103,6 @@ public:
     int numFiles() const;
     QImage getPixmap();
 
-#ifdef WITH_QUAZIP
-    bool loadZipArchive(const QString &zipPath);
-#endif
-
 signals:
     void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
     void setPlayer(bool play) const;
