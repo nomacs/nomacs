@@ -117,7 +117,7 @@ void DkTabInfo::loadSettings(const QSettings &settings)
         mTabMode = tab_single_image;
     }
 
-    QFileInfo info(file);
+    DkFileInfo info(file);
     if (info.exists())
         mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(info)));
 }
@@ -645,7 +645,7 @@ void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, in
 
 void DkCentralWidget::addTab(const QString &filePath, int idx /* = -1 */, bool background)
 {
-    QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(QFileInfo(filePath)));
+    QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(DkFileInfo(filePath)));
     addTab(imgC, idx, background);
 }
 

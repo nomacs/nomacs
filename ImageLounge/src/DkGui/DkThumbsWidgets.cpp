@@ -816,7 +816,7 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
     int tIdx = -1;
 
     for (int idx = 0; idx < mFilePaths.size(); idx++) {
-        if (mFilePaths.at(idx) == cImage->originalFilePath()) {
+        if (mFilePaths.at(idx) == cImage->originalFileInfo().path()) {
             tIdx = idx;
             break;
         }
@@ -833,7 +833,7 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thum
     mThumbs.clear();
     mFilePaths = std::vector<QString>(thumbs.size());
     for (int idx = 0; idx < thumbs.size(); idx++) {
-        mFilePaths[idx] = thumbs[idx]->originalFilePath();
+        mFilePaths[idx] = thumbs[idx]->originalFileInfo().path();
         if (thumbs.at(idx)->isSelected()) {
             currentFileIdx = idx;
         }
@@ -1201,7 +1201,7 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
     mThumbs.clear();
     mThumbs.reserve(thumbs.size());
     for (const auto &img : thumbs) {
-        mThumbs.push_back(img->originalFilePath());
+        mThumbs.push_back(img->originalFileInfo().path());
     }
     updateThumbLabels();
 
@@ -1340,7 +1340,7 @@ QString DkThumbScene::currentDir() const
         }
     }
 
-    return QFileInfo(mThumbs[0]).absolutePath();
+    return DkFileInfo(mThumbs[0]).dirPath(); // FIXME: mthumbs=>DkFileInfo
 }
 
 int DkThumbScene::selectedThumbIndex(bool first)
