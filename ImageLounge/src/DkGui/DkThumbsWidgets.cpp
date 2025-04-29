@@ -1290,7 +1290,7 @@ QString DkThumbScene::currentDir() const
         }
     }
 
-    return mThumbs[0]->fileInfo().absolutePath();
+    return mThumbs[0]->fileInfo().dirPath();
 }
 
 int DkThumbScene::selectedThumbIndex(bool first)

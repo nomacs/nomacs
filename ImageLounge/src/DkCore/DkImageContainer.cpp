@@ -65,7 +65,7 @@ QString DkZipContainer::mZipMarker = "dIrChAr";
  * This class is the basic image management class.
  * @param fileInfo the file of the given
  **/
-DkImageContainer::DkImageContainer(const QFileInfo &fileInfo)
+DkImageContainer::DkImageContainer(const DkFileInfo &fileInfo)
 {
     setFile(fileInfo);
     init();
@@ -119,14 +119,14 @@ void DkImageContainer::cropImage(const DkRotatingRect &rect, const QColor &col, 
         getMetaData()->saveRectToXMP(rect, image().size());
 }
 
-QFileInfo DkImageContainer::fileInfo() const
+DkFileInfo DkImageContainer::fileInfo() const
 {
     return mFileInfo;
 }
 
 QString DkImageContainer::filePath() const
 {
-    return mFileInfo.absoluteFilePath();
+    return mFileInfo.path();
 }
 
 QString DkImageContainer::dirPath() const
@@ -139,7 +139,7 @@ QString DkImageContainer::dirPath() const
         mZipData->getZipFilePath();
 #endif
 
-    return mFileInfo.absolutePath();
+    return mFileInfo.dirPath();
 }
 
 QString DkImageContainer::fileName() const
@@ -365,7 +365,7 @@ void DkImageContainer::setMetaData(const QString &editName)
     mEdited = true;
 }
 
-void DkImageContainer::setFile(const QFileInfo &fileInfo)
+void DkImageContainer::setFile(const DkFileInfo &fileInfo)
 {
     mFileInfo = fileInfo;
 
@@ -525,7 +525,7 @@ std::wstring DkImageContainer::getFileNameWStr() const
 #endif
 
 // DkImageContainerT --------------------------------------------------------------------
-DkImageContainerT::DkImageContainerT(const QFileInfo &fileInfo)
+DkImageContainerT::DkImageContainerT(const DkFileInfo &fileInfo)
     : DkImageContainer(fileInfo)
 {
     // our file watcher
@@ -827,9 +827,9 @@ void DkImageContainerT::fileDownloaded(const QString &filePath)
     mDownloaded = true;
 
     if (filePath.isEmpty())
-        setFile(QFileInfo(mFileDownloader->getUrl().toString().split("/").last()));
+        setFile(DkFileInfo(mFileDownloader->getUrl().toString().split("/").last()));
     else
-        setFile(QFileInfo(filePath));
+        setFile(DkFileInfo(filePath));
 
     fetchImage();
 }
@@ -913,7 +913,7 @@ void DkImageContainerT::savingFinished()
 {
     QString savePath = mSaveImageWatcher.result();
 
-    QFileInfo sInfo(savePath);
+    DkFileInfo sInfo(savePath);
     qDebug() << "save file: " << savePath;
 
     if (!sInfo.exists() || !sInfo.isFile())
@@ -925,7 +925,7 @@ void DkImageContainerT::savingFinished()
         if (mFileBuffer)
             mFileBuffer->clear(); // do a complete clear?
 
-        if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty() || dirPath() == sInfo.absolutePath()) {
+        if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty() || dirPath() == sInfo.dirPath()) {
             setFile(sInfo);
             emit fileSavedSignal(savePath, true, false);
         } else {
