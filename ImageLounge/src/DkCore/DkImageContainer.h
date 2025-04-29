@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "DkFileInfo.h"
+
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QFileInfo>
 #include <QFutureWatcher>
@@ -66,7 +68,7 @@ public:
         loaded,
     };
 
-    DkImageContainer(const QFileInfo &fileInfo);
+    DkImageContainer(const DkFileInfo &fileInfo);
     virtual ~DkImageContainer();
 
     QImage image();
@@ -78,7 +80,7 @@ public:
     bool hasMovie() const;
 
     int getLoadState() const;
-    QFileInfo fileInfo() const;
+    DkFileInfo fileInfo() const;
     QString filePath() const;
     QString dirPath() const;
     QString fileName() const;
@@ -89,7 +91,12 @@ public:
     QString getTitleAttribute() const;
     float getMemoryUsage() const;
     float getFileSize() const;
-    QString originalFilePath() const;
+
+    // file info when container was constructed
+    DkFileInfo originalFileInfo() const
+    {
+        return mOriginalFileInfo;
+    };
 
     virtual QSharedPointer<DkBasicLoader> getLoader();
     virtual QSharedPointer<DkMetaDataT> getMetaData();
@@ -132,7 +139,7 @@ protected:
     void
     saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
     QString saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-    void setFile(const QFileInfo &fileInfo);
+    void setFile(const DkFileInfo &fileInfo);
     void init();
 
     QSharedPointer<QByteArray> mFileBuffer;
@@ -142,7 +149,7 @@ protected:
     bool mEdited = false;
     bool mSelected = false;
 
-    QFileInfo mFileInfo;
+    DkFileInfo mFileInfo;
     QVector<QImage> scaledImages;
 
 #ifdef WITH_QUAZIP
@@ -153,8 +160,7 @@ protected:
 #endif
 
 private:
-    // File path before processing zip file
-    QString mOriginalFilePath;
+    const DkFileInfo mOriginalFileInfo;
 };
 
 class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
@@ -162,7 +168,7 @@ class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
     Q_OBJECT
 
 public:
-    DkImageContainerT(const QFileInfo &fileInfo = {});
+    DkImageContainerT(const DkFileInfo &fileInfo = {});
     virtual ~DkImageContainerT();
 
     void fetchFile();
