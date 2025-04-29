@@ -169,54 +169,6 @@ void DkImageLoader::clearPath()
     }
 }
 
-#ifdef WITH_QUAZIP
-/**
- * Loads a given zip archive and the first image in it.
- * @param zipFile the archive to be loaded.
- **/
-bool DkImageLoader::loadZipArchive(const QString &zipPath)
-{
-    QStringList fileNameList = JlCompress::getFileList(zipPath);
-
-    // remove the * in fileFilters
-    QStringList fileFiltersClean = DkSettingsManager::param().app().browseFilters;
-    for (int idx = 0; idx < fileFiltersClean.size(); idx++)
-        fileFiltersClean[idx].replace("*", "");
-
-    QStringList fileList;
-    for (int idx = 0; idx < fileNameList.size(); idx++) {
-        for (int idxFilter = 0; idxFilter < fileFiltersClean.size(); idxFilter++) {
-            if (fileNameList.at(idx).contains(fileFiltersClean[idxFilter], Qt::CaseInsensitive)) {
-                fileList.append(fileNameList.at(idx));
-                break;
-            }
-        }
-    }
-
-    QFileInfoList fileInfoList;
-    // encode both the input zip file and the output image into a single fileInfo
-    for (const QString &filePath : fileList)
-        fileInfoList.append(QFileInfo(DkZipContainer::encodeZipFile(zipPath, filePath)));
-
-    QFileInfo zipInfo(zipPath);
-
-    // zip archives could not contain known image formats
-    if (fileInfoList.empty()) {
-        emit showInfoSignal(tr("%1 \n does not contain any image").arg(zipInfo.fileName()), 4000); // stop mShowing
-        return false;
-    }
-
-    createImages(fileInfoList);
-
-    emit updateDirSignal(mImages);
-    mCurrentDir = zipInfo.absolutePath();
-
-    qDebug() << "ZIP FOLDER set: " << mCurrentDir;
-
-    return true;
-}
-#endif
-
 /**
  * Loads a given directory.
  * @param newDir the directory to be loaded.
