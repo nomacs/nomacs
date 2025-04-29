@@ -62,6 +62,16 @@ namespace nmc
 class DllCoreExport DkFileInfo
 {
 public:
+    /**
+     * Returns the file list of the directory dir.
+     * Note: this function might get slow if lots of files (> 10000) are in the
+     * directory or if the directory is in the net.
+     * Currently the file list is sorted according to the system specification.
+     * @param dir the directory to load the file list from.
+     * @return QStringList all filtered files of the current directory.
+     **/
+    static QFileInfoList readDirectory(const QString &dirPath, QString folderKeywords = {});
+
     // todo: clean path before giving fileInfo
     // remove trailing '/' : breaks fileName()
     //
