@@ -133,8 +133,8 @@ public:
     QDateTime lastModified() const;
     bool permission(QFile::Permissions flags) const;
 
-    bool isSymLink() const;
-    QString symLinkTarget() const;
+    bool isShortcut() const;
+    bool resolveShortcut();
 
     qint64 size() const;
 
