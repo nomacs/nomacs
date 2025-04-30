@@ -86,7 +86,7 @@ public:
     bool operator==(const DkTabInfo &o) const;
 
     QString getFilePath() const;
-    bool setDirPath(const QString &dirPath);
+    bool setDirPath(const DkFileInfo &dir);
 
     QSharedPointer<DkImageContainerT> getImage() const;
     void setImage(QSharedPointer<DkImageContainerT> imgC);
