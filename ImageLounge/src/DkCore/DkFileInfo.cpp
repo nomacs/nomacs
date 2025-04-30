@@ -157,18 +157,27 @@ bool DkFileInfo::permission(QFileDevice::Permissions flags) const
     return containerInfo().permission(flags);
 }
 
-bool DkFileInfo::isSymLink() const
+bool DkFileInfo::isShortcut() const
 {
-    return isFromZip() ? false : d->mFileInfo.isSymLink();
+    if (isFromZip())
+        return false;
+
+    bool shortcut = false, alias = false;
+#if defined(Q_OS_WIN)
+    shortcut = d->mFileInfo.isShortcut();
+#elif defined(Q_OS_DARWIN)
+    alias = d->mFileInfo.isAlias();
+#endif
+    return shortcut || alias;
 }
 
-QString DkFileInfo::symLinkTarget() const
+bool DkFileInfo::resolveShortcut()
 {
-    if (isFromZip()) {
-        qWarning() << "[FileInfo] ignoring zip symlink resolution";
-        return path();
-    }
-    return d->mFileInfo.symLinkTarget();
+    if (!isShortcut())
+        return false;
+
+    *this = DkFileInfo(d->mFileInfo.symLinkTarget());
+    return exists();
 }
 
 qint64 DkFileInfo::size() const
