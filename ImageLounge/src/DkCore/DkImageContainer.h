@@ -107,7 +107,8 @@ public:
     bool exists();
     bool setPageIdx(int skipIdx);
 
-    QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath);
+    static QSharedPointer<QByteArray> loadFileToBuffer(const DkFileInfo &fileInfo);
+
     bool loadImage();
     void setImage(const QImage &img, const QString &editName);
     bool saveImage(const QString &filePath, const QImage saveImg, int compression = -1);

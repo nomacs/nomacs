@@ -355,27 +355,23 @@ bool DkImageContainer::saveImage(const QString &filePath, const QImage saveImg, 
     return saveFile.exists() && saveFile.isFile();
 }
 
-QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QString &filePath)
+QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &fileInfo)
 {
-    QFileInfo fInfo = QFileInfo(filePath);
+    DkFileInfo fInfo = fileInfo;
 
-    if (fInfo.isSymLink())
-        fInfo = QFileInfo(fInfo.symLinkTarget());
-
-#ifdef WITH_QUAZIP
-    if (isFromZip())
-        return getZipData()->extractImage(getZipData()->getZipFilePath(), getZipData()->getImageFileName());
-#endif
-
-    if (fInfo.suffix().contains("psd")) { // for now just psd's are not cached because their file might be way larger than the part we need to read
-        return QSharedPointer<QByteArray>(new QByteArray());
+    if (fInfo.isShortcut() && !fInfo.resolveShortcut()) { // .lnk or macOS alias
+        qWarning() << "broken shortcut:" << fileInfo.path();
+        return {};
     }
 
-    QFile file(fInfo.absoluteFilePath());
-    file.open(QIODevice::ReadOnly);
+    if (fInfo.suffix().contains("psd")) // for now just psd's are not cached because their file might be way larger than the part we need to read
+        return {};
 
-    QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
-    file.close();
+    auto io = fInfo.getIoDevice();
+    if (!io)
+        return {};
+
+    QSharedPointer<QByteArray> ba(new QByteArray(io->readAll()));
 
     return ba;
 }
@@ -563,8 +559,8 @@ void DkImageContainerT::fetchFile()
 
     mFetchingBuffer = true; // saves the threaded call
     connect(&mBufferWatcher, &QFutureWatcher<QSharedPointer<QByteArray>>::finished, this, &DkImageContainerT::bufferLoaded, Qt::UniqueConnection);
-    mBufferWatcher.setFuture(QtConcurrent::run([&] {
-        return loadFileToBuffer(filePath());
+    mBufferWatcher.setFuture(QtConcurrent::run([file = mFileInfo] {
+        return loadFileToBuffer(file);
     }));
 }
 
