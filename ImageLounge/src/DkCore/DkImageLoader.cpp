@@ -78,11 +78,6 @@
 #include <QtConcurrentRun>
 #include <qmath.h>
 
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
-#endif
-
 // opencv
 #ifdef WITH_OPENCV
 
@@ -181,6 +176,7 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     // }
 
     DkTimer dt;
+    DkFileInfo info(newDirPath);
 
     // folder changed signal was emitted
     if (mFolderUpdated && newDirPath == mCurrentDir) {
@@ -208,7 +204,7 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
         qDebug() << "getting file list.....";
     }
     // new folder is loaded
-    else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && QDir(newDirPath).exists()) {
+    else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && info.isDir()) {
         QFileInfoList files;
 
         // newDir.setNameFilters(DkSettingsManager::param().app().fileFilters);
@@ -452,24 +448,6 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
         }
     }
 
-#ifdef WITH_QUAZIP
-    // zips only loop if browse filter is disabled; otherwise we could not break out of a zip
-    bool loopZip = DkSettingsManager::param().global().loop && !DkSettingsManager::param().app().browseFilters.contains("*.zip");
-
-    if (!validIndex && !loopZip && mCurrentImage && mCurrentImage->isFromZip() && mCurrentImage->getZipData()) {
-        // browse to the next zipfile or image file (in theory)
-        // fixme: this doesn't really do what you'd want
-        // if skipping backwards it always goes to the first file in the next zip
-        // if skipping forwards it always jumps to last zip or first zip in the directory
-        setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(mCurrentImage->getZipData()->getZipFilePath())));
-
-        if (newFileIdx >= mImages.size())
-            newFileIdx -= mImages.size() - 1;
-
-        return getSkippedImage(newFileIdx);
-    }
-#endif
-
     // could happen if current dir was deleted; we
     // don't check status of loadDir() so we can try subfolders
     if (mImages.empty()) {
@@ -531,7 +509,8 @@ void DkImageLoader::loadFileAt(int idx)
     else
         qDebug() << "current image is NULL";
 
-    QDir cDir(mCurrentDir);
+    DkFileInfo cDir(mCurrentDir);
+    Q_ASSERT(cDir.isDir());
 
     if (mCurrentImage && !cDir.exists())
         loadDir(mCurrentImage->dirPath());
@@ -793,39 +772,20 @@ void DkImageLoader::showOnMap()
     QDesktopServices::openUrl(QUrl(DkMetaDataHelper::getInstance().getGpsCoordinates(metaData)));
 }
 
-void DkImageLoader::load(const QString &filePath)
+void DkImageLoader::load(const DkFileInfo &info)
 {
-    bool hasZipMarker = false;
+    Q_ASSERT(info.isFile());
 
-#ifdef WITH_QUAZIP
-    hasZipMarker = filePath.contains(DkZipContainer::zipMarker()) != 0;
-#endif
-
-    if (QFileInfo(filePath).isFile() || hasZipMarker) {
-        QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(filePath);
-        setCurrentImage(newImg);
-        load(mCurrentImage);
-    } else
-        firstFile();
-
-    // if here is a folder upate bug - this was before -- if (QFileInfo(filePath).isFile() || hasZipMarker) {
-    loadDir(QFileInfo(filePath).absolutePath());
+    QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(info.path());
+    setCurrentImage(newImg);
+    load(mCurrentImage);
+    // loadDir(info.dirPath()); // does not seem to be needed
 }
 
 void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPointer<DkImageContainerT> */)
 {
     if (!image)
         return;
-
-#ifdef WITH_QUAZIP
-    bool isZipArchive = DkBasicLoader::isContainer(image->filePath());
-
-    if (isZipArchive) {
-        loadZipArchive(image->filePath());
-        firstFile();
-        return;
-    }
-#endif
 
     setCurrentImage(image);
 
@@ -1805,13 +1765,11 @@ void DkImageLoader::setFolderFilter(const QString &filter)
  * Sets the current directory to dir.
  * @param dir the directory to be loaded.
  **/
-void DkImageLoader::setDir(const QString &dir)
+void DkImageLoader::setDir(const DkFileInfo &info)
 {
-    // QDir oldDir = file.absoluteDir();
+    Q_ASSERT(info.isDir());
 
-    bool valid = loadDir(dir);
-
-    if (valid)
+    if (loadDir(info.path()))
         firstFile();
 }
 
