@@ -40,17 +40,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace nmc
 {
+DkFileInfo::SharedData::SharedData(const QFileInfo &info)
+    : mFileInfo(info)
+    , mContainerInfo()
+#if WITH_QUAZIP
+    , mZipData(info.absoluteFilePath())
+#endif
+{
+#ifdef WITH_QUAZIP
+    if (mZipData.isZip())
+        mContainerInfo.setFile(mZipData.getZipFilePath());
+#endif
+}
 
 DkFileInfo::DkFileInfo(const QString &path)
 {
-    d = new PrivateData(path);
-    setFile(path);
+    d = new SharedData(QFileInfo(path));
 }
 
 DkFileInfo::DkFileInfo(const QFileInfo &info)
 {
-    d = new PrivateData(info.absoluteFilePath());
-    d->mFileInfo = info;
+    d = new SharedData(info);
 }
 
 DkFileInfo::operator QFileInfo() const
@@ -188,15 +198,6 @@ qint64 DkFileInfo::size() const
 #endif
     }
     return d->mFileInfo.size();
-}
-
-void DkFileInfo::setFile(const QString &newPath)
-{
-    d->mFileInfo.setFile(newPath);
-#ifdef WITH_QUAZIP
-    if (isFromZip())
-        d->mContainerInfo.setFile(d->mZipData.getZipFilePath());
-#endif
 }
 
 const QFileInfo &DkFileInfo::containerInfo() const
