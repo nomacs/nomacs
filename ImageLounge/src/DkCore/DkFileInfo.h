@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QFileInfo>
 
 #if WITH_QUAZIP
-#include "DkBasicLoader.h"
+#include "DkBasicLoader.h" // FIXME: this only to import DkZipContainer
 #endif
 
 #ifndef DllCoreExport
@@ -118,7 +118,6 @@ public:
     // ---- QFileInfo methods --------------------------------
     // where possible keep the semantics of QFileInfo
 
-    void setFile(const QString &newPath);
     void refresh();
 
     bool exists() const;
@@ -142,24 +141,20 @@ private:
     // info of the container, if it is a local file, otherwise invalid
     const QFileInfo &containerInfo() const;
 
-    class PrivateData : public QSharedData
+    class SharedData : public QSharedData
     {
-    public:
-        PrivateData(const QString &path)
-            : mFileInfo(path)
-#if WITH_QUAZIP
-            , mZipData(path)
-#endif
-            , mContainerInfo()
-        {
-        }
+        friend class DkFileInfo;
+
+    private:
+        SharedData(const QFileInfo &info);
         QFileInfo mFileInfo; // only valid if path() is an ordinary file
         QFileInfo mContainerInfo; // only valid if container is an ordinary file
 #if WITH_QUAZIP
         DkZipContainer mZipData; // todo: move relevant parts of DkZipContainer here
 #endif
     };
-    QSharedDataPointer<PrivateData> d;
+
+    QSharedDataPointer<SharedData> d;
 };
 
 typedef QList<DkFileInfo> DkFileInfoList;
