@@ -194,7 +194,8 @@ qint64 DkFileInfo::size() const
 {
     if (isFromZip()) {
 #ifdef WITH_QUAZIP
-        return d->mZipData.getZipFileSize();
+        qWarning() << "TODO: zip file member size";
+        return 1;
 #endif
     }
     return d->mFileInfo.size();
