@@ -92,8 +92,7 @@ public:
     QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool recursive = false, int currFileIdx = 0);
 
     QString getDirPath() const;
-    void setDir(const QString &dir);
-
+    void setDir(const DkFileInfo &info);
     bool hasMovie() const;
     bool hasSvg() const;
 
@@ -126,7 +125,7 @@ public slots:
     void copyUserFile();
     void saveFile(const QString &filename, const QImage &saveImg = QImage(), const QString &fileFilter = "", int compression = -1, bool threaded = true);
     void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
-    void load(const QString &filePath);
+    void load(const DkFileInfo &filePath);
     void downloadFile(const QUrl &url);
     bool deleteFile();
     QString saveTempFile(const QImage &img, const QString &name = "img", const QString &fileExt = ".png", bool force = false, bool threaded = true);
