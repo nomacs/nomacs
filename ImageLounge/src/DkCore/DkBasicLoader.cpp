@@ -2038,6 +2038,8 @@ QUrl FileDownloader::getUrl() const
 
 #ifdef WITH_QUAZIP
 
+QString DkZipContainer::mZipMarker = "dIrChAr";
+
 // DkZipContainer --------------------------------------------------------------------
 DkZipContainer::DkZipContainer(const QString &encodedFilePath)
 {

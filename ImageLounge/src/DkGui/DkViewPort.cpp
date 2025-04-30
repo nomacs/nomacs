@@ -1602,7 +1602,7 @@ void DkViewPort::toggleLena(bool fullscreen)
         if (fullscreen)
             mLoader->downloadFile(QUrl("http://www.lenna.org/lena_std.tif"));
         else
-            mLoader->load(":/nomacs/img/we.jpg");
+            mLoader->load(DkFileInfo(":/nomacs/img/we.jpg"));
     }
 }
 
@@ -1698,11 +1698,15 @@ void DkViewPort::loadFile(const QString &filePath)
         return;
 
     mTestLoaded = false;
+    if (!mLoader)
+        return;
 
-    if (mLoader && !filePath.isEmpty() && QFileInfo(filePath).isDir()) {
-        mLoader->setDir(filePath);
-    } else if (mLoader)
-        mLoader->load(filePath);
+    DkFileInfo info(filePath);
+
+    if (info.isDir())
+        mLoader->setDir(info);
+    else
+        mLoader->load(info);
 
     // diem: I removed this line for a) we don't support remote displays anymore and be: https://github.com/nomacs/nomacs/issues/219
     // qDebug() << "sync mode: " << (DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_remote_display);
