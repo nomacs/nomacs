@@ -100,9 +100,6 @@ public:
     virtual QSharedPointer<DkBasicLoader> getLoader();
     virtual QSharedPointer<DkMetaDataT> getMetaData();
     virtual QSharedPointer<QByteArray> getFileBuffer();
-#ifdef WITH_QUAZIP
-    QSharedPointer<DkZipContainer> getZipData();
-#endif
 #ifdef Q_OS_WIN
     std::wstring getFileNameWStr() const;
 #endif
@@ -148,9 +145,6 @@ protected:
     DkFileInfo mFileInfo;
     QVector<QImage> scaledImages;
 
-#ifdef WITH_QUAZIP
-    QSharedPointer<DkZipContainer> mZipData;
-#endif
 #ifdef Q_OS_WIN
     std::wstring mFileNameStr; // speeds up sorting of filenames on windows
 #endif
@@ -162,6 +156,7 @@ private:
 class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(DkImageContainerT);
 
 public:
     DkImageContainerT(const DkFileInfo &fileInfo = {});

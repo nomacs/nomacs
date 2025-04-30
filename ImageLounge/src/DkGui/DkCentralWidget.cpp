@@ -135,13 +135,13 @@ void DkTabInfo::saveSettings(QSettings &settings) const
     settings.setValue("tabMode", mTabMode);
 }
 
-bool DkTabInfo::setDirPath(const QString &dirPath)
+bool DkTabInfo::setDirPath(const DkFileInfo &dir)
 {
-    QFileInfo di(dirPath);
-    if (!di.isDir())
+    Q_ASSERT(dir.isDir());
+    if (!dir.isDir())
         return false;
 
-    bool dirIsLoaded = mImageLoader->loadDir(dirPath);
+    bool dirIsLoaded = mImageLoader->loadDir(dir.path());
     if (dirIsLoaded) {
         setMode(tab_thumb_preview);
         return true;
@@ -1108,11 +1108,12 @@ void DkCentralWidget::loadDirToTab(const QString &dirPath)
     }
 
     QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
-    QFileInfo di(dirPath);
+    DkFileInfo dir(dirPath);
+    Q_ASSERT(dir.isDir());
 
-    if (di.isDir()) {
+    if (dir.isDir()) {
         // try to load the dir
-        bool dirIsLoaded = targetTab->setDirPath(dirPath);
+        bool dirIsLoaded = targetTab->setDirPath(dir);
 
         if (dirIsLoaded) {
             // show the directory in overview mode

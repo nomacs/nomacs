@@ -1328,7 +1328,7 @@ void DkNoMacs::loadFile(const QString &filePath)
     if (!getTabWidget())
         return;
 
-    if (QFileInfo(filePath).isDir())
+    if (DkFileInfo(filePath).isDir())
         getTabWidget()->loadDirToTab(filePath);
     else
         getTabWidget()->loadFile(filePath, false);
@@ -1428,13 +1428,12 @@ void DkNoMacs::trainFormat()
 void DkNoMacs::extractImagesFromArchive()
 {
 #ifdef WITH_QUAZIP
-
     if (!mArchiveExtractionDialog)
         mArchiveExtractionDialog = new DkArchiveExtractionDialog(this);
 
     if (getTabWidget()->getCurrentImage()) {
         if (getTabWidget()->getCurrentImage()->isFromZip())
-            mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentImage()->getZipData()->getZipFilePath(), true);
+            mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentImage()->dirPath(), true);
         else
             mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
     } else

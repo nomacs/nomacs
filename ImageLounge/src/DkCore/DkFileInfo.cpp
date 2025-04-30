@@ -29,12 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef WITH_QUAZIP
 #include "DkBasicLoader.h"
-
-#ifdef WITH_QUAZIP1
 #include <quazip/JlCompress.h>
-#else
-#include <quazip5/JlCompress.h>
-#endif
 #endif
 
 #include <QDir>

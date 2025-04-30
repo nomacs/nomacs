@@ -39,21 +39,12 @@
 #include <QObject>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
-
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
-#endif
 #pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251) // TODO: remove
 
 namespace nmc
 {
-#ifdef WITH_QUAZIP
-QString DkZipContainer::mZipMarker = "dIrChAr";
-#endif
-
 // DkImageContainer --------------------------------------------------------------------
 /**
  * Creates a DkImageContainer.
@@ -130,11 +121,6 @@ QString DkImageContainer::dirPath() const
     if (!mFileInfo.isFile())
         return "";
 
-#ifdef WITH_QUAZIP
-    if (mZipData && mZipData->isZip())
-        mZipData->getZipFilePath();
-#endif
-
     return mFileInfo.dirPath();
 }
 
@@ -145,21 +131,11 @@ QString DkImageContainer::fileName() const
 
 bool DkImageContainer::isFromZip()
 {
-#ifdef WITH_QUAZIP
-    return getZipData() && getZipData()->isZip();
-#else
-    return false;
-#endif
+    return mFileInfo.isFromZip();
 }
 
 bool DkImageContainer::exists()
 {
-#ifdef WITH_QUAZIP
-
-    if (isFromZip())
-        return true;
-#endif
-
     return mFileInfo.exists();
 }
 
@@ -450,21 +426,6 @@ bool DkImageContainer::setPageIdx(int skipIdx)
     return getLoader()->setPageIdx(skipIdx);
 }
 
-#ifdef WITH_QUAZIP
-QSharedPointer<DkZipContainer> DkImageContainer::getZipData()
-{
-    if (!mZipData) {
-        mZipData = QSharedPointer<DkZipContainer>(new DkZipContainer(mFilePath));
-        if (mZipData->isZip()) {
-            setFilePath(mZipData->getImageFileName());
-            // mFileInfo = mZipData->getZipFilePath();
-            qDebug() << "new fileInfoPath: " << mFileInfo.absoluteFilePath();
-        }
-    }
-
-    return mZipData;
-}
-#endif
 #ifdef Q_OS_WIN
 std::wstring DkImageContainer::getFileNameWStr() const
 {
@@ -513,11 +474,6 @@ void DkImageContainerT::clear()
 
 void DkImageContainerT::checkForFileUpdates()
 {
-#ifdef WITH_QUAZIP
-    if (isFromZip())
-        setFilePath(getZipData()->getZipFilePath());
-#endif
-
     QDateTime modifiedBefore = fileInfo().lastModified();
     mFileInfo.refresh();
 
@@ -530,11 +486,6 @@ void DkImageContainerT::checkForFileUpdates()
 
     if (mWaitForUpdate != update_loading && mFileInfo.lastModified() != modifiedBefore)
         mWaitForUpdate = update_pending;
-
-#ifdef WITH_QUAZIP
-    if (isFromZip())
-        setFilePath(getZipData()->getImageFileName());
-#endif
 
     if (changed) {
         mFileUpdateTimer.stop();
@@ -563,12 +514,6 @@ void DkImageContainerT::checkForFileUpdates()
 
 bool DkImageContainerT::loadImageThreaded(bool force)
 {
-#ifdef WITH_QUAZIP
-    // zip archives: get zip file fileInfo for checks
-    if (isFromZip())
-        setFilePath(getZipData()->getZipFilePath());
-#endif
-
     // check file for updates
     // without this, checkForFileUpdates() will see the modification and
     // reload the image; all this does is prevent the old image from showing
@@ -592,12 +537,6 @@ bool DkImageContainerT::loadImageThreaded(bool force)
         mLoadState = exists_not;
         return false;
     }
-
-#ifdef WITH_QUAZIP
-    // zip archives: use the image file info from now on
-    if (isFromZip())
-        setFilePath(getZipData()->getImageFileName());
-#endif
 
     mLoadState = loading;
     fetchFile();
