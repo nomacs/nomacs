@@ -43,71 +43,25 @@ namespace nmc
 
 #ifdef WITH_QUAZIP
 
-QString DkFileInfo::ZipData::mZipMarker = "dIrChAr";
+// this is the same marker as KIO
+const QString DkFileInfo::ZipData::mZipMarker = "#/";
 
-// DkZipContainer --------------------------------------------------------------------
 DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
 {
-    if (!encodedFilePath.isEmpty() && encodedFilePath.contains(mZipMarker)) {
-        mImageInZip = true;
-        mEncodedFilePath = encodedFilePath;
-        mZipFilePath = decodeZipFile(encodedFilePath);
-        mImageFileName = decodeImageFile(encodedFilePath);
-    } else
-        mImageInZip = false;
+    qsizetype index = encodedFilePath.indexOf(mZipMarker);
+    if (index > 0) {
+        mIsMember = true;
+        mZipFilePath = encodedFilePath.mid(0, index);
+        mZipMemberPath = encodedFilePath.mid(index + mZipMarker.length());
+    }
 }
 
-QString DkFileInfo::ZipData::encodeZipFile(const QString &zipFile, const QString &imageFile)
+QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QString &memberPath)
 {
-    // if you think this code is unreadable, take a look at the old line:
-    // return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/",
-    // mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
+    Q_ASSERT(!memberPath.startsWith('/'));
+    Q_ASSERT(QFileInfo(zipFilePath).absoluteFilePath() == zipFilePath);
 
-    QDir dir = QDir(zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker));
-    QString fileName = (imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
-
-    return QFileInfo(dir, fileName).absoluteFilePath();
-}
-
-QString DkFileInfo::ZipData::decodeZipFile(const QString &encodedFileInfo)
-{
-    QString encodedDir = QFileInfo(encodedFileInfo).absolutePath();
-
-    return encodedDir.left(encodedDir.indexOf(mZipMarker));
-}
-
-QString DkFileInfo::ZipData::decodeImageFile(const QString &encodedFileInfo)
-{
-    // get relative zip path
-    QString tmp = encodedFileInfo.right(encodedFileInfo.size() - encodedFileInfo.indexOf(mZipMarker) - QString(mZipMarker).size());
-    tmp = tmp.replace(mZipMarker, "/");
-    tmp = tmp.replace("//", "/");
-
-    // diem: this fixes an issue with images that are in a zip's root folder
-    if (tmp.startsWith("/"))
-        tmp = tmp.right(tmp.length() - 1);
-
-    return tmp;
-}
-
-bool DkFileInfo::ZipData::isZip() const
-{
-    return mImageInZip;
-}
-
-QString DkFileInfo::ZipData::getZipFilePath() const
-{
-    return mZipFilePath;
-}
-
-QString DkFileInfo::ZipData::getImageFileName() const
-{
-    return mImageFileName;
-}
-
-QString DkFileInfo::ZipData::zipMarker()
-{
-    return mZipMarker;
+    return zipFilePath + mZipMarker + memberPath;
 }
 
 #endif
@@ -120,8 +74,8 @@ DkFileInfo::SharedData::SharedData(const QFileInfo &info)
 #endif
 {
 #ifdef WITH_QUAZIP
-    if (mZipData.isZip())
-        mContainerInfo.setFile(mZipData.getZipFilePath());
+    if (mZipData.isZipMember())
+        mContainerInfo.setFile(mZipData.zipFilePath());
 #endif
 }
 
@@ -147,7 +101,7 @@ DkFileInfo::operator QFileInfo() const
 #ifdef WITH_QUAZIP
 bool DkFileInfo::isFromZip() const
 {
-    return d->mZipData.isZip();
+    return d->mZipData.isZipMember();
 }
 
 bool DkFileInfo::isZipFile() const
@@ -162,7 +116,7 @@ QSharedPointer<QIODevice> DkFileInfo::getIoDevice() const
 
 #ifdef WITH_QUAZIP
     if (isFromZip())
-        io.reset(new QuaZipFile(d->mZipData.getZipFilePath(), d->mZipData.getImageFileName()));
+        io.reset(new QuaZipFile(d->mZipData.zipFilePath(), d->mZipData.zipMemberPath()));
 #endif
 
     if (!io)
@@ -304,7 +258,7 @@ QFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
     QFileInfoList fileInfoList;
     // encode both the input zip file and the output image into a single fileInfo
     for (const QString &filePath : fileList)
-        fileInfoList.append(QFileInfo(DkFileInfo::ZipData::encodeZipFile(zipPath, filePath)));
+        fileInfoList.append(QFileInfo(DkFileInfo::ZipData::encodePath(zipPath, filePath)));
 
     return fileInfoList;
 }
