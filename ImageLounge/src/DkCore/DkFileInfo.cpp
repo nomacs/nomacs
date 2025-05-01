@@ -56,6 +56,21 @@ DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
     }
 }
 
+DkFileInfo::ZipData::ZipData(const QString &zipFile, const QuaZipFileInfo64 &info)
+{
+    mIsMember = true;
+    mZipFilePath = zipFile;
+    mZipMemberPath = info.name;
+    mDecompressedSize = info.uncompressedSize;
+    mModified = info.dateTime;
+    mCreated = info.getExtTime(info.extra, 4);
+    if (!mCreated.isValid())
+        mCreated = info.getNTFScTime();
+    mAccessed = info.getExtTime(info.extra, 2);
+    if (!mAccessed.isValid())
+        mAccessed = info.getNTFSaTime();
+}
+
 QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QString &memberPath)
 {
     Q_ASSERT(!memberPath.startsWith('/'));
@@ -68,9 +83,21 @@ QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QStrin
 
 DkFileInfo::SharedData::SharedData(const QFileInfo &info)
     : mFileInfo(info)
-    , mContainerInfo()
 #if WITH_QUAZIP
     , mZipData(info.absoluteFilePath())
+#endif
+{
+#ifdef WITH_QUAZIP
+    if (mZipData.isZipMember())
+        mContainerInfo.setFile(mZipData.zipFilePath());
+#endif
+}
+
+DkFileInfo::SharedData::SharedData(const QString &zipPath, const QuaZipFileInfo64 &info)
+    : mFileInfo(ZipData::encodePath(zipPath, info.name))
+    ,
+#ifdef WITH_QUAZIP
+    mZipData(zipPath, info)
 #endif
 {
 #ifdef WITH_QUAZIP
@@ -87,6 +114,11 @@ DkFileInfo::DkFileInfo(const QString &path)
 DkFileInfo::DkFileInfo(const QFileInfo &info)
 {
     d = new SharedData(info);
+}
+
+DkFileInfo::DkFileInfo(SharedData *shared)
+{
+    d = shared;
 }
 
 DkFileInfo::operator QFileInfo() const
@@ -182,10 +214,31 @@ QString DkFileInfo::suffix() const
     return d->mFileInfo.suffix();
 }
 
+QDateTime DkFileInfo::birthTime() const
+{
+#if WITH_QUAZIP
+    if (isFromZip())
+        return d->mZipData.birthTime();
+#endif
+    return d->mFileInfo.birthTime();
+}
+
 QDateTime DkFileInfo::lastModified() const
 {
-    // TODO: use zip file internal modification date
-    return containerInfo().lastModified();
+#if WITH_QUAZIP
+    if (isFromZip())
+        return d->mZipData.lastModified();
+#endif
+    return d->mFileInfo.lastModified();
+}
+
+QDateTime DkFileInfo::lastRead() const
+{
+#if WITH_QUAZIP
+    if (isFromZip())
+        return d->mZipData.lastRead();
+#endif
+    return d->mFileInfo.lastRead();
 }
 
 bool DkFileInfo::permission(QFileDevice::Permissions flags) const
@@ -218,12 +271,10 @@ bool DkFileInfo::resolveShortcut()
 
 qint64 DkFileInfo::size() const
 {
-    if (isFromZip()) {
 #ifdef WITH_QUAZIP
-        qWarning() << "TODO: zip file member size";
-        return 1;
+    if (isFromZip())
+        return d->mZipData.size();
 #endif
-    }
     return d->mFileInfo.size();
 }
 
@@ -238,27 +289,34 @@ const QFileInfo &DkFileInfo::containerInfo() const
 
 DkFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
 {
-    QStringList fileNameList = JlCompress::getFileList(zipPath);
-
-    // remove the * in fileFilters
-    QStringList fileFiltersClean = DkSettingsManager::param().app().browseFilters;
-    for (int idx = 0; idx < fileFiltersClean.size(); idx++)
-        fileFiltersClean[idx].replace("*", "");
-
-    QStringList fileList;
-    for (int idx = 0; idx < fileNameList.size(); idx++) {
-        for (int idxFilter = 0; idxFilter < fileFiltersClean.size(); idxFilter++) {
-            if (fileNameList.at(idx).contains(fileFiltersClean[idxFilter], Qt::CaseInsensitive)) {
-                fileList.append(fileNameList.at(idx));
-                break;
-            }
-        }
+    QuaZip zip(zipPath);
+    if (!zip.open(QuaZip::mdUnzip)) {
+        qWarning() << "[FileInfo] zip: open failed:" << zipPath << zip.getZipError();
+        zip.getZipError();
+        return {};
     }
 
+    // seems better to use a hashtable here; ~50 extensions are possible without kimageformats
+    const QStringList &fileFilters = DkSettingsManager::param().app().browseFilters;
+    QSet<QString> suffixes;
+    for (const QString &filter : fileFilters)
+        suffixes.insert(QString(filter).replace('*', ""));
+
     DkFileInfoList fileInfoList;
-    // encode both the input zip file and the output image into a single fileInfo
-    for (const QString &filePath : fileList)
-        fileInfoList.append(DkFileInfo::ZipData::encodePath(zipPath, filePath));
+    QuaZipFileInfo64 info;
+
+    for (bool more = zip.goToFirstFile(); more; more = zip.goToNextFile()) {
+        if (!zip.getCurrentFileInfo(&info)) {
+            qWarning() << "[FileInfo] zip: getCurrentFile failed:" << zipPath << zip.getZipError();
+            return {};
+        }
+
+        QString suffix = info.name.mid(info.name.lastIndexOf('.')).toLower();
+        if (!suffixes.contains(suffix))
+            continue;
+
+        fileInfoList += DkFileInfo(new SharedData(zipPath, info));
+    }
 
     return fileInfoList;
 }

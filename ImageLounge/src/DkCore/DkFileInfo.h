@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************************************/
 #pragma once
 
+#include <QDateTime>
 #include <QFileInfo>
 
 #ifndef DllCoreExport
@@ -35,6 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
+
+class QuaZipFileInfo64;
 
 namespace nmc
 {
@@ -128,7 +131,9 @@ public:
     QString fileName() const;
     QString suffix() const;
 
+    QDateTime birthTime() const;
     QDateTime lastModified() const;
+    QDateTime lastRead() const;
     bool permission(QFile::Permissions flags) const;
 
     bool isShortcut() const;
@@ -141,30 +146,25 @@ private:
     const QFileInfo &containerInfo() const;
 
 #ifdef WITH_QUAZIP
-
     static DkFileInfoList readZipArchive(const QString &zipPath);
 
     class ZipData
     {
     public:
         ZipData(const QString &encodedFilePath);
-
-        bool isZipMember() const
-        {
-            return mIsMember;
-        }
-
-        QString zipFilePath() const
-        {
-            return mZipFilePath;
-        }
-
-        QString zipMemberPath() const
-        {
-            return mZipMemberPath;
-        }
+        ZipData(const QString &zipFile, const QuaZipFileInfo64 &info);
 
         static QString encodePath(const QString &zipFilePath, const QString &memberPath);
+
+        // clang-format off
+        bool isZipMember() const       { return mIsMember; }
+        QString zipFilePath() const    { return mZipFilePath; }
+        QString zipMemberPath() const  { return mZipMemberPath; }
+        qint64 size() const            { return mDecompressedSize; }
+        QDateTime lastModified() const { return mModified; }
+        QDateTime birthTime() const    { return mCreated; }
+        QDateTime lastRead() const     { return mAccessed; }
+        // clang-format on
 
     private:
         static const QString mZipMarker;
@@ -172,6 +172,10 @@ private:
         QString mZipFilePath;
         QString mZipMemberPath;
         bool mIsMember = false;
+        qint64 mDecompressedSize = 0;
+        QDateTime mModified;
+        QDateTime mCreated;
+        QDateTime mAccessed;
     };
 #endif
 
@@ -181,6 +185,8 @@ private:
 
     private:
         SharedData(const QFileInfo &info);
+        SharedData(const QString &zipPath, const QuaZipFileInfo64 &info);
+
         QFileInfo mFileInfo; // only valid if path() is an ordinary file
         QFileInfo mContainerInfo; // only valid if container is an ordinary file
 #if WITH_QUAZIP
@@ -189,5 +195,7 @@ private:
     };
 
     QSharedDataPointer<SharedData> d;
+
+    DkFileInfo(DkFileInfo::SharedData *shared);
 };
 }
