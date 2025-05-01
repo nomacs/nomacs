@@ -71,7 +71,7 @@ public:
     DkImageLoader(const QString &filePath = QString());
     virtual ~DkImageLoader();
 
-    QFileInfoList updateSubFolders(const QString &rootDirPath);
+    DkFileInfoList updateSubFolders(const QString &rootDirPath);
 
     void rotateImage(double angle);
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
@@ -150,7 +150,7 @@ protected:
     int getSubFolderIdx(int fromIdx, bool forward) const;
     void updateHistory();
     void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images);
-    void createImages(const QFileInfoList &files, bool sort = true);
+    void createImages(const DkFileInfoList &files, bool sort = true);
     QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void receiveUpdates(bool connectSignals);
 
