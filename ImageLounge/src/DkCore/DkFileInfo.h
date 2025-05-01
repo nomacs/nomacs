@@ -39,6 +39,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace nmc
 {
 
+class DkFileInfo;
+typedef QList<DkFileInfo> DkFileInfoList;
+
 /**
  * Replaces QFileInfo to support VFS and normalize filesystem calls throughout
  * nomacs.
@@ -66,7 +69,7 @@ public:
      * @param dir the directory to load the file list from.
      * @return QStringList all filtered files of the current directory.
      **/
-    static QFileInfoList readDirectory(const QString &dirPath, QString folderKeywords = {});
+    static DkFileInfoList readDirectory(const QString &dirPath, QString folderKeywords = {});
 
     // todo: clean path before giving fileInfo
     // remove trailing '/' : breaks fileName()
@@ -139,7 +142,7 @@ private:
 
 #ifdef WITH_QUAZIP
 
-    static QFileInfoList readZipArchive(const QString &zipPath);
+    static DkFileInfoList readZipArchive(const QString &zipPath);
 
     class ZipData
     {
@@ -187,7 +190,4 @@ private:
 
     QSharedDataPointer<SharedData> d;
 };
-
-typedef QList<DkFileInfo> DkFileInfoList;
-
 }

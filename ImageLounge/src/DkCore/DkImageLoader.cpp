@@ -181,7 +181,7 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     // folder changed signal was emitted
     if (mFolderUpdated && newDirPath == mCurrentDir) {
         mFolderUpdated = false;
-        QFileInfoList files =
+        DkFileInfoList files =
             DkFileInfo::readDirectory(newDirPath,
                                       mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
 
@@ -205,7 +205,7 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     }
     // new folder is loaded
     else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && info.isDir()) {
-        QFileInfoList files;
+        DkFileInfoList files;
 
         // newDir.setNameFilters(DkSettingsManager::param().app().fileFilters);
         // newDir.setSorting(QDir::LocaleAware);		// TODO: extend
@@ -288,7 +288,7 @@ void DkImageLoader::imagesSorted()
     qDebug() << "images sorted...";
 }
 
-void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
+void DkImageLoader::createImages(const DkFileInfoList &files, bool sort)
 {
     // TODO: change files to QStringList
     DkTimer dt;
@@ -297,13 +297,13 @@ void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
 
     QDate today = QDate::currentDate();
 
-    for (const QFileInfo &f : files) {
-        const QString &fp = f.absoluteFilePath();
+    for (const DkFileInfo &f : files) {
+        const QString &fp = f.path();
         int oIdx = findFileIdx(fp, oldImages);
 
         // NOTE: we had this here: oIdx != -1 && QFileInfo(oldImages.at(oIdx)->filePath()).lastModified() == f.lastModified())
         // however, that did not detect file changes & slowed down the process - so I removed it...
-        mImages << ((oIdx != -1) ? oldImages.at(oIdx) : QSharedPointer<DkImageContainerT>(new DkImageContainerT(DkFileInfo(f))));
+        mImages << ((oIdx != -1) ? oldImages.at(oIdx) : QSharedPointer<DkImageContainerT>(new DkImageContainerT(f)));
     }
     qInfo() << "[DkImageLoader]" << mImages.size() << "containers created in" << dt;
 
@@ -1530,10 +1530,10 @@ QStringList DkImageLoader::getFoldersRecursive(const QString &dirPath)
     return subFolders;
 }
 
-QFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
+DkFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
 {
     mSubFolders = getFoldersRecursive(rootDirPath);
-    QFileInfoList files;
+    DkFileInfoList files;
     qDebug() << mSubFolders;
 
     // find the first subfolder that has images
@@ -1577,7 +1577,8 @@ int DkImageLoader::getSubFolderIdx(int fromIdx, bool forward) const
             return -1;
 
         QDir cDir = mSubFolders[checkIdx];
-        QFileInfoList cFiles = DkFileInfo::readDirectory(cDir.absolutePath());
+        // FIXME: expensive call to read dir discards result
+        DkFileInfoList cFiles = DkFileInfo::readDirectory(cDir.absolutePath());
         if (!cFiles.empty()) {
             idx = checkIdx;
             break;
