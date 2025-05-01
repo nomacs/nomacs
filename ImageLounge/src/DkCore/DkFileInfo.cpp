@@ -236,7 +236,7 @@ const QFileInfo &DkFileInfo::containerInfo() const
 
 #ifdef WITH_QUAZIP
 
-QFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
+DkFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
 {
     QStringList fileNameList = JlCompress::getFileList(zipPath);
 
@@ -255,21 +255,21 @@ QFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
         }
     }
 
-    QFileInfoList fileInfoList;
+    DkFileInfoList fileInfoList;
     // encode both the input zip file and the output image into a single fileInfo
     for (const QString &filePath : fileList)
-        fileInfoList.append(QFileInfo(DkFileInfo::ZipData::encodePath(zipPath, filePath)));
+        fileInfoList.append(DkFileInfo::ZipData::encodePath(zipPath, filePath));
 
     return fileInfoList;
 }
 #endif
 
-QFileInfoList DkFileInfo::readDirectory(const QString &dirPath, QString folderKeywords)
+DkFileInfoList DkFileInfo::readDirectory(const QString &dirPath, QString folderKeywords)
 {
     DkTimer dt;
 
     if (dirPath.isEmpty())
-        return QFileInfoList();
+        return {};
 
 #if WITH_QUAZIP
     if (DkFileInfo(dirPath).isZipFile())
@@ -381,12 +381,10 @@ QFileInfoList DkFileInfo::readDirectory(const QString &dirPath, QString folderKe
 
     // fileList = sort(fileList, dir);
 
-    QFileInfoList fileInfoList;
-
+    DkFileInfoList fileInfoList;
     for (int idx = 0; idx < fileList.size(); idx++)
-        fileInfoList.append(QFileInfo(dirPath, fileList.at(idx)));
+        fileInfoList.append(DkFileInfo(QFileInfo(dirPath, fileList.at(idx))));
 
     return fileInfoList;
 }
-
 }
