@@ -70,32 +70,6 @@ namespace nmc
 {
 class DkMetaDataT;
 
-#ifdef WITH_QUAZIP
-class DllCoreExport DkZipContainer
-{
-public:
-    DkZipContainer(const QString &fileName);
-
-    bool isZip() const;
-    QString getZipFilePath() const;
-    QString getImageFileName() const;
-    QString getEncodedFilePath() const;
-    static QString zipMarker();
-    static QSharedPointer<QByteArray> extractImage(const QString &zipFile, const QString &imageFile);
-    static void extractImage(const QString &zipFile, const QString &imageFile, QByteArray &ba);
-    static QString decodeZipFile(const QString &encodedFileInfo);
-    static QString decodeImageFile(const QString &encodedFileInfo);
-    static QString encodeZipFile(const QString &zipFile, const QString &imageFile);
-
-protected:
-    QString mEncodedFilePath;
-    QString mZipFilePath;
-    QString mImageFileName;
-    bool mImageInZip;
-    static QString mZipMarker;
-};
-#endif
-
 class DllCoreExport DkEditImage
 {
 public:
