@@ -54,11 +54,6 @@
 #include <assert.h>
 #include <qmath.h>
 
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
-#endif
-
 // opencv
 #ifdef WITH_OPENCV
 
@@ -2012,121 +2007,6 @@ QUrl FileDownloader::getUrl() const
 {
     return mUrl;
 }
-
-#ifdef WITH_QUAZIP
-
-QString DkZipContainer::mZipMarker = "dIrChAr";
-
-// DkZipContainer --------------------------------------------------------------------
-DkZipContainer::DkZipContainer(const QString &encodedFilePath)
-{
-    if (!encodedFilePath.isEmpty() && encodedFilePath.contains(mZipMarker)) {
-        mImageInZip = true;
-        mEncodedFilePath = encodedFilePath;
-        mZipFilePath = decodeZipFile(encodedFilePath);
-        mImageFileName = decodeImageFile(encodedFilePath);
-    } else
-        mImageInZip = false;
-}
-
-QString DkZipContainer::encodeZipFile(const QString &zipFile, const QString &imageFile)
-{
-    // if you think this code is unreadable, take a look at the old line:
-    // return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/",
-    // mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
-
-    QDir dir = QDir(zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker));
-    QString fileName = (imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
-
-    return QFileInfo(dir, fileName).absoluteFilePath();
-}
-
-QString DkZipContainer::decodeZipFile(const QString &encodedFileInfo)
-{
-    QString encodedDir = QFileInfo(encodedFileInfo).absolutePath();
-
-    return encodedDir.left(encodedDir.indexOf(mZipMarker));
-}
-
-QString DkZipContainer::decodeImageFile(const QString &encodedFileInfo)
-{
-    // get relative zip path
-    QString tmp = encodedFileInfo.right(encodedFileInfo.size() - encodedFileInfo.indexOf(mZipMarker) - QString(mZipMarker).size());
-    tmp = tmp.replace(mZipMarker, "/");
-    tmp = tmp.replace("//", "/");
-
-    // diem: this fixes an issue with images that are in a zip's root folder
-    if (tmp.startsWith("/"))
-        tmp = tmp.right(tmp.length() - 1);
-
-    return tmp;
-}
-
-QSharedPointer<QByteArray> DkZipContainer::extractImage(const QString &zipFile, const QString &imageFile)
-{
-    QuaZip zip(zipFile);
-    if (!zip.open(QuaZip::mdUnzip))
-        return QSharedPointer<QByteArray>(new QByteArray());
-
-    qDebug() << "DkZip::extractImage filePath: " << zipFile;
-    qDebug() << "3.0 image file" << imageFile;
-
-    zip.setCurrentFile(imageFile);
-    QuaZipFile extractedFile(&zip);
-    if (!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK)
-        return QSharedPointer<QByteArray>(new QByteArray());
-
-    QSharedPointer<QByteArray> ba(new QByteArray(extractedFile.readAll()));
-    extractedFile.close();
-
-    zip.close();
-
-    return ba;
-}
-
-void DkZipContainer::extractImage(const QString &zipFile, const QString &imageFile, QByteArray &ba)
-{
-    QuaZip zip(zipFile);
-    if (!zip.open(QuaZip::mdUnzip))
-        return;
-
-    zip.setCurrentFile(imageFile);
-    QuaZipFile extractedFile(&zip);
-    if (!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK)
-        return;
-
-    ba = QByteArray(extractedFile.readAll());
-    extractedFile.close();
-
-    zip.close();
-}
-
-bool DkZipContainer::isZip() const
-{
-    return mImageInZip;
-}
-
-QString DkZipContainer::getZipFilePath() const
-{
-    return mZipFilePath;
-}
-
-QString DkZipContainer::getImageFileName() const
-{
-    return mImageFileName;
-}
-
-QString DkZipContainer::getEncodedFilePath() const
-{
-    return mEncodedFilePath;
-}
-
-QString DkZipContainer::zipMarker()
-{
-    return mZipMarker;
-}
-
-#endif
 
 // DkRawLoader --------------------------------------------------------------------
 DkRawLoader::DkRawLoader(const QString &filePath, const QSharedPointer<DkMetaDataT> &metaData)
