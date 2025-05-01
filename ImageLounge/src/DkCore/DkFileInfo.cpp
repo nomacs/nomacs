@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkUtils.h"
 
 #ifdef WITH_QUAZIP
-#include "DkBasicLoader.h"
+#include "DkBasicLoader.h" // TODO: move isContainer() here
 #include <quazip/JlCompress.h>
 #endif
 
@@ -40,6 +40,78 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace nmc
 {
+
+#ifdef WITH_QUAZIP
+
+QString DkFileInfo::ZipData::mZipMarker = "dIrChAr";
+
+// DkZipContainer --------------------------------------------------------------------
+DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
+{
+    if (!encodedFilePath.isEmpty() && encodedFilePath.contains(mZipMarker)) {
+        mImageInZip = true;
+        mEncodedFilePath = encodedFilePath;
+        mZipFilePath = decodeZipFile(encodedFilePath);
+        mImageFileName = decodeImageFile(encodedFilePath);
+    } else
+        mImageInZip = false;
+}
+
+QString DkFileInfo::ZipData::encodeZipFile(const QString &zipFile, const QString &imageFile)
+{
+    // if you think this code is unreadable, take a look at the old line:
+    // return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/",
+    // mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
+
+    QDir dir = QDir(zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker));
+    QString fileName = (imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
+
+    return QFileInfo(dir, fileName).absoluteFilePath();
+}
+
+QString DkFileInfo::ZipData::decodeZipFile(const QString &encodedFileInfo)
+{
+    QString encodedDir = QFileInfo(encodedFileInfo).absolutePath();
+
+    return encodedDir.left(encodedDir.indexOf(mZipMarker));
+}
+
+QString DkFileInfo::ZipData::decodeImageFile(const QString &encodedFileInfo)
+{
+    // get relative zip path
+    QString tmp = encodedFileInfo.right(encodedFileInfo.size() - encodedFileInfo.indexOf(mZipMarker) - QString(mZipMarker).size());
+    tmp = tmp.replace(mZipMarker, "/");
+    tmp = tmp.replace("//", "/");
+
+    // diem: this fixes an issue with images that are in a zip's root folder
+    if (tmp.startsWith("/"))
+        tmp = tmp.right(tmp.length() - 1);
+
+    return tmp;
+}
+
+bool DkFileInfo::ZipData::isZip() const
+{
+    return mImageInZip;
+}
+
+QString DkFileInfo::ZipData::getZipFilePath() const
+{
+    return mZipFilePath;
+}
+
+QString DkFileInfo::ZipData::getImageFileName() const
+{
+    return mImageFileName;
+}
+
+QString DkFileInfo::ZipData::zipMarker()
+{
+    return mZipMarker;
+}
+
+#endif
+
 DkFileInfo::SharedData::SharedData(const QFileInfo &info)
     : mFileInfo(info)
     , mContainerInfo()
@@ -210,7 +282,7 @@ const QFileInfo &DkFileInfo::containerInfo() const
 
 #ifdef WITH_QUAZIP
 
-static QFileInfoList readZipArchive(const QString &zipPath)
+QFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
 {
     QStringList fileNameList = JlCompress::getFileList(zipPath);
 
@@ -232,7 +304,7 @@ static QFileInfoList readZipArchive(const QString &zipPath)
     QFileInfoList fileInfoList;
     // encode both the input zip file and the output image into a single fileInfo
     for (const QString &filePath : fileList)
-        fileInfoList.append(QFileInfo(DkZipContainer::encodeZipFile(zipPath, filePath)));
+        fileInfoList.append(QFileInfo(DkFileInfo::ZipData::encodeZipFile(zipPath, filePath)));
 
     return fileInfoList;
 }

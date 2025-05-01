@@ -26,10 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QFileInfo>
 
-#if WITH_QUAZIP
-#include "DkBasicLoader.h" // FIXME: this only to import DkZipContainer
-#endif
-
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT
@@ -141,6 +137,34 @@ private:
     // info of the container, if it is a local file, otherwise invalid
     const QFileInfo &containerInfo() const;
 
+#ifdef WITH_QUAZIP
+
+    static QFileInfoList readZipArchive(const QString &zipPath);
+
+    class ZipData
+    {
+    public:
+        ZipData(const QString &fileName);
+
+        bool isZip() const;
+        QString getZipFilePath() const;
+        QString getImageFileName() const;
+        static QString encodeZipFile(const QString &zipFile, const QString &imageFile);
+
+    private:
+        static QString zipMarker();
+        static QString decodeZipFile(const QString &encodedFileInfo);
+        static QString decodeImageFile(const QString &encodedFileInfo);
+
+        static QString mZipMarker;
+
+        QString mEncodedFilePath;
+        QString mZipFilePath;
+        QString mImageFileName;
+        bool mImageInZip;
+    };
+#endif
+
     class SharedData : public QSharedData
     {
         friend class DkFileInfo;
@@ -150,7 +174,7 @@ private:
         QFileInfo mFileInfo; // only valid if path() is an ordinary file
         QFileInfo mContainerInfo; // only valid if container is an ordinary file
 #if WITH_QUAZIP
-        DkZipContainer mZipData; // todo: move relevant parts of DkZipContainer here
+        ZipData mZipData;
 #endif
     };
 
