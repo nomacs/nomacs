@@ -144,24 +144,31 @@ private:
     class ZipData
     {
     public:
-        ZipData(const QString &fileName);
+        ZipData(const QString &encodedFilePath);
 
-        bool isZip() const;
-        QString getZipFilePath() const;
-        QString getImageFileName() const;
-        static QString encodeZipFile(const QString &zipFile, const QString &imageFile);
+        bool isZipMember() const
+        {
+            return mIsMember;
+        }
+
+        QString zipFilePath() const
+        {
+            return mZipFilePath;
+        }
+
+        QString zipMemberPath() const
+        {
+            return mZipMemberPath;
+        }
+
+        static QString encodePath(const QString &zipFilePath, const QString &memberPath);
 
     private:
-        static QString zipMarker();
-        static QString decodeZipFile(const QString &encodedFileInfo);
-        static QString decodeImageFile(const QString &encodedFileInfo);
+        static const QString mZipMarker;
 
-        static QString mZipMarker;
-
-        QString mEncodedFilePath;
         QString mZipFilePath;
-        QString mImageFileName;
-        bool mImageInZip;
+        QString mZipMemberPath;
+        bool mIsMember = false;
     };
 #endif
 
