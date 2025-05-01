@@ -369,7 +369,7 @@ public:
     void setHistoryIndex(int idx);
     int historyIndex() const;
 
-    QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath) const;
+    static QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath);
     bool writeBufferToFile(const QString &fileInfo, const QSharedPointer<QByteArray> ba) const;
 
     void release();

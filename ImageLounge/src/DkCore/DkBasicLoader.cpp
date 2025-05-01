@@ -1129,40 +1129,16 @@ void DkBasicLoader::setHistoryIndex(int idx)
     // TODO update mMetaData, see undo()
 }
 
-// QByteArray DkBasicLoader::loadFileToBuffer(const QString &filePath) const
-// {
-//     QFileInfo fi(filePath);
-
-//     if (!fi.exists())
-//         return;
-
-// #ifdef WITH_QUAZIP
-//     if (fi.dir().path().contains(DkZipContainer::zipMarker()))
-//         DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath), ba);
-// #endif
-
-//     QFile file(filePath);
-//     file.open(QIODevice::ReadOnly);
-
-//     ba = file.readAll();
-// }
-
-QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath) const
+QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath)
 {
-    QFileInfo fi(filePath);
+    DkFileInfo file(filePath);
+    Q_ASSERT(file.isFile());
 
-#ifdef WITH_QUAZIP
-    if (fi.dir().path().contains(DkZipContainer::zipMarker()))
-        return DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
-#endif
+    auto io = file.getIoDevice();
+    if (!io)
+        return {};
 
-    QFile file(filePath);
-    file.open(QIODevice::ReadOnly);
-
-    QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
-    file.close();
-
-    return ba;
+    return QSharedPointer<QByteArray>(new QByteArray(io->readAll()));
 }
 
 /**
