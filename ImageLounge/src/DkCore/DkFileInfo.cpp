@@ -241,6 +241,26 @@ QDateTime DkFileInfo::lastRead() const
     return d->mFileInfo.lastRead();
 }
 
+QString DkFileInfo::owner() const
+{
+    return containerInfo().owner();
+}
+
+uint DkFileInfo::ownerId() const
+{
+    return containerInfo().ownerId();
+}
+
+QString DkFileInfo::group() const
+{
+    return containerInfo().group();
+}
+
+QFile::Permissions DkFileInfo::permissions() const
+{
+    return containerInfo().permissions();
+}
+
 bool DkFileInfo::permission(QFileDevice::Permissions flags) const
 {
     return containerInfo().permission(flags);
@@ -269,12 +289,20 @@ bool DkFileInfo::resolveShortcut()
     return exists();
 }
 
+bool DkFileInfo::isSymLink() const
+{
+    return containerInfo().isSymLink();
+}
+
+QString DkFileInfo::symLinkTarget() const
+{
+    return containerInfo().symLinkTarget();
+}
+
 qint64 DkFileInfo::size() const
 {
-#ifdef WITH_QUAZIP
     if (isFromZip())
         return d->mZipData.size();
-#endif
     return d->mFileInfo.size();
 }
 
