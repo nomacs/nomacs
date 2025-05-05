@@ -41,28 +41,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace nmc
 {
 
-#ifdef WITH_QUAZIP
-
 // this is the same marker as KIO
 const QString DkFileInfo::ZipData::mZipMarker = "#/";
 
 DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
 {
+#ifdef WITH_QUAZIP
     qsizetype index = encodedFilePath.indexOf(mZipMarker);
     if (index > 0) {
         mIsMember = true;
         mZipFilePath = encodedFilePath.mid(0, index);
         mZipMemberPath = encodedFilePath.mid(index + mZipMarker.length());
+        readMetaData();
     }
+#else
+    (void)encodedFilePath;
+#endif
 }
 
+#ifdef WITH_QUAZIP
 DkFileInfo::ZipData::ZipData(const QString &zipFile, const QuaZipFileInfo64 &info)
 {
     mIsMember = true;
+    mIsCached = true;
     mZipFilePath = zipFile;
     mZipMemberPath = info.name;
+    setMetaData(info);
+}
+
+void DkFileInfo::ZipData::setMetaData(const QuaZipFileInfo64 &info)
+{
     mDecompressedSize = info.uncompressedSize;
     mModified = info.dateTime;
+    // TODO: haven't found a zip that has created/accessed
     mCreated = info.getExtTime(info.extra, 4);
     if (!mCreated.isValid())
         mCreated = info.getNTFScTime();
@@ -70,6 +81,8 @@ DkFileInfo::ZipData::ZipData(const QString &zipFile, const QuaZipFileInfo64 &inf
     if (!mAccessed.isValid())
         mAccessed = info.getNTFSaTime();
 }
+
+#endif
 
 QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QString &memberPath)
 {
@@ -79,32 +92,53 @@ QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QStrin
     return zipFilePath + mZipMarker + memberPath;
 }
 
+void DkFileInfo::ZipData::readMetaData()
+{
+    if (mIsCached)
+        return;
+#ifdef WITH_QUAZIP
+    // FIXME: this is a bit slow on large zipfiles, readZipArchive() could cache it
+    QuaZip zip(mZipFilePath);
+    if (!zip.open(QuaZip::mdUnzip)) {
+        qWarning() << "[FileInfo] zip: open failed:" << mZipFilePath << zip.getZipError();
+        zip.getZipError();
+        return;
+    }
+
+    if (!zip.setCurrentFile(mZipMemberPath)) {
+        qWarning() << "[FileInfo] zip: locate failed:" << mZipFilePath << zip.getZipError();
+        zip.getZipError();
+        return;
+    }
+
+    QuaZipFileInfo64 info;
+    if (!zip.getCurrentFileInfo(&info)) {
+        qWarning() << "[FileInfo] zip: decompress failed:" << mZipFilePath << zip.getZipError();
+        zip.getZipError();
+        return;
+    }
+
+    setMetaData(info);
 #endif
+}
 
 DkFileInfo::SharedData::SharedData(const QFileInfo &info)
     : mFileInfo(info)
-#if WITH_QUAZIP
     , mZipData(info.absoluteFilePath())
-#endif
 {
-#ifdef WITH_QUAZIP
     if (mZipData.isZipMember())
         mContainerInfo.setFile(mZipData.zipFilePath());
-#endif
 }
 
+#ifdef WITH_QUAZIP
 DkFileInfo::SharedData::SharedData(const QString &zipPath, const QuaZipFileInfo64 &info)
     : mFileInfo(ZipData::encodePath(zipPath, info.name))
-    ,
-#ifdef WITH_QUAZIP
-    mZipData(zipPath, info)
-#endif
+    , mZipData(zipPath, info)
 {
-#ifdef WITH_QUAZIP
     if (mZipData.isZipMember())
         mContainerInfo.setFile(mZipData.zipFilePath());
-#endif
 }
+#endif
 
 DkFileInfo::DkFileInfo(const QString &path)
 {
@@ -123,10 +157,8 @@ DkFileInfo::DkFileInfo(SharedData *shared)
 
 DkFileInfo::operator QFileInfo() const
 {
-#if WITH_QUAZIP
     if (isFromZip())
         qWarning() << "[FileInfo] cast to QFileInfo breaks zip files";
-#endif
     return d->mFileInfo;
 }
 
@@ -146,13 +178,13 @@ QSharedPointer<QIODevice> DkFileInfo::getIoDevice() const
 {
     QSharedPointer<QIODevice> io;
 
+    if (isFromZip()) {
 #ifdef WITH_QUAZIP
-    if (isFromZip())
         io.reset(new QuaZipFile(d->mZipData.zipFilePath(), d->mZipData.zipMemberPath()));
 #endif
-
-    if (!io)
+    } else {
         io.reset(new QFile(path()));
+    }
 
     if (!io->open(QIODevice::ReadOnly)) {
         qWarning() << "[FileInfo] failed to open i/o" << path() << io->errorString();
@@ -216,28 +248,22 @@ QString DkFileInfo::suffix() const
 
 QDateTime DkFileInfo::birthTime() const
 {
-#if WITH_QUAZIP
     if (isFromZip())
         return d->mZipData.birthTime();
-#endif
     return d->mFileInfo.birthTime();
 }
 
 QDateTime DkFileInfo::lastModified() const
 {
-#if WITH_QUAZIP
     if (isFromZip())
         return d->mZipData.lastModified();
-#endif
     return d->mFileInfo.lastModified();
 }
 
 QDateTime DkFileInfo::lastRead() const
 {
-#if WITH_QUAZIP
     if (isFromZip())
         return d->mZipData.lastRead();
-#endif
     return d->mFileInfo.lastRead();
 }
 
