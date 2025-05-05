@@ -328,7 +328,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // - if the suffix has no match in Qt, this will fail
     // - if the suffix is empty, plugins will check the file header
     LoaderResult result;
-    if (loader.isNull() && qtFormats.contains(suffix) || suffix.isEmpty()) {
+    if (loader.isNull() && (qtFormats.contains(suffix) || suffix.isEmpty())) {
         result = loadQt(mFile, ba, suffix);
         if (result.ok) {
             loader = "qt";
@@ -401,6 +401,10 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     if (!loader.isNull() && !mPageIdxDirty)
         indexPages(mFile, ba);
     mPageIdxDirty = false;
+
+    // copy QImage::text() data to DkMetaData
+    if (!loader.isNull())
+        mMetaData->setQtValues(img);
 
     int rotation = DkMetaDataT::or_invalid;
     bool mirrored = false;
