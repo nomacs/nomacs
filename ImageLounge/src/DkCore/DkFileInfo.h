@@ -88,15 +88,10 @@ public:
     bool isFromZip() const;
     bool isZipFile() const;
 #else
-    bool isFromZip() const
-    {
-        return false;
-    }
-
-    bool isZipFile() const
-    {
-        return false;
-    }
+    // clang-format off
+    bool isFromZip() const { return false; }
+    bool isZipFile() const { return false; }
+    // clang-format on
 #endif
 
     // return i/o open for reading
@@ -154,7 +149,6 @@ private:
     // info of the container, if it is a local file, otherwise invalid
     const QFileInfo &containerInfo() const;
 
-#ifdef WITH_QUAZIP
     static DkFileInfoList readZipArchive(const QString &zipPath);
 
     class ZipData
@@ -166,7 +160,11 @@ private:
         static QString encodePath(const QString &zipFilePath, const QString &memberPath);
 
         // clang-format off
-        bool isZipMember() const       { return mIsMember; }
+#ifdef WITH_QUAZIP
+        bool isZipMember() const { return mIsMember; }
+#else
+        bool isZipMember() const { return false; }
+#endif
         QString zipFilePath() const    { return mZipFilePath; }
         QString zipMemberPath() const  { return mZipMemberPath; }
         qint64 size() const            { return mDecompressedSize; }
@@ -178,15 +176,20 @@ private:
     private:
         static const QString mZipMarker;
 
+        void setMetaData(const QuaZipFileInfo64 &info);
+        void readMetaData();
+
         QString mZipFilePath;
         QString mZipMemberPath;
-        bool mIsMember = false;
-        qint64 mDecompressedSize = 0;
+
         QDateTime mModified;
         QDateTime mCreated;
         QDateTime mAccessed;
+
+        qint64 mDecompressedSize = 0;
+        bool mIsMember = false;
+        bool mIsCached = false;
     };
-#endif
 
     class SharedData : public QSharedData
     {
@@ -196,11 +199,9 @@ private:
         SharedData(const QFileInfo &info);
         SharedData(const QString &zipPath, const QuaZipFileInfo64 &info);
 
-        QFileInfo mFileInfo; // only valid if path() is an ordinary file
-        QFileInfo mContainerInfo; // only valid if container is an ordinary file
-#if WITH_QUAZIP
+        QFileInfo mFileInfo; // zip: constructed from encoded path in the zipfile
+        QFileInfo mContainerInfo; // zip: info of the .zip file itself
         ZipData mZipData;
-#endif
     };
 
     QSharedDataPointer<SharedData> d;
