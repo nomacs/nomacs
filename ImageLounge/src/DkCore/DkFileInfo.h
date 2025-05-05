@@ -134,10 +134,19 @@ public:
     QDateTime birthTime() const;
     QDateTime lastModified() const;
     QDateTime lastRead() const;
+
+    QString owner() const;
+    uint ownerId() const;
+    QString group() const;
+    QFileDevice::Permissions permissions() const;
+
     bool permission(QFile::Permissions flags) const;
 
     bool isShortcut() const;
     bool resolveShortcut();
+
+    bool isSymLink() const;
+    QString symLinkTarget() const;
 
     qint64 size() const;
 
