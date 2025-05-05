@@ -62,7 +62,7 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
 {
     // Copy Exiv2::Image object
     QSharedPointer<DkMetaDataT> metaDataN(new DkMetaDataT());
-    metaDataN->mFilePath = mFilePath;
+    metaDataN->mFileInfo = mFileInfo;
     metaDataN->mExifState = mExifState;
 
     if (mExifImg.get() != 0) {
@@ -96,26 +96,26 @@ void DkMetaDataT::update(const QSharedPointer<DkMetaDataT> &other)
     mExifImg->setExifData(src->mExifImg->exifData()); // explicit copy of list<Exifdatum>
 }
 
-void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArray> ba)
+void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray> ba)
 {
     mExifState = no_data;
 
     if (mUseSidecar) {
-        loadSidecar(filePath);
+        loadSidecar(file.path());
         return;
     }
 
-    mFilePath = filePath;
-    QFileInfo fileInfo(filePath);
+    mFileInfo = file;
+    if (mFileInfo.isShortcut() && !mFileInfo.resolveShortcut()) {
+        qWarning() << "[DkMetaDataT] broken shortcut" << file.path();
+        return;
+    }
 
     try {
         if (!ba || ba->isEmpty()) {
-            // we used to have a few ugly lines here, just to get unicode files loaded
-            // since we load 99% through the buffer & we cannot use /Zc:wchar_t- (as of Qt5.10)
-            // I removed these lines - so if we don't have the buffer, we can only load the metadata
-            // of files that use std::string literals in their path
-            std::string strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdString() : filePath.toStdString();
-            mExifImg = Exiv2::ImageFactory::open(strFilePath);
+            // FIXME: this does not support unicode file names on windows
+            // we could use DkFileInfo::getIoDevice() and subclass Exiv2::BasicIo
+            mExifImg = Exiv2::ImageFactory::open(qUtf8Printable(mFileInfo.path()));
         } else {
             mExifImg = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba->constData()), ba->size());
         }
@@ -123,7 +123,7 @@ void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArra
     } catch (...) {
         // TODO: check crashes here
         // qDebug() << "[Exiv2] could not open file for exif data";
-        qInfo() << "[Exiv2] could not load Exif data from file:" << filePath;
+        qInfo() << "[Exiv2] could not load Exif data from file:" << file;
         return;
     }
 
@@ -162,36 +162,49 @@ void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArra
  * Note that this changes the file (again).
  * It's a wrapper around the real saveMetaData() function, which works with an in-memory copy.
  *
- * @param filePath path to the file to be read and updated
+ * @param fileInfo file to be read and updated
  * @param force update file even if no exif data has been changed
  */
-bool DkMetaDataT::saveMetaData(const QString &filePath, bool force)
+bool DkMetaDataT::saveMetaData(const DkFileInfo &fileInfo, bool force)
 {
     if (mExifState != loaded && mExifState != dirty)
         return false;
 
-    // Open image file for reading, read whole file into memory
-    QFile file(filePath);
-    file.open(QFile::ReadOnly);
-    QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
-    file.close();
+    QSharedPointer<QByteArray> ba;
+    {
+        auto io = fileInfo.getIoDevice();
+        if (!io) {
+            qWarning() << "[DkMetaDataT] could not open for reading:" << fileInfo.fileName();
+            return false;
+        }
+        ba.reset(new QByteArray(io->readAll()));
+    }
 
     // Write modified metadata (from this instance) to mExifImg and then to ba (in-memory image file)
     bool saved = saveMetaData(ba, force);
     if (!saved) {
-        qDebug() << "[DkMetaDataT] could not save: " << QFileInfo(filePath).fileName();
+        qDebug() << "[DkMetaDataT] could not save: " << fileInfo.fileName();
         return saved;
     } else if (ba->isEmpty()) {
-        qDebug() << "[DkMetaDataT] could not save: " << QFileInfo(filePath).fileName() << " empty Buffer!";
+        qDebug() << "[DkMetaDataT] could not save: " << fileInfo.fileName() << " empty Buffer!";
         return false;
     }
 
-    // Open image file for WRITING, save it with modified metadata
-    file.open(QFile::WriteOnly);
-    file.write(ba->data(), ba->size());
-    file.close();
+    // FIXME: zip: test if file is writable here
 
-    qInfo() << "[DkMetaDataT] I saved: " << ba->size() << " bytes";
+    // Open image file for WRITING, save it with modified metadata
+    QFile file(fileInfo.path());
+    if (!file.open(QFile::WriteOnly)) {
+        qWarning() << "[DkMetaDataT] could not open for writing:" << fileInfo.fileName() << file.error() << file.errorString();
+        return false;
+    }
+
+    if (ba->size() != file.write(ba->data(), ba->size())) {
+        qWarning() << "[DkMetaDataT] write failed:" << fileInfo.fileName() << file.error() << file.errorString();
+        return false;
+    }
+
+    qInfo() << "[DkMetaDataT] " << fileInfo.fileName() << "wrote" << ba->size() << " bytes";
 
     return true;
 }
@@ -580,70 +593,69 @@ QString DkMetaDataT::getIptcValue(const QString &key) const
 
 void DkMetaDataT::getFileMetaData(QStringList &fileKeys, QStringList &fileValues) const
 {
-    QFileInfo fileInfo(mFilePath);
     fileKeys.append(QObject::tr("Filename"));
-    fileValues.append(fileInfo.fileName());
+    fileValues.append(mFileInfo.fileName());
 
     fileKeys.append(QObject::tr("Path"));
-    fileValues.append(fileInfo.absolutePath());
+    fileValues.append(mFileInfo.path());
 
-    if (fileInfo.isSymLink()) {
+    if (mFileInfo.isSymLink()) {
         fileKeys.append(QObject::tr("Target"));
-        fileValues.append(fileInfo.symLinkTarget());
+        fileValues.append(mFileInfo.symLinkTarget());
     }
 
     fileKeys.append(QObject::tr("Size"));
-    fileValues.append(DkUtils::readableByte((float)fileInfo.size()));
+    fileValues.append(DkUtils::readableByte((float)mFileInfo.size()));
 
     // date group
     fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Created"));
-    fileValues.append(fileInfo.birthTime().toString());
+    fileValues.append(mFileInfo.birthTime().toString());
 
     fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Modified"));
-    fileValues.append(fileInfo.lastModified().toString());
+    fileValues.append(mFileInfo.lastModified().toString());
 
     fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Read"));
-    fileValues.append(fileInfo.lastRead().toString());
+    fileValues.append(mFileInfo.lastRead().toString());
 
-    if (!fileInfo.owner().isEmpty()) {
+    if (!mFileInfo.owner().isEmpty()) {
         fileKeys.append(QObject::tr("Owner"));
-        fileValues.append(fileInfo.owner());
+        fileValues.append(mFileInfo.owner());
     }
 
     fileKeys.append(QObject::tr("OwnerID"));
-    fileValues.append(QString::number(fileInfo.ownerId()));
+    fileValues.append(QString::number(mFileInfo.ownerId()));
 
-    if (!fileInfo.group().isEmpty()) {
+    if (!mFileInfo.group().isEmpty()) {
         fileKeys.append(QObject::tr("Group"));
-        fileValues.append(fileInfo.group());
+        fileValues.append(mFileInfo.group());
     }
 
     QString permissionString;
     fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Owner"));
-    permissionString += fileInfo.permissions() & QFile::ReadOwner ? "r" : "-";
-    permissionString += fileInfo.permissions() & QFile::WriteOwner ? "w" : "-";
-    permissionString += fileInfo.permissions() & QFile::ExeOwner ? "x" : "-";
+    permissionString += mFileInfo.permissions() & QFile::ReadOwner ? "r" : "-";
+    permissionString += mFileInfo.permissions() & QFile::WriteOwner ? "w" : "-";
+    permissionString += mFileInfo.permissions() & QFile::ExeOwner ? "x" : "-";
     fileValues.append(permissionString);
 
     permissionString = "";
     fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("User"));
-    permissionString += fileInfo.permissions() & QFile::ReadUser ? "r" : "-";
-    permissionString += fileInfo.permissions() & QFile::WriteUser ? "w" : "-";
-    permissionString += fileInfo.permissions() & QFile::ExeUser ? "x" : "-";
+    permissionString += mFileInfo.permissions() & QFile::ReadUser ? "r" : "-";
+    permissionString += mFileInfo.permissions() & QFile::WriteUser ? "w" : "-";
+    permissionString += mFileInfo.permissions() & QFile::ExeUser ? "x" : "-";
     fileValues.append(permissionString);
 
     permissionString = "";
     fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Group"));
-    permissionString += fileInfo.permissions() & QFile::ReadGroup ? "r" : "-";
-    permissionString += fileInfo.permissions() & QFile::WriteGroup ? "w" : "-";
-    permissionString += fileInfo.permissions() & QFile::ExeGroup ? "x" : "-";
+    permissionString += mFileInfo.permissions() & QFile::ReadGroup ? "r" : "-";
+    permissionString += mFileInfo.permissions() & QFile::WriteGroup ? "w" : "-";
+    permissionString += mFileInfo.permissions() & QFile::ExeGroup ? "x" : "-";
     fileValues.append(permissionString);
 
     permissionString = "";
     fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Other"));
-    permissionString += fileInfo.permissions() & QFile::ReadOther ? "r" : "-";
-    permissionString += fileInfo.permissions() & QFile::WriteOther ? "w" : "-";
-    permissionString += fileInfo.permissions() & QFile::ExeOther ? "x" : "-";
+    permissionString += mFileInfo.permissions() & QFile::ReadOther ? "r" : "-";
+    permissionString += mFileInfo.permissions() & QFile::WriteOther ? "w" : "-";
+    permissionString += mFileInfo.permissions() & QFile::ExeOther ? "x" : "-";
     fileValues.append(permissionString);
 
     QStringList tmpKeys;
@@ -801,38 +813,32 @@ bool DkMetaDataT::isLoaded() const
 
 bool DkMetaDataT::isTiff() const
 {
-    QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegularExpression("(tif|tiff)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(tif|tiff)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isJpg() const
 {
-    QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegularExpression("(jpg|jpeg)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(jpg|jpeg)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isRaw() const
 {
-    QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegularExpression("(nef|crw|cr2|arw)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(nef|crw|cr2|arw)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isAVIF() const
 {
-    QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegularExpression("(avif)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(avif)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isHEIF() const
 {
-    QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegularExpression("(heic|heif)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(heic|heif)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isJXL() const
 {
-    QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegularExpression("(jxl)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(jxl)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isDirty() const
