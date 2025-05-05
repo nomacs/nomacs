@@ -100,6 +100,7 @@ namespace nmc
 {
 
 // nomacs defines
+class DkFileInfo;
 class TreeItem;
 
 /**
@@ -130,15 +131,15 @@ public:
 
     static bool compLogicQString(const QString &lhs, const QString &rhs);
 
-    static bool compFilename(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compFilename(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool compFileSize(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compFileSize(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compDateCreated(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool compDateModified(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compDateModified(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool compRandom(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compRandom(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
     static bool naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity cs = Qt::CaseSensitive);
 
