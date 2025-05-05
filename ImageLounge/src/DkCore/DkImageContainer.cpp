@@ -225,7 +225,7 @@ std::function<bool(const QSharedPointer<DkImageContainer> &, const QSharedPointe
 {
     // select from the assortment of QFileInfo functions; if there isn't one use this one
     // future: exif, custom sorting, etc can all be tied in here, need not be QFileInfo
-    std::function<bool(const QFileInfo &, const QFileInfo &FileInfo)> cmp;
+    std::function<bool(const DkFileInfo &, const DkFileInfo &FileInfo)> cmp;
 
     int mode = DkSettingsManager::param().global().sortMode;
 
