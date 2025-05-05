@@ -33,6 +33,7 @@
 #include <QStringList>
 
 // code for metadata crop:
+#include "DkFileInfo.h"
 #include "DkMath.h"
 
 #if defined(__clang__)
@@ -96,8 +97,8 @@ public:
         or_valid = 0,
     };
 
-    void readMetaData(const QString &filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-    bool saveMetaData(const QString &filePath, bool force = false);
+    void readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+    bool saveMetaData(const DkFileInfo &file, bool force = false);
     bool saveMetaData(QSharedPointer<QByteArray> &ba, bool force = false);
 
     /**
@@ -179,7 +180,7 @@ protected:
     };
 
     std::unique_ptr<Exiv2::Image> mExifImg;
-    QString mFilePath;
+    DkFileInfo mFileInfo;
     QStringList mQtKeys;
     QStringList mQtValues;
 

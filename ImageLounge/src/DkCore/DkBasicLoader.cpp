@@ -233,8 +233,13 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 {
     DkTimer dt;
 
-    mFile = DkUtils::resolveSymLink(filePath);
-    const QFileInfo fileInfo(mFile); // resolved windows shortcut(.lnk)
+    DkFileInfo fileInfo(filePath);
+    if (fileInfo.isShortcut() && !fileInfo.resolveShortcut()) {
+        qWarning() << "[Loader] broken shortcut:" << fileInfo.fileName();
+        return false;
+    }
+    mFile = fileInfo.path();
+
     const QByteArray suffix = fileInfo.suffix().toLower().toLatin1();
 
     // name of the load method for tracing and also indicates if we loaded successfully
@@ -256,7 +261,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // however, the old nomacs wrote 0 if the orientation should be cleared
     // so we simply adopt the memory here
     if (loadMetaData)
-        mMetaData->readMetaData(filePath, ba);
+        mMetaData->readMetaData(fileInfo, ba);
 
     static const QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
     static const QList<QByteArray> drifFormats{"drif", "yuv", "raw"};
