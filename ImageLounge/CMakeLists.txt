@@ -77,7 +77,7 @@ elseif (MSVC)
     endif()
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
@@ -92,10 +92,6 @@ if(${QT_VERSION_MAJOR} VERSION_GREATER_EQUAL "6")
     if(NOT MSVC)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
     endif()
-
-    # We need these to biuld with Qt6
-    set(CMAKE_CXX_STANDARD 17)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
 if (NOT ENABLE_QT_DEBUG)

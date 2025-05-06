@@ -51,7 +51,7 @@
 namespace nmc
 {
 // DkControlWidget --------------------------------------------------------------------
-DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags)
+DkControlWidget::DkControlWidget(DkThumbLoader *thumbLoader, DkViewPort *parent, Qt::WindowFlags flags)
     : DkWidget(parent, flags)
 {
     mViewport = parent;
@@ -62,7 +62,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags)
     mCropWidget = new DkCropWidget(QRectF(), this);
 
     // thumbnails, metadata
-    mFilePreview = new DkFilePreview(this, flags);
+    mFilePreview = new DkFilePreview(thumbLoader, this, flags);
     mMetaDataInfo = new DkMetaDataHUD(this);
     mZoomWidget = new DkZoomWidget(this);
     mPlayer = new DkPlayer(this);

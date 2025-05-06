@@ -119,7 +119,7 @@ public:
     static QPixmap loadIcon(const QString &filePath = QString(), const QSize &size = QSize(), const QColor &col = QColor());
     static QPixmap loadIcon(const QString &filePath, const QColor &col, const QSize &size = QSize());
     static QPixmap loadFromSvg(const QString &filePath, const QSize &size);
-    static QImage createThumb(const QImage &img, const int maxSize = -1);
+    static QImage createThumb(const QImage &img, int maxSize = -1);
     static uchar findHistPeak(const int *hist, float quantile = 0.005f);
     static QPixmap makeSquare(const QPixmap &pm);
     static QPixmap merge(const QVector<QImage> &imgs);
