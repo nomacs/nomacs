@@ -382,18 +382,37 @@ class DkRecentDir
 public:
     DkRecentDir(const QStringList &filePaths = QStringList(), bool pinned = false);
 
-    bool operator==(const DkRecentDir &o) const;
-    void update(const DkRecentDir &o);
+    // copy file paths from another dir
+    void update(const DkRecentDir &dir);
 
-    bool isEmpty() const;
-    bool isPinned() const;
+    // remove paths from recent files/pinned files settings
+    void removeFromHistory() const;
+
+    bool operator==(const DkRecentDir &dir) const
+    {
+        return dirPath() == dir.dirPath();
+    }
+
+    bool isEmpty() const
+    {
+        return mFilePaths.isEmpty();
+    }
+
+    bool isPinned() const
+    {
+        return mIsPinned;
+    }
 
     QString dirName() const;
     QString dirPath() const;
-    QString firstFilePath() const;
-    QStringList filePaths(int max = -1) const;
 
-    void remove() const;
+    QString firstFilePath() const
+    {
+        return mFilePaths.value(0);
+    }
+
+    // get up to max most-recent paths
+    QStringList filePaths(int max = -1) const;
 
 private:
     QStringList mFilePaths;
@@ -405,7 +424,10 @@ class DkRecentDirManager
 public:
     DkRecentDirManager();
 
-    QList<DkRecentDir> recentDirs() const;
+    QList<DkRecentDir> recentDirs() const
+    {
+        return mDirs;
+    }
 
 private:
     QList<DkRecentDir> genFileLists(const QStringList &filePaths, bool pinned = false);
