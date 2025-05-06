@@ -53,7 +53,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0 # ensure full history for git rev-parse
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Install build dependencies
         run: |
@@ -77,7 +78,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/build
           OS=$(sw_vers -productVersion)
-          SHA=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
+          SHA=$(git rev-parse --short ${{ github.event.pull_request.head.sha || github.sha }})
           VERSION=$(cat DkVersion.h | grep NOMACS_VERSION_STR | sed 's/[^0-9\.]*//g')
           echo "VERSION=${VERSION}-${SHA}-${OS}" >> $GITHUB_OUTPUT
 
