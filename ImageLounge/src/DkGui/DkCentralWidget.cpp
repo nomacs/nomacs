@@ -1109,7 +1109,6 @@ void DkCentralWidget::loadDirToTab(const QString &dirPath)
 
     QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
     DkFileInfo dir(dirPath);
-    Q_ASSERT(dir.isDir());
 
     if (dir.isDir()) {
         // try to load the dir

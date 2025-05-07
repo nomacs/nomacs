@@ -380,22 +380,25 @@ protected:
 class DkRecentDir
 {
 public:
-    DkRecentDir(const QStringList &filePaths = QStringList(), bool pinned = false);
+    DkRecentDir(const DkFileInfo &dir, const DkFileInfoList &files = {}, bool pinned = false);
 
     // copy file paths from another dir
     void update(const DkRecentDir &dir);
+
+    // add file to list of recents
+    void append(const DkFileInfo &file);
 
     // remove paths from recent files/pinned files settings
     void removeFromHistory() const;
 
     bool operator==(const DkRecentDir &dir) const
     {
-        return dirPath() == dir.dirPath();
+        return mDir == dir.mDir;
     }
 
     bool isEmpty() const
     {
-        return mFilePaths.isEmpty();
+        return mFiles.isEmpty();
     }
 
     bool isPinned() const
@@ -408,14 +411,15 @@ public:
 
     QString firstFilePath() const
     {
-        return mFilePaths.value(0);
+        return mFiles.value(0).path();
     }
 
     // get up to max most-recent paths
     QStringList filePaths(int max = -1) const;
 
 private:
-    QStringList mFilePaths;
+    DkFileInfo mDir;
+    DkFileInfoList mFiles;
     bool mIsPinned = false;
 };
 
