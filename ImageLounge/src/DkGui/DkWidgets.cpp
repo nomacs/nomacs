@@ -452,14 +452,17 @@ void DkExplorer::setCurrentPath(const QString &filePath)
 
 void DkExplorer::fileClicked(const QModelIndex &index) const
 {
-    QFileInfo cFile = mFileModel->fileInfo(mSortModel->mapToSource(index));
+    DkFileInfo fileInfo(mFileModel->fileInfo(mSortModel->mapToSource(index)));
 
-    qDebug() << "opening: " << cFile.absoluteFilePath();
+    QString filePath = fileInfo.path();
+    qDebug() << "[Explorer] clicked:" << filePath;
 
-    if (DkUtils::isValid(cFile))
-        emit openFile(cFile.absoluteFilePath());
-    else if (cFile.isDir())
-        emit openDir(cFile.absoluteFilePath());
+    // we do not check if the file is openable by nomacs; the explorer does
+    // not allow this to happen (e.g. unsupported extensions are disabled or hidden)
+    if (!fileInfo.isDir())
+        emit openFile(filePath);
+    else
+        emit openDir(filePath);
 }
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
