@@ -83,6 +83,8 @@ public:
     explicit DkFileInfo(const QFileInfo &info);
     operator QFileInfo() const;
 
+    bool operator==(const DkFileInfo &other) const;
+
     // these will be made private when they are no longer necessary
 #ifdef WITH_QUAZIP
     bool isFromZip() const;
