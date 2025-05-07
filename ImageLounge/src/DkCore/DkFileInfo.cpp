@@ -162,6 +162,11 @@ DkFileInfo::operator QFileInfo() const
     return d->mFileInfo;
 }
 
+bool DkFileInfo::operator==(const DkFileInfo &other) const
+{
+    return path() == other.path();
+}
+
 #ifdef WITH_QUAZIP
 bool DkFileInfo::isFromZip() const
 {
