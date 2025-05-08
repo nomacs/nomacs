@@ -261,7 +261,6 @@ public:
         bool loop;
         bool scanSubFolders;
 
-        QString lastDir;
         QString lastSaveDir;
         QStringList recentFiles;
         QStringList recentFolders;
