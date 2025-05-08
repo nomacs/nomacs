@@ -89,10 +89,12 @@ public:
 #ifdef WITH_QUAZIP
     bool isFromZip() const;
     bool isZipFile() const;
+    QString pathInZip() const;
 #else
     // clang-format off
     bool isFromZip() const { return false; }
     bool isZipFile() const { return false; }
+    QString pathInZip() const { return {}; }
     // clang-format on
 #endif
 
