@@ -182,6 +182,11 @@ bool DkFileInfo::isZipFile() const
 {
     return d->mFileInfo.isFile() && DkBasicLoader::isContainer(path());
 }
+
+QString DkFileInfo::pathInZip() const
+{
+    return d->mZipData.zipMemberPath();
+}
 #endif
 
 QSharedPointer<QIODevice> DkFileInfo::getIoDevice() const
