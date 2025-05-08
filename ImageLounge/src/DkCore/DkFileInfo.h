@@ -174,7 +174,6 @@ private:
         qint64 size() const            { return mDecompressedSize; }
         QDateTime lastModified() const { return mModified; }
         QDateTime birthTime() const    { return mCreated; }
-        QDateTime lastRead() const     { return mAccessed; }
         // clang-format on
 
     private:
@@ -188,7 +187,6 @@ private:
 
         QDateTime mModified;
         QDateTime mCreated;
-        QDateTime mAccessed;
 
         qint64 mDecompressedSize = 0;
         bool mIsMember = false;
