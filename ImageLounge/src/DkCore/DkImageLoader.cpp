@@ -96,14 +96,7 @@
 
 namespace nmc
 {
-
-// DkImageLoader -> is nomacs file handling routine --------------------------------------------------------------------
-/**
- * Default constructor.
- * Creates a DkImageLoader instance with a given file.
- * @param file the file to be loaded.
- **/
-DkImageLoader::DkImageLoader(const QString &filePath)
+DkImageLoader::DkImageLoader()
 {
     qRegisterMetaType<QFileInfo>("QFileInfo");
 
@@ -125,20 +118,8 @@ DkImageLoader::DkImageLoader(const QString &filePath)
     connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), &QAction::triggered, this, &DkImageLoader::redo);
     connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map), &QAction::triggered, this, &DkImageLoader::showOnMap);
     connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), &QAction::triggered, this, &DkImageLoader::deleteFile, Qt::UniqueConnection);
-
-    // saveDir = DkSettingsManager::param().global().lastSaveDir;	// loading save dir is obsolete ?!
-
-    QFileInfo fInfo(filePath);
-
-    if (fInfo.exists())
-        loadDir(fInfo.absolutePath());
-    else
-        mCurrentDir = DkSettingsManager::param().global().lastDir;
 }
 
-/**
- * Default destructor.
- **/
 DkImageLoader::~DkImageLoader()
 {
     if (mCreateImageWatcher.isRunning())
@@ -1327,7 +1308,6 @@ void DkImageLoader::updateHistory()
     settings.endGroup();
 
     // update
-    DkSettingsManager::param().global().lastDir = file.absolutePath();
     DkSettingsManager::param().global().recentFiles = rFiles;
     DkSettingsManager::param().global().recentFolders = rFolders;
 
