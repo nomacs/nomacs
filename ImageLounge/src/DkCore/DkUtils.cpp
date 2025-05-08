@@ -341,7 +341,10 @@ bool DkUtils::compDateModified(const DkFileInfo &lhf, const DkFileInfo &rhf)
 
 bool DkUtils::compFilename(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
-    return compLogicQString(lhf.fileName(), rhf.fileName());
+    if (lhf.isFromZip() && rhf.isFromZip())
+        return compLogicQString(lhf.pathInZip(), rhf.pathInZip());
+    else
+        return compLogicQString(lhf.fileName(), rhf.fileName());
 }
 
 bool DkUtils::compFileSize(const DkFileInfo &lhf, const DkFileInfo &rhf)
