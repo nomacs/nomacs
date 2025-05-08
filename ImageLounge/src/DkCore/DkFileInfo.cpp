@@ -72,14 +72,18 @@ DkFileInfo::ZipData::ZipData(const QString &zipFile, const QuaZipFileInfo64 &inf
 void DkFileInfo::ZipData::setMetaData(const QuaZipFileInfo64 &info)
 {
     mDecompressedSize = info.uncompressedSize;
-    mModified = info.dateTime;
-    // TODO: haven't found a zip that has created/accessed
-    mCreated = info.getExtTime(info.extra, 4);
+
+    // support for these dates is mixed so we will try the various options
+    // the extra data fields first for modtime since they have higher resolution
+    mModified = info.getNTFSmTime().toLocalTime();
+    if (!mModified.isValid())
+        mModified = info.getExtTime(info.extra, QUAZIP_EXTRA_EXT_MOD_TIME_FLAG).toLocalTime();
+    if (!mModified.isValid())
+        mModified = info.dateTime;
+
+    mCreated = info.getNTFScTime().toLocalTime();
     if (!mCreated.isValid())
-        mCreated = info.getNTFScTime();
-    mAccessed = info.getExtTime(info.extra, 2);
-    if (!mAccessed.isValid())
-        mAccessed = info.getNTFSaTime();
+        mCreated = info.getExtTime(info.extra, QUAZIP_EXTRA_EXT_CR_TIME_FLAG).toLocalTime();
 }
 
 #endif
