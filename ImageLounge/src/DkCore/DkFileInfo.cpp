@@ -272,9 +272,7 @@ QDateTime DkFileInfo::lastModified() const
 
 QDateTime DkFileInfo::lastRead() const
 {
-    if (isFromZip())
-        return d->mZipData.lastRead();
-    return d->mFileInfo.lastRead();
+    return containerInfo().lastRead();
 }
 
 QString DkFileInfo::owner() const
