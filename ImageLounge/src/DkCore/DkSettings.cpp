@@ -410,7 +410,6 @@ void DkSettings::load(QSettings &settings, bool defaults)
 
     global_p.loop = settings.value("loop", global_p.loop).toBool();
     global_p.scanSubFolders = settings.value("scanRecursive", global_p.scanSubFolders).toBool();
-    global_p.lastDir = settings.value("lastDir", global_p.lastDir).toString();
     global_p.searchHistory = settings.value("searchHistory", global_p.searchHistory).toStringList();
     global_p.recentFolders = settings.value("recentFolders", global_p.recentFolders).toStringList();
     global_p.pinnedFiles = settings.value("pinnedFiles", global_p.pinnedFiles).toStringList();
@@ -632,8 +631,6 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("loop", global_p.loop);
     if (force || global_p.scanSubFolders != global_d.scanSubFolders)
         settings.setValue("scanRecursive", global_p.scanSubFolders);
-    if (force || global_p.lastDir != global_d.lastDir)
-        settings.setValue("lastDir", global_p.lastDir);
     if (force || global_p.searchHistory != global_d.searchHistory)
         settings.setValue("searchHistory", global_p.searchHistory);
     if (force || global_p.recentFolders != global_d.recentFolders)
@@ -869,7 +866,6 @@ void DkSettings::setToDefaultSettings()
     global_p.extendedTabs = false;
     global_p.loop = true;
     global_p.scanSubFolders = false;
-    global_p.lastDir = QString();
     global_p.lastSaveDir = QString();
     global_p.recentFiles = QStringList();
     global_p.pinnedFiles = QStringList();
