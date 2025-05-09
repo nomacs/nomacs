@@ -2381,12 +2381,12 @@ Please restart nomacs and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="1132"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="1138"/>
         <source>Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="1153"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="1215"/>
         <source>nomacs - Image Lounge is a lightweight image viewer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2481,27 +2481,27 @@ Please restart nomacs and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="229"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="231"/>
         <source>New Tab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="232"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="234"/>
         <source>Thumbnail Preview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="234"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="236"/>
         <source>Recent Files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="236"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="238"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="238"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="240"/>
         <source>Batch</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2531,102 +2531,112 @@ Please restart nomacs and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="130"/>
+        <location filename="../../src/main.cpp" line="131"/>
         <source>An input image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="135"/>
+        <location filename="../../src/main.cpp" line="136"/>
         <source>Start in fullscreen.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="138"/>
+        <location filename="../../src/main.cpp" line="139"/>
         <source>Start slideshow playback</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="141"/>
+        <location filename="../../src/main.cpp" line="142"/>
         <source>Start Pong.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="146"/>
+        <location filename="../../src/main.cpp" line="147"/>
         <source>Start in private mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="151"/>
+        <location filename="../../src/main.cpp" line="152"/>
         <source>Set the viewing mode &lt;mode&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="152"/>
+        <location filename="../../src/main.cpp" line="153"/>
         <source>default | frameless | pseudocolor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="157"/>
+        <location filename="../../src/main.cpp" line="158"/>
         <source>Load all files of a &lt;directory&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="158"/>
+        <location filename="../../src/main.cpp" line="159"/>
         <source>directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="163"/>
+        <location filename="../../src/main.cpp" line="164"/>
         <source>Load &lt;images&gt; to tabs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="164"/>
+        <location filename="../../src/main.cpp" line="165"/>
         <source>images</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="167"/>
+        <location filename="../../src/main.cpp" line="168"/>
         <source>Batch processing of &lt;batch-settings.pnm&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="167"/>
+        <location filename="../../src/main.cpp" line="168"/>
         <source>batch-settings-path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="170"/>
+        <location filename="../../src/main.cpp" line="171"/>
         <source>Saves batch log to &lt;log-path.txt&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="170"/>
+        <location filename="../../src/main.cpp" line="171"/>
         <source>log-path.txt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="174"/>
+        <location filename="../../src/main.cpp" line="175"/>
         <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="175"/>
+        <location filename="../../src/main.cpp" line="176"/>
         <source>settings-path.ini</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="178"/>
+        <location filename="../../src/main.cpp" line="179"/>
         <source>Register file associations (Windows only).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="372"/>
+        <location filename="../../src/main.cpp" line="182"/>
+        <source>List available image formats</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/main.cpp" line="186"/>
+        <source>Print build information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/main.cpp" line="414"/>
         <source>Critical Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="372"/>
+        <location filename="../../src/main.cpp" line="414"/>
         <source>Sorry, nomacs ran out of memory...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2939,13 +2949,13 @@ Please restart nomacs and try again.</source>
 <context>
     <name>nmc::DkBasicLoader</name>
     <message>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="455"/>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1343"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="459"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1347"/>
         <source>Original Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1514"/>
+        <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1518"/>
         <source>Sorry, I could not save: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3482,128 +3492,128 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
 <context>
     <name>nmc::DkCentralWidget</name>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="292"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="294"/>
         <source>Go to Tab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="292"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="294"/>
         <source>Go to tab number: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="527"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="529"/>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="534"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="536"/>
         <source>Display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="541"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="543"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="548"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="550"/>
         <source>File Associations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="555"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="557"/>
         <source>Advanced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="562"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="564"/>
         <source>Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1165"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1167"/>
         <source>I could not load &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1217"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1219"/>
         <source>Unable to load file &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1223"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1225"/>
         <source>&quot;%1&quot; cannot be loaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1231"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1233"/>
         <source>downloading &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1254"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1256"/>
         <source>Sorry, I could not drop the content.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1365"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1367"/>
         <source>Save File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1376"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1378"/>
         <source>%1 vec files merged</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1390"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1392"/>
         <source>Sorry, there are unsaved changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1403"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1405"/>
         <source>Sorry, the directory: %1 does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1408"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1410"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1416"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1418"/>
         <source>Rename: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1416"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1418"/>
         <source>New File Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1437"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1439"/>
         <source>Sorry, I can&apos;t rename: NFS mount is case-insensitive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1446"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1448"/>
         <source>Overwrite: %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1447"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1449"/>
         <source>The file: %1 already exists.
 Do you want to replace it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1457"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1459"/>
         <source>Sorry, I can&apos;t delete: &quot;%1&quot; : %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1475"/>
+        <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1477"/>
         <source>Sorry, I can&apos;t rename: &quot;%1&quot; : %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3822,12 +3832,12 @@ Do you want to replace it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkControlWidget.cpp" line="566"/>
+        <location filename="../../src/DkGui/DkControlWidget.cpp" line="586"/>
         <source>Closing Plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkControlWidget.cpp" line="566"/>
+        <location filename="../../src/DkGui/DkControlWidget.cpp" line="586"/>
         <source>Apply plugin changes?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5122,7 +5132,7 @@ Do you want to show them again?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMessageBox.cpp" line="103"/>
+        <location filename="../../src/DkCore/DkMessageBox.cpp" line="100"/>
         <source>Remember my choice</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5130,132 +5140,132 @@ Do you want to show them again?</source>
 <context>
     <name>nmc::DkMetaData</name>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="73"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="75"/>
         <source>Image Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="73"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="75"/>
         <source>Orientation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="74"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="76"/>
         <source>Make</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="74"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="76"/>
         <source>Model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="75"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="77"/>
         <source>Aperture Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="75"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="77"/>
         <source>ISO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="76"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="78"/>
         <source>Flash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="76"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="78"/>
         <source>Focal Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="77"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="79"/>
         <source>Exposure Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="77"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="79"/>
         <source>Exposure Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="78"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="80"/>
         <source>Compression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="80"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="82"/>
         <source>Rating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="80"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="82"/>
         <source>User Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="81"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="83"/>
         <source>Date Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="81"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="83"/>
         <source>Date Time Original</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="82"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="84"/>
         <source>Image Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="82"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="84"/>
         <source>Creator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="83"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="85"/>
         <source>Creator Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="83"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="85"/>
         <source>City</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="84"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="86"/>
         <source>Country</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="84"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="86"/>
         <source>Headline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="85"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="87"/>
         <source>Caption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="85"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="87"/>
         <source>Copyright</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="86"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="88"/>
         <source>Keywords</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="86"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="88"/>
         <source>Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="87"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="89"/>
         <source>File Size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5616,175 +5626,175 @@ Do you want to show them again?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="371"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="375"/>
         <source>Quit nomacs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="372"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="376"/>
         <source>Do you want nomacs to save your tabs?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="375"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="379"/>
         <source>&amp;Save and Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="376"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="380"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="798"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="811"/>
         <source>Recursive Folder Scan is Now Enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="800"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="813"/>
         <source>Recursive Folder Scan is Now Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="809"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="822"/>
         <source>Change Opacity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="887"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="900"/>
         <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="889"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="902"/>
         <source>You should first reduce opacity
  before working through the window.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="981"/>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="983"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="994"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="996"/>
         <source>File Explorer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1015"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1028"/>
         <source>Meta Data Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1038"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1051"/>
         <source>Edit Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1058"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1071"/>
         <source>History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1079"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1092"/>
         <source>Console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1119"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1132"/>
         <source>Thumbnails</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1157"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1170"/>
         <source>Open an Image Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1171"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1184"/>
         <source>All Files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1175"/>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1224"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1188"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1237"/>
         <source>Open Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1205"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1218"/>
         <source>The following duplicates were not opened:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1219"/>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1250"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1232"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1263"/>
         <source>Text file (*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1220"/>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1251"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1233"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1264"/>
         <source>All files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1254"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1267"/>
         <source>Save Tab List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1394"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1407"/>
         <source>Go To Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1394"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1407"/>
         <source>Image Index:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1448"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1461"/>
         <source>Save Thumbnails</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1739"/>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1756"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1752"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1769"/>
         <source> [Private Mode]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1839"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1852"/>
         <source>Already downloading update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1866"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1879"/>
         <source>Downloading update...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1866"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1879"/>
         <source>Cancel Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1901"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1914"/>
         <source>Unable to install new version&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1901"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1914"/>
         <source>You can download the new version from our web page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1915"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1928"/>
         <source>Downloading new translations...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1915"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="1928"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5792,7 +5802,7 @@ then press %1</source>
 <context>
     <name>nmc::DkNoMacsFrameless</name>
     <message>
-        <location filename="../../src/DkGui/DkNoMacs.cpp" line="2155"/>
+        <location filename="../../src/DkGui/DkNoMacs.cpp" line="2182"/>
         <source>Choose a Monitor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6118,17 +6128,17 @@ then press %1</source>
 <context>
     <name>nmc::DkRecentDirWidget</name>
     <message>
-        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2112"/>
+        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2120"/>
         <source>Load the directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2123"/>
+        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2131"/>
         <source>Pin this directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2132"/>
+        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2140"/>
         <source>Remove this directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6600,27 +6610,27 @@ Press ESC to undo changes</source>
 <context>
     <name>nmc::DkThumbScrollWidget</name>
     <message>
-        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1831"/>
+        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1839"/>
         <source>Thumb Preview Toolbar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1849"/>
+        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1857"/>
         <source>&amp;Sort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1864"/>
+        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1872"/>
         <source>Filter Files (Ctrl + F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1877"/>
+        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1885"/>
         <source>Thumb</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1891"/>
+        <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1899"/>
         <source>Open Image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7026,43 +7036,43 @@ Please contact your system administrator for further information.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1528"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1530"/>
         <source>Transparency Pattern Enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1528"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1530"/>
         <source>Transparency Pattern Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1564"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1566"/>
         <source>Lenna</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1564"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1566"/>
         <source>A remarkable woman</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1573"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1575"/>
         <source>you cannot cancel this</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1580"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1582"/>
         <source>did you understand the brainteaser?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1582"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1584"/>
         <source>%1 is wrong...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1615"/>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="1638"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1617"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="1640"/>
         <source>Attempted to set NULL image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7070,7 +7080,7 @@ Please contact your system administrator for further information.</source>
 <context>
     <name>nmc::DkViewPortFrameless</name>
     <message>
-        <location filename="../../src/DkGui/DkViewPort.cpp" line="2129"/>
+        <location filename="../../src/DkGui/DkViewPort.cpp" line="2131"/>
         <source>Press F10 to exit Frameless view</source>
         <translation type="unfinished"></translation>
     </message>
