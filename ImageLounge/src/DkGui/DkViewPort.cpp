@@ -1117,7 +1117,6 @@ void DkViewPort::stopMovie()
     if (!mMovie)
         return;
 
-    mMovie->stop();
     mMovie = {};
     mMovieIo = {};
 }
@@ -1695,11 +1694,8 @@ bool DkViewPort::unloadImage(bool fileChange)
     // notify controller
     mController->updateImage({});
 
-    if (mMovie && success) {
-        mMovie->stop();
-        mMovie = {};
-        mMovieIo = {};
-    }
+    if (success)
+        stopMovie();
 
     if (mSvg && success)
         mSvg = QSharedPointer<QSvgRenderer>();
