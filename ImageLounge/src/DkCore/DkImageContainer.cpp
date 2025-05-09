@@ -41,33 +41,21 @@
 #include <QRegularExpression>
 #include <QtConcurrentRun>
 
-// quazip
-#ifdef WITH_QUAZIP
-#ifdef WITH_QUAZIP1
-#include <quazip/JlCompress.h>
-#else
-#include <quazip5/JlCompress.h>
-#endif
-#endif
 #pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251) // TODO: remove
 
 namespace nmc
 {
-#ifdef WITH_QUAZIP
-QString DkZipContainer::mZipMarker = "dIrChAr";
-#endif
-
 // DkImageContainer --------------------------------------------------------------------
 /**
  * Creates a DkImageContainer.
  * This class is the basic image management class.
  * @param fileInfo the file of the given
  **/
-DkImageContainer::DkImageContainer(const QString &filePath)
+DkImageContainer::DkImageContainer(const DkFileInfo &fileInfo)
 {
-    setFilePath(filePath);
+    setFile(fileInfo);
     init();
 }
 
@@ -83,11 +71,6 @@ void DkImageContainer::init()
     // always keep in mind that a file does not exist
     if (!mEdited && mLoadState != exists_not)
         mLoadState = not_loaded;
-}
-
-bool DkImageContainer::operator==(const DkImageContainer &ric) const
-{
-    return mFilePath == ric.filePath();
 }
 
 void DkImageContainer::clear()
@@ -124,14 +107,14 @@ void DkImageContainer::cropImage(const DkRotatingRect &rect, const QColor &col, 
         getMetaData()->saveRectToXMP(rect, image().size());
 }
 
-QFileInfo DkImageContainer::fileInfo() const
+DkFileInfo DkImageContainer::fileInfo() const
 {
     return mFileInfo;
 }
 
 QString DkImageContainer::filePath() const
 {
-    return mFilePath;
+    return mFileInfo.path();
 }
 
 QString DkImageContainer::dirPath() const
@@ -139,12 +122,7 @@ QString DkImageContainer::dirPath() const
     if (!mFileInfo.isFile())
         return "";
 
-#ifdef WITH_QUAZIP
-    if (mZipData && mZipData->isZip())
-        mZipData->getZipFilePath();
-#endif
-
-    return mFileInfo.absolutePath();
+    return mFileInfo.dirPath();
 }
 
 QString DkImageContainer::fileName() const
@@ -154,22 +132,12 @@ QString DkImageContainer::fileName() const
 
 bool DkImageContainer::isFromZip()
 {
-#ifdef WITH_QUAZIP
-    return getZipData() && getZipData()->isZip();
-#else
-    return false;
-#endif
+    return mFileInfo.isFromZip();
 }
 
 bool DkImageContainer::exists()
 {
-#ifdef WITH_QUAZIP
-
-    if (isFromZip())
-        return true;
-#endif
-
-    return QFileInfo(mFilePath).exists();
+    return mFileInfo.exists();
 }
 
 QString DkImageContainer::getTitleAttribute() const
@@ -203,16 +171,8 @@ QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData()
 
 QSharedPointer<DkThumbNailT> DkImageContainer::getThumb()
 {
-    if (!mThumb) {
-#ifdef WITH_QUAZIP
-        if (isFromZip())
-            mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(getZipData()->getEncodedFilePath()));
-        else
-            mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
-#else
-        mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
-#endif
-    }
+    if (!mThumb)
+        mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath())); // FIXME: pass DkFileInfo here
 
     return mThumb;
 }
@@ -222,7 +182,7 @@ QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedP
     if (!imgC)
         return QSharedPointer<DkImageContainerT>();
 
-    QSharedPointer<DkImageContainerT> imgCT = QSharedPointer<DkImageContainerT>(new DkImageContainerT(imgC->filePath()));
+    QSharedPointer<DkImageContainerT> imgCT = QSharedPointer<DkImageContainerT>(new DkImageContainerT(imgC->fileInfo()));
 
     imgCT->mLoader = imgC->getLoader();
     imgCT->mEdited = imgC->isEdited();
@@ -256,7 +216,7 @@ float DkImageContainer::getMemoryUsage() const
 
 float DkImageContainer::getFileSize() const
 {
-    return QFileInfo(mFilePath).size() / (1024.0f * 1024.0f);
+    return mFileInfo.size() / (1024.0f * 1024.0f);
 }
 
 DkRotatingRect DkImageContainer::cropRect()
@@ -275,7 +235,7 @@ std::function<bool(const QSharedPointer<DkImageContainer> &, const QSharedPointe
 {
     // select from the assortment of QFileInfo functions; if there isn't one use this one
     // future: exif, custom sorting, etc can all be tied in here, need not be QFileInfo
-    std::function<bool(const QFileInfo &, const QFileInfo &FileInfo)> cmp;
+    std::function<bool(const DkFileInfo &, const DkFileInfo &FileInfo)> cmp;
 
     int mode = DkSettingsManager::param().global().sortMode;
 
@@ -344,15 +304,6 @@ void DkImageContainer::setImage(const QImage &img, const QString &editName)
     mEdited = true;
 }
 
-void DkImageContainer::setImage(const QImage &img, const QString &editName, const QString &filePath)
-{
-    scaledImages.clear(); // invalid now
-
-    setFilePath(mFilePath);
-    getLoader()->setImage(img, editName, filePath); // set new image
-    mEdited = true;
-}
-
 void DkImageContainer::setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName)
 {
     // Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
@@ -379,10 +330,9 @@ void DkImageContainer::setMetaData(const QString &editName)
     mEdited = true;
 }
 
-void DkImageContainer::setFilePath(const QString &filePath)
+void DkImageContainer::setFile(const DkFileInfo &fileInfo)
 {
-    mFilePath = filePath;
-    mFileInfo = QFileInfo(filePath);
+    mFileInfo = fileInfo;
 
 #ifdef Q_OS_WIN
     mFileNameStr = DkUtils::qStringToStdWString(fileName());
@@ -399,13 +349,13 @@ bool DkImageContainer::hasImage() const
 
 bool DkImageContainer::hasMovie() const
 {
-    QString newSuffix = QFileInfo(filePath()).suffix();
+    QString newSuffix = mFileInfo.suffix();
     return newSuffix.contains(QRegularExpression("(apng|avif|gif|jxl|mng|webp)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkImageContainer::hasSvg() const
 {
-    QString newSuffix = QFileInfo(filePath()).suffix();
+    QString newSuffix = mFileInfo.suffix();
     return newSuffix.contains(QRegularExpression("(svg)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
@@ -416,13 +366,13 @@ int DkImageContainer::getLoadState() const
 
 bool DkImageContainer::loadImage()
 {
-    if (!QFileInfo(mFileInfo).exists())
+    if (!mFileInfo.exists())
         return false;
 
     if (getFileBuffer()->isEmpty())
-        mFileBuffer = loadFileToBuffer(mFilePath);
+        mFileBuffer = loadFileToBuffer(filePath());
 
-    mLoader = loadImageIntern(mFilePath, getLoader(), mFileBuffer);
+    mLoader = loadImageIntern(filePath(), getLoader(), mFileBuffer);
 
     return mLoader->hasImage();
 }
@@ -434,35 +384,30 @@ bool DkImageContainer::saveImage(const QString &filePath, int compression /* = -
 
 bool DkImageContainer::saveImage(const QString &filePath, const QImage saveImg, int compression /* = -1 */)
 {
-    QFileInfo saveFile = QFileInfo(saveImageIntern(filePath, getLoader(), saveImg, compression));
+    QFileInfo saveFile(saveImageIntern(filePath, getLoader(), saveImg, compression));
 
-    saveFile.refresh();
     qDebug() << "save file: " << saveFile.absoluteFilePath();
 
     return saveFile.exists() && saveFile.isFile();
 }
 
-QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QString &filePath)
+QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &fileInfo)
 {
-    QFileInfo fInfo = QFileInfo(filePath);
+    DkFileInfo fInfo = fileInfo;
 
-    if (fInfo.isSymLink())
-        fInfo = QFileInfo(fInfo.symLinkTarget());
-
-#ifdef WITH_QUAZIP
-    if (isFromZip())
-        return getZipData()->extractImage(getZipData()->getZipFilePath(), getZipData()->getImageFileName());
-#endif
-
-    if (fInfo.suffix().contains("psd")) { // for now just psd's are not cached because their file might be way larger than the part we need to read
-        return QSharedPointer<QByteArray>(new QByteArray());
+    if (fInfo.isShortcut() && !fInfo.resolveShortcut()) { // .lnk or macOS alias
+        qWarning() << "broken shortcut:" << fileInfo.path();
+        return {};
     }
 
-    QFile file(fInfo.absoluteFilePath());
-    file.open(QIODevice::ReadOnly);
+    if (fInfo.suffix().contains("psd")) // for now just psd's are not cached because their file might be way larger than the part we need to read
+        return {};
 
-    QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
-    file.close();
+    auto io = fInfo.getIoDevice();
+    if (!io)
+        return {};
+
+    QSharedPointer<QByteArray> ba(new QByteArray(io->readAll()));
 
     return ba;
 }
@@ -489,7 +434,7 @@ void DkImageContainer::saveMetaData()
     if (!mLoader)
         return;
 
-    saveMetaDataIntern(mFilePath, mLoader, mFileBuffer);
+    saveMetaDataIntern(filePath(), mLoader, mFileBuffer);
 }
 
 void DkImageContainer::saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer)
@@ -518,21 +463,6 @@ bool DkImageContainer::setPageIdx(int skipIdx)
     return getLoader()->setPageIdx(skipIdx);
 }
 
-#ifdef WITH_QUAZIP
-QSharedPointer<DkZipContainer> DkImageContainer::getZipData()
-{
-    if (!mZipData) {
-        mZipData = QSharedPointer<DkZipContainer>(new DkZipContainer(mFilePath));
-        if (mZipData->isZip()) {
-            setFilePath(mZipData->getImageFileName());
-            // mFileInfo = mZipData->getZipFilePath();
-            qDebug() << "new fileInfoPath: " << mFileInfo.absoluteFilePath();
-        }
-    }
-
-    return mZipData;
-}
-#endif
 #ifdef Q_OS_WIN
 std::wstring DkImageContainer::getFileNameWStr() const
 {
@@ -541,8 +471,8 @@ std::wstring DkImageContainer::getFileNameWStr() const
 #endif
 
 // DkImageContainerT --------------------------------------------------------------------
-DkImageContainerT::DkImageContainerT(const QString &filePath)
-    : DkImageContainer(filePath)
+DkImageContainerT::DkImageContainerT(const DkFileInfo &fileInfo)
+    : DkImageContainer(fileInfo)
 {
     // our file watcher
     mFileUpdateTimer.setSingleShot(false);
@@ -581,11 +511,6 @@ void DkImageContainerT::clear()
 
 void DkImageContainerT::checkForFileUpdates()
 {
-#ifdef WITH_QUAZIP
-    if (isFromZip())
-        setFilePath(getZipData()->getZipFilePath());
-#endif
-
     QDateTime modifiedBefore = fileInfo().lastModified();
     mFileInfo.refresh();
 
@@ -598,11 +523,6 @@ void DkImageContainerT::checkForFileUpdates()
 
     if (mWaitForUpdate != update_loading && mFileInfo.lastModified() != modifiedBefore)
         mWaitForUpdate = update_pending;
-
-#ifdef WITH_QUAZIP
-    if (isFromZip())
-        setFilePath(getZipData()->getImageFileName());
-#endif
 
     if (changed) {
         mFileUpdateTimer.stop();
@@ -631,41 +551,31 @@ void DkImageContainerT::checkForFileUpdates()
 
 bool DkImageContainerT::loadImageThreaded(bool force)
 {
-#ifdef WITH_QUAZIP
-    // zip archives: get zip file fileInfo for checks
-    if (isFromZip())
-        setFilePath(getZipData()->getZipFilePath());
-#endif
-
     // check file for updates
-    QFileInfo fileInfo = QFileInfo(filePath());
-    QDateTime modifiedBefore = fileInfo.lastModified();
-    fileInfo.refresh();
+    // without this, checkForFileUpdates() will see the modification and
+    // reload the image; all this does is prevent the old image from showing
+    // for a moment before that happens
+    QDateTime modifiedBefore = mFileInfo.lastModified();
+    mFileInfo.refresh();
 
-    if (force || fileInfo.lastModified() != modifiedBefore || getLoader()->isDirty()) {
-        qDebug() << "updating image...";
+    if (force || mFileInfo.lastModified() != modifiedBefore || getLoader()->isDirty()) {
+        // FIXME: DkFilePreview thumbnail is not updated
         getThumb()->setImage(QImage());
         clear();
     }
 
     // null file?
-    if (fileInfo.fileName().isEmpty() || !fileInfo.exists()) {
+    if (mFileInfo.fileName().isEmpty() || !mFileInfo.exists()) {
         QString msg = tr("Sorry, the file: %1 does not exist... ").arg(fileName());
         emit showInfoSignal(msg);
         mLoadState = exists_not;
         return false;
-    } else if (!fileInfo.permission(QFile::ReadUser)) {
+    } else if (!mFileInfo.permission(QFile::ReadUser)) {
         QString msg = tr("Sorry, you are not allowed to read: %1").arg(fileName());
         emit showInfoSignal(msg);
         mLoadState = exists_not;
         return false;
     }
-
-#ifdef WITH_QUAZIP
-    // zip archives: use the image file info from now on
-    if (isFromZip())
-        setFilePath(getZipData()->getImageFileName());
-#endif
 
     mLoadState = loading;
     fetchFile();
@@ -692,8 +602,8 @@ void DkImageContainerT::fetchFile()
 
     mFetchingBuffer = true; // saves the threaded call
     connect(&mBufferWatcher, &QFutureWatcher<QSharedPointer<QByteArray>>::finished, this, &DkImageContainerT::bufferLoaded, Qt::UniqueConnection);
-    mBufferWatcher.setFuture(QtConcurrent::run([&] {
-        return loadFileToBuffer(filePath());
+    mBufferWatcher.setFuture(QtConcurrent::run([file = mFileInfo] {
+        return loadFileToBuffer(file);
     }));
 }
 
@@ -841,9 +751,9 @@ void DkImageContainerT::fileDownloaded(const QString &filePath)
     mDownloaded = true;
 
     if (filePath.isEmpty())
-        setFilePath(mFileDownloader->getUrl().toString().split("/").last());
+        setFile(DkFileInfo(mFileDownloader->getUrl().toString().split("/").last()));
     else
-        setFilePath(filePath);
+        setFile(DkFileInfo(filePath));
 
     fetchImage();
 }
@@ -927,8 +837,7 @@ void DkImageContainerT::savingFinished()
 {
     QString savePath = mSaveImageWatcher.result();
 
-    QFileInfo sInfo = QFileInfo(savePath);
-    sInfo.refresh();
+    DkFileInfo sInfo(savePath);
     qDebug() << "save file: " << savePath;
 
     if (!sInfo.exists() || !sInfo.isFile())
@@ -940,9 +849,8 @@ void DkImageContainerT::savingFinished()
         if (mFileBuffer)
             mFileBuffer->clear(); // do a complete clear?
 
-        if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty() || dirPath() == sInfo.absolutePath()) {
-            setFilePath(savePath);
-
+        if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty() || dirPath() == sInfo.dirPath()) {
+            setFile(sInfo);
             emit fileSavedSignal(savePath, true, false);
         } else {
             emit fileSavedSignal(savePath);
@@ -955,27 +863,6 @@ void DkImageContainerT::savingFinished()
             mFileUpdateTimer.start();
         }
     }
-}
-
-QSharedPointer<QByteArray> DkImageContainerT::loadFileToBuffer(const QString &filePath)
-{
-    return DkImageContainer::loadFileToBuffer(filePath);
-}
-
-QSharedPointer<DkBasicLoader>
-DkImageContainerT::loadImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer)
-{
-    return DkImageContainer::loadImageIntern(filePath, loader, fileBuffer);
-}
-
-QString DkImageContainerT::saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression)
-{
-    return DkImageContainer::saveImageIntern(filePath, loader, saveImg, compression);
-}
-
-void DkImageContainerT::saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer)
-{
-    return DkImageContainer::saveMetaDataIntern(filePath, loader, fileBuffer);
 }
 
 QSharedPointer<DkBasicLoader> DkImageContainerT::getLoader()

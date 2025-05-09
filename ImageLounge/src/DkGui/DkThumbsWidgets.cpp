@@ -1275,7 +1275,7 @@ QString DkThumbScene::currentDir() const
         }
     }
 
-    return mThumbs[0]->fileInfo().absolutePath();
+    return mThumbs[0]->fileInfo().dirPath();
 }
 
 int DkThumbScene::selectedThumbIndex(bool first)
@@ -2101,9 +2101,8 @@ void DkThumbPreviewLabel::mousePressEvent(QMouseEvent *ev)
 // -------------------------------------------------------------------- DkRecentFilesEntry
 DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir &rde, QWidget *parent)
     : DkFadeWidget(parent)
+    , mRecentDir(rde)
 {
-    mRecentDir = rde;
-
     createLayout();
 }
 
@@ -2192,7 +2191,7 @@ void DkRecentDirWidget::onPinClicked(bool checked)
 
 void DkRecentDirWidget::onRemoveClicked()
 {
-    mRecentDir.remove();
+    mRecentDir.removeFromHistory();
     emit removeSignal();
 }
 
@@ -2289,141 +2288,105 @@ void DkRecentFilesWidget::entryRemoved()
 }
 
 // -------------------------------------------------------------------- DkRecentDir
-DkRecentDir::DkRecentDir(const QStringList &filePaths, bool pinned)
+DkRecentDir::DkRecentDir(const DkFileInfo &dir, const DkFileInfoList &files, bool pinned)
 {
-    mFilePaths = filePaths;
+    mDir = dir;
+    mFiles = files;
     mIsPinned = pinned;
 }
 
-bool DkRecentDir::operator==(const DkRecentDir &o) const
+void DkRecentDir::update(const DkRecentDir &dir)
 {
-    return dirPath() == o.dirPath();
+    Q_ASSERT(dir.mDir.path() == mDir.path());
+
+    for (auto &info : dir.mFiles) {
+        mFiles.removeAll(info);
+        mFiles.append(info);
+    }
 }
 
-void DkRecentDir::update(const DkRecentDir &o)
+void DkRecentDir::append(const DkFileInfo &file)
 {
-    for (const QString &cp : o.filePaths())
-        mFilePaths.push_front(cp);
-
-    mFilePaths.removeDuplicates();
+    Q_ASSERT(file.dirPath() == mDir.path());
+    Q_ASSERT(!mFiles.contains(file));
+    mFiles.append(file);
 }
 
 QStringList DkRecentDir::filePaths(int max) const
 {
-    if (max <= 0)
-        return mFilePaths;
+    DkFileInfoList list = mFiles;
+    if (max > 0)
+        list = mFiles.mid(0, max);
 
-    QStringList fps = mFilePaths;
+    QStringList paths;
+    for (auto &info : qAsConst(list))
+        paths.append(info.path());
 
-    while (fps.size() > max)
-        fps.pop_back();
-
-    return fps;
-}
-
-bool DkRecentDir::isEmpty() const
-{
-    return mFilePaths.isEmpty();
-}
-
-bool DkRecentDir::isPinned() const
-{
-    return mIsPinned;
+    return paths;
 }
 
 QString DkRecentDir::dirName() const
 {
-    QDir d(dirPath());
-    return d.dirName();
+    return mDir.fileName();
 }
 
 QString DkRecentDir::dirPath() const
 {
-    if (mFilePaths.empty())
-        return QString("");
+    if (mFiles.empty())
+        return {};
 
-    return QFileInfo(mFilePaths[0]).absolutePath();
+    return mDir.path();
 }
 
-QString DkRecentDir::firstFilePath() const
+void DkRecentDir::removeFromHistory() const
 {
-    if (!mFilePaths.isEmpty())
-        return mFilePaths[0];
+    QStringList &pinnedFiles = DkSettingsManager::param().global().pinnedFiles;
+    QStringList &recentFiles = DkSettingsManager::param().global().recentFiles;
 
-    return QString();
-}
-
-void DkRecentDir::remove() const
-{
-    QStringList &pf = DkSettingsManager::param().global().pinnedFiles;
-    QStringList &rf = DkSettingsManager::param().global().recentFiles;
-
-    // remove from history
-    for (const QString &fp : mFilePaths) {
-        pf.removeAll(fp);
-        rf.removeAll(fp);
+    for (const auto &info : mFiles) {
+        QString filePath = info.path();
+        pinnedFiles.removeAll(filePath);
+        recentFiles.removeAll(filePath);
     }
 }
 
 // -------------------------------------------------------------------- DkRecentDirManager
 DkRecentDirManager::DkRecentDirManager()
 {
-    // update pinned files
+    // pinned dirs appear first, followed by dirs of recent files
     mDirs = genFileLists(DkSettingsManager::param().global().pinnedFiles, true);
-    auto recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);
+    QList<DkRecentDir> recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);
 
-    for (auto rde : recentDirs) {
-        if (!mDirs.contains(rde))
-            mDirs << rde;
-        else {
-            int idx = mDirs.indexOf(rde);
-            if (idx != -1)
-                mDirs[idx].update(rde);
-        }
+    // merge pinned dirs with recent dirs
+    for (const DkRecentDir &recentDir : recentDirs) {
+        int idx = mDirs.indexOf(recentDir);
+        if (idx < 0)
+            mDirs.append(recentDir);
+        else
+            mDirs[idx].update(recentDir);
     }
-}
-
-QList<DkRecentDir> DkRecentDirManager::recentDirs() const
-{
-    return mDirs;
 }
 
 QList<DkRecentDir> DkRecentDirManager::genFileLists(const QStringList &filePaths, bool pinned)
 {
-    QMap<QString, QStringList> gPaths;
+    QList<DkRecentDir> recentDirs; // keeps the order of dirs the same as filePaths (fixes #279)
+    QHash<QString, int> dirIndex; // use a map to avoid unecessary filesystem syscalls
+    for (const QString &recentFilePath : filePaths) {
+        // We do not require the file/dir to exist here
+        // - The check can be incredibly slow for disconnected networked resources
+        // - We do not want to hide history and have it potentially come back later
+        DkFileInfo fileInfo(recentFilePath);
+        QString dirPath = fileInfo.dirPath();
 
-    for (const QString &cp : filePaths) {
-        QFileInfo fi(cp);
-
-        // this if is needed if there are errors in our data
-        // however, it incredibly slows down the process if samba mounts are lost
-        // if (!fi.isFile())
-        //	continue;
-
-        // get folder
-        QString dp = fi.absolutePath();
-
-        auto dir = gPaths.find(dp);
-
-        // ok, create a new entry
-        if (dir == gPaths.end()) {
-            QStringList cpl;
-            cpl << cp;
-            gPaths.insert(dp, cpl);
+        auto it = dirIndex.find(dirPath);
+        if (it == dirIndex.end()) {
+            recentDirs.append(DkRecentDir(DkFileInfo{dirPath}, DkFileInfoList{fileInfo}, pinned));
+            dirIndex[dirPath] = recentDirs.count() - 1;
         } else {
-            // append the filename
-            dir.value() << cp;
+            recentDirs[it.value()].append(fileInfo);
         }
     }
 
-    // TODO: here is the issue reported in #279
-    // the map re-sorts the entries w.r.t to the path
-    // create recent directories
-    QList<DkRecentDir> rdes;
-    for (const QStringList &fps : gPaths.values())
-        rdes << DkRecentDir(fps, pinned);
-
-    return rdes;
+    return recentDirs;
 }
-
 }
