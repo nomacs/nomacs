@@ -47,6 +47,7 @@
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
+#include <QBuffer>
 #include <QClipboard>
 #include <QDrag>
 #include <QDragLeaveEvent>
@@ -757,12 +758,8 @@ void DkViewPort::deleteImage()
 
     int answer = msgBox->exec();
 
-    if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
-        stopMovie(); // movies keep file handles so stop it before we can delete files
-
-        if (!mLoader->deleteFile())
-            loadMovie(); // load the movie again, if we could not delete it
-    }
+    if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes)
+        mLoader->deleteFile();
 }
 
 void DkViewPort::saveFile()
@@ -1042,12 +1039,27 @@ void DkViewPort::loadMovie()
     if (mMovie)
         mMovie->stop();
 
+    QSharedPointer<QIODevice> io = mLoader->getCurrentImage()->fileInfo().getIoDevice();
+    if (!io)
+        return;
+
+    // read file to buffer, uses more memory, but:
+    // - required for devices that can't seek (zip, network)
+    // - QMovie has a bug, fails to loop when constructed with a QFile
+    // - we don't keep the file handle open (on windows can be a problem with delete, rename etc)
+    auto *bufferIo = new QBuffer;
+    bufferIo->setData(io->readAll());
+    io.reset(bufferIo);
+
+    // pointer is not owned by QMovie, we must retain it
+    QSharedPointer<QMovie> m(new QMovie(io.get()));
+
     // check if it truely a movie (we need this for we don't know if webp is actually animated)
-    QSharedPointer<QMovie> m(new QMovie(mLoader->filePath()));
-    if (m->frameCount() == 1)
+    if (!m->isValid() || m->frameCount() == 1)
         return;
 
     mMovie = m;
+    mMovieIo = io;
 
     connect(mMovie.data(), &QMovie::frameChanged, this, QOverload<>::of(&DkViewPort::update));
     mMovie->start();
@@ -1111,7 +1123,8 @@ void DkViewPort::stopMovie()
         return;
 
     mMovie->stop();
-    mMovie = QSharedPointer<QMovie>();
+    mMovie = {};
+    mMovieIo = {};
 }
 
 void DkViewPort::drawPolygon(QPainter &painter, const QPolygon &polygon)
@@ -1669,7 +1682,8 @@ bool DkViewPort::unloadImage(bool fileChange)
 
     if (mMovie && success) {
         mMovie->stop();
-        mMovie = QSharedPointer<QMovie>();
+        mMovie = {};
+        mMovieIo = {};
     }
 
     if (mSvg && success)
