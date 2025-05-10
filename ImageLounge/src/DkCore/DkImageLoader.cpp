@@ -490,11 +490,16 @@ void DkImageLoader::loadFileAt(int idx)
     else
         qDebug() << "current image is NULL";
 
+    // FIXME: somehow mCurrentDir gets messed up, so we have this recovery workaround
     DkFileInfo cDir(mCurrentDir);
-    Q_ASSERT(cDir.isDir());
-
-    if (mCurrentImage && !cDir.exists())
-        loadDir(mCurrentImage->dirPath());
+    if (!cDir.isDir() || !cDir.exists()) {
+        qWarning() << "[Loader] current dir is now invalid:" << mCurrentDir;
+        if (mCurrentImage) {
+            qWarning() << "[Loader] attempting to reload from:" << mCurrentImage->dirPath();
+            loadDir(mCurrentImage->dirPath());
+            cDir = DkFileInfo(mCurrentDir);
+        }
+    }
 
     if (mImages.empty())
         return;
