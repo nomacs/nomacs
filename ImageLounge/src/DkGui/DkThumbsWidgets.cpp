@@ -825,9 +825,11 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thum
 
 void DkFilePreview::setVisible(bool visible, bool saveSettings)
 {
-    emit showThumbsDockSignal(visible);
-
     DkFadeWidget::setVisible(visible, saveSettings);
+    if (mSetWidgetVisible)
+        return; // prevent recursion via fade()
+
+    emit showThumbsDockSignal(visible);
 }
 
 // DkThumbLabel --------------------------------------------------------------------
@@ -1801,7 +1803,7 @@ void DkThumbsView::fetchThumbs()
 
 // DkThumbScrollWidget --------------------------------------------------------------------
 DkThumbScrollWidget::DkThumbScrollWidget(QWidget *parent /* = 0 */, Qt::WindowFlags flags /* = 0 */)
-    : DkFadeWidget(parent, flags)
+    : DkWidget(parent, flags)
 {
     // TODO: is this name required elsewhere?
     setObjectName("DkThumbScrollWidget");
@@ -1965,13 +1967,19 @@ void DkThumbScrollWidget::setVisible(bool visible)
 {
     connectToActions(visible);
 
-    DkFadeWidget::setVisible(visible);
-
     if (visible) {
         mThumbsScene->updateThumbLabels();
         mFilterEdit->setText("");
     } else
         mThumbsScene->cancelLoading();
+
+    if (mAction) {
+        mAction->blockSignals(true);
+        mAction->setChecked(visible);
+        mAction->blockSignals(false);
+    }
+
+    DkWidget::setVisible(visible);
 }
 
 void DkThumbScrollWidget::connectToActions(bool activate)
@@ -2027,7 +2035,7 @@ void DkThumbScrollWidget::resizeEvent(QResizeEvent *event)
     if (event->oldSize().width() != event->size().width() && isVisible())
         mThumbsScene->updateLayout();
 
-    DkFadeWidget::resizeEvent(event);
+    DkWidget::resizeEvent(event);
 }
 
 void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event)
@@ -2100,7 +2108,7 @@ void DkThumbPreviewLabel::mousePressEvent(QMouseEvent *ev)
 
 // -------------------------------------------------------------------- DkRecentFilesEntry
 DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir &rde, QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     mRecentDir = rde;
 
@@ -2207,7 +2215,7 @@ void DkRecentDirWidget::mousePressEvent(QMouseEvent *event)
         emit loadFileSignal(mRecentDir.firstFilePath(), event->modifiers() == Qt::ControlModifier);
     }
 
-    DkFadeWidget::mousePressEvent(event);
+    DkWidget::mousePressEvent(event);
 }
 
 void DkRecentDirWidget::enterEvent(DkEnterEvent *event)
@@ -2215,7 +2223,7 @@ void DkRecentDirWidget::enterEvent(DkEnterEvent *event)
     for (auto b : mButtons)
         b->show();
 
-    DkFadeWidget::enterEvent(event);
+    DkWidget::enterEvent(event);
 }
 
 void DkRecentDirWidget::leaveEvent(QEvent *event)
@@ -2223,12 +2231,12 @@ void DkRecentDirWidget::leaveEvent(QEvent *event)
     for (auto b : mButtons)
         b->hide();
 
-    DkFadeWidget::leaveEvent(event);
+    DkWidget::leaveEvent(event);
 }
 
 // -------------------------------------------------------------------- DkRecentFilesEntry
 DkRecentFilesWidget::DkRecentFilesWidget(QWidget *parent)
-    : DkFadeWidget(parent)
+    : DkWidget(parent)
 {
     createLayout();
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -2238,8 +2246,13 @@ void DkRecentFilesWidget::setVisible(bool visible)
 {
     if (visible)
         updateList();
+    if (mAction) {
+        mAction->blockSignals(true);
+        mAction->setChecked(visible);
+        mAction->blockSignals(false);
+    }
 
-    DkFadeWidget::setVisible(visible);
+    DkWidget::setVisible(visible);
 }
 
 void DkRecentFilesWidget::createLayout()

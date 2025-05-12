@@ -59,20 +59,186 @@ class DllCoreExport DkWidget : public QWidget
 
 public:
     DkWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
 };
 
-class DllCoreExport DkFadeWidget : public DkWidget
+// non-specialized functions for the mixin
+class DllCoreExport DkFadeHelper
+{
+    Q_DISABLE_COPY_MOVE(DkFadeHelper);
+
+public:
+    // globally disable animations, independent of user setting
+    static void enableAnimations(bool enable)
+    {
+        mGloballyEnabled = enable;
+    }
+
+    static bool animationsEnabled()
+    {
+        return mGloballyEnabled;
+    }
+
+    DkFadeHelper() = delete;
+    DkFadeHelper(QWidget *w);
+
+    // binds action checked state to widget visibility
+    void registerAction(QAction *action)
+    {
+        mAction = action;
+    }
+
+    // binds a per-appmode setting to visibility changes
+    void setDisplaySettings(QBitArray *displayBits)
+    {
+        mDisplayBits = displayBits;
+    }
+
+    // returns the setting value for current app mode
+    bool getCurrentDisplaySetting();
+
+    // check if animation is currently enabled (may consider user settings)
+    bool isFadeEnabled() const;
+
+    // disable/enable animation of this widget, regardless of any user settings
+    // will not affect fades that are in progress (call show/hide/etc for that)
+    void setFadeEnabled(bool enable)
+    {
+        mEnabled = enable;
+    }
+
+protected:
+    // if true, overrides of of setVisible() should directly call QWidget::setVisible()
+    bool mSetWidgetVisible = false;
+
+    // fade in or fade out, set QWidget visibility, action checkstate, settings
+    void fade(bool show, bool saveSetting = true);
+
+    // step the animation, stop it when completed
+    void animateFade(const QTimerEvent *event);
+
+private:
+    void setWidgetVisible(bool visible);
+    bool isParentAnimating() const;
+
+    bool isAnimating() const
+    {
+        return mTimerId != 0;
+    }
+
+    void stopAnimation()
+    {
+        mWidget->killTimer(mTimerId);
+        mTimerId = 0;
+    }
+
+    void startAnimation()
+    {
+        mTimerId = mWidget->startTimer(20);
+    }
+
+    static bool mGloballyEnabled;
+
+    QWidget *mWidget; // widget we are showing/hiding
+    QGraphicsOpacityEffect *mOpacityEffect;
+
+    bool mEnabled = true;
+    bool mShowing = false;
+    bool mHiding = false;
+    int mTimerId = 0; // from mWidget->startTimer()
+    QAction *mAction = nullptr; // hide/show action for widget
+    QBitArray *mDisplayBits = nullptr; // pointer to DkSettings visiblity bits for widget
+};
+
+// mixin pattern to allow QWidget::setVisible to
+// fade a widget in/out. Also can manage visiblity settings and actions
+template<class QWidgetBase>
+class DkFadeMixin : public QWidgetBase, public DkFadeHelper
+{
+    Q_DISABLE_COPY_MOVE(DkFadeMixin<QWidgetBase>)
+public:
+    DkFadeMixin() = delete;
+
+    // handle 1-3 argument widget constructors
+    template<typename T, typename U, typename V>
+    DkFadeMixin(T arg0, U arg1, V arg2)
+        : QWidgetBase(arg0, arg1, arg2)
+        , DkFadeHelper(this)
+    {
+    }
+
+    template<typename T, typename U>
+    DkFadeMixin(T arg0, U arg1)
+        : QWidgetBase(arg0, arg1)
+        , DkFadeHelper(this)
+    {
+    }
+
+    template<typename T>
+    DkFadeMixin(T arg0)
+        : QWidgetBase(arg0)
+        , DkFadeHelper(this)
+    {
+    }
+
+    //
+    // QWidget::hide() and QWidget::show() are not overriden
+    // as they are not virtual and go through QWidget::setVisible()
+    //
+
+    // if saveSetting=true then set the bound setting
+    //
+    // NOTE: when subclasses of DkFadeMixin override setVisible, they should *normally*:
+    //   1) call the superclass setVisible() immediately
+    //   2) check for recursive call with mSetWidgetVisible and skip the function body,
+    //      this indicates a recursion that is trying to bubble up to QWidget::setVisible()
+    //
+    // failure to do this may have unexpected behavior as the function body will
+    // be repeated on every call to setVisible()
+    //
+    // to avoid these pitfalls, override showEvent()/hideEvent() instead of setVisible()
+    // where possible
+    //
+    virtual void setVisible(bool visible, bool saveSetting)
+    {
+        if (mSetWidgetVisible)
+            QWidgetBase::setVisible(visible);
+        else
+            fade(visible, saveSetting);
+    }
+
+    // always sets the bound setting, if there is one
+    void setVisible(bool visible) override
+    {
+        setVisible(visible, true);
+    }
+
+    void show(bool saveSetting = true)
+    {
+        setVisible(true, saveSetting);
+    }
+
+    void hide(bool saveSetting = true)
+    {
+        setVisible(false, saveSetting);
+    }
+
+protected:
+    // not possible to have cancelable QTimer from FadeHelper so use startTimer()/killTimer()
+    void timerEvent(QTimerEvent *event) override
+    {
+        animateFade(event);
+    }
+};
+
+class DllCoreExport DkFadeWidget : public DkFadeMixin<DkWidget>
 {
     Q_OBJECT
 
 public:
     DkFadeWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-
-    void registerAction(QAction *action);
-    void block(bool blocked);
-    void setDisplaySettings(QBitArray *displayBits);
-    bool getCurrentDisplaySetting();
-    bool isHiding() const;
 
     enum {
         pos_west,
@@ -85,29 +251,14 @@ public:
         pos_end,
     };
 
-public slots:
-    virtual void show(bool saveSetting = true);
-    virtual void hide(bool saveSetting = true);
-    virtual void setVisible(bool visible, bool saveSetting = true);
-
-    void animateOpacityUp();
-    void animateOpacityDown();
-
 protected:
-    bool mBlocked;
-    bool mHiding;
-    bool mShowing;
-
-    QGraphicsOpacityEffect *mOpacityEffect;
-    QBitArray *mDisplaySettingsBits;
-    QAction *mAction = 0;
-
     // functions
     void init();
-    void paintEvent(QPaintEvent *event) override;
 };
 
-class DllCoreExport DkNamedWidget : public DkFadeWidget
+extern template class DkFadeMixin<DkWidget>; // speed up compilation/linking
+
+class DllCoreExport DkNamedWidget : public DkWidget
 {
     Q_OBJECT
 
@@ -125,7 +276,7 @@ class DllCoreExport DkLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkLabel(QWidget *parent = 0, const QString &text = QString());
+    DkLabel(const QString &text = QString(), QWidget *parent = 0);
     virtual ~DkLabel();
 
     virtual void showTimed(int time = 3000);
@@ -146,8 +297,7 @@ public:
         updateStyleSheet();
     };
 
-public slots:
-    virtual void hide();
+    void setVisible(bool) override;
 
 protected:
     QWidget *mParent;
@@ -201,7 +351,7 @@ class DkLabelBg : public DkLabel
     Q_OBJECT
 
 public:
-    DkLabelBg(QWidget *parent = 0, const QString &text = QString());
+    DkLabelBg(const QString &text = QString(), QWidget *parent = 0);
     virtual ~DkLabelBg(){};
 };
 
@@ -211,38 +361,12 @@ public:
  * we need this class too, since we cannot derive from DkLabel & DkFadeWidget
  * at the same time -> both have QObject as common base class.
  **/
-class DkFadeLabel : public DkLabel
+class DkFadeLabel : public DkFadeMixin<DkLabel>
 {
     Q_OBJECT
 
 public:
-    DkFadeLabel(QWidget *parent = 0, const QString &text = QString());
-
-    void block(bool blocked);
-    void registerAction(QAction *action);
-    void setDisplaySettings(QBitArray *displayBits);
-    bool getCurrentDisplaySetting();
-
-public slots:
-    virtual void show(bool saveSetting = true);
-    virtual void hide(bool saveSetting = true);
-    virtual void setVisible(bool visible, bool saveSetting = true);
-
-protected slots:
-    void animateOpacityUp();
-    void animateOpacityDown();
-
-protected:
-    bool hiding;
-    bool showing;
-    QBitArray *displaySettingsBits;
-
-    QAction *mAction = 0;
-
-    QGraphicsOpacityEffect *opacityEffect;
-
-    // functions
-    void init();
+    DkFadeLabel(const QString &text = QString(), QWidget *parent = 0);
 };
 
 class DllCoreExport DkDockWidget : public QDockWidget
@@ -259,8 +383,11 @@ public:
     static bool testDisplaySettings(const QBitArray &displaySettingsBits);
     Qt::DockWidgetArea getDockLocationSettings(const Qt::DockWidgetArea &defaultArea) const;
 
-public slots:
-    virtual void setVisible(bool visible, bool saveSetting = true);
+    void setVisible(bool visible) override
+    {
+        setVisible(visible, true);
+    }
+    virtual void setVisible(bool visible, bool saveSetting);
 
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
@@ -268,6 +395,8 @@ protected:
     QBitArray *displaySettingsBits;
     QAction *mAction = 0;
 };
+
+extern template class DkFadeMixin<DkLabel>;
 
 class DllCoreExport DkResizableScrollArea : public QScrollArea
 {
