@@ -1,5 +1,5 @@
 files:
   - source: /ImageLounge/translations/src/nomacs.ts
-    translation: /ImageLounge/translations/nomacs_%two_letters_code%.ts
     ignore:
       - /ImageLounge/translations/nomacs_en.ts
+    translation: /ImageLounge/translations/nomacs_%two_letters_code%.ts
