@@ -47,13 +47,13 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="445"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="670"/>
       <source>&amp;View</source>
-      <translation>&amp; Zobraziť</translation>
+      <translation>&amp;Zobraziť</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="503"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="676"/>
       <source>&amp;Edit</source>
-      <translation>&amp; Upraviť</translation>
+      <translation>&amp;Upraviť</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="525"/>
@@ -504,7 +504,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1206"/>
       <source>open image manipulation toolbox</source>
-      <translation type="unfinished">open image manipulation toolbox</translation>
+      <translation>otvorí nástroje na úpravu obrázka</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1209"/>
@@ -529,7 +529,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1223"/>
       <source>Show &amp;Menu</source>
-      <translation type="unfinished">Show &amp;Menu</translation>
+      <translation>Zobraziť &amp;Menu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1224"/>
