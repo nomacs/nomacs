@@ -368,13 +368,14 @@ public:
 
     const Display &defaultDisplay() const
     {
-        return display_d;
+        return display_default;
     }
 
 protected:
     QStringList scamDataDesc;
     QStringList sdescriptionDesc;
 
+    // current settings
     App app_p;
     Global global_p;
     Display display_p;
@@ -383,6 +384,7 @@ protected:
     MetaData meta_p;
     Resources resources_p;
 
+    // saved settings
     App app_d;
     Global global_d;
     Display display_d;
@@ -390,6 +392,9 @@ protected:
     Sync sync_d;
     MetaData meta_d;
     Resources resources_d;
+
+    // app defaults
+    Display display_default;
 
     void init();
 
