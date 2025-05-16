@@ -901,8 +901,6 @@ QString DkThemeManager::preprocess(const QString &cssString) const
             qWarning() << "[theme] unknown color name" << name << color;
     };
 
-    const QStringView inCss(cssString);
-
     //
     // stylesheet preprocessor directives (one per line)
     // -------------------------------
@@ -919,11 +917,12 @@ QString DkThemeManager::preprocess(const QString &cssString) const
     //
     // Includes and preprocesses another CSS file; if <path> starts with ":" it is loaded as a resource,
     // otherwise it looks in the current theme directory. <path> may not contain quotes. All nomacs
-    // themes should override the built-in stylesheet, but that is not a requirement.
+    // themes should include the built-in stylesheet, but that is not a requirement for custom themes.
     //
     // The included file may override state in the parent, any state referenced by further preprocessor
     // directives will be affected (e.g. nomacs-if-colorscheme)
     //
+    // -------------------------------
     // /* nomacs-if-<property>-<operator>-<expression> */
     //   [css block]
     // /* nomacs-elif-<property>-<operator>-<expression> */
@@ -995,19 +994,21 @@ QString DkThemeManager::preprocess(const QString &cssString) const
                    {"nomacs-elif", Token::ELIF},
                    {"nomacs-endif", Token::ENDIF}};
 
-    const QList<QStringView> lines = inCss.split('\n');
+    QString inCss(cssString);
+    QTextStream inStream(&inCss); // handles LF/CRLF automatically
 
     QFlags<Token> branch = Token::NONE;
     bool branchTaken = false;
 
     bool bufferLines = false;
-    QList<QStringView> lineBuffer;
+    QStringList lineBuffer;
     QStringList expression;
 
     QString outCss;
     int lineNumber = 0;
 
-    for (auto &line : lines) {
+    while (!inStream.atEnd()) {
+        const QString line = inStream.readLine();
         lineNumber++;
 
         Token token = Token::NONE;
@@ -1027,12 +1028,11 @@ QString DkThemeManager::preprocess(const QString &cssString) const
                 lineBuffer += line;
             }
         } else if (token == Token::COLOR) {
-            QString str = line.toString();
-            str = str.mid(2, str.length() - 4).trimmed();
+            QString str = line.mid(2, line.length() - 4).trimmed(); // remove /* */
             const QStringList colorDef = str.split(' ', Qt::SkipEmptyParts).mid(1);
             setColor(colorDef);
         } else if (token == Token::INCLUDE) {
-            QString path = line.toString().split(QChar(' ')).at(2);
+            QString path = line.split(QChar(' ')).at(2);
             path = path.mid(1, path.length() - 2); // remove quotes
             if (!path.startsWith(":")) {
                 const QFileInfo themeFileInfo(themeDir(), path);
@@ -1045,8 +1045,7 @@ QString DkThemeManager::preprocess(const QString &cssString) const
                 break;
             }
             branch = token;
-            QString str = line.toString();
-            str = str.mid(2, str.length() - 4).trimmed();
+            QString str = line.mid(2, line.length() - 4).trimmed();
             expression = str.split('-').mid(2);
             if (expression.count() != 3) {
                 qCritical() << "[theme] on line:" << lineNumber << "invalid IF expression";
@@ -1087,8 +1086,7 @@ QString DkThemeManager::preprocess(const QString &cssString) const
                 } else {
                     lineBuffer.clear();
                     if (token == Token::ELIF) {
-                        QString str = line.toString();
-                        str = str.mid(2, str.length() - 4).trimmed();
+                        QString str = line.mid(2, line.length() - 4).trimmed();
                         expression = str.split('-').mid(2);
                         if (expression.count() != 3) {
                             qCritical() << "[theme] on line:" << lineNumber << "invalid ELIF expression";
