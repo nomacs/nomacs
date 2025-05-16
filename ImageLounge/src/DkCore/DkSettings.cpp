@@ -326,6 +326,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
 {
     applyDefaultsFromFile(); // copies entries from "default.ini" to the user settings file
     setToDefaultSettings();
+    display_default = display_p;
     qInfoClean() << "loading settings from: " << settings.fileName();
 
     settings.beginGroup("AppSettings");

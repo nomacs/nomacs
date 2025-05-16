@@ -650,7 +650,16 @@ void DkThemeManager::applyTheme()
             display.iconColor = QColor(136, 0, 125);
     }
 
-    const QFileInfo themeFileInfo(themeDir(), getCurrentThemeName());
+    QFileInfo themeFileInfo(themeDir(), getCurrentThemeName());
+    if (!themeFileInfo.exists()) {
+        qWarning() << "[theme] file missing, reverting to default:" << themeFileInfo.absoluteFilePath();
+        setCurrentTheme(DkSettingsManager::param().defaultDisplay().themeName);
+        themeFileInfo = QFileInfo(themeDir(), getCurrentThemeName());
+    }
+    if (!themeFileInfo.exists()) {
+        qWarning() << "[theme] default theme missing:" << themeFileInfo.absoluteFilePath();
+        themeFileInfo.setFile(":/nomacs/stylesheet.css");
+    }
     cssString += preprocess(readFile(themeFileInfo.absoluteFilePath()));
 
     const ColorBinding colors = cssColors(); // must follow css preprocessing (or you get the defaults)
