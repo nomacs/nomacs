@@ -534,12 +534,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1224"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation type="unfinished">Hides the Menu and Shows it Again on ALT</translation>
+      <translation>Schová Menu a zobrazí ho po stlačení ALT</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1227"/>
       <source>Tool&amp;bar</source>
-      <translation type="unfinished">Tool&amp;bar</translation>
+      <translation>Tool&amp;bar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1229"/>
@@ -2499,7 +2499,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="238"/>
       <source>Settings</source>
-      <translation type="unfinished">Settings</translation>
+      <translation>Nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="240"/>
@@ -3166,7 +3166,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1699"/>
       <source> Settings</source>
-      <translation type="unfinished"> Settings</translation>
+      <translation> Nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1770"/>
@@ -3466,7 +3466,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2948"/>
       <source>Sorry, I cannot save the settings...</source>
-      <translation type="unfinished">Sorry, I cannot save the settings...</translation>
+      <translation>Ľutujem, nastavenia nemožno uložiť...</translation>
     </message>
   </context>
   <context>
@@ -3630,7 +3630,7 @@ Do you want to replace it?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4301"/>
       <source>Remember Monitor Settings</source>
-      <translation type="unfinished">Remember Monitor Settings</translation>
+      <translation>Zapamätať Nastavenia Monitora</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4305"/>
@@ -3733,12 +3733,12 @@ Do you want to replace it?</translation>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="195"/>
       <source>AVIF Settings</source>
-      <translation type="unfinished">AVIF Settings</translation>
+      <translation>AVIF nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="205"/>
       <source>JXL Settings</source>
-      <translation type="unfinished">JXL Settings</translation>
+      <translation>JXL nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="213"/>
@@ -4668,17 +4668,17 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="382"/>
       <source>&amp;Import Settings</source>
-      <translation type="unfinished">&amp;Import Settings</translation>
+      <translation>&amp;Imporovať nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="386"/>
       <source>&amp;Export Settings</source>
-      <translation type="unfinished">&amp;Export Settings</translation>
+      <translation>&amp;Exportovať nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="390"/>
       <source>Default Settings</source>
-      <translation type="unfinished">Default Settings</translation>
+      <translation>Predvolené nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="405"/>
@@ -4843,12 +4843,12 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="635"/>
       <source>Import Settings</source>
-      <translation type="unfinished">Import Settings</translation>
+      <translation>Imporovať nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="653"/>
       <source>Export Settings</source>
-      <translation type="unfinished">Export Settings</translation>
+      <translation>Exportovať nastavenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="676"/>
