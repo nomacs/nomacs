@@ -142,7 +142,7 @@ void DkSettings::initFileFilters()
     if (qtFormats.contains("png"))
         app_p.saveFilters.append("PNG (*.png)");
     if (qtFormats.contains("jpg"))
-        app_p.saveFilters.append("JPEG (*.jpg *.jpeg *.jpe)");
+        app_p.saveFilters.append("JPEG (*.jpg *.jpeg *.jpe *.jfif)");
     if (qtFormats.contains("jp2"))
         app_p.saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
     if (qtFormats.contains("jxl"))
