@@ -633,7 +633,7 @@ void DkGeneralPreference::onImportSettingsClicked()
     QString filePath = QFileDialog::getOpenFileName(DkUtils::getMainWindow(),
                                                     tr("Import Settings"),
                                                     QDir::homePath(),
-                                                    "Nomacs Settings (*.ini)",
+                                                    "Nomacs Settings (*.ini *.conf)",
                                                     nullptr,
                                                     DkDialog::fileDialogOptions());
 
@@ -651,7 +651,7 @@ void DkGeneralPreference::onExportSettingsClicked()
     QString filePath = QFileDialog::getSaveFileName(DkUtils::getMainWindow(),
                                                     tr("Export Settings"),
                                                     QDir::homePath(),
-                                                    "Nomacs Settings (*.ini)",
+                                                    "Nomacs Settings (*.ini *.conf)",
                                                     nullptr,
                                                     DkDialog::fileDialogOptions());
 
