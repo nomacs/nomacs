@@ -1205,6 +1205,26 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event)
     DkBaseViewPort::mouseReleaseEvent(event);
 }
 
+void DkViewPort::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    // if zoom on wheel, the additional keys should be used for switching files
+    if (DkSettingsManager::param().global().zoomOnWheel) {
+        // double click event happens on second mouse press, so offset by 1
+        int skip = 0;
+        if (event->buttons() == Qt::XButton1)
+            skip = -1;
+        else if (event->buttons() == Qt::XButton2)
+            skip = 1;
+
+        if (skip) {
+            loadFileFast(skip);
+            return;
+        }
+    }
+
+    DkBaseViewPort::mouseDoubleClickEvent(event);
+}
+
 void DkViewPort::mouseMoveEvent(QMouseEvent *event)
 {
     if (DkSettingsManager::param().display().showNavigation && event->modifiers() == Qt::NoModifier && event->buttons() == Qt::NoButton) {
