@@ -53,6 +53,7 @@ class QComboBox;
 
 namespace nmc
 {
+// base for custom widgets
 class DllCoreExport DkWidget : public QWidget
 {
     Q_OBJECT
@@ -64,7 +65,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 };
 
-// non-specialized functions for the mixin
+// non-specialized functions for DkFadeMixin
 class DllCoreExport DkFadeHelper
 {
     Q_DISABLE_COPY_MOVE(DkFadeHelper);
@@ -152,8 +153,7 @@ private:
     QBitArray *mDisplayBits = nullptr; // pointer to DkSettings visiblity bits for widget
 };
 
-// mixin pattern to allow QWidget::setVisible to
-// fade a widget in/out. Also can manage visiblity settings and actions
+// common fade behavior for widgets, implemented as mixin to support any QWidget type
 template<class QWidgetBase>
 class DkFadeMixin : public QWidgetBase, public DkFadeHelper
 {
@@ -233,6 +233,7 @@ protected:
     }
 };
 
+// widget that can fade in/out on QWidget::setVisible
 class DllCoreExport DkFadeWidget : public DkFadeMixin<DkWidget>
 {
     Q_OBJECT
@@ -258,6 +259,9 @@ protected:
 
 extern template class DkFadeMixin<DkWidget>; // speed up compilation/linking
 
+// widget with name() method to represent the displayed name (e.g. prefs tab label)
+// as opposed to objectName() which should be used for identification in QSS, etc
+// FIXME: this class is only used twice and could be replaced with QObject::setProperty()
 class DllCoreExport DkNamedWidget : public DkWidget
 {
     Q_OBJECT
@@ -271,6 +275,7 @@ protected:
     QString mName;
 };
 
+// label to show temporarily when text content changes (notifications etc)
 class DllCoreExport DkLabel : public QLabel
 {
     Q_OBJECT
@@ -322,6 +327,7 @@ protected:
     virtual void updateStyleSheet();
 };
 
+// label for long string we don't want to wrap around or scroll
 class DllCoreExport DkElidedLabel : public QLabel
 {
     Q_OBJECT
@@ -355,12 +361,7 @@ public:
     virtual ~DkLabelBg(){};
 };
 
-/**
- * This label fakes the DkFadeWidget behavior.
- * (allows for registering actions + fades in and out)
- * we need this class too, since we cannot derive from DkLabel & DkFadeWidget
- * at the same time -> both have QObject as common base class.
- **/
+// label widget that can fade in/out on QWidget::setVisible()
 class DkFadeLabel : public DkFadeMixin<DkLabel>
 {
     Q_OBJECT
