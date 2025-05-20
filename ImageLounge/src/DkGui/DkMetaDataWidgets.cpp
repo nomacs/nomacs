@@ -443,8 +443,10 @@ void DkMetaDataDock::updateEntries()
     mModel = new DkMetaDataModel(this);
     if (!mImgC) {
         mProxyModel->setSourceModel(mModel);
+        mThumbNailLabel->hide();
         return;
     }
+    mThumbNailLabel->show();
     mModel->addMetaData(mImgC->getMetaData());
     mProxyModel->setSourceModel(mModel);
 
