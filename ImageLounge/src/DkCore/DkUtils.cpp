@@ -671,7 +671,7 @@ QString DkUtils::nowString()
  * @param file is an existing file.
  * @return true, if file exists and has content we support, false otherwise.
  */
-bool isValidByContent(const QFileInfo &file)
+bool DkUtils::isValidByContent(const QFileInfo &file)
 {
     if (!file.exists())
         return false;
