@@ -65,14 +65,15 @@ class DllCoreExport DkFileInfo
 {
 public:
     /**
-     * Returns the file list of the directory dir.
-     * Note: this function might get slow if lots of files (> 10000) are in the
-     * directory or if the directory is in the net.
-     * Currently the file list is sorted according to the system specification.
-     * @param dir the directory to load the file list from.
-     * @return QStringList all filtered files of the current directory.
+     * Returns a file list of supported file types, non-recursive.
+     * @param dirPath directory or container path
+     * @param nameFilter additional filter on file name
+     * @return list of presumed supported files in no particular order
+     *
+     * @note checks the header of files with no suffix, which may get slow
+     *       for large directories.
      **/
-    static DkFileInfoList readDirectory(const QString &dirPath, QString folderKeywords = {});
+    static DkFileInfoList readDirectory(const QString &dirPath, const QString &nameFilter = {});
 
     // todo: clean path before giving fileInfo
     // remove trailing '/' : breaks fileName()
@@ -129,6 +130,7 @@ public:
 
     QString fileName() const;
     QString suffix() const;
+    QString baseName() const;
 
     QDateTime birthTime() const;
     QDateTime lastModified() const;
