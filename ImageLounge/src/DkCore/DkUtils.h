@@ -388,6 +388,7 @@ public:
         return stringify(rounded / pow(10, n));
     }
 
+    static bool isValidByContent(const QFileInfo &file);
     static bool isValid(const QFileInfo &fileInfo);
     static bool isSavable(const QString &fileName);
     static bool hasValidSuffix(const QString &fileName);
