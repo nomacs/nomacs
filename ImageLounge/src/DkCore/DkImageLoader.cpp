@@ -271,20 +271,28 @@ void DkImageLoader::imagesSorted()
 
 void DkImageLoader::createImages(const DkFileInfoList &files, bool sort)
 {
-    // TODO: change files to QStringList
     DkTimer dt;
-    QVector<QSharedPointer<DkImageContainerT>> oldImages = mImages;
-    mImages.clear();
 
-    QDate today = QDate::currentDate();
+    // preserve current images when updating
+    const QVector<QSharedPointer<DkImageContainerT>> oldImages = mImages;
+
+    mImages.clear();
+    mImages.reserve(files.count());
+
+    // use a temporary hashmap or this loop is n^2 !!
+    QHash<QString, int> oldFileIndex;
+    for (int idx = 0; idx < oldImages.count(); ++idx)
+        oldFileIndex.insert(oldImages.at(idx)->filePath(), idx);
 
     for (const DkFileInfo &f : files) {
-        const QString &fp = f.path();
-        int oIdx = findFileIdx(fp, oldImages);
+        int oldIdx = -1;
+        auto it = oldFileIndex.constFind(f.path());
+        if (it != oldFileIndex.constEnd())
+            oldIdx = it.value();
 
         // NOTE: we had this here: oIdx != -1 && QFileInfo(oldImages.at(oIdx)->filePath()).lastModified() == f.lastModified())
         // however, that did not detect file changes & slowed down the process - so I removed it...
-        mImages << ((oIdx != -1) ? oldImages.at(oIdx) : QSharedPointer<DkImageContainerT>(new DkImageContainerT(f)));
+        mImages << ((oldIdx != -1) ? oldImages.at(oldIdx) : QSharedPointer<DkImageContainerT>(new DkImageContainerT(f)));
     }
     qInfo() << "[DkImageLoader]" << mImages.size() << "containers created in" << dt;
 
@@ -566,6 +574,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QString &filePat
 
 int DkImageLoader::findFileIdx(const QString &filePath, const QVector<QSharedPointer<DkImageContainerT>> &images) const
 {
+    // TODO: this could be removed if we pass fileInfo
     // this seems a bit bizare...
     // however, in converting the string from a fileInfo - we quarantee that the separators are the same (/ vs \)
     QString lFilePath = filePath;
