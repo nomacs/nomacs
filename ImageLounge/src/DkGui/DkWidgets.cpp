@@ -441,13 +441,19 @@ void DkExplorer::setCurrentImage(QSharedPointer<DkImageContainerT> img)
     setCurrentPath(img->filePath());
 }
 
-void DkExplorer::setCurrentPath(const QString &filePath)
+void DkExplorer::setCurrentPath(const QString &path)
 {
-    // expand folders
-    if (QFileInfo(filePath).isDir())
-        mFileTree->expand(mSortModel->mapFromSource(mFileModel->index(filePath)));
+    // we could be passed a file, dir, zipfile, or zipfile member
+    DkFileInfo info(path);
 
-    mFileTree->setCurrentIndex(mSortModel->mapFromSource(mFileModel->index(filePath)));
+    // we can't see inside zip with QFileSystemModel so select the container
+    QString newPath = info.isFromZip() ? info.dirPath() : info.path();
+
+    // expand folder if we're selecting a folder, otherwise its automatic
+    if (info.isDir() && !info.isZipFile())
+        mFileTree->expand(mSortModel->mapFromSource(mFileModel->index(info.path())));
+
+    mFileTree->setCurrentIndex(mSortModel->mapFromSource(mFileModel->index(newPath)));
 }
 
 void DkExplorer::fileClicked(const QModelIndex &index) const
@@ -2992,5 +2998,4 @@ void DkDisplayWidget::updateLayout()
 //	if (w)
 //		w->setGeometry(sr);
 // }
-
 }
