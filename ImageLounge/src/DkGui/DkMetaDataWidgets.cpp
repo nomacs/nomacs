@@ -32,6 +32,7 @@
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkShortcuts.h"
+#include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
 
@@ -433,7 +434,7 @@ void DkMetaDataDock::onFilterTextChanged(const QString &filterText)
     mProxyModel->setFilterRegularExpression(QRegularExpression(QRegularExpression::escape(filterText), QRegularExpression::CaseInsensitiveOption));
 }
 
-void DkMetaDataDock::updateEntries()
+void DkMetaDataDock::updateEntries(QSharedPointer<DkMetaDataT> metadata)
 {
     int nr = mProxyModel->rowCount(QModelIndex());
     for (int idx = 0; idx < nr; idx++)
@@ -441,11 +442,7 @@ void DkMetaDataDock::updateEntries()
 
     mModel->deleteLater();
     mModel = new DkMetaDataModel(this);
-    if (!mImgC) {
-        mProxyModel->setSourceModel(mModel);
-        return;
-    }
-    mModel->addMetaData(mImgC->getMetaData());
+    mModel->addMetaData(metadata);
     mProxyModel->setSourceModel(mModel);
 
     mTreeView->setUpdatesEnabled(false);
@@ -463,41 +460,45 @@ void DkMetaDataDock::updateEntries()
 
 void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC)
 {
-    mImgC = imgC;
+    if (!imgC) {
+        mProxyModel->setSourceModel(new DkMetaDataModel(this));
+        return;
+    }
+
+    const auto metadata = imgC->getMetaData();
 
     if (isVisible())
-        updateEntries();
+        updateEntries(metadata);
 
-    if (imgC) {
-        // we need to load the thumbnail fresh to guarantee, that we just consider the exif thumb
-        // the imgC thumbnail might be created from the image
-        mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(imgC->filePath()));
-        connect(mThumb.data(), &DkThumbNailT::thumbLoadedSignal, this, &DkMetaDataDock::thumbLoaded);
-        if (!mThumb->fetchThumb(DkThumbNailT::require_exif))
-            thumbLoaded(false);
-    }
-}
-
-void DkMetaDataDock::thumbLoaded(bool loaded)
-{
-    if (loaded) {
-        QImage thumbImg = mThumb->getImage();
-
-        const QSize tSize = thumbImg.size();
-        thumbImg = thumbImg.scaled(tSize.boundedTo(QSize(mTreeView->width(), mTreeView->width())), Qt::KeepAspectRatio);
-
-        // mThumbNailLabel->setScaledContents(true);
-        mThumbNailLabel->setPixmap(QPixmap::fromImage(thumbImg));
-
-        QString toolTip = tr("Embedded Thumbnail");
-        toolTip += QString("\n%1: %2").arg(tr("Size")).arg(DkUtils::readableByte(thumbImg.text("Thumb.FileSize").toInt()));
-        toolTip += QString("\n%1: %2x%3").arg(tr("Resolution")).arg(tSize.width()).arg(tSize.height());
-        toolTip += QString("\n%1: %2").arg(tr("Transformed")).arg(thumbImg.text("Thumb.Transformed") == "yes" ? tr("yes") : tr("no"));
-        mThumbNailLabel->setToolTip(toolTip);
-
-        mThumbNailLabel->show();
-    } else
+    // Only load the EXIF thumbnail, so do not use DkThumbLoader.
+    // We already have the metadata, no need to read file again,
+    // so we can do this in the main thread.
+    if (!metadata) {
         mThumbNailLabel->hide();
+        return;
+    }
+
+    const std::optional<ThumbnailFromMetadata> res = loadThumbnailFromMetadata(*metadata);
+    if (!res) {
+        mThumbNailLabel->hide();
+        return;
+    }
+
+    QImage thumbImg = res->thumb;
+
+    const QSize tSize = thumbImg.size();
+    const qint64 tSizeBytes = thumbImg.sizeInBytes();
+    thumbImg = thumbImg.scaled(tSize.boundedTo(QSize(mTreeView->width(), mTreeView->width())), Qt::KeepAspectRatio);
+
+    mThumbNailLabel->setPixmap(QPixmap::fromImage(thumbImg));
+
+    QString toolTip = tr("Embedded Thumbnail");
+    toolTip += QString("\n%1: %2").arg(tr("Size")).arg(DkUtils::readableByte(tSizeBytes));
+    toolTip += QString("\n%1: %2x%3").arg(tr("Resolution")).arg(tSize.width()).arg(tSize.height());
+    toolTip += QString("\n%1: %2").arg(tr("Transformed")).arg(res->transformed ? tr("yes") : tr("no"));
+    mThumbNailLabel->setToolTip(toolTip);
+
+    mThumbNailLabel->show();
 }
 
 void DkMetaDataDock::getExpandedItemNames(const QModelIndex &index, QStringList &expandedNames)

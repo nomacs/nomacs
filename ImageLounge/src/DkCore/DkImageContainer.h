@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include "DkThumbs.h"
-
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QFileInfo>
 #include <QFutureWatcher>
@@ -92,10 +90,10 @@ public:
     QString getTitleAttribute() const;
     float getMemoryUsage() const;
     float getFileSize() const;
+    QString originalFilePath() const;
 
     virtual QSharedPointer<DkBasicLoader> getLoader();
     virtual QSharedPointer<DkMetaDataT> getMetaData();
-    virtual QSharedPointer<DkThumbNailT> getThumb();
     virtual QSharedPointer<QByteArray> getFileBuffer();
 #ifdef WITH_QUAZIP
     QSharedPointer<DkZipContainer> getZipData();
@@ -141,7 +139,6 @@ protected:
 
     QSharedPointer<QByteArray> mFileBuffer;
     QSharedPointer<DkBasicLoader> mLoader;
-    QSharedPointer<DkThumbNailT> mThumb;
 
     int mLoadState = not_loaded;
     bool mEdited = false;
@@ -159,6 +156,9 @@ protected:
 
 private:
     QString mFilePath;
+
+    // File path before processing zip file
+    QString mOriginalFilePath;
 };
 
 class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
@@ -183,7 +183,6 @@ public:
     bool isFileDownloaded() const;
 
     virtual QSharedPointer<DkBasicLoader> getLoader() override;
-    virtual QSharedPointer<DkThumbNailT> getThumb() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
     virtual void undo() override;

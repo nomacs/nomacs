@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
+#include "DkThumbs.h"
 
 // Qt defines
 class QListView;
@@ -202,7 +203,7 @@ public:
         tab_end
     };
 
-    DkBatchInput(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    DkBatchInput(DkThumbLoader *thumbLoader, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
     QString getDir() const;
     QStringList getSelectedFiles() const;
@@ -238,7 +239,7 @@ signals:
     void changed() const;
 
 protected:
-    virtual void createLayout();
+    virtual void createLayout(DkThumbLoader *);
 
     QString mCDirPath;
     QListView *mFileWidget = 0;
@@ -612,7 +613,7 @@ class DkBatchWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkBatchWidget(const QString &currentDirectory = QString(), QWidget *parent = 0);
+    DkBatchWidget(DkThumbLoader *thumbLoader, const QString &currentDirectory = QString(), QWidget *parent = 0);
     ~DkBatchWidget();
 
     enum batchWidgets {
@@ -647,7 +648,7 @@ signals:
     void infoSignal(const QString &message, const DkBatchInfoWidget::InfoMode &mode = DkBatchInfoWidget::InfoMode::info_message) const;
 
 protected:
-    void createLayout();
+    void createLayout(DkThumbLoader *);
     DkBatchConfig createBatchConfig(bool strict = true) const;
     void startProcessing();
     void stopProcessing();

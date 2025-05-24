@@ -29,6 +29,7 @@
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
+#include "DkThumbs.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QSharedPointer>
@@ -93,7 +94,7 @@ public:
         widget_end
     };
 
-    DkControlWidget(DkViewPort *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkControlWidget(DkThumbLoader *thumbLoader, DkViewPort *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
     virtual ~DkControlWidget(){};
 
     void setFullScreen(bool fullscreen);
