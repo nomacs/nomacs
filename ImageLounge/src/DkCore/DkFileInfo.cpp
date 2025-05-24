@@ -454,6 +454,10 @@ DkFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
             return {};
         }
 
+        // ignore MacOS metadata, could be parsed with adouble interface from netatalk
+        if (info.name.startsWith("__MACOSX/._"))
+            continue;
+
         fileInfoList += DkFileInfo(new SharedData(zipPath, info));
     }
 
