@@ -170,6 +170,7 @@ protected:
 
     DkImageStorage mImgStorage;
     QSharedPointer<QMovie> mMovie;
+    QSharedPointer<QIODevice> mMovieIo;
     QSharedPointer<QSvgRenderer> mSvg;
     QBrush mPattern;
 

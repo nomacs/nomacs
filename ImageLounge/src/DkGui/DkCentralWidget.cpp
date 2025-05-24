@@ -117,8 +117,9 @@ void DkTabInfo::loadSettings(const QSettings &settings)
         mTabMode = tab_single_image;
     }
 
-    if (QFileInfo(file).exists())
-        mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(file)));
+    DkFileInfo info(file);
+    if (info.exists())
+        mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(info)));
 }
 
 void DkTabInfo::saveSettings(QSettings &settings) const
@@ -134,13 +135,13 @@ void DkTabInfo::saveSettings(QSettings &settings) const
     settings.setValue("tabMode", mTabMode);
 }
 
-bool DkTabInfo::setDirPath(const QString &dirPath)
+bool DkTabInfo::setDirPath(const DkFileInfo &dir)
 {
-    QFileInfo di(dirPath);
-    if (!di.isDir())
+    Q_ASSERT(dir.isDir());
+    if (!dir.isDir())
         return false;
 
-    bool dirIsLoaded = mImageLoader->loadDir(dirPath);
+    bool dirIsLoaded = mImageLoader->loadDir(dir.path());
     if (dirIsLoaded) {
         setMode(tab_thumb_preview);
         return true;
@@ -651,7 +652,7 @@ void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, in
 
 void DkCentralWidget::addTab(const QString &filePath, int idx /* = -1 */, bool background)
 {
-    QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath));
+    QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(DkFileInfo(filePath)));
     addTab(imgC, idx, background);
 }
 
@@ -1110,11 +1111,11 @@ void DkCentralWidget::loadDirToTab(const QString &dirPath)
     }
 
     QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
-    QFileInfo di(dirPath);
+    DkFileInfo dir(dirPath);
 
-    if (di.isDir()) {
+    if (dir.isDir()) {
         // try to load the dir
-        bool dirIsLoaded = targetTab->setDirPath(dirPath);
+        bool dirIsLoaded = targetTab->setDirPath(dir);
 
         if (dirIsLoaded) {
             // show the directory in overview mode
