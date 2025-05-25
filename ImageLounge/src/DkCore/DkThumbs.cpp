@@ -100,7 +100,7 @@ std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadTh
     }
 
     if (fileInfo.isFromZip()) {
-        auto io = fileInfo.getIoDevice();
+        std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
         if (io)
             ba.reset(new QByteArray(io->readAll()));
     }

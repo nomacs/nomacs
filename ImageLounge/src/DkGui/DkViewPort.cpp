@@ -47,7 +47,6 @@
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
-#include <QBuffer>
 #include <QClipboard>
 #include <QDrag>
 #include <QDragLeaveEvent>
@@ -1028,7 +1027,7 @@ void DkViewPort::loadMovie()
         mMovie->stop();
 
     DkFileInfo fileInfo = mLoader->getCurrentImage()->fileInfo();
-    QSharedPointer<QIODevice> io = fileInfo.getIoDevice();
+    std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
     if (!io)
         return;
 
@@ -1037,14 +1036,13 @@ void DkViewPort::loadMovie()
     // - QMovie has a bug, fails to loop when constructed with a QFile
     // - we don't keep the file handle open (on windows can be a problem with delete, rename etc)
     // - animation won't hitch at the start
-    auto *bufferIo = new QBuffer;
-    bufferIo->setData(io->readAll());
-    io.reset(bufferIo);
+    mMovieIo.reset(new QBuffer);
+    mMovieIo->setData(io->readAll());
 
     QByteArray format = fileInfo.suffix().toLower().toLatin1();
 
     // QIODevice pointer is not owned by QMovie
-    QSharedPointer<QMovie> m(new QMovie(io.get(), format));
+    QSharedPointer<QMovie> m(new QMovie(mMovieIo.get(), format));
 
     // check if it truely a movie (we need this for we don't know if webp is actually animated)
     if (!m->isValid() || m->frameCount() == 1) {
@@ -1053,7 +1051,6 @@ void DkViewPort::loadMovie()
     }
 
     mMovie = m;
-    mMovieIo = io;
     qInfo() << "[movie] loaded animation:" << fileInfo.fileName();
 
     connect(mMovie.data(), &QMovie::frameChanged, this, QOverload<>::of(&DkViewPort::update));
