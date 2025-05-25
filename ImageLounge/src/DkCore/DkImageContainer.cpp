@@ -367,7 +367,7 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &
     if (fInfo.suffix().contains("psd")) // for now just psd's are not cached because their file might be way larger than the part we need to read
         return {};
 
-    auto io = fInfo.getIoDevice();
+    std::unique_ptr<QIODevice> io = fInfo.getIODevice();
     if (!io)
         return {};
 
