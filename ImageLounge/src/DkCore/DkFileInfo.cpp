@@ -33,21 +33,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include <QDir>
+#include <QStringBuilder>
 
 namespace nmc
 {
-
-// this is the same marker as KIO
-const QString DkFileInfo::ZipData::mZipMarker = "#/";
+// Delimiter for zipfile+member encoded path
+// - this is the same marker as KIO
+// - the slash at the end makes QFileInfo::fileName(),
+//   etc compatible with encoded paths
+// - note: would prefer to scope to class but breaks plugins linking on Qt5/gcc
+static constexpr QStringView ZipMarker = u"#/";
 
 DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
 {
 #ifdef WITH_QUAZIP
-    qsizetype index = encodedFilePath.indexOf(mZipMarker);
+    qsizetype index = encodedFilePath.indexOf(ZipMarker);
     if (index > 0) {
         mIsMember = true;
         mZipFilePath = encodedFilePath.mid(0, index);
-        mZipMemberPath = encodedFilePath.mid(index + mZipMarker.length());
+        mZipMemberPath = encodedFilePath.mid(index + ZipMarker.length());
         readMetaData();
     }
 #else
@@ -89,7 +93,7 @@ QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QStrin
     Q_ASSERT(!memberPath.startsWith('/'));
     Q_ASSERT(QFileInfo(zipFilePath).absoluteFilePath() == zipFilePath);
 
-    return zipFilePath + mZipMarker + memberPath;
+    return zipFilePath % ZipMarker % memberPath;
 }
 
 void DkFileInfo::ZipData::readMetaData()
