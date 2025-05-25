@@ -181,8 +181,6 @@ private:
         // clang-format on
 
     private:
-        static const QString mZipMarker;
-
         void setMetaData(const QuaZipFileInfo64 &info);
         void readMetaData();
 
