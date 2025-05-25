@@ -108,7 +108,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
 
     // TODO: pass QIODevice to readMetadata() to avoid reading the entire file
     if (fileInfo.isFromZip()) {
-        auto io = fileInfo.getIoDevice();
+        std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
         if (io)
             ba.reset(new QByteArray(io->readAll()));
     }

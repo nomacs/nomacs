@@ -172,7 +172,7 @@ bool DkMetaDataT::saveMetaData(const DkFileInfo &fileInfo, bool force)
 
     QSharedPointer<QByteArray> ba;
     {
-        auto io = fileInfo.getIoDevice();
+        std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
         if (!io) {
             qWarning() << "[DkMetaDataT] could not open for reading:" << fileInfo.fileName();
             return false;
