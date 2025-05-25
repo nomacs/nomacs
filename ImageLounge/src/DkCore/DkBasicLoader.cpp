@@ -1134,7 +1134,7 @@ QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePa
     DkFileInfo file(filePath);
     Q_ASSERT(file.isFile());
 
-    auto io = file.getIoDevice();
+    std::unique_ptr<QIODevice> io = file.getIODevice();
     if (!io)
         return {};
 

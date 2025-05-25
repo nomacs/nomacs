@@ -184,21 +184,25 @@ QString DkFileInfo::pathInZip() const
 }
 #endif
 
-QSharedPointer<QIODevice> DkFileInfo::getIoDevice() const
+std::unique_ptr<QIODevice> DkFileInfo::getIODevice() const
 {
-    QSharedPointer<QIODevice> io;
+    std::unique_ptr<QIODevice> io;
+
+    Q_ASSERT(!io);
 
     if (isFromZip()) {
 #ifdef WITH_QUAZIP
-        io.reset(new QuaZipFile(d->mZipData.zipFilePath(), d->mZipData.zipMemberPath()));
+        io = std::make_unique<QuaZipFile>(d->mZipData.zipFilePath(), d->mZipData.zipMemberPath());
 #endif
     } else {
-        io.reset(new QFile(path()));
+        io = std::make_unique<QFile>(path());
     }
+
+    Q_ASSERT(io != nullptr); // isFromZip()=>false if !WITH_QUAZIP
 
     if (!io->open(QIODevice::ReadOnly)) {
         qWarning() << "[FileInfo] failed to open i/o" << path() << io->errorString();
-        io.clear();
+        io = {};
     }
 
     return io;

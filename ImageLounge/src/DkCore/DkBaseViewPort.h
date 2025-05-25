@@ -28,6 +28,7 @@
 #pragma once
 
 #pragma warning(push, 0) // no warnings from includes - begin
+#include <QBuffer>
 #include <QGraphicsView>
 #pragma warning(pop) // no warnings from includes - end
 
@@ -170,7 +171,7 @@ protected:
 
     DkImageStorage mImgStorage;
     QSharedPointer<QMovie> mMovie;
-    QSharedPointer<QIODevice> mMovieIo;
+    QSharedPointer<QBuffer> mMovieIo;
     QSharedPointer<QSvgRenderer> mSvg;
     QBrush mPattern;
 
