@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDateTime>
 #include <QFileInfo>
 
+#include <memory>
+
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT
@@ -99,8 +101,8 @@ public:
     // clang-format on
 #endif
 
-    // return i/o open for reading
-    QSharedPointer<QIODevice> getIoDevice() const;
+    // return i/o open for reading, or nullptr
+    std::unique_ptr<QIODevice> getIODevice() const;
 
     // absolute file path
     // this is also the uuid of file; e.g. DkFileInfo(info.path()) == info;
