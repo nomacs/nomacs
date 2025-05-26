@@ -200,12 +200,15 @@ private:
         friend class DkFileInfo;
 
     private:
+        SharedData(const QString &path);
         SharedData(const QFileInfo &info);
         SharedData(const QString &zipPath, const QuaZipFileInfo64 &info);
 
         QFileInfo mFileInfo; // zip: constructed from encoded path in the zipfile
+#ifdef WITH_QUAZIP
+        const ZipData mZipData;
         QFileInfo mContainerInfo; // zip: info of the .zip file itself
-        ZipData mZipData;
+#endif
     };
 
     QSharedDataPointer<SharedData> d;
