@@ -238,10 +238,10 @@ void DkSettings::initFileFilters()
 
     // archive formats
     app_p.containerFilters.append("ZIP Archive (*.zip)");
+    app_p.containerFilters.append("Comic Book Archive (*.cbz)");
     app_p.containerFilters.append("Microsoft Word Document (*.docx)");
     app_p.containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
     app_p.containerFilters.append("Microsoft Excel Document (*.xlsx)");
-    app_p.containerFilters.append("Comic Book Archive (*.cbz)");
 
     // kimageformats supports krita now, we don't need this and it is bugged
     // since it does not open the correct file inside the zip
@@ -249,7 +249,9 @@ void DkSettings::initFileFilters()
 
     app_p.openFilters += app_p.containerFilters;
 
-    app_p.containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
+    // NOTE: if any suffixes have the same prefix, DkFileInfo::isContainer() will break
+    // TODO: use vector for this, copy from the long form
+    app_p.containerRawFilters = "*.zip *.cbz *.docx *.pptx *.xlsx";
 
     // exif filter as reported in #518 - afaik this is not a standard (typically it contains jpg/tiff)
     app_p.openFilters.append("EXIF (*.exif)");

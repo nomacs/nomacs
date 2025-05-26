@@ -189,20 +189,14 @@ bool DkFileInfo::operator==(const DkFileInfo &other) const
     return path() == other.path();
 }
 
-bool DkFileInfo::isContainer(const QFileInfo &fInfo)
+bool DkFileInfo::isContainer(const QFileInfo &fileInfo)
 {
-    if (!fInfo.isFile() || !fInfo.exists())
+    if (!fileInfo.isFile())
         return false;
 
-    QString suffix = fInfo.suffix();
-
-    if (suffix.isEmpty())
-        return false;
-
-    for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++) {
-        if (DkSettingsManager::param().app().containerFilters[idx].contains(suffix))
-            return true;
-    }
+    const QString &rawFilters = DkSettingsManager::param().app().containerRawFilters; // "*.zip *.cbz *.docx"
+    if (rawFilters.contains(fileInfo.suffix(), Qt::CaseInsensitive))
+        return true;
 
     return false;
 }

@@ -78,7 +78,7 @@ public:
     static DkFileInfoList readDirectory(const QString &dirPath, const QString &nameFilter = {});
 
     // fast check if file has supported suffix
-    static bool isContainer(const QFileInfo &fInfo);
+    static bool isContainer(const QFileInfo &fileInfo);
 
     // todo: clean path before giving fileInfo
     // remove trailing '/' : breaks fileName()
