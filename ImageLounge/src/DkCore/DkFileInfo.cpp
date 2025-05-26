@@ -474,11 +474,12 @@ DkFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
 
     DkFileInfoList fileInfoList;
     QuaZipFileInfo64 info;
+    int idx = 0;
 
     for (bool more = zip.goToFirstFile(); more; more = zip.goToNextFile()) {
         if (!zip.getCurrentFileInfo(&info)) {
-            qWarning() << "[FileInfo] zip: getCurrentFile failed:" << zipPath << zip.getZipError();
-            return {};
+            qWarning() << "[FileInfo] zip: getCurrentFile failed @index:" << idx << zipPath << zip.getZipError();
+            continue;
         }
 
         // ignore MacOS metadata, could be parsed with adouble interface from netatalk
@@ -486,6 +487,7 @@ DkFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
             continue;
 
         fileInfoList += DkFileInfo(new SharedData(zipPath, info));
+        idx++;
     }
 
     return fileInfoList;
