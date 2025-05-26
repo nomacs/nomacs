@@ -254,11 +254,6 @@ public:
     void saveMetaData(const QString &filePath);
 
     /**
-     * Check if file suffix should be treated as a container/folder
-     */
-    static bool isContainer(const QString &filePath);
-
-    /**
      * Sets a new image (if edited outside the basicLoader class)
      * @param img the new image
      * @param file assigns the current file name

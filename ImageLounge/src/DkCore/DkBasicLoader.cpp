@@ -1554,25 +1554,6 @@ void DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteAr
         writeBufferToFile(filePath, ba);
 }
 
-bool DkBasicLoader::isContainer(const QString &filePath)
-{
-    QFileInfo fInfo(filePath);
-    if (!fInfo.isFile() || !fInfo.exists())
-        return false;
-
-    QString suffix = fInfo.suffix();
-
-    if (suffix.isEmpty())
-        return false;
-
-    for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++) {
-        if (DkSettingsManager::param().app().containerFilters[idx].contains(suffix))
-            return true;
-    }
-
-    return false;
-}
-
 /**
  * @brief releases the currently loaded images.
  *
