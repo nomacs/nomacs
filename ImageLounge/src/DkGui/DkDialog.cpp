@@ -3761,7 +3761,7 @@ void DkArchiveExtractionDialog::textChanged(const QString &text)
     bool oldStyle = mArchivePathEdit->property("error").toBool();
     bool newStyle = false;
 
-    if (QFileInfo(text).exists() && DkBasicLoader::isContainer(text)) {
+    if (DkFileInfo::isContainer(QFileInfo(text))) {
         newStyle = false;
         mArchivePathEdit->setProperty("error", newStyle);
         loadArchive(text);
@@ -3844,10 +3844,8 @@ void DkArchiveExtractionDialog::loadArchive(const QString &filePath)
         lFilePath = mArchivePathEdit->text();
 
     QFileInfo fileInfo(lFilePath);
-    if (!fileInfo.exists())
-        return;
 
-    if (!DkBasicLoader::isContainer(lFilePath)) {
+    if (!DkFileInfo::isContainer(fileInfo)) {
         userFeedback(tr("Not a valid archive."), true);
         return;
     }
