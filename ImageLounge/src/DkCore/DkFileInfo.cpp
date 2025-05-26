@@ -28,8 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkUtils.h"
 
 #ifdef WITH_QUAZIP
-#include "DkBasicLoader.h" // TODO: move isContainer() here
-
 #ifdef WITH_QUAZIP1
 #include <quazip/JlCompress.h>
 #else
@@ -195,7 +193,26 @@ bool DkFileInfo::operator==(const DkFileInfo &other) const
     return path() == other.path();
 }
 
+bool DkFileInfo::isContainer(const QFileInfo &fInfo)
+{
+    if (!fInfo.isFile() || !fInfo.exists())
+        return false;
+
+    QString suffix = fInfo.suffix();
+
+    if (suffix.isEmpty())
+        return false;
+
+    for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++) {
+        if (DkSettingsManager::param().app().containerFilters[idx].contains(suffix))
+            return true;
+    }
+
+    return false;
+}
+
 #ifdef WITH_QUAZIP
+
 bool DkFileInfo::isFromZip() const
 {
     return d->mZipData.isZipMember();
@@ -203,7 +220,7 @@ bool DkFileInfo::isFromZip() const
 
 bool DkFileInfo::isZipFile() const
 {
-    return d->mFileInfo.isFile() && DkBasicLoader::isContainer(path());
+    return isContainer(d->mFileInfo);
 }
 
 QString DkFileInfo::pathInZip() const
