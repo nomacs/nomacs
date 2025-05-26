@@ -35,8 +35,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDir>
 #include <QStringBuilder>
 
+// macro to avoid #ifdef spaghetti
+#ifdef WITH_QUAZIP
+#define IF_FROM_ZIP(x, y) (isFromZip() ? (x) : (y))
+#else
+#define IF_FROM_ZIP(x, y) (y)
+#endif
+
 namespace nmc
 {
+#ifdef WITH_QUAZIP
+
 // Delimiter for zipfile+member encoded path
 // - this is the same marker as KIO
 // - the slash at the end makes QFileInfo::fileName(),
@@ -46,7 +55,6 @@ static constexpr QStringView ZipMarker = u"#/";
 
 DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
 {
-#ifdef WITH_QUAZIP
     qsizetype index = encodedFilePath.indexOf(ZipMarker);
     if (index > 0) {
         mIsMember = true;
@@ -54,12 +62,8 @@ DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
         mZipMemberPath = encodedFilePath.mid(index + ZipMarker.length());
         readMetaData();
     }
-#else
-    (void)encodedFilePath;
-#endif
 }
 
-#ifdef WITH_QUAZIP
 DkFileInfo::ZipData::ZipData(const QString &zipFile, const QuaZipFileInfo64 &info)
 {
     mIsMember = true;
@@ -86,8 +90,6 @@ void DkFileInfo::ZipData::setMetaData(const QuaZipFileInfo64 &info)
         mCreated = info.getExtTime(info.extra, QUAZIP_EXTRA_EXT_CR_TIME_FLAG).toLocalTime();
 }
 
-#endif
-
 QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QString &memberPath)
 {
     Q_ASSERT(!memberPath.startsWith('/'));
@@ -100,63 +102,80 @@ void DkFileInfo::ZipData::readMetaData()
 {
     if (mIsCached)
         return;
-#ifdef WITH_QUAZIP
+
     // FIXME: this is a bit slow on large zipfiles, readZipArchive() could cache it
     QuaZip zip(mZipFilePath);
     if (!zip.open(QuaZip::mdUnzip)) {
         qWarning() << "[FileInfo] zip: open failed:" << mZipFilePath << zip.getZipError();
-        zip.getZipError();
         return;
     }
 
     if (!zip.setCurrentFile(mZipMemberPath)) {
         qWarning() << "[FileInfo] zip: locate failed:" << mZipFilePath << zip.getZipError();
-        zip.getZipError();
         return;
     }
 
     QuaZipFileInfo64 info;
     if (!zip.getCurrentFileInfo(&info)) {
         qWarning() << "[FileInfo] zip: decompress failed:" << mZipFilePath << zip.getZipError();
-        zip.getZipError();
         return;
     }
 
     setMetaData(info);
+    mIsCached = true;
+}
 #endif
+
+#ifdef WITH_QUAZIP
+
+DkFileInfo::SharedData::SharedData(const QString &path)
+    : mFileInfo(path)
+    , mZipData(mFileInfo.absoluteFilePath())
+    , mContainerInfo(mZipData.isZipMember() ? mZipData.zipFilePath() : QString{})
+{
 }
 
 DkFileInfo::SharedData::SharedData(const QFileInfo &info)
     : mFileInfo(info)
-    , mZipData(info.absoluteFilePath())
+    , mZipData(mFileInfo.absoluteFilePath())
+    , mContainerInfo(mZipData.isZipMember() ? mZipData.zipFilePath() : QString{})
 {
-    if (mZipData.isZipMember())
-        mContainerInfo.setFile(mZipData.zipFilePath());
 }
 
-#ifdef WITH_QUAZIP
 DkFileInfo::SharedData::SharedData(const QString &zipPath, const QuaZipFileInfo64 &info)
     : mFileInfo(ZipData::encodePath(zipPath, info.name))
     , mZipData(zipPath, info)
+    , mContainerInfo(zipPath)
 {
-    if (mZipData.isZipMember())
-        mContainerInfo.setFile(mZipData.zipFilePath());
 }
+
+#else
+
+DkFileInfo::SharedData::SharedData(const QString &path)
+    : mFileInfo(path)
+{
+}
+
+DkFileInfo::SharedData::SharedData(const QFileInfo &info)
+    : mFileInfo(info)
+{
+}
+
 #endif
 
 DkFileInfo::DkFileInfo(const QString &path)
+    : d(new SharedData(path))
 {
-    d = new SharedData(QFileInfo(path));
 }
 
 DkFileInfo::DkFileInfo(const QFileInfo &info)
+    : d(new SharedData(info))
 {
-    d = new SharedData(info);
 }
 
 DkFileInfo::DkFileInfo(SharedData *shared)
+    : d(shared)
 {
-    d = shared;
 }
 
 DkFileInfo::operator QFileInfo() const
@@ -192,8 +211,6 @@ std::unique_ptr<QIODevice> DkFileInfo::getIODevice() const
 {
     std::unique_ptr<QIODevice> io;
 
-    Q_ASSERT(!io);
-
     if (isFromZip()) {
 #ifdef WITH_QUAZIP
         io = std::make_unique<QuaZipFile>(d->mZipData.zipFilePath(), d->mZipData.zipMemberPath());
@@ -202,7 +219,7 @@ std::unique_ptr<QIODevice> DkFileInfo::getIODevice() const
         io = std::make_unique<QFile>(path());
     }
 
-    Q_ASSERT(io != nullptr); // isFromZip()=>false if !WITH_QUAZIP
+    Q_ASSERT(io != nullptr); // isFromZip()==false if !WITH_QUAZIP
 
     if (!io->open(QIODevice::ReadOnly)) {
         qWarning() << "[FileInfo] failed to open i/o" << path() << io->errorString();
@@ -221,17 +238,15 @@ QString DkFileInfo::dirPath() const
 {
     if (isFromZip())
         return containerInfo().absoluteFilePath();
-    if (isZipFile())
+    else if (isZipFile())
         return path();
-    return d->mFileInfo.absolutePath();
+    else
+        return d->mFileInfo.absolutePath();
 }
 
 void DkFileInfo::refresh()
 {
-    if (isFromZip())
-        d->mContainerInfo.refresh();
-    else
-        d->mFileInfo.refresh();
+    IF_FROM_ZIP(d->mContainerInfo.refresh(), d->mFileInfo.refresh());
 }
 
 bool DkFileInfo::exists() const
@@ -246,7 +261,7 @@ bool DkFileInfo::isFile() const
 
 bool DkFileInfo::isDir() const
 {
-    return d->mFileInfo.isDir() || isZipFile();
+    return isZipFile() || d->mFileInfo.isDir();
 }
 
 bool DkFileInfo::isReadable() const
@@ -271,16 +286,12 @@ QString DkFileInfo::baseName() const
 
 QDateTime DkFileInfo::birthTime() const
 {
-    if (isFromZip())
-        return d->mZipData.birthTime();
-    return d->mFileInfo.birthTime();
+    return IF_FROM_ZIP(d->mZipData.birthTime(), d->mFileInfo.birthTime());
 }
 
 QDateTime DkFileInfo::lastModified() const
 {
-    if (isFromZip())
-        return d->mZipData.lastModified();
-    return d->mFileInfo.lastModified();
+    return IF_FROM_ZIP(d->mZipData.lastModified(), d->mFileInfo.lastModified());
 }
 
 QDateTime DkFileInfo::lastRead() const
@@ -348,16 +359,12 @@ QString DkFileInfo::symLinkTarget() const
 
 qint64 DkFileInfo::size() const
 {
-    if (isFromZip())
-        return d->mZipData.size();
-    return d->mFileInfo.size();
+    return IF_FROM_ZIP(d->mZipData.size(), d->mFileInfo.size());
 }
 
 const QFileInfo &DkFileInfo::containerInfo() const
 {
-    if (isFromZip())
-        return d->mContainerInfo;
-    return d->mFileInfo;
+    return IF_FROM_ZIP(d->mContainerInfo, d->mFileInfo);
 }
 
 // remove files that have the same name but different extension
@@ -406,7 +413,7 @@ DkFileInfoList filterFileName(const QString &word, const DkFileInfoList &list)
 }
 
 // filter list with query string
-// - keywords separated by space " " (case-sensitive)
+// - keywords separated by space " " (case-insensitive)
 // - regular expression (case-sensitive)
 // - glob pattern (anchored, case-insensitive)
 DkFileInfoList filterInfoList(const QString &query, const DkFileInfoList &list)
