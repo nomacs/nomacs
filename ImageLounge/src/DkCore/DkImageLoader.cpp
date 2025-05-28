@@ -1837,12 +1837,14 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
         connect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal, Qt::UniqueConnection);
         connect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved, Qt::UniqueConnection);
         connect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::zipFileDownloadedSignal, this, &DkImageLoader::setDir, Qt::UniqueConnection);
     } else if (!connectSignals) {
         disconnect(currImage, &DkImageContainerT::errorDialogSignal, this, &DkImageLoader::errorDialog);
         disconnect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::imageLoaded);
         disconnect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal);
         disconnect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved);
         disconnect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated);
+        disconnect(currImage, &DkImageContainerT::zipFileDownloadedSignal, this, &DkImageLoader::setDir);
     }
 
     currImage->receiveUpdates(connectSignals);
