@@ -191,14 +191,8 @@ bool DkFileInfo::operator==(const DkFileInfo &other) const
 
 bool DkFileInfo::isContainer(const QFileInfo &fileInfo)
 {
-    if (!fileInfo.isFile())
-        return false;
-
     const QString &rawFilters = DkSettingsManager::param().app().containerRawFilters; // "*.zip *.cbz *.docx"
-    if (rawFilters.contains(fileInfo.suffix(), Qt::CaseInsensitive))
-        return true;
-
-    return false;
+    return rawFilters.contains(fileInfo.suffix(), Qt::CaseInsensitive) && fileInfo.isFile();
 }
 
 #ifdef WITH_QUAZIP
@@ -210,7 +204,7 @@ bool DkFileInfo::isFromZip() const
 
 bool DkFileInfo::isZipFile() const
 {
-    return isContainer(d->mFileInfo);
+    return isFromZip() ? false : isContainer(d->mFileInfo);
 }
 
 QString DkFileInfo::pathInZip() const
@@ -268,12 +262,12 @@ bool DkFileInfo::exists() const
 
 bool DkFileInfo::isFile() const
 {
-    return !isDir();
+    return isZipFile() ? false : containerInfo().isFile();
 }
 
 bool DkFileInfo::isDir() const
 {
-    return isZipFile() || d->mFileInfo.isDir();
+    return isZipFile() ? true : d->mFileInfo.isDir();
 }
 
 bool DkFileInfo::isReadable() const
