@@ -194,6 +194,7 @@ signals:
     void errorDialogSignal(const QString &msg) const;
     void thumbLoadedSignal(bool loaded = true) const;
     void imageUpdatedSignal() const;
+    void zipFileDownloadedSignal(const DkFileInfo &file) const;
 
 public slots:
     void checkForFileUpdates();
