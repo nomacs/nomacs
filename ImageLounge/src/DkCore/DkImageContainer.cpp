@@ -705,12 +705,19 @@ void DkImageContainerT::fileDownloaded(const QString &filePath)
 
     mDownloaded = true;
 
-    if (filePath.isEmpty())
+    if (filePath.isEmpty()) {
         setFile(DkFileInfo(mFileDownloader->getUrl().toString().split("/").last()));
-    else
-        setFile(DkFileInfo(filePath));
-
-    fetchImage();
+    } else {
+        DkFileInfo info(filePath);
+        if (info.isFile()) {
+            setFile(info);
+        } else if (info.isZipFile()) {
+            emit fileLoadedSignal(false); // stop progress bar if no loadable content
+            emit zipFileDownloadedSignal(info);
+            return;
+        }
+    }
+    fetchImage(); // load from buffer
 }
 
 void DkImageContainerT::cancel()
