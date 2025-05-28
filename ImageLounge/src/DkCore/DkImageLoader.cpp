@@ -773,8 +773,6 @@ void DkImageLoader::showOnMap()
 
 void DkImageLoader::load(const DkFileInfo &info)
 {
-    Q_ASSERT(info.isFile());
-
     QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(info.path());
     setCurrentImage(newImg);
     load(mCurrentImage);
