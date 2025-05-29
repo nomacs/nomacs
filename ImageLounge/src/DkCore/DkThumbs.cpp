@@ -27,6 +27,7 @@
 
 #include "DkThumbs.h"
 #include "DkBasicLoader.h"
+#include "DkFileInfo.h"
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
@@ -98,10 +99,19 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     DkMetaDataT metaData;
     QSize origSize;
 
-#ifdef WITH_QUAZIP
-    if (QFileInfo(filePath).dir().path().contains(DkZipContainer::zipMarker()))
-        ba = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
-#endif
+    DkFileInfo fileInfo(filePath);
+
+    if (fileInfo.isShortcut() && !fileInfo.resolveShortcut()) {
+        qWarning() << "[Thumbnail] broken shortcut:" << filePath;
+        return {};
+    }
+
+    // TODO: pass QIODevice to readMetadata() to avoid reading the entire file
+    if (fileInfo.isFromZip()) {
+        std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
+        if (io)
+            ba.reset(new QByteArray(io->readAll()));
+    }
 
     // read the thumbnail from the exif data
     try {
@@ -138,11 +148,6 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
         p.fillRect(thumb.rect(), Qt::cyan);
     }
 
-    // FIXME: why do we need link resolution here?? won't links be followed by default??
-    QFileInfo fileInfo(filePath);
-    QString linkFilePath = fileInfo.isSymLink() ? fileInfo.symLinkTarget() : filePath;
-    fileInfo = QFileInfo(linkFilePath);
-
     bool transformed = false;
 
     // transform the exif thumbnail; do not attempt later as loadGeneral() *should* take care of that
@@ -165,7 +170,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     // read the full image
     if ((mode != require_exif /*|| fInfo.size() < 1e5*/) && (thumb.isNull() || mode == write_exif_always)) {
         DkBasicLoader loader;
-        if (loader.loadGeneral(linkFilePath, ba, true, true)) {
+        if (loader.loadGeneral(fileInfo.path(), ba, true, true)) {
             thumb = loader.image();
             origSize = thumb.size();
         }
@@ -221,7 +226,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
             metaData.updateImageMetaData(rotatedThumb);
 
             if (!ba || ba->isEmpty())
-                metaData.saveMetaData(linkFilePath);
+                metaData.saveMetaData(fileInfo.path());
             else
                 qWarning() << "[Thumbnail] I cannot update exif thumbnail without a file";
 

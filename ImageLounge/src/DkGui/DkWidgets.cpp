@@ -419,25 +419,34 @@ void DkExplorer::setCurrentImage(QSharedPointer<DkImageContainerT> img)
     setCurrentPath(img->filePath());
 }
 
-void DkExplorer::setCurrentPath(const QString &filePath)
+void DkExplorer::setCurrentPath(const QString &path)
 {
-    // expand folders
-    if (QFileInfo(filePath).isDir())
-        mFileTree->expand(mSortModel->mapFromSource(mFileModel->index(filePath)));
+    // we could be passed a file, dir, zipfile, or zipfile member
+    DkFileInfo info(path);
 
-    mFileTree->setCurrentIndex(mSortModel->mapFromSource(mFileModel->index(filePath)));
+    // we can't see inside zip with QFileSystemModel so select the container
+    QString newPath = info.isFromZip() ? info.dirPath() : info.path();
+
+    // expand folder if we're selecting a folder, otherwise its automatic
+    if (info.isDir() && !info.isZipFile())
+        mFileTree->expand(mSortModel->mapFromSource(mFileModel->index(info.path())));
+
+    mFileTree->setCurrentIndex(mSortModel->mapFromSource(mFileModel->index(newPath)));
 }
 
 void DkExplorer::fileClicked(const QModelIndex &index) const
 {
-    QFileInfo cFile = mFileModel->fileInfo(mSortModel->mapToSource(index));
+    DkFileInfo fileInfo(mFileModel->fileInfo(mSortModel->mapToSource(index)));
 
-    qDebug() << "opening: " << cFile.absoluteFilePath();
+    QString filePath = fileInfo.path();
+    qDebug() << "[Explorer] clicked:" << filePath;
 
-    if (DkUtils::isValid(cFile))
-        emit openFile(cFile.absoluteFilePath());
-    else if (cFile.isDir())
-        emit openDir(cFile.absoluteFilePath());
+    // we do not check if the file is openable by nomacs; the explorer does
+    // not allow this to happen (e.g. unsupported extensions are disabled or hidden)
+    if (!fileInfo.isDir())
+        emit openFile(filePath);
+    else
+        emit openDir(filePath);
 }
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
@@ -2352,44 +2361,44 @@ void DkHistogram::mouseReleaseEvent(QMouseEvent *event)
 }
 
 // DkFileInfo --------------------------------------------------------------------
-DkFileInfo::DkFileInfo()
+DkFileInfoWrapper::DkFileInfoWrapper()
 {
     mFileExists = false;
     mUsed = false;
 }
 
-DkFileInfo::DkFileInfo(const QFileInfo &fileInfo)
+DkFileInfoWrapper::DkFileInfoWrapper(const QFileInfo &fileInfo)
 {
     mFileInfo = fileInfo;
 }
 
-bool DkFileInfo::exists() const
+bool DkFileInfoWrapper::exists() const
 {
     return mFileExists;
 }
 
-void DkFileInfo::setExists(bool fileExists)
+void DkFileInfoWrapper::setExists(bool fileExists)
 {
     mFileExists = fileExists;
 }
 
-bool DkFileInfo::inUse() const
+bool DkFileInfoWrapper::inUse() const
 {
     return mUsed;
 }
 
-void DkFileInfo::setInUse(bool inUse)
+void DkFileInfoWrapper::setInUse(bool inUse)
 {
     mUsed = inUse;
 }
 
-QString DkFileInfo::getFilePath() const
+QString DkFileInfoWrapper::getFilePath() const
 {
     return mFileInfo.absoluteFilePath();
 }
 
 // DkFileLabel --------------------------------------------------------------------
-DkFolderLabel::DkFolderLabel(const DkFileInfo &fileInfo, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+DkFolderLabel::DkFolderLabel(const DkFileInfoWrapper &fileInfo, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
 {
     // we don't use the file labels anymore
@@ -2967,5 +2976,4 @@ void DkDisplayWidget::updateLayout()
 //	if (w)
 //		w->setGeometry(sr);
 // }
-
 }

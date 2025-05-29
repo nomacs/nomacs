@@ -747,12 +747,8 @@ void DkViewPort::deleteImage()
 
     int answer = msgBox->exec();
 
-    if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
-        stopMovie(); // movies keep file handles so stop it before we can delete files
-
-        if (!mLoader->deleteFile())
-            loadMovie(); // load the movie again, if we could not delete it
-    }
+    if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes)
+        mLoader->deleteFile();
 }
 
 void DkViewPort::saveFile()
@@ -1032,12 +1028,32 @@ void DkViewPort::loadMovie()
     if (mMovie)
         mMovie->stop();
 
-    // check if it truely a movie (we need this for we don't know if webp is actually animated)
-    QSharedPointer<QMovie> m(new QMovie(mLoader->filePath()));
-    if (m->frameCount() == 1)
+    DkFileInfo fileInfo = mLoader->getCurrentImage()->fileInfo();
+    std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
+    if (!io)
         return;
 
+    // read file to buffer, uses more memory, but:
+    // - devices that can't seek also can't loop (zip, network)
+    // - QMovie has a bug, fails to loop when constructed with a QFile
+    // - we don't keep the file handle open (on windows can be a problem with delete, rename etc)
+    // - animation won't hitch at the start
+    mMovieIo.reset(new QBuffer);
+    mMovieIo->setData(io->readAll());
+
+    QByteArray format = fileInfo.suffix().toLower().toLatin1();
+
+    // QIODevice pointer is not owned by QMovie
+    QSharedPointer<QMovie> m(new QMovie(mMovieIo.get(), format));
+
+    // check if it truely a movie (we need this for we don't know if webp is actually animated)
+    if (!m->isValid() || m->frameCount() == 1) {
+        qWarning() << "[movie]" << fileInfo.fileName() << "invalid format or not an animation";
+        return;
+    }
+
     mMovie = m;
+    qInfo() << "[movie] loaded animation:" << fileInfo.fileName();
 
     connect(mMovie.data(), &QMovie::frameChanged, this, QOverload<>::of(&DkViewPort::update));
     mMovie->start();
@@ -1100,8 +1116,8 @@ void DkViewPort::stopMovie()
     if (!mMovie)
         return;
 
-    mMovie->stop();
-    mMovie = QSharedPointer<QMovie>();
+    mMovie = {};
+    mMovieIo = {};
 }
 
 void DkViewPort::drawPolygon(QPainter &painter, const QPolygon &polygon)
@@ -1604,7 +1620,7 @@ void DkViewPort::toggleLena(bool fullscreen)
         if (fullscreen)
             mLoader->downloadFile(QUrl("http://www.lenna.org/lena_std.tif"));
         else
-            mLoader->load(":/nomacs/img/we.jpg");
+            mLoader->load(DkFileInfo(":/nomacs/img/we.jpg"));
     }
 }
 
@@ -1634,7 +1650,7 @@ void DkViewPort::setEditedImage(const QImage &newImg, const QString &editName)
     QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 
     if (!imgC)
-        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(""));
+        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT());
 
     if (!imgC)
         imgC = QSharedPointer<DkImageContainerT>();
@@ -1677,10 +1693,8 @@ bool DkViewPort::unloadImage(bool fileChange)
     // notify controller
     mController->updateImage({});
 
-    if (mMovie && success) {
-        mMovie->stop();
-        mMovie = QSharedPointer<QMovie>();
-    }
+    if (success)
+        stopMovie();
 
     if (mSvg && success)
         mSvg = QSharedPointer<QSvgRenderer>();
@@ -1700,11 +1714,15 @@ void DkViewPort::loadFile(const QString &filePath)
         return;
 
     mTestLoaded = false;
+    if (!mLoader)
+        return;
 
-    if (mLoader && !filePath.isEmpty() && QFileInfo(filePath).isDir()) {
-        mLoader->setDir(filePath);
-    } else if (mLoader)
-        mLoader->load(filePath);
+    DkFileInfo info(filePath);
+
+    if (info.isDir())
+        mLoader->setDir(info);
+    else
+        mLoader->load(info);
 
     // diem: I removed this line for a) we don't support remote displays anymore and be: https://github.com/nomacs/nomacs/issues/219
     // qDebug() << "sync mode: " << (DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_remote_display);

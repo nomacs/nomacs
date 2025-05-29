@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "DkFileInfo.h"
 #include "DkThumbs.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
@@ -68,9 +69,8 @@ public:
         loaded,
     };
 
-    DkImageContainer(const QString &filePath);
+    DkImageContainer(const DkFileInfo &fileInfo);
     virtual ~DkImageContainer();
-    bool operator==(const DkImageContainer &ric) const;
 
     QImage image();
     QImage pixmap();
@@ -81,7 +81,7 @@ public:
     bool hasMovie() const;
 
     int getLoadState() const;
-    QFileInfo fileInfo() const;
+    DkFileInfo fileInfo() const;
     QString filePath() const;
     QString dirPath() const;
     QString fileName() const;
@@ -97,9 +97,6 @@ public:
     virtual QSharedPointer<DkMetaDataT> getMetaData();
     virtual QSharedPointer<DkThumbNailT> getThumb();
     virtual QSharedPointer<QByteArray> getFileBuffer();
-#ifdef WITH_QUAZIP
-    QSharedPointer<DkZipContainer> getZipData();
-#endif
 #ifdef Q_OS_WIN
     std::wstring getFileNameWStr() const;
 #endif
@@ -107,10 +104,10 @@ public:
     bool exists();
     bool setPageIdx(int skipIdx);
 
-    QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath);
+    static QSharedPointer<QByteArray> loadFileToBuffer(const DkFileInfo &fileInfo);
+
     bool loadImage();
     void setImage(const QImage &img, const QString &editName);
-    void setImage(const QImage &img, const QString &editName, const QString &filePath);
     void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName);
     void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString &editName);
     void setMetaData(const QString &editName);
@@ -136,7 +133,7 @@ protected:
     void
     saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
     QString saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-    void setFilePath(const QString &filePath);
+    void setFile(const DkFileInfo &fileInfo);
     void init();
 
     QSharedPointer<QByteArray> mFileBuffer;
@@ -147,26 +144,21 @@ protected:
     bool mEdited = false;
     bool mSelected = false;
 
-    QFileInfo mFileInfo;
+    DkFileInfo mFileInfo;
     QVector<QImage> scaledImages;
 
-#ifdef WITH_QUAZIP
-    QSharedPointer<DkZipContainer> mZipData;
-#endif
 #ifdef Q_OS_WIN
     std::wstring mFileNameStr; // speeds up sorting of filenames on windows
 #endif
-
-private:
-    QString mFilePath;
 };
 
 class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(DkImageContainerT);
 
 public:
-    DkImageContainerT(const QString &filePath);
+    DkImageContainerT(const DkFileInfo &fileInfo = {});
     virtual ~DkImageContainerT();
 
     void fetchFile();
@@ -197,6 +189,7 @@ signals:
     void errorDialogSignal(const QString &msg) const;
     void thumbLoadedSignal(bool loaded = true) const;
     void imageUpdatedSignal() const;
+    void zipFileDownloadedSignal(const DkFileInfo &file) const;
 
 public slots:
     void checkForFileUpdates();
@@ -210,11 +203,6 @@ protected slots:
 
 protected:
     void fetchImage();
-
-    QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath);
-    QSharedPointer<DkBasicLoader> loadImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
-    QString saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-    void saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer);
 
     QFutureWatcher<QSharedPointer<QByteArray>> mBufferWatcher;
     QFutureWatcher<QSharedPointer<DkBasicLoader>> mImageWatcher;

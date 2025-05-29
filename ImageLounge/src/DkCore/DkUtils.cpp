@@ -320,7 +320,7 @@ QString DkUtils::getLongestNumber(const QString &str, int startIdx)
     return str.mid(startIdx, idx - startIdx);
 }
 
-bool DkUtils::compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compDateCreated(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
     // avoid equality because we keep our directory position/index using the sorted position
     auto left = lhf.birthTime(), right = rhf.birthTime();
@@ -330,7 +330,7 @@ bool DkUtils::compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf)
         return compFilename(lhf, rhf);
 }
 
-bool DkUtils::compDateModified(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compDateModified(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
     auto left = lhf.lastModified(), right = rhf.lastModified();
     if (left != right)
@@ -339,12 +339,15 @@ bool DkUtils::compDateModified(const QFileInfo &lhf, const QFileInfo &rhf)
         return compFilename(lhf, rhf);
 }
 
-bool DkUtils::compFilename(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compFilename(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
-    return compLogicQString(lhf.fileName(), rhf.fileName());
+    if (lhf.isFromZip() && rhf.isFromZip())
+        return compLogicQString(lhf.pathInZip(), rhf.pathInZip());
+    else
+        return compLogicQString(lhf.fileName(), rhf.fileName());
 }
 
-bool DkUtils::compFileSize(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compFileSize(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
     auto left = lhf.size(), right = rhf.size();
     if (left != right)
@@ -353,12 +356,10 @@ bool DkUtils::compFileSize(const QFileInfo &lhf, const QFileInfo &rhf)
         return compFilename(lhf, rhf);
 }
 
-bool DkUtils::compRandom(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compRandom(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
-    return QCryptographicHash::hash(lhf.absoluteFilePath().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed),
-                                    QCryptographicHash::Algorithm::Md5)
-        > QCryptographicHash::hash(rhf.absoluteFilePath().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed),
-                                   QCryptographicHash::Algorithm::Md5);
+    return QCryptographicHash::hash(lhf.path().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed), QCryptographicHash::Algorithm::Md5)
+        > QCryptographicHash::hash(rhf.path().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed), QCryptographicHash::Algorithm::Md5);
 }
 
 void DkUtils::addLanguages(QComboBox *langCombo, QStringList &languages)
@@ -674,7 +675,7 @@ QString DkUtils::nowString()
  * @param file is an existing file.
  * @return true, if file exists and has content we support, false otherwise.
  */
-bool isValidByContent(const QFileInfo &file)
+bool DkUtils::isValidByContent(const QFileInfo &file)
 {
     if (!file.exists())
         return false;

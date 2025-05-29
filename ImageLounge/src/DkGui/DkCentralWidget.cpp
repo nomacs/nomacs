@@ -117,8 +117,9 @@ void DkTabInfo::loadSettings(const QSettings &settings)
         mTabMode = tab_single_image;
     }
 
-    if (QFileInfo(file).exists())
-        mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(file)));
+    DkFileInfo info(file);
+    if (info.exists())
+        mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(info)));
 }
 
 void DkTabInfo::saveSettings(QSettings &settings) const
@@ -134,13 +135,13 @@ void DkTabInfo::saveSettings(QSettings &settings) const
     settings.setValue("tabMode", mTabMode);
 }
 
-bool DkTabInfo::setDirPath(const QString &dirPath)
+bool DkTabInfo::setDirPath(const DkFileInfo &dir)
 {
-    QFileInfo di(dirPath);
-    if (!di.isDir())
+    Q_ASSERT(dir.isDir());
+    if (!dir.isDir())
         return false;
 
-    bool dirIsLoaded = mImageLoader->loadDir(dirPath);
+    bool dirIsLoaded = mImageLoader->loadDir(dir.path());
     if (dirIsLoaded) {
         setMode(tab_thumb_preview);
         return true;
@@ -649,23 +650,21 @@ void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, in
         mTabbar->show();
 }
 
-void DkCentralWidget::addTab(const QString &filePath, int idx /* = -1 */, bool background)
+void DkCentralWidget::addTab(const QString &filePath, bool background)
 {
-    QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath));
-    addTab(imgC, idx, background);
+    QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(DkFileInfo(filePath)));
+    addTab(imgC, background);
 }
 
-void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, int idx /* = -1 */, bool background)
+void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, bool background)
 {
-    if (idx == -1)
-        idx = mTabInfos.size();
-
-    QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo(imgC, idx));
+    QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo(imgC));
     addTab(tabInfo, background);
 }
 
 void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 {
+    tabInfo->setTabIdx(mTabInfos.size());
     mTabInfos.push_back(tabInfo);
     mTabbar->addTab(tabInfo->getTabText());
 
@@ -1094,7 +1093,7 @@ void DkCentralWidget::loadFile(const QString &filePath, bool newTab)
     }
 
     // no tab to reuse -> create a new tab
-    addTab(filePath, -1, mTabInfos.size() > 0);
+    addTab(filePath, mTabInfos.size() > 0);
 }
 
 /**
@@ -1110,11 +1109,11 @@ void DkCentralWidget::loadDirToTab(const QString &dirPath)
     }
 
     QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
-    QFileInfo di(dirPath);
+    DkFileInfo dir(dirPath);
 
-    if (di.isDir()) {
+    if (dir.isDir()) {
         // try to load the dir
-        bool dirIsLoaded = targetTab->setDirPath(dirPath);
+        bool dirIsLoaded = targetTab->setDirPath(dir);
 
         if (dirIsLoaded) {
             // show the directory in overview mode
@@ -1146,53 +1145,41 @@ void DkCentralWidget::loadUrls(const QList<QUrl> &urls, int maxUrlsToLoad)
     }
 }
 
-/** loadUrl() loads a single valid url
- *  @param loadInTab: if true, replace the currently active image, so it exists.
+/** loadUrl() loads a single valid url (probably from drag-drop)
+ *  @param newTab: if true, do not replace the currently active image
  */
 void DkCentralWidget::loadUrl(const QUrl &url, bool newTab)
 {
-    Q_ASSERT(url.isValid());
-
-    QString fp = url.toString();
-
-    // allow drops from VSCode (i.e. images in README files)
-    if (fp.startsWith("vscode-resource:/"))
-        fp = fp.remove("vscode-resource:/");
-
-    // url.toString fixes windows "C:/" vs "C:\"
-    QFileInfo fi(fp);
-
-    if (!fi.exists()) {
-        fi = QFileInfo(url.toLocalFile());
+    if (!url.isValid()) {
+        qWarning() << "invalid url:" << url;
+        return;
     }
 
-    auto display = [&](QString msg) {
-        setInfo(msg);
-    };
+    DkFileInfo fileInfo;
 
-    if (fi.exists()) {
-        if (fi.isFile()) {
-            // load a local file
-            if (DkUtils::isValid(fi)) {
-                loadFile(fi.filePath(), newTab);
-            } else {
-                display(tr("Unable to load file \"%1\"").arg(fi.canonicalPath()));
-            }
-        } else if (fi.isDir()) {
-            // load a directory as thmbnail view
-            loadDirToTab(fi.filePath());
-        } else {
-            display(tr("\"%1\" cannot be loaded").arg(fi.canonicalPath()));
-        }
-    } else {
-        // is this the right way to do it?
-        addTab();
-
+    if (url.isLocalFile()) {
+        fileInfo = DkFileInfo(url.toLocalFile());
+    } else if (url.scheme() == "vscode-resource") {
+        // allow drops from VSCode (i.e. images in README files)
+        fileInfo = DkFileInfo(url.path());
+    } else if (QNetworkAccessManager().supportedSchemes().contains(url.scheme())) {
         // load a remote url
-        QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
-        display(tr("downloading \"%1\"").arg(url.toDisplayString()));
-        targetTab->getImageLoader()->downloadFile(url);
+        if (newTab) {
+            QSharedPointer<DkTabInfo> tab(new DkTabInfo(DkTabInfo::tab_empty));
+            addTab(tab, false); // must be current tab
+        }
+        setInfo(tr("Downloading \"%1\"").arg(url.toDisplayString()));
+        getCurrentImageLoader()->downloadFile(url);
+        return;
+    } else {
+        qWarning() << "unsupported url:" << url;
     }
+
+    // do not check if the file is valid input or not; the loader already does this
+    if (fileInfo.isFile())
+        loadFile(fileInfo.path(), newTab);
+    else
+        loadDirToTab(fileInfo.path());
 }
 
 void DkCentralWidget::pasteImage()
@@ -1255,14 +1242,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
     QList<QUrl> urls;
 
     if (mimeFmts.contains("text/uri-list")) {
-        // we got a list of uris
-        // mimeData has both urls and text (empty string. at least for dolphin 16.04.3)
-        for (QUrl u : mimeData->urls()) {
-            QFileInfo f = DkUtils::urlToLocalFile(u);
-
-            if (u.isValid() && DkUtils::isValid(f))
-                urls.append(u);
-        }
+        urls = mimeData->urls();
     } else if (mimeData->formats().contains("text/plain")) {
         // we got text data. maybe it is a list of urls
         urls = DkUtils::findUrlsInTextNewline(mimeData->text());
