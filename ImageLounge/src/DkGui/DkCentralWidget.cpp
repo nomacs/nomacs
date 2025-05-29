@@ -643,23 +643,21 @@ void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, in
         mTabbar->show();
 }
 
-void DkCentralWidget::addTab(const QString &filePath, int idx /* = -1 */, bool background)
+void DkCentralWidget::addTab(const QString &filePath, bool background)
 {
     QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(DkFileInfo(filePath)));
-    addTab(imgC, idx, background);
+    addTab(imgC, background);
 }
 
-void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, int idx /* = -1 */, bool background)
+void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, bool background)
 {
-    if (idx == -1)
-        idx = mTabInfos.size();
-
-    QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo(imgC, idx));
+    QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo(imgC));
     addTab(tabInfo, background);
 }
 
 void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 {
+    tabInfo->setTabIdx(mTabInfos.size());
     mTabInfos.push_back(tabInfo);
     mTabbar->addTab(tabInfo->getTabText());
 
@@ -1092,7 +1090,7 @@ void DkCentralWidget::loadFile(const QString &filePath, bool newTab)
     }
 
     // no tab to reuse -> create a new tab
-    addTab(filePath, -1, mTabInfos.size() > 0);
+    addTab(filePath, mTabInfos.size() > 0);
 }
 
 /**

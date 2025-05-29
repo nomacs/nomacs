@@ -155,8 +155,8 @@ public slots:
     void tabCloseRequested(int idx);
     void tabMoved(int from, int to);
     void setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex = -1);
-    void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1, bool background = false);
-    void addTab(const QString &filePath, int idx = -1, bool background = false);
+    void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), bool background = false);
+    void addTab(const QString &filePath, bool background = false);
     void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
     void removeTab(int tabIdx = -1);
     void nextTab() const;
