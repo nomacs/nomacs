@@ -180,7 +180,7 @@ DkFileInfo::DkFileInfo(SharedData *shared)
 DkFileInfo::operator QFileInfo() const
 {
     if (isFromZip())
-        qWarning() << "[FileInfo] cast to QFileInfo breaks zip files";
+        qWarning() << "[FileInfo] cast to QFileInfo breaks zip members:" << path();
     return d->mFileInfo;
 }
 
@@ -478,6 +478,10 @@ DkFileInfoList DkFileInfo::readZipArchive(const QString &zipPath)
 
         // ignore MacOS metadata, could be parsed with adouble interface from netatalk
         if (info.name.startsWith("__MACOSX/._"))
+            continue;
+
+        // ignore directories
+        if (info.name.endsWith('/'))
             continue;
 
         fileInfoList += DkFileInfo(new SharedData(zipPath, info));
