@@ -367,6 +367,22 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &
     if (fInfo.suffix().contains("psd")) // for now just psd's are not cached because their file might be way larger than the part we need to read
         return {};
 
+    //
+    // We support loading files with unknown extensions, this is a problem
+    // because someone could mistakenly open a large video file (maybe from drag-drop),
+    // and exhaust all memory on the system.
+    //
+    // DkUtils::isValid can do a quick check on the file extension/header, but this check
+    // does not involve the image loader codecs so it could accept otherwise unloadable files.
+    //
+    // FIXME: the proper fix here is to check if the file is actually loadable before caching, OR
+    //        do not use a file cache at all and leave that up to the OS.
+    //
+    if (fInfo.size() > 100 * 1024 * 1024 && !DkUtils::isValid(fInfo)) {
+        qWarning() << "refusing to cache large file:" << fInfo.fileName();
+        return {};
+    }
+
     std::unique_ptr<QIODevice> io = fInfo.getIODevice();
     if (!io)
         return {};
