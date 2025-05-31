@@ -989,7 +989,9 @@ void DkThumbLabel::generatePixmap(const QImage &thumb)
 
 void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit loadFileSignal(mFilePath, event->modifiers() == Qt::ControlModifier);
+    emit loadFileSignal(QString(mFilePath), event->modifiers() == Qt::ControlModifier);
+    // FIXME: `this` could already be destroyed after this line due to the slot connected to
+    // loadFileSignal updates the directory.
 }
 
 void DkThumbLabel::hoverEnterEvent(QGraphicsSceneHoverEvent *)
