@@ -28,6 +28,8 @@
 #pragma once
 
 #include "DkQt5Compat.h"
+#include <optional>
+#include <vector>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QDrag>
@@ -42,6 +44,8 @@
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
+#include "DkThumbs.h"
+#include <QPixmapCache>
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -80,7 +84,7 @@ public:
         cm_end,
     };
 
-    DkFilePreview(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkFilePreview(DkThumbLoader *loader, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
     ~DkFilePreview()
     {
@@ -113,7 +117,6 @@ public:
 
 public slots:
     void moveImages();
-    void updateFileIdx(int fileIdx);
     void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs);
     void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
     void newPosition();
@@ -137,7 +140,6 @@ protected:
     void saveSettings();
 
 private:
-    QVector<QSharedPointer<DkImageContainerT>> mThumbs;
     QTransform worldMatrix;
 
     QPoint lastMousePos;
@@ -150,11 +152,8 @@ private:
 
     QLinearGradient leftGradient;
     QLinearGradient rightGradient;
-    // QPixmap selectedImg;
-    // QPixmap currentImg;
 
     int mouseTrace;
-    QFileInfo currentFile;
     int currentFileIdx;
     int oldFileIdx;
     float currentDx;
@@ -177,10 +176,22 @@ private:
     QMenu *contextMenu;
     QVector<QAction *> contextMenuActions;
 
+    std::vector<QString> mFilePaths{};
+
+    struct Thumb {
+        QImage image{};
+        bool notExist{};
+        bool fromExif{};
+        bool loading{};
+    };
+
+    QHash<QString, Thumb> mThumbs;
+    DkThumbLoader *mThumbLoader;
+
     void init();
     void initOrientations();
     void drawThumbs(QPainter *painter);
-    void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
+    QImage applyFadeOut(const QLinearGradient &gradient, const QRectF &imgRect, const QImage &img);
     void drawSelectedEffect(QPainter *painter, const QRectF &r);
     void drawCurrentImgEffect(QPainter *painter, const QRectF &r);
     void drawNoImgEffect(QPainter *painter, const QRectF &r);
@@ -192,45 +203,45 @@ class DkThumbLabel : public QGraphicsObject
     Q_OBJECT
 
 public:
-    DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QGraphicsItem *parent = 0);
+    DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, bool fillSquare, QGraphicsItem *parent = nullptr);
     ~DkThumbLabel();
 
-    void setThumb(QSharedPointer<DkThumbNailT> thumb);
-    QSharedPointer<DkThumbNailT> getThumb()
-    {
-        return mThumb;
-    };
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
-    void updateSize();
-    void setVisible(bool visible);
-    QPixmap pixmap() const;
     void cancelLoading();
-
-public slots:
-    void updateLabel();
+    QString filePath() const;
+    QImage image() const;
+    void setFillSquare(bool value);
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;
     void showFileSignal(const QString &filePath = QString()) const;
 
-protected:
+private:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    void updateTooltip(const QImage &thumb, bool fromExif);
+    void generatePixmap(const QImage &thumb);
+    void onThumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
+    void onThumbnailLoadFailed(const QString &filePath);
+    std::optional<QPixmap> pixmap() const;
 
-    QSharedPointer<DkThumbNailT> mThumb;
-    QGraphicsPixmapItem mIcon;
     QGraphicsTextItem mText;
-    bool mThumbInitialized = false;
-    bool mFetchingThumb = false;
-    QPen mNoImagePen;
-    QBrush mNoImageBrush;
+    QString mFilePath;
+    QString mTooltip;
+    std::optional<QPixmapCache::Key> mPixmapKey = std::nullopt;
     QPen mSelectPen;
     QBrush mSelectBrush;
+    DkThumbLoader *mThumbLoader = nullptr;
+    bool mThumbNotExist = false;
+    bool mFetchingThumb = false;
     bool mIsHovered = false;
-    QPointF mLastMove;
+    bool mFillSquare = false;
+
+    static constexpr QColor sNoImagePen = QColor(150, 150, 150);
+    static constexpr QColor sNoImageBrush = QColor(100, 100, 100, 50);
 };
 
 class DllCoreExport DkThumbScene : public QGraphicsScene
@@ -238,19 +249,17 @@ class DllCoreExport DkThumbScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    DkThumbScene(QWidget *parent = 0);
+    DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent = 0);
 
     void updateLayout();
     QStringList getSelectedFiles() const;
     QVector<DkThumbLabel *> getSelectedThumbs() const;
-    int selectedThumbIndex(bool first = true);
 
     void setImageLoader(QSharedPointer<DkImageLoader> loader);
     void copyImages(const QMimeData *mimeData, const Qt::DropAction &da = Qt::CopyAction) const;
     int findThumb(DkThumbLabel *thumb) const;
     bool allThumbsSelected() const;
-    void ensureVisible(QSharedPointer<DkImageContainerT> img) const;
-    QString currentDir() const;
+    void ensureVisible(const QString &path) const;
 
 public slots:
     void updateThumbLabels();
@@ -272,22 +281,23 @@ public slots:
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;
-    void statusInfoSignal(const QString &msg, int pos = 0) const;
     void thumbLoadedSignal() const;
 
-protected:
+private:
     void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
     void keyPressEvent(QKeyEvent *event) override;
+    QString currentDir() const;
+    int selectedThumbIndex(bool first = true);
 
     int mXOffset = 0;
     int mNumRows = 0;
     int mNumCols = 0;
-    bool mFirstLayout = true;
     int mLastSelectedIdx = -1; // last selected item to restore on updateThumbs()
 
     QVector<DkThumbLabel *> mThumbLabels;
     QSharedPointer<DkImageLoader> mLoader;
-    QVector<QSharedPointer<DkImageContainerT>> mThumbs;
+    QVector<QString> mThumbs;
+    DkThumbLoader *mThumbLoader;
 };
 
 class DkThumbsView : public QGraphicsView
@@ -299,9 +309,6 @@ public:
 
 signals:
     void updateDirSignal(const QString &dir) const;
-
-public slots:
-    void fetchThumbs();
 
 protected:
     void wheelEvent(QWheelEvent *event) override;
@@ -315,6 +322,9 @@ protected:
     DkThumbScene *scene;
     QPointF mousePos;
     int lastShiftIdx;
+
+private:
+    void onScroll();
 };
 
 class DllCoreExport DkThumbScrollWidget : public DkWidget
@@ -322,7 +332,7 @@ class DllCoreExport DkThumbScrollWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkThumbScrollWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkThumbScrollWidget(DkThumbLoader *thumbLoader, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkThumbScrollWidget();
 
     DkThumbScene *getThumbWidget()
@@ -408,19 +418,20 @@ class DkThumbPreviewLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkThumbPreviewLabel(const QString &filePath, int thumbSize = 100, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    DkThumbPreviewLabel(const QString &filePath, DkThumbLoader *thumbLoader, int thumbSize = 100, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
 
 public slots:
-    void thumbLoaded();
+    void thumbLoaded(const QString &filePath, const QImage &img);
 
 protected:
     void mousePressEvent(QMouseEvent *ev) override;
 
-    QSharedPointer<DkThumbNailT> mThumb;
     int mThumbSize = 100;
+    DkThumbLoader *mLoader;
+    QString mFilePath;
 };
 
 class DllCoreExport DkRecentDirWidget : public DkWidget
@@ -428,7 +439,7 @@ class DllCoreExport DkRecentDirWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkRecentDirWidget(const DkRecentDir &rde, QWidget *parent = 0);
+    DkRecentDirWidget(const DkRecentDir &rde, DkThumbLoader *thumbLoader, QWidget *parent = 0);
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
@@ -454,7 +465,7 @@ protected:
 
     QVector<QPushButton *> mButtons;
 
-    void createLayout();
+    void createLayout(DkThumbLoader *);
     void mousePressEvent(QMouseEvent *event) override;
     void enterEvent(DkEnterEvent *event) override;
     void leaveEvent(QEvent *event) override;
@@ -465,7 +476,7 @@ class DllCoreExport DkRecentFilesWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkRecentFilesWidget(QWidget *parent = 0);
+    DkRecentFilesWidget(DkThumbLoader *thumbLoader, QWidget *parent = 0);
 
     void registerAction(QAction *action)
     {
@@ -488,6 +499,7 @@ protected:
 
 private:
     QAction *mAction = nullptr;
+    DkThumbLoader *mThumbLoader;
 };
 
 }

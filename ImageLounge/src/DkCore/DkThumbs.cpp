@@ -31,7 +31,6 @@
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-#include "DkUtils.h"
 #include "qpainter.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
@@ -47,57 +46,51 @@
 namespace nmc
 {
 
-DkThumbNail::DkThumbNail(const QString &filePath, const QImage &img)
-{
-    mImg = DkImage::createThumb(img);
-    mFile = filePath;
-    mMaxThumbSize = qRound(max_thumb_size * DkSettingsManager::param().dpiScaleFactor());
-    mImgExists = true;
-}
+void removeBlackBorder(QImage &img);
 
-DkThumbNail::~DkThumbNail()
+std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData)
 {
-}
-
-void DkThumbNail::compute(FetchMode mode)
-{
-    if (!DkUtils::isValid(QFileInfo(mFile))) {
-        qWarning() << "[Thumbnail] compute: file does not exist or is not readable" << mFile;
-        return;
+    QImage thumb = metaData.getThumbnail();
+    if (thumb.isNull()) {
+        return std::nullopt;
     }
 
-    mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), mode, mMaxThumbSize);
-    mImg = DkImage::createThumb(mImg);
-}
+    removeBlackBorder(thumb);
 
-QString DkThumbNail::toolTip() const
-{
-    const QFileInfo fileInfo(getFilePath());
+    int orientation = metaData.getOrientationDegrees();
 
-    // clang-format off
-    QString str =
-        QObject::tr("Name: ") % fileInfo.fileName() % "\n" %
-        QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size()) % "\n" %
-        QObject::tr("Created: ") % fileInfo.birthTime().toString();
-    if (hasImage()) {
-        str = str % "\n" %
-            QObject::tr("Thumb: ") %
-            QString::number(mImg.size().width()) % "x" % QString::number(mImg.size().height()) % " " %
-            (mImg.text("Thumb.IsExif") == "yes" ? QObject::tr("Embedded ") : "");
+    const bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
+    const bool shouldTransform = !disableTransform && orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set;
+    if (shouldTransform) {
+        if (orientation != 0) {
+            QTransform rotationMatrix;
+            rotationMatrix.rotate(orientation);
+            thumb = thumb.transformed(rotationMatrix);
+        }
+        if (metaData.isOrientationMirrored()) {
+            thumb = thumb.mirrored(true, false);
+        }
     }
-    // clang-format on
 
-    return str;
+    return ThumbnailFromMetadata{thumb, shouldTransform};
 }
 
-QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, const int mode, const int maxThumbSize)
+std::optional<QImage> loadThumbnailFromFullImage(const QString &filePath, QSharedPointer<QByteArray> baZip)
 {
-    DkTimer dt;
+    DkBasicLoader loader;
+    if (loader.loadGeneral(filePath, baZip, true, true)) {
+        return loader.image();
+    } else {
+        return std::nullopt;
+    }
+}
 
-    QImage thumb;
-    DkMetaDataT metaData;
-    QSize origSize;
+std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt)
+{
+    DkTimer dt{};
 
+    auto metaData = std::make_unique<DkMetaDataT>();
+    QSharedPointer<QByteArray> ba{};
 #ifdef WITH_QUAZIP
     if (QFileInfo(filePath).dir().path().contains(DkZipContainer::zipMarker()))
         ba = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
@@ -105,37 +98,14 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
 
     // read the thumbnail from the exif data
     try {
-        if (!ba || ba->isEmpty())
-            metaData.readMetaData(filePath);
-        else
-            metaData.readMetaData(filePath, ba);
-
-        // read the full image if we want to recreate thumbnails
-        if (mode != write_exif_always) {
-            thumb = metaData.getThumbnail();
-            origSize = thumb.size();
+        if (!ba || ba->isEmpty()) {
+            metaData->readMetaData(filePath);
+        } else {
+            metaData->readMetaData(filePath, ba);
         }
-
-        // debug tool: force loading full image
-        if (qEnvironmentVariableIsSet("NOMACS_THUMB_NO_EXIF"))
-            thumb = QImage();
-
     } catch (...) {
         // this should never happen since we handle exceptions in metaData
         qWarning() << "[Thumbnail] unexpected exception when reading exif thumbnail";
-    }
-
-    removeBlackBorder(thumb);
-
-    const bool isExif = !thumb.isNull();
-    const int rotation = metaData.getOrientationDegrees();
-    const bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
-
-    // debug tool: tint embedded thumbs
-    if (isExif && qEnvironmentVariableIsSet("NOMACS_THUMB_TINT")) {
-        QPainter p(&thumb);
-        p.setOpacity(0.5);
-        p.fillRect(thumb.rect(), Qt::cyan);
     }
 
     // FIXME: why do we need link resolution here?? won't links be followed by default??
@@ -143,115 +113,39 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
     QString linkFilePath = fileInfo.isSymLink() ? fileInfo.symLinkTarget() : filePath;
     fileInfo = QFileInfo(linkFilePath);
 
-    bool transformed = false;
-
-    // transform the exif thumbnail; do not attempt later as loadGeneral() *should* take care of that
-    if (!disableTransform && isExif && rotation != DkMetaDataT::or_invalid && rotation != DkMetaDataT::or_not_set) {
-        if (rotation != 0) {
-            // TODO: use DkUtils rotation as in loadGeneral()
-            QTransform rotationMatrix;
-            rotationMatrix.rotate((double)rotation);
-            thumb = thumb.transformed(rotationMatrix);
-        }
-        if (metaData.isOrientationMirrored())
-            thumb = thumb.mirrored(true, false);
-
-        transformed = true;
+    std::optional<ThumbnailFromMetadata> exifThumb{};
+    if (opt != LoadThumbnailOption::force_full) {
+        exifThumb = loadThumbnailFromMetadata(*metaData);
     }
 
-    if (mode == require_exif && thumb.isNull())
-        return thumb;
-
-    // read the full image
-    if ((mode != require_exif /*|| fInfo.size() < 1e5*/) && (thumb.isNull() || mode == write_exif_always)) {
-        DkBasicLoader loader;
-        if (loader.loadGeneral(linkFilePath, ba, true, true)) {
-            thumb = loader.image();
-            origSize = thumb.size();
-        }
+    std::optional<QImage> fullThumb{};
+    if (opt != LoadThumbnailOption::force_exif && !exifThumb) {
+        fullThumb = loadThumbnailFromFullImage(linkFilePath, ba);
     }
 
-    // rescale only in the default mode
-    bool isScaled = false;
-    if (mode == prefer_exif && !thumb.isNull()) {
-        int w = thumb.width();
-        int h = thumb.height();
-
-        if (w > maxThumbSize || h > maxThumbSize) {
-            if (w > h) {
-                h = qRound((double)maxThumbSize / w * h);
-                w = maxThumbSize;
-            } else if (w < h) {
-                w = qRound((double)maxThumbSize / h * w);
-                h = maxThumbSize;
-            } else {
-                w = maxThumbSize;
-                h = maxThumbSize;
-            }
-        }
-
-        // simple antialasing but could use a lot of memory
-        // FIXME: use opencv area scaler
-        // FIXME: this runs even if w/h did not change
-        isScaled = true;
-        thumb = thumb.scaled(QSize(w * 2, h * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
-        thumb = thumb.scaled(QSize(w, h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    if (!fullThumb && !exifThumb) {
+        return std::nullopt;
     }
 
-    // this was a bug; if the JPG does not have a thumbnail, but was rotated, we get a double rotation
-    // if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
-    //     QTransform rotationMatrix;
-    //     rotationMatrix.rotate((double)orientation);
-    //     thumb = thumb.transformed(rotationMatrix);
-    //     isRotated = true;
-    // }
+    LoadThumbnailResult res = {
+        exifThumb ? exifThumb.value().thumb : fullThumb.value(),
+        linkFilePath,
+        std::move(metaData),
+        exifThumb.has_value(),
+        exifThumb && exifThumb->transformed,
+    };
 
-    // save the thumbnail
-    if (mode == write_exif_always || (mode == write_exif && !isExif)) {
-        try {
-            QImage rotatedThumb = thumb;
-            if (rotation != DkMetaDataT::or_invalid && rotation != DkMetaDataT::or_not_set && rotation != 0) {
-                // TODO: Use DkUtils rotation
-                QTransform rotationMatrix;
-                rotationMatrix.rotate(-(double)rotation);
-                rotatedThumb = rotatedThumb.transformed(rotationMatrix);
-                transformed = true;
-            }
-
-            metaData.updateImageMetaData(rotatedThumb);
-
-            if (!ba || ba->isEmpty())
-                metaData.saveMetaData(linkFilePath);
-            else
-                qWarning() << "[Thumbnail] I cannot update exif thumbnail without a file";
-
-        } catch (...) {
-            qWarning() << "Sorry, I could not save the metadata";
-        }
-    }
-
-    // NOTE: setText() should not be used, since values could end up in saved metadata
-    // It is OK here since it isn't something a user would save; if it was used
-    // for the EXIF thumb we explicitly strip all metadata there
-    // thumb.setText("Thumb.IsScaled", isScaled ? "yes" : "no");
-    thumb.setText("Thumb.IsExif", isExif ? "yes" : "no");
-    thumb.setText("Thumb.Size", QString("%1x%2").arg(origSize.width()).arg(origSize.height()));
-    thumb.setText("Thumb.Transformed", transformed ? "yes" : "no");
-
-    QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 scaled=%5x%6 %8ms")
-                       .arg(fileInfo.fileName())
-                       .arg(isExif ? "yes" : "no")
-                       .arg(origSize.width())
-                       .arg(origSize.height())
-                       .arg(thumb.width())
-                       .arg(thumb.height())
+    QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 %8ms")
+                       .arg(linkFilePath)
+                       .arg(exifThumb ? "yes" : "no")
+                       .arg(res.thumb.width())
+                       .arg(res.thumb.height())
                        .arg(dt.elapsed());
     qInfo().noquote() << info;
-
-    return thumb;
+    return res;
 }
 
-void DkThumbNail::removeBlackBorder(QImage &img)
+void removeBlackBorder(QImage &img)
 {
     int rIdx = 0;
     bool nonblack = false;
@@ -299,73 +193,6 @@ void DkThumbNail::removeBlackBorder(QImage &img)
         img = img.copy(0, rIdx, img.width(), rIdxB - rIdx);
 }
 
-void DkThumbNail::setImage(const QImage &img)
-{
-    mImg = DkImage::createThumb(img);
-}
-
-/**
- * This class provides threaded access to image thumbnails.
- * @param file the thumbnail's file
- * @param img optional: a thumb image.
- **/
-DkThumbNailT::DkThumbNailT(const QString &filePath, const QImage &img)
-    : DkThumbNail(filePath, img)
-{
-}
-
-DkThumbNailT::~DkThumbNailT()
-{
-    mThumbWatcher.blockSignals(true);
-    mThumbWatcher.cancel();
-}
-
-bool DkThumbNailT::fetchThumb(DkThumbNail::FetchMode mode /* = false */, QSharedPointer<QByteArray> ba)
-{
-    if (mode == write_exif_always || mode == write_exif)
-        mImg = QImage();
-
-    if (!mImg.isNull() || !mImgExists || mFetching)
-        return false;
-
-    // check if we can load the file
-    // though if it might seem over engineered: it is much faster cascading it here
-    // FIXME: hasValidSuffix() bypasses exists/readable check presumably to workaround ZIP support issues
-    if (!DkUtils::hasValidSuffix(getFilePath()) && !DkUtils::isValid(QFileInfo(getFilePath())))
-        return false;
-
-    // we have to do our own bool here
-    // watcher.isRunning() returns false if the thread is waiting in the pool
-    mFetching = true;
-    mFetchMode = mode;
-    connect(&mThumbWatcher, &QFutureWatcherBase::finished, this, &DkThumbNailT::thumbLoaded, Qt::UniqueConnection);
-
-    // add work to the thread pool
-    // note: arguments to lambda must be thread-safe or copies (no "&", "this") to prevent race conditions
-    QString filePath = getFilePath(); // not a copy, but will detach (COW) if string is modified
-    int maxThumbSize = mMaxThumbSize;
-    mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              [filePath, ba, mode, maxThumbSize] {
-                                                  QImage thumb = DkThumbNail::computeIntern(filePath, ba, mode, maxThumbSize);
-                                                  return DkImage::createThumb(thumb);
-                                              }));
-
-    return true;
-}
-
-void DkThumbNailT::thumbLoaded()
-{
-    QFuture<QImage> future = mThumbWatcher.future();
-
-    mImg = future.result();
-
-    if (mImg.isNull() && mFetchMode != require_exif)
-        mImgExists = false;
-
-    mFetching = false;
-    emit thumbLoadedSignal(!mImg.isNull());
-}
-
 // DkThumbsThreadPool --------------------------------------------------------------------
 DkThumbsThreadPool::DkThumbsThreadPool()
 {
@@ -389,4 +216,120 @@ void DkThumbsThreadPool::clear()
     pool()->clear();
 }
 
+DkThumbLoader::DkThumbLoader()
+    : mWatchers(qMax(QThread::idealThreadCount() - 2, 1))
+{
+    mIdleWatchers.reserve(mWatchers.size());
+    for (auto &ele : mWatchers) {
+        mIdleWatchers.push_back(&ele);
+        connect(&ele, &QFutureWatcher<LoadThumbnailResultLocal>::finished, this, &DkThumbLoader::onThumbnailLoadFinished);
+    }
+}
+
+DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const QString &filePath)
+{
+    const auto res = loadThumbnail(filePath, LoadThumbnailOption::none);
+    if (!res) {
+        return {QImage(), filePath, false, false};
+    }
+    return {DkImage::createThumb(res->thumb), filePath, true, res->fromExif};
+}
+
+DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const QString &filePath, const QImage &img)
+{
+    return {DkImage::createThumb(img), filePath, true, false};
+}
+
+void DkThumbLoader::requestThumbnail(const QString &filePath)
+{
+    const auto *cached = mThumbnailCache.object(filePath);
+    if (cached) {
+        if (!cached->valid) {
+            emit thumbnailLoadFailed(cached->filePath);
+            return;
+        }
+
+        emit thumbnailLoaded(cached->filePath, cached->thumb, cached->fromExif);
+        return;
+    }
+
+    if (mIdleWatchers.size() == 0) {
+        const int count = mCounts.value(filePath, 0);
+        if (count == 0) {
+            mQueue.push(filePath);
+        }
+        mCounts.insert(filePath, count + 1);
+        return;
+    }
+
+    auto *w = mIdleWatchers.back();
+    mIdleWatchers.pop_back();
+    w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
+}
+
+void DkThumbLoader::cancelThumbnailRequest(const QString &filePath)
+{
+    auto it = mCounts.find(filePath);
+    if (it == mCounts.end()) {
+        return;
+    }
+    it.value() -= 1;
+}
+
+void DkThumbLoader::dispatchFullImage(const QString &filePath, const QImage &img)
+{
+    if (mIdleWatchers.size() == 0) {
+        // Full image takes priority, so we can skip the pending requests
+        mCounts.remove(filePath);
+        mFullImageQueue.push({img, filePath, true, false});
+        return;
+    }
+
+    auto *w = mIdleWatchers.back();
+    mIdleWatchers.pop_back();
+    w->setFuture(QtConcurrent::run(scaleFullThumbnail, filePath, img));
+}
+
+void DkThumbLoader::onThumbnailLoadFinished()
+{
+    const auto w = dynamic_cast<QFutureWatcher<LoadThumbnailResultLocal> *>(sender());
+    Q_ASSERT(w != nullptr);
+
+    auto *res = new LoadThumbnailResultLocal{w->result()};
+
+    handleFinishedWatcher(w);
+
+    if (!res->valid) {
+        emit thumbnailLoadFailed(res->filePath);
+        mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size());
+        return;
+    }
+
+    emit thumbnailLoaded(res->filePath, res->thumb, res->fromExif);
+
+    // Add cache after finished using res because the cache takes ownership.
+    // Add 1 to avoid zero cost.
+    mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size() + res->thumb.sizeInBytes());
+}
+
+void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w)
+{
+    if (mFullImageQueue.size() > 0) {
+        const LoadThumbnailResultLocal &item = mFullImageQueue.front();
+        w->setFuture(QtConcurrent::run(scaleFullThumbnail, item.filePath, item.thumb));
+        mFullImageQueue.pop();
+        return;
+    }
+
+    while (mQueue.size() > 0) {
+        const QString filePath = mQueue.front();
+        mQueue.pop();
+        if (mCounts.value(filePath, 0) > 0) {
+            mCounts.remove(filePath);
+            w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
+            return;
+        }
+    }
+    mIdleWatchers.push_back(w);
+}
 }

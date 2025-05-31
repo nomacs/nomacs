@@ -72,7 +72,7 @@
 namespace nmc
 {
 // DkViewPort --------------------------------------------------------------------
-DkViewPort::DkViewPort(QWidget *parent)
+DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     : DkBaseViewPort(parent)
 {
     mRepeatZoomTimer = new QTimer(this);
@@ -99,7 +99,7 @@ DkViewPort::DkViewPort(QWidget *parent)
 
     createShortcuts();
 
-    mController = new DkControlWidget(this);
+    mController = new DkControlWidget(thumbLoader, this);
 
     mLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
     connectLoader(mLoader);
@@ -1966,8 +1966,8 @@ void DkViewPort::cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------
-DkViewPortFrameless::DkViewPortFrameless(QWidget *parent)
-    : DkViewPort(parent)
+DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent)
+    : DkViewPort(thumbLoader, parent)
 {
 #if defined(Q_OS_MAC) && QT_VERSION_MAJOR < 6
     parent->setAttribute(Qt::WA_MacNoShadow); // deprecated
@@ -2284,8 +2284,8 @@ void DkViewPortFrameless::updateImageMatrix()
 }
 
 // DkViewPortContrast --------------------------------------------------------------------
-DkViewPortContrast::DkViewPortContrast(QWidget *parent)
-    : DkViewPort(parent)
+DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *parent)
+    : DkViewPort(thumbLoader, parent)
 {
     mColorTable = QVector<QRgb>(256);
     for (int i = 0; i < mColorTable.size(); i++)
