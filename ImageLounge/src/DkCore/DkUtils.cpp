@@ -597,7 +597,7 @@ void DkUtils::mSleep(int ms)
 #endif
 }
 
-bool DkUtils::exists(const QFileInfo &file, int waitMs)
+bool DkUtils::exists(const DkFileInfo &file, int waitMs)
 {
     QFuture<bool> future = QtConcurrent::run(
         // TODO: if we have a lot of mounted files (windows) in the history
@@ -610,7 +610,7 @@ bool DkUtils::exists(const QFileInfo &file, int waitMs)
         // - create a dedicated pool for image loading
         DkThumbsThreadPool::pool(), // hook it to the thumbs pool
         [file] {
-            return DkUtils::checkFile(file);
+            return file.exists();
         });
 
     for (int idx = 0; idx < waitMs; idx++) {
@@ -618,7 +618,6 @@ bool DkUtils::exists(const QFileInfo &file, int waitMs)
             break;
 
         // qDebug() << "you are trying the new exists method... - you are modern!";
-
         mSleep(1);
     }
 
@@ -626,11 +625,6 @@ bool DkUtils::exists(const QFileInfo &file, int waitMs)
 
     // assume file is not existing if it took longer than waitMs
     return (future.isFinished()) ? future.result() : false;
-}
-
-bool DkUtils::checkFile(const QFileInfo &file)
-{
-    return file.exists();
 }
 
 QFileInfo DkUtils::urlToLocalFile(const QUrl &url)
