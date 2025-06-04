@@ -184,8 +184,7 @@ public:
      * @param waitMs time in milli seconds to wait for file.exists()
      * @return bool true if the file exists
      **/
-    static bool exists(const QFileInfo &file, int waitMs = 10);
-    static bool checkFile(const QFileInfo &file);
+    static bool exists(const DkFileInfo &file, int waitMs = 10);
     static QFileInfo urlToLocalFile(const QUrl &url);
     static QString fileNameFromUrl(const QUrl &url);
     static QString nowString();
