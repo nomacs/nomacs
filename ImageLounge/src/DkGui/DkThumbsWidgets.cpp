@@ -2225,16 +2225,16 @@ void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
 
     QVector<DkThumbPreviewLabel *> tls;
 
-    // check if the folder exists (in the current context)
-    // this should fix issues with disconnected samba drives on windows
-    if (DkUtils::exists(QFileInfo(mRecentDir.firstFilePath()), 30)) {
-        for (auto tp : mRecentDir.filePaths(4)) {
-            auto tpl = new DkThumbPreviewLabel(tp, thumbLoader, 42, this);
+    DkFileInfo firstFile = mRecentDir.firstFile();
+    if (DkUtils::exists(firstFile, 30)) {
+        const DkFileInfoList files = mRecentDir.files(4);
+        for (auto &tp : files) {
+            auto tpl = new DkThumbPreviewLabel(tp.path(), thumbLoader, 42, this);
             connect(tpl, &DkThumbPreviewLabel::loadFileSignal, this, &DkRecentDirWidget::loadFileSignal);
             tls << tpl;
         }
     } else {
-        qInfo() << mRecentDir.firstFilePath() << "does not exist - according to a fast check";
+        qInfo() << firstFile.path() << "does not exist - according to a fast check";
     }
 
     QLabel *pathLabel = new QLabel(mRecentDir.dirPath(), this);
@@ -2397,6 +2397,14 @@ void DkRecentDir::append(const DkFileInfo &file)
     Q_ASSERT(file.dirPath() == mDir.path());
     Q_ASSERT(!mFiles.contains(file));
     mFiles.append(file);
+}
+
+DkFileInfoList DkRecentDir::files(int max) const
+{
+    DkFileInfoList list = mFiles;
+    if (max > 0)
+        list = mFiles.mid(0, max);
+    return list;
 }
 
 QStringList DkRecentDir::filePaths(int max) const
