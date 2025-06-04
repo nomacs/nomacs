@@ -409,10 +409,18 @@ public:
     QString dirName() const;
     QString dirPath() const;
 
+    DkFileInfo firstFile() const
+    {
+        return mFiles.value(0);
+    }
+
     QString firstFilePath() const
     {
         return mFiles.value(0).path();
     }
+
+    // get up to max most-recent files
+    DkFileInfoList files(int max = -1) const;
 
     // get up to max most-recent paths
     QStringList filePaths(int max = -1) const;
