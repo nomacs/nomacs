@@ -96,11 +96,13 @@ public:
     bool isFromZip() const;
     bool isZipFile() const;
     QString pathInZip() const;
+    void readZipMetaData() const;
 #else
     // clang-format off
     bool isFromZip() const { return false; }
     bool isZipFile() const { return false; }
     QString pathInZip() const { return {}; }
+    void readZipMetaData() const {}
     // clang-format on
 #endif
 
@@ -181,11 +183,13 @@ private:
         qint64 size() const            { return mDecompressedSize; }
         QDateTime lastModified() const { return mModified; }
         QDateTime birthTime() const    { return mCreated; }
+        bool hasMetaData() const       { return mHasMetaData; }
         // clang-format on
+
+        void readMetaData();
 
     private:
         void setMetaData(const QuaZipFileInfo64 &info);
-        void readMetaData();
 
         QString mZipFilePath;
         QString mZipMemberPath;
@@ -195,7 +199,7 @@ private:
 
         qint64 mDecompressedSize = 0;
         bool mIsMember = false;
-        bool mIsCached = false;
+        bool mHasMetaData = false;
     };
 
     class SharedData : public QSharedData
@@ -209,7 +213,7 @@ private:
 
         QFileInfo mFileInfo; // zip: constructed from encoded path in the zipfile
 #ifdef WITH_QUAZIP
-        const ZipData mZipData;
+        ZipData mZipData;
         QFileInfo mContainerInfo; // zip: info of the .zip file itself
 #endif
     };

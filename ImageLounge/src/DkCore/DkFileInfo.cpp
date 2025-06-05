@@ -59,14 +59,12 @@ DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
         mIsMember = true;
         mZipFilePath = encodedFilePath.mid(0, index);
         mZipMemberPath = encodedFilePath.mid(index + ZipMarker.length());
-        readMetaData();
     }
 }
 
 DkFileInfo::ZipData::ZipData(const QString &zipFile, const QuaZipFileInfo64 &info)
 {
     mIsMember = true;
-    mIsCached = true;
     mZipFilePath = zipFile;
     mZipMemberPath = info.name;
     setMetaData(info);
@@ -87,6 +85,8 @@ void DkFileInfo::ZipData::setMetaData(const QuaZipFileInfo64 &info)
     mCreated = info.getNTFScTime().toLocalTime();
     if (!mCreated.isValid())
         mCreated = info.getExtTime(info.extra, QUAZIP_EXTRA_EXT_CR_TIME_FLAG).toLocalTime();
+
+    mHasMetaData = true;
 }
 
 QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QString &memberPath)
@@ -99,9 +99,6 @@ QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QStrin
 
 void DkFileInfo::ZipData::readMetaData()
 {
-    if (mIsCached)
-        return;
-
     // FIXME: this is a bit slow on large zipfiles, readZipArchive() could cache it
     QuaZip zip(mZipFilePath);
     if (!zip.open(QuaZip::mdUnzip)) {
@@ -121,7 +118,6 @@ void DkFileInfo::ZipData::readMetaData()
     }
 
     setMetaData(info);
-    mIsCached = true;
 }
 #endif
 
@@ -211,6 +207,19 @@ QString DkFileInfo::pathInZip() const
 {
     return d->mZipData.zipMemberPath();
 }
+
+void DkFileInfo::readZipMetaData() const
+{
+    // would like to do this lazily, since it is somewhat costly and
+    // often unused
+    // we have to break const, but this is fine as dereference will
+    // detach the shared data (deep copy) if needed.
+    if (isFromZip() && !d->mZipData.hasMetaData()) {
+        auto *dataPtr = const_cast<QSharedDataPointer<SharedData> *>(&d);
+        (*dataPtr)->mZipData.readMetaData();
+    }
+}
+
 #endif
 
 std::unique_ptr<QIODevice> DkFileInfo::getIODevice() const
@@ -292,11 +301,13 @@ QString DkFileInfo::baseName() const
 
 QDateTime DkFileInfo::birthTime() const
 {
+    readZipMetaData();
     return IF_FROM_ZIP(d->mZipData.birthTime(), d->mFileInfo.birthTime());
 }
 
 QDateTime DkFileInfo::lastModified() const
 {
+    readZipMetaData();
     return IF_FROM_ZIP(d->mZipData.lastModified(), d->mFileInfo.lastModified());
 }
 
@@ -365,6 +376,7 @@ QString DkFileInfo::symLinkTarget() const
 
 qint64 DkFileInfo::size() const
 {
+    readZipMetaData();
     return IF_FROM_ZIP(d->mZipData.size(), d->mFileInfo.size());
 }
 
