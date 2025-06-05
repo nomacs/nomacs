@@ -517,9 +517,7 @@ void DkImageContainerT::clear()
 
 void DkImageContainerT::checkForFileUpdates()
 {
-    QDateTime modifiedBefore = fileInfo().lastModified();
-    mFileInfo.refresh();
-
+    bool modified = mFileInfo.isModified();
     bool changed = false;
 
     // if image exists_not don't do this
@@ -527,7 +525,7 @@ void DkImageContainerT::checkForFileUpdates()
         changed = true;
     }
 
-    if (mWaitForUpdate != update_loading && mFileInfo.lastModified() != modifiedBefore)
+    if (mWaitForUpdate != update_loading && modified)
         mWaitForUpdate = update_pending;
 
     if (changed) {
@@ -561,10 +559,9 @@ bool DkImageContainerT::loadImageThreaded(bool force)
     // without this, checkForFileUpdates() will see the modification and
     // reload the image; all this does is prevent the old image from showing
     // for a moment before that happens
-    QDateTime modifiedBefore = mFileInfo.lastModified();
-    mFileInfo.refresh();
+    bool modified = mFileInfo.isModified();
 
-    if (force || mFileInfo.lastModified() != modifiedBefore || getLoader()->isDirty()) {
+    if (force || modified || getLoader()->isDirty()) {
         clear();
     }
 

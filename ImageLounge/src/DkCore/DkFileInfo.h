@@ -127,8 +127,6 @@ public:
     // ---- QFileInfo methods --------------------------------
     // where possible keep the semantics of QFileInfo
 
-    void refresh();
-
     bool exists() const;
     bool isFile() const;
     bool isDir() const;
@@ -140,8 +138,15 @@ public:
     QString baseName() const;
 
     QDateTime birthTime() const;
+
+    // for display purposes only; use isModified for freshness checks
     QDateTime lastModified() const;
+
     QDateTime lastRead() const;
+
+    // check for file or metadata modification and refresh internal state
+    // return true if no longer exists or modified
+    bool isModified();
 
     QString owner() const;
     uint ownerId() const;
@@ -184,6 +189,7 @@ private:
         QDateTime lastModified() const { return mModified; }
         QDateTime birthTime() const    { return mCreated; }
         bool hasMetaData() const       { return mHasMetaData; }
+        void zipFileModified()         { mHasMetaData = false; }
         // clang-format on
 
         void readMetaData();
