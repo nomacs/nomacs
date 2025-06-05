@@ -852,15 +852,14 @@ void DkFilePreview::setVisible(bool visible, bool saveSettings)
 }
 
 // DkThumbLabel --------------------------------------------------------------------
-DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, bool fillSquare, QGraphicsItem *parent)
+DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const DkFileInfo &fileInfo, bool fillSquare, QGraphicsItem *parent)
     : QGraphicsObject(parent)
     , mText(this)
+    , mFilePath{fileInfo.path()}
     , mThumbLoader{thumbLoader}
-    , mFilePath{path}
     , mFillSquare{fillSquare}
 
 {
-    const QFileInfo fileInfo(mFilePath);
     // clang-format off
     mTooltip =
         QObject::tr("Name: ") % fileInfo.fileName() % "\n" %
@@ -1201,7 +1200,7 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
     mThumbs.clear();
     mThumbs.reserve(thumbs.size());
     for (const auto &img : thumbs) {
-        mThumbs.push_back(img->originalFileInfo().path());
+        mThumbs.push_back(img->originalFileInfo());
     }
     updateThumbLabels();
 
@@ -1219,8 +1218,8 @@ void DkThumbScene::updateThumbLabels()
 
     mThumbLabels.clear();
 
-    for (const auto &filePath : mThumbs) {
-        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader, filePath, DkSettingsManager::param().display().displaySquaredThumbs);
+    for (const auto &fileInfo : std::as_const(mThumbs)) {
+        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader, fileInfo, DkSettingsManager::param().display().displaySquaredThumbs);
         connect(thumb, &DkThumbLabel::loadFileSignal, this, &DkThumbScene::loadFileSignal);
         connect(thumb, &DkThumbLabel::showFileSignal, this, &DkThumbScene::showFile);
 
@@ -1340,7 +1339,7 @@ QString DkThumbScene::currentDir() const
         }
     }
 
-    return DkFileInfo(mThumbs[0]).dirPath(); // FIXME: mthumbs=>DkFileInfo
+    return mThumbs[0].dirPath();
 }
 
 int DkThumbScene::selectedThumbIndex(bool first)

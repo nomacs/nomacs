@@ -203,7 +203,7 @@ class DkThumbLabel : public QGraphicsObject
     Q_OBJECT
 
 public:
-    DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, bool fillSquare, QGraphicsItem *parent = nullptr);
+    DkThumbLabel(DkThumbLoader *thumbLoader, const DkFileInfo &fileInfo, bool fillSquare, QGraphicsItem *parent = nullptr);
     ~DkThumbLabel();
 
     QRectF boundingRect() const override;
@@ -296,7 +296,7 @@ private:
 
     QVector<DkThumbLabel *> mThumbLabels;
     QSharedPointer<DkImageLoader> mLoader;
-    QVector<QString> mThumbs;
+    QVector<DkFileInfo> mThumbs;
     DkThumbLoader *mThumbLoader;
 };
 
