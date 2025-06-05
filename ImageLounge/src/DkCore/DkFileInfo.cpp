@@ -259,11 +259,6 @@ QString DkFileInfo::dirPath() const
         return d->mFileInfo.absolutePath();
 }
 
-void DkFileInfo::refresh()
-{
-    IF_FROM_ZIP(d->mContainerInfo.refresh(), d->mFileInfo.refresh());
-}
-
 bool DkFileInfo::exists() const
 {
     return containerInfo().exists();
@@ -314,6 +309,24 @@ QDateTime DkFileInfo::lastModified() const
 QDateTime DkFileInfo::lastRead() const
 {
     return containerInfo().lastRead();
+}
+
+bool DkFileInfo::isModified()
+{
+    QFileInfo &info = IF_FROM_ZIP(d->mContainerInfo, d->mFileInfo);
+
+    QDateTime prevModified = info.lastModified();
+    bool prevExists = info.exists();
+
+    // do not use refresh() as it won't see exists() change
+    info = QFileInfo(info.absoluteFilePath());
+
+    bool modified = info.exists() != prevExists || info.lastModified() != prevModified;
+#ifdef WITH_QUAZIP
+    if (modified && isFromZip())
+        d->mZipData.zipFileModified();
+#endif
+    return modified;
 }
 
 QString DkFileInfo::owner() const
