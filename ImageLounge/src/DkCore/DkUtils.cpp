@@ -56,6 +56,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QRegularExpression>
+#include <QSemaphore>
 #include <QStandardPaths>
 #include <QString>
 #include <QStringList>
@@ -597,34 +598,76 @@ void DkUtils::mSleep(int ms)
 #endif
 }
 
-bool DkUtils::exists(const DkFileInfo &file, int waitMs)
+bool DkUtils::tryExists(const DkFileInfo &file, int waitMs)
 {
-    QFuture<bool> future = QtConcurrent::run(
-        // TODO: if we have a lot of mounted files (windows) in the history
-        // we can potentially exhaust the pool & image loading has
-        // to wait for these exists
-        // I now only moved it to the thumbnail pool which does
-        // not fix this issue at all (now thumbnail preview stalls)
-        // we could
-        // - create a dedicated pool for exists
-        // - create a dedicated pool for image loading
-        DkThumbsThreadPool::pool(), // hook it to the thumbs pool
-        [file] {
-            return file.exists();
-        });
+    class ExistsThreadPool : public QThreadPool
+    {
+    public:
+        ExistsThreadPool()
+        {
+            // we have about 20 checks (one for each recent dir). This sets the
+            // number of checks that can hang before the rest error out.
+            setMaxThreadCount(4);
+        }
+    };
 
-    for (int idx = 0; idx < waitMs; idx++) {
-        if (future.isFinished())
-            break;
+    class ExistsRunnable : public QRunnable
+    {
+    public:
+        ExistsRunnable(const DkFileInfo &file)
+            : mFile(file)
+        {
+        }
 
-        // qDebug() << "you are trying the new exists method... - you are modern!";
-        mSleep(1);
+        // note: runnable is invalid after this returns
+        bool waitResult(int maxWaitMillis)
+        {
+            // timeout without polling
+            if (!mConsumer.tryAcquire(1, maxWaitMillis))
+                qWarning() << "tryExists: timed out:" << mFile.path();
+
+            // read the result, then allow runnable to be deleted
+            // if we timed out, thread will be able to exit and delete as well
+            bool result = mResult;
+            mProducer.release();
+            return result;
+        }
+
+    private:
+        DkFileInfo mFile;
+        bool mResult = false;
+        QSemaphore mConsumer, mProducer;
+
+        void run() override
+        {
+            DkTimer dt;
+
+            if (mFile.isShortcut())
+                mResult = mFile.resolveShortcut();
+            else
+                mResult = mFile.exists();
+
+            mConsumer.release();
+            mProducer.acquire();
+            if (dt.elapsed() > 100)
+                qWarning() << "tryExists: slow file:" << dt << mFile.path();
+        }
+    };
+
+    // destruction of pool could hang; prevent with pointer
+    static auto *pool = new ExistsThreadPool;
+
+    // runnable is owned by pool once started
+    auto *runnable = new ExistsRunnable(file);
+
+    // if all threads are occupied, additional checks will most likely timeout
+    if (!pool->tryStart(runnable)) {
+        qWarning() << "tryExists: filesystem is too slow to respond";
+        delete runnable;
+        return false;
     }
 
-    // future.cancel();
-
-    // assume file is not existing if it took longer than waitMs
-    return (future.isFinished()) ? future.result() : false;
+    return runnable->waitResult(waitMs);
 }
 
 QFileInfo DkUtils::urlToLocalFile(const QUrl &url)
