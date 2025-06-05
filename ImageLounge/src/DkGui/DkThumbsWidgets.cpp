@@ -2226,7 +2226,7 @@ void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
     QVector<DkThumbPreviewLabel *> tls;
 
     DkFileInfo firstFile = mRecentDir.firstFile();
-    if (DkUtils::exists(firstFile, 30)) {
+    if (DkUtils::tryExists(firstFile, 30)) {
         const DkFileInfoList files = mRecentDir.files(4);
         for (auto &tp : files) {
             auto tpl = new DkThumbPreviewLabel(tp.path(), thumbLoader, 42, this);
