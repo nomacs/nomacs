@@ -1081,6 +1081,13 @@ void DkCentralWidget::loadFileToTab(const QString &filePath)
 
 void DkCentralWidget::loadFile(const QString &filePath, bool newTab)
 {
+    // could be container
+    DkFileInfo fileInfo(filePath);
+    if (fileInfo.isDir()) {
+        loadDirToTab(filePath);
+        return;
+    }
+
     if (!newTab) {
         if (!hasViewPort())
             createViewPort();
