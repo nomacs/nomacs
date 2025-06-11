@@ -1499,19 +1499,22 @@ QStringList DkImageLoader::getFoldersRecursive(const QString &dirPath)
     // qDebug() << "scanning recursively: " << dir.absolutePath();
 
     if (DkSettingsManager::param().global().scanSubFolders) {
-        QDirIterator dirs(dirPath, QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
+        QDirIterator dirs(dirPath, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
 
         int nFolders = 0;
         while (dirs.hasNext()) {
             dirs.next();
-            subFolders << dirs.filePath();
-            nFolders++;
+            DkFileInfo fileInfo(dirs.filePath());
+            if (fileInfo.isDir()) {
+                subFolders << fileInfo.path();
+                nFolders++;
 
-            if (nFolders > 100)
-                break;
+                if (nFolders > 100)
+                    break;
 
-            // getFoldersRecursive(dirs.filePath(), subFolders);
-            // qDebug() << "loop: " << dirs.filePath();
+                // getFoldersRecursive(dirs.filePath(), subFolders);
+                // qDebug() << "loop: " << dirs.filePath();
+            }
         }
     }
 
