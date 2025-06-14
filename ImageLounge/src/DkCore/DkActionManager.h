@@ -612,35 +612,4 @@ protected:
 
     QSharedPointer<DkActionManager> inst;
 };
-
-class DllCoreExport DkGlobalProgress : public DkWidget
-{
-    Q_OBJECT
-
-public:
-    static DkGlobalProgress &instance();
-    ~DkGlobalProgress();
-
-    // singleton
-    DkGlobalProgress(DkGlobalProgress const &) = delete;
-    void operator=(DkGlobalProgress const &) = delete;
-
-    QObject *progressObject() const;
-    void start();
-    void stop();
-
-    QProgressDialog *progressBar() const;
-
-public slots:
-    void setProgressValue(int value);
-
-private:
-    DkGlobalProgress();
-
-    QSharedPointer<DkGlobalProgress> inst;
-    bool showProgress;
-
-    QProgressDialog *mProgress = 0;
-};
-
 }
