@@ -367,30 +367,6 @@ cmake -D QT_MAJOR_VERSION=5 -D ENABLE_TRANSLATIONS=ON -D USE_SYSTEM_QUAZIP=ON <n
 cmake --build . --parallel 8
 ```
 
-
-## Build in Docker
-
-We have created a docker image that best simulates the old travis system (currently it's ubuntu xenial 16.04). To build nomacs in a docker, you have to create the image:
-
-```bash
-docker build --rm -f "Dockerfile" -t nomacs:latest empty-docker-dir
-```
-
-To deploy nomacs in a docker on your system, you can mount this directory using:
-
-```bash
-docker run --rm -it -v C:\\coding\\nomacs:/usr/nomacs nomacs:latest
-```
-
-If needed, you can upload the image:
-
-```bash
-docker login
-docker tag nomacs diemmarkus/nomacs
-docker push diemmarkus/nomacs:latest
-```
-
-
 ## Enable Debug output
 
 To enable Qt debug messages set
