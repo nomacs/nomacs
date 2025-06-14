@@ -1823,45 +1823,4 @@ void DkActionManager::enableViewPortPluginActions(bool enable) const
 
     action(menu_tools_batch)->setEnabled(enable); // tabs
 }
-
-// DkGlobalProgress --------------------------------------------------------------------
-DkGlobalProgress::DkGlobalProgress()
-    : showProgress(true)
-{
-}
-
-DkGlobalProgress::~DkGlobalProgress()
-{
-}
-
-DkGlobalProgress &DkGlobalProgress::instance()
-{
-    static DkGlobalProgress inst;
-    return inst;
-}
-
-void DkGlobalProgress::start()
-{
-}
-
-void DkGlobalProgress::stop()
-{
-    if (!mProgress)
-        return;
-}
-
-void DkGlobalProgress::setProgressValue(int value)
-{
-}
-
-QObject *DkGlobalProgress::progressObject() const
-{
-    return mProgress;
-}
-
-QProgressDialog *DkGlobalProgress::progressBar() const
-{
-    return 0;
-}
-
 }
