@@ -54,9 +54,6 @@
 #include <QTextStream>
 #include <QThread>
 #include <QTranslator>
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#include <QImageReader>
-#endif
 
 #pragma warning(pop) // no warnings from includes - end
 
@@ -107,9 +104,7 @@ int main(int argc, char *argv[])
     app.setDesktopFileName("org.nomacs.ImageLounge");
 #endif
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QImageReader::setAllocationLimit(2048);
-#endif
 
     // init settings
     nmc::DkSettingsManager::instance().init();

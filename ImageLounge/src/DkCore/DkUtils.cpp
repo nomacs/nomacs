@@ -1124,11 +1124,7 @@ DkFileNameConverter::DkFileNameConverter(const QString &p)
             continue;
         }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         QStringView token = pattern.sliced(start, i - start);
-#else
-        QStringView token = pattern.mid(start, i - start);
-#endif
         start = i + 1;
 
         if (ch == '<') {
@@ -1159,11 +1155,7 @@ DkFileNameConverter::DkFileNameConverter(const QString &p)
                 break;
 
             case Token::Number:
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 numbers.push_back(token.toUInt());
-#else
-                numbers.push_back(token.toString().toInt());
-#endif
                 break;
 
             default:
@@ -1207,11 +1199,7 @@ DkFileNameConverter::DkFileNameConverter(const QString &p)
             qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", expecting token text at index " << pattern.size();
             return;
         }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         QStringView token = pattern.sliced(start, pattern.size() - start);
-#else
-        QStringView token = pattern.mid(start, pattern.size() - start);
-#endif
         mFrags.push_back(Frag{FragType::Text, 0, 0, token.toString(), 0});
     }
 }
@@ -1241,11 +1229,7 @@ QString DkFileNameConverter::convert(const QString &file, int index) const
         case FragType::FileName: {
             const qsizetype sep = file.lastIndexOf('.');
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             const QString fileName = sep >= 0 ? file.first(sep) : file;
-#else
-            const QString fileName = sep >= 0 ? file.left(sep) : file;
-#endif
             if (frag.caseConv == 1) {
                 list.append(fileName.toLower());
             } else if (frag.caseConv == 2) {

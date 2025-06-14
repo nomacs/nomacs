@@ -70,9 +70,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QDesktopWidget>
-#endif
 #include <QDrag>
 #include <QErrorMessage>
 #include <QEvent>
@@ -97,10 +94,6 @@
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
-#endif
-
-#if defined(Q_OS_WIN) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-#include <QWinTaskbarButton>
 #endif
 
 #include <assert.h>
@@ -1638,14 +1631,6 @@ void DkNoMacs::onWindowLoaded()
 
     // load settings AFTER everything is initialized
     getTabWidget()->loadSettings();
-
-// init global taskbar
-#if defined(Q_OS_WIN) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QWinTaskbarButton *button = new QWinTaskbarButton(this);
-    button->setWindow(windowHandle());
-
-    DkGlobalProgress::instance().setProgressBar(button->progress());
-#endif
 
     toggleDocks(DkSettingsManager::param().app().hideAllPanels);
 }

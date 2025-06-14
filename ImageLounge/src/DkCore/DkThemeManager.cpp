@@ -490,9 +490,7 @@ public:
         PRINT(QPalette::LinkVisited);
         PRINT(QPalette::ToolTipBase);
         PRINT(QPalette::ToolTipText);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         PRINT(QPalette::PlaceholderText);
-#endif
 #undef PRINT
     }
 #endif // QT_DEBUG
@@ -712,10 +710,8 @@ void DkThemeManager::applyTheme()
             palette.setDisabledColor(QPalette::Link, QPalette::Base);
             palette.setDisabledColor(QPalette::LinkVisited, QPalette::Base);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
             palette.setForegroundColor(QPalette::PlaceholderText, QPalette::Base, sysPalette.color(QPalette::PlaceholderText));
             palette.setDisabledColor(QPalette::PlaceholderText, QPalette::Base);
-#endif
         }
 
         if (!d.defaultIconColor) {
