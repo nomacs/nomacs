@@ -53,10 +53,6 @@
 #include <QSvgRenderer>
 
 #ifdef Q_OS_WIN
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QWinTaskbarProgress>
-#include <QtWin>
-#endif
 #include <windows.h>
 #endif
 #pragma warning(pop) // no warnings from includes - end
@@ -278,11 +274,7 @@ void DkAppManager::assignIcon(QAction *app) const
     ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
 
     if (nIcons != 0 && smallIcon != NULL) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        appIcon = QtWin::fromHICON(smallIcon);
-#else
         appIcon = QPixmap::fromImage(QImage::fromHICON(smallIcon));
-#endif
     }
 
     DestroyIcon(largeIcon);
@@ -1836,9 +1828,6 @@ void DkActionManager::enableViewPortPluginActions(bool enable) const
 DkGlobalProgress::DkGlobalProgress()
     : showProgress(true)
 {
-#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    mProgress = new QWinTaskbarProgress(this);
-#endif
 }
 
 DkGlobalProgress::~DkGlobalProgress()
@@ -1853,35 +1842,16 @@ DkGlobalProgress &DkGlobalProgress::instance()
 
 void DkGlobalProgress::start()
 {
-#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-
-    if (!mProgress) {
-        qWarning() << "global progress bar is empty...";
-        return;
-    }
-
-    mProgress->setVisible(true);
-    mProgress->setValue(0);
-#endif
 }
 
 void DkGlobalProgress::stop()
 {
     if (!mProgress)
         return;
-
-#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    mProgress->setVisible(false);
-    mProgress->setValue(0);
-#endif
 }
 
 void DkGlobalProgress::setProgressValue(int value)
 {
-#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    if (showProgress)
-        mProgress->setValue(value);
-#endif
 }
 
 QObject *DkGlobalProgress::progressObject() const
@@ -1889,21 +1859,9 @@ QObject *DkGlobalProgress::progressObject() const
     return mProgress;
 }
 
-#if defined Q_OS_WIN32 && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-void DkGlobalProgress::setProgressBar(QWinTaskbarProgress *progress)
-{
-    mProgress = progress;
-}
-
-QWinTaskbarProgress *DkGlobalProgress::progressBar()
-{
-    return mProgress;
-}
-#else
 QProgressDialog *DkGlobalProgress::progressBar() const
 {
     return 0;
 }
-#endif
 
 }
