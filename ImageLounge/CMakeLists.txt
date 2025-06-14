@@ -33,8 +33,6 @@ find_package(Python QUIET)
 # include macros needed
 include("cmake/Utils.cmake")
 
-set(QT5_MIN_VERSION 5.15.0)
-
 # different compile options
 option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
 option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
