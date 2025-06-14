@@ -572,11 +572,7 @@ QString DkUtils::getBuildInfo()
 #endif
 
 #ifdef WITH_QUAZIP
-#ifdef WITH_QUAZIP1
     const char *quazip = "v1";
-#else
-    const char *quazip = "v0";
-#endif
 #ifdef QUAZIP_STATIC
     const char *linkage = "(s)";
 #else
