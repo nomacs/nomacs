@@ -14,8 +14,6 @@ jobs:
     strategy:
       matrix:
         qt: 
-          - ver: 5
-            deps: "qttools5-dev-tools qtbase5-dev qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libquazip5-dev"
           - ver: 6
             deps: "qt6-tools-dev-tools qt6-base-dev qt6-tools-dev libqt6svg6-dev qt6-image-formats-plugins libgl-dev qt6-l10n-tools libquazip1-qt6-dev"
         cmake_flags:
