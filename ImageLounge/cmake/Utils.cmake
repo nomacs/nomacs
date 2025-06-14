@@ -3,10 +3,6 @@ macro(NMC_FINDQT)
 	set(CMAKE_AUTOMOC ON)
 	set(CMAKE_AUTORCC OFF)
 
-	if(CMAKE_VERSION VERSION_LESS "3.7.0")
-		set(CMAKE_INCLUDE_CURRENT_DIR ON)
-	endif()
-
 	if (MSVC)
 		if(NOT QT_QMAKE_EXECUTABLE)
 		find_program(QT_QMAKE_EXECUTABLE NAMES "qmake" "qmake-qt5" "qmake.exe")
