@@ -5,10 +5,10 @@ macro(NMC_FINDQT)
 
 	if (MSVC)
 		if(NOT QT_QMAKE_EXECUTABLE)
-		find_program(QT_QMAKE_EXECUTABLE NAMES "qmake" "qmake-qt5" "qmake.exe")
+		find_program(QT_QMAKE_EXECUTABLE NAMES "qmake" "qmake.exe")
 		endif()
 		if(NOT QT_QMAKE_EXECUTABLE)
-		message(FATAL_ERROR "you have to set the path to the Qt5 qmake executable")
+		message(FATAL_ERROR "you have to set the path to the qmake executable")
 		endif()
 
 		message(STATUS "QMake found: ${QT_QMAKE_EXECUTABLE}")
@@ -16,7 +16,7 @@ macro(NMC_FINDQT)
 	 endif()
 
 	if (NOT DEFINED QT_VERSION_MAJOR)
-	   find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+	   find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
 	endif()
 
 	find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network LinguistTools PrintSupport Concurrent Gui Svg)
@@ -25,9 +25,6 @@ macro(NMC_FINDQT)
 		message(FATAL_ERROR "Qt Libraries not found!")
 	endif()
 
-	if ((MSVC OR MINGW) AND QT_VERSION_MAJOR STREQUAL "5")
-		find_package(Qt5 ${QT5_MIN_VERSION} REQUIRED WinExtras)
-	endif()
 
 endmacro(NMC_FINDQT)
 

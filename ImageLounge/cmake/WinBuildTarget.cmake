@@ -77,16 +77,12 @@ set(DELAY_DLL_NAMES
 set(DELAY_DLL_NAMES_DEBUG 
 	opencv_core4110d.dll
 	opencv_imgproc4110d.dll
-	quazip5d.dll
-	Qt5WinExtrasd.dll
 	${DELAY_DLL_NAMES}
 	)
 
 set(DELAY_DLL_NAMES_RELEASE
 	opencv_core4110.dll
 	opencv_imgproc4110.dll
-	quazip1-qt5.dll
-	Qt5WinExtras.dll
 	${DELAY_DLL_NAMES}
 	)
 
@@ -114,10 +110,6 @@ set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL R
 # this will break in the future - but is by far the easiest way now - sorry...
 file(GLOB PRECOMPILED_IMAGE_FORMATS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/win-binaries/*.dll")
 file(COPY ${PRECOMPILED_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
-
-if(ENABLE_QUAZIP)
-	file(COPY "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt5.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-endif(ENABLE_QUAZIP)
 
 if (ENABLE_AVIF)
     file(DOWNLOAD "https://github.com/novomesk/qt-avif-image-plugin/releases/latest/download/qavif.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/qavif.dll)
@@ -163,27 +155,6 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/printsupport)
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/printsupport)
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/printsupport)
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupportd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/printsupport)
-
-if (NOT Qt5Widgets_VERSION VERSION_LESS 5.9.0)
-
-	# WinExtras
-	file(COPY ${QT_QMAKE_PATH}/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	file(COPY ${QT_QMAKE_PATH}/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	file(COPY ${QT_QMAKE_PATH}/Qt5WinExtrasd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-	
-	# SVG support
-	file(COPY ${QT_QMAKE_PATH}/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	file(COPY ${QT_QMAKE_PATH}/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	file(COPY ${QT_QMAKE_PATH}/Qt5Svgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-endif()
-
-if (NOT Qt5Widgets_VERSION VERSION_LESS 5.11.0)
-	# Themes
-	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/styles)
-	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/styles/)
-	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/styles/)
-	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyled.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/styles/)
-endif()
 
 # OpenSSL
 if (NOT DEFINED ${OPEN_SSL_PATH} )
