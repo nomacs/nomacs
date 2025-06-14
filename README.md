@@ -63,7 +63,7 @@ python scripts/make.py "qt/bin" --lib-path "nomacs/3rd-party/build"
 
 Before you build nomacs, please note the following:
 
-- We recommend using the Qt6 version of nomacs. However, you may want to match the Qt version of your desktop environment (e.g. KDE in Ubuntu 24.04 is Qt5-based).
+- Nomacs requires using Qt6.
 - [kimageformats-plugins]([https://github.com/KDE/kimageformats](https://invent.kde.org/frameworks/kimageformats)) is an optional dependency that provides additional formats such as AVIF, HEIC/HEIF, and JPEG XL/JXL. The Qt version of the plugins should match the Qt version when compiling nomacs.
 - Zip file support requires Quazip, which has varied support in distributions. If the system package is missing or does not work, you can set `USE_SYSTEM_QUAZIP=NO` to use the version in nomacs/3rdparty. However, you may also need to remove the any system quazip development package temporarily. (such as `llibquazip*-dev` for Ubuntu)
 
@@ -93,28 +93,20 @@ There are other optional features that can be enabled during build:
 #### Runtime dependencies
 
 Additional packages will be used by nomacs if they are available at runtime, and they use the same Qt version as nomacs (5 or 6).
+
 - QImageFormats: Enables reading ICNS, MNG, TGA, TIFF, WBMP, WEBP
 - KImageFormats: Enables reading AVIF, HEIF/HEIC, JXL, EXR, EPS and [more](https://github.com/KDE/kimageformats)
 
 #### Ubuntu 24.04
 
 ```console
-# qt6
 sudo apt install qt6-base-dev qt6-tools-dev qt6-svg-dev qt6-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev libtiff-dev libtiff-dev libquazip1-qt6-dev build-essential git cmake lcov libgtest-dev
-
-# qt5
-# note: cmake configuration will fail if libquazip1-qt6-dev is also installed; or you can use USE_SYSTEM_QUAZIP=OFF
-sudo apt install qtbase5-dev qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev libtiff-dev libtiff-dev libquazip1-qt5-dev build-essential git cmake lcov libgtest-dev kimageformat-plugins
 ```
 
 #### Ubuntu 22.04
 
 ```console
-# qt6
 sudo apt install qt6-base-dev qt6-tools-dev qt6-tools-dev-tools libqt6svg6-dev libqt6core5compat6-dev qt6-l10n-tools qt6-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev libtiff-dev libtiff-dev build-essential git cmake lcov libgtest-dev libgl-dev
-
-# qt5
-sudo apt install qtbase5-dev qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev libtiff-dev libtiff-dev libquazip5-dev build-essential git cmake lcov libgtest-dev kimageformat-plugins
 ```
 
 #### Arch
@@ -127,25 +119,17 @@ sudo pacman -S qt6-base qt6-imageformats qt6-svg qt6-tools quazip-qt6 exiv2 libr
 #### Redhat/Fedora/CentOS (tested on Rocky 9.5)
 
 ```console
-# qt6
 sudo dnf install qt6-qtbase-devel qt6-qtimageformats qt6-qtsvg-devel qt6-qttools-devel qt6-qt5compat-devel LibRaw-devel opencv-devel exiv2-devel libtiff-devel git cmake lcov gtest-devel gcc-c++
-
-# qt5
-sudo dnf install qt5-qtbase-devel qt5-qtimageformats qt5-qtsvg-devel qt5-qttools-devel LibRaw-devel opencv-devel exiv2-devel libtiff-devel git cmake lcov gtest-devel gcc-c++ quazip-qt5-devel
 ```
 
 #### FreeBSD (14.2 release)
 
 ```console
-# qt6
 sudo pkg install qt6-base qt6-imageformats qt6-svg qt6-5compat qt6-tools quazip-qt6 tiff exiv2 kf6-kimageformats libraw opencv git cmake googletest gcc
-
-# qt5
-sudo pkg install qt5-gui qt5-imageformats
-qt5-svg qt5-linguisttools qt5-qmake qt5-buildtools qt5-uitools qt5-concurrent quazip-qt5 tiff exiv2 kf5-kimageformats libraw opencv git cmake googletest gcc
 ```
 
 #### Haiku (r1 beta 5)
+
 ```console
 # qt6
 pkgman install qt6_base_devel qt6_tools_devel qt6_svg_devel qt6_5compat_devel quazip1_qt6_devel tiff_devel libraw_devel opencv_devel gtest_devel exiv2_devel kimageformats6 qt6_imageformats cake git gcc make pkgconfig lcms_devel
@@ -154,6 +138,7 @@ pkgman install qt6_base_devel qt6_tools_devel qt6_svg_devel qt6_5compat_devel qu
 ### Configure nomacs
 
 Nomacs is configured with cmake. These cmake options are often needed:
+
 - QT_VERSION_MAJOR=[5|6] - Default 5, 6 recommended
 - ENABLE_QUAZIP=[ON|OFF] - Default OFF
 - USE_SYSTEM_QUAZIP=[ON|OFF] - Default ON
@@ -215,19 +200,13 @@ Install [Homebrew](http://brew.sh/) for easier installation of dependencies.
 Install required dependencies:
 
 ```console
-brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
+brew install qt6 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
 Go to the `nomacs` directory and run the correct cmake for your hardware and Qt version. We recommend Qt6.
 
 ```console
 cd nomacs; mkdir build; cd build
-
-# Qt5 / Intel
-CMAKE_PREFIX_PATH=/usr/local/opt/qt@5/lib/cmake cmake -D QT_VERSION_MAJOR=5 -D ENABLE_QUAZIP=on -D USE_SYSTEM_QUAZIP=OFF ../ImageLounge
-
-# Qt5 / Apple Silicon
-CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt@5/lib/cmake cmake -D QT_VERSION_MAJOR=5 -D ENABLE_QUAZIP=ON -D USE_SYSTEM_QUAZIP=OFF ../ImageLounge
 
 # Qt6 / Intel 
 CMAKE_PREFIX_PATH=/usr/local/opt/qt6/lib/cmake cmake -D QT_VERSION_MAJOR=6 -D ENABLE_QUAZIP=ON ../ImageLounge
@@ -239,7 +218,7 @@ CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt6/lib/cmake cmake -D QT_VERSION_MAJOR=6 -D
 Run make:
 
 ```console
-$ make
+make
 ```
 
 You will now have a binary (`nomacs.app`), which you can test (or use directly):
@@ -258,11 +237,12 @@ Homebrew seems to be missing kimageformats so we haves this option until that ha
 make kimageformats
 ```
 
-Nomacs registers supported file types via the Info.plist file in the app bundle. This is essential for open-with, drag-and-drop, etc features of the Finder. Supported types vary depending on what options to cmake, Qt and OS version, homebrew configuration, and even nomacs user-specified custom file types (via `Tools/Add Image Format`). 
+Nomacs registers supported file types via the Info.plist file in the app bundle. This is essential for open-with, drag-and-drop, etc features of the Finder. Supported types vary depending on what options to cmake, Qt and OS version, homebrew configuration, and even nomacs user-specified custom file types (via `Tools/Add Image Format`).
 
 Note that nomacs does not automatically make itself the default application for any supported types at this time, you will need to you use the open-with function in "Get Info" etc.
 
 To ensure it is correct for the current build, run
+
 ```console
 make filetypes
 make
@@ -281,6 +261,7 @@ make bundle
 ```
 
 If macdeployqt complains about `ERROR: Cannot resolve rpath "@rpath/QtGui.framework/Versions/A/QtGui"` [here](https://github.com/orgs/Homebrew/discussions/2823#discussioncomment-2010340) is the solution:
+
 ```console
 cd /usr/local/lib/QtGui.framework/Versions/A
 install_name_tool -id '@rpath/QtGui.framework/Versions/A/QtGui' QtGui
@@ -291,16 +272,13 @@ QtGui:
 
 ## Build nomacs (Windows Cross-Compile)
 
-Compiles nomacs for Windows using M Cross Environment (MXE) from a Linux/Unix host. 
+Compiles nomacs for Windows using M Cross Environment (MXE) from a Linux/Unix host.
 
 MXE environment is usually compiled from source, however you may be able to skip this if MXE has packages for your platform:
 
 ```bash
 git clone <mxe url>
 cd mxe
-
-# qt5
-make MXE_TARGETS='x86_64-w64-mingw32.shared' qtbase qtimageformats qtwinextras opencv quazip tiff exiv2 libraw
 
 # qt6 (quazip-qt6 is unavailable)
 make MXE_TARGETS='x86_64-w64-mingw32.shared' qt6-qtbase qt6-qtimageformats qt6-qttools qt6-qt5compat opencv tiff exiv2 libraw
@@ -376,7 +354,6 @@ cmake -D CMAKE_BUILD_TYPE=Debug ...
 ```
 
 at the Makefiles generation phase.
-
 
 ## Links
 
