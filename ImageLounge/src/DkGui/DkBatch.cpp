@@ -2818,8 +2818,6 @@ void DkBatchWidget::startProcessing()
     mButtonWidget->logButton()->setEnabled(false);
     mButtonWidget->setPaused(false);
 
-    DkGlobalProgress::instance().start();
-
     mLogUpdateTimer.start(1000);
 }
 
@@ -2829,8 +2827,6 @@ void DkBatchWidget::stopProcessing()
 
     if (mBatchProcessing)
         mBatchProcessing->postLoad();
-
-    DkGlobalProgress::instance().stop();
 
     mProgressBar->hide();
     mProgressBar->reset();
@@ -2859,8 +2855,6 @@ void DkBatchWidget::updateProgress(int progress)
 {
     mProgressBar->setValue(progress);
     mLogNeedsUpdate = true;
-
-    DkGlobalProgress::instance().setProgressValue(qRound((double)progress / inputWidget()->getSelectedFiles().size() * 100));
 }
 
 void DkBatchWidget::showLog()

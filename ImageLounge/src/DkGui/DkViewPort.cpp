@@ -892,8 +892,6 @@ void DkViewPort::applyManipulator()
 
 void DkViewPort::manipulatorApplied()
 {
-    DkGlobalProgress::instance().stop();
-
     if (mManipulatorWatcher.isCanceled() || !mActiveManipulator) {
         qDebug() << "manipulator applied - but it's canceled";
         return;
