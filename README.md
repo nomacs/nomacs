@@ -332,7 +332,7 @@ nomacs.exe
 ```bash
 export target=mingw-w64-x86_64
 
-pacman -S $target-qt5-base $target-qt5-svg $target-qt5-winextras $target-qt5-tools \
+pacman -S $target-qt6-base $target-qt6-svg $target-qt6-tools \
           $target-libraw $target-libtiff $target-exiv2 $target-opencv $target-cmake $target-gcc
 
 export PATH=/ming64:$PATH
