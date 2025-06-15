@@ -139,7 +139,6 @@ pkgman install qt6_base_devel qt6_tools_devel qt6_svg_devel qt6_5compat_devel qu
 
 Nomacs is configured with cmake. These cmake options are often needed:
 
-- QT_VERSION_MAJOR=[5|6] - Default 5, 6 recommended
 - ENABLE_QUAZIP=[ON|OFF] - Default OFF
 - USE_SYSTEM_QUAZIP=[ON|OFF] - Default ON
 - CMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo] - For normal usage, choose `RelWithDebInfo`. For development, `Debug` builds have more logging as well as debug symbols.
@@ -209,10 +208,10 @@ Go to the `nomacs` directory and run the correct cmake for your hardware and Qt 
 cd nomacs; mkdir build; cd build
 
 # Qt6 / Intel 
-CMAKE_PREFIX_PATH=/usr/local/opt/qt6/lib/cmake cmake -D QT_VERSION_MAJOR=6 -D ENABLE_QUAZIP=ON ../ImageLounge
+CMAKE_PREFIX_PATH=/usr/local/opt/qt6/lib/cmake cmake -D ENABLE_QUAZIP=ON ../ImageLounge
 
 # Qt6 / Apple Silicon
-CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt6/lib/cmake cmake -D QT_VERSION_MAJOR=6 -D ENABLE_QUAZIP=ON ../ImageLounge
+CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt6/lib/cmake cmake -D ENABLE_QUAZIP=ON ../ImageLounge
 ```
 
 Run make:
@@ -302,7 +301,7 @@ Run cmake out-of-tree:
 mkdir build-nomacs
 cd build-nomacs
 
-cmake -D QT_VERSION_MAJOR=5 -D ENABLE_TRANSLATIONS=ON -D ENABLE_HEIF=ON -D ENABLE_AVIF=ON  \
+cmake -D ENABLE_TRANSLATIONS=ON -D ENABLE_HEIF=ON -D ENABLE_AVIF=ON  \
 -DENABLE_JXL=ON -D USE_SYSTEM_QUAZIP=OFF <nomacs-path>/ImageLounge
 ```
 

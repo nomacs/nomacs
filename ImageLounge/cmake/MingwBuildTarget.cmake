@@ -12,11 +12,6 @@ target_sources(${BINARY_NAME} PRIVATE ${NOMACS_QRC})
 target_link_libraries(${BINARY_NAME} shlwapi)
 target_link_libraries(${DLL_CORE_NAME} shlwapi)
 
-if(${QT_VERSION_MAJOR} VERSION_LESS "6") # winextras is removed from Qt6
-    target_link_libraries(${BINARY_NAME} Qt::WinExtras)
-    target_link_libraries(${DLL_CORE_NAME} Qt::WinExtras)
-endif()
-
 set_target_properties(${BINARY_NAME} PROPERTIES LINK_FLAGS_DEBUG "-mconsole")
 set_target_properties(${DLL_CORE_NAME} PROPERTIES LINK_FLAGS_DEBUG "-mconsole")
 
