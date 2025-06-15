@@ -114,10 +114,6 @@ void DkMessageBox::createLayout(const QMessageBox::Icon &userIcon, const QString
     grid->addWidget(showAgain, 2, 1, 1, 2);
     grid->addWidget(buttonBox, 3, 0, 1, 2);
 #else
-
-#if QT_VERSION_MAJOR < 6
-    grid->setMargin(0);
-#endif
     grid->setVerticalSpacing(8);
     grid->setHorizontalSpacing(0);
     setContentsMargins(24, 15, 24, 20);

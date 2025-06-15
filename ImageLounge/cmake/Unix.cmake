@@ -133,10 +133,8 @@ if(ENABLE_QUAZIP)
       add_definitions(-DQUAZIP_STATIC)
       add_definitions(-DWITH_QUAZIP)
 
-      if (QT_VERSION_MAJOR VERSION_GREATER_EQUAL "6")
-        find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
-        set(QUAZIP_LIBRARIES Qt6::Core5Compat ${ZLIB_LIBRARIES})
-      endif()
+      find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
+      set(QUAZIP_LIBRARIES Qt6::Core5Compat ${ZLIB_LIBRARIES})
     endif(USE_SYSTEM_QUAZIP)
 endif(ENABLE_QUAZIP)
 
