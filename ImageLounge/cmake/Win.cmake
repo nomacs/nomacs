@@ -109,7 +109,6 @@ set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if(ENABLE_QUAZIP)
 	add_definitions(-DWITH_QUAZIP)
-	add_definitions(-DWITH_QUAZIP1)
 	include_directories("${PROJECT_SOURCE_DIR}/../3rd-party/quazip/" "${PROJECT_SOURCE_DIR}/../3rd-party/opencv/3rdparty/zlib")
 	SET(QUAZIP_LIBRARIES "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt${QT_VERSION_MAJOR}.lib")
 endif(ENABLE_QUAZIP)

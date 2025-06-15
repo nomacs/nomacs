@@ -74,7 +74,6 @@ public:
     QAction *findAction(const QString &appPath) const;
 
     enum defaultAppIdx {
-
         app_photohsop,
         app_picasa,
         app_picasa_viewer,
@@ -142,7 +141,6 @@ public:
     };
 
     enum SortMenuActions {
-
         menu_sort_filename,
         menu_sort_file_size,
         menu_sort_date_created,
@@ -368,7 +366,6 @@ public:
     // default nomacs shortcuts
     // keyboard shortcuts
     enum Shortcuts {
-
         // general
         shortcut_esc = Qt::Key_Escape,
 
@@ -615,44 +612,4 @@ protected:
 
     QSharedPointer<DkActionManager> inst;
 };
-
-class DllCoreExport DkGlobalProgress : public DkWidget
-{
-    Q_OBJECT
-
-public:
-    static DkGlobalProgress &instance();
-    ~DkGlobalProgress();
-
-    // singleton
-    DkGlobalProgress(DkGlobalProgress const &) = delete;
-    void operator=(DkGlobalProgress const &) = delete;
-
-    QObject *progressObject() const;
-    void start();
-    void stop();
-
-#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    void setProgressBar(QWinTaskbarProgress *progressbar);
-    QWinTaskbarProgress *progressBar();
-#else
-    QProgressDialog *progressBar() const;
-#endif
-
-public slots:
-    void setProgressValue(int value);
-
-private:
-    DkGlobalProgress();
-
-    QSharedPointer<DkGlobalProgress> inst;
-    bool showProgress;
-
-#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QWinTaskbarProgress *mProgress = 0;
-#else
-    QProgressDialog *mProgress = 0;
-#endif
-};
-
 }

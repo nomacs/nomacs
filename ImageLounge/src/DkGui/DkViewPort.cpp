@@ -892,8 +892,6 @@ void DkViewPort::applyManipulator()
 
 void DkViewPort::manipulatorApplied()
 {
-    DkGlobalProgress::instance().stop();
-
     if (mManipulatorWatcher.isCanceled() || !mActiveManipulator) {
         qDebug() << "manipulator applied - but it's canceled";
         return;
@@ -1969,10 +1967,6 @@ void DkViewPort::cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool
 DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent)
     : DkViewPort(thumbLoader, parent)
 {
-#if defined(Q_OS_MAC) && QT_VERSION_MAJOR < 6
-    parent->setAttribute(Qt::WA_MacNoShadow); // deprecated
-#endif
-
     setAttribute(Qt::WA_TranslucentBackground, true);
     mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bgf.png").absoluteFilePath());
 

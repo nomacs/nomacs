@@ -7,8 +7,8 @@ target_link_libraries(
     ${DLL_CORE_NAME}
     ${OpenCV_LIBS}
     GTest::gtest_main
-    Qt${QT_MAJOR_VERSION}::Core
-    Qt${QT_MAJOR_VERSION}::Gui
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
 )
 
 add_custom_target(
