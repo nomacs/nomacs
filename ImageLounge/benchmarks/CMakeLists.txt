@@ -7,8 +7,8 @@ target_link_libraries(
     nomacsCore
     ${OpenCV_LIBS}
     benchmark::benchmark
-    Qt${QT_MAJOR_VERSION}::Core
-    Qt${QT_MAJOR_VERSION}::Gui
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
 )
 
 add_custom_target(

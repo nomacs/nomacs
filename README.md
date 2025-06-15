@@ -339,7 +339,7 @@ export PATH=/ming64:$PATH
 
 cd <build-dir>
 
-cmake -D QT_MAJOR_VERSION=5 -D ENABLE_TRANSLATIONS=ON -D USE_SYSTEM_QUAZIP=ON <nomacs-dir>/ImageLounge
+cmake -D ENABLE_TRANSLATIONS=ON -D USE_SYSTEM_QUAZIP=ON <nomacs-dir>/ImageLounge
 
 cmake --build . --parallel 8
 ```
