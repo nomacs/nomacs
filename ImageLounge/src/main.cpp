@@ -367,7 +367,7 @@ int main(int argc, char *argv[])
 
     // load directory preview
     if (!parser.value(sourceDirOpt).trimmed().isEmpty()) {
-        cw->loadDirToTab(parser.value(sourceDirOpt));
+        cw->loadToTab(parser.value(sourceDirOpt));
         loading = true;
     }
 
