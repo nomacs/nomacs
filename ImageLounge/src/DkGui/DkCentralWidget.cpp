@@ -135,21 +135,6 @@ void DkTabInfo::saveSettings(QSettings &settings) const
     settings.setValue("tabMode", mTabMode);
 }
 
-bool DkTabInfo::setDirPath(const DkFileInfo &dir)
-{
-    Q_ASSERT(dir.isDir());
-    if (!dir.isDir())
-        return false;
-
-    bool dirIsLoaded = mImageLoader->loadDir(dir.path());
-    if (dirIsLoaded) {
-        setMode(tab_thumb_preview);
-        return true;
-    }
-
-    return false;
-}
-
 QString DkTabInfo::getFilePath() const
 {
     return (mImageLoader->getCurrentImage()) ? mImageLoader->getCurrentImage()->filePath() : mFilePath;
@@ -472,7 +457,7 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
                    &DkCentralWidget::imageUpdatedSignal);
         disconnect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal);
         disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress);
-        disconnect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadFileToTab);
+        disconnect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab);
     }
 
     if (!loader)
@@ -493,7 +478,7 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
             Qt::UniqueConnection);
     connect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal, Qt::UniqueConnection);
     connect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress, Qt::UniqueConnection);
-    connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadFileToTab, Qt::UniqueConnection);
+    connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab, Qt::UniqueConnection);
 }
 
 void DkCentralWidget::paintEvent(QPaintEvent *)
@@ -564,8 +549,8 @@ DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
     DkRecentFilesWidget *rw = new DkRecentFilesWidget(&mThumbLoader, this);
     rw->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
 
-    connect(rw, &DkRecentFilesWidget::loadFileSignal, this, &DkCentralWidget::loadFile);
-    connect(rw, &DkRecentFilesWidget::loadDirSignal, this, &DkCentralWidget::loadDirToTab);
+    connect(rw, &DkRecentFilesWidget::loadFileSignal, this, &DkCentralWidget::load);
+    connect(rw, &DkRecentFilesWidget::loadDirSignal, this, &DkCentralWidget::load);
 
     return rw;
 }
@@ -577,7 +562,7 @@ DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
     thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 
     // thumbnail preview widget
-    connect(thumbScrollWidget->getThumbWidget(), &DkThumbScene::loadFileSignal, this, &DkCentralWidget::loadFile);
+    connect(thumbScrollWidget->getThumbWidget(), &DkThumbScene::loadFileSignal, this, &DkCentralWidget::load);
     connect(thumbScrollWidget, &DkThumbScrollWidget::batchProcessFilesSignal, this, &DkCentralWidget::openBatch);
 
     return thumbScrollWidget;
@@ -1080,60 +1065,45 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event)
     QWidget::dragEnterEvent(event);
 }
 
-void DkCentralWidget::loadFileToTab(const QString &filePath)
+void DkCentralWidget::load(const QString &path)
 {
-    loadFile(filePath, true);
-}
+    if (!hasViewPort())
+        createViewPort(); // viewport is shared by all tabs
 
-void DkCentralWidget::loadFile(const QString &filePath, bool newTab)
-{
-    // could be container
-    DkFileInfo fileInfo(filePath);
+    // create the initial empty tab; do not show recents if we fail here
+    // TODO: also add tab if modifier key is pressed
+    if (mTabbar->count() == 0) {
+        QSharedPointer<DkTabInfo> newTab(new DkTabInfo(DkTabInfo::tab_empty));
+        addTab(newTab);
+    }
+
+    QSharedPointer<DkTabInfo> tab = mTabInfos[mTabbar->currentIndex()];
+    QSharedPointer<DkImageLoader> loader = tab->getImageLoader();
+
+    DkFileInfo fileInfo(path);
     if (fileInfo.isDir()) {
-        loadDirToTab(filePath);
-        return;
-    }
-
-    if (!newTab) {
-        if (!hasViewPort())
-            createViewPort();
-
-        getViewPort()->loadFile(filePath);
-        return;
-    }
-
-    // no tab to reuse -> create a new tab
-    addTab(filePath, mTabInfos.size() > 0);
-}
-
-/**
- * @brief loadDirToTab loads a directory path into the current tab.
- * @param dirPath the directory to load
- */
-void DkCentralWidget::loadDirToTab(const QString &dirPath)
-{
-    if (mTabInfos.size() > 1
-        || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty && mTabInfos.at(0)->getMode() != DkTabInfo::tab_recent_files
-            && mTabInfos.at(0)->getMode() != DkTabInfo::tab_single_image && mTabInfos.at(0)->getMode() != DkTabInfo::tab_thumb_preview)) {
-        addTab();
-    }
-
-    QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
-    DkFileInfo dir(dirPath);
-
-    if (dir.isDir()) {
-        // try to load the dir
-        bool dirIsLoaded = targetTab->setDirPath(dir);
-
-        if (dirIsLoaded) {
-            // show the directory in overview mode
-            targetTab->setMode(DkTabInfo::tab_thumb_preview);
-            showThumbView();
+        if (!loader->loadDir(fileInfo.path())) {
+            setInfo(tr("I could not load \"%1\"").arg(path));
             return;
         }
+        // load dir does not set a current image; it seems one is always needed
+        // or else switching between tabs could revert to the old directory
+        auto img = loader->getImages().value(0);
+        loader->setCurrentImage(img);
+        showThumbView();
+    } else {
+        tab->setMode(DkTabInfo::tab_single_image);
+        loader->load(fileInfo);
+        updateTab(tab); // required to set the tab text on background tabs
     }
+}
 
-    setInfo(tr("I could not load \"%1\"").arg(dirPath));
+void DkCentralWidget::loadToTab(const QString &path)
+{
+    QSharedPointer<DkTabInfo> newTab(new DkTabInfo(DkTabInfo::tab_empty));
+    addTab(newTab);
+
+    load(path);
 }
 
 /** loadUrls() loads a list of valid urls.
@@ -1186,10 +1156,10 @@ void DkCentralWidget::loadUrl(const QUrl &url, bool newTab)
     }
 
     // do not check if the file is valid input or not; the loader already does this
-    if (fileInfo.isFile())
-        loadFile(fileInfo.path(), newTab);
+    if (newTab)
+        loadToTab(fileInfo.path());
     else
-        loadDirToTab(fileInfo.path());
+        load(fileInfo.path());
 }
 
 void DkCentralWidget::pasteImage()
@@ -1324,7 +1294,7 @@ bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls)
         int numFiles = loader.mergeVecFiles(vecFiles, sPath);
 
         if (numFiles) {
-            loadFile(sPath);
+            load(sPath);
             setInfo(tr("%1 vec files merged").arg(numFiles));
             return true;
         }
@@ -1425,11 +1395,11 @@ void DkCentralWidget::renameFile()
 
     if (!renamed) {
         setInfo(tr("Sorry, I can't rename: \"%1\" : %2").arg(fileInfo.fileName()).arg(newFile.errorString()));
-        loadFile(fileInfo.absoluteFilePath());
+        load(fileInfo.absoluteFilePath());
         return;
     }
 
-    loadFile(renamedInfo.absoluteFilePath());
+    load(renamedInfo.absoluteFilePath());
 }
 
 } // namespace nmc
