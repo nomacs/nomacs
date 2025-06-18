@@ -643,9 +643,15 @@ void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, in
         mTabbar->show();
 }
 
-void DkCentralWidget::addTab(const QString &filePath, bool background)
+void DkCentralWidget::addTab(const DkFileInfo &file, bool background)
 {
-    QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(DkFileInfo(filePath)));
+    // image container cannot be constructed from a directory
+    if (!file.isFile()) {
+        qWarning() << "invalid addTab() with non-file:" << file.path();
+        return;
+    }
+
+    QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(file));
     addTab(imgC, background);
 }
 
