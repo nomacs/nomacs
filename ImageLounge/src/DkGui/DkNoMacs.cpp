@@ -1001,9 +1001,9 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings)
         addDockWidget(mExplorer->getDockLocationSettings(Qt::LeftDockWidgetArea), mExplorer);
 
         connect(mExplorer, &DkExplorer::openFile, getTabWidget(), [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
-        connect(mExplorer, &DkExplorer::openDir, getTabWidget(), &DkCentralWidget::loadDirToTab);
+        connect(mExplorer, &DkExplorer::openDir, getTabWidget(), &DkCentralWidget::load);
         connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mExplorer, &DkExplorer::setCurrentImage);
         connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, mExplorer, &DkExplorer::setCurrentPath);
     }
@@ -1175,7 +1175,7 @@ void DkNoMacs::openDir()
     if (dirName.isEmpty())
         return;
 
-    getTabWidget()->loadDirToTab(dirName);
+    getTabWidget()->load(dirName);
 }
 
 void DkNoMacs::openFile()
@@ -1212,7 +1212,10 @@ void DkNoMacs::openFile()
         if (!dup) {
             // > 1: only open in tab if more than one file is opened
             bool newTab = (filePaths.size() > 1) || (getTabWidget()->getTabs().size() > 1);
-            getTabWidget()->loadFile(fp, newTab);
+            if (newTab)
+                getTabWidget()->loadToTab(fp);
+            else
+                getTabWidget()->load(fp);
         }
     }
     if (duplicates.count() > 0) { // Show message if at least one duplicate was found
@@ -1251,7 +1254,7 @@ void DkNoMacs::openFileList()
     while (!file.atEnd()) {
         QString line = file.readLine().simplified();
         if (QFileInfo::exists(line)) {
-            getTabWidget()->loadFile(line, true);
+            getTabWidget()->loadToTab(line);
         }
     }
 
@@ -1297,7 +1300,7 @@ void DkNoMacs::openQuickLaunch()
         mQuickAccess->addActions(DkActionManager::instance().allActions());
 
         connect(mQuickAccess, &DkQuickAccess::loadFileSignal, this, [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
     }
 
@@ -1328,10 +1331,7 @@ void DkNoMacs::loadFile(const QString &filePath)
     if (!getTabWidget())
         return;
 
-    if (DkFileInfo(filePath).isDir())
-        getTabWidget()->loadDirToTab(filePath);
-    else
-        getTabWidget()->loadFile(filePath, false);
+    getTabWidget()->load(filePath);
 }
 
 void DkNoMacs::find(bool filterAction)
@@ -1351,7 +1351,7 @@ void DkNoMacs::find(bool filterAction)
 
         connect(searchDialog, &DkSearchDialog::filterSignal, getTabWidget()->getCurrentImageLoader().data(), &DkImageLoader::setFolderFilter);
         connect(searchDialog, &DkSearchDialog::loadFileSignal, this, [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
         int answer = searchDialog->exec();
 
