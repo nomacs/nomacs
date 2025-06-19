@@ -117,7 +117,7 @@ public:
 
 public slots:
     void moveImages();
-    void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs);
+    void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> images);
     void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
     void newPosition();
 
@@ -176,7 +176,7 @@ private:
     QMenu *contextMenu;
     QVector<QAction *> contextMenuActions;
 
-    std::vector<QString> mFilePaths{};
+    std::vector<DkFileInfo> mFiles{};
 
     struct Thumb {
         QImage image{};
