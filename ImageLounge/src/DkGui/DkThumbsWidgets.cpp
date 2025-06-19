@@ -252,7 +252,7 @@ void DkFilePreview::createContextMenu()
 void DkFilePreview::paintEvent(QPaintEvent *)
 {
     // render nothing if there are no thumbs
-    if (mFilePaths.empty())
+    if (mFiles.empty())
         return;
 
     if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
@@ -304,17 +304,20 @@ void DkFilePreview::drawThumbs(QPainter *painter)
     // mouse over effect
     QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
 
-    for (int idx = 0; idx < mFilePaths.size(); idx++) {
-        QImage img;
+    for (int idx = 0; idx < mFiles.size(); idx++) {
+        const QString &filePath = mFiles[idx].path();
 
-        bool existsInTable = mThumbs.contains(mFilePaths[idx]);
-        if (existsInTable && mThumbs[mFilePaths[idx]].notExist) {
+        const auto thumb = mThumbs.constFind(filePath);
+        bool existsInTable = thumb != mThumbs.constEnd();
+
+        if (existsInTable && thumb->notExist) {
             thumbRects.push_back(QRectF());
             continue;
         }
 
-        if (existsInTable && !mThumbs[mFilePaths[idx]].image.isNull()) {
-            img = mThumbs[mFilePaths[idx]].image;
+        QImage img;
+        if (existsInTable && !thumb->image.isNull()) {
+            img = thumb->image;
         }
 
         // if (img.width() > max_thumb_size * DkSettingsManager::param().dpiScaleFactor())
@@ -357,9 +360,9 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         const bool oobEnd = (orientation == Qt::Horizontal && imgWorldRect.left() > width()) || (orientation == Qt::Vertical && imgWorldRect.top() > height());
 
         if (oobStart || oobEnd) {
-            if (existsInTable && mThumbs[mFilePaths[idx]].loading) {
-                mThumbLoader->cancelThumbnailRequest(mFilePaths[idx]);
-                mThumbs.remove(mFilePaths[idx]);
+            if (existsInTable && thumb->loading) {
+                mThumbLoader->cancelThumbnailRequest(filePath);
+                mThumbs.remove(filePath);
             }
 
             if (oobEnd && !scrollToCurrentImage) {
@@ -370,9 +373,10 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         // only fetch thumbs if we are not moving too fast...
         if (!existsInTable) {
-            mThumbs[mFilePaths[idx]] = {};
-            mThumbs[mFilePaths[idx]].loading = true;
-            mThumbLoader->requestThumbnail(mFilePaths[idx]);
+            Thumb newThumb;
+            newThumb.loading = true;
+            mThumbs.insert(filePath, newThumb);
+            mThumbLoader->requestThumbnail(filePath);
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
@@ -584,21 +588,22 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
             if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
                 selected = idx;
 
-                if (selected < mFilePaths.size() && selected >= 0) {
+                if (selected < mFiles.size() && selected >= 0) {
                     // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettingsManager::param().display().highlightColor, 0.3f);
 
                     // important: setText shows the label - if you then hide it here again you'll get a stack overflow
                     // if (fileLabel->height() < height())
                     //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
-                    QFileInfo fileInfo(mFilePaths[selected]);
+                    const DkFileInfo &fileInfo = mFiles[selected];
+                    auto thumb = mThumbs.constFind(fileInfo.path());
+                    Q_ASSERT(thumb != mThumbs.constEnd());
 
                     QString str = QObject::tr("Name: ") % fileInfo.fileName() % "\n" % QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size())
                         % "\n" % QObject::tr("Created: ") % fileInfo.birthTime().toString();
-                    if (!mThumbs[mFilePaths[selected]].notExist) {
-                        const Thumb &thumb{mThumbs[mFilePaths[selected]]};
-                        const QImage &img{thumb.image};
+                    if (!thumb->notExist) {
+                        const QImage &img = thumb->image;
                         str = str % "\n" % QObject::tr("Thumb: ") % QString::number(img.size().width()) % "x" % QString::number(img.size().height()) % " "
-                            % (thumb.fromExif ? QObject::tr("Embedded ") : "");
+                            % (thumb->fromExif ? QObject::tr("Embedded ") : "");
                     }
                     setToolTip(str);
                     setStatusTip(fileInfo.fileName());
@@ -762,7 +767,7 @@ void DkFilePreview::moveImages()
     if (scrollToCurrentImage) {
         float cDist = limit / 2.0f - center;
 
-        if (mFilePaths.size() < 2000) {
+        if (mFiles.size() < 2000) {
             if (fabs(cDist) < limit) {
                 currentDx = sqrt(fabs(cDist)) / 1.3f;
                 if (cDist < 0)
@@ -815,8 +820,8 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
     int tIdx = -1;
 
-    for (int idx = 0; idx < mFilePaths.size(); idx++) {
-        if (mFilePaths.at(idx) == cImage->originalFileInfo().path()) {
+    for (int idx = 0; idx < mFiles.size(); idx++) {
+        if (mFiles[idx] == cImage->originalFileInfo()) {
             tIdx = idx;
             break;
         }
@@ -828,13 +833,14 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
     update();
 }
 
-void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
+void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> images)
 {
     mThumbs.clear();
-    mFilePaths = std::vector<QString>(thumbs.size());
-    for (int idx = 0; idx < thumbs.size(); idx++) {
-        mFilePaths[idx] = thumbs[idx]->originalFileInfo().path();
-        if (thumbs.at(idx)->isSelected()) {
+    mFiles.resize(images.size());
+    for (int idx = 0; idx < images.size(); idx++) {
+        const auto &imgC = images[idx];
+        mFiles[idx] = imgC->originalFileInfo();
+        if (imgC->isSelected()) {
             currentFileIdx = idx;
         }
     }
