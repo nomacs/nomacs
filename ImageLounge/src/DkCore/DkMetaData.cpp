@@ -1910,7 +1910,9 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
             // utfStr = (ushort*)(rValue.data());
 
             qDebug() << "UNICODE conversion started...";
-            rValue = QString::fromUtf16((ushort *)(rValue.data()), rValue.size());
+            // TODO: does this actually have any effect?
+            // QStrings should already be UTF-16
+            rValue = QString::fromUtf16((char16_t *)(rValue.data()), rValue.size());
         }
     } else {
         rValue = DkUtils::resolveFraction(rValue); // resolve fractions
