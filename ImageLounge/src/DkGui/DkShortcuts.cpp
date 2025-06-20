@@ -37,6 +37,7 @@
 #include <QSet>
 #include <QTreeView>
 #pragma warning(pop) // no warnings from includes - end
+#include <utility>
 
 namespace nmc
 {
@@ -247,7 +248,7 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
 
     {
         // keys we reserved with reserveKeys() first take priority
-        auto &map = qAsConst(mReservedKeys); // TODO: c++17 std::as_const
+        auto &map = std::as_const(mReservedKeys);
         auto it = map.find(widget->objectName());
         if (it != map.end()) {
             if (it.value().contains(keySeq)) {
@@ -301,7 +302,7 @@ bool DkActionEventFilter::eventFilter(QObject *target, QEvent *event)
     QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 
     int key = keyEvent->modifiers() | keyEvent->key();
-    for (QAction *a : qAsConst(mActions)) { // TODO: c++17 std::as_const()
+    for (QAction *a : std::as_const(mActions)) {
         if (!a->isEnabled())
             continue;
 

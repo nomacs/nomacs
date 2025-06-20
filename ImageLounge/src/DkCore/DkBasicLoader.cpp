@@ -34,6 +34,7 @@
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h" // just needed for qInfo() #ifdef
+#include <utility>
 
 #pragma warning(push, 0)
 #include <QBuffer>
@@ -2272,7 +2273,7 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
 
         mImg = raw2Img(iProcessor, rawMat);
 
-        for (auto &key : qAsConst(info).keys())
+        for (auto &key : std::as_const(info).keys())
             mImg.setText(key, info.value(key));
 
         // qDebug() << "img size" << mImg.size();
