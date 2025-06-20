@@ -40,6 +40,7 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
+#include <utility>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
@@ -1881,7 +1882,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QSt
 
 void DkImageLoader::sort()
 {
-    for (auto &img : qAsConst(mImages))
+    for (auto &img : std::as_const(mImages))
         if (!img) {
             qWarning() << "attempt to sort null image(s) averted";
             return;

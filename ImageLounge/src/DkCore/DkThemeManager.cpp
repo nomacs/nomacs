@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QStyleHints>
 #include <cmath>
 #pragma warning(pop) // no warnings from includes - end
+#include <utility>
 
 namespace nmc
 {
@@ -1075,7 +1076,7 @@ QString DkThemeManager::preprocess(const QString &cssString) const
                 }
 
                 if (branchTaken) {
-                    for (auto &l : qAsConst(lineBuffer)) {
+                    for (auto &l : std::as_const(lineBuffer)) {
                         outCss += l;
                         outCss += '\n';
                     }
