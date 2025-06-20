@@ -1443,7 +1443,7 @@ void DkTransformRect::draw(QPainter *painter)
 void DkTransformRect::mousePressEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        posGrab = event->globalPos();
+        posGrab = event->globalPosition();
         initialPos = geometry().topLeft();
 
         emit updateDiagonal(parentIdx);
@@ -1455,7 +1455,7 @@ void DkTransformRect::mousePressEvent(QMouseEvent *event)
 void DkTransformRect::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        QPointF pt = initialPos + event->globalPos() - posGrab;
+        QPointF pt = initialPos + event->globalPosition() - posGrab;
         emit ctrlMovedSignal(parentIdx, pt, event->modifiers(), true);
     }
 
@@ -1871,7 +1871,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event)
         info += QString::number(sAngle) + dk_degree_str;
 
         if (mShowInfo) {
-            QToolTip::showText(event->globalPos(), info, this);
+            QToolTip::showText(event->globalPosition().toPoint(), info, this);
         }
 
         DkStatusBarManager::instance().setMessage(info);

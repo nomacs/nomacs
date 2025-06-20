@@ -211,15 +211,16 @@ DkSplashScreen::~DkSplashScreen()
 void DkSplashScreen::mousePressEvent(QMouseEvent *event)
 {
     setCursor(Qt::ClosedHandCursor);
-    mDragStart = event->globalPos();
+    mDragStart = event->globalPosition().toPoint();
     QDialog::mousePressEvent(event);
 }
 
 void DkSplashScreen::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        move(pos() - (mDragStart - event->globalPos()));
-        mDragStart = event->globalPos();
+        const QPoint gPos = event->globalPosition().toPoint();
+        move(pos() - (mDragStart - gPos));
+        mDragStart = gPos;
     }
 
     showButtons();
@@ -1479,8 +1480,8 @@ bool DkShortcutDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, c
     // did the user click the x?
     if (event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent *e = (QMouseEvent *)event;
-        int clickX = e->x();
-        int clickY = e->y();
+        int clickX = e->pos().x();
+        int clickY = e->pos().y();
 
         QRect r = option.rect;
         int x = r.left() + r.width() - r.height();
