@@ -268,7 +268,7 @@ DkSortFileProxyModel::DkSortFileProxyModel(QObject *parent /* = 0 */)
 
 bool DkSortFileProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
-    if (left.data().canConvert(QMetaType::QUrl)) {
+    if (left.data().canConvert(QMetaType(QMetaType::QUrl))) {
         QFileInfo lf = QFileInfo(left.data().toString());
         QFileInfo rf = QFileInfo(right.data().toString());
 
