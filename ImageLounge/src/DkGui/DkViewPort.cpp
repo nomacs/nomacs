@@ -1272,7 +1272,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
 
     // drag & drop action
     if (event->buttons() == Qt::LeftButton && dist > QApplication::startDragDistance() && imageInside() && !getImage().isNull() && mLoader
-        && !QApplication::widgetAt(event->globalPos())) { // is NULL if the mouse leaves the window
+        && !QApplication::widgetAt(event->globalPosition().toPoint())) { // is NULL if the mouse leaves the window
 
         QMimeData *mimeData = createMime();
 
