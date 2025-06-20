@@ -62,13 +62,6 @@ DkMessageBox::DkMessageBox(QMessageBox::Icon icon,
     setWindowTitle(title);
 }
 
-DkMessageBox::DkMessageBox(QWidget *parent /* = 0 */)
-    : QDialog(parent)
-{
-    createLayout(QMessageBox::NoIcon, "", QMessageBox::NoButton);
-    setWindowTitle(tr("Error"));
-}
-
 DkMessageBox::~DkMessageBox()
 {
     // save settings
@@ -78,7 +71,35 @@ DkMessageBox::~DkMessageBox()
     settings.endGroup();
 }
 
-void DkMessageBox::createLayout(const QMessageBox::Icon &userIcon, const QString &userText, QMessageBox::StandardButtons buttons)
+// Modified from https://github.com/qt/qtbase/blob/cca658d4821b6d7378df13c29d1dab53c44359ac/src/widgets/dialogs/qmessagebox.cpp#L2735C1-L2761C2
+QPixmap msgBoxStandardIcon(QMessageBox::Icon icon)
+{
+    QStyle *style = QApplication::style();
+    int iconSize = style->pixelMetric(QStyle::PM_MessageBoxIconSize);
+    QIcon tmpIcon;
+    switch (icon) {
+    case QMessageBox::Information:
+        tmpIcon = style->standardIcon(QStyle::SP_MessageBoxInformation);
+        break;
+    case QMessageBox::Warning:
+        tmpIcon = style->standardIcon(QStyle::SP_MessageBoxWarning);
+        break;
+    case QMessageBox::Critical:
+        tmpIcon = style->standardIcon(QStyle::SP_MessageBoxCritical);
+        break;
+    case QMessageBox::Question:
+        tmpIcon = style->standardIcon(QStyle::SP_MessageBoxQuestion);
+        break;
+    default:
+        break;
+    }
+    if (tmpIcon.isNull()) {
+        return {};
+    }
+    return tmpIcon.pixmap(QSize(iconSize, iconSize), qApp->devicePixelRatio());
+}
+
+void DkMessageBox::createLayout(QMessageBox::Icon userIcon, const QString &userText, QMessageBox::StandardButtons buttons)
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
 
@@ -91,9 +112,8 @@ void DkMessageBox::createLayout(const QMessageBox::Icon &userIcon, const QString
     textLabel->setContentsMargins(2, 0, 0, 0);
     textLabel->setIndent(9);
 
-    icon = userIcon;
     iconLabel = new QLabel;
-    iconLabel->setPixmap(QMessageBox::standardIcon((QMessageBox::Icon)icon));
+    iconLabel->setPixmap(msgBoxStandardIcon(userIcon));
     iconLabel->setObjectName(QLatin1String("iconLabel"));
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 

@@ -60,7 +60,6 @@ public:
                  QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
                  QWidget *parent = 0,
                  Qt::WindowFlags f = Qt::Dialog);
-    DkMessageBox(QWidget *parent = 0);
 
     ~DkMessageBox();
 
@@ -75,11 +74,10 @@ public slots:
 protected:
     QLabel *iconLabel;
     QLabel *textLabel;
-    QMessageBox::Icon icon;
     QDialogButtonBox *buttonBox;
     QCheckBox *showAgain;
 
-    void createLayout(const QMessageBox::Icon &userIcon, const QString &userText, QMessageBox::StandardButtons buttons);
+    void createLayout(QMessageBox::Icon userIcon, const QString &userText, QMessageBox::StandardButtons buttons);
     void updateSize();
 };
 
