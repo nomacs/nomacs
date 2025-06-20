@@ -2338,7 +2338,7 @@ void DkBatchButtonsWidget::createLayout()
     mPlayButton->setIconSize(pm.size());
     mPlayButton->setCheckable(true);
     mPlayButton->setFlat(true);
-    mPlayButton->setShortcut(Qt::ALT + Qt::Key_Return);
+    mPlayButton->setShortcut(Qt::ALT | Qt::Key_Return);
     mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
 
     icon = QIcon();

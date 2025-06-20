@@ -419,11 +419,12 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent *event)
 // key events --------------------------------------------------------------------
 void DkBaseViewPort::keyPressEvent(QKeyEvent *event)
 {
+    QKeyCombination kc = event->keyCombination();
     // we want to change the behaviour on auto-repeat - so we cannot use QShortcuts here...
-    if (event->key() == DkActionManager::shortcut_zoom_in || event->key() == DkActionManager::shortcut_zoom_in_alt) {
+    if (kc == DkActionManager::shortcut_zoom_in || kc == DkActionManager::shortcut_zoom_in_alt) {
         zoom(event->isAutoRepeat() ? 1.1f : 1.5f);
     }
-    if (event->key() == DkActionManager::shortcut_zoom_out || event->key() == DkActionManager::shortcut_zoom_out_alt) {
+    if (kc == DkActionManager::shortcut_zoom_out || kc == DkActionManager::shortcut_zoom_out_alt) {
         zoom(event->isAutoRepeat() ? 0.9f : 0.5f);
     }
 
