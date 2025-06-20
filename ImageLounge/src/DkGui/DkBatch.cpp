@@ -288,7 +288,7 @@ void DkInputTextEdit::dropEvent(QDropEvent *event)
         return;
     }
 
-    appendFromMime(event->mimeData(), (event->keyboardModifiers() & Qt::ControlModifier) != 0);
+    appendFromMime(event->mimeData(), (event->modifiers() & Qt::ControlModifier) != 0);
 
     // do not propagate!
     // QTextEdit::dropEvent(event);
