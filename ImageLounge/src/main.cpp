@@ -91,9 +91,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("https://nomacs.org");
     QCoreApplication::setApplicationName("Image Lounge");
     QCoreApplication::setApplicationVersion(NOMACS_VERSION_STR);
-
-    QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
-
 #ifdef Q_OS_MAC
     QApplication::setAttribute(Qt::AA_DontShowIconsInMenus, true);
 #endif
