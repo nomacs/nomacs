@@ -1307,7 +1307,7 @@ void DkPluginManager::createPluginsPath()
     // not copied into .app/Contents/Frameworks as is the usual case
     QDir pluginsDir = QCoreApplication::applicationDirPath() + "/../PlugIns/nomacs";
 #else
-    QDir pluginsDir = QLibraryInfo::location(QLibraryInfo::LibrariesPath) + "/nomacs-plugins/";
+    QDir pluginsDir = QLibraryInfo::path(QLibraryInfo::LibrariesPath) + "/nomacs-plugins/";
 #endif // Q_OS_WIN
 
     if (!pluginsDir.exists())
