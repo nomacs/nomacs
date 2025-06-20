@@ -365,125 +365,123 @@ public:
 
     // default nomacs shortcuts
     // keyboard shortcuts
-    enum Shortcuts {
-        // general
-        shortcut_esc = Qt::Key_Escape,
+    // general
+    static constexpr QKeyCombination shortcut_esc = Qt::Key_Escape;
 
-        // file
-        shortcut_open_preview = Qt::Key_T,
-        shortcut_open_thumbview = Qt::SHIFT | Qt::Key_T,
-        shortcut_open_dir = Qt::CTRL | Qt::SHIFT | Qt::Key_O,
-        shortcut_app_manager = Qt::CTRL | Qt::Key_M,
-        shortcut_save_as = Qt::CTRL | Qt::SHIFT | Qt::Key_S,
-        shortcut_first_file = Qt::Key_Home,
-        shortcut_last_file = Qt::Key_End,
-        shortcut_skip_prev = Qt::Key_PageUp,
-        shortcut_skip_next = Qt::Key_PageDown,
-        shortcut_prev_file = Qt::Key_Left,
-        shortcut_next_file = Qt::Key_Right,
-        shortcut_rename = Qt::Key_F2,
-        shortcut_goto = Qt::CTRL | Qt::Key_G,
-        shortcut_extract = Qt::CTRL | Qt::Key_E,
-        shortcut_reload = Qt::Key_F5,
+    // file
+    static constexpr QKeyCombination shortcut_open_preview = Qt::Key_T;
+    static constexpr QKeyCombination shortcut_open_thumbview = Qt::SHIFT | Qt::Key_T;
+    static constexpr QKeyCombination shortcut_open_dir = Qt::CTRL | Qt::SHIFT | Qt::Key_O;
+    static constexpr QKeyCombination shortcut_app_manager = Qt::CTRL | Qt::Key_M;
+    static constexpr QKeyCombination shortcut_save_as = Qt::CTRL | Qt::SHIFT | Qt::Key_S;
+    static constexpr QKeyCombination shortcut_first_file = Qt::Key_Home;
+    static constexpr QKeyCombination shortcut_last_file = Qt::Key_End;
+    static constexpr QKeyCombination shortcut_skip_prev = Qt::Key_PageUp;
+    static constexpr QKeyCombination shortcut_skip_next = Qt::Key_PageDown;
+    static constexpr QKeyCombination shortcut_prev_file = Qt::Key_Left;
+    static constexpr QKeyCombination shortcut_next_file = Qt::Key_Right;
+    static constexpr QKeyCombination shortcut_rename = Qt::Key_F2;
+    static constexpr QKeyCombination shortcut_goto = Qt::CTRL | Qt::Key_G;
+    static constexpr QKeyCombination shortcut_extract = Qt::CTRL | Qt::Key_E;
+    static constexpr QKeyCombination shortcut_reload = Qt::Key_F5;
 
-        shortcut_first_file_sync = Qt::ALT | Qt::Key_Home,
-        shortcut_last_file_sync = Qt::ALT | Qt::Key_End,
-        shortcut_skip_prev_sync = Qt::ALT | Qt::Key_Left,
-        shortcut_skip_next_sync = Qt::ALT | Qt::Key_Right,
+    static constexpr QKeyCombination shortcut_first_file_sync = Qt::ALT | Qt::Key_Home;
+    static constexpr QKeyCombination shortcut_last_file_sync = Qt::ALT | Qt::Key_End;
+    static constexpr QKeyCombination shortcut_skip_prev_sync = Qt::ALT | Qt::Key_Left;
+    static constexpr QKeyCombination shortcut_skip_next_sync = Qt::ALT | Qt::Key_Right;
 
-        shortcut_star_rating_0 = Qt::Key_0,
-        shortcut_star_rating_1 = Qt::Key_1,
-        shortcut_star_rating_2 = Qt::Key_2,
-        shortcut_star_rating_3 = Qt::Key_3,
-        shortcut_star_rating_4 = Qt::Key_4,
-        shortcut_star_rating_5 = Qt::Key_5,
+    static constexpr QKeyCombination shortcut_star_rating_0 = Qt::Key_0;
+    static constexpr QKeyCombination shortcut_star_rating_1 = Qt::Key_1;
+    static constexpr QKeyCombination shortcut_star_rating_2 = Qt::Key_2;
+    static constexpr QKeyCombination shortcut_star_rating_3 = Qt::Key_3;
+    static constexpr QKeyCombination shortcut_star_rating_4 = Qt::Key_4;
+    static constexpr QKeyCombination shortcut_star_rating_5 = Qt::Key_5;
 
-        // view
-        shortcut_new_tab = Qt::CTRL | Qt::Key_T,
-        shortcut_close_tab = Qt::CTRL | Qt::Key_W,
-        shortcut_show_toolbar = Qt::CTRL | Qt::Key_B,
-        shortcut_show_statusbar = Qt::CTRL | Qt::Key_I,
-        shortcut_show_transfer = Qt::CTRL | Qt::Key_U,
+    // view
+    static constexpr QKeyCombination shortcut_new_tab = Qt::CTRL | Qt::Key_T;
+    static constexpr QKeyCombination shortcut_close_tab = Qt::CTRL | Qt::Key_W;
+    static constexpr QKeyCombination shortcut_show_toolbar = Qt::CTRL | Qt::Key_B;
+    static constexpr QKeyCombination shortcut_show_statusbar = Qt::CTRL | Qt::Key_I;
+    static constexpr QKeyCombination shortcut_show_transfer = Qt::CTRL | Qt::Key_U;
 #ifdef Q_OS_MAC
-        shortcut_next_tab = Qt::META | Qt::Key_Tab,
-        shortcut_previous_tab = Qt::META | Qt::SHIFT | Qt::Key_Tab,
-        shortcut_full_screen_ff = Qt::CTRL | Qt::Key_F,
-        shortcut_frameless = Qt::CTRL | Qt::Key_R,
+    static constexpr QKeyCombination shortcut_next_tab = Qt::META | Qt::Key_Tab;
+    static constexpr QKeyCombination shortcut_previous_tab = Qt::META | Qt::SHIFT | Qt::Key_Tab;
+    static constexpr QKeyCombination shortcut_full_screen_ff = Qt::CTRL | Qt::Key_F;
+    static constexpr QKeyCombination shortcut_frameless = Qt::CTRL | Qt::Key_R;
 #else
-        shortcut_next_tab = Qt::CTRL | Qt::Key_Tab,
-        shortcut_previous_tab = Qt::CTRL | Qt::SHIFT | Qt::Key_Tab,
-        shortcut_full_screen_ff = Qt::Key_F11,
-        shortcut_frameless = Qt::Key_F10,
+    static constexpr QKeyCombination shortcut_next_tab = Qt::CTRL | Qt::Key_Tab;
+    static constexpr QKeyCombination shortcut_previous_tab = Qt::CTRL | Qt::SHIFT | Qt::Key_Tab;
+    static constexpr QKeyCombination shortcut_full_screen_ff = Qt::Key_F11;
+    static constexpr QKeyCombination shortcut_frameless = Qt::Key_F10;
 #endif
-        shortcut_reset_view = Qt::CTRL | Qt::Key_0,
-        shortcut_zoom_full = Qt::CTRL | Qt::Key_1,
-        shortcut_fit_frame = Qt::CTRL | Qt::Key_2,
-        shortcut_show_overview = Qt::Key_O,
-        shortcut_show_explorer = Qt::Key_E,
-        shortcut_show_metadata_dock = Qt::ALT | Qt::Key_M,
-        shortcut_show_history = Qt::CTRL | Qt::SHIFT | Qt::Key_H,
-        shortcut_show_log = Qt::CTRL | Qt::ALT | Qt::Key_L,
-        shortcut_view_slideshow = Qt::Key_Space,
-        shortcut_show_player = Qt::Key_P,
-        shortcut_show_exif = Qt::Key_M,
-        shortcut_show_info = Qt::Key_I,
-        shortcut_show_histogram = Qt::Key_H,
-        shortcut_show_comment = Qt::Key_N,
-        shortcut_opacity_down = Qt::CTRL | Qt::Key_J,
-        shortcut_opacity_up = Qt::CTRL | Qt::SHIFT | Qt::Key_J,
-        shortcut_opacity_change = Qt::ALT | Qt::SHIFT | Qt::Key_J,
-        shortcut_an_opacity = Qt::ALT | Qt::Key_J,
-        shortcut_new_instance = Qt::CTRL | Qt::Key_N,
-        shortcut_private_instance = Qt::CTRL | Qt::ALT | Qt::Key_N,
-        shortcut_tp_pattern = Qt::Key_B,
-        shortcut_anti_aliasing = Qt::Key_A,
-        shortcut_lock_window = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_B,
-        shortcut_recent_files = Qt::CTRL | Qt::Key_H,
-        shortcut_toggle_panels = Qt::Key_F,
+    static constexpr QKeyCombination shortcut_reset_view = Qt::CTRL | Qt::Key_0;
+    static constexpr QKeyCombination shortcut_zoom_full = Qt::CTRL | Qt::Key_1;
+    static constexpr QKeyCombination shortcut_fit_frame = Qt::CTRL | Qt::Key_2;
+    static constexpr QKeyCombination shortcut_show_overview = Qt::Key_O;
+    static constexpr QKeyCombination shortcut_show_explorer = Qt::Key_E;
+    static constexpr QKeyCombination shortcut_show_metadata_dock = Qt::ALT | Qt::Key_M;
+    static constexpr QKeyCombination shortcut_show_history = Qt::CTRL | Qt::SHIFT | Qt::Key_H;
+    static constexpr QKeyCombination shortcut_show_log = Qt::CTRL | Qt::ALT | Qt::Key_L;
+    static constexpr QKeyCombination shortcut_view_slideshow = Qt::Key_Space;
+    static constexpr QKeyCombination shortcut_show_player = Qt::Key_P;
+    static constexpr QKeyCombination shortcut_show_exif = Qt::Key_M;
+    static constexpr QKeyCombination shortcut_show_info = Qt::Key_I;
+    static constexpr QKeyCombination shortcut_show_histogram = Qt::Key_H;
+    static constexpr QKeyCombination shortcut_show_comment = Qt::Key_N;
+    static constexpr QKeyCombination shortcut_opacity_down = Qt::CTRL | Qt::Key_J;
+    static constexpr QKeyCombination shortcut_opacity_up = Qt::CTRL | Qt::SHIFT | Qt::Key_J;
+    static constexpr QKeyCombination shortcut_opacity_change = Qt::ALT | Qt::SHIFT | Qt::Key_J;
+    static constexpr QKeyCombination shortcut_an_opacity = Qt::ALT | Qt::Key_J;
+    static constexpr QKeyCombination shortcut_new_instance = Qt::CTRL | Qt::Key_N;
+    static constexpr QKeyCombination shortcut_private_instance = Qt::CTRL | Qt::ALT | Qt::Key_N;
+    static constexpr QKeyCombination shortcut_tp_pattern = Qt::Key_B;
+    static constexpr QKeyCombination shortcut_anti_aliasing = Qt::Key_A;
+    static constexpr QKeyCombination shortcut_lock_window = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_B;
+    static constexpr QKeyCombination shortcut_recent_files = Qt::CTRL | Qt::Key_H;
+    static constexpr QKeyCombination shortcut_toggle_panels = Qt::Key_F;
 
-        // hidden viewport shortcuts
-        shortcut_pan_left = Qt::CTRL | Qt::Key_Left,
-        shortcut_pan_right = Qt::CTRL | Qt::Key_Right,
-        shortcut_pan_up = Qt::CTRL | Qt::Key_Up,
-        shortcut_pan_down = Qt::CTRL | Qt::Key_Down,
+    // hidden viewport static constexpr QKeyCombination shortcuts
+    static constexpr QKeyCombination shortcut_pan_left = Qt::CTRL | Qt::Key_Left;
+    static constexpr QKeyCombination shortcut_pan_right = Qt::CTRL | Qt::Key_Right;
+    static constexpr QKeyCombination shortcut_pan_up = Qt::CTRL | Qt::Key_Up;
+    static constexpr QKeyCombination shortcut_pan_down = Qt::CTRL | Qt::Key_Down;
 
-        shortcut_zoom_in = Qt::Key_Plus,
-        shortcut_zoom_out = Qt::Key_Minus,
-        shortcut_zoom_in_alt = Qt::Key_Up,
-        shortcut_zoom_out_alt = Qt::Key_Down,
+    static constexpr QKeyCombination shortcut_zoom_in = Qt::Key_Plus;
+    static constexpr QKeyCombination shortcut_zoom_out = Qt::Key_Minus;
+    static constexpr QKeyCombination shortcut_zoom_in_alt = Qt::Key_Up;
+    static constexpr QKeyCombination shortcut_zoom_out_alt = Qt::Key_Down;
 
-        // edit
-        shortcut_edit_image = Qt::Key_D,
-        shortcut_rotate_cw = Qt::Key_R,
-        shortcut_rotate_ccw = Qt::SHIFT | Qt::Key_R,
-        shortcut_transform = Qt::CTRL | Qt::Key_R,
-        shortcut_manipulation = Qt::CTRL | Qt::SHIFT | Qt::Key_M,
-        shortcut_paste = Qt::Key_Insert,
-        shortcut_delete_silent = Qt::SHIFT | Qt::Key_Delete,
-        shortcut_crop = Qt::Key_C,
-        shortcut_copy_buffer = Qt::CTRL | Qt::SHIFT | Qt::Key_C,
-        shortcut_copy_color = Qt::CTRL | Qt::ALT | Qt::Key_C,
+    // edit
+    static constexpr QKeyCombination shortcut_edit_image = Qt::Key_D;
+    static constexpr QKeyCombination shortcut_rotate_cw = Qt::Key_R;
+    static constexpr QKeyCombination shortcut_rotate_ccw = Qt::SHIFT | Qt::Key_R;
+    static constexpr QKeyCombination shortcut_transform = Qt::CTRL | Qt::Key_R;
+    static constexpr QKeyCombination shortcut_manipulation = Qt::CTRL | Qt::SHIFT | Qt::Key_M;
+    static constexpr QKeyCombination shortcut_paste = Qt::Key_Insert;
+    static constexpr QKeyCombination shortcut_delete_silent = Qt::SHIFT | Qt::Key_Delete;
+    static constexpr QKeyCombination shortcut_crop = Qt::Key_C;
+    static constexpr QKeyCombination shortcut_copy_buffer = Qt::CTRL | Qt::SHIFT | Qt::Key_C;
+    static constexpr QKeyCombination shortcut_copy_color = Qt::CTRL | Qt::ALT | Qt::Key_C;
 
-        // tools
-        shortcut_batch_processing = Qt::CTRL | Qt::SHIFT | Qt::Key_B,
+    // tools
+    static constexpr QKeyCombination shortcut_batch_processing = Qt::CTRL | Qt::SHIFT | Qt::Key_B;
 
-        // tcp
-        shortcut_shortcuts = Qt::CTRL | Qt::Key_K,
-        shortcut_settings = Qt::CTRL | Qt::SHIFT | Qt::Key_P,
-        shortcut_sync = Qt::CTRL | Qt::Key_D,
-        shortcut_tab = Qt::ALT | Qt::Key_O,
-        shortcut_arrange = Qt::ALT | Qt::Key_A,
-        shortcut_send_img = Qt::ALT | Qt::Key_I,
-        shortcut_connect_all = Qt::CTRL | Qt::Key_A,
+    // tcp
+    static constexpr QKeyCombination shortcut_shortcuts = Qt::CTRL | Qt::Key_K;
+    static constexpr QKeyCombination shortcut_settings = Qt::CTRL | Qt::SHIFT | Qt::Key_P;
+    static constexpr QKeyCombination shortcut_sync = Qt::CTRL | Qt::Key_D;
+    static constexpr QKeyCombination shortcut_tab = Qt::ALT | Qt::Key_O;
+    static constexpr QKeyCombination shortcut_arrange = Qt::ALT | Qt::Key_A;
+    static constexpr QKeyCombination shortcut_send_img = Qt::ALT | Qt::Key_I;
+    static constexpr QKeyCombination shortcut_connect_all = Qt::CTRL | Qt::Key_A;
 
-        // help
-        shortcut_show_help = Qt::Key_F1,
+    // help
+    static constexpr QKeyCombination shortcut_show_help = Qt::Key_F1;
 
-        // eggs
-        shortcut_test_pong = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_P,
-        shortcut_test_img = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_L,
-        shortcut_test_rec = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_R,
-    };
+    // eggs
+    static constexpr QKeyCombination shortcut_test_pong = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_P;
+    static constexpr QKeyCombination shortcut_test_img = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_L;
+    static constexpr QKeyCombination shortcut_test_rec = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_R;
 
     QMenu *updateOpenWithMenu();
 
