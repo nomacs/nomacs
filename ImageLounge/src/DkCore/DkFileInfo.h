@@ -53,7 +53,7 @@ typedef QList<DkFileInfo> DkFileInfoList;
  *
  * The API should match QFileInfo semantics for the most part.
  *
- * porting notes:
+ * Porting notes:
  *   isFile/isDir imply exists() so don't combine them
  *
  *   absoluteFilePath() => path() -- we always use absolute file paths in nomacs
@@ -80,55 +80,53 @@ public:
     // fast check if file has supported suffix
     static bool isContainer(const QFileInfo &fileInfo);
 
-    // todo: clean path before giving fileInfo
-    // remove trailing '/' : breaks fileName()
-    //
+    // construct from vfs-supported path
     DkFileInfo(const QString &path = "");
 
-    // provide type conversions for porting; prints a warning if there might be a problem
+    // construct from ordinary file info (non-zip, non-vfs etc)
     explicit DkFileInfo(const QFileInfo &info);
 
     bool operator==(const DkFileInfo &other) const;
 
-    // these will be made private when they are no longer necessary
+    // avoid these if possible as they break the abstraction
 #ifdef WITH_QUAZIP
     bool isFromZip() const;
     bool isZipFile() const;
     QString pathInZip() const;
-    void readZipMetaData() const;
 #else
     // clang-format off
     bool isFromZip() const { return false; }
     bool isZipFile() const { return false; }
     QString pathInZip() const { return {}; }
-    void readZipMetaData() const {}
     // clang-format on
 #endif
 
     // return i/o open for reading, or nullptr
     std::unique_ptr<QIODevice> getIODevice() const;
 
-    // absolute file path
+    // absolute file path (like QFileInfo::absoluteFilePath())
     // this is also the uuid of file; e.g. DkFileInfo(info.path()) == info;
     // for VFS this will not be an ordinary path, so avoid QFileInfo(dkInfo.path())
     QString path() const;
 
-    // absolute directory path
-    // if it's a file, return parent
-    // if it's a dir, return the dir (container files are considered a dir)
+    // absolute directory path not including entry itself (like QFileInfo::absolutePath())
+    // note: returns parent directory path for directories
     QString dirPath() const;
 
-    // todo: move certain DkUtils methods here
-    // static bool isValid(const QFileInfo &fileInfo);
-    // static bool isSavable(const QString &fileName);
-    // static bool hasValidSuffix(const QString &fileName);
+    // check for file or metadata modification and refresh internal state
+    // return true if no longer exists or modified
+    bool isModified();
 
-    // ---- QFileInfo methods --------------------------------
-    // where possible keep the semantics of QFileInfo
+    // switch to the shortcut target
+    // return false if target does not exist
+    bool resolveShortcut();
+
+    // ---- wrapped methods of QFileInfo --------------------------------
+    // where noted changes semantics of QFileInfo
 
     bool exists() const;
     bool isFile() const;
-    bool isDir() const;
+    bool isDir() const; // also true for containers
 
     bool isReadable() const;
 
@@ -137,34 +135,30 @@ public:
     QString baseName() const;
 
     QDateTime birthTime() const;
-
-    // for display purposes only; use isModified for freshness checks
     QDateTime lastModified() const;
+    QDateTime lastRead() const; // from container, not member
 
-    QDateTime lastRead() const;
-
-    // check for file or metadata modification and refresh internal state
-    // return true if no longer exists or modified
-    bool isModified();
-
-    QString owner() const;
+    QString owner() const; // owner/group/perm from container, not member
     uint ownerId() const;
     QString group() const;
     QFileDevice::Permissions permissions() const;
-
     bool permission(QFile::Permissions flags) const;
 
-    bool isShortcut() const;
-    bool resolveShortcut();
-
+    bool isShortcut() const; // .lnk or MacOS alias
     bool isSymLink() const;
     QString symLinkTarget() const;
 
     qint64 size() const;
 
 private:
-    // info of the container, if it is a local file, otherwise invalid
+    // info of the container if isFromZip(), otherwise info of file/dir,
     const QFileInfo &containerInfo() const;
+
+#ifdef WITH_QUAZIP
+    void readZipMetaData() const;
+#else
+    void readZipMetaData() const {};
+#endif
 
     static DkFileInfoList readZipArchive(const QString &zipPath);
 
@@ -216,10 +210,10 @@ private:
         SharedData(const QFileInfo &info);
         SharedData(const QString &zipPath, const QuaZipFileInfo64 &info);
 
-        QFileInfo mFileInfo; // zip: constructed from encoded path in the zipfile
+        QFileInfo mFileInfo; // isFromZip() => constructed from encodedPath()-formatted path
 #ifdef WITH_QUAZIP
         ZipData mZipData;
-        QFileInfo mContainerInfo; // zip: info of the .zip file itself
+        QFileInfo mContainerInfo; // isFromZip() => info of the .zip file itself
 #endif
     };
 
