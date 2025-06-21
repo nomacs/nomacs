@@ -173,13 +173,6 @@ DkFileInfo::DkFileInfo(SharedData *shared)
 {
 }
 
-DkFileInfo::operator QFileInfo() const
-{
-    if (isFromZip())
-        qWarning() << "[FileInfo] cast to QFileInfo breaks zip members:" << path();
-    return d->mFileInfo;
-}
-
 bool DkFileInfo::operator==(const DkFileInfo &other) const
 {
     return path() == other.path();
