@@ -557,24 +557,12 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findOrCreateFile(const QString 
 
 QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QString &filePath) const
 {
-    // if one image is from zip than all should be
-    // for images in zip the "images[idx]->file() == file" comparison somahow does not work
-    if (mImages.size() > 0) {
-        if (mImages[0]->isFromZip()) {
-            int idx = findFileIdx(filePath, mImages);
-            if (idx < 0)
-                return QSharedPointer<DkImageContainerT>();
-            else
-                return mImages[idx];
-        }
+    for (auto &imgC : mImages) {
+        if (imgC->filePath() == filePath)
+            return imgC;
     }
 
-    for (int idx = 0; idx < mImages.size(); idx++) {
-        if (mImages[idx]->filePath() == filePath)
-            return mImages[idx];
-    }
-
-    return QSharedPointer<DkImageContainerT>();
+    return {};
 }
 
 int DkImageLoader::findFileIdx(const QString &filePath, const QVector<QSharedPointer<DkImageContainerT>> &images) const
