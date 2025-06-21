@@ -539,13 +539,14 @@ void DkExplorer::loadSelectedToggled(bool checked)
 void DkExplorer::openSelected()
 {
     auto index = mFileTree->selectionModel()->currentIndex();
-    QFileInfo cFile = mFileModel->fileInfo(mSortModel->mapToSource(index));
-    qDebug() << "opening: " << cFile.absoluteFilePath();
+    DkFileInfo file(mFileModel->fileInfo(mSortModel->mapToSource(index)));
+    QString filePath = file.path();
+    qDebug() << "opening: " << filePath;
 
-    if (DkUtils::isValid(cFile))
-        emit openFile(cFile.absoluteFilePath());
-    else if (cFile.isDir())
-        emit openDir(cFile.absoluteFilePath());
+    if (DkUtils::isLoadable(file))
+        emit openFile(filePath);
+    else if (file.isDir())
+        emit openDir(filePath);
 }
 
 void DkExplorer::setEditable(bool editable)
