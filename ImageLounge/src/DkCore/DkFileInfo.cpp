@@ -246,8 +246,6 @@ QString DkFileInfo::dirPath() const
 {
     if (isFromZip())
         return containerInfo().absoluteFilePath();
-    else if (isZipFile())
-        return path();
     else
         return d->mFileInfo.absolutePath();
 }
