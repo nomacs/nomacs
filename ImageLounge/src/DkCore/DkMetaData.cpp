@@ -123,7 +123,7 @@ void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray
     } catch (...) {
         // TODO: check crashes here
         // qDebug() << "[Exiv2] could not open file for exif data";
-        qInfo() << "[Exiv2] could not load Exif data from file:" << file;
+        qInfo() << "[Exiv2] could not load Exif data from file:" << file.fileName();
         return;
     }
 

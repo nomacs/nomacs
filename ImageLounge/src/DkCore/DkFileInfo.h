@@ -87,7 +87,6 @@ public:
 
     // provide type conversions for porting; prints a warning if there might be a problem
     explicit DkFileInfo(const QFileInfo &info);
-    operator QFileInfo() const;
 
     bool operator==(const DkFileInfo &other) const;
 
