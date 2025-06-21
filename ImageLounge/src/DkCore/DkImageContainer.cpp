@@ -404,7 +404,7 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &
     // FIXME: the proper fix here is to check if the file is actually loadable before caching, OR
     //        do not use a file cache at all and leave that up to the OS.
     //
-    if (fInfo.size() > 100 * 1024 * 1024 && !DkUtils::isValid(fInfo)) {
+    if (fInfo.size() > 100 * 1024 * 1024 && !DkUtils::isLoadable(fInfo)) {
         qWarning() << "refusing to cache large file:" << fInfo.fileName();
         return {};
     }

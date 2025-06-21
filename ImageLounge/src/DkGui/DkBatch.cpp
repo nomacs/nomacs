@@ -240,19 +240,20 @@ void DkInputTextEdit::appendFromMime(const QMimeData *mimeData, bool recursive)
     if (!mimeData || !mimeData->hasUrls())
         return;
 
-    QStringList cFiles;
+    QStringList files;
 
-    for (QUrl url : mimeData->urls()) {
-        QFileInfo cFile = DkUtils::urlToLocalFile(url);
+    const auto urls = mimeData->urls();
+    for (auto &url : urls) {
+        DkFileInfo fileInfo(DkUtils::urlToLocalFile(url));
 
-        if (cFile.isDir())
-            appendDir(cFile.absoluteFilePath(), recursive);
-        else if (cFile.exists() && DkUtils::isValid(cFile))
-            cFiles.append(cFile.absoluteFilePath());
+        if (fileInfo.isDir())
+            appendDir(fileInfo.path(), recursive);
+        else if (DkUtils::isLoadable(fileInfo))
+            files.append(fileInfo.path());
     }
 
-    if (!cFiles.empty())
-        appendFiles(cFiles);
+    if (!files.empty())
+        appendFiles(files);
 }
 
 void DkInputTextEdit::insertFromMimeData(const QMimeData *mimeData)
