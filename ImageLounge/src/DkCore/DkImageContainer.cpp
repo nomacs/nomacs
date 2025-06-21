@@ -129,11 +129,6 @@ QString DkImageContainer::fileName() const
     return mFileInfo.fileName();
 }
 
-bool DkImageContainer::isFromZip()
-{
-    return mFileInfo.isFromZip();
-}
-
 bool DkImageContainer::exists()
 {
     return mFileInfo.exists();
