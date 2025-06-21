@@ -84,7 +84,6 @@ public:
     QString filePath() const;
     QString dirPath() const;
     QString fileName() const;
-    bool isFromZip();
     bool isEdited() const;
     bool isSelected() const;
     QString getTitleAttribute() const;

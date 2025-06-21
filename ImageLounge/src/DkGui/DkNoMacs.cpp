@@ -1431,13 +1431,12 @@ void DkNoMacs::extractImagesFromArchive()
     if (!mArchiveExtractionDialog)
         mArchiveExtractionDialog = new DkArchiveExtractionDialog(this);
 
-    if (getTabWidget()->getCurrentImage()) {
-        if (getTabWidget()->getCurrentImage()->isFromZip())
-            mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentImage()->dirPath(), true);
-        else
-            mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
-    } else
-        mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
+    auto *tab = getTabWidget();
+    auto imgC = tab->getCurrentImage();
+    if (imgC && imgC->fileInfo().isFromZip())
+        mArchiveExtractionDialog->setCurrentFile(imgC->dirPath(), true);
+    else
+        mArchiveExtractionDialog->setCurrentFile(tab->getCurrentFilePath(), false);
 
     mArchiveExtractionDialog->exec();
 #endif
