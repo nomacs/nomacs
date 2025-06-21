@@ -387,10 +387,33 @@ public:
         return stringify(rounded / pow(10, n));
     }
 
-    static bool isValidByContent(const QFileInfo &file);
-    static bool isValid(const QFileInfo &fileInfo);
+    /**
+     * @brief check for loadable file from extension
+     * @param fileSuffix suffix not including dot (QFileInfo::suffix())
+     * @return true if file has a supported filetype
+     */
+    static bool isLoadableSuffix(const QString &fileSuffix);
+
+    /**
+     * @brief check for loadable file via file header
+     * @param file file to check
+     * @return true if file is readable and has a supported filetype
+     * @note reads the file header to find true file type (e.g. wrong or missing suffix)
+     *       use as a fallback for isLoadableSuffix()
+     */
+    static bool isLoadableByContent(const DkFileInfo &file);
+
+    /**
+     * @brief check for loadable file without involving image loader
+     * @param file
+     * @return true if file is readable and has a supported filetype
+     * @note uses isLoadableBySuffix() and falls back to isLoadableByContent()
+     * @note may return true for unloadable files as image loader is not involved
+     */
+    static bool isLoadable(const DkFileInfo &fileInfo);
+
     static bool isSavable(const QString &fileName);
-    static bool hasValidSuffix(const QString &fileName);
+
     static QStringList suffixOnly(const QStringList &fileFilters);
     static QDateTime getConvertableDate(const QString &date);
     static QDateTime convertDate(const QString &date, const QFileInfo &file = QFileInfo());

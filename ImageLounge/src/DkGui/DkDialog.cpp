@@ -2685,9 +2685,9 @@ void DkMosaicDialog::dragEnterEvent(QDragEnterEvent *event)
     if (event->mimeData()->hasUrls()) {
         QUrl url = event->mimeData()->urls().at(0);
         url = url.toLocalFile();
-        QFileInfo file = QFileInfo(url.toString());
+        DkFileInfo file(url.toString());
 
-        if (file.exists() && DkUtils::isValid(file))
+        if (DkUtils::isLoadable(file))
             event->acceptProposedAction();
     }
 }

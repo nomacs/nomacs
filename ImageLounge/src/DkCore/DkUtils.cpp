@@ -289,14 +289,14 @@ QString DkUtils::resolveSymLink(const QString &filePath)
                     continue;
 
                 QFileInfo fi(cl);
-                if (fi.exists() && fi.isFile() && DkUtils::hasValidSuffix(fi.fileName())) {
+                if (fi.exists() && fi.isFile() && DkUtils::isLoadableSuffix(fi.suffix())) {
                     rFilePath = fi.absoluteFilePath();
                     break;
                 }
 
                 // is there a relative path?
                 fi = QFileInfo(fInfo.absolutePath() + QDir::separator() + cl);
-                if (fi.exists() && fi.isFile() && DkUtils::hasValidSuffix(fi.fileName())) {
+                if (fi.exists() && fi.isFile() && DkUtils::isLoadableSuffix(fi.suffix())) {
                     rFilePath = fi.absoluteFilePath();
                     break;
                 }
@@ -703,28 +703,22 @@ QString DkUtils::nowString()
     return QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss");
 }
 
-/**
- * @brief isValidByContent identifies a file by file content.
- * @param file is an existing file.
- * @return true, if file exists and has content we support, false otherwise.
- */
-bool DkUtils::isValidByContent(const QFileInfo &file)
+bool DkUtils::isLoadableByContent(const DkFileInfo &file)
 {
-    if (!file.exists())
+    if (file.isFromZip()) // unsupported for performance
         return false;
     if (!file.isFile())
         return false;
 
     QMimeDatabase mimeDb;
-    QMimeType fileMimeType = mimeDb.mimeTypeForFile(file, QMimeDatabase::MatchContent);
+    QMimeType fileMimeType = mimeDb.mimeTypeForFile(file.path(), QMimeDatabase::MatchContent);
+    const QStringList suffixes = fileMimeType.suffixes();
 
-    for (QString sfx : fileMimeType.suffixes()) {
-        QString tryFilename = file.fileName() + QString(".") + sfx;
-
-        if (DkUtils::hasValidSuffix(tryFilename)) {
+    for (auto &suffix : suffixes) {
+        if (DkUtils::isLoadableSuffix(suffix))
             return true;
-        }
     }
+
     return false;
 }
 
@@ -733,19 +727,19 @@ bool DkUtils::isValidByContent(const QFileInfo &file)
  * @param fileInfo the file info of the file to be validated.
  * @return bool true if the file format is supported.
  **/
-bool DkUtils::isValid(const QFileInfo &fileInfo)
+bool DkUtils::isLoadable(const DkFileInfo &fileInfo)
 {
-    QFileInfo fInfo = fileInfo;
+    auto fInfo = fileInfo;
     QString fileName = fInfo.fileName();
 
-    if (fInfo.isSymLink())
-        fInfo = QFileInfo(fileInfo.symLinkTarget());
+    if (fInfo.isShortcut() && !fInfo.resolveShortcut())
+        return false;
 
     if (!fInfo.exists()) {
         return false;
-    } else if (hasValidSuffix(fInfo.fileName())) {
+    } else if (isLoadableSuffix(fInfo.suffix())) {
         return true;
-    } else if (isValidByContent(fInfo)) {
+    } else if (isLoadableByContent(fInfo)) {
         return true;
     }
 
@@ -768,18 +762,15 @@ bool DkUtils::isSavable(const QString &fileName)
     return false;
 }
 
-bool DkUtils::hasValidSuffix(const QString &fileName)
+bool DkUtils::isLoadableSuffix(const QString &fileSuffix)
 {
-    const QString fileSuffix = fileName.mid(fileName.lastIndexOf('.')).toLower(); // .jpg
     if (fileSuffix.isEmpty())
         return false;
 
     const QStringList &filters = DkSettingsManager::param().app().fileFilters; // [*.jpg, ...]
-    for (const QString &filter : filters)
-        if (filter.endsWith(fileSuffix))
-            return true;
+    QString filter = "*." + fileSuffix.toLower();
 
-    return false;
+    return filters.contains(filter);
 }
 
 QStringList DkUtils::suffixOnly(const QStringList &fileFilters)
