@@ -99,7 +99,10 @@ QString DkFileInfo::ZipData::encodePath(const QString &zipFilePath, const QStrin
 
 void DkFileInfo::ZipData::readMetaData()
 {
-    // FIXME: this is a bit slow on large zipfiles, readZipArchive() could cache it
+    // FIXME: this is a bit slow on large zipfiles, readZipArchive() could cache it,
+    // or it can be eliminated by passing DkFileInfo around instead of paths
+    qDebug() << "[FileInfo] zip: slow metadata parsing:" << mZipMemberPath;
+
     QuaZip zip(mZipFilePath);
     if (!zip.open(QuaZip::mdUnzip)) {
         qWarning() << "[FileInfo] zip: open failed:" << mZipFilePath << zip.getZipError();
@@ -204,7 +207,7 @@ QString DkFileInfo::pathInZip() const
 void DkFileInfo::readZipMetaData() const
 {
     // would like to do this lazily, since it is somewhat costly and
-    // often unused
+    // often unused (readDirectory() already includes it)
     // we have to break const, but this is fine as dereference will
     // detach the shared data (deep copy) if needed.
     if (isFromZip() && !d->mZipData.hasMetaData()) {
@@ -315,7 +318,7 @@ bool DkFileInfo::isModified()
     bool modified = info.exists() != prevExists || info.lastModified() != prevModified;
 #ifdef WITH_QUAZIP
     if (modified && isFromZip())
-        d->mZipData.zipFileModified();
+        d->mZipData.zipFileModified(); // force reload of zip metadata
 #endif
     return modified;
 }
@@ -539,7 +542,7 @@ DkFileInfoList DkFileInfo::readDirectory(const QString &dirPath, const QString &
     DkFileInfoList filtered;
 
     // filter by suffix
-    for (auto &fileInfo : qAsConst(unfiltered)) {
+    for (auto &fileInfo : std::as_const(unfiltered)) {
         DkFileInfo fi = fileInfo;
         if (fi.isShortcut() && !fi.resolveShortcut())
             continue;
