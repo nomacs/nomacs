@@ -32,6 +32,7 @@
 #include "DkTimer.h"
 #include "DkUpdater.h"
 #include "DkUtils.h"
+#include "DkVersion.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
@@ -1307,7 +1308,36 @@ void DkPluginManager::createPluginsPath()
     // not copied into .app/Contents/Frameworks as is the usual case
     QDir pluginsDir = QCoreApplication::applicationDirPath() + "/../PlugIns/nomacs";
 #else
-    QDir pluginsDir = QLibraryInfo::path(QLibraryInfo::LibrariesPath) + "/nomacs-plugins/";
+
+    //
+    // QLibraryInfo::path() is where Qt installation resides (from qt.conf),
+    // not necessarily where nomacs was installed. This could be non-distro
+    // location such as /opt or /usr/local for user-built Qt versions
+    //
+    // It is also possible for nomacs to be installed in /usr/local or some user
+    // specified location (CMAKE_INSTALL_PREFIX) etc. So it is probably more
+    // reliable to look in the install prefix first.
+    //
+    // Also include app dir path since it is useful for portable builds or testing.
+    // Note that qt.conf could be manipulated for appImage, snap, flatpak
+    // in case this is insufficient.
+    //
+    QStringList libPaths;
+    libPaths += qApp->applicationDirPath();
+    libPaths += NOMACS_INSTALL_LIBPATH;
+    libPaths += QLibraryInfo::path(QLibraryInfo::LibrariesPath);
+
+    qDebug() << "plugins search path:" << libPaths;
+
+    QDir pluginsDir;
+    for (auto &libPath : std::as_const(libPaths)) {
+        QFileInfo info(libPath + "/nomacs-plugins/");
+        if (info.exists()) {
+            pluginsDir = info.absoluteFilePath();
+            break;
+        }
+    }
+
 #endif // Q_OS_WIN
 
     if (!pluginsDir.exists())
