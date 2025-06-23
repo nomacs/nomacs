@@ -41,10 +41,9 @@ echo "copying translations..."
 mkdir -p "$PKG_DIR/translations"
 cp -auv *.qm "$PKG_DIR/translations"
 
-# todo: run nomacs in such a way that all plugins try to load so we can find deps
 echo "copying nomacs plugins..."
 mkdir -p "$PKG_DIR/plugins"
-cp -auv plugins/*/*.dll "$PKG_DIR/plugins/"
+cp -auv nomacs-plugins/*/*.dll "$PKG_DIR/plugins/"
 
 echo "copying programs..."
 mkdir -p "$PKG_DIR"
@@ -63,7 +62,7 @@ for exe in *.exe; do
         echo "copying dlls for $exe (pass $PASS) ..."
         LAST=$PASS
         PASS=0
-        DLLS=`wine "$PKG_DIR/$exe" --version 2>&1 | grep :err:module:import_dll | cut -d' ' -f3`
+        DLLS=`wine "$PKG_DIR/$exe" --about 2>&1 | grep :err:module:import_dll | cut -d' ' -f3`
         for x in $DLLS; do
             if   [ -e "$SELF_BIN/$x"   ]; then cp -auv "$SELF_BIN/$x" "$PKG_DIR/"
             elif [ -e "$MXE_BIN/$x"    ]; then cp -auv "$MXE_BIN/$x" "$PKG_DIR/"
