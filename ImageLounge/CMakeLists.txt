@@ -286,7 +286,7 @@ if(ENABLE_PLUGINS)
 		message(STATUS "using plugin directory: ${PLUGINS_DIR}")
 		set(NOMACS_FOUND true)
 		set(NOMACS_VARS_ALREADY_SET true)
-		add_subdirectory(${PLUGINS_DIR} "${CMAKE_CURRENT_BINARY_DIR}/plugins")
+		add_subdirectory(${PLUGINS_DIR} "${CMAKE_CURRENT_BINARY_DIR}/nomacs-plugins")
 
 		if(APPLE)
 			NMC_BUNDLE_COPY_PLUGINS()

@@ -192,7 +192,7 @@ macro(NMC_BUNDLE_COPY_PLUGINS)
 	# naming convention for plugins output is "libxxx.dylib"
 	set(PLUGINS_FILES "")
 	foreach(plugin_target ${PLUGINS_TARGETS})
-		list(APPEND PLUGINS_FILES "${CMAKE_CURRENT_BINARY_DIR}/plugins/lib${plugin_target}.dylib")
+		list(APPEND PLUGINS_FILES "${CMAKE_CURRENT_BINARY_DIR}/nomacs-plugins/lib${plugin_target}.dylib")
 	endforeach()
 
 	# use rsync to deref the symlink and keep the same filename
