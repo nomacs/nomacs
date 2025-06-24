@@ -174,11 +174,11 @@ macro(NMC_GENERATE_PACKAGE_XML)
 	set(JSON_FILE ${ARGN})
 
 	# replace DATE_MODIFIED in json file to last cmake run
-	file(STRINGS ${JSON_FILE} date_modified_line REGEX ".*\"DateModified\".*:")
-	file(READ ${JSON_FILE} JSON_CONTENT)
-	string(TIMESTAMP CURRENT_DATE "%Y-%m-%d")
-	string(REPLACE "${date_modified_line}" "\t\"DateModified\"\t: \"${CURRENT_DATE}\"," JSON_CONTENT ${JSON_CONTENT})
-	file(WRITE ${JSON_FILE} ${JSON_CONTENT})
+	# file(STRINGS ${JSON_FILE} date_modified_line REGEX ".*\"DateModified\".*:")
+	# file(READ ${JSON_FILE} JSON_CONTENT)
+	# string(TIMESTAMP CURRENT_DATE "%Y-%m-%d")
+	# string(REPLACE "${date_modified_line}" "\t\"DateModified\"\t: \"${CURRENT_DATE}\"," JSON_CONTENT ${JSON_CONTENT})
+	# file(WRITE ${JSON_FILE} ${JSON_CONTENT})
 	
 	file(STRINGS ${JSON_FILE} line REGEX ".*\"PluginName\".*:")
 	string(REGEX REPLACE ".*:\ +\"" "" PLUGIN_NAME ${line})
