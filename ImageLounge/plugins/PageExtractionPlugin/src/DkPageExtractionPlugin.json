@@ -1,0 +1,11 @@
+{
+    "PluginName" 	: "Page Extraction",
+	"AuthorName" 	: "Markus Diem, Thomas Lang",
+	"Company"		: "Computer Vision Lab",
+	"DateCreated" 	: "2015-08-27",
+	"DateModified"	: "2024-06-23",
+	"Description"	: "This plugin detects document pages and either crops the image accordingly or annotates the region.",
+	"Tagline" 		: "Detect document pages in images",
+	"PluginId"		: "4acb88c461024cb080ae5cd15d0ef0ec",
+	"Version"		: "3.1.0"
+}

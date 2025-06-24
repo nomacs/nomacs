@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/nomacsPluginPaint">
+	        <file>img/description.png</file>
+            <file>img/pencil.svg</file>
+            <file>img/line.svg</file>
+            <file>img/arrow.svg</file>
+            <file>img/circle-outline.svg</file>
+            <file>img/square-outline.svg</file>
+            <file>img/square.svg</file>
+            <file>img/blur.svg</file>
+            <file>img/text.svg</file>
+    </qresource>
+</RCC>

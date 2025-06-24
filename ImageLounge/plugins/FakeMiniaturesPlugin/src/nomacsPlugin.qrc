@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/nomacsPluginFakeMin">
+        <file>img/fakeMinDesc.png</file>
+    </qresource>
+</RCC>

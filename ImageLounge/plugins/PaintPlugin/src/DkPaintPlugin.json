@@ -1,0 +1,11 @@
+{
+    "PluginName" 	: "Paint on Image",
+	"AuthorName" 	: "Tim Jerman",
+	"Company"		: "",
+	"DateCreated" 	: "2014-05-01",
+	"DateModified"	: "2024-06-23",
+	"Description"	: "Paint on an image. The color, size and opacity of the brush can be changed.",
+	"Tagline" 		: "Draw with adjustable brushes to an image.",
+	"PluginId"		: "ad970ef36cc24737afd2b53ad015ff0d",
+	"Version"		: "3.1.0"
+}
