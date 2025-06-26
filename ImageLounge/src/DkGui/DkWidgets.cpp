@@ -118,7 +118,11 @@ DkFolderScrollBar::~DkFolderScrollBar()
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> images)
 {
+    // updateDir() comes from the loader, the loader manages the current image,
+    // so setMaximum() cannot be allowed to change the current image
+    blockSignals(true);
     setMaximum(images.size() - 1);
+    blockSignals(false);
 }
 
 void DkFolderScrollBar::updateFile(int idx)
