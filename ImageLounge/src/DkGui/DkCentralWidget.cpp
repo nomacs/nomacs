@@ -207,28 +207,32 @@ QIcon DkTabInfo::getIcon(const QSize &size)
 
 QString DkTabInfo::getTabText() const
 {
-    QString tabText(QObject::tr("New Tab"));
-
-    if (mTabMode == tab_thumb_preview)
-        return QObject::tr("Thumbnail Preview");
-    else if (mTabMode == tab_recent_files)
+    if (mTabMode == tab_recent_files)
         return QObject::tr("Recent Files");
     else if (mTabMode == tab_preferences)
         return QObject::tr("Settings");
     else if (mTabMode == tab_batch)
         return QObject::tr("Batch");
 
-    QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
+    QString tabText(QObject::tr("New Tab"));
+    if (mTabMode == tab_thumb_preview)
+        tabText = QObject::tr("Thumbnail Preview");
 
+    QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
     if (!imgC)
         imgC = mImageLoader->getLastImage();
 
-    if (imgC) {
-        tabText = QFileInfo(imgC->filePath()).fileName();
+    if (!imgC)
+        return tabText;
 
-        if (imgC->isEdited())
-            tabText += "*";
-    }
+    DkFileInfo info = imgC->fileInfo();
+    if (mTabMode == tab_thumb_preview)
+        tabText = QFileInfo(info.dirPath()).fileName();
+    else
+        tabText = info.fileName();
+
+    if (imgC->isEdited())
+        tabText += "*";
 
     return tabText;
 }
@@ -1094,8 +1098,8 @@ void DkCentralWidget::load(const QString &path)
     } else {
         tab->setMode(DkTabInfo::tab_single_image);
         loader->load(fileInfo);
-        updateTab(tab); // required to set the tab text on background tabs
     }
+    updateTab(tab); // required to set the tab text on background tabs
 }
 
 void DkCentralWidget::loadToTab(const QString &path)
