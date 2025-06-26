@@ -1238,27 +1238,25 @@ void DkNoMacs::openFileList()
 
     // load system default open dialog
     QString fileName =
-        QFileDialog::getOpenFileName(this, tr("Open Image"), getTabWidget()->getCurrentDir(), openFilters.join(";;"), nullptr, DkDialog::fileDialogOptions());
+        QFileDialog::getOpenFileName(this, tr("Open Tabs"), getTabWidget()->getCurrentDir(), openFilters.join(";;"), nullptr, DkDialog::fileDialogOptions());
 
     if (fileName.isEmpty())
         return;
-
-    int count = getTabWidget()->getTabs().count();
-    if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
-        count = 0;
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     while (!file.atEnd()) {
-        QString line = file.readLine().simplified();
-        if (QFileInfo::exists(line)) {
-            getTabWidget()->loadToTab(line);
+        QString filePath = file.readLine().trimmed();
+        if (filePath.isEmpty())
+            continue;
+        if (!DkFileInfo(filePath).exists()) {
+            qWarning() << "[open file list] file does not exist:" << filePath;
+            continue;
         }
+        getTabWidget()->loadToTab(filePath);
     }
-
-    getTabWidget()->setActiveTab(count);
 }
 
 void DkNoMacs::saveFileList()
