@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addPositionalArgument("image", QObject::tr("An input image."));
+    parser.addPositionalArgument("[File|Directory...]", QObject::tr("List of files and/or directories to open"));
 
     // fullscreen (-f)
     QCommandLineOption fullScreenOpt(QStringList() << "f"
@@ -145,18 +145,6 @@ int main(int argc, char *argv[])
                                QObject::tr("Set the viewing mode <mode>."),
                                QObject::tr("default | frameless | pseudocolor"));
     parser.addOption(modeOpt);
-
-    QCommandLineOption sourceDirOpt(QStringList() << "d"
-                                                  << "directory",
-                                    QObject::tr("Load all files of a <directory>."),
-                                    QObject::tr("directory"));
-    parser.addOption(sourceDirOpt);
-
-    QCommandLineOption tabOpt(QStringList() << "t"
-                                            << "tab",
-                              QObject::tr("Load <images> to tabs."),
-                              QObject::tr("images"));
-    parser.addOption(tabOpt);
 
     QCommandLineOption batchOpt(QStringList() << "batch", QObject::tr("Batch processing of <batch-settings.pnm>."), QObject::tr("batch-settings-path"));
     parser.addOption(batchOpt);
@@ -356,28 +344,16 @@ int main(int argc, char *argv[])
 
     bool loading = false;
 
-    if (!parser.positionalArguments().empty()) {
-        QString filePath = parser.positionalArguments()[0].trimmed();
+    for (auto &filePath : parser.positionalArguments()) {
+        if (filePath.isEmpty())
+            continue;
 
-        if (!filePath.isEmpty()) {
-            w->loadFile(QFileInfo(filePath).absoluteFilePath()); // update folder + be silent
-            loading = true;
-        }
-    }
+        if (loading)
+            cw->loadToTab(filePath);
+        else
+            cw->load(filePath);
 
-    // load directory preview
-    if (!parser.value(sourceDirOpt).trimmed().isEmpty()) {
-        cw->loadToTab(parser.value(sourceDirOpt));
         loading = true;
-    }
-
-    // load to tabs
-    if (!parser.value(tabOpt).isEmpty()) {
-        QStringList tabPaths = parser.values(tabOpt);
-        loading = true;
-
-        for (const QString &filePath : tabPaths)
-            cw->addTab(filePath);
     }
 
     // load recent files if there is nothing to display
