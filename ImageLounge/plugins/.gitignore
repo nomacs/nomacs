@@ -1,0 +1,23 @@
+# git ignore file
+*.exe
+*.sdf
+*.suo
+*.pdb
+*.filters
+*.htm
+*.aps
+release
+debug
+_UpgradeReport_Files
+Backup
+build*
+msvc*
+data
+installer/repository
+install
+d.txt
+/.project
+CMakeUserPaths.cmake
+CMakeUser.cmake
+ext
+*.traineddata

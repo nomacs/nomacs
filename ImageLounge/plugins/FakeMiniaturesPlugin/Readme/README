@@ -1,0 +1,70 @@
+nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
+
+Copyright (C) 2011-2013 Markus Diem, Stefan Fiel, Florian Kleber
+
+AUTHORS
+
+Markus Diem <markus@nomacs.org>
+Stefan Fiel <stefan@nomacs.org>
+Florian Kleber <florian@nomacs.org>
+
+
+License:
+nomacs is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by  the Free Software Foundation, either version 3 of the License, or  (at your option) any later version.
+
+nomacs is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see http://www.gnu.org/licenses/.
+
+------------------------------------------------------------
+Installations Instructions
+
+nomacs ships with an installer. The installer copies all library dll's and the exe into a defined directory. It is possible to associate the designated image types (*.jpg, *.png, etc.) during the installation process. just run nomacs.exe
+
+------------------------------------------------------------
+
+Compile Instructions:
+	MS Windows:
+		for MS Windows there is a seprate README file (compile_instructions_msvc.txt) in the SVN which explains how to compile nomacs using MS Windows and MS Visual Studio.
+		before following this instructions you have to compile Qt (>4.7.0) and (if you want to enable raw images) OpenCV (>2.1.0)
+		
+	Linux:
+		All required libraries should be available in any modern Linux distribution. Just install their -devel packages.
+		Cmake is used to build Nomacs.
+		
+		you need following libraries:		
+			- Qt  > 4.7.0
+			- exiv2  > 0.20
+			if you want to enable raw images you need
+				- OpenCV  > 0.2.1 
+				- libraw > 0.12.0
+				
+			Cmake is used to build Nomacs.
+			cmake .;make;make install
+			
+	Mac OS X:
+		See README.MacOSX
+------------------------------------------------------------
+
+
+nomacs uses the following libraries:
+
+Open Source Computer Vision Library 2.3.1:
+http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.3.1/
+-------------------------------------------------------------
+Qt 4.7.4:
+ftp://ftp.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip or
+ftp://ftp.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.tar.gz
+
+-------------------------------------------------------------
+exiv2-0.21.1 library:
+http://www.exiv2.org/download.html
+	exiv2 uses zlib version 1.2.3, expat version 2.0.1 and 	libiconv version 1.13.1
+	http://expat.sourceforge.net/
+	http://www.gnu.org/s/libiconv/
+	http://zlib.net/
+------------------------------------------------------------
+LibRaw-0.13.5 library:
+http://www.libraw.org/download
+-------------------------------------------------------------

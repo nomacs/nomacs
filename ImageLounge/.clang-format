@@ -12,6 +12,9 @@
 Language: JavaScript
 DisableFormat: true
 ---
+Language: Json
+DisableFormat: true
+---
 
 # Style for C++
 Language: Cpp

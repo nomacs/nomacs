@@ -1,0 +1,11 @@
+{
+    "PluginName" 	: "Composite Image",
+	"Tagline" 		: "Combine 3 grayscale images to 1 RGB image",
+	"Description"	: "With this plugin you can create a composite RGB image by assigning three images of equal size to the R- G- and B-channel. The channels can be inverted and the intensity adjusted.",
+	"AuthorName" 	: "Simon Brenner",
+	"Company"		: "TU Wien, Computer Vision Lab",
+	"DateCreated" 	: "2020-06-10",
+	"DateModified"	: "2024-06-23",
+	"PluginId"		: "5414075eeff248e4be909635701494bf",
+	"Version"		: "0.1.0"
+}

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/nomacsPluginImgTrans">
+        <file>img/description.png</file>
+        <file>img/scale.svg</file>
+        <file>img/rotate-plugin.svg</file>
+        <file>img/shear.svg</file>
+    </qresource>
+</RCC>

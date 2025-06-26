@@ -7,9 +7,6 @@
 [submodule "3rd-party/quazip"]
 	path = 3rd-party/quazip
 	url = https://github.com/novomesk/nomacs-quazip.git
-[submodule "ImageLounge/plugins"]
-	path = ImageLounge/plugins
-	url = https://github.com/novomesk/nomacs-plugins.git
 [submodule "3rd-party/exiv2"]
 	path = 3rd-party/exiv2
 	url = https://github.com/novomesk/exiv2-nomacs.git

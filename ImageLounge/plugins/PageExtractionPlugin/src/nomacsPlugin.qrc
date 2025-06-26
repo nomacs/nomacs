@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/PageExtractionPlugin">
+        <file>img/page-extraction.png</file>
+    </qresource>
+</RCC>
