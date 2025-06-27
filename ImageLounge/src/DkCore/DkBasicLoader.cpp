@@ -234,6 +234,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     DkTimer dt;
 
     DkFileInfo fileInfo(filePath);
+
     if (fileInfo.isShortcut() && !fileInfo.resolveShortcut()) {
         qWarning() << "[Loader] broken shortcut:" << fileInfo.fileName();
         return false;
@@ -260,8 +261,12 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // Qt considers an orientation of 0 as wrong and fails to load these jpgs
     // however, the old nomacs wrote 0 if the orientation should be cleared
     // so we simply adopt the memory here
-    if (loadMetaData)
+    if (loadMetaData) {
+        // collect all file info now and save it in metadata, we won't have
+        // to do a slow fetch when displaying metadata panels
+        fileInfo.stat();
         mMetaData->readMetaData(fileInfo, ba);
+    }
 
     static const QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
     static const QList<QByteArray> drifFormats{"drif", "yuv", "raw"};
