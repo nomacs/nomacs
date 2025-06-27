@@ -1002,9 +1002,9 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings)
         addDockWidget(mExplorer->getDockLocationSettings(Qt::LeftDockWidgetArea), mExplorer);
 
         connect(mExplorer, &DkExplorer::openFile, getTabWidget(), [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
-        connect(mExplorer, &DkExplorer::openDir, getTabWidget(), &DkCentralWidget::loadDirToTab);
+        connect(mExplorer, &DkExplorer::openDir, getTabWidget(), &DkCentralWidget::load);
         connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mExplorer, &DkExplorer::setCurrentImage);
         connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, mExplorer, &DkExplorer::setCurrentPath);
     }
@@ -1176,7 +1176,7 @@ void DkNoMacs::openDir()
     if (dirName.isEmpty())
         return;
 
-    getTabWidget()->loadDirToTab(dirName);
+    getTabWidget()->load(dirName);
 }
 
 void DkNoMacs::openFile()
@@ -1213,7 +1213,10 @@ void DkNoMacs::openFile()
         if (!dup) {
             // > 1: only open in tab if more than one file is opened
             bool newTab = (filePaths.size() > 1) || (getTabWidget()->getTabs().size() > 1);
-            getTabWidget()->loadFile(fp, newTab);
+            if (newTab)
+                getTabWidget()->loadToTab(fp);
+            else
+                getTabWidget()->load(fp);
         }
     }
     if (duplicates.count() > 0) { // Show message if at least one duplicate was found
@@ -1236,27 +1239,25 @@ void DkNoMacs::openFileList()
 
     // load system default open dialog
     QString fileName =
-        QFileDialog::getOpenFileName(this, tr("Open Image"), getTabWidget()->getCurrentDir(), openFilters.join(";;"), nullptr, DkDialog::fileDialogOptions());
+        QFileDialog::getOpenFileName(this, tr("Open Tabs"), getTabWidget()->getCurrentDir(), openFilters.join(";;"), nullptr, DkDialog::fileDialogOptions());
 
     if (fileName.isEmpty())
         return;
-
-    int count = getTabWidget()->getTabs().count();
-    if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
-        count = 0;
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     while (!file.atEnd()) {
-        QString line = file.readLine().simplified();
-        if (QFileInfo::exists(line)) {
-            getTabWidget()->loadFile(line, true);
+        QString filePath = file.readLine().trimmed();
+        if (filePath.isEmpty())
+            continue;
+        if (!DkFileInfo(filePath).exists()) {
+            qWarning() << "[open file list] file does not exist:" << filePath;
+            continue;
         }
+        getTabWidget()->loadToTab(filePath);
     }
-
-    getTabWidget()->setActiveTab(count);
 }
 
 void DkNoMacs::saveFileList()
@@ -1298,7 +1299,7 @@ void DkNoMacs::openQuickLaunch()
         mQuickAccess->addActions(DkActionManager::instance().allActions());
 
         connect(mQuickAccess, &DkQuickAccess::loadFileSignal, this, [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
     }
 
@@ -1329,10 +1330,7 @@ void DkNoMacs::loadFile(const QString &filePath)
     if (!getTabWidget())
         return;
 
-    if (QFileInfo(filePath).isDir())
-        getTabWidget()->loadDirToTab(filePath);
-    else
-        getTabWidget()->loadFile(filePath, false);
+    getTabWidget()->load(filePath);
 }
 
 void DkNoMacs::find(bool filterAction)
@@ -1352,7 +1350,7 @@ void DkNoMacs::find(bool filterAction)
 
         connect(searchDialog, &DkSearchDialog::filterSignal, getTabWidget()->getCurrentImageLoader().data(), &DkImageLoader::setFolderFilter);
         connect(searchDialog, &DkSearchDialog::loadFileSignal, this, [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
         int answer = searchDialog->exec();
 
@@ -1429,17 +1427,15 @@ void DkNoMacs::trainFormat()
 void DkNoMacs::extractImagesFromArchive()
 {
 #ifdef WITH_QUAZIP
-
     if (!mArchiveExtractionDialog)
         mArchiveExtractionDialog = new DkArchiveExtractionDialog(this);
 
-    if (getTabWidget()->getCurrentImage()) {
-        if (getTabWidget()->getCurrentImage()->isFromZip())
-            mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentImage()->getZipData()->getZipFilePath(), true);
-        else
-            mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
-    } else
-        mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
+    auto *tab = getTabWidget();
+    auto imgC = tab->getCurrentImage();
+    if (imgC && imgC->fileInfo().isFromZip())
+        mArchiveExtractionDialog->setCurrentFile(imgC->dirPath(), true);
+    else
+        mArchiveExtractionDialog->setCurrentFile(tab->getCurrentFilePath(), false);
 
     mArchiveExtractionDialog->exec();
 #endif
