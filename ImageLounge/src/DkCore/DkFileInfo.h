@@ -150,6 +150,8 @@ public:
 
     qint64 size() const;
 
+    void stat();
+
 private:
     // info of the container if isFromZip(), otherwise info of file/dir,
     const QFileInfo &containerInfo() const;

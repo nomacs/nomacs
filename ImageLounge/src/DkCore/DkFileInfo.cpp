@@ -387,6 +387,12 @@ qint64 DkFileInfo::size() const
     return IF_FROM_ZIP(d->mZipData.size(), d->mFileInfo.size());
 }
 
+void DkFileInfo::stat()
+{
+    IF_FROM_ZIP(d->mContainerInfo.stat(), d->mFileInfo.stat());
+    readZipMetaData();
+}
+
 const QFileInfo &DkFileInfo::containerInfo() const
 {
     return IF_FROM_ZIP(d->mContainerInfo, d->mFileInfo);
