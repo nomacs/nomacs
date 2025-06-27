@@ -408,6 +408,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
 
     global_p.skipImgs = settings.value("skipImgs", global_p.skipImgs).toInt();
     global_p.checkOpenDuplicates = settings.value("checkOpenDuplicates", global_p.checkOpenDuplicates).toBool();
+    global_p.openDirShowFirstImage = settings.value("openDirShowFirstImage", global_p.openDirShowFirstImage).toBool();
     global_p.extendedTabs = settings.value("extendedTabs", global_p.extendedTabs).toBool();
 
     global_p.loop = settings.value("loop", global_p.loop).toBool();
@@ -627,6 +628,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("skipImgs", global_p.skipImgs);
     if (force || global_p.checkOpenDuplicates != global_d.checkOpenDuplicates)
         settings.setValue("checkOpenDuplicates", global_p.checkOpenDuplicates);
+    if (force || global_p.openDirShowFirstImage != global_d.openDirShowFirstImage)
+        settings.setValue("openDirShowFirstImage", global_p.openDirShowFirstImage);
     if (force || global_p.extendedTabs != global_d.extendedTabs)
         settings.setValue("extendedTabs", global_p.extendedTabs);
     if (force || global_p.loop != global_d.loop)
@@ -865,6 +868,7 @@ void DkSettings::setToDefaultSettings()
     global_p.skipImgs = 10;
     global_p.numFiles = 50;
     global_p.checkOpenDuplicates = true;
+    global_p.openDirShowFirstImage = false;
     global_p.extendedTabs = false;
     global_p.loop = true;
     global_p.scanSubFolders = false;

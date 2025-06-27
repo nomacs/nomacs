@@ -416,6 +416,13 @@ void DkGeneralPreference::createLayout()
     cbCheckOpenDuplicates->setChecked(DkSettingsManager::param().global().checkOpenDuplicates);
     connect(cbCheckOpenDuplicates, &QCheckBox::toggled, this, &DkGeneralPreference::onCheckOpenDuplicatesToggled);
 
+    QCheckBox *cbShowFirstImage = new QCheckBox(tr("Open First Image in Folder"), this);
+    cbShowFirstImage->setToolTip(tr("When opening a folder, show the first image. Otherwise, show the folder's contents."));
+    cbShowFirstImage->setChecked(DkSettingsManager::param().global().openDirShowFirstImage);
+    connect(cbShowFirstImage, &QCheckBox::toggled, this, [](bool checked) {
+        DkSettingsManager::param().global().openDirShowFirstImage = checked;
+    });
+
     QCheckBox *cbExtendedTabs = new QCheckBox(tr("Show extra options related to tabs"), this);
     cbExtendedTabs->setToolTip(
         tr("Enables the \"Go to Tab\", \"First Tab\", and \"Last Tab\" options in the View menu, and the \"Open Tabs\" and \"Save Tabs\" options in the File "
@@ -480,6 +487,7 @@ void DkGeneralPreference::createLayout()
     generalGroup->addWidget(cbRecentFiles);
     generalGroup->addWidget(cbLogRecentFiles);
     generalGroup->addWidget(cbCheckOpenDuplicates);
+    generalGroup->addWidget(cbShowFirstImage);
     generalGroup->addWidget(cbExtendedTabs);
     generalGroup->addWidget(cbLoopImages);
     generalGroup->addWidget(cbZoomOnWheel);
