@@ -1093,8 +1093,13 @@ void DkCentralWidget::load(const QString &path)
         // load dir does not set a current image; it seems one is always needed
         // or else switching between tabs could revert to the old directory
         auto img = loader->getImages().value(0);
-        loader->setCurrentImage(img);
-        showThumbView();
+        if (DkSettingsManager::param().global().openDirShowFirstImage) {
+            tab->setMode(DkTabInfo::tab_single_image);
+            loader->load(img);
+        } else {
+            loader->setCurrentImage(img);
+            showThumbView();
+        }
     } else {
         tab->setMode(DkTabInfo::tab_single_image);
         loader->load(fileInfo);

@@ -268,6 +268,7 @@ public:
         QStringList pinnedFiles;
         bool logRecentFiles;
         bool checkOpenDuplicates;
+        bool openDirShowFirstImage; // show first image when opening dir, otherwise show thumbs
         bool extendedTabs;
         bool askToSaveDeletedFiles;
         QString tmpPath;
