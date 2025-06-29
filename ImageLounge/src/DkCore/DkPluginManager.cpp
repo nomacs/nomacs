@@ -1152,8 +1152,9 @@ void DkPluginManager::loadPlugins()
 
         for (const QString &fileName : pluginsDir.entryList(QDir::Files)) {
             DkTimer dtt;
-#ifdef Q_OS_LINUX
-            // needed because of symbolic links of sonames
+#ifdef Q_OS_UNIX
+            // symlinks to libraries will create duplicates
+            // FIXME: still possible to get duplicates if nomacs version changes
             QFileInfo file(pluginsDir.absoluteFilePath(fileName));
             if (file.isSymLink())
                 continue;
