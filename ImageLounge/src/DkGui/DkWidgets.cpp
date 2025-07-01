@@ -457,7 +457,11 @@ void DkExplorer::setCurrentPath(const QString &path)
     if (info.isDir() && !info.isZipFile())
         mFileTree->expand(mSortModel->mapFromSource(mFileModel->index(info.path())));
 
+    // if we are setting the index do not behave as if user clicked an item
+    bool loadSelected = mLoadSelected;
+    enableLoadSelected(false);
     mFileTree->setCurrentIndex(mSortModel->mapFromSource(mFileModel->index(newPath)));
+    enableLoadSelected(loadSelected);
 }
 
 void DkExplorer::fileClicked(const QModelIndex &index) const
@@ -489,7 +493,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
     QAction *selAction = new QAction(tr("Open Selected Image"), this);
     selAction->setCheckable(true);
     selAction->setChecked(mLoadSelected);
-    connect(selAction, &QAction::triggered, this, &DkExplorer::loadSelectedToggled);
+    connect(selAction, &QAction::triggered, this, &DkExplorer::enableLoadSelected);
 
     cm->addAction(editAction);
     cm->addAction(selAction);
@@ -530,9 +534,9 @@ void DkExplorer::showColumn(bool show)
     mFileTree->setColumnHidden(idx, !show);
 }
 
-void DkExplorer::loadSelectedToggled(bool checked)
+void DkExplorer::enableLoadSelected(bool enable)
 {
-    mLoadSelected = checked;
+    mLoadSelected = enable;
 
     if (mLoadSelected)
         connect(mFileTree->selectionModel(), &QItemSelectionModel::currentChanged, this, &DkExplorer::fileClicked, Qt::UniqueConnection);

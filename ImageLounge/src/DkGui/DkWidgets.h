@@ -334,7 +334,7 @@ public slots:
     void showColumn(bool show);
     void setEditable(bool editable);
     void adjustColumnWidth();
-    void loadSelectedToggled(bool checked);
+    void enableLoadSelected(bool enable);
     void openSelected();
 
 signals:
