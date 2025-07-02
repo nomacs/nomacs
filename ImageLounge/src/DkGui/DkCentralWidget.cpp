@@ -885,6 +885,12 @@ DkBatchWidget *DkCentralWidget::createBatch()
 
 void DkCentralWidget::openBatch(const QStringList &selectedFiles)
 {
+    // batch wants current tab's directory, must be created before changing tabs
+    if (!mWidgets[batch_widget]) {
+        mWidgets[batch_widget] = createBatch();
+        mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
+    }
+
     // switch to tab if already opened
     for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
         if (tabInfo->getMode() == DkTabInfo::tab_batch) {
@@ -896,14 +902,7 @@ void DkCentralWidget::openBatch(const QStringList &selectedFiles)
     QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_batch, mTabInfos.size()));
     addTab(info);
 
-    // create the batch dialog...
-    if (!mWidgets[batch_widget]) {
-        createBatch();
-        mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
-    }
-
     DkBatchWidget *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
-
     if (!bw) {
         qWarning() << "batch widget is NULL where it should not be!";
         return;
@@ -916,10 +915,7 @@ void DkCentralWidget::showBatch(bool show)
 {
     showViewPort(!show);
     if (show) {
-        if (!mWidgets[batch_widget]) {
-            mWidgets[batch_widget] = createBatch();
-            mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
-        }
+        Q_ASSERT(mWidgets[batch_widget]);
 
         switchWidget(mWidgets[batch_widget]);
 
