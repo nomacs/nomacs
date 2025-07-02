@@ -241,6 +241,15 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
     mFile = fileInfo.path();
 
+    if (fileInfo.isFromZip() && (!ba || ba->isEmpty())) {
+        auto io = fileInfo.getIODevice();
+        if (!io) {
+            qWarning() << "[Loader] failed to read:" << fileInfo.fileName();
+            return false;
+        }
+        ba = QSharedPointer<QByteArray>(new QByteArray(io->readAll()));
+    }
+
     const QByteArray suffix = fileInfo.suffix().toLower().toLatin1();
 
     // name of the load method for tracing and also indicates if we loaded successfully
