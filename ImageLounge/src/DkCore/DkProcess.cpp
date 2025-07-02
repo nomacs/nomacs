@@ -759,7 +759,7 @@ bool DkBatchProcess::compute()
 {
     mIsProcessed = true;
 
-    QFileInfo fInfoIn(mSaveInfo.inputFilePath());
+    DkFileInfo fInfoIn(mSaveInfo.inputFilePath());
     QFileInfo fInfoOut(mSaveInfo.outputFilePath());
 
     // check errors
@@ -913,10 +913,39 @@ bool DkBatchProcess::updateMetaData(DkMetaDataT *md)
     return false;
 }
 
+/**
+ * @brief QFile::copy() supporting VFS (zip etc)
+ * @param inFileInfo input file
+ * @param outFileInfo output file (cannot exist)
+ * @return error message
+ */
+static QString copyFileIntern(const DkFileInfo &inFileInfo, const DkFileInfo &outFileInfo)
+{
+    // follow semantics of QFile::copy() (destination cannot be overwritten)
+    QFile outFile(outFileInfo.path());
+    if (outFile.exists())
+        return QObject::tr("Output file exists");
+    if (!outFile.open(QFile::WriteOnly))
+        return QObject::tr("Failed to open output: %1").arg(outFile.errorString());
+
+    if (!inFileInfo.exists())
+        return QObject::tr("Input file does not exist");
+
+    auto io = inFileInfo.getIODevice();
+    if (!io)
+        return QObject::tr("Failed to open input file");
+
+    QByteArray data = io->readAll();
+    if (data.size() == 0)
+        return QObject::tr("Empty input file");
+    if (data.size() != outFile.write(data))
+        return QObject::tr("Failed to write output file: %1").arg(outFile.errorString());
+
+    return {};
+}
+
 bool DkBatchProcess::copyFile()
 {
-    QFile file(mSaveInfo.inputFilePath());
-
     if (mSaveInfo.mode() == DkSaveInfo::mode_do_not_save_output) {
         mLogStrings.append(QObject::tr("I should copy the file, but 'Do not Save' is checked - so I will do nothing..."));
         return false;
@@ -933,11 +962,13 @@ bool DkBatchProcess::copyFile()
 
     bool exifUpdated = updateMetaData(md.data());
 
-    if (!file.copy(mSaveInfo.outputFilePath())) {
+    QString copyError = copyFileIntern(mSaveInfo.inputFilePath(), mSaveInfo.outputFilePath());
+
+    if (!copyError.isEmpty()) {
         mLogStrings.append(QObject::tr("Error: could not copy file"));
         mLogStrings.append(QObject::tr("Input: %1").arg(mSaveInfo.inputFilePath()));
         mLogStrings.append(QObject::tr("Output: %1").arg(mSaveInfo.outputFilePath()));
-        mLogStrings.append(file.errorString());
+        mLogStrings.append(copyError);
         return false;
     } else {
         if (exifUpdated && md->saveMetaData(mSaveInfo.outputFilePath()))
