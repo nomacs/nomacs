@@ -329,7 +329,7 @@ bool DkImageContainer::loadImage()
         return false;
 
     if (getFileBuffer()->isEmpty())
-        mFileBuffer = loadFileToBuffer(filePath());
+        mFileBuffer = loadFileToBuffer(fileInfo());
 
     mLoader = loadImageIntern(filePath(), getLoader(), mFileBuffer);
 
