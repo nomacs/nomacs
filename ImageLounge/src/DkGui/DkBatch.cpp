@@ -3022,12 +3022,12 @@ void DkBatchWidget::widgetChanged()
         QString fString = url.toString();
         fString = fString.replace("file:///", "");
 
-        QFileInfo cFileInfo = QFileInfo(fString);
+        DkFileInfo cFileInfo(fString);
         if (!cFileInfo.exists()) // try an alternative conversion
-            cFileInfo = QFileInfo(url.toLocalFile());
+            cFileInfo = DkFileInfo(url.toLocalFile());
 
         outputWidget()->setExampleFilename(cFileInfo.fileName());
-        manipulatorWidget()->setExampleFile(cFileInfo.filePath());
+        manipulatorWidget()->setExampleFile(cFileInfo.path());
         mButtonWidget->playButton()->setEnabled(true);
     }
 }
