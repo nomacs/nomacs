@@ -357,8 +357,9 @@ void DkBatchInput::createLayout(DkThumbLoader *thumbLoader)
 
     // add explorer
     mExplorer = new DkExplorer(tr("File Explorer"));
-    mExplorer->getModel()->setFilter(QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot | QDir::AllDirs);
-    mExplorer->getModel()->setNameFilters(QStringList());
+    mExplorer->getModel()->setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot | QDir::AllDirs);
+    mExplorer->getModel()->setNameFilters(DkSettingsManager::param().app().containerRawFilters.split(' '));
+    mExplorer->getModel()->setNameFilterDisables(false);
     mExplorer->setMaximumWidth(300);
 
     // tab widget
