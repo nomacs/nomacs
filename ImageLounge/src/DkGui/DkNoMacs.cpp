@@ -1010,13 +1010,16 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings)
 
     mExplorer->setVisible(show, saveSettings);
 
-    if (getTabWidget()->getCurrentImage() && QFileInfo(getTabWidget()->getCurrentFilePath()).exists()) {
-        mExplorer->setCurrentPath(getTabWidget()->getCurrentFilePath());
+    auto imgC = getTabWidget()->getCurrentImage();
+    if (imgC && imgC->fileInfo().exists()) {
+        mExplorer->setCurrentPath(imgC->fileInfo().path());
     } else {
-        QStringList folders = DkSettingsManager::param().global().recentFiles;
-
-        if (folders.size() > 0)
-            mExplorer->setCurrentPath(folders[0]);
+        QStringList filePaths = DkSettingsManager::param().global().recentFiles;
+        if (!filePaths.isEmpty()) {
+            DkFileInfo fileInfo(filePaths.first());
+            if (DkUtils::tryExists(fileInfo))
+                mExplorer->setCurrentPath(fileInfo.path());
+        }
     }
 }
 
