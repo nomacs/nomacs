@@ -1045,7 +1045,23 @@ bool DkCentralWidget::requestClose() const
 
 QString DkCentralWidget::getCurrentDir() const
 {
-    QString cDir = mTabInfos[mTabbar->currentIndex()]->getImageLoader()->getDirPath();
+    QString cDir;
+
+    auto imgC = getCurrentImage();
+    if (imgC) {
+        DkFileInfo dirInfo(imgC->fileInfo().dirPath());
+        if (dirInfo.exists())
+            cDir = dirInfo.path();
+    }
+
+    if (cDir.isEmpty()) {
+        const QStringList recentFiles = DkSettingsManager::param().global().recentFiles;
+        if (!recentFiles.isEmpty()) {
+            DkFileInfo dirInfo(DkFileInfo(recentFiles.first()).dirPath());
+            if (DkUtils::tryExists(dirInfo))
+                cDir = dirInfo.path();
+        }
+    }
 
     // load the picture folder if there is no recent directory
     if (cDir.isEmpty())

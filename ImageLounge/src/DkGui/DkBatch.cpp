@@ -361,11 +361,6 @@ void DkBatchInput::createLayout(DkThumbLoader *thumbLoader)
     mExplorer->getModel()->setNameFilters(QStringList());
     mExplorer->setMaximumWidth(300);
 
-    QStringList folders = DkSettingsManager::param().global().recentFiles;
-
-    if (folders.size() > 0)
-        mExplorer->setCurrentPath(folders[0]);
-
     // tab widget
     mInputTabs = new QTabWidget(this);
     mInputTabs->addTab(mThumbScrollWidget, DkImage::loadIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
