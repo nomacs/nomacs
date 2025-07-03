@@ -112,7 +112,9 @@ bool DkQuickAccess::execute(const QString &cmd) const
 {
     qDebug() << "executing" << cmd;
 
-    if (DkFileInfo(cmd).exists()) {
+    // use tryExists because file paths come from recent files history, which
+    // could contain disconnected network shares
+    if (DkUtils::tryExists(DkFileInfo(cmd))) {
         emit loadFileSignal(cmd);
         return true;
     }
@@ -164,7 +166,7 @@ void DkQuickAccessEdit::editConfirmed()
     QString fp = text();
 
     // check if we can directly load what is there (this is nice to load the parent dir of a recent dir)
-    if (DkFileInfo(fp).exists())
+    if (DkUtils::tryExists(DkFileInfo(fp)))
         emit executeSignal(text());
     else if (!mCompleter->currentCompletion().isNull())
         emit executeSignal(mCompleter->currentCompletion());
