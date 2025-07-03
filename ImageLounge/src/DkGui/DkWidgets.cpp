@@ -2495,7 +2495,7 @@ void DkDirectoryEdit::lineEditChanged(const QString &path)
 
 bool DkDirectoryEdit::existsDirectory(const QString &path)
 {
-    return QDir(path).exists();
+    return DkFileInfo(path).isDir();
 }
 
 // DkDirectoryChooser --------------------------------------------------------------------
