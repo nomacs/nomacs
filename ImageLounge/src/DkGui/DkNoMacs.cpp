@@ -1698,16 +1698,38 @@ void DkNoMacs::openFileWith(QAction *action)
 
     QStringList args;
 
-    QString filePath = getTabWidget()->getCurrentFilePath();
+    // open the file location, not the file itself
+    bool openLocation = app.fileName() == "explorer.exe";
 
-    if (app.fileName() == "explorer.exe")
-        args << "/select," << QDir::toNativeSeparators(filePath);
+    DkFileInfo fileInfo(getTabWidget()->getCurrentFilePath());
+    if (!openLocation && fileInfo.isFromZip()) {
+        // copy to temporary file
+        QString tmpFilePath = DkUtils::getTemporaryFilePath(fileInfo.baseName(), fileInfo.suffix());
+        if (tmpFilePath.isEmpty())
+            return;
+
+        QFile tmpFile(tmpFilePath);
+        if (!tmpFile.open(QFile::WriteOnly))
+            return;
+
+        auto io = fileInfo.getIODevice();
+        if (!io)
+            return;
+
+        QByteArray data = io->readAll();
+        if (data.size() != tmpFile.write(data))
+            return;
+
+        fileInfo = DkFileInfo(tmpFilePath);
+    }
+    QString filePath = fileInfo.path();
+    if (openLocation)
+        args << "/select," << QDir::toNativeSeparators(fileInfo.isFromZip() ? fileInfo.dirPath() : filePath);
     else if (app.fileName().toLower() == "outlook.exe") {
         args << "/a" << QDir::toNativeSeparators(filePath);
     } else
         args << QDir::toNativeSeparators(filePath);
 
-    // bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
     bool started = mProcess.startDetached(app.absoluteFilePath(), args);
 
     if (started)
