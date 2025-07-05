@@ -1037,7 +1037,9 @@ void DkCentralWidget::showProgress(bool show, int time)
 
 void DkCentralWidget::startSlideshow(bool start) const
 {
-    getViewPort()->getController()->startSlideshow(start);
+    if (hasViewPort()) {
+        getViewPort()->getController()->startSlideshow(start);
+    }
 }
 
 void DkCentralWidget::startSlideshowWithFiles(const QStringList& files) const
