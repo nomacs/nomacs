@@ -154,8 +154,7 @@ int main(int argc, char *argv[])
 
     QCommandLineOption tabOpt(QStringList() << "t"
                                             << "tab",
-                              QObject::tr("Load <images> to tabs."),
-                              QObject::tr("images"));
+                              QObject::tr("Load <images> to tabs."));
     parser.addOption(tabOpt);
 
     QCommandLineOption batchOpt(QStringList() << "batch", QObject::tr("Batch processing of <batch-settings.pnm>."), QObject::tr("batch-settings-path"));
@@ -371,13 +370,17 @@ int main(int argc, char *argv[])
         loading = true;
     }
 
-    // load to tabs
-    if (!parser.value(tabOpt).isEmpty()) {
-        QStringList tabPaths = parser.values(tabOpt);
+    // load to tabs - use all positional arguments when --tab is set
+    if (parser.isSet(tabOpt)) {
+        QStringList tabPaths = parser.positionalArguments();
         loading = true;
 
-        for (const QString &filePath : tabPaths)
-            cw->addTab(filePath);
+        for (const QString &filePath : tabPaths) {
+            QString trimmedPath = filePath.trimmed();
+            if (!trimmedPath.isEmpty()) {
+                cw->addTab(trimmedPath);
+            }
+        }
     }
 
     // load recent files if there is nothing to display
