@@ -1272,6 +1272,7 @@ void DkPlayer::init()
     int timeToDisplayPlayer = 3000;
     timeToDisplay = qRound(DkSettingsManager::param().slideShow().time * 1000);
     playing = false;
+    mCurrentIndex = 0;
     displayTimer = new QTimer(this);
     displayTimer->setInterval(timeToDisplay);
     displayTimer->setSingleShot(true);
@@ -1322,19 +1323,53 @@ void DkPlayer::startTimer()
 
 void DkPlayer::autoNext()
 {
-    emit nextSignal();
+    next();
 }
 
 void DkPlayer::next()
 {
     hideTimer->stop();
+
+    if (!mFileList.isEmpty()) {
+        mCurrentIndex++;
+
+        // Handle looping
+        if (DkSettingsManager::param().global().loop) {
+            mCurrentIndex %= mFileList.size();
+        } else if (mCurrentIndex >= mFileList.size()) {
+            // End of slideshow
+            play(false);
+            return;
+        }
+
+        loadCurrentFile();
+    } else {
+        // Fallback to old behavior for directory mode
     emit nextSignal();
+}
 }
 
 void DkPlayer::previous()
 {
     hideTimer->stop();
+
+    if (!mFileList.isEmpty()) {
+        mCurrentIndex--;
+
+        // Handle looping
+        if (DkSettingsManager::param().global().loop) {
+            while (mCurrentIndex < 0) {
+                mCurrentIndex += mFileList.size();
+            }
+        } else if (mCurrentIndex < 0) {
+            mCurrentIndex = 0;
+        }
+
+        loadCurrentFile();
+    } else {
+        // Fallback to old behavior for directory mode
     emit previousSignal();
+}
 }
 
 bool DkPlayer::isPlaying() const
@@ -1355,6 +1390,46 @@ void DkPlayer::showTemporarily(bool autoHide)
 
     // automatic showing, don't save visibility setting
     DkFadeWidget::show(false);
+}
+
+void DkPlayer::setFileList(const QStringList& files)
+{
+    mFileList = files;
+    mCurrentIndex = 0;
+}
+
+void DkPlayer::setCurrentFile(const QString& filePath)
+{
+    if (mFileList.isEmpty()) {
+        return;
+    }
+
+    int index = mFileList.indexOf(filePath);
+    if (index >= 0) {
+        mCurrentIndex = index;
+    }
+}
+
+QStringList DkPlayer::getFileList() const
+{
+    return mFileList;
+}
+
+int DkPlayer::getCurrentIndex() const
+{
+    return mCurrentIndex;
+}
+
+int DkPlayer::getFileCount() const
+{
+    return mFileList.size();
+}
+
+void DkPlayer::loadCurrentFile()
+{
+    if (mCurrentIndex >= 0 && mCurrentIndex < mFileList.size()) {
+        emit loadFileSignal(mFileList[mCurrentIndex]);
+    }
 }
 
 // -------------------------------------------------------------------- DkHudNavigation

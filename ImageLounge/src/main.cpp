@@ -350,8 +350,18 @@ int main(int argc, char *argv[])
     if (w->isFullScreen())
         w->enterFullScreen();
 
-    if (parser.isSet(slideshowOpt))
+    // Handle slideshow with file list support
+    if (parser.isSet(slideshowOpt)) {
+        QStringList slideshowFiles = parser.positionalArguments();
+
+        if (!slideshowFiles.isEmpty()) {
+            // File list mode: use the provided files for slideshow
+            cw->startSlideshowWithFiles(slideshowFiles);
+        } else {
+            // Directory mode: use current directory for slideshow
         cw->startSlideshow();
+        }
+    }
 
     if (cw->hasViewPort())
         cw->getViewPort()->setFocus(Qt::TabFocusReason);

@@ -1040,6 +1040,22 @@ void DkCentralWidget::startSlideshow(bool start) const
     getViewPort()->getController()->startSlideshow(start);
 }
 
+void DkCentralWidget::startSlideshowWithFiles(const QStringList& files) const
+{
+    if (hasViewPort()) {
+        // Set the file list in the player
+        getViewPort()->getController()->getPlayer()->setFileList(files);
+
+        // Load the first file if we have files
+        if (!files.isEmpty()) {
+            getViewPort()->loadFile(files[0]);
+        }
+
+        // Start the slideshow
+        getViewPort()->getController()->startSlideshow(true);
+    }
+}
+
 void DkCentralWidget::setInfo(const QString &msg) const
 {
     if (hasViewPort())
