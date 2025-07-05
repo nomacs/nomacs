@@ -832,43 +832,20 @@ void DkImageLoader::downloadFile(const QUrl &url)
  * Saves a temporary file to the folder specified in DkSettingsManager.
  * @param img the image (which was in most cases pasted to nomacs)
  **/
-QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, const QString &fileExt, bool force, bool threaded)
+QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, const QString &fileExt, bool threaded)
 {
-    QString filePath = DkSettingsManager::param().global().tmpPath;
-    QFileInfo fInfo(filePath + QDir::separator());
+    QString filePath = DkUtils::getTemporaryFilePath(name, fileExt);
+    if (filePath.isEmpty())
+        return {};
 
-    if (!force && (filePath.isEmpty() || !fInfo.exists())) {
-        if (!filePath.isEmpty())
-            qWarning() << filePath << "does not exist";
-        return QString();
-    } else if (filePath.isEmpty() || !fInfo.exists()) {
-        fInfo = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-
-        if (!fInfo.isDir()) {
-            // load system default open dialog
-            QString dirName = QFileDialog::getExistingDirectory(DkUtils::getMainWindow(),
-                                                                tr("Save Directory"),
-                                                                getDirPath(),
-                                                                QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
-
-            fInfo = QFileInfo(dirName + QDir::separator());
-
-            if (!fInfo.exists())
-                return QString();
-        }
+    if (QFile::exists(filePath)) {
+        qWarning() << "File exists, will not overwrite:" << filePath;
+        return {};
     }
 
-    qInfo() << "saving to: " << fInfo.absolutePath();
-
-    QString fileName = name + "-" + DkUtils::nowString() + fileExt;
-    fInfo = QFileInfo(fInfo.absolutePath(), fileName);
-
-    if (!fInfo.exists()) {
-        saveFile(fInfo.absoluteFilePath(), img, "", -1, threaded);
-        return fInfo.absoluteFilePath();
-    }
-
-    return QString();
+    qInfo() << "Saving file to: " << filePath;
+    saveFile(filePath, img, "", -1, threaded);
+    return filePath;
 }
 
 void DkImageLoader::saveFileWeb(const QImage &saveImg)

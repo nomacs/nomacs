@@ -709,16 +709,13 @@ void DkImageContainerT::loadingFinished()
 void DkImageContainerT::downloadFile(const QUrl &url)
 {
     if (!mFileDownloader) {
-        QString savePath = DkSettingsManager::param().global().tmpPath;
+        QString saveFile = DkUtils::getTemporaryFilePath(DkUtils::fileNameFromUrl(url));
+        if (saveFile.isEmpty())
+            return;
 
-        if (!QFileInfo(savePath).exists())
-            savePath = QDir::tempPath() + "/nomacs";
-
-        QFileInfo saveFile(savePath, DkUtils::nowString() + " " + DkUtils::fileNameFromUrl(url));
-
-        mFileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, saveFile.absoluteFilePath(), this));
+        qInfo() << "Downloading " << url << "to file:" << saveFile;
+        mFileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, saveFile, this));
         connect(mFileDownloader.data(), &FileDownloader::downloaded, this, &DkImageContainerT::fileDownloaded, Qt::UniqueConnection);
-        qDebug() << "trying to download: " << url;
     } else
         mFileDownloader->downloadFile(url);
 }
