@@ -238,10 +238,10 @@ void DkSettings::initFileFilters()
 
     // archive formats
     app_p.containerFilters.append("ZIP Archive (*.zip)");
+    app_p.containerFilters.append("Comic Book Archive (*.cbz)");
     app_p.containerFilters.append("Microsoft Word Document (*.docx)");
     app_p.containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
     app_p.containerFilters.append("Microsoft Excel Document (*.xlsx)");
-    app_p.containerFilters.append("Comic Book Archive (*.cbz)");
 
     // kimageformats supports krita now, we don't need this and it is bugged
     // since it does not open the correct file inside the zip
@@ -249,7 +249,9 @@ void DkSettings::initFileFilters()
 
     app_p.openFilters += app_p.containerFilters;
 
-    app_p.containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
+    // NOTE: if any suffixes have the same prefix, DkFileInfo::isContainer() will break
+    // TODO: use vector for this, copy from the long form
+    app_p.containerRawFilters = "*.zip *.cbz *.docx *.pptx *.xlsx";
 
     // exif filter as reported in #518 - afaik this is not a standard (typically it contains jpg/tiff)
     app_p.openFilters.append("EXIF (*.exif)");
@@ -406,11 +408,11 @@ void DkSettings::load(QSettings &settings, bool defaults)
 
     global_p.skipImgs = settings.value("skipImgs", global_p.skipImgs).toInt();
     global_p.checkOpenDuplicates = settings.value("checkOpenDuplicates", global_p.checkOpenDuplicates).toBool();
+    global_p.openDirShowFirstImage = settings.value("openDirShowFirstImage", global_p.openDirShowFirstImage).toBool();
     global_p.extendedTabs = settings.value("extendedTabs", global_p.extendedTabs).toBool();
 
     global_p.loop = settings.value("loop", global_p.loop).toBool();
     global_p.scanSubFolders = settings.value("scanRecursive", global_p.scanSubFolders).toBool();
-    global_p.lastDir = settings.value("lastDir", global_p.lastDir).toString();
     global_p.searchHistory = settings.value("searchHistory", global_p.searchHistory).toStringList();
     global_p.recentFolders = settings.value("recentFolders", global_p.recentFolders).toStringList();
     global_p.pinnedFiles = settings.value("pinnedFiles", global_p.pinnedFiles).toStringList();
@@ -626,14 +628,14 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("skipImgs", global_p.skipImgs);
     if (force || global_p.checkOpenDuplicates != global_d.checkOpenDuplicates)
         settings.setValue("checkOpenDuplicates", global_p.checkOpenDuplicates);
+    if (force || global_p.openDirShowFirstImage != global_d.openDirShowFirstImage)
+        settings.setValue("openDirShowFirstImage", global_p.openDirShowFirstImage);
     if (force || global_p.extendedTabs != global_d.extendedTabs)
         settings.setValue("extendedTabs", global_p.extendedTabs);
     if (force || global_p.loop != global_d.loop)
         settings.setValue("loop", global_p.loop);
     if (force || global_p.scanSubFolders != global_d.scanSubFolders)
         settings.setValue("scanRecursive", global_p.scanSubFolders);
-    if (force || global_p.lastDir != global_d.lastDir)
-        settings.setValue("lastDir", global_p.lastDir);
     if (force || global_p.searchHistory != global_d.searchHistory)
         settings.setValue("searchHistory", global_p.searchHistory);
     if (force || global_p.recentFolders != global_d.recentFolders)
@@ -866,10 +868,10 @@ void DkSettings::setToDefaultSettings()
     global_p.skipImgs = 10;
     global_p.numFiles = 50;
     global_p.checkOpenDuplicates = true;
+    global_p.openDirShowFirstImage = false;
     global_p.extendedTabs = false;
     global_p.loop = true;
     global_p.scanSubFolders = false;
-    global_p.lastDir = QString();
     global_p.lastSaveDir = QString();
     global_p.recentFiles = QStringList();
     global_p.pinnedFiles = QStringList();
