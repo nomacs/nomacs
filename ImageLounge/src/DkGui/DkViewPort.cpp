@@ -800,7 +800,7 @@ void DkViewPort::setAsWallpaper()
     }
 
     QImage img = imgC->image();
-    QString tmpPath = mLoader->saveTempFile(img, "wallpaper", ".jpg", true, false);
+    QString tmpPath = mLoader->saveTempFile(img, "wallpaper", "jpg", false);
 
     // is there a more elegant way to see if saveTempFile returned an empty path
     if (tmpPath.isEmpty()) {

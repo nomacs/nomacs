@@ -128,7 +128,7 @@ public slots:
     void load(const DkFileInfo &filePath);
     void downloadFile(const QUrl &url);
     bool deleteFile();
-    QString saveTempFile(const QImage &img, const QString &name = "img", const QString &fileExt = ".png", bool force = false, bool threaded = true);
+    QString saveTempFile(const QImage &img, const QString &name = "img", const QString &fileExt = "png", bool threaded = true);
     void setFolderFilter(const QString &filter);
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);
     void loadDirRecursive(const QString &newDirPath);
