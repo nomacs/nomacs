@@ -157,6 +157,21 @@ public:
 
     static QString getAppDataPath();
 
+    /**
+     * @brief get writeable temporary directory
+     * @return empty string if not exists or not writeable
+     * @note uses the user tempdir preference or falls back to <system tempdir>/nomacs
+     */
+    static QString getTemporaryDirPath();
+
+    /**
+     * @brief get writeable temporary file
+     * @param name file name
+     * @param suffix not including dot
+     * @return file path or empty string on error
+     */
+    static QString getTemporaryFilePath(const QString &name, const QString &suffix = {});
+
     static QString getTranslationPath();
 
     static QWidget *getMainWindow();
