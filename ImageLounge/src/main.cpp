@@ -381,6 +381,10 @@ int main(int argc, char *argv[])
                 cw->addTab(trimmedPath);
             }
         }
+        // Remove the initial empty tab if we have file tabs
+        if (!tabPaths.isEmpty() && cw->getTabs().size() > 1) {
+            cw->removeTab(0);
+        }
     }
 
     // load recent files if there is nothing to display
