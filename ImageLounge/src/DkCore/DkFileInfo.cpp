@@ -553,7 +553,7 @@ DkFileInfoList DkFileInfo::readDirectory(const QString &dirPath, const QString &
         if (fi.isShortcut() && !fi.resolveShortcut())
             continue;
 
-        const QString suffix = fileInfo.suffix().toLower();
+        const QString suffix = fi.suffix().toLower();
         if (suffix.isEmpty() && !DkUtils::isLoadableByContent(fi)) // reads file header, maybe slow
             continue;
         else if (!suffixes.contains(suffix))
