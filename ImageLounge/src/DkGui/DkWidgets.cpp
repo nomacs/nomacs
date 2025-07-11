@@ -118,7 +118,11 @@ DkFolderScrollBar::~DkFolderScrollBar()
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> images)
 {
+    // updateDir() comes from the loader, the loader manages the current image,
+    // so setMaximum() cannot be allowed to change the current image
+    blockSignals(true);
     setMaximum(images.size() - 1);
+    blockSignals(false);
 }
 
 void DkFolderScrollBar::updateFile(int idx)
@@ -441,25 +445,38 @@ void DkExplorer::setCurrentImage(QSharedPointer<DkImageContainerT> img)
     setCurrentPath(img->filePath());
 }
 
-void DkExplorer::setCurrentPath(const QString &filePath)
+void DkExplorer::setCurrentPath(const QString &path)
 {
-    // expand folders
-    if (QFileInfo(filePath).isDir())
-        mFileTree->expand(mSortModel->mapFromSource(mFileModel->index(filePath)));
+    // we could be passed a file, dir, zipfile, or zipfile member
+    DkFileInfo info(path);
 
-    mFileTree->setCurrentIndex(mSortModel->mapFromSource(mFileModel->index(filePath)));
+    // we can't see inside zip with QFileSystemModel so select the container
+    QString newPath = info.isFromZip() ? info.dirPath() : info.path();
+
+    // expand folder if we're selecting a folder, otherwise its automatic
+    if (info.isDir() && !info.isZipFile())
+        mFileTree->expand(mSortModel->mapFromSource(mFileModel->index(info.path())));
+
+    // if we are setting the index do not behave as if user clicked an item
+    bool loadSelected = mLoadSelected;
+    enableLoadSelected(false);
+    mFileTree->setCurrentIndex(mSortModel->mapFromSource(mFileModel->index(newPath)));
+    enableLoadSelected(loadSelected);
 }
 
 void DkExplorer::fileClicked(const QModelIndex &index) const
 {
-    QFileInfo cFile = mFileModel->fileInfo(mSortModel->mapToSource(index));
+    DkFileInfo fileInfo(mFileModel->fileInfo(mSortModel->mapToSource(index)));
 
-    qDebug() << "opening: " << cFile.absoluteFilePath();
+    QString filePath = fileInfo.path();
+    qDebug() << "[Explorer] clicked:" << filePath;
 
-    if (DkUtils::isValid(cFile))
-        emit openFile(cFile.absoluteFilePath());
-    else if (cFile.isDir())
-        emit openDir(cFile.absoluteFilePath());
+    // we do not check if the file is openable by nomacs; the explorer does
+    // not allow this to happen (e.g. unsupported extensions are disabled or hidden)
+    if (!fileInfo.isDir())
+        emit openFile(filePath);
+    else
+        emit openDir(filePath);
 }
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
@@ -476,7 +493,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
     QAction *selAction = new QAction(tr("Open Selected Image"), this);
     selAction->setCheckable(true);
     selAction->setChecked(mLoadSelected);
-    connect(selAction, &QAction::triggered, this, &DkExplorer::loadSelectedToggled);
+    connect(selAction, &QAction::triggered, this, &DkExplorer::enableLoadSelected);
 
     cm->addAction(editAction);
     cm->addAction(selAction);
@@ -517,9 +534,9 @@ void DkExplorer::showColumn(bool show)
     mFileTree->setColumnHidden(idx, !show);
 }
 
-void DkExplorer::loadSelectedToggled(bool checked)
+void DkExplorer::enableLoadSelected(bool enable)
 {
-    mLoadSelected = checked;
+    mLoadSelected = enable;
 
     if (mLoadSelected)
         connect(mFileTree->selectionModel(), &QItemSelectionModel::currentChanged, this, &DkExplorer::fileClicked, Qt::UniqueConnection);
@@ -530,13 +547,14 @@ void DkExplorer::loadSelectedToggled(bool checked)
 void DkExplorer::openSelected()
 {
     auto index = mFileTree->selectionModel()->currentIndex();
-    QFileInfo cFile = mFileModel->fileInfo(mSortModel->mapToSource(index));
-    qDebug() << "opening: " << cFile.absoluteFilePath();
+    DkFileInfo file(mFileModel->fileInfo(mSortModel->mapToSource(index)));
+    QString filePath = file.path();
+    qDebug() << "opening: " << filePath;
 
-    if (DkUtils::isValid(cFile))
-        emit openFile(cFile.absoluteFilePath());
-    else if (cFile.isDir())
-        emit openDir(cFile.absoluteFilePath());
+    if (DkUtils::isLoadable(file))
+        emit openFile(filePath);
+    else if (file.isDir())
+        emit openDir(filePath);
 }
 
 void DkExplorer::setEditable(bool editable)
@@ -2374,44 +2392,44 @@ void DkHistogram::mouseReleaseEvent(QMouseEvent *event)
 }
 
 // DkFileInfo --------------------------------------------------------------------
-DkFileInfo::DkFileInfo()
+DkFileInfoWrapper::DkFileInfoWrapper()
 {
     mFileExists = false;
     mUsed = false;
 }
 
-DkFileInfo::DkFileInfo(const QFileInfo &fileInfo)
+DkFileInfoWrapper::DkFileInfoWrapper(const QFileInfo &fileInfo)
 {
     mFileInfo = fileInfo;
 }
 
-bool DkFileInfo::exists() const
+bool DkFileInfoWrapper::exists() const
 {
     return mFileExists;
 }
 
-void DkFileInfo::setExists(bool fileExists)
+void DkFileInfoWrapper::setExists(bool fileExists)
 {
     mFileExists = fileExists;
 }
 
-bool DkFileInfo::inUse() const
+bool DkFileInfoWrapper::inUse() const
 {
     return mUsed;
 }
 
-void DkFileInfo::setInUse(bool inUse)
+void DkFileInfoWrapper::setInUse(bool inUse)
 {
     mUsed = inUse;
 }
 
-QString DkFileInfo::getFilePath() const
+QString DkFileInfoWrapper::getFilePath() const
 {
     return mFileInfo.absoluteFilePath();
 }
 
 // DkFileLabel --------------------------------------------------------------------
-DkFolderLabel::DkFolderLabel(const DkFileInfo &fileInfo, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+DkFolderLabel::DkFolderLabel(const DkFileInfoWrapper &fileInfo, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
 {
     // we don't use the file labels anymore
@@ -2477,7 +2495,7 @@ void DkDirectoryEdit::lineEditChanged(const QString &path)
 
 bool DkDirectoryEdit::existsDirectory(const QString &path)
 {
-    return QDir(path).exists();
+    return DkFileInfo(path).isDir();
 }
 
 // DkDirectoryChooser --------------------------------------------------------------------
@@ -2989,5 +3007,4 @@ void DkDisplayWidget::updateLayout()
 //	if (w)
 //		w->setGeometry(sr);
 // }
-
 }

@@ -86,7 +86,6 @@ public:
     bool operator==(const DkTabInfo &o) const;
 
     QString getFilePath() const;
-    bool setDirPath(const QString &dirPath);
 
     QSharedPointer<DkImageContainerT> getImage() const;
     void setImage(QSharedPointer<DkImageContainerT> imgC);
@@ -155,8 +154,8 @@ public slots:
     void tabCloseRequested(int idx);
     void tabMoved(int from, int to);
     void setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex = -1);
-    void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1, bool background = false);
-    void addTab(const QString &filePath, int idx = -1, bool background = false);
+    void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), bool background = false);
+    void addTab(const DkFileInfo &file, bool background = false);
     void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
     void removeTab(int tabIdx = -1);
     void nextTab() const;
@@ -167,11 +166,16 @@ public slots:
     void showPreferences(bool show = true);
     void showTabs(bool show = true);
     void pasteImage();
-    void loadFileToTab(const QString &filePath);
-    void loadFile(const QString &filePath, bool newTab = false);
-    void loadDirToTab(const QString &dirPath);
-    void loadUrl(const QUrl &urls, bool newTab = false);
+
+    // load file/dir to current tab
+    void load(const QString &path);
+
+    // load file/dir to new tab
+    void loadToTab(const QString &path);
+
+    void loadUrl(const QUrl &urls, bool newTab);
     void loadUrls(const QList<QUrl> &urls, const int maxUrlsToLoad = 20);
+
     void openBatch(const QStringList &selectedFiles = QStringList());
     void showBatch(bool show = true);
     void openPreferences();
