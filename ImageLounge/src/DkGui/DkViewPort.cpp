@@ -312,6 +312,7 @@ void DkViewPort::setImage(QImage newImg)
 
     emit movieLoadedSignal(false);
     stopMovie(); // just to be sure
+    mSvg = {};
 
     if (mManipulatorWatcher.isRunning())
         mManipulatorWatcher.cancel();
@@ -1700,7 +1701,7 @@ bool DkViewPort::unloadImage(bool fileChange)
         stopMovie();
 
     if (mSvg && success)
-        mSvg = QSharedPointer<QSvgRenderer>();
+        mSvg = {};
 
     return success != 0;
 }
