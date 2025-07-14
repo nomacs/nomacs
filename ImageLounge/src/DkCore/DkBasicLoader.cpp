@@ -235,8 +235,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 
     DkFileInfo fileInfo(filePath);
 
-    if (fileInfo.isShortcut() && !fileInfo.resolveShortcut()) {
-        qWarning() << "[Loader] broken shortcut:" << fileInfo.fileName();
+    if (fileInfo.isSymLink() && !fileInfo.resolveSymLink()) {
+        qWarning() << "[Loader] broken link:" << fileInfo.fileName();
         return false;
     }
     mFile = fileInfo.path();

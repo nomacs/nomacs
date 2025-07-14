@@ -117,9 +117,9 @@ public:
     // return true if no longer exists or modified
     bool isModified();
 
-    // switch to the shortcut target
+    // switch to the link target if isSymLink() is true
     // return false if target does not exist
-    bool resolveShortcut();
+    bool resolveSymLink();
 
     // ---- wrapped methods of QFileInfo --------------------------------
     // where noted changes semantics of QFileInfo
@@ -144,7 +144,6 @@ public:
     QFileDevice::Permissions permissions() const;
     bool permission(QFile::Permissions flags) const;
 
-    bool isShortcut() const; // .lnk or MacOS alias
     bool isSymLink() const;
     QString symLinkTarget() const;
 

@@ -674,8 +674,8 @@ bool DkUtils::tryExists(const DkFileInfo &file, int waitMs)
         {
             DkTimer dt;
 
-            if (mFile.isShortcut())
-                mResult = mFile.resolveShortcut();
+            if (mFile.isSymLink())
+                mResult = mFile.resolveSymLink();
             else
                 mResult = mFile.exists();
 
@@ -764,7 +764,7 @@ bool DkUtils::isLoadable(const DkFileInfo &fileInfo)
     auto fInfo = fileInfo;
     QString fileName = fInfo.fileName();
 
-    if (fInfo.isShortcut() && !fInfo.resolveShortcut())
+    if (fInfo.isSymLink() && !fInfo.resolveSymLink())
         return false;
 
     if (!fInfo.exists()) {

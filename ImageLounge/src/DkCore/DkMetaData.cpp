@@ -106,8 +106,8 @@ void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray
     }
 
     mFileInfo = file;
-    if (mFileInfo.isShortcut() && !mFileInfo.resolveShortcut()) {
-        qWarning() << "[DkMetaDataT] broken shortcut" << file.path();
+    if (mFileInfo.isSymLink() && !mFileInfo.resolveSymLink()) {
+        qWarning() << "[DkMetaDataT] broken link" << file.path();
         return;
     }
 

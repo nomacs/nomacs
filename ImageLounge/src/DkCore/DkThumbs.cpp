@@ -94,8 +94,8 @@ std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadTh
     QSharedPointer<QByteArray> ba{};
     DkFileInfo fileInfo(filePath);
 
-    if (fileInfo.isShortcut() && !fileInfo.resolveShortcut()) {
-        qWarning() << "[Thumbnail] broken shortcut:" << filePath;
+    if (fileInfo.isSymLink() && !fileInfo.resolveSymLink()) {
+        qWarning() << "[Thumbnail] broken link:" << filePath;
         return std::nullopt;
     }
 
