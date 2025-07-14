@@ -233,7 +233,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 {
     DkTimer dt;
 
-    DkFileInfo fileInfo(filePath);
+    DkFileInfo origFileInfo(filePath); // unmodified info for metadata
+    DkFileInfo fileInfo = origFileInfo; // maybe different (resolved link etc)
 
     if (fileInfo.isSymLink() && !fileInfo.resolveSymLink()) {
         qWarning() << "[Loader] broken link:" << fileInfo.fileName();
@@ -273,8 +274,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     if (loadMetaData) {
         // collect all file info now and save it in metadata, we won't have
         // to do a slow fetch when displaying metadata panels
-        fileInfo.stat();
-        mMetaData->readMetaData(fileInfo, ba);
+        origFileInfo.stat();
+        mMetaData->readMetaData(origFileInfo, ba);
     }
 
     static const QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();

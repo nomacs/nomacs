@@ -106,16 +106,18 @@ void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray
     }
 
     mFileInfo = file;
-    if (mFileInfo.isSymLink() && !mFileInfo.resolveSymLink()) {
-        qWarning() << "[DkMetaDataT] broken link" << file.path();
-        return;
-    }
 
     try {
         if (!ba || ba->isEmpty()) {
+            DkFileInfo tmpFileInfo = file;
+            if (tmpFileInfo.isSymLink() && !tmpFileInfo.resolveSymLink()) {
+                qWarning() << "[DkMetaDataT] broken link" << file.path();
+                return;
+            }
+
             // FIXME: this does not support unicode file names on windows
             // we could use DkFileInfo::getIoDevice() and subclass Exiv2::BasicIo
-            mExifImg = Exiv2::ImageFactory::open(qUtf8Printable(mFileInfo.path()));
+            mExifImg = Exiv2::ImageFactory::open(qUtf8Printable(tmpFileInfo.path()));
         } else {
             mExifImg = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba->constData()), ba->size());
         }

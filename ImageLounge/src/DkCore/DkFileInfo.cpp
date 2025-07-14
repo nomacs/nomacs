@@ -535,17 +535,17 @@ DkFileInfoList DkFileInfo::readDirectory(const QString &dirPath, const QString &
 
     // filter by suffix
     for (auto &fileInfo : std::as_const(unfiltered)) {
-        DkFileInfo fi = fileInfo;
-        if (fi.isSymLink() && !fi.resolveSymLink())
+        DkFileInfo tmpInfo = fileInfo;
+        if (tmpInfo.isSymLink() && !tmpInfo.resolveSymLink())
             continue;
 
-        const QString suffix = fi.suffix().toLower();
-        if (suffix.isEmpty() && !DkUtils::isLoadableByContent(fi)) // reads file header, maybe slow
+        const QString suffix = tmpInfo.suffix().toLower();
+        if (suffix.isEmpty() && !DkUtils::isLoadableByContent(tmpInfo)) // reads file header, maybe slow
             continue;
         else if (!suffixes.contains(suffix))
             continue;
 
-        filtered.append(fi);
+        filtered.append(fileInfo);
     }
 
     // filter with keywords, regexp, or glob
