@@ -184,7 +184,8 @@ bool DkFileInfo::operator==(const DkFileInfo &other) const
 bool DkFileInfo::isContainer(const QFileInfo &fileInfo)
 {
     const QString &rawFilters = DkSettingsManager::param().app().containerRawFilters; // "*.zip *.cbz *.docx"
-    return rawFilters.contains(fileInfo.suffix(), Qt::CaseInsensitive) && fileInfo.isFile();
+    QString suffix = fileInfo.suffix();
+    return !suffix.isEmpty() && rawFilters.contains(suffix, Qt::CaseInsensitive) && fileInfo.isFile();
 }
 
 #ifdef WITH_QUAZIP
