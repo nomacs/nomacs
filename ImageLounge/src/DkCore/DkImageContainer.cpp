@@ -334,14 +334,31 @@ bool DkImageContainer::hasImage() const
 
 bool DkImageContainer::hasMovie() const
 {
-    QString newSuffix = mFileInfo.suffix();
-    return newSuffix.contains(QRegularExpression("(apng|avif|gif|jxl|mng|webp)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    QString suffix;
+    if (!mFileInfo.isSymLink())
+        suffix = mFileInfo.suffix();
+    else {
+        DkFileInfo target = mFileInfo;
+        if (!target.resolveSymLink())
+            return false;
+        suffix = target.suffix();
+    }
+    return suffix.contains(QRegularExpression("(apng|avif|gif|jxl|mng|webp)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkImageContainer::hasSvg() const
 {
-    QString newSuffix = mFileInfo.suffix();
-    return newSuffix.contains(QRegularExpression("(svg)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    QString suffix = mFileInfo.suffix();
+    if (!mFileInfo.isSymLink())
+        suffix = mFileInfo.suffix();
+    else {
+        DkFileInfo target = mFileInfo;
+        if (!target.resolveSymLink())
+            return false;
+        suffix = target.suffix();
+    }
+
+    return suffix.contains(QRegularExpression("(svg)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 int DkImageContainer::getLoadState() const

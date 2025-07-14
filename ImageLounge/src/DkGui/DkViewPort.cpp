@@ -1027,6 +1027,9 @@ void DkViewPort::loadMovie()
         mMovie->stop();
 
     DkFileInfo fileInfo = mLoader->getCurrentImage()->fileInfo();
+    if (fileInfo.isSymLink() && !fileInfo.resolveSymLink())
+        return;
+
     std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
     if (!io)
         return;
@@ -1068,8 +1071,10 @@ void DkViewPort::loadSvg()
     if (cc) {
         mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(*cc->getFileBuffer()));
     } else {
+        // this seems to be dead code; note it will fail if file path refers to a link
         mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(mLoader->filePath()));
     }
+    qInfo() << "[svg] loaded svg:" << cc->fileName();
 
     connect(mSvg.data(), &QSvgRenderer::repaintNeeded, this, QOverload<>::of(&DkViewPort::update));
 }
