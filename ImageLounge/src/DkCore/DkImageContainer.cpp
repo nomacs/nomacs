@@ -380,8 +380,8 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &
 {
     DkFileInfo fInfo = fileInfo;
 
-    if (fInfo.isShortcut() && !fInfo.resolveShortcut()) { // .lnk or macOS alias
-        qWarning() << "broken shortcut:" << fileInfo.path();
+    if (fInfo.isSymLink() && !fInfo.resolveSymLink()) { // .lnk or macOS alias
+        qWarning() << "broken link:" << fileInfo.path();
         return {};
     }
 
