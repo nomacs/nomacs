@@ -348,32 +348,18 @@ bool DkFileInfo::permission(QFileDevice::Permissions flags) const
     return containerInfo().permission(flags);
 }
 
-bool DkFileInfo::isShortcut() const
+bool DkFileInfo::isSymLink() const
 {
-    if (isFromZip())
-        return false;
-
-    bool shortcut = false, alias = false;
-#if defined(Q_OS_WIN)
-    shortcut = d->mFileInfo.isShortcut();
-#elif defined(Q_OS_DARWIN)
-    alias = d->mFileInfo.isAlias();
-#endif
-    return shortcut || alias;
+    return IF_FROM_ZIP(false, d->mFileInfo.isSymLink());
 }
 
-bool DkFileInfo::resolveShortcut()
+bool DkFileInfo::resolveSymLink()
 {
-    if (!isShortcut())
+    if (!isSymLink())
         return false;
 
     *this = DkFileInfo(d->mFileInfo.symLinkTarget());
     return exists();
-}
-
-bool DkFileInfo::isSymLink() const
-{
-    return containerInfo().isSymLink();
 }
 
 QString DkFileInfo::symLinkTarget() const
@@ -550,7 +536,7 @@ DkFileInfoList DkFileInfo::readDirectory(const QString &dirPath, const QString &
     // filter by suffix
     for (auto &fileInfo : std::as_const(unfiltered)) {
         DkFileInfo fi = fileInfo;
-        if (fi.isShortcut() && !fi.resolveShortcut())
+        if (fi.isSymLink() && !fi.resolveSymLink())
             continue;
 
         const QString suffix = fi.suffix().toLower();
