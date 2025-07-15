@@ -1342,6 +1342,11 @@ void DkCentralWidget::renameFile()
     const QString filePath = getCurrentFilePath();
     const QFileInfo fileInfo(filePath);
 
+    if (DkFileInfo(filePath).isFromZip()) {
+        setInfo(tr("Sorry, renaming archived files is unsupported."));
+        return;
+    }
+
     if (!fileInfo.absoluteDir().exists()) {
         setInfo(tr("Sorry, the directory: %1 does not exist").arg(fileInfo.absolutePath()));
         return;
