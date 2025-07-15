@@ -1487,7 +1487,18 @@ void DkThumbScene::copyImages(const QMimeData *mimeData, const Qt::DropAction &d
     if (!mimeData || !mimeData->hasUrls() || !mLoader)
         return;
 
-    QDir dir = mLoader->getDirPath();
+    DkFileInfo dirInfo(mLoader->getDirPath());
+    if (!dirInfo.isDir()) {
+        QMessageBox::information(DkUtils::getMainWindow(), tr("Copy Images"), tr("The current directory is invalid or no longer exists."));
+        return;
+    }
+
+    if (dirInfo.isZipFile()) {
+        QMessageBox::information(DkUtils::getMainWindow(), tr("Copy Images"), tr("Copying to an archive is unsupported."));
+        return;
+    }
+
+    QDir dir = dirInfo.path();
 
     for (QUrl url : mimeData->urls()) {
         QFileInfo fileInfo = DkUtils::urlToLocalFile(url);
