@@ -100,6 +100,7 @@ namespace nmc
 {
 
 // nomacs defines
+class DkFileInfo;
 class TreeItem;
 
 /**
@@ -130,15 +131,15 @@ public:
 
     static bool compLogicQString(const QString &lhs, const QString &rhs);
 
-    static bool compFilename(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compFilename(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool compFileSize(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compFileSize(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compDateCreated(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool compDateModified(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compDateModified(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool compRandom(const QFileInfo &lhf, const QFileInfo &rhf);
+    static bool compRandom(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
     static bool naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity cs = Qt::CaseSensitive);
 
@@ -156,6 +157,21 @@ public:
 
     static QString getAppDataPath();
 
+    /**
+     * @brief get writeable temporary directory
+     * @return empty string if not exists or not writeable
+     * @note uses the user tempdir preference or falls back to <system tempdir>/nomacs
+     */
+    static QString getTemporaryDirPath();
+
+    /**
+     * @brief get writeable temporary file
+     * @param name file name
+     * @param suffix not including dot
+     * @return file path or empty string on error
+     */
+    static QString getTemporaryFilePath(const QString &name, const QString &suffix = {});
+
     static QString getTranslationPath();
 
     static QWidget *getMainWindow();
@@ -172,19 +188,18 @@ public:
     static void mSleep(int ms);
 
     /**
-     * Fast file exists method.
+     * Time-limited file/dir exists check.
      * This function seems to be a bit unnecessary, however
      * at least windows has long (> 10 sec) timeouts if a
      * network drive is disconnected and you want to find
-     * a file on that network. This function calls the normal
-     * file.exists() but returns false if a timeout > waitMs
+     * a filePath on that network. This function calls the normal
+     * fileInfo.exists() but returns false if a timeout > waitMs
      * is reached.
-     * @param file the file to check
-     * @param waitMs time in milli seconds to wait for file.exists()
-     * @return bool true if the file exists
+     * @param file the file/dir to check
+     * @param waitMs maximum time in milliseconds to wait
+     * @return bool true if exists
      **/
-    static bool exists(const QFileInfo &file, int waitMs = 10);
-    static bool checkFile(const QFileInfo &file);
+    static bool tryExists(const DkFileInfo &file, int waitMs = 10);
     static QFileInfo urlToLocalFile(const QUrl &url);
     static QString fileNameFromUrl(const QUrl &url);
     static QString nowString();
@@ -387,9 +402,33 @@ public:
         return stringify(rounded / pow(10, n));
     }
 
-    static bool isValid(const QFileInfo &fileInfo);
+    /**
+     * @brief check for loadable file from extension
+     * @param fileSuffix suffix not including dot (QFileInfo::suffix())
+     * @return true if file has a supported filetype
+     */
+    static bool isLoadableSuffix(const QString &fileSuffix);
+
+    /**
+     * @brief check for loadable file via file header
+     * @param file file to check
+     * @return true if file is readable and has a supported filetype
+     * @note reads the file header to find true file type (e.g. wrong or missing suffix)
+     *       use as a fallback for isLoadableSuffix()
+     */
+    static bool isLoadableByContent(const DkFileInfo &file);
+
+    /**
+     * @brief check for loadable file without involving image loader
+     * @param file
+     * @return true if file is readable and has a supported filetype
+     * @note uses isLoadableBySuffix() and falls back to isLoadableByContent()
+     * @note may return true for unloadable files as image loader is not involved
+     */
+    static bool isLoadable(const DkFileInfo &fileInfo);
+
     static bool isSavable(const QString &fileName);
-    static bool hasValidSuffix(const QString &fileName);
+
     static QStringList suffixOnly(const QStringList &fileFilters);
     static QDateTime getConvertableDate(const QString &date);
     static QDateTime convertDate(const QString &date, const QFileInfo &file = QFileInfo());

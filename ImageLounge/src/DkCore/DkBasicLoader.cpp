@@ -54,11 +54,6 @@
 #include <assert.h>
 #include <qmath.h>
 
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
-#endif
-
 // opencv
 #ifdef WITH_OPENCV
 
@@ -238,8 +233,24 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 {
     DkTimer dt;
 
-    mFile = DkUtils::resolveSymLink(filePath);
-    const QFileInfo fileInfo(mFile); // resolved windows shortcut(.lnk)
+    DkFileInfo origFileInfo(filePath); // unmodified info for metadata
+    DkFileInfo fileInfo = origFileInfo; // maybe different (resolved link etc)
+
+    if (fileInfo.isSymLink() && !fileInfo.resolveSymLink()) {
+        qWarning() << "[Loader] broken link:" << fileInfo.fileName();
+        return false;
+    }
+    mFile = fileInfo.path();
+
+    if (fileInfo.isFromZip() && (!ba || ba->isEmpty())) {
+        auto io = fileInfo.getIODevice();
+        if (!io) {
+            qWarning() << "[Loader] failed to read:" << fileInfo.fileName();
+            return false;
+        }
+        ba = QSharedPointer<QByteArray>(new QByteArray(io->readAll()));
+    }
+
     const QByteArray suffix = fileInfo.suffix().toLower().toLatin1();
 
     // name of the load method for tracing and also indicates if we loaded successfully
@@ -260,8 +271,12 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // Qt considers an orientation of 0 as wrong and fails to load these jpgs
     // however, the old nomacs wrote 0 if the orientation should be cleared
     // so we simply adopt the memory here
-    if (loadMetaData)
-        mMetaData->readMetaData(filePath, ba);
+    if (loadMetaData) {
+        // collect all file info now and save it in metadata, we won't have
+        // to do a slow fetch when displaying metadata panels
+        origFileInfo.stat();
+        mMetaData->readMetaData(origFileInfo, ba);
+    }
 
     static const QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
     static const QList<QByteArray> drifFormats{"drif", "yuv", "raw"};
@@ -1129,40 +1144,16 @@ void DkBasicLoader::setHistoryIndex(int idx)
     // TODO update mMetaData, see undo()
 }
 
-// QByteArray DkBasicLoader::loadFileToBuffer(const QString &filePath) const
-// {
-//     QFileInfo fi(filePath);
-
-//     if (!fi.exists())
-//         return;
-
-// #ifdef WITH_QUAZIP
-//     if (fi.dir().path().contains(DkZipContainer::zipMarker()))
-//         DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath), ba);
-// #endif
-
-//     QFile file(filePath);
-//     file.open(QIODevice::ReadOnly);
-
-//     ba = file.readAll();
-// }
-
-QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath) const
+QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath)
 {
-    QFileInfo fi(filePath);
+    DkFileInfo file(filePath);
+    Q_ASSERT(file.isFile());
 
-#ifdef WITH_QUAZIP
-    if (fi.dir().path().contains(DkZipContainer::zipMarker()))
-        return DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
-#endif
+    std::unique_ptr<QIODevice> io = file.getIODevice();
+    if (!io)
+        return {};
 
-    QFile file(filePath);
-    file.open(QIODevice::ReadOnly);
-
-    QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
-    file.close();
-
-    return ba;
+    return QSharedPointer<QByteArray>(new QByteArray(io->readAll()));
 }
 
 /**
@@ -1576,25 +1567,6 @@ void DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteAr
     // Write in-memory copy to specified file - use this overload only if you really need it
     if (saved)
         writeBufferToFile(filePath, ba);
-}
-
-bool DkBasicLoader::isContainer(const QString &filePath)
-{
-    QFileInfo fInfo(filePath);
-    if (!fInfo.isFile() || !fInfo.exists())
-        return false;
-
-    QString suffix = fInfo.suffix();
-
-    if (suffix.isEmpty())
-        return false;
-
-    for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++) {
-        if (DkSettingsManager::param().app().containerFilters[idx].contains(suffix))
-            return true;
-    }
-
-    return false;
 }
 
 /**
@@ -2036,119 +2008,6 @@ QUrl FileDownloader::getUrl() const
 {
     return mUrl;
 }
-
-#ifdef WITH_QUAZIP
-
-// DkZipContainer --------------------------------------------------------------------
-DkZipContainer::DkZipContainer(const QString &encodedFilePath)
-{
-    if (!encodedFilePath.isEmpty() && encodedFilePath.contains(mZipMarker)) {
-        mImageInZip = true;
-        mEncodedFilePath = encodedFilePath;
-        mZipFilePath = decodeZipFile(encodedFilePath);
-        mImageFileName = decodeImageFile(encodedFilePath);
-    } else
-        mImageInZip = false;
-}
-
-QString DkZipContainer::encodeZipFile(const QString &zipFile, const QString &imageFile)
-{
-    // if you think this code is unreadable, take a look at the old line:
-    // return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/",
-    // mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
-
-    QDir dir = QDir(zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker));
-    QString fileName = (imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
-
-    return QFileInfo(dir, fileName).absoluteFilePath();
-}
-
-QString DkZipContainer::decodeZipFile(const QString &encodedFileInfo)
-{
-    QString encodedDir = QFileInfo(encodedFileInfo).absolutePath();
-
-    return encodedDir.left(encodedDir.indexOf(mZipMarker));
-}
-
-QString DkZipContainer::decodeImageFile(const QString &encodedFileInfo)
-{
-    // get relative zip path
-    QString tmp = encodedFileInfo.right(encodedFileInfo.size() - encodedFileInfo.indexOf(mZipMarker) - QString(mZipMarker).size());
-    tmp = tmp.replace(mZipMarker, "/");
-    tmp = tmp.replace("//", "/");
-
-    // diem: this fixes an issue with images that are in a zip's root folder
-    if (tmp.startsWith("/"))
-        tmp = tmp.right(tmp.length() - 1);
-
-    return tmp;
-}
-
-QSharedPointer<QByteArray> DkZipContainer::extractImage(const QString &zipFile, const QString &imageFile)
-{
-    QuaZip zip(zipFile);
-    if (!zip.open(QuaZip::mdUnzip))
-        return QSharedPointer<QByteArray>(new QByteArray());
-
-    qDebug() << "DkZip::extractImage filePath: " << zipFile;
-    qDebug() << "3.0 image file" << imageFile;
-
-    zip.setCurrentFile(imageFile);
-    QuaZipFile extractedFile(&zip);
-    if (!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK)
-        return QSharedPointer<QByteArray>(new QByteArray());
-
-    QSharedPointer<QByteArray> ba(new QByteArray(extractedFile.readAll()));
-    extractedFile.close();
-
-    zip.close();
-
-    return ba;
-}
-
-void DkZipContainer::extractImage(const QString &zipFile, const QString &imageFile, QByteArray &ba)
-{
-    QuaZip zip(zipFile);
-    if (!zip.open(QuaZip::mdUnzip))
-        return;
-
-    zip.setCurrentFile(imageFile);
-    QuaZipFile extractedFile(&zip);
-    if (!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK)
-        return;
-
-    ba = QByteArray(extractedFile.readAll());
-    extractedFile.close();
-
-    zip.close();
-}
-
-bool DkZipContainer::isZip() const
-{
-    return mImageInZip;
-}
-
-QString DkZipContainer::getZipFilePath() const
-{
-    return mZipFilePath;
-}
-
-QString DkZipContainer::getImageFileName() const
-{
-    return mImageFileName;
-}
-
-QString DkZipContainer::getEncodedFilePath() const
-{
-    return mEncodedFilePath;
-}
-
-QString DkZipContainer::zipMarker()
-{
-    return mZipMarker;
-}
-
-#endif
 
 // DkRawLoader --------------------------------------------------------------------
 DkRawLoader::DkRawLoader(const QString &filePath, const QSharedPointer<DkMetaDataT> &metaData)
