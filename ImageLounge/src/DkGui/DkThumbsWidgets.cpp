@@ -2116,13 +2116,16 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event)
 
 void DkThumbScrollWidget::enableSelectionActions()
 {
-    bool enable = !mThumbsScene->getSelectedFiles().isEmpty();
+    const QStringList files = mThumbsScene->getSelectedFiles();
+    bool hasSelection = !files.isEmpty();
+    bool isFromZip = hasSelection && DkFileInfo(files[0]).isFromZip();
 
     DkActionManager &am = DkActionManager::instance();
-    am.action(DkActionManager::preview_copy)->setEnabled(enable);
-    am.action(DkActionManager::preview_rename)->setEnabled(enable);
-    am.action(DkActionManager::preview_delete)->setEnabled(enable);
-    am.action(DkActionManager::preview_batch)->setEnabled(enable);
+    am.action(DkActionManager::preview_copy)->setEnabled(hasSelection && !isFromZip);
+
+    am.action(DkActionManager::preview_rename)->setEnabled(hasSelection && !isFromZip);
+    am.action(DkActionManager::preview_delete)->setEnabled(hasSelection && !isFromZip);
+    am.action(DkActionManager::preview_batch)->setEnabled(hasSelection);
 
     am.action(DkActionManager::preview_select_all)->setChecked(mThumbsScene->allThumbsSelected());
 }
