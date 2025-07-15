@@ -1299,22 +1299,28 @@ void DkImageLoader::updateHistory()
  **/
 bool DkImageLoader::deleteFile()
 {
-    if (mCurrentImage && mCurrentImage->exists()) {
-        QString fileName = mCurrentImage->fileName();
-        int currFileIdx = findFileIdx(mCurrentImage->filePath(), mImages);
-        if (DkUtils::moveToTrash(mCurrentImage->filePath())) {
-            mImages.removeAt(currFileIdx);
-            QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
-            if (!imgC)
-                imgC = getSkippedImage(0); // deleted from the end
-            load(imgC);
-            emit showInfoSignal(tr("%1 deleted...").arg(fileName));
-            return true;
-        } else
-            emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(fileName));
+    if (!mCurrentImage || !mCurrentImage->exists())
+        return false;
+
+    if (mCurrentImage->fileInfo().isFromZip()) {
+        emit showInfoSignal(tr("Sorry, deleting archived files is unsupported."));
+        return false;
     }
 
-    return false;
+    QString fileName = mCurrentImage->fileName();
+    int currFileIdx = findFileIdx(mCurrentImage->filePath(), mImages);
+    if (!DkUtils::moveToTrash(mCurrentImage->filePath())) {
+        emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(fileName));
+        return false;
+    }
+
+    mImages.removeAt(currFileIdx);
+    QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
+    if (!imgC)
+        imgC = getSkippedImage(0); // deleted from the end
+    load(imgC);
+    emit showInfoSignal(tr("%1 deleted...").arg(fileName));
+    return true;
 }
 
 /**
