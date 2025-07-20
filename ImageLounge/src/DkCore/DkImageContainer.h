@@ -86,7 +86,6 @@ public:
     bool isFromZip();
     bool isEdited() const;
     bool isSelected() const;
-    void setEdited(bool edited = true);
     QString getTitleAttribute() const;
     float getMemoryUsage() const;
     float getFileSize() const;
@@ -109,9 +108,6 @@ public:
     bool loadImage();
     void setImage(const QImage &img, const QString &editName);
     void setImage(const QImage &img, const QString &editName, const QString &filePath);
-    void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName);
-    void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString &editName);
-    void setMetaData(const QString &editName);
     bool saveImage(const QString &filePath, const QImage saveImg, int compression = -1);
     bool saveImage(const QString &filePath, int compression = -1);
     void saveMetaData();
@@ -188,6 +184,10 @@ public:
     virtual void undo() override;
     virtual void redo() override;
     virtual void setHistoryIndex(int idx) override;
+    void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName);
+    void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString &editName);
+    void setMetaData(const QString &editName);
+    void setEdited(bool edited = true);
 
 signals:
     void fileLoadedSignal(bool loaded = true) const;
