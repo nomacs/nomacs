@@ -1165,7 +1165,6 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
         setCurrentImage(mCurrentImage);
         mCurrentImage->setEdited(false);
         emit imageLoadedSignal(mCurrentImage, true);
-        emit imageUpdatedSignal(mCurrentImage);
 
         // Skip the rest which is only relevant when re-encoding/saving the image
         return;
@@ -1486,7 +1485,6 @@ void DkImageLoader::rotateImage(double angle)
     if (metaDataSet) {
         // Add history item with edited metadata (exif rotation)
         mCurrentImage->setMetaData(metaData, img, tr("Rotated")); // new edit with modified metadata
-        setImageUpdated();
     } else {
         // Update the image itself, along with the history and everything
         // In other words, the rotated image is saved to the history and the edit flag is set
@@ -2020,7 +2018,6 @@ QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QSharedPointer<DkImage
 void DkImageLoader::setImageUpdated()
 {
     mCurrentImage->setEdited();
-    emit imageUpdatedSignal(mCurrentImage);
 }
 
 /**

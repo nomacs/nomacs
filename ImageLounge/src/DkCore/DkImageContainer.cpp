@@ -964,32 +964,28 @@ void DkImageContainerT::setHistoryIndex(int idx)
 void DkImageContainerT::setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName)
 {
     // Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
-    // how about a signal?
-
     getLoader()->setEditMetaData(editedMetaData, img, editName);
-    mEdited = true;
+    setEdited();
 }
 
 void DkImageContainerT::setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString &editName)
 {
     // Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
-    // how about a signal?
-
     getLoader()->setEditMetaData(editedMetaData, editName);
-    mEdited = true;
+    setEdited();
 }
 
 void DkImageContainerT::setMetaData(const QString &editName)
 {
     // Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
-
     getLoader()->setEditMetaData(editName);
-    mEdited = true;
+    setEdited();
 }
 
 void DkImageContainerT::setEdited(bool edited /* = true */)
 {
     mEdited = edited;
+    emit imageUpdatedSignal();
 }
 
 }
