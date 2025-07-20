@@ -988,4 +988,19 @@ void DkImageContainerT::setEdited(bool edited /* = true */)
     emit imageUpdatedSignal();
 }
 
+void DkImageContainerT::setRating(int rating)
+{
+    QSharedPointer<DkMetaDataT> metaDataInfo = getMetaData();
+    // TODO: right now we do not handle non-existing EXIF data well.
+    // currRating == -1 does not guarentee this.
+    int currRating = metaDataInfo->getRating();
+    if (rating == currRating) {
+        // Do not create a history entry if the rating does not change.
+        return;
+    }
+
+    metaDataInfo->setRating(rating);
+    QString msg = (rating == 0) ? QObject::tr("Clear rating") : QObject::tr("Set rating to %1").arg(rating);
+    setMetaData(metaDataInfo, msg);
+}
 }
