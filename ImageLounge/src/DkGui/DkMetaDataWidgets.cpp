@@ -1298,15 +1298,12 @@ void DkCommentWidget::saveComment()
         initComment(text());
 
         emit commentSavedSignal();
-        emit commentSavedSignal(tr("File comment"));
     }
 }
 
 void DkCommentWidget::onCommentLabelTextChanged()
 {
     mTextEdited = text() != mOldText;
-    if (mTextEdited)
-        emit commentEditedSignal();
 }
 
 void DkCommentWidget::onCommentLabelFocusLost()
