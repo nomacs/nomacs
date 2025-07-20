@@ -691,8 +691,8 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
     QString dateString = metaData->getExifValue("DateTimeOriginal");
     mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
     mFileInfoLabel->setEdited(imgC->isEdited());
+    mFileInfoLabel->updateRating(metaData->getRating());
     mCommentWidget->setMetaData(metaData); // reset
-    updateRating(metaData->getRating());
 
     connect(imgC.get(), &DkImageContainerT::imageUpdatedSignal, this, &DkControlWidget::imageUpdatedSignal);
 }
@@ -750,8 +750,7 @@ void DkControlWidget::updateRating(int rating)
     if (mFileInfoLabel)
         mFileInfoLabel->updateRating(rating);
 
-    QSharedPointer<DkMetaDataT> metaDataInfo = mImgC->getMetaData();
-    metaDataInfo->setRating(rating);
+    mImgC->setRating(rating);
 }
 
 void DkControlWidget::imagePresenceChanged(bool imagePresent)

@@ -185,9 +185,9 @@ public:
     virtual void redo() override;
     virtual void setHistoryIndex(int idx) override;
     void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName);
-    void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString &editName);
     void setMetaData(const QString &editName);
     void setEdited(bool edited = true);
+    void setRating(int rating);
 
 signals:
     void fileLoadedSignal(bool loaded = true) const;
@@ -237,6 +237,9 @@ protected:
     bool mDownloaded = false;
 
     QTimer mFileUpdateTimer;
+
+private:
+    void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString &editName);
 };
 
 }
