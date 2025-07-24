@@ -1236,6 +1236,8 @@ void DkToolBarManager::restore()
         mToolBar->setVisible(DkSettingsManager::param().app().showToolBar);
     if (mMovieToolBar)
         mMovieToolBar->setVisible(DkSettingsManager::param().app().showMovieToolBar);
+    if (mTransferToolBar)
+        mTransferToolBar->setVisible(true); // always visible when pseudocolor is enabled
 }
 
 void DkToolBarManager::showToolBar(QToolBar *toolbar, bool show)
