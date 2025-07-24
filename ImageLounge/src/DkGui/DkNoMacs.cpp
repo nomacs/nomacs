@@ -121,8 +121,8 @@ bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event)
 DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
 {
-    QMainWindow::setWindowTitle("nomacs | Image Lounge");
     setObjectName("DkNoMacs");
+    QMainWindow::setWindowTitle("nomacs | Image Lounge");
 
     mMenu = new DkMenuBar(this, -1);
 
@@ -176,7 +176,6 @@ void DkNoMacs::init()
     QString iconPath = ":/nomacs/img/nomacs.svg";
 
     QIcon nmcIcon = QIcon(iconPath);
-    setObjectName("DkNoMacs");
 
     if (!nmcIcon.isNull())
         setWindowIcon(nmcIcon);
@@ -2124,7 +2123,6 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
         chooseMonitor(true);
     });
 
-    setObjectName("DkNoMacsFrameless"); // init() changed it
     DkStatusBarManager::instance().show(false, false);
 
     // actions that should always be disabled
