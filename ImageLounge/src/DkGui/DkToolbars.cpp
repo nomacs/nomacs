@@ -687,23 +687,16 @@ void DkTransferToolBar::setImageMode(int mode)
 
 void DkTransferToolBar::applyImageMode(int mode)
 {
-    // At first check if the right mode is already set. If so, don't do nothing.
-
     if (mode == mImageMode)
         return;
 
-    // if (mImageMode != mode_invalid_format) {
-    //	enableToolBar(true);
-    //	emit channelChanged(0);
-    // }
-
     mImageMode = mode;
-    mEnableTFCheckBox->setEnabled(mImageMode != mode_invalid_format);
 
-    if (mImageMode == mode_invalid_format) {
-        enableToolBar(false);
+    bool enabled = mImageMode != mode_invalid_format;
+    enableToolBar(enabled);
+
+    if (!enabled)
         return;
-    }
 
     disconnect(mChannelComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkTransferToolBar::changeChannel);
     mChannelComboBox->clear();
@@ -751,6 +744,8 @@ void DkTransferToolBar::enableTFCheckBoxClicked(int state)
 
 void DkTransferToolBar::enableToolBar(bool enable)
 {
+    mEnableTFCheckBox->setEnabled(enable);
+
     QObjectList list = this->children();
 
     for (int i = 0; i < list.count(); i++) {
