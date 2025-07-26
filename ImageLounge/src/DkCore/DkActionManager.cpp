@@ -997,10 +997,10 @@ void DkActionManager::createActions(QWidget *parent)
 
     mFileActions[menu_file_open_dir] = new QAction(mFileIcons[icon_file_dir], QObject::tr("Open &Directory"), parent);
     mFileActions[menu_file_open_dir]->setShortcut(QKeySequence(shortcut_open_dir));
-    mFileActions[menu_file_open_dir]->setStatusTip(QObject::tr("Open a directory and load its first image"));
+    mFileActions[menu_file_open_dir]->setStatusTip(QObject::tr("Open a directory"));
 
     mFileActions[menu_file_open_list] = new QAction(QObject::tr("&Open Tabs"), parent);
-    mFileActions[menu_file_open_list]->setStatusTip(QObject::tr("Open a texfile containing a list of filepaths, and open tabs for them"));
+    mFileActions[menu_file_open_list]->setStatusTip(QObject::tr("Open a text file containing a list of filepaths, and open tabs for them"));
 
     mFileActions[menu_file_quick_launch] = new QAction(QObject::tr("&Quick Launch"), parent);
 #ifdef Q_OS_WIN

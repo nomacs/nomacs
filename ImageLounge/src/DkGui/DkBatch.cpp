@@ -240,19 +240,20 @@ void DkInputTextEdit::appendFromMime(const QMimeData *mimeData, bool recursive)
     if (!mimeData || !mimeData->hasUrls())
         return;
 
-    QStringList cFiles;
+    QStringList files;
 
-    for (QUrl url : mimeData->urls()) {
-        QFileInfo cFile = DkUtils::urlToLocalFile(url);
+    const auto urls = mimeData->urls();
+    for (auto &url : urls) {
+        DkFileInfo fileInfo(DkUtils::urlToLocalFile(url));
 
-        if (cFile.isDir())
-            appendDir(cFile.absoluteFilePath(), recursive);
-        else if (cFile.exists() && DkUtils::isValid(cFile))
-            cFiles.append(cFile.absoluteFilePath());
+        if (fileInfo.isDir())
+            appendDir(fileInfo.path(), recursive);
+        else if (DkUtils::isLoadable(fileInfo))
+            files.append(fileInfo.path());
     }
 
-    if (!cFiles.empty())
-        appendFiles(cFiles);
+    if (!files.empty())
+        appendFiles(files);
 }
 
 void DkInputTextEdit::insertFromMimeData(const QMimeData *mimeData)
@@ -356,14 +357,10 @@ void DkBatchInput::createLayout(DkThumbLoader *thumbLoader)
 
     // add explorer
     mExplorer = new DkExplorer(tr("File Explorer"));
-    mExplorer->getModel()->setFilter(QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot | QDir::AllDirs);
-    mExplorer->getModel()->setNameFilters(QStringList());
+    mExplorer->getModel()->setFilter(QDir::Files | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot | QDir::AllDirs);
+    mExplorer->getModel()->setNameFilters(DkSettingsManager::param().app().containerRawFilters.split(' '));
+    mExplorer->getModel()->setNameFilterDisables(false);
     mExplorer->setMaximumWidth(300);
-
-    QStringList folders = DkSettingsManager::param().global().recentFiles;
-
-    if (folders.size() > 0)
-        mExplorer->setCurrentPath(folders[0]);
 
     // tab widget
     mInputTabs = new QTabWidget(this);
@@ -3021,12 +3018,12 @@ void DkBatchWidget::widgetChanged()
         QString fString = url.toString();
         fString = fString.replace("file:///", "");
 
-        QFileInfo cFileInfo = QFileInfo(fString);
+        DkFileInfo cFileInfo(fString);
         if (!cFileInfo.exists()) // try an alternative conversion
-            cFileInfo = QFileInfo(url.toLocalFile());
+            cFileInfo = DkFileInfo(url.toLocalFile());
 
         outputWidget()->setExampleFilename(cFileInfo.fileName());
-        manipulatorWidget()->setExampleFile(cFileInfo.filePath());
+        manipulatorWidget()->setExampleFile(cFileInfo.path());
         mButtonWidget->playButton()->setEnabled(true);
     }
 }

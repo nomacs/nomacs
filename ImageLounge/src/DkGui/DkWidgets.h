@@ -329,12 +329,12 @@ public:
 
 public slots:
     void setCurrentImage(QSharedPointer<DkImageContainerT> img);
-    void setCurrentPath(const QString &filePath);
+    void setCurrentPath(const QString &path);
     void fileClicked(const QModelIndex &index) const;
     void showColumn(bool show);
     void setEditable(bool editable);
     void adjustColumnWidth();
-    void loadSelectedToggled(bool checked);
+    void enableLoadSelected(bool enable);
     void openSelected();
 
 signals:
@@ -653,11 +653,11 @@ private:
     QMenu *mContextMenu = 0;
 };
 
-class DkFileInfo
+class DkFileInfoWrapper
 {
 public:
-    DkFileInfo();
-    DkFileInfo(const QFileInfo &fileInfo);
+    DkFileInfoWrapper();
+    DkFileInfoWrapper(const QFileInfo &fileInfo);
 
     QString getFilePath() const;
     bool exists() const;
@@ -677,7 +677,7 @@ class DkFolderLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkFolderLabel(const DkFileInfo &fileInfo, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    DkFolderLabel(const DkFileInfoWrapper &fileInfo, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 signals:
     void loadFileSignal(const QString &) const;
@@ -685,7 +685,7 @@ signals:
 protected:
     void mousePressEvent(QMouseEvent *ev) override;
 
-    DkFileInfo fileInfo;
+    DkFileInfoWrapper fileInfo;
 };
 
 class DkDirectoryEdit : public QLineEdit
