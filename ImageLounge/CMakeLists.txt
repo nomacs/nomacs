@@ -9,6 +9,8 @@ endif(COMMAND cmake_policy)
 
 project(nomacs)
 
+include(GNUInstallDirs)
+
 # needed for soname
 set(NOMACS_VERSION_MAJOR 3)
 set(NOMACS_VERSION_MINOR 21)

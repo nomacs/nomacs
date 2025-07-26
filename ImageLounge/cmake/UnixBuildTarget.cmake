@@ -72,7 +72,7 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE
 
 # installation
 #  binary
-install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} DESTINATION bin LIBRARY DESTINATION lib${LIB_SUFFIX})
+install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} DESTINATION bin LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 #  translations
 install(FILES ${NOMACS_QM} DESTINATION "share/nomacs/Image Lounge/translations")
 #  manpage
