@@ -32,6 +32,7 @@
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
+#include <QCloseEvent>
 #include <QComboBox>
 #include <QDebug>
 #include <QEvent>
@@ -493,9 +494,14 @@ void DkDockWidget::setVisible(bool visible, bool saveSetting)
 
 void DkDockWidget::closeEvent(QCloseEvent *event)
 {
-    setVisible(false);
+    if (isFloating()) {
+        setFloating(false);
+        event->ignore();
+    } else {
+        setVisible(false);
 
-    QDockWidget::closeEvent(event);
+        QDockWidget::closeEvent(event);
+    }
 }
 
 Qt::DockWidgetArea DkDockWidget::getDockLocationSettings(const Qt::DockWidgetArea &defaultArea) const

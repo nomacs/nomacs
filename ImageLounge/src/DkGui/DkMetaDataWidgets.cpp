@@ -444,6 +444,8 @@ void DkMetaDataDock::updateEntries(QSharedPointer<DkMetaDataT> metadata)
     mModel = new DkMetaDataModel(this);
     mModel->addMetaData(metadata);
     mProxyModel->setSourceModel(mModel);
+        mThumbNailLabel->hide();
+    mThumbNailLabel->show();
 
     mTreeView->setUpdatesEnabled(false);
     nr = mProxyModel->rowCount();
