@@ -15,8 +15,8 @@
 
 #define NOMACS_VERSION_RC @NOMACS_VERSION_MAJOR@,@NOMACS_VERSION_MINOR@,@NOMACS_VERSION_PATCH@
 
-// install path of shared libraries and plugins
-#define NOMACS_INSTALL_LIBPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}"
+// install path of shared libs and plugins
+#define NOMACS_INSTALL_LIBPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
 
 // compile-time revision of nomacs
 #define NOMACS_REVISION_STR "${NOMACS_REVISION}"
