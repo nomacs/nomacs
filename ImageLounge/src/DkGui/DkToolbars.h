@@ -256,7 +256,6 @@ public:
         info_icon,
 
         icons_end,
-
     };
 
     DkCropToolBar(const QString &title, QWidget *parent = 0);

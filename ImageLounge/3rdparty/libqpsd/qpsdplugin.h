@@ -24,22 +24,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 #include <QImageIOPlugin>
 
-
 class QPsdPlugin : public QImageIOPlugin
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "QPsdPlugin.json")
 #endif // QT_VERSION >= 0x050000
-    
+
 public:
     QPsdPlugin(QObject *parent = 0);
     ~QPsdPlugin();
     QStringList keys() const;
-    Capabilities capabilities(QIODevice *device,
-                    const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device,
-                               const QByteArray &format = QByteArray()) const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
 };
 
 #endif // QPSDPLUGIN_H

@@ -81,10 +81,34 @@ class DllCoreExport DkControlWidget : public DkWidget
     Q_OBJECT
 
 public:
-    enum VerPos { top_scroll = 0, top_thumbs, top_metadata, top_info, ver_center, bottom_info, bottom, bottom_metadata, bottom_thumbs, ver_pos_end };
-    enum HorPos { left_thumbs = 0, left_metadata, left, hor_center, right, right_metadata, right_thumbs, hor_pos_end };
+    enum VerPos {
+        top_scroll = 0,
+        top_thumbs,
+        top_metadata,
+        top_info,
+        ver_center,
+        bottom_info,
+        bottom,
+        bottom_metadata,
+        bottom_thumbs,
+        ver_pos_end
+    };
+    enum HorPos {
+        left_thumbs = 0,
+        left_metadata,
+        left,
+        hor_center,
+        right,
+        right_metadata,
+        right_thumbs,
+        hor_pos_end
+    };
 
-    enum InfoPos { bottom_left_label, bottom_right_label, top_left_label };
+    enum InfoPos {
+        bottom_left_label,
+        bottom_right_label,
+        top_left_label
+    };
 
     enum Widgets {
         last_widget = -1,

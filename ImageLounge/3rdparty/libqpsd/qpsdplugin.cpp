@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include "qpsdplugin.h"
 #include "qpsdhandler.h"
 
-QPsdPlugin::QPsdPlugin(QObject *parent) :
-    QImageIOPlugin(parent)
+QPsdPlugin::QPsdPlugin(QObject *parent)
+    : QImageIOPlugin(parent)
 {
 }
 
@@ -36,11 +36,10 @@ QStringList QPsdPlugin::keys() const
     return QStringList() << "psd" << "psb";
 }
 
-QImageIOPlugin::Capabilities QPsdPlugin::capabilities(
-    QIODevice *device, const QByteArray &format) const
+QImageIOPlugin::Capabilities QPsdPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
     if (format == "psd" || format == "psb")
-        return Capabilities(CanRead);//TODO: add CanWrite support
+        return Capabilities(CanRead); // TODO: add CanWrite support
 
     if (!(format.isEmpty() && device->isOpen()))
         return {};
@@ -51,8 +50,7 @@ QImageIOPlugin::Capabilities QPsdPlugin::capabilities(
     return cap;
 }
 
-QImageIOHandler *QPsdPlugin::create(
-    QIODevice *device, const QByteArray &format) const
+QImageIOHandler *QPsdPlugin::create(QIODevice *device, const QByteArray &format) const
 {
     QImageIOHandler *handler = new QPsdHandler;
     handler->setDevice(device);

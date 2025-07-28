@@ -320,8 +320,7 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply *data)
         }
 
         file.write(data->readAll());
-        qDebug() << "saved new version: "
-                 << " " << QFileInfo(file).absoluteFilePath();
+        qDebug() << "saved new version: " << " " << QFileInfo(file).absoluteFilePath();
 
         file.close();
 
@@ -455,8 +454,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply *reply)
         }
 
         file.write(reply->readAll());
-        qDebug() << "saved new translation: "
-                 << " " << QFileInfo(file).absoluteFilePath();
+        qDebug() << "saved new translation: " << " " << QFileInfo(file).absoluteFilePath();
 
         file.close();
 

@@ -722,11 +722,9 @@ void DkNoMacs::restartFrameless(bool)
     QStringList args;
 
     if (objectName() != "DkNoMacsFrameless")
-        args << "-m"
-             << "frameless";
+        args << "-m" << "frameless";
     else
-        args << "-m"
-             << "default";
+        args << "-m" << "default";
 
     if (isFullScreen())
         args << "-f";
@@ -1574,11 +1572,9 @@ void DkNoMacs::restartWithPseudoColor(bool contrast)
     QStringList args;
 
     if (contrast)
-        args << "-m"
-             << "pseudocolor";
+        args << "-m" << "pseudocolor";
     else
-        args << "-m"
-             << "default";
+        args << "-m" << "default";
 
     if (isFullScreen())
         args << "-f";

@@ -124,9 +124,7 @@ int main(int argc, char *argv[])
     parser.addPositionalArgument("[File|Directory...]", QObject::tr("List of files and/or directories to open"));
 
     // fullscreen (-f)
-    QCommandLineOption fullScreenOpt(QStringList() << "f"
-                                                   << "fullscreen",
-                                     QObject::tr("Start in fullscreen."));
+    QCommandLineOption fullScreenOpt(QStringList() << "f" << "fullscreen", QObject::tr("Start in fullscreen."));
     parser.addOption(fullScreenOpt);
 
     QCommandLineOption slideshowOpt(QStringList() << "slideshow", QObject::tr("Start slideshow playback"));
@@ -135,15 +133,10 @@ int main(int argc, char *argv[])
     QCommandLineOption pongOpt(QStringList() << "pong", QObject::tr("Start Pong."));
     parser.addOption(pongOpt);
 
-    QCommandLineOption privateOpt(QStringList() << "p"
-                                                << "private",
-                                  QObject::tr("Start in private mode."));
+    QCommandLineOption privateOpt(QStringList() << "p" << "private", QObject::tr("Start in private mode."));
     parser.addOption(privateOpt);
 
-    QCommandLineOption modeOpt(QStringList() << "m"
-                                             << "mode",
-                               QObject::tr("Set the viewing mode <mode>."),
-                               QObject::tr("default | frameless | pseudocolor"));
+    QCommandLineOption modeOpt(QStringList() << "m" << "mode", QObject::tr("Set the viewing mode <mode>."), QObject::tr("default | frameless | pseudocolor"));
     parser.addOption(modeOpt);
 
     QCommandLineOption batchOpt(QStringList() << "batch", QObject::tr("Batch processing of <batch-settings.pnm>."), QObject::tr("batch-settings-path"));

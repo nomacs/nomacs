@@ -322,7 +322,7 @@ protected:
     virtual void draw(QPainter *painter);
 
     // for my children...
-    virtual void drawBackground(QPainter *){};
+    virtual void drawBackground(QPainter *) {};
     virtual void setTextToLabel();
     virtual void updateStyleSheet();
 };

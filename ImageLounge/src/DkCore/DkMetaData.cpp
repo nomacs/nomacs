@@ -1379,10 +1379,9 @@ void DkMetaDataT::printMetaData() const
 
     Exiv2::XmpData::iterator endI3 = xmpData.end();
     for (Exiv2::XmpData::iterator md = xmpData.begin(); md != endI3; ++md) {
-        std::cout << std::setw(44) << std::setfill(' ') << std::left << md->key() << " "
-                  << "0x" << std::setw(4) << std::setfill('0') << std::right << std::hex << md->tag() << " " << std::setw(9) << std::setfill(' ') << std::left
-                  << md->typeName() << " " << std::dec << std::setw(3) << std::setfill(' ') << std::right << md->count() << "  " << std::dec << md->value()
-                  << std::endl;
+        std::cout << std::setw(44) << std::setfill(' ') << std::left << md->key() << " " << "0x" << std::setw(4) << std::setfill('0') << std::right << std::hex
+                  << md->tag() << " " << std::setw(9) << std::setfill(' ') << std::left << md->typeName() << " " << std::dec << std::setw(3)
+                  << std::setfill(' ') << std::right << md->count() << "  " << std::dec << md->value() << std::endl;
     }
 
     std::string xmpPacket;
