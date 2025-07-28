@@ -1001,22 +1001,25 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings)
         addDockWidget(mExplorer->getDockLocationSettings(Qt::LeftDockWidgetArea), mExplorer);
 
         connect(mExplorer, &DkExplorer::openFile, getTabWidget(), [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
-        connect(mExplorer, &DkExplorer::openDir, getTabWidget(), &DkCentralWidget::loadDirToTab);
+        connect(mExplorer, &DkExplorer::openDir, getTabWidget(), &DkCentralWidget::load);
         connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mExplorer, &DkExplorer::setCurrentImage);
         connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, mExplorer, &DkExplorer::setCurrentPath);
     }
 
     mExplorer->setVisible(show, saveSettings);
 
-    if (getTabWidget()->getCurrentImage() && QFileInfo(getTabWidget()->getCurrentFilePath()).exists()) {
-        mExplorer->setCurrentPath(getTabWidget()->getCurrentFilePath());
+    auto imgC = getTabWidget()->getCurrentImage();
+    if (imgC && imgC->fileInfo().exists()) {
+        mExplorer->setCurrentPath(imgC->fileInfo().path());
     } else {
-        QStringList folders = DkSettingsManager::param().global().recentFiles;
-
-        if (folders.size() > 0)
-            mExplorer->setCurrentPath(folders[0]);
+        QStringList filePaths = DkSettingsManager::param().global().recentFiles;
+        if (!filePaths.isEmpty()) {
+            DkFileInfo fileInfo(filePaths.first());
+            if (DkUtils::tryExists(fileInfo))
+                mExplorer->setCurrentPath(fileInfo.path());
+        }
     }
 }
 
@@ -1175,7 +1178,7 @@ void DkNoMacs::openDir()
     if (dirName.isEmpty())
         return;
 
-    getTabWidget()->loadDirToTab(dirName);
+    getTabWidget()->load(dirName);
 }
 
 void DkNoMacs::openFile()
@@ -1212,7 +1215,10 @@ void DkNoMacs::openFile()
         if (!dup) {
             // > 1: only open in tab if more than one file is opened
             bool newTab = (filePaths.size() > 1) || (getTabWidget()->getTabs().size() > 1);
-            getTabWidget()->loadFile(fp, newTab);
+            if (newTab)
+                getTabWidget()->loadToTab(fp);
+            else
+                getTabWidget()->load(fp);
         }
     }
     if (duplicates.count() > 0) { // Show message if at least one duplicate was found
@@ -1235,27 +1241,25 @@ void DkNoMacs::openFileList()
 
     // load system default open dialog
     QString fileName =
-        QFileDialog::getOpenFileName(this, tr("Open Image"), getTabWidget()->getCurrentDir(), openFilters.join(";;"), nullptr, DkDialog::fileDialogOptions());
+        QFileDialog::getOpenFileName(this, tr("Open Tabs"), getTabWidget()->getCurrentDir(), openFilters.join(";;"), nullptr, DkDialog::fileDialogOptions());
 
     if (fileName.isEmpty())
         return;
-
-    int count = getTabWidget()->getTabs().count();
-    if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
-        count = 0;
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     while (!file.atEnd()) {
-        QString line = file.readLine().simplified();
-        if (QFileInfo::exists(line)) {
-            getTabWidget()->loadFile(line, true);
+        QString filePath = file.readLine().trimmed();
+        if (filePath.isEmpty())
+            continue;
+        if (!DkFileInfo(filePath).exists()) {
+            qWarning() << "[open file list] file does not exist:" << filePath;
+            continue;
         }
+        getTabWidget()->loadToTab(filePath);
     }
-
-    getTabWidget()->setActiveTab(count);
 }
 
 void DkNoMacs::saveFileList()
@@ -1297,7 +1301,7 @@ void DkNoMacs::openQuickLaunch()
         mQuickAccess->addActions(DkActionManager::instance().allActions());
 
         connect(mQuickAccess, &DkQuickAccess::loadFileSignal, this, [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
     }
 
@@ -1328,10 +1332,7 @@ void DkNoMacs::loadFile(const QString &filePath)
     if (!getTabWidget())
         return;
 
-    if (QFileInfo(filePath).isDir())
-        getTabWidget()->loadDirToTab(filePath);
-    else
-        getTabWidget()->loadFile(filePath, false);
+    getTabWidget()->load(filePath);
 }
 
 void DkNoMacs::find(bool filterAction)
@@ -1351,7 +1352,7 @@ void DkNoMacs::find(bool filterAction)
 
         connect(searchDialog, &DkSearchDialog::filterSignal, getTabWidget()->getCurrentImageLoader().data(), &DkImageLoader::setFolderFilter);
         connect(searchDialog, &DkSearchDialog::loadFileSignal, this, [this](const QString &path) {
-            getTabWidget()->loadFile(path);
+            getTabWidget()->load(path);
         });
         int answer = searchDialog->exec();
 
@@ -1428,17 +1429,15 @@ void DkNoMacs::trainFormat()
 void DkNoMacs::extractImagesFromArchive()
 {
 #ifdef WITH_QUAZIP
-
     if (!mArchiveExtractionDialog)
         mArchiveExtractionDialog = new DkArchiveExtractionDialog(this);
 
-    if (getTabWidget()->getCurrentImage()) {
-        if (getTabWidget()->getCurrentImage()->isFromZip())
-            mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentImage()->getZipData()->getZipFilePath(), true);
-        else
-            mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
-    } else
-        mArchiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
+    auto *tab = getTabWidget();
+    auto imgC = tab->getCurrentImage();
+    if (imgC && imgC->fileInfo().isFromZip())
+        mArchiveExtractionDialog->setCurrentFile(imgC->dirPath(), true);
+    else
+        mArchiveExtractionDialog->setCurrentFile(tab->getCurrentFilePath(), false);
 
     mArchiveExtractionDialog->exec();
 #endif
@@ -1699,16 +1698,38 @@ void DkNoMacs::openFileWith(QAction *action)
 
     QStringList args;
 
-    QString filePath = getTabWidget()->getCurrentFilePath();
+    // open the file location, not the file itself
+    bool openLocation = app.fileName() == "explorer.exe";
 
-    if (app.fileName() == "explorer.exe")
-        args << "/select," << QDir::toNativeSeparators(filePath);
+    DkFileInfo fileInfo(getTabWidget()->getCurrentFilePath());
+    if (!openLocation && fileInfo.isFromZip()) {
+        // copy to temporary file
+        QString tmpFilePath = DkUtils::getTemporaryFilePath(fileInfo.baseName(), fileInfo.suffix());
+        if (tmpFilePath.isEmpty())
+            return;
+
+        QFile tmpFile(tmpFilePath);
+        if (!tmpFile.open(QFile::WriteOnly))
+            return;
+
+        auto io = fileInfo.getIODevice();
+        if (!io)
+            return;
+
+        QByteArray data = io->readAll();
+        if (data.size() != tmpFile.write(data))
+            return;
+
+        fileInfo = DkFileInfo(tmpFilePath);
+    }
+    QString filePath = fileInfo.path();
+    if (openLocation)
+        args << "/select," << QDir::toNativeSeparators(fileInfo.isFromZip() ? fileInfo.dirPath() : filePath);
     else if (app.fileName().toLower() == "outlook.exe") {
         args << "/a" << QDir::toNativeSeparators(filePath);
     } else
         args << QDir::toNativeSeparators(filePath);
 
-    // bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
     bool started = mProcess.startDetached(app.absoluteFilePath(), args);
 
     if (started)

@@ -117,7 +117,7 @@ public:
 
 public slots:
     void moveImages();
-    void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs);
+    void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> images);
     void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
     void newPosition();
 
@@ -176,7 +176,7 @@ private:
     QMenu *contextMenu;
     QVector<QAction *> contextMenuActions;
 
-    std::vector<QString> mFilePaths{};
+    std::vector<DkFileInfo> mFiles{};
 
     struct Thumb {
         QImage image{};
@@ -203,7 +203,7 @@ class DkThumbLabel : public QGraphicsObject
     Q_OBJECT
 
 public:
-    DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, bool fillSquare, QGraphicsItem *parent = nullptr);
+    DkThumbLabel(DkThumbLoader *thumbLoader, const DkFileInfo &fileInfo, bool fillSquare, QGraphicsItem *parent = nullptr);
     ~DkThumbLabel();
 
     QRectF boundingRect() const override;
@@ -296,7 +296,7 @@ private:
 
     QVector<DkThumbLabel *> mThumbLabels;
     QSharedPointer<DkImageLoader> mLoader;
-    QVector<QString> mThumbs;
+    QVector<DkFileInfo> mThumbs;
     DkThumbLoader *mThumbLoader;
 };
 
@@ -380,23 +380,54 @@ protected:
 class DkRecentDir
 {
 public:
-    DkRecentDir(const QStringList &filePaths = QStringList(), bool pinned = false);
+    DkRecentDir(const DkFileInfo &dir, const DkFileInfoList &files = {}, bool pinned = false);
 
-    bool operator==(const DkRecentDir &o) const;
-    void update(const DkRecentDir &o);
+    // copy file paths from another dir
+    void update(const DkRecentDir &dir);
 
-    bool isEmpty() const;
-    bool isPinned() const;
+    // add file to list of recents
+    void append(const DkFileInfo &file);
+
+    // remove paths from recent files/pinned files settings
+    void removeFromHistory() const;
+
+    bool operator==(const DkRecentDir &dir) const
+    {
+        return mDir == dir.mDir;
+    }
+
+    bool isEmpty() const
+    {
+        return mFiles.isEmpty();
+    }
+
+    bool isPinned() const
+    {
+        return mIsPinned;
+    }
 
     QString dirName() const;
     QString dirPath() const;
-    QString firstFilePath() const;
+
+    DkFileInfo firstFile() const
+    {
+        return mFiles.value(0);
+    }
+
+    QString firstFilePath() const
+    {
+        return mFiles.value(0).path();
+    }
+
+    // get up to max most-recent files
+    DkFileInfoList files(int max = -1) const;
+
+    // get up to max most-recent paths
     QStringList filePaths(int max = -1) const;
 
-    void remove() const;
-
 private:
-    QStringList mFilePaths;
+    DkFileInfo mDir;
+    DkFileInfoList mFiles;
     bool mIsPinned = false;
 };
 
@@ -405,7 +436,10 @@ class DkRecentDirManager
 public:
     DkRecentDirManager();
 
-    QList<DkRecentDir> recentDirs() const;
+    QList<DkRecentDir> recentDirs() const
+    {
+        return mDirs;
+    }
 
 private:
     QList<DkRecentDir> genFileLists(const QStringList &filePaths, bool pinned = false);

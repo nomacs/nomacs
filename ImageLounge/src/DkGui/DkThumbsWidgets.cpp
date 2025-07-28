@@ -252,7 +252,7 @@ void DkFilePreview::createContextMenu()
 void DkFilePreview::paintEvent(QPaintEvent *)
 {
     // render nothing if there are no thumbs
-    if (mFilePaths.empty())
+    if (mFiles.empty())
         return;
 
     if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
@@ -304,17 +304,20 @@ void DkFilePreview::drawThumbs(QPainter *painter)
     // mouse over effect
     QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
 
-    for (int idx = 0; idx < mFilePaths.size(); idx++) {
-        QImage img;
+    for (int idx = 0; idx < mFiles.size(); idx++) {
+        const QString &filePath = mFiles[idx].path();
 
-        bool existsInTable = mThumbs.contains(mFilePaths[idx]);
-        if (existsInTable && mThumbs[mFilePaths[idx]].notExist) {
+        const auto thumb = mThumbs.constFind(filePath);
+        bool existsInTable = thumb != mThumbs.constEnd();
+
+        if (existsInTable && thumb->notExist) {
             thumbRects.push_back(QRectF());
             continue;
         }
 
-        if (existsInTable && !mThumbs[mFilePaths[idx]].image.isNull()) {
-            img = mThumbs[mFilePaths[idx]].image;
+        QImage img;
+        if (existsInTable && !thumb->image.isNull()) {
+            img = thumb->image;
         }
 
         // if (img.width() > max_thumb_size * DkSettingsManager::param().dpiScaleFactor())
@@ -357,9 +360,9 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         const bool oobEnd = (orientation == Qt::Horizontal && imgWorldRect.left() > width()) || (orientation == Qt::Vertical && imgWorldRect.top() > height());
 
         if (oobStart || oobEnd) {
-            if (existsInTable && mThumbs[mFilePaths[idx]].loading) {
-                mThumbLoader->cancelThumbnailRequest(mFilePaths[idx]);
-                mThumbs.remove(mFilePaths[idx]);
+            if (existsInTable && thumb->loading) {
+                mThumbLoader->cancelThumbnailRequest(filePath);
+                mThumbs.remove(filePath);
             }
 
             if (oobEnd && !scrollToCurrentImage) {
@@ -370,9 +373,10 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         // only fetch thumbs if we are not moving too fast...
         if (!existsInTable) {
-            mThumbs[mFilePaths[idx]] = {};
-            mThumbs[mFilePaths[idx]].loading = true;
-            mThumbLoader->requestThumbnail(mFilePaths[idx]);
+            Thumb newThumb;
+            newThumb.loading = true;
+            mThumbs.insert(filePath, newThumb);
+            mThumbLoader->requestThumbnail(filePath);
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
@@ -584,21 +588,22 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
             if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
                 selected = idx;
 
-                if (selected < mFilePaths.size() && selected >= 0) {
+                if (selected < mFiles.size() && selected >= 0) {
                     // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettingsManager::param().display().highlightColor, 0.3f);
 
                     // important: setText shows the label - if you then hide it here again you'll get a stack overflow
                     // if (fileLabel->height() < height())
                     //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
-                    QFileInfo fileInfo(mFilePaths[selected]);
+                    const DkFileInfo &fileInfo = mFiles[selected];
+                    auto thumb = mThumbs.constFind(fileInfo.path());
+                    Q_ASSERT(thumb != mThumbs.constEnd());
 
                     QString str = QObject::tr("Name: ") % fileInfo.fileName() % "\n" % QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size())
                         % "\n" % QObject::tr("Created: ") % fileInfo.birthTime().toString();
-                    if (!mThumbs[mFilePaths[selected]].notExist) {
-                        const Thumb &thumb{mThumbs[mFilePaths[selected]]};
-                        const QImage &img{thumb.image};
+                    if (!thumb->notExist) {
+                        const QImage &img = thumb->image;
                         str = str % "\n" % QObject::tr("Thumb: ") % QString::number(img.size().width()) % "x" % QString::number(img.size().height()) % " "
-                            % (thumb.fromExif ? QObject::tr("Embedded ") : "");
+                            % (thumb->fromExif ? QObject::tr("Embedded ") : "");
                     }
                     setToolTip(str);
                     setStatusTip(fileInfo.fileName());
@@ -762,7 +767,7 @@ void DkFilePreview::moveImages()
     if (scrollToCurrentImage) {
         float cDist = limit / 2.0f - center;
 
-        if (mFilePaths.size() < 2000) {
+        if (mFiles.size() < 2000) {
             if (fabs(cDist) < limit) {
                 currentDx = sqrt(fabs(cDist)) / 1.3f;
                 if (cDist < 0)
@@ -815,8 +820,8 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
     int tIdx = -1;
 
-    for (int idx = 0; idx < mFilePaths.size(); idx++) {
-        if (mFilePaths.at(idx) == cImage->originalFilePath()) {
+    for (int idx = 0; idx < mFiles.size(); idx++) {
+        if (mFiles[idx] == cImage->originalFileInfo()) {
             tIdx = idx;
             break;
         }
@@ -828,13 +833,14 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
     update();
 }
 
-void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
+void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> images)
 {
     mThumbs.clear();
-    mFilePaths = std::vector<QString>(thumbs.size());
-    for (int idx = 0; idx < thumbs.size(); idx++) {
-        mFilePaths[idx] = thumbs[idx]->originalFilePath();
-        if (thumbs.at(idx)->isSelected()) {
+    mFiles.resize(images.size());
+    for (int idx = 0; idx < images.size(); idx++) {
+        const auto &imgC = images[idx];
+        mFiles[idx] = imgC->originalFileInfo();
+        if (imgC->isSelected()) {
             currentFileIdx = idx;
         }
     }
@@ -852,15 +858,14 @@ void DkFilePreview::setVisible(bool visible, bool saveSettings)
 }
 
 // DkThumbLabel --------------------------------------------------------------------
-DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const QString &path, bool fillSquare, QGraphicsItem *parent)
+DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const DkFileInfo &fileInfo, bool fillSquare, QGraphicsItem *parent)
     : QGraphicsObject(parent)
     , mText(this)
+    , mFilePath{fileInfo.path()}
     , mThumbLoader{thumbLoader}
-    , mFilePath{path}
     , mFillSquare{fillSquare}
 
 {
-    const QFileInfo fileInfo(mFilePath);
     // clang-format off
     mTooltip =
         QObject::tr("Name: ") % fileInfo.fileName() % "\n" %
@@ -1201,7 +1206,7 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
     mThumbs.clear();
     mThumbs.reserve(thumbs.size());
     for (const auto &img : thumbs) {
-        mThumbs.push_back(img->originalFilePath());
+        mThumbs.push_back(img->originalFileInfo());
     }
     updateThumbLabels();
 
@@ -1219,8 +1224,8 @@ void DkThumbScene::updateThumbLabels()
 
     mThumbLabels.clear();
 
-    for (const auto &filePath : mThumbs) {
-        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader, filePath, DkSettingsManager::param().display().displaySquaredThumbs);
+    for (const auto &fileInfo : std::as_const(mThumbs)) {
+        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader, fileInfo, DkSettingsManager::param().display().displaySquaredThumbs);
         connect(thumb, &DkThumbLabel::loadFileSignal, this, &DkThumbScene::loadFileSignal);
         connect(thumb, &DkThumbLabel::showFileSignal, this, &DkThumbScene::showFile);
 
@@ -1340,7 +1345,7 @@ QString DkThumbScene::currentDir() const
         }
     }
 
-    return QFileInfo(mThumbs[0]).absolutePath();
+    return mThumbs[0].dirPath();
 }
 
 int DkThumbScene::selectedThumbIndex(bool first)
@@ -1482,7 +1487,18 @@ void DkThumbScene::copyImages(const QMimeData *mimeData, const Qt::DropAction &d
     if (!mimeData || !mimeData->hasUrls() || !mLoader)
         return;
 
-    QDir dir = mLoader->getDirPath();
+    DkFileInfo dirInfo(mLoader->getDirPath());
+    if (!dirInfo.isDir()) {
+        QMessageBox::information(DkUtils::getMainWindow(), tr("Copy Images"), tr("The current directory is invalid or no longer exists."));
+        return;
+    }
+
+    if (dirInfo.isZipFile()) {
+        QMessageBox::information(DkUtils::getMainWindow(), tr("Copy Images"), tr("Copying to an archive is unsupported."));
+        return;
+    }
+
+    QDir dir = dirInfo.path();
 
     for (QUrl url : mimeData->urls()) {
         QFileInfo fileInfo = DkUtils::urlToLocalFile(url);
@@ -1810,10 +1826,10 @@ void DkThumbsView::dragEnterEvent(QDragEnterEvent *event)
         QUrl url = event->mimeData()->urls().at(0);
         url = url.toLocalFile();
 
-        QFileInfo file = QFileInfo(url.toString());
+        DkFileInfo file(url.toString());
 
         // just accept image files
-        if (DkUtils::isValid(file))
+        if (DkUtils::isLoadable(file))
             event->acceptProposedAction();
         else if (file.isDir())
             event->acceptProposedAction();
@@ -1830,10 +1846,10 @@ void DkThumbsView::dragMoveEvent(QDragMoveEvent *event)
         QUrl url = event->mimeData()->urls().at(0);
         url = url.toLocalFile();
 
-        QFileInfo file = QFileInfo(url.toString());
+        DkFileInfo file(url.toString());
 
         // just accept image files
-        if (DkUtils::isValid(file))
+        if (DkUtils::isLoadable(file))
             event->acceptProposedAction();
         else if (file.isDir())
             event->acceptProposedAction();
@@ -2111,13 +2127,16 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event)
 
 void DkThumbScrollWidget::enableSelectionActions()
 {
-    bool enable = !mThumbsScene->getSelectedFiles().isEmpty();
+    const QStringList files = mThumbsScene->getSelectedFiles();
+    bool hasSelection = !files.isEmpty();
+    bool isFromZip = hasSelection && DkFileInfo(files[0]).isFromZip();
 
     DkActionManager &am = DkActionManager::instance();
-    am.action(DkActionManager::preview_copy)->setEnabled(enable);
-    am.action(DkActionManager::preview_rename)->setEnabled(enable);
-    am.action(DkActionManager::preview_delete)->setEnabled(enable);
-    am.action(DkActionManager::preview_batch)->setEnabled(enable);
+    am.action(DkActionManager::preview_copy)->setEnabled(hasSelection && !isFromZip);
+
+    am.action(DkActionManager::preview_rename)->setEnabled(hasSelection && !isFromZip);
+    am.action(DkActionManager::preview_delete)->setEnabled(hasSelection && !isFromZip);
+    am.action(DkActionManager::preview_batch)->setEnabled(hasSelection);
 
     am.action(DkActionManager::preview_select_all)->setChecked(mThumbsScene->allThumbsSelected());
 }
@@ -2182,9 +2201,8 @@ void DkThumbPreviewLabel::mousePressEvent(QMouseEvent *ev)
 // -------------------------------------------------------------------- DkRecentFilesEntry
 DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir &rde, DkThumbLoader *thumbLoader, QWidget *parent)
     : DkWidget(parent)
+    , mRecentDir(rde)
 {
-    mRecentDir = rde;
-
     createLayout(thumbLoader);
 }
 
@@ -2226,16 +2244,16 @@ void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
 
     QVector<DkThumbPreviewLabel *> tls;
 
-    // check if the folder exists (in the current context)
-    // this should fix issues with disconnected samba drives on windows
-    if (DkUtils::exists(QFileInfo(mRecentDir.firstFilePath()), 30)) {
-        for (auto tp : mRecentDir.filePaths(4)) {
-            auto tpl = new DkThumbPreviewLabel(tp, thumbLoader, 42, this);
+    DkFileInfo firstFile = mRecentDir.firstFile();
+    if (DkUtils::tryExists(firstFile, 30)) {
+        const DkFileInfoList files = mRecentDir.files(4);
+        for (auto &tp : files) {
+            auto tpl = new DkThumbPreviewLabel(tp.path(), thumbLoader, 42, this);
             connect(tpl, &DkThumbPreviewLabel::loadFileSignal, this, &DkRecentDirWidget::loadFileSignal);
             tls << tpl;
         }
     } else {
-        qInfo() << mRecentDir.firstFilePath() << "does not exist - according to a fast check";
+        qInfo() << firstFile.path() << "does not exist - according to a fast check";
     }
 
     QLabel *pathLabel = new QLabel(mRecentDir.dirPath(), this);
@@ -2273,7 +2291,7 @@ void DkRecentDirWidget::onPinClicked(bool checked)
 
 void DkRecentDirWidget::onRemoveClicked()
 {
-    mRecentDir.remove();
+    mRecentDir.removeFromHistory();
     emit removeSignal();
 }
 
@@ -2376,141 +2394,113 @@ void DkRecentFilesWidget::entryRemoved()
 }
 
 // -------------------------------------------------------------------- DkRecentDir
-DkRecentDir::DkRecentDir(const QStringList &filePaths, bool pinned)
+DkRecentDir::DkRecentDir(const DkFileInfo &dir, const DkFileInfoList &files, bool pinned)
 {
-    mFilePaths = filePaths;
+    mDir = dir;
+    mFiles = files;
     mIsPinned = pinned;
 }
 
-bool DkRecentDir::operator==(const DkRecentDir &o) const
+void DkRecentDir::update(const DkRecentDir &dir)
 {
-    return dirPath() == o.dirPath();
+    Q_ASSERT(dir.mDir.path() == mDir.path());
+
+    for (auto &info : dir.mFiles) {
+        mFiles.removeAll(info);
+        mFiles.append(info);
+    }
 }
 
-void DkRecentDir::update(const DkRecentDir &o)
+void DkRecentDir::append(const DkFileInfo &file)
 {
-    for (const QString &cp : o.filePaths())
-        mFilePaths.push_front(cp);
+    Q_ASSERT(file.dirPath() == mDir.path());
+    Q_ASSERT(!mFiles.contains(file));
+    mFiles.append(file);
+}
 
-    mFilePaths.removeDuplicates();
+DkFileInfoList DkRecentDir::files(int max) const
+{
+    DkFileInfoList list = mFiles;
+    if (max > 0)
+        list = mFiles.mid(0, max);
+    return list;
 }
 
 QStringList DkRecentDir::filePaths(int max) const
 {
-    if (max <= 0)
-        return mFilePaths;
+    DkFileInfoList list = mFiles;
+    if (max > 0)
+        list = mFiles.mid(0, max);
 
-    QStringList fps = mFilePaths;
+    QStringList paths;
+    for (auto &info : qAsConst(list))
+        paths.append(info.path());
 
-    while (fps.size() > max)
-        fps.pop_back();
-
-    return fps;
-}
-
-bool DkRecentDir::isEmpty() const
-{
-    return mFilePaths.isEmpty();
-}
-
-bool DkRecentDir::isPinned() const
-{
-    return mIsPinned;
+    return paths;
 }
 
 QString DkRecentDir::dirName() const
 {
-    QDir d(dirPath());
-    return d.dirName();
+    return mDir.fileName();
 }
 
 QString DkRecentDir::dirPath() const
 {
-    if (mFilePaths.empty())
-        return QString("");
+    if (mFiles.empty())
+        return {};
 
-    return QFileInfo(mFilePaths[0]).absolutePath();
+    return mDir.path();
 }
 
-QString DkRecentDir::firstFilePath() const
+void DkRecentDir::removeFromHistory() const
 {
-    if (!mFilePaths.isEmpty())
-        return mFilePaths[0];
+    QStringList &pinnedFiles = DkSettingsManager::param().global().pinnedFiles;
+    QStringList &recentFiles = DkSettingsManager::param().global().recentFiles;
 
-    return QString();
-}
-
-void DkRecentDir::remove() const
-{
-    QStringList &pf = DkSettingsManager::param().global().pinnedFiles;
-    QStringList &rf = DkSettingsManager::param().global().recentFiles;
-
-    // remove from history
-    for (const QString &fp : mFilePaths) {
-        pf.removeAll(fp);
-        rf.removeAll(fp);
+    for (const auto &info : mFiles) {
+        QString filePath = info.path();
+        pinnedFiles.removeAll(filePath);
+        recentFiles.removeAll(filePath);
     }
 }
 
 // -------------------------------------------------------------------- DkRecentDirManager
 DkRecentDirManager::DkRecentDirManager()
 {
-    // update pinned files
+    // pinned dirs appear first, followed by dirs of recent files
     mDirs = genFileLists(DkSettingsManager::param().global().pinnedFiles, true);
-    auto recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);
+    QList<DkRecentDir> recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);
 
-    for (auto rde : recentDirs) {
-        if (!mDirs.contains(rde))
-            mDirs << rde;
-        else {
-            int idx = mDirs.indexOf(rde);
-            if (idx != -1)
-                mDirs[idx].update(rde);
-        }
+    // merge pinned dirs with recent dirs
+    for (const DkRecentDir &recentDir : recentDirs) {
+        int idx = mDirs.indexOf(recentDir);
+        if (idx < 0)
+            mDirs.append(recentDir);
+        else
+            mDirs[idx].update(recentDir);
     }
-}
-
-QList<DkRecentDir> DkRecentDirManager::recentDirs() const
-{
-    return mDirs;
 }
 
 QList<DkRecentDir> DkRecentDirManager::genFileLists(const QStringList &filePaths, bool pinned)
 {
-    QMap<QString, QStringList> gPaths;
+    QList<DkRecentDir> recentDirs; // keeps the order of dirs the same as filePaths (fixes #279)
+    QHash<QString, int> dirIndex; // use a map to avoid unecessary filesystem syscalls
+    for (const QString &recentFilePath : filePaths) {
+        // We do not require the file/dir to exist here
+        // - The check can be incredibly slow for disconnected networked resources
+        // - We do not want to hide history and have it potentially come back later
+        DkFileInfo fileInfo(recentFilePath);
+        QString dirPath = fileInfo.dirPath();
 
-    for (const QString &cp : filePaths) {
-        QFileInfo fi(cp);
-
-        // this if is needed if there are errors in our data
-        // however, it incredibly slows down the process if samba mounts are lost
-        // if (!fi.isFile())
-        //	continue;
-
-        // get folder
-        QString dp = fi.absolutePath();
-
-        auto dir = gPaths.find(dp);
-
-        // ok, create a new entry
-        if (dir == gPaths.end()) {
-            QStringList cpl;
-            cpl << cp;
-            gPaths.insert(dp, cpl);
+        auto it = dirIndex.find(dirPath);
+        if (it == dirIndex.end()) {
+            recentDirs.append(DkRecentDir(DkFileInfo{dirPath}, DkFileInfoList{fileInfo}, pinned));
+            dirIndex[dirPath] = recentDirs.count() - 1;
         } else {
-            // append the filename
-            dir.value() << cp;
+            recentDirs[it.value()].append(fileInfo);
         }
     }
 
-    // TODO: here is the issue reported in #279
-    // the map re-sorts the entries w.r.t to the path
-    // create recent directories
-    QList<DkRecentDir> rdes;
-    for (const QStringList &fps : gPaths.values())
-        rdes << DkRecentDir(fps, pinned);
-
-    return rdes;
+    return recentDirs;
 }
-
 }

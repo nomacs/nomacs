@@ -78,11 +78,6 @@
 #include <QtConcurrentRun>
 #include <qmath.h>
 
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
-#endif
-
 // opencv
 #ifdef WITH_OPENCV
 
@@ -101,19 +96,13 @@
 
 namespace nmc
 {
-
-// DkImageLoader -> is nomacs file handling routine --------------------------------------------------------------------
-/**
- * Default constructor.
- * Creates a DkImageLoader instance with a given file.
- * @param file the file to be loaded.
- **/
-DkImageLoader::DkImageLoader(const QString &filePath)
+DkImageLoader::DkImageLoader()
 {
     qRegisterMetaType<QFileInfo>("QFileInfo");
 
     mDirWatcher = new QFileSystemWatcher(this);
     connect(mDirWatcher, &QFileSystemWatcher::directoryChanged, this, &DkImageLoader::directoryChanged);
+    connect(mDirWatcher, &QFileSystemWatcher::fileChanged, this, &DkImageLoader::directoryChanged); // for containers
 
     mSortingIsDirty = false;
     mSortingImages = false;
@@ -130,20 +119,8 @@ DkImageLoader::DkImageLoader(const QString &filePath)
     connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), &QAction::triggered, this, &DkImageLoader::redo);
     connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map), &QAction::triggered, this, &DkImageLoader::showOnMap);
     connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), &QAction::triggered, this, &DkImageLoader::deleteFile, Qt::UniqueConnection);
-
-    // saveDir = DkSettingsManager::param().global().lastSaveDir;	// loading save dir is obsolete ?!
-
-    QFileInfo fInfo(filePath);
-
-    if (fInfo.exists())
-        loadDir(fInfo.absolutePath());
-    else
-        mCurrentDir = DkSettingsManager::param().global().lastDir;
 }
 
-/**
- * Default destructor.
- **/
 DkImageLoader::~DkImageLoader()
 {
     if (mCreateImageWatcher.isRunning())
@@ -169,54 +146,6 @@ void DkImageLoader::clearPath()
     }
 }
 
-#ifdef WITH_QUAZIP
-/**
- * Loads a given zip archive and the first image in it.
- * @param zipFile the archive to be loaded.
- **/
-bool DkImageLoader::loadZipArchive(const QString &zipPath)
-{
-    QStringList fileNameList = JlCompress::getFileList(zipPath);
-
-    // remove the * in fileFilters
-    QStringList fileFiltersClean = DkSettingsManager::param().app().browseFilters;
-    for (int idx = 0; idx < fileFiltersClean.size(); idx++)
-        fileFiltersClean[idx].replace("*", "");
-
-    QStringList fileList;
-    for (int idx = 0; idx < fileNameList.size(); idx++) {
-        for (int idxFilter = 0; idxFilter < fileFiltersClean.size(); idxFilter++) {
-            if (fileNameList.at(idx).contains(fileFiltersClean[idxFilter], Qt::CaseInsensitive)) {
-                fileList.append(fileNameList.at(idx));
-                break;
-            }
-        }
-    }
-
-    QFileInfoList fileInfoList;
-    // encode both the input zip file and the output image into a single fileInfo
-    for (const QString &filePath : fileList)
-        fileInfoList.append(QFileInfo(DkZipContainer::encodeZipFile(zipPath, filePath)));
-
-    QFileInfo zipInfo(zipPath);
-
-    // zip archives could not contain known image formats
-    if (fileInfoList.empty()) {
-        emit showInfoSignal(tr("%1 \n does not contain any image").arg(zipInfo.fileName()), 4000); // stop mShowing
-        return false;
-    }
-
-    createImages(fileInfoList);
-
-    emit updateDirSignal(mImages);
-    mCurrentDir = zipInfo.absolutePath();
-
-    qDebug() << "ZIP FOLDER set: " << mCurrentDir;
-
-    return true;
-}
-#endif
-
 /**
  * Loads a given directory.
  * @param newDir the directory to be loaded.
@@ -229,12 +158,14 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     // }
 
     DkTimer dt;
+    DkFileInfo info(newDirPath);
 
     // folder changed signal was emitted
     if (mFolderUpdated && newDirPath == mCurrentDir) {
         mFolderUpdated = false;
-        QFileInfoList files = getFilteredFileInfoList(newDirPath,
-                                                      mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+        DkFileInfoList files =
+            DkFileInfo::readDirectory(newDirPath,
+                                      mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
 
         // might get empty too (e.g. someone deletes all images)
         if (files.empty()) {
@@ -255,8 +186,8 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
         qDebug() << "getting file list.....";
     }
     // new folder is loaded
-    else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && QDir(newDirPath).exists()) {
-        QFileInfoList files;
+    else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && info.isDir()) {
+        DkFileInfoList files;
 
         // newDir.setNameFilters(DkSettingsManager::param().app().fileFilters);
         // newDir.setSorting(QDir::LocaleAware);		// TODO: extend
@@ -270,8 +201,8 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
         if (scanRecursive && DkSettingsManager::param().global().scanSubFolders)
             files = updateSubFolders(mCurrentDir);
         else
-            files = getFilteredFileInfoList(mCurrentDir,
-                                            mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+            files = DkFileInfo::readDirectory(mCurrentDir,
+                                              mFolderFilterString); // this line takes seconds if you have lots of files and slow loading (e.g. network)
 
         // ok new folder, this should speed-up loading
         mImages.clear();
@@ -330,44 +261,56 @@ void DkImageLoader::imagesSorted()
 
     emit updateDirSignal(mImages);
 
-    if (mDirWatcher) {
-        if (!mDirWatcher->directories().isEmpty())
-            mDirWatcher->removePaths(mDirWatcher->directories());
-        mDirWatcher->addPath(mCurrentDir);
+    // this is duplicate code; it is also dead code since threaded sort is disabled
+    const QStringList watched[] = {mDirWatcher->directories(), mDirWatcher->files()};
+    for (auto &w : watched) {
+        if (!w.isEmpty()) // Qt gives a warning if we pass empty list
+            mDirWatcher->removePaths(w);
     }
+    mDirWatcher->addPath(mCurrentDir);
 
     qDebug() << "images sorted...";
 }
 
-void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
+void DkImageLoader::createImages(const DkFileInfoList &files, bool sort)
 {
-    // TODO: change files to QStringList
     DkTimer dt;
-    QVector<QSharedPointer<DkImageContainerT>> oldImages = mImages;
+
+    // preserve current images when updating
+    const QVector<QSharedPointer<DkImageContainerT>> oldImages = mImages;
+
     mImages.clear();
+    mImages.reserve(files.count());
 
-    QDate today = QDate::currentDate();
+    // use a temporary hashmap or this loop is n^2 !!
+    QHash<QString, int> oldFileIndex;
+    for (int idx = 0; idx < oldImages.count(); ++idx)
+        oldFileIndex.insert(oldImages.at(idx)->filePath(), idx);
 
-    for (const QFileInfo &f : files) {
-        const QString &fp = f.absoluteFilePath();
-        int oIdx = findFileIdx(fp, oldImages);
+    for (const DkFileInfo &f : files) {
+        int oldIdx = -1;
+        auto it = oldFileIndex.constFind(f.path());
+        if (it != oldFileIndex.constEnd())
+            oldIdx = it.value();
 
         // NOTE: we had this here: oIdx != -1 && QFileInfo(oldImages.at(oIdx)->filePath()).lastModified() == f.lastModified())
         // however, that did not detect file changes & slowed down the process - so I removed it...
-        mImages << ((oIdx != -1) ? oldImages.at(oIdx) : QSharedPointer<DkImageContainerT>(new DkImageContainerT(fp)));
+        mImages << ((oldIdx != -1) ? oldImages.at(oldIdx) : QSharedPointer<DkImageContainerT>(new DkImageContainerT(f)));
     }
     qInfo() << "[DkImageLoader]" << mImages.size() << "containers created in" << dt;
 
     if (sort) {
         DkImageLoader::sort();
         qInfo() << "[DkImageLoader] after sorting: " << dt;
-
-        if (mDirWatcher) {
-            if (!mDirWatcher->directories().isEmpty())
-                mDirWatcher->removePaths(mDirWatcher->directories());
-            mDirWatcher->addPath(mCurrentDir);
-        }
     }
+
+    // the watched dir didn't necessarily change but we'll do this anyways
+    const QStringList watched[] = {mDirWatcher->directories(), mDirWatcher->files()};
+    for (auto &w : watched) {
+        if (!w.isEmpty()) // Qt gives a warning if we pass empty list
+            mDirWatcher->removePaths(w);
+    }
+    mDirWatcher->addPath(mCurrentDir);
 }
 
 QVector<QSharedPointer<DkImageContainerT>> DkImageLoader::sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const
@@ -499,24 +442,6 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
         }
     }
 
-#ifdef WITH_QUAZIP
-    // zips only loop if browse filter is disabled; otherwise we could not break out of a zip
-    bool loopZip = DkSettingsManager::param().global().loop && !DkSettingsManager::param().app().browseFilters.contains("*.zip");
-
-    if (!validIndex && !loopZip && mCurrentImage && mCurrentImage->isFromZip() && mCurrentImage->getZipData()) {
-        // browse to the next zipfile or image file (in theory)
-        // fixme: this doesn't really do what you'd want
-        // if skipping backwards it always goes to the first file in the next zip
-        // if skipping forwards it always jumps to last zip or first zip in the directory
-        setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(mCurrentImage->getZipData()->getZipFilePath())));
-
-        if (newFileIdx >= mImages.size())
-            newFileIdx -= mImages.size() - 1;
-
-        return getSkippedImage(newFileIdx);
-    }
-#endif
-
     // could happen if current dir was deleted; we
     // don't check status of loadDir() so we can try subfolders
     if (mImages.empty()) {
@@ -578,10 +503,16 @@ void DkImageLoader::loadFileAt(int idx)
     else
         qDebug() << "current image is NULL";
 
-    QDir cDir(mCurrentDir);
-
-    if (mCurrentImage && !cDir.exists())
-        loadDir(mCurrentImage->dirPath());
+    // FIXME: somehow mCurrentDir gets messed up, so we have this recovery workaround
+    DkFileInfo cDir(mCurrentDir);
+    if (!cDir.isDir() || !cDir.exists()) {
+        qWarning() << "[Loader] current dir is now invalid:" << mCurrentDir;
+        if (mCurrentImage) {
+            qWarning() << "[Loader] attempting to reload from:" << mCurrentImage->dirPath();
+            loadDir(mCurrentImage->dirPath());
+            cDir = DkFileInfo(mCurrentDir);
+        }
+    }
 
     if (mImages.empty())
         return;
@@ -619,35 +550,24 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findOrCreateFile(const QString 
     QSharedPointer<DkImageContainerT> imgC = findFile(filePath);
 
     if (!imgC)
-        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath));
+        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(DkFileInfo(filePath)));
 
     return imgC;
 }
 
 QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QString &filePath) const
 {
-    // if one image is from zip than all should be
-    // for images in zip the "images[idx]->file() == file" comparison somahow does not work
-    if (mImages.size() > 0) {
-        if (mImages[0]->isFromZip()) {
-            int idx = findFileIdx(filePath, mImages);
-            if (idx < 0)
-                return QSharedPointer<DkImageContainerT>();
-            else
-                return mImages[idx];
-        }
+    for (auto &imgC : mImages) {
+        if (imgC->filePath() == filePath)
+            return imgC;
     }
 
-    for (int idx = 0; idx < mImages.size(); idx++) {
-        if (mImages[idx]->filePath() == filePath)
-            return mImages[idx];
-    }
-
-    return QSharedPointer<DkImageContainerT>();
+    return {};
 }
 
 int DkImageLoader::findFileIdx(const QString &filePath, const QVector<QSharedPointer<DkImageContainerT>> &images) const
 {
+    // TODO: this could be removed if we pass fileInfo
     // this seems a bit bizare...
     // however, in converting the string from a fileInfo - we quarantee that the separators are the same (/ vs \)
     QString lFilePath = filePath;
@@ -756,10 +676,6 @@ void DkImageLoader::activate(bool isActive /* = true */)
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg)
 {
-    // force index folder if we dir out of the zip
-    if (mCurrentImage && newImg && mCurrentImage->isFromZip() && !newImg->isFromZip())
-        mFolderUpdated = true;
-
     if (signalsBlocked()) {
         mCurrentImage = newImg;
         return;
@@ -840,39 +756,18 @@ void DkImageLoader::showOnMap()
     QDesktopServices::openUrl(QUrl(DkMetaDataHelper::getInstance().getGpsCoordinates(metaData)));
 }
 
-void DkImageLoader::load(const QString &filePath)
+void DkImageLoader::load(const DkFileInfo &info)
 {
-    bool hasZipMarker = false;
-
-#ifdef WITH_QUAZIP
-    hasZipMarker = filePath.contains(DkZipContainer::zipMarker()) != 0;
-#endif
-
-    if (QFileInfo(filePath).isFile() || hasZipMarker) {
-        QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(filePath);
-        setCurrentImage(newImg);
-        load(mCurrentImage);
-    } else
-        firstFile();
-
-    // if here is a folder upate bug - this was before -- if (QFileInfo(filePath).isFile() || hasZipMarker) {
-    loadDir(QFileInfo(filePath).absolutePath());
+    QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(info.path());
+    setCurrentImage(newImg);
+    load(mCurrentImage);
+    // loadDir(info.dirPath()); // does not seem to be needed
 }
 
 void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPointer<DkImageContainerT> */)
 {
     if (!image)
         return;
-
-#ifdef WITH_QUAZIP
-    bool isZipArchive = DkBasicLoader::isContainer(image->filePath());
-
-    if (isZipArchive) {
-        loadZipArchive(image->filePath());
-        firstFile();
-        return;
-    }
-#endif
 
     setCurrentImage(image);
 
@@ -937,43 +832,20 @@ void DkImageLoader::downloadFile(const QUrl &url)
  * Saves a temporary file to the folder specified in DkSettingsManager.
  * @param img the image (which was in most cases pasted to nomacs)
  **/
-QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, const QString &fileExt, bool force, bool threaded)
+QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, const QString &fileExt, bool threaded)
 {
-    QString filePath = DkSettingsManager::param().global().tmpPath;
-    QFileInfo fInfo(filePath + QDir::separator());
+    QString filePath = DkUtils::getTemporaryFilePath(name, fileExt);
+    if (filePath.isEmpty())
+        return {};
 
-    if (!force && (filePath.isEmpty() || !fInfo.exists())) {
-        if (!filePath.isEmpty())
-            qWarning() << filePath << "does not exist";
-        return QString();
-    } else if (filePath.isEmpty() || !fInfo.exists()) {
-        fInfo = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-
-        if (!fInfo.isDir()) {
-            // load system default open dialog
-            QString dirName = QFileDialog::getExistingDirectory(DkUtils::getMainWindow(),
-                                                                tr("Save Directory"),
-                                                                getDirPath(),
-                                                                QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
-
-            fInfo = QFileInfo(dirName + QDir::separator());
-
-            if (!fInfo.exists())
-                return QString();
-        }
+    if (QFile::exists(filePath)) {
+        qWarning() << "File exists, will not overwrite:" << filePath;
+        return {};
     }
 
-    qInfo() << "saving to: " << fInfo.absolutePath();
-
-    QString fileName = name + "-" + DkUtils::nowString() + fileExt;
-    fInfo = QFileInfo(fInfo.absolutePath(), fileName);
-
-    if (!fInfo.exists()) {
-        saveFile(fInfo.absoluteFilePath(), img, "", -1, threaded);
-        return fInfo.absoluteFilePath();
-    }
-
-    return QString();
+    qInfo() << "Saving file to: " << filePath;
+    saveFile(filePath, img, "", -1, threaded);
+    return filePath;
 }
 
 void DkImageLoader::saveFileWeb(const QImage &saveImg)
@@ -1413,7 +1285,6 @@ void DkImageLoader::updateHistory()
     settings.endGroup();
 
     // update
-    DkSettingsManager::param().global().lastDir = file.absolutePath();
     DkSettingsManager::param().global().recentFiles = rFiles;
     DkSettingsManager::param().global().recentFolders = rFolders;
 
@@ -1427,22 +1298,28 @@ void DkImageLoader::updateHistory()
  **/
 bool DkImageLoader::deleteFile()
 {
-    if (mCurrentImage && mCurrentImage->exists()) {
-        QString fileName = mCurrentImage->fileName();
-        int currFileIdx = findFileIdx(mCurrentImage->filePath(), mImages);
-        if (DkUtils::moveToTrash(mCurrentImage->filePath())) {
-            mImages.removeAt(currFileIdx);
-            QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
-            if (!imgC)
-                imgC = getSkippedImage(0); // deleted from the end
-            load(imgC);
-            emit showInfoSignal(tr("%1 deleted...").arg(fileName));
-            return true;
-        } else
-            emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(fileName));
+    if (!mCurrentImage || !mCurrentImage->exists())
+        return false;
+
+    if (mCurrentImage->fileInfo().isFromZip()) {
+        emit showInfoSignal(tr("Sorry, deleting archived files is unsupported."));
+        return false;
     }
 
-    return false;
+    QString fileName = mCurrentImage->fileName();
+    int currFileIdx = findFileIdx(mCurrentImage->filePath(), mImages);
+    if (!DkUtils::moveToTrash(mCurrentImage->filePath())) {
+        emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(fileName));
+        return false;
+    }
+
+    mImages.removeAt(currFileIdx);
+    QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
+    if (!imgC)
+        imgC = getSkippedImage(0); // deleted from the end
+    load(imgC);
+    emit showInfoSignal(tr("%1 deleted...").arg(fileName));
+    return true;
 }
 
 /**
@@ -1589,19 +1466,22 @@ QStringList DkImageLoader::getFoldersRecursive(const QString &dirPath)
     // qDebug() << "scanning recursively: " << dir.absolutePath();
 
     if (DkSettingsManager::param().global().scanSubFolders) {
-        QDirIterator dirs(dirPath, QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
+        QDirIterator dirs(dirPath, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
 
         int nFolders = 0;
         while (dirs.hasNext()) {
             dirs.next();
-            subFolders << dirs.filePath();
-            nFolders++;
+            DkFileInfo fileInfo(dirs.filePath());
+            if (fileInfo.isDir()) {
+                subFolders << fileInfo.path();
+                nFolders++;
 
-            if (nFolders > 100)
-                break;
+                if (nFolders > 100)
+                    break;
 
-            // getFoldersRecursive(dirs.filePath(), subFolders);
-            // qDebug() << "loop: " << dirs.filePath();
+                // getFoldersRecursive(dirs.filePath(), subFolders);
+                // qDebug() << "loop: " << dirs.filePath();
+            }
         }
     }
 
@@ -1615,16 +1495,16 @@ QStringList DkImageLoader::getFoldersRecursive(const QString &dirPath)
     return subFolders;
 }
 
-QFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
+DkFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
 {
     mSubFolders = getFoldersRecursive(rootDirPath);
-    QFileInfoList files;
+    DkFileInfoList files;
     qDebug() << mSubFolders;
 
     // find the first subfolder that has images
     for (int idx = 0; idx < mSubFolders.size(); idx++) {
         mCurrentDir = mSubFolders[idx];
-        files = getFilteredFileInfoList(mCurrentDir); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+        files = DkFileInfo::readDirectory(mCurrentDir); // this line takes seconds if you have lots of files and slow loading (e.g. network)
         if (!files.empty())
             break;
     }
@@ -1662,8 +1542,8 @@ int DkImageLoader::getSubFolderIdx(int fromIdx, bool forward) const
             return -1;
 
         QDir cDir = mSubFolders[checkIdx];
-        QFileInfoList cFiles =
-            getFilteredFileInfoList(cDir.absolutePath()); // this line takes seconds if you have lots of files and slow loading (e.g. network)
+        // FIXME: expensive call to read dir discards result
+        DkFileInfoList cFiles = DkFileInfo::readDirectory(cDir.absolutePath());
         if (!cFiles.empty()) {
             idx = checkIdx;
             break;
@@ -1747,135 +1627,6 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC)
     }
 
     qDebug() << "[Cacher] created in" << dt << "(" << mem + totalMem << "MB)";
-}
-
-/**
- * Returns the file list of the directory dir.
- * Note: this function might get slow if lots of files (> 10000) are in the
- * directory or if the directory is in the net.
- * Currently the file list is sorted according to the system specification.
- * @param dir the directory to load the file list from.
- * @return QStringList all filtered files of the current directory.
- **/
-QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QString folderKeywords) const
-{
-    DkTimer dt;
-
-    if (dirPath.isEmpty())
-        return QFileInfoList();
-
-#ifdef Q_OS_WIN
-
-    QString winPath = QDir::toNativeSeparators(dirPath) + "\\*.*";
-
-    const wchar_t *fname = reinterpret_cast<const wchar_t *>(winPath.utf16());
-
-    WIN32_FIND_DATAW findFileData;
-    HANDLE MyHandle = FindFirstFileW(fname, &findFileData);
-
-    std::vector<std::wstring> fileNameList;
-    std::wstring fileName;
-
-    if (MyHandle != INVALID_HANDLE_VALUE) {
-        do {
-            fileName = findFileData.cFileName;
-            fileNameList.push_back(fileName); // TODO: sort correct according to numbers
-        } while (FindNextFileW(MyHandle, &findFileData) != 0);
-    }
-
-    FindClose(MyHandle);
-
-    // remove the * in fileFilters
-    QStringList fileFiltersClean = DkSettingsManager::param().app().browseFilters;
-    for (QString &filter : fileFiltersClean)
-        filter.replace("*", "");
-
-    // qDebug() << "browse filters: " << DkSettingsManager::param().app().browseFilters;
-
-    QStringList fileList;
-    std::vector<std::wstring>::iterator lIter = fileNameList.begin();
-
-    // convert to QStringList
-    for (unsigned int idx = 0; idx < fileNameList.size(); idx++, lIter++) {
-        QString qFilename = DkUtils::stdWStringToQString(*lIter);
-
-        // believe it or not, but this is 10 times faster than QRegExp
-        // drawback: we also get files that contain *.jpg*
-        for (int i = 0; i < fileFiltersClean.size(); i++) {
-            if (qFilename.contains(fileFiltersClean[i], Qt::CaseInsensitive)) {
-                fileList.append(qFilename);
-                break;
-            }
-        }
-    }
-
-    qInfoClean() << "WinAPI, indexed (" << fileList.size() << ") files in: " << dt;
-#else
-
-    // true file list
-    QDir tmpDir(dirPath);
-    tmpDir.setSorting(QDir::LocaleAware);
-    QStringList fileList = tmpDir.entryList(DkSettingsManager::param().app().browseFilters);
-
-#endif
-
-    // append files with no suffix
-    QDir cDir(dirPath);
-    QStringList allFiles = cDir.entryList();
-    QStringList noSuffixFiles;
-
-    for (const QString &name : allFiles) {
-        if (!name.contains(".") && DkUtils::isValid(QFileInfo(dirPath, name))) {
-            fileList << name;
-        }
-    }
-
-    if (folderKeywords != "") {
-        QStringList filterList = fileList;
-        fileList = DkUtils::filterStringList(folderKeywords, filterList);
-    }
-
-    if (DkSettingsManager::param().resources().filterDuplicats) {
-        QString preferredExtension = DkSettingsManager::param().resources().preferredExtension;
-        preferredExtension = preferredExtension.replace("*.", "");
-        qDebug() << "preferred extension: " << preferredExtension;
-
-        QStringList resultList = fileList;
-        fileList.clear();
-
-        for (int idx = 0; idx < resultList.size(); idx++) {
-            QFileInfo cFName = QFileInfo(resultList.at(idx));
-
-            if (preferredExtension.compare(cFName.suffix(), Qt::CaseInsensitive) == 0) {
-                fileList.append(resultList.at(idx));
-                continue;
-            }
-
-            QString cFBase = cFName.baseName();
-            bool remove = false;
-
-            for (int cIdx = 0; cIdx < resultList.size(); cIdx++) {
-                QString ccBase = QFileInfo(resultList.at(cIdx)).baseName();
-
-                if (cIdx != idx && ccBase == cFBase && resultList.at(cIdx).contains(preferredExtension, Qt::CaseInsensitive)) {
-                    remove = true;
-                    break;
-                }
-            }
-
-            if (!remove)
-                fileList.append(resultList.at(idx));
-        }
-    }
-
-    // fileList = sort(fileList, dir);
-
-    QFileInfoList fileInfoList;
-
-    for (int idx = 0; idx < fileList.size(); idx++)
-        fileInfoList.append(QFileInfo(mCurrentDir, fileList.at(idx)));
-
-    return fileInfoList;
 }
 
 void DkImageLoader::sort()
@@ -1980,33 +1731,30 @@ void DkImageLoader::setFolderFilter(const QString &filter)
  * Sets the current directory to dir.
  * @param dir the directory to be loaded.
  **/
-void DkImageLoader::setDir(const QString &dir)
+void DkImageLoader::setDir(const DkFileInfo &info)
 {
-    // QDir oldDir = file.absoluteDir();
+    Q_ASSERT(info.isDir());
 
-    bool valid = loadDir(dir);
-
-    if (valid)
+    if (loadDir(info.path()))
         firstFile();
+}
+
+/**
+ * Sets the current image to a new image buffer (e.g. pasted image)
+ * @param img the loader's new image.
+ * @param editName the name in the edit history
+ **/
+QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage &img, const QString &editName)
+{
+    QSharedPointer<DkImageContainerT> newImg(new DkImageContainerT());
+    newImg->setImage(img, editName);
+    return setImage(newImg);
 }
 
 /**
  * Sets the current image to a new image container.
  * @param img the loader's new image.
  **/
-QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage &img, const QString &editName, const QString &editFilePath)
-{
-    qDebug() << "edited file: " << editFilePath;
-
-    QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(editFilePath);
-    newImg->setImage(img, editName, editFilePath);
-
-    setCurrentImage(newImg);
-    emit imageUpdatedSignal(mCurrentImage);
-
-    return newImg;
-}
-
 QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QSharedPointer<DkImageContainerT> img)
 {
     setCurrentImage(img);
@@ -2056,12 +1804,14 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
         connect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal, Qt::UniqueConnection);
         connect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved, Qt::UniqueConnection);
         connect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated, Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::zipFileDownloadedSignal, this, &DkImageLoader::setDir, Qt::UniqueConnection);
     } else if (!connectSignals) {
         disconnect(currImage, &DkImageContainerT::errorDialogSignal, this, &DkImageLoader::errorDialog);
         disconnect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::imageLoaded);
         disconnect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal);
         disconnect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved);
         disconnect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated);
+        disconnect(currImage, &DkImageContainerT::zipFileDownloadedSignal, this, &DkImageLoader::setDir);
     }
 
     currImage->receiveUpdates(connectSignals);

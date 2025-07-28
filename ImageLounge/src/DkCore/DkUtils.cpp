@@ -56,8 +56,10 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QRegularExpression>
+#include <QSemaphore>
 #include <QStandardPaths>
 #include <QString>
+#include <QStringBuilder>
 #include <QStringList>
 #include <QTranslator>
 #include <QUrl>
@@ -288,14 +290,14 @@ QString DkUtils::resolveSymLink(const QString &filePath)
                     continue;
 
                 QFileInfo fi(cl);
-                if (fi.exists() && fi.isFile() && DkUtils::hasValidSuffix(fi.fileName())) {
+                if (fi.exists() && fi.isFile() && DkUtils::isLoadableSuffix(fi.suffix())) {
                     rFilePath = fi.absoluteFilePath();
                     break;
                 }
 
                 // is there a relative path?
                 fi = QFileInfo(fInfo.absolutePath() + QDir::separator() + cl);
-                if (fi.exists() && fi.isFile() && DkUtils::hasValidSuffix(fi.fileName())) {
+                if (fi.exists() && fi.isFile() && DkUtils::isLoadableSuffix(fi.suffix())) {
                     rFilePath = fi.absoluteFilePath();
                     break;
                 }
@@ -320,7 +322,7 @@ QString DkUtils::getLongestNumber(const QString &str, int startIdx)
     return str.mid(startIdx, idx - startIdx);
 }
 
-bool DkUtils::compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compDateCreated(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
     // avoid equality because we keep our directory position/index using the sorted position
     auto left = lhf.birthTime(), right = rhf.birthTime();
@@ -330,7 +332,7 @@ bool DkUtils::compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf)
         return compFilename(lhf, rhf);
 }
 
-bool DkUtils::compDateModified(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compDateModified(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
     auto left = lhf.lastModified(), right = rhf.lastModified();
     if (left != right)
@@ -339,12 +341,15 @@ bool DkUtils::compDateModified(const QFileInfo &lhf, const QFileInfo &rhf)
         return compFilename(lhf, rhf);
 }
 
-bool DkUtils::compFilename(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compFilename(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
-    return compLogicQString(lhf.fileName(), rhf.fileName());
+    if (lhf.isFromZip() && rhf.isFromZip())
+        return compLogicQString(lhf.pathInZip(), rhf.pathInZip());
+    else
+        return compLogicQString(lhf.fileName(), rhf.fileName());
 }
 
-bool DkUtils::compFileSize(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compFileSize(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
     auto left = lhf.size(), right = rhf.size();
     if (left != right)
@@ -353,12 +358,10 @@ bool DkUtils::compFileSize(const QFileInfo &lhf, const QFileInfo &rhf)
         return compFilename(lhf, rhf);
 }
 
-bool DkUtils::compRandom(const QFileInfo &lhf, const QFileInfo &rhf)
+bool DkUtils::compRandom(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
-    return QCryptographicHash::hash(lhf.absoluteFilePath().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed),
-                                    QCryptographicHash::Algorithm::Md5)
-        > QCryptographicHash::hash(rhf.absoluteFilePath().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed),
-                                   QCryptographicHash::Algorithm::Md5);
+    return QCryptographicHash::hash(lhf.path().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed), QCryptographicHash::Algorithm::Md5)
+        > QCryptographicHash::hash(rhf.path().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed), QCryptographicHash::Algorithm::Md5);
 }
 
 void DkUtils::addLanguages(QComboBox *langCombo, QStringList &languages)
@@ -463,6 +466,37 @@ QString DkUtils::getAppDataPath()
         qWarning() << "I could not create" << appPath;
 
     return appPath;
+}
+
+QString DkUtils::getTemporaryDirPath()
+{
+    QFileInfo tmpDir(DkSettingsManager::param().global().tmpPath);
+    if (!tmpDir.exists() || !tmpDir.isWritable()) {
+        QDir dir(QDir::tempPath());
+        (void)dir.mkdir("nomacs");
+
+        if (!dir.cd("nomacs")) {
+            qWarning() << "Could not create temporary dir in:" << dir.absolutePath();
+            return {};
+        }
+
+        tmpDir = QFileInfo(dir.absolutePath());
+    }
+    return tmpDir.absoluteFilePath();
+}
+
+QString DkUtils::getTemporaryFilePath(const QString &name, const QString &suffix)
+{
+    QString tmpDir = getTemporaryDirPath();
+    if (tmpDir.isEmpty())
+        return {};
+
+    QString tmpPath = tmpDir % '/' % (name.isEmpty() ? "img" : name) % '-' % DkUtils::nowString();
+
+    if (!suffix.isEmpty())
+        tmpPath = tmpPath % '.' % suffix;
+
+    return tmpPath;
 }
 
 QString DkUtils::getTranslationPath()
@@ -596,40 +630,76 @@ void DkUtils::mSleep(int ms)
 #endif
 }
 
-bool DkUtils::exists(const QFileInfo &file, int waitMs)
+bool DkUtils::tryExists(const DkFileInfo &file, int waitMs)
 {
-    QFuture<bool> future = QtConcurrent::run(
-        // TODO: if we have a lot of mounted files (windows) in the history
-        // we can potentially exhaust the pool & image loading has
-        // to wait for these exists
-        // I now only moved it to the thumbnail pool which does
-        // not fix this issue at all (now thumbnail preview stalls)
-        // we could
-        // - create a dedicated pool for exists
-        // - create a dedicated pool for image loading
-        DkThumbsThreadPool::pool(), // hook it to the thumbs pool
-        [file] {
-            return DkUtils::checkFile(file);
-        });
+    class ExistsThreadPool : public QThreadPool
+    {
+    public:
+        ExistsThreadPool()
+        {
+            // we have about 20 checks (one for each recent dir). This sets the
+            // number of checks that can hang before the rest error out.
+            setMaxThreadCount(4);
+        }
+    };
 
-    for (int idx = 0; idx < waitMs; idx++) {
-        if (future.isFinished())
-            break;
+    class ExistsRunnable : public QRunnable
+    {
+    public:
+        ExistsRunnable(const DkFileInfo &file)
+            : mFile(file)
+        {
+        }
 
-        // qDebug() << "you are trying the new exists method... - you are modern!";
+        // note: runnable is invalid after this returns
+        bool waitResult(int maxWaitMillis)
+        {
+            // timeout without polling
+            if (!mConsumer.tryAcquire(1, maxWaitMillis))
+                qWarning() << "tryExists: timed out:" << mFile.path();
 
-        mSleep(1);
+            // read the result, then allow runnable to be deleted
+            // if we timed out, thread will be able to exit and delete as well
+            bool result = mResult;
+            mProducer.release();
+            return result;
+        }
+
+    private:
+        DkFileInfo mFile;
+        bool mResult = false;
+        QSemaphore mConsumer, mProducer;
+
+        void run() override
+        {
+            DkTimer dt;
+
+            if (mFile.isSymLink())
+                mResult = mFile.resolveSymLink();
+            else
+                mResult = mFile.exists();
+
+            mConsumer.release();
+            mProducer.acquire();
+            if (dt.elapsed() > 100)
+                qWarning() << "tryExists: slow file:" << dt << mFile.path();
+        }
+    };
+
+    // destruction of pool could hang; prevent with pointer
+    static auto *pool = new ExistsThreadPool;
+
+    // runnable is owned by pool once started
+    auto *runnable = new ExistsRunnable(file);
+
+    // if all threads are occupied, additional checks will most likely timeout
+    if (!pool->tryStart(runnable)) {
+        qWarning() << "tryExists: filesystem is too slow to respond";
+        delete runnable;
+        return false;
     }
 
-    // future.cancel();
-
-    // assume file is not existing if it took longer than waitMs
-    return (future.isFinished()) ? future.result() : false;
-}
-
-bool DkUtils::checkFile(const QFileInfo &file)
-{
-    return file.exists();
+    return runnable->waitResult(waitMs);
 }
 
 QFileInfo DkUtils::urlToLocalFile(const QUrl &url)
@@ -665,28 +735,22 @@ QString DkUtils::nowString()
     return QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss");
 }
 
-/**
- * @brief isValidByContent identifies a file by file content.
- * @param file is an existing file.
- * @return true, if file exists and has content we support, false otherwise.
- */
-bool isValidByContent(const QFileInfo &file)
+bool DkUtils::isLoadableByContent(const DkFileInfo &file)
 {
-    if (!file.exists())
+    if (file.isFromZip()) // unsupported for performance
         return false;
     if (!file.isFile())
         return false;
 
     QMimeDatabase mimeDb;
-    QMimeType fileMimeType = mimeDb.mimeTypeForFile(file, QMimeDatabase::MatchContent);
+    QMimeType fileMimeType = mimeDb.mimeTypeForFile(file.path(), QMimeDatabase::MatchContent);
+    const QStringList suffixes = fileMimeType.suffixes();
 
-    for (QString sfx : fileMimeType.suffixes()) {
-        QString tryFilename = file.fileName() + QString(".") + sfx;
-
-        if (DkUtils::hasValidSuffix(tryFilename)) {
+    for (auto &suffix : suffixes) {
+        if (DkUtils::isLoadableSuffix(suffix))
             return true;
-        }
     }
+
     return false;
 }
 
@@ -695,19 +759,19 @@ bool isValidByContent(const QFileInfo &file)
  * @param fileInfo the file info of the file to be validated.
  * @return bool true if the file format is supported.
  **/
-bool DkUtils::isValid(const QFileInfo &fileInfo)
+bool DkUtils::isLoadable(const DkFileInfo &fileInfo)
 {
-    QFileInfo fInfo = fileInfo;
+    auto fInfo = fileInfo;
     QString fileName = fInfo.fileName();
 
-    if (fInfo.isSymLink())
-        fInfo = QFileInfo(fileInfo.symLinkTarget());
+    if (fInfo.isSymLink() && !fInfo.resolveSymLink())
+        return false;
 
     if (!fInfo.exists()) {
         return false;
-    } else if (hasValidSuffix(fInfo.fileName())) {
+    } else if (isLoadableSuffix(fInfo.suffix())) {
         return true;
-    } else if (isValidByContent(fInfo)) {
+    } else if (isLoadableByContent(fInfo)) {
         return true;
     }
 
@@ -730,18 +794,15 @@ bool DkUtils::isSavable(const QString &fileName)
     return false;
 }
 
-bool DkUtils::hasValidSuffix(const QString &fileName)
+bool DkUtils::isLoadableSuffix(const QString &fileSuffix)
 {
-    const QString fileSuffix = fileName.mid(fileName.lastIndexOf('.')).toLower(); // .jpg
     if (fileSuffix.isEmpty())
         return false;
 
     const QStringList &filters = DkSettingsManager::param().app().fileFilters; // [*.jpg, ...]
-    for (const QString &filter : filters)
-        if (filter.endsWith(fileSuffix))
-            return true;
+    QString filter = "*." + fileSuffix.toLower();
 
-    return false;
+    return filters.contains(filter);
 }
 
 QStringList DkUtils::suffixOnly(const QStringList &fileFilters)

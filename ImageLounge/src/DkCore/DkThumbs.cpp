@@ -27,6 +27,7 @@
 
 #include "DkThumbs.h"
 #include "DkBasicLoader.h"
+#include "DkFileInfo.h"
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
@@ -91,27 +92,32 @@ std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadTh
 
     auto metaData = std::make_unique<DkMetaDataT>();
     QSharedPointer<QByteArray> ba{};
-#ifdef WITH_QUAZIP
-    if (QFileInfo(filePath).dir().path().contains(DkZipContainer::zipMarker()))
-        ba = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
-#endif
+    DkFileInfo fileInfo(filePath);
+
+    if (fileInfo.isSymLink() && !fileInfo.resolveSymLink()) {
+        qWarning() << "[Thumbnail] broken link:" << filePath;
+        return std::nullopt;
+    }
+
+    if (fileInfo.isFromZip()) {
+        std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
+        if (io)
+            ba.reset(new QByteArray(io->readAll()));
+    }
+
+    const QString thumbPath = fileInfo.path(); // resolved path (shortcuts/aliases)
 
     // read the thumbnail from the exif data
     try {
         if (!ba || ba->isEmpty()) {
-            metaData->readMetaData(filePath);
+            metaData->readMetaData(thumbPath);
         } else {
-            metaData->readMetaData(filePath, ba);
+            metaData->readMetaData(thumbPath, ba);
         }
     } catch (...) {
         // this should never happen since we handle exceptions in metaData
         qWarning() << "[Thumbnail] unexpected exception when reading exif thumbnail";
     }
-
-    // FIXME: why do we need link resolution here?? won't links be followed by default??
-    QFileInfo fileInfo(filePath);
-    QString linkFilePath = fileInfo.isSymLink() ? fileInfo.symLinkTarget() : filePath;
-    fileInfo = QFileInfo(linkFilePath);
 
     std::optional<ThumbnailFromMetadata> exifThumb{};
     if (opt != LoadThumbnailOption::force_full) {
@@ -120,7 +126,7 @@ std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadTh
 
     std::optional<QImage> fullThumb{};
     if (opt != LoadThumbnailOption::force_exif && !exifThumb) {
-        fullThumb = loadThumbnailFromFullImage(linkFilePath, ba);
+        fullThumb = loadThumbnailFromFullImage(thumbPath, ba);
     }
 
     if (!fullThumb && !exifThumb) {
@@ -129,14 +135,14 @@ std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadTh
 
     LoadThumbnailResult res = {
         exifThumb ? exifThumb.value().thumb : fullThumb.value(),
-        linkFilePath,
+        thumbPath,
         std::move(metaData),
         exifThumb.has_value(),
         exifThumb && exifThumb->transformed,
     };
 
     QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 %8ms")
-                       .arg(linkFilePath)
+                       .arg(thumbPath)
                        .arg(exifThumb ? "yes" : "no")
                        .arg(res.thumb.width())
                        .arg(res.thumb.height())
