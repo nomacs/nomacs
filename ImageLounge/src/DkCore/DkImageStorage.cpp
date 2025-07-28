@@ -974,8 +974,7 @@ QByteArray DkImage::extractImageFromDataStream(const QByteArray &ba, const QByte
     if (debugOutput) {
         qDebug() << "extracting image from stream...";
         qDebug() << "cropping: [" << bIdx << eIdx << "]";
-        qDebug() << "original size: " << ba.size() / 1024.0 << "KB"
-                 << "new size: " << bac.size() / 1024.0 << "KB"
+        qDebug() << "original size: " << ba.size() / 1024.0 << "KB" << "new size: " << bac.size() / 1024.0 << "KB"
                  << "difference:" << (ba.size() - bac.size()) / 1024 << "KB";
     }
 

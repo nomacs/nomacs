@@ -502,7 +502,13 @@ public:
         mode_end,
     };
 
-    enum { do_nothing, initializing, rotating, moving, scaling };
+    enum {
+        do_nothing,
+        initializing,
+        rotating,
+        moving,
+        scaling
+    };
 
     DkEditableRect(const QRectF &rect = QRect(), QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     virtual ~DkEditableRect(){};

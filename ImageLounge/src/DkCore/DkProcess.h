@@ -69,9 +69,9 @@ class DllCoreExport DkAbstractBatch
 public:
     DkAbstractBatch(){};
 
-    virtual void setProperties(...){};
+    virtual void setProperties(...) {};
     virtual void saveSettings(QSettings &) const {};
-    virtual void loadSettings(QSettings &){};
+    virtual void loadSettings(QSettings &) {};
     virtual bool compute(QSharedPointer<DkImageContainer> container,
                          const DkSaveInfo &saveInfo,
                          QStringList &logStrings,

@@ -168,7 +168,7 @@ public slots:
     void sendPosition(QRect newRect, bool overlaid);
 
     void sendNewFile(qint16 op, const QString &filename);
-    virtual void sendNewImage(QImage, const QString &){}; // dummy
+    virtual void sendNewImage(QImage, const QString &) {}; // dummy
     void sendGoodByeToAll();
 
 protected slots:

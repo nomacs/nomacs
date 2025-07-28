@@ -166,7 +166,7 @@ public:
         saveSettings(settings);
     };
 
-    virtual void loadSettings(QSettings &){}; // dummy
+    virtual void loadSettings(QSettings &) {}; // dummy
     virtual void saveSettings(QSettings &) const {}; // dummy
 };
 
@@ -213,7 +213,7 @@ public:
         mImgMatrix = imgMatrix;
     };
 
-    virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC){}; // dummy
+    virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) {}; // dummy
 
 signals:
     void closePlugin(bool askForSaving = false) const;

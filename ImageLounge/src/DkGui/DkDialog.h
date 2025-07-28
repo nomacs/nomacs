@@ -286,10 +286,30 @@ public:
     DkResizeDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkResizeDialog(){};
 
-    enum { ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end };
-    enum { size_pixel, size_percent, size_end };
-    enum { unit_cm, unit_mm, unit_inch, unit_end };
-    enum { res_ppi, res_ppc, res_end };
+    enum {
+        ipl_nearest,
+        ipl_area,
+        ipl_linear,
+        ipl_cubic,
+        ipl_lanczos,
+        ipl_end
+    };
+    enum {
+        size_pixel,
+        size_percent,
+        size_end
+    };
+    enum {
+        unit_cm,
+        unit_mm,
+        unit_inch,
+        unit_end
+    };
+    enum {
+        res_ppi,
+        res_ppc,
+        res_end
+    };
 
     void setImage(const QImage &img);
     QImage getResizedImage();
@@ -672,7 +692,6 @@ protected:
         finished,
         question_save,
         error,
-
     };
 };
 
@@ -767,7 +786,6 @@ protected:
         finished,
         question_save,
         error,
-
     };
 };
 #endif

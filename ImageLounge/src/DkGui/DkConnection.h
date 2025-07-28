@@ -114,8 +114,22 @@ public slots:
     void synchronizedPeersListChanged(QList<quint16> newList);
 
 protected:
-    enum ConnectionState { WaitingForGreeting, ReadyForUse, Synchronized };
-    enum DataType { Greeting, startSynchronize, stopSynchronize, newTitle, newPosition, newTransform, newFile, GoodBye, Undefined };
+    enum ConnectionState {
+        WaitingForGreeting,
+        ReadyForUse,
+        Synchronized
+    };
+    enum DataType {
+        Greeting,
+        startSynchronize,
+        stopSynchronize,
+        newTitle,
+        newPosition,
+        newTransform,
+        newFile,
+        GoodBye,
+        Undefined
+    };
 
     virtual bool readProtocolHeader();
     virtual void checkState();
@@ -180,7 +194,10 @@ public slots:
     void sendQuitMessage();
 
 protected:
-    enum LocalDataType { Quit, Undefined };
+    enum LocalDataType {
+        Quit,
+        Undefined
+    };
 
 private:
     bool readProtocolHeader();

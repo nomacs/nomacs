@@ -80,7 +80,14 @@ class DllCoreExport DkImage
 {
 public:
     /**< interpolation mapping OpenCV -> Qt */
-    enum { ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end };
+    enum {
+        ipl_nearest,
+        ipl_area,
+        ipl_linear,
+        ipl_cubic,
+        ipl_lanczos,
+        ipl_end
+    };
 
 #ifdef WITH_OPENCV
     static cv::Mat qImage2Mat(const QImage &img);

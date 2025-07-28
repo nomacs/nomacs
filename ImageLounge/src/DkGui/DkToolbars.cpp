@@ -908,13 +908,7 @@ void DkCropToolBar::createLayout()
     connect(mPanAction, &QAction::toggled, this, &DkCropToolBar::onPanActionToggled);
 
     QStringList ratios;
-    ratios << "1:1"
-           << "4:3"
-           << "5:4"
-           << "14:10"
-           << "14:11"
-           << "16:9"
-           << "16:10";
+    ratios << "1:1" << "4:3" << "5:4" << "14:10" << "14:11" << "16:9" << "16:10";
     ratios.prepend(tr("User Defined"));
     ratios.prepend(tr("No Aspect Ratio"));
     mRatioBox = new QComboBox(this);
