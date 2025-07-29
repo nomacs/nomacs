@@ -160,8 +160,9 @@ void DkFolderScrollBar::init()
 {
     setMouseTracking(true);
 
-    mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ? DkSettingsManager::param().display().bgColorFrameless
-                                                                                      : DkSettingsManager::param().display().hudBgColor;
+    mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless)
+        ? DkSettingsManager::param().display().bgColorFrameless
+        : DkSettingsManager::param().display().hudBgColor;
 }
 
 // DkThumbsSaver --------------------------------------------------------------------
@@ -180,7 +181,11 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
     mStop = false;
     mNumSaved = 0;
 
-    mPd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), DkUtils::getMainWindow());
+    mPd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(),
+                              tr("Cancel"),
+                              0,
+                              (int)images.size(),
+                              DkUtils::getMainWindow());
     mPd->setWindowTitle(tr("Thumbnails"));
 
     connect(this, &DkThumbsSaver::numFilesSignal, mPd, &QProgressDialog::setValue);
@@ -210,7 +215,8 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
                 try {
                     int orientation = res->metaData->getOrientationDegrees();
                     QImage rotatedThumb = res->thumb;
-                    if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set && orientation != 0) {
+                    if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set
+                        && orientation != 0) {
                         // TODO: Use DkUtils rotation
                         QTransform rotationMatrix;
                         rotationMatrix.rotate(-orientation);
@@ -322,7 +328,10 @@ DkBrowseExplorer::~DkBrowseExplorer()
 
 void DkBrowseExplorer::browseClicked()
 {
-    QString root = QFileDialog::getExistingDirectory(this, tr("Choose Root Directory"), mRootPath, QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
+    QString root = QFileDialog::getExistingDirectory(this,
+                                                     tr("Choose Root Directory"),
+                                                     mRootPath,
+                                                     QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
     if (root != "")
         setRootPath(root);
@@ -401,7 +410,11 @@ DkExplorer::DkExplorer(const QString &title, QWidget *parent /* = 0 */, Qt::Wind
     addAction(selAction);
 
     if (mLoadSelected)
-        connect(mFileTree->selectionModel(), &QItemSelectionModel::currentChanged, this, &DkExplorer::fileClicked, Qt::UniqueConnection);
+        connect(mFileTree->selectionModel(),
+                &QItemSelectionModel::currentChanged,
+                this,
+                &DkExplorer::fileClicked,
+                Qt::UniqueConnection);
 }
 
 DkExplorer::~DkExplorer()
@@ -539,7 +552,11 @@ void DkExplorer::enableLoadSelected(bool enable)
     mLoadSelected = enable;
 
     if (mLoadSelected)
-        connect(mFileTree->selectionModel(), &QItemSelectionModel::currentChanged, this, &DkExplorer::fileClicked, Qt::UniqueConnection);
+        connect(mFileTree->selectionModel(),
+                &QItemSelectionModel::currentChanged,
+                this,
+                &DkExplorer::fileClicked,
+                Qt::UniqueConnection);
     else
         disconnect(mFileTree->selectionModel(), &QItemSelectionModel::currentChanged, this, &DkExplorer::fileClicked);
 }
@@ -645,7 +662,7 @@ void DkOverview::paintEvent(QPaintEvent *event)
     QSize viewSize = QSize(width() - lm - rm, height() - tm - bm); // overview shall take 15% of the mViewport....
 
     if (viewSize.width() > 2 && viewSize.height() > 2) {
-        QTransform overviewImgMatrix = getScaledImageMatrix(); // matrix that always resizes the image to the current mViewport
+        QTransform overviewImgMatrix = getScaledImageMatrix();
         QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), mImgSize));
 
         // now render the current view
@@ -679,7 +696,8 @@ void DkOverview::paintEvent(QPaintEvent *event)
         painter.setBrush(col);
 
         if (viewRect.width() + 1 < overviewImgRect.width()
-            || viewRect.height() + 1 < overviewImgRect.height()) // draw viewrect if we do not see all parts of the image
+            || viewRect.height() + 1
+                < overviewImgRect.height()) // draw viewrect if we do not see all parts of the image
             painter.drawRect(viewRect);
     }
     painter.end();
@@ -756,7 +774,7 @@ QImage DkOverview::resizedImg(const QImage &src)
     if (src.isNull())
         return QImage();
 
-    QTransform overviewImgMatrix = getScaledImageMatrix(); // matrix that always resizes the image to the current mViewport
+    QTransform overviewImgMatrix = getScaledImageMatrix();
 
     // is the overviewImgMatrix empty?
     if (overviewImgMatrix.isIdentity())
@@ -796,12 +814,14 @@ QTransform DkOverview::getScaledImageMatrix()
     if (imgRect.width() == 0 || imgRect.height() == 0)
         s = 1.0f;
     else
-        s = (ratioImg > ratioWin) ? (float)(iSize.width() / imgRect.width()) : (float)(iSize.height() / imgRect.height());
+        s = (ratioImg > ratioWin) ? (float)(iSize.width() / imgRect.width())
+                                  : (float)(iSize.height() / imgRect.height());
 
     imgMatrix.scale(s, s);
 
     QRectF imgViewRect = imgMatrix.mapRect(imgRect);
-    imgMatrix.translate((iSize.width() - imgViewRect.width()) * 0.5f / s, (iSize.height() - imgViewRect.height()) * 0.5f / s);
+    imgMatrix.translate((iSize.width() - imgViewRect.width()) * 0.5f / s,
+                        (iSize.height() - imgViewRect.height()) * 0.5f / s);
 
     return imgMatrix;
 }
@@ -950,13 +970,15 @@ void DkButton::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (!mySize.isEmpty()) {
-        offset = QPoint(qRound((float)(size().width() - mySize.width()) * 0.5f), qRound((float)(size().height() - mySize.height()) * 0.5f));
+        offset = QPoint(qRound((float)(size().width() - mySize.width()) * 0.5f),
+                        qRound((float)(size().height() - mySize.height()) * 0.5f));
         s = mySize;
     } else
         s = this->size();
 
     // scale to parent label
-    QRect r = (keepAspectRatio) ? QRect(offset, checkedIcon.actualSize(s)) : QRect(offset, s); // actual size preserves the aspect ratio
+    QRect r = (keepAspectRatio) ? QRect(offset, checkedIcon.actualSize(s))
+                                : QRect(offset, s); // actual size preserves the aspect ratio
     QPixmap pm2draw;
 
     if (isChecked() || !isCheckable())
@@ -1032,8 +1054,12 @@ void DkRatingLabel::updateRating()
 
 void DkRatingLabel::init()
 {
-    QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg", QSize(), DkSettingsManager::param().display().hudFgdColor);
-    QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg", QSize(), DkSettingsManager::param().display().hudFgdColor);
+    QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg",
+                                       QSize(),
+                                       DkSettingsManager::param().display().hudFgdColor);
+    QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg",
+                                        QSize(),
+                                        DkSettingsManager::param().display().hudFgdColor);
 
     DkActionManager &am = DkActionManager::instance();
 
@@ -1134,8 +1160,10 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
         }
 
         mTitleLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name));
-        mDateLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date));
-        mRatingLabel->setVisible(DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating));
+        mDateLabel->setVisible(
+            DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date));
+        mRatingLabel->setVisible(
+            DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating));
     }
 
     int height = 32;
@@ -1201,7 +1229,8 @@ void DkFileInfoLabel::updateRating(const int rating)
 void DkFileInfoLabel::updateWidth()
 {
     int width = 20; // mar
-    width += qMax(qMax(mTitleLabel->sizeHint().width(), mDateLabel->sizeHint().width()), mRatingLabel->sizeHint().width());
+    width += qMax(qMax(mTitleLabel->sizeHint().width(), mDateLabel->sizeHint().width()),
+                  mRatingLabel->sizeHint().width());
 
     if (width < minimumWidth())
         setMinimumWidth(width);
@@ -1293,7 +1322,10 @@ void DkPlayer::init()
         this->hide(false); // do not save setting when showing/hiding temporarily
     });
 
-    connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow), &QAction::triggered, this, &DkPlayer::togglePlay);
+    connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow),
+            &QAction::triggered,
+            this,
+            &DkPlayer::togglePlay);
 }
 
 void DkPlayer::play(bool play)
@@ -1502,8 +1534,9 @@ DkEditableRect::DkEditableRect(const QRectF &rect, QWidget *parent, Qt::WindowFl
 
     mPen = QPen(QColor(0, 0, 0, 255), 1);
     mPen.setCosmetic(true);
-    mBrush = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ? DkSettingsManager::param().display().bgColorFrameless
-                                                                                      : DkSettingsManager::param().display().hudBgColor;
+    mBrush = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless)
+        ? DkSettingsManager::param().display().bgColorFrameless
+        : DkSettingsManager::param().display().hudBgColor;
 
     for (int idx = 0; idx < 8; idx++) {
         mCtrlPoints.push_back(new DkTransformRect(idx, &this->mRect, this));
@@ -1622,7 +1655,8 @@ void DkEditableRect::updateCorner(int idx, const QPointF &point, Qt::KeyboardMod
     if (changeState)
         mState = scaling;
 
-    DkVector diag = (modifiers & Qt::ShiftModifier || (mFixedDiag.x != 0 && mFixedDiag.y != 0)) ? mOldDiag : DkVector(); // braces
+    DkVector diag = (modifiers & Qt::ShiftModifier || (mFixedDiag.x != 0 && mFixedDiag.y != 0)) ? mOldDiag
+                                                                                                : DkVector(); // braces
     QPointF p = point;
 
     if ((modifiers & Qt::ControlModifier) == 0)
@@ -1765,7 +1799,8 @@ void DkEditableRect::drawGuide(QPainter *painter, const QPolygonF &p, int paintM
 void DkEditableRect::mousePressEvent(QMouseEvent *event)
 {
     // panning -> redirect to mViewport
-    if (event->buttons() == Qt::LeftButton && (event->modifiers() == DkSettingsManager::param().global().altMod || mPanning)) {
+    if (event->buttons() == Qt::LeftButton
+        && (event->modifiers() == DkSettingsManager::param().global().altMod || mPanning)) {
         event->setModifiers(Qt::NoModifier); // we want a 'normal' action in the mViewport
         event->ignore();
         return;
@@ -1901,7 +1936,8 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event)
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event)
 {
     // panning -> redirect to mViewport
-    if (event->buttons() == Qt::LeftButton && (event->modifiers() == DkSettingsManager::param().global().altMod || mPanning)) {
+    if (event->buttons() == Qt::LeftButton
+        && (event->modifiers() == DkSettingsManager::param().global().altMod || mPanning)) {
         setCursor(Qt::OpenHandCursor);
         event->setModifiers(Qt::NoModifier);
         event->ignore();
@@ -2135,9 +2171,12 @@ void DkHistogram::paintEvent(QPaintEvent *)
     if (mIsPainted && mMaxValue > 0) {
         for (int x = 0; x < 256; x++) {
             // get bounded values
-            int rLineHeight = qMax(qMin(qRound((float)mHist[0][x] * binHeight * mScaleFactor / mMaxValue), binHeight), 0);
-            int gLineHeight = qMax(qMin(qRound((float)mHist[1][x] * binHeight * mScaleFactor / mMaxValue), binHeight), 0);
-            int bLineHeight = qMax(qMin(qRound((float)mHist[2][x] * binHeight * mScaleFactor / mMaxValue), binHeight), 0);
+            int rLineHeight = qMax(qMin(qRound((float)mHist[0][x] * binHeight * mScaleFactor / mMaxValue), binHeight),
+                                   0);
+            int gLineHeight = qMax(qMin(qRound((float)mHist[1][x] * binHeight * mScaleFactor / mMaxValue), binHeight),
+                                   0);
+            int bLineHeight = qMax(qMin(qRound((float)mHist[2][x] * binHeight * mScaleFactor / mMaxValue), binHeight),
+                                   0);
             int maxLineHeight = qMax(qMax(rLineHeight, gLineHeight), bLineHeight);
 
             painter.setCompositionMode(QPainter::CompositionMode_Clear);
@@ -2160,13 +2199,15 @@ void DkHistogram::paintEvent(QPaintEvent *)
         painter.setPen(QColor(255, 255, 255, 200));
 
         QString histText1("Pixels: %1\tMPix: %2");
-        painter.drawText(QPoint(margin, height() - 2 * TEXT_SIZE + margin), histText1.arg(mNumPixels, 10, 10).arg(megaPixels, 10, 'f', 2));
+        painter.drawText(QPoint(margin, height() - 2 * TEXT_SIZE + margin),
+                         histText1.arg(mNumPixels, 10, 10).arg(megaPixels, 10, 'f', 2));
 
         if (mMinBinValue < 256) {
             // gray image statistics
             QString histText2("Min: %1\tMax: %2\tValue Count: %3");
-            painter.drawText(QPoint(margin, height() - 1 * TEXT_SIZE + margin),
-                             histText2.arg(mMinBinValue, 5, 10).arg(mMaxBinValue, 5, 10).arg(mNumDistinctValues, 5, 10));
+            painter
+                .drawText(QPoint(margin, height() - 1 * TEXT_SIZE + margin),
+                          histText2.arg(mMinBinValue, 5, 10).arg(mMaxBinValue, 5, 10).arg(mNumDistinctValues, 5, 10));
         } else {
             // color image statistics
             double blackPct = 100.0 * (double)mNumZeroPixels / (double)mNumPixels;
@@ -2524,8 +2565,10 @@ void DkDirectoryChooser::createLayout(const QString &dirPath)
 
 void DkDirectoryChooser::onDirButtonClicked()
 {
-    QString dirPath =
-        QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mDirEdit->text(), QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
+    QString dirPath = QFileDialog::getExistingDirectory(this,
+                                                        tr("Open an Image Directory"),
+                                                        mDirEdit->text(),
+                                                        QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
     if (dirPath.isEmpty())
         return;
@@ -2797,7 +2840,12 @@ void DkGenericProfileWidget::saveSettings() const
     QString dName = mProfileList->currentText().isEmpty() ? "Profile 1" : mProfileList->currentText();
 
     bool ok;
-    QString text = QInputDialog::getText(DkUtils::getMainWindow(), tr("Profile Name"), tr("Profile Name:"), QLineEdit::Normal, dName, &ok);
+    QString text = QInputDialog::getText(DkUtils::getMainWindow(),
+                                         tr("Profile Name"),
+                                         tr("Profile Name:"),
+                                         QLineEdit::Normal,
+                                         dName,
+                                         &ok);
 
     if (!ok || text.isEmpty())
         return; // user canceled

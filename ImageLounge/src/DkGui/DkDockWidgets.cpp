@@ -51,7 +51,8 @@ void DkHistoryDock::createLayout()
     mHistoryList = new QListWidget(this);
     mHistoryList->setObjectName("historyList");
     mHistoryList->setFocusPolicy(Qt::ClickFocus);
-    mHistoryList->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
+    mHistoryList->setIconSize(
+        QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
     connect(mHistoryList, &QListWidget::itemClicked, this, &DkHistoryDock::onHistoryListItemClicked);
 
     QWidget *contentWidget = new QWidget(this);

@@ -83,22 +83,26 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
     windowPosition = pos_north;
 
     init();
-    // setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(mBgCol) + ";}");
+    // setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" +
+    // DkUtils::colorToString(mBgCol) + ";}");
 
     loadSettings();
     initOrientations();
 
     createContextMenu();
 
-    connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, [this](const QString &filePath, const QImage &thumb, const bool fromExif) {
-        if (!mThumbs.contains(filePath)) {
-            return;
-        }
-        mThumbs[filePath].image = DkImage::createThumb(thumb);
-        mThumbs[filePath].fromExif = fromExif;
-        mThumbs[filePath].loading = false;
-        update();
-    });
+    connect(mThumbLoader,
+            &DkThumbLoader::thumbnailLoaded,
+            this,
+            [this](const QString &filePath, const QImage &thumb, const bool fromExif) {
+                if (!mThumbs.contains(filePath)) {
+                    return;
+                }
+                mThumbs[filePath].image = DkImage::createThumb(thumb);
+                mThumbs[filePath].fromExif = fromExif;
+                mThumbs[filePath].loading = false;
+                update();
+            });
 
     connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &filePath) {
         if (!mThumbs.contains(filePath)) {
@@ -137,10 +141,11 @@ void DkFilePreview::init()
     connect(moveImageTimer, &QTimer::timeout, this, &DkFilePreview::moveImages);
 
     int borderTriggerI = qRound(borderTrigger);
-    leftGradient =
-        (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(0, 0), QPoint(borderTriggerI, 0)) : QLinearGradient(QPoint(0, 0), QPoint(0, borderTriggerI));
-    rightGradient = (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(width() - borderTriggerI, 0), QPoint(width(), 0))
-                                                    : QLinearGradient(QPoint(0, height() - borderTriggerI), QPoint(0, height()));
+    leftGradient = (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(0, 0), QPoint(borderTriggerI, 0))
+                                                   : QLinearGradient(QPoint(0, 0), QPoint(0, borderTriggerI));
+    rightGradient = (orientation == Qt::Horizontal)
+        ? QLinearGradient(QPoint(width() - borderTriggerI, 0), QPoint(width(), 0))
+        : QLinearGradient(QPoint(0, height() - borderTriggerI), QPoint(0, height()));
     leftGradient.setColorAt(1, Qt::white);
     leftGradient.setColorAt(0, Qt::black);
     rightGradient.setColorAt(1, Qt::black);
@@ -255,7 +260,8 @@ void DkFilePreview::paintEvent(QPaintEvent *)
     if (mFiles.empty())
         return;
 
-    if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
+    if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor
+        && windowPosition != pos_dock_ver) {
         xOffset = qCeil(DkSettingsManager::param().effectiveThumbSize(this) * 0.1f);
         yOffset = qCeil(DkSettingsManager::param().effectiveThumbSize(this) * 0.1f);
 
@@ -296,7 +302,8 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 {
     // qDebug() << "drawing thumbs: " << worldMatrix.dx();
 
-    bufferDim = (orientation == Qt::Horizontal) ? QRectF(QPointF(0, yOffset / 2), QSize(xOffset, 0)) : QRectF(QPointF(yOffset / 2, 0), QSize(0, xOffset));
+    bufferDim = (orientation == Qt::Horizontal) ? QRectF(QPointF(0, yOffset / 2), QSize(xOffset, 0))
+                                                : QRectF(QPointF(yOffset / 2, 0), QSize(0, xOffset));
     thumbRects.clear();
 
     DkTimer dt;
@@ -324,9 +331,10 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         //	qDebug() << thumb->getFilePath() << "size:" << img.size();
 
         QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
-        QRectF r = !img.isNull()
-            ? QRectF(anchor, img.size())
-            : QRectF(anchor, QSize(DkSettingsManager::param().effectiveThumbSize(this), DkSettingsManager::param().effectiveThumbSize(this)));
+        QRectF r = !img.isNull() ? QRectF(anchor, img.size())
+                                 : QRectF(anchor,
+                                          QSize(DkSettingsManager::param().effectiveThumbSize(this),
+                                                DkSettingsManager::param().effectiveThumbSize(this)));
         if (orientation == Qt::Horizontal && height() - yOffset < r.height() * 2)
             r.setSize(QSizeF(qFloor(r.width() * (float)(height() - yOffset) / r.height()), height() - yOffset));
         else if (orientation == Qt::Vertical && width() - yOffset < r.width() * 2)
@@ -356,8 +364,10 @@ void DkFilePreview::drawThumbs(QPainter *painter)
             newFileRect = imgWorldRect;
 
         // is the current image within the canvas?
-        const bool oobStart = (orientation == Qt::Horizontal && imgWorldRect.right() < 0) || (orientation == Qt::Vertical && imgWorldRect.bottom() < 0);
-        const bool oobEnd = (orientation == Qt::Horizontal && imgWorldRect.left() > width()) || (orientation == Qt::Vertical && imgWorldRect.top() > height());
+        const bool oobStart = (orientation == Qt::Horizontal && imgWorldRect.right() < 0)
+            || (orientation == Qt::Vertical && imgWorldRect.bottom() < 0);
+        const bool oobEnd = (orientation == Qt::Horizontal && imgWorldRect.left() > width())
+            || (orientation == Qt::Vertical && imgWorldRect.top() > height());
 
         if (oobStart || oobEnd) {
             if (existsInTable && thumb->loading) {
@@ -379,8 +389,10 @@ void DkFilePreview::drawThumbs(QPainter *painter)
             mThumbLoader->requestThumbnail(filePath);
         }
 
-        bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
-            || (orientation == Qt::Vertical && worldMatrix.dy() < 0 && imgWorldRect.top() < leftGradient.finalStop().y());
+        bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0
+                               && imgWorldRect.left() < leftGradient.finalStop().x())
+            || (orientation == Qt::Vertical && worldMatrix.dy() < 0
+                && imgWorldRect.top() < leftGradient.finalStop().y());
         bool isRightGradient = (orientation == Qt::Horizontal && imgWorldRect.right() > rightGradient.start().x())
             || (orientation == Qt::Vertical && imgWorldRect.bottom() > rightGradient.start().y());
         // show that there are more images...
@@ -499,7 +511,8 @@ void DkFilePreview::resizeEvent(QResizeEvent *event)
     QWidget *pw = qobject_cast<QWidget *>(parent());
 
     if (event->size() == event->oldSize()
-        && ((orientation == Qt::Horizontal && pw && this->width() == pw->width()) || (orientation == Qt::Vertical && pw && this->height() == pw->height()))) {
+        && ((orientation == Qt::Horizontal && pw && this->width() == pw->width())
+            || (orientation == Qt::Vertical && pw && this->height() == pw->height()))) {
         return;
     }
 
@@ -512,7 +525,8 @@ void DkFilePreview::resizeEvent(QResizeEvent *event)
     borderTrigger = (orientation == Qt::Horizontal) ? (float)width() * winPercent : (float)height() * winPercent;
     int borderTriggerI = qRound(borderTrigger);
     leftGradient.setFinalStop((orientation == Qt::Horizontal) ? QPoint(borderTriggerI, 0) : QPoint(0, borderTriggerI));
-    rightGradient.setStart((orientation == Qt::Horizontal) ? QPoint(width() - borderTriggerI, 0) : QPoint(0, height() - borderTriggerI));
+    rightGradient.setStart((orientation == Qt::Horizontal) ? QPoint(width() - borderTriggerI, 0)
+                                                           : QPoint(0, height() - borderTriggerI));
     rightGradient.setFinalStop((orientation == Qt::Horizontal) ? QPoint(width(), 0) : QPoint(0, height()));
 
     // update();
@@ -589,7 +603,8 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
                 selected = idx;
 
                 if (selected < mFiles.size() && selected >= 0) {
-                    // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettingsManager::param().display().highlightColor, 0.3f);
+                    // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()),
+                    // DkSettingsManager::param().display().highlightColor, 0.3f);
 
                     // important: setText shows the label - if you then hide it here again you'll get a stack overflow
                     // if (fileLabel->height() < height())
@@ -598,11 +613,13 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
                     auto thumb = mThumbs.constFind(fileInfo.path());
                     Q_ASSERT(thumb != mThumbs.constEnd());
 
-                    QString str = QObject::tr("Name: ") % fileInfo.fileName() % "\n" % QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size())
-                        % "\n" % QObject::tr("Created: ") % fileInfo.birthTime().toString();
+                    QString str = QObject::tr("Name: ") % fileInfo.fileName() % "\n" % QObject::tr("Size: ")
+                        % DkUtils::readableByte((float)fileInfo.size()) % "\n" % QObject::tr("Created: ")
+                        % fileInfo.birthTime().toString();
                     if (!thumb->notExist) {
                         const QImage &img = thumb->image;
-                        str = str % "\n" % QObject::tr("Thumb: ") % QString::number(img.size().width()) % "x" % QString::number(img.size().height()) % " "
+                        str = str % "\n" % QObject::tr("Thumb: ") % QString::number(img.size().width()) % "x"
+                            % QString::number(img.size().height()) % " "
                             % (thumb->fromExif ? QObject::tr("Embedded ") : "");
                     }
                     setToolTip(str);
@@ -795,13 +812,15 @@ void DkFilePreview::moveImages()
     float bufferPos = orientation == Qt::Horizontal ? (float)bufferDim.right() : (float)bufferDim.bottom();
 
     // do not scroll out of the thumbs
-    if ((translation >= limit * 0.5 && currentDx > 0) || (translation <= -(bufferPos - limit * 0.5 + xOffset) && currentDx < 0))
+    if ((translation >= limit * 0.5 && currentDx > 0)
+        || (translation <= -(bufferPos - limit * 0.5 + xOffset) && currentDx < 0))
         return;
 
     // set the last step to match the center of the screen...	(nicer if user scrolls very fast)
     if (translation < limit * 0.5 && currentDx > 0 && translation + currentDx > limit * 0.5 && currentDx > 0)
         currentDx = limit * 0.5f - translation;
-    else if (translation > -(bufferPos - limit * 0.5 + xOffset) && translation + currentDx <= -(bufferPos - limit * 0.5 + xOffset) && currentDx < 0)
+    else if (translation > -(bufferPos - limit * 0.5 + xOffset)
+             && translation + currentDx <= -(bufferPos - limit * 0.5 + xOffset) && currentDx < 0)
         currentDx = -(bufferPos - limit * 0.5f + xOffset + (float)worldMatrix.dx());
 
     // qDebug() << "currentDx: " << currentDx;
@@ -858,7 +877,10 @@ void DkFilePreview::setVisible(bool visible, bool saveSettings)
 }
 
 // DkThumbLabel --------------------------------------------------------------------
-DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader, const DkFileInfo &fileInfo, bool fillSquare, QGraphicsItem *parent)
+DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader,
+                           const DkFileInfo &fileInfo,
+                           bool fillSquare,
+                           QGraphicsItem *parent)
     : QGraphicsObject(parent)
     , mText(this)
     , mFilePath{fileInfo.path()}
@@ -1225,7 +1247,9 @@ void DkThumbScene::updateThumbLabels()
     mThumbLabels.clear();
 
     for (const auto &fileInfo : std::as_const(mThumbs)) {
-        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader, fileInfo, DkSettingsManager::param().display().displaySquaredThumbs);
+        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader,
+                                               fileInfo,
+                                               DkSettingsManager::param().display().displaySquaredThumbs);
         connect(thumb, &DkThumbLabel::loadFileSignal, this, &DkThumbScene::loadFileSignal);
         connect(thumb, &DkThumbLabel::showFileSignal, this, &DkThumbScene::showFile);
 
@@ -1246,7 +1270,8 @@ void DkThumbScene::setImageLoader(QSharedPointer<DkImageLoader> loader)
     connectLoader(mLoader, false); // disconnect
     mLoader = loader;
     connectLoader(loader);
-    showFile(""); // if we don't do this, then if the FIRST directory opened after startup is empty, no directory will be displayed in the status bar
+    showFile(""); // if we don't do this, then if the FIRST directory opened after startup is empty, no directory will
+                  // be displayed in the status bar
 }
 
 void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals)
@@ -1255,7 +1280,11 @@ void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool conn
         return;
 
     if (connectSignals) {
-        connect(loader.data(), &DkImageLoader::updateDirSignal, this, &DkThumbScene::updateThumbs, Qt::UniqueConnection);
+        connect(loader.data(),
+                &DkImageLoader::updateDirSignal,
+                this,
+                &DkThumbScene::updateThumbs,
+                Qt::UniqueConnection);
     } else {
         disconnect(loader.data(), &DkImageLoader::updateDirSignal, this, &DkThumbScene::updateThumbs);
     }
@@ -1269,7 +1298,8 @@ void DkThumbScene::keyPressEvent(QKeyEvent *event)
         return;
 
     if (event->modifiers() != Qt::ShiftModifier
-        && (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right || event->key() == Qt::Key_Up || event->key() == Qt::Key_Down))
+        && (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right || event->key() == Qt::Key_Up
+            || event->key() == Qt::Key_Down))
         selectThumbs(false);
 
     switch (event->key()) {
@@ -1489,12 +1519,16 @@ void DkThumbScene::copyImages(const QMimeData *mimeData, const Qt::DropAction &d
 
     DkFileInfo dirInfo(mLoader->getDirPath());
     if (!dirInfo.isDir()) {
-        QMessageBox::information(DkUtils::getMainWindow(), tr("Copy Images"), tr("The current directory is invalid or no longer exists."));
+        QMessageBox::information(DkUtils::getMainWindow(),
+                                 tr("Copy Images"),
+                                 tr("The current directory is invalid or no longer exists."));
         return;
     }
 
     if (dirInfo.isZipFile()) {
-        QMessageBox::information(DkUtils::getMainWindow(), tr("Copy Images"), tr("Copying to an archive is unsupported."));
+        QMessageBox::information(DkUtils::getMainWindow(),
+                                 tr("Copy Images"),
+                                 tr("Copying to an archive is unsupported."));
         return;
     }
 
@@ -1619,13 +1653,19 @@ void DkThumbScene::renameSelected() const
         return;
 
     bool ok;
-    QString newFileName = QInputDialog::getText(DkUtils::getMainWindow(), tr("Rename File(s)"), tr("New Filename:"), QLineEdit::Normal, "", &ok);
+    QString newFileName = QInputDialog::getText(DkUtils::getMainWindow(),
+                                                tr("Rename File(s)"),
+                                                tr("New Filename:"),
+                                                QLineEdit::Normal,
+                                                "",
+                                                &ok);
 
     if (!ok || newFileName.isEmpty()) {
         return;
     }
 
-    QString pattern = (fileList.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>"; // no index if just 1 file was added
+    QString pattern = (fileList.size() == 1) ? newFileName + ".<old>"
+                                             : newFileName + "<d:3>.<old>"; // no index if just 1 file was added
     DkFileNameConverter converter(pattern);
 
     for (int idx = 0; idx < fileList.size(); idx++) {
@@ -1635,7 +1675,8 @@ void DkThumbScene::renameSelected() const
         if (!file.rename(newFileInfo.absoluteFilePath())) {
             int answer = QMessageBox::critical(DkUtils::getMainWindow(),
                                                tr("Error"),
-                                               tr("Sorry, I cannot rename: %1 to %2").arg(fileInfo.fileName(), newFileInfo.fileName()),
+                                               tr("Sorry, I cannot rename: %1 to %2")
+                                                   .arg(fileInfo.fileName(), newFileInfo.fileName()),
                                                QMessageBox::Ok | QMessageBox::Cancel);
 
             if (answer == QMessageBox::Cancel) {
@@ -1786,7 +1827,8 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
                     imgs << tl[idx]->image();
                 }
 
-                QPixmap pm = DkImage::merge(imgs).scaledToHeight(73); // 73: see https://www.youtube.com/watch?v=TIYMmbHik08
+                QPixmap pm = DkImage::merge(imgs).scaledToHeight(
+                    73); // 73: see https://www.youtube.com/watch?v=TIYMmbHik08
 
                 QDrag *drag = new QDrag(this);
                 drag->setMimeData(mimeData);
@@ -1881,7 +1923,9 @@ void DkThumbsView::dropEvent(QDropEvent *event)
 }
 
 // DkThumbScrollWidget --------------------------------------------------------------------
-DkThumbScrollWidget::DkThumbScrollWidget(DkThumbLoader *thumbLoader, QWidget *parent /* = 0 */, Qt::WindowFlags flags /* = 0 */)
+DkThumbScrollWidget::DkThumbScrollWidget(DkThumbLoader *thumbLoader,
+                                         QWidget *parent /* = 0 */,
+                                         Qt::WindowFlags flags /* = 0 */)
     : DkWidget(parent, flags)
 {
     // TODO: is this name required elsewhere?
@@ -1918,7 +1962,8 @@ DkThumbScrollWidget::~DkThumbScrollWidget()
 void DkThumbScrollWidget::createToolbar()
 {
     mToolbar = new QToolBar(tr("Thumb Preview Toolbar"), this);
-    mToolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
+    mToolbar->setIconSize(
+        QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
     DkActionManager &am = DkActionManager::instance();
     mToolbar->addAction(am.action(DkActionManager::preview_zoom_in));
@@ -2068,35 +2113,104 @@ void DkThumbScrollWidget::connectToActions(bool activate)
         a->setEnabled(activate);
 
     if (activate) {
-        connect(am.action(DkActionManager::preview_select_all), &QAction::triggered, mThumbsScene, &DkThumbScene::selectAllThumbs);
-        connect(am.action(DkActionManager::preview_zoom_in), &QAction::triggered, mThumbsScene, &DkThumbScene::increaseThumbs);
-        connect(am.action(DkActionManager::preview_zoom_out), &QAction::triggered, mThumbsScene, &DkThumbScene::decreaseThumbs);
-        connect(am.action(DkActionManager::preview_display_squares), &QAction::triggered, mThumbsScene, &DkThumbScene::toggleSquaredThumbs);
-        connect(am.action(DkActionManager::preview_show_labels), &QAction::triggered, mThumbsScene, &DkThumbScene::toggleThumbLabels);
-        connect(am.action(DkActionManager::preview_filter), &QAction::triggered, this, &DkThumbScrollWidget::setFilterFocus);
-        connect(am.action(DkActionManager::preview_delete), &QAction::triggered, mThumbsScene, &DkThumbScene::deleteSelected);
-        connect(am.action(DkActionManager::preview_copy), &QAction::triggered, mThumbsScene, &DkThumbScene::copySelected);
-        connect(am.action(DkActionManager::preview_paste), &QAction::triggered, mThumbsScene, &DkThumbScene::pasteImages);
-        connect(am.action(DkActionManager::preview_rename), &QAction::triggered, mThumbsScene, &DkThumbScene::renameSelected);
-        connect(am.action(DkActionManager::preview_batch), &QAction::triggered, this, &DkThumbScrollWidget::batchProcessFiles);
+        connect(am.action(DkActionManager::preview_select_all),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::selectAllThumbs);
+        connect(am.action(DkActionManager::preview_zoom_in),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::increaseThumbs);
+        connect(am.action(DkActionManager::preview_zoom_out),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::decreaseThumbs);
+        connect(am.action(DkActionManager::preview_display_squares),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::toggleSquaredThumbs);
+        connect(am.action(DkActionManager::preview_show_labels),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::toggleThumbLabels);
+        connect(am.action(DkActionManager::preview_filter),
+                &QAction::triggered,
+                this,
+                &DkThumbScrollWidget::setFilterFocus);
+        connect(am.action(DkActionManager::preview_delete),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::deleteSelected);
+        connect(am.action(DkActionManager::preview_copy),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::copySelected);
+        connect(am.action(DkActionManager::preview_paste),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::pasteImages);
+        connect(am.action(DkActionManager::preview_rename),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::renameSelected);
+        connect(am.action(DkActionManager::preview_batch),
+                &QAction::triggered,
+                this,
+                &DkThumbScrollWidget::batchProcessFiles);
         connect(am.action(DkActionManager::preview_print), &QAction::triggered, this, &DkThumbScrollWidget::batchPrint);
 
         connect(mFilterEdit, &QLineEdit::textChanged, this, &DkThumbScrollWidget::filterChangedSignal);
         connect(mView, &DkThumbsView::updateDirSignal, this, &DkThumbScrollWidget::updateDirSignal);
         connect(mThumbsScene, &DkThumbScene::selectionChanged, this, &DkThumbScrollWidget::enableSelectionActions);
     } else {
-        disconnect(am.action(DkActionManager::preview_select_all), &QAction::triggered, mThumbsScene, &DkThumbScene::selectAllThumbs);
-        disconnect(am.action(DkActionManager::preview_zoom_in), &QAction::triggered, mThumbsScene, &DkThumbScene::increaseThumbs);
-        disconnect(am.action(DkActionManager::preview_zoom_out), &QAction::triggered, mThumbsScene, &DkThumbScene::decreaseThumbs);
-        disconnect(am.action(DkActionManager::preview_display_squares), &QAction::triggered, mThumbsScene, &DkThumbScene::toggleSquaredThumbs);
-        disconnect(am.action(DkActionManager::preview_show_labels), &QAction::triggered, mThumbsScene, &DkThumbScene::toggleThumbLabels);
-        disconnect(am.action(DkActionManager::preview_filter), &QAction::triggered, this, &DkThumbScrollWidget::setFilterFocus);
-        disconnect(am.action(DkActionManager::preview_delete), &QAction::triggered, mThumbsScene, &DkThumbScene::deleteSelected);
-        disconnect(am.action(DkActionManager::preview_copy), &QAction::triggered, mThumbsScene, &DkThumbScene::copySelected);
-        disconnect(am.action(DkActionManager::preview_paste), &QAction::triggered, mThumbsScene, &DkThumbScene::pasteImages);
-        disconnect(am.action(DkActionManager::preview_rename), &QAction::triggered, mThumbsScene, &DkThumbScene::renameSelected);
-        disconnect(am.action(DkActionManager::preview_batch), &QAction::triggered, this, &DkThumbScrollWidget::batchProcessFiles);
-        disconnect(am.action(DkActionManager::preview_print), &QAction::triggered, this, &DkThumbScrollWidget::batchPrint);
+        disconnect(am.action(DkActionManager::preview_select_all),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::selectAllThumbs);
+        disconnect(am.action(DkActionManager::preview_zoom_in),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::increaseThumbs);
+        disconnect(am.action(DkActionManager::preview_zoom_out),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::decreaseThumbs);
+        disconnect(am.action(DkActionManager::preview_display_squares),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::toggleSquaredThumbs);
+        disconnect(am.action(DkActionManager::preview_show_labels),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::toggleThumbLabels);
+        disconnect(am.action(DkActionManager::preview_filter),
+                   &QAction::triggered,
+                   this,
+                   &DkThumbScrollWidget::setFilterFocus);
+        disconnect(am.action(DkActionManager::preview_delete),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::deleteSelected);
+        disconnect(am.action(DkActionManager::preview_copy),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::copySelected);
+        disconnect(am.action(DkActionManager::preview_paste),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::pasteImages);
+        disconnect(am.action(DkActionManager::preview_rename),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::renameSelected);
+        disconnect(am.action(DkActionManager::preview_batch),
+                   &QAction::triggered,
+                   this,
+                   &DkThumbScrollWidget::batchProcessFiles);
+        disconnect(am.action(DkActionManager::preview_print),
+                   &QAction::triggered,
+                   this,
+                   &DkThumbScrollWidget::batchPrint);
 
         disconnect(mFilterEdit, &QLineEdit::textChanged, this, &DkThumbScrollWidget::filterChangedSignal);
         disconnect(mView, &DkThumbsView::updateDirSignal, this, &DkThumbScrollWidget::updateDirSignal);

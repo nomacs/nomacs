@@ -123,12 +123,19 @@ public slots:
     void saveFileWeb(const QImage &saveImg);
     void saveUserFileAs(const QImage &saveImg, bool silent);
     void copyUserFile();
-    void saveFile(const QString &filename, const QImage &saveImg = QImage(), const QString &fileFilter = "", int compression = -1, bool threaded = true);
+    void saveFile(const QString &filename,
+                  const QImage &saveImg = QImage(),
+                  const QString &fileFilter = "",
+                  int compression = -1,
+                  bool threaded = true);
     void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
     void load(const DkFileInfo &filePath);
     void downloadFile(const QUrl &url);
     bool deleteFile();
-    QString saveTempFile(const QImage &img, const QString &name = "img", const QString &fileExt = "png", bool threaded = true);
+    QString saveTempFile(const QImage &img,
+                         const QString &name = "img",
+                         const QString &fileExt = "png",
+                         bool threaded = true);
     void setFolderFilter(const QString &filter);
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);
     void loadDirRecursive(const QString &newDirPath);

@@ -309,10 +309,11 @@ void DkGeneralPreference::createLayout()
         QColor *userColor; // setting: user modified color
         bool *isThemeColor; // setting: true if user modified a color
         DkColorChooser *chooser;
-    } colors[] = {{tr("Icon Color"), true, &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
-                  {tr("Foreground Color"), false, &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
-                  {tr("Background Color"), false, &display.themeBgdColor, &display.bgColor, &display.defaultBackgroundColor},
-                  {tr("Fullscreen Color"), false, &defaultSlideShowColor, &slideshow.backgroundColor, &noSetting}};
+    } colors[] =
+        {{tr("Icon Color"), true, &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
+         {tr("Foreground Color"), false, &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
+         {tr("Background Color"), false, &display.themeBgdColor, &display.bgColor, &display.defaultBackgroundColor},
+         {tr("Fullscreen Color"), false, &defaultSlideShowColor, &slideshow.backgroundColor, &noSetting}};
 
     for (auto &c : colors) {
         c.chooser = new DkColorChooser(*c.themeColor, c.caption, this);
@@ -340,7 +341,8 @@ void DkGeneralPreference::createLayout()
     const QStringList themes = tm.getAvailableThemes();
 
     QComboBox *themeBox = new QComboBox(this);
-    themeBox->setToolTip(tr("Sets the overall theme. The System theme uses the operating system theme except for custom widgets"));
+    themeBox->setToolTip(
+        tr("Sets the overall theme. The System theme uses the operating system theme except for custom widgets"));
     for (auto &themeFile : themes)
         themeBox->addItem(tm.cleanThemeName(themeFile), themeFile);
     themeBox->setCurrentText(tm.cleanThemeName(tm.getCurrentThemeName()));
@@ -357,7 +359,8 @@ void DkGeneralPreference::createLayout()
     });
 
     QComboBox *stylesBox = new QComboBox(this);
-    stylesBox->setToolTip(tr("Sets the appearance of buttons, checkboxes, etc. on the System theme or otherwise unstyled elements"));
+    stylesBox->setToolTip(
+        tr("Sets the appearance of buttons, checkboxes, etc. on the System theme or otherwise unstyled elements"));
     stylesBox->insertItems(0, tm.getStylePlugins());
     stylesBox->setCurrentText(display.stylePlugin);
     connect(stylesBox, &QComboBox::currentTextChanged, this, [this, stylesBox](const QString &text) {
@@ -412,12 +415,14 @@ void DkGeneralPreference::createLayout()
     connect(cbLogRecentFiles, &QCheckBox::toggled, this, &DkGeneralPreference::onLogRecentFilesToggled);
 
     QCheckBox *cbCheckOpenDuplicates = new QCheckBox(tr("Check for Duplicates on Open"), this);
-    cbCheckOpenDuplicates->setToolTip(tr("If any files are opened which are already open in a tab, don't open them again."));
+    cbCheckOpenDuplicates->setToolTip(
+        tr("If any files are opened which are already open in a tab, don't open them again."));
     cbCheckOpenDuplicates->setChecked(DkSettingsManager::param().global().checkOpenDuplicates);
     connect(cbCheckOpenDuplicates, &QCheckBox::toggled, this, &DkGeneralPreference::onCheckOpenDuplicatesToggled);
 
     QCheckBox *cbShowFirstImage = new QCheckBox(tr("Open First Image in Folder"), this);
-    cbShowFirstImage->setToolTip(tr("When opening a folder, show the first image. Otherwise, show the folder's contents."));
+    cbShowFirstImage->setToolTip(
+        tr("When opening a folder, show the first image. Otherwise, show the folder's contents."));
     cbShowFirstImage->setChecked(DkSettingsManager::param().global().openDirShowFirstImage);
     connect(cbShowFirstImage, &QCheckBox::toggled, this, [](bool checked) {
         DkSettingsManager::param().global().openDirShowFirstImage = checked;
@@ -425,7 +430,8 @@ void DkGeneralPreference::createLayout()
 
     QCheckBox *cbExtendedTabs = new QCheckBox(tr("Show extra options related to tabs"), this);
     cbExtendedTabs->setToolTip(
-        tr("Enables the \"Go to Tab\", \"First Tab\", and \"Last Tab\" options in the View menu, and the \"Open Tabs\" and \"Save Tabs\" options in the File "
+        tr("Enables the \"Go to Tab\", \"First Tab\", and \"Last Tab\" options in the View menu, and the \"Open Tabs\" "
+           "and \"Save Tabs\" options in the File "
            "menu."));
     cbExtendedTabs->setChecked(DkSettingsManager::param().global().extendedTabs);
     connect(cbExtendedTabs, &QCheckBox::toggled, this, &DkGeneralPreference::onExtendedTabsToggled);
@@ -448,7 +454,10 @@ void DkGeneralPreference::createLayout()
     QCheckBox *cbDoubleClickForFullscreen = new QCheckBox(tr("Double Click Opens Fullscreen"), this);
     cbDoubleClickForFullscreen->setToolTip(tr("If checked, a double click on the canvas opens the fullscreen mode."));
     cbDoubleClickForFullscreen->setChecked(DkSettingsManager::param().global().doubleClickForFullscreen);
-    connect(cbDoubleClickForFullscreen, &QCheckBox::toggled, this, &DkGeneralPreference::onDoubleClickForFullscreenToggled);
+    connect(cbDoubleClickForFullscreen,
+            &QCheckBox::toggled,
+            this,
+            &DkGeneralPreference::onDoubleClickForFullscreenToggled);
 
     QCheckBox *cbShowBgImage = new QCheckBox(tr("Show Background Image"), this);
     cbShowBgImage->setToolTip(tr("If checked, the nomacs logo is shown in the bottom right corner."));
@@ -507,9 +516,13 @@ void DkGeneralPreference::createLayout()
     languageCombo->setToolTip(tr("Choose your preferred language."));
     DkUtils::addLanguages(languageCombo, mLanguages);
     languageCombo->setCurrentIndex(mLanguages.indexOf(DkSettingsManager::param().global().language));
-    connect(languageCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkGeneralPreference::onLanguageComboCurrentIndexChanged);
+    connect(languageCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkGeneralPreference::onLanguageComboCurrentIndexChanged);
 
-    QLabel *translateLabel = new QLabel("<a href=\"https://nomacs.org/how-to-translate-nomacs/\">How-to translate nomacs</a>", this);
+    QLabel *translateLabel =
+        new QLabel("<a href=\"https://nomacs.org/how-to-translate-nomacs/\">How-to translate nomacs</a>", this);
     translateLabel->setToolTip(tr("Info on how to translate nomacs."));
     translateLabel->setOpenExternalLinks(true);
 
@@ -749,7 +762,10 @@ void DkDisplayPreference::createLayout()
     sbInterpolation->setMinimum(0);
     sbInterpolation->setMaximum(10000);
     sbInterpolation->setValue(DkSettingsManager::param().display().interpolateZoomLevel);
-    connect(sbInterpolation, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkDisplayPreference::onInterpolationBoxValueChanged);
+    connect(sbInterpolation,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DkDisplayPreference::onInterpolationBoxValueChanged);
 
     // zoom levels
     DkZoomConfig &zc = DkZoomConfig::instance();
@@ -818,7 +834,10 @@ void DkDisplayPreference::createLayout()
     sbIconSize->setMinimum(16);
     sbIconSize->setMaximum(1024);
     sbIconSize->setValue(DkSettingsManager::param().effectiveIconSize(sbIconSize));
-    connect(sbIconSize, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkDisplayPreference::onIconSizeBoxValueChanged);
+    connect(sbIconSize,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DkDisplayPreference::onIconSizeBoxValueChanged);
 
     DkGroupWidget *iconGroup = new DkGroupWidget(tr("Icon Size"), this);
     iconGroup->addWidget(sbIconSize);
@@ -838,7 +857,10 @@ void DkDisplayPreference::createLayout()
     QComboBox *cbTransition = new QComboBox(this);
     cbTransition->setView(new QListView()); // fix style
     cbTransition->setToolTip(tr("Choose a transition when loading a new image"));
-    connect(cbTransition, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkDisplayPreference::onTransitionCurrentIndexChanged);
+    connect(cbTransition,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkDisplayPreference::onTransitionCurrentIndexChanged);
 
     for (int idx = 0; idx < DkSettings::trans_end; idx++) {
         QString str = tr("Unknown Transition");
@@ -866,7 +888,10 @@ void DkDisplayPreference::createLayout()
     fadeImageBox->setMaximum(3);
     fadeImageBox->setSingleStep(.2);
     fadeImageBox->setValue(DkSettingsManager::param().display().animationDuration);
-    connect(fadeImageBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkDisplayPreference::onFadeImageBoxValueChanged);
+    connect(fadeImageBox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DkDisplayPreference::onFadeImageBoxValueChanged);
 
     QCheckBox *cbAlwaysAnimate = new QCheckBox(tr("Always Animate Image Loading"), this);
     cbAlwaysAnimate->setToolTip(tr("If unchecked, loading is only animated if nomacs is fullscreen"));
@@ -882,7 +907,10 @@ void DkDisplayPreference::createLayout()
     displayTimeBox->setMaximum(30);
     displayTimeBox->setSingleStep(.2);
     displayTimeBox->setValue(DkSettingsManager::param().slideShow().time);
-    connect(displayTimeBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkDisplayPreference::onDisplayTimeBoxValueChanged);
+    connect(displayTimeBox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DkDisplayPreference::onDisplayTimeBoxValueChanged);
 
     QCheckBox *showPlayer = new QCheckBox(tr("Show Player"), this);
     showPlayer->setChecked(DkSettingsManager::param().slideShow().showPlayer);
@@ -1062,8 +1090,10 @@ void DkFilePreference::createLayout()
     cacheBox->setValue(qRound(DkSettingsManager::param().resources().cacheMemory));
     connect(cacheBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkFilePreference::onCacheBoxValueChanged);
 
-    QLabel *cLabel =
-        new QLabel(tr("We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]").arg(cacheBox->minimum()).arg(cacheBox->maximum()), this);
+    QLabel *cLabel = new QLabel(tr("We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]")
+                                    .arg(cacheBox->minimum())
+                                    .arg(cacheBox->maximum()),
+                                this);
 
     DkGroupWidget *cacheGroup = new DkGroupWidget(tr("Maximal Cache Size"), this);
     cacheGroup->addWidget(cacheBox);
@@ -1079,9 +1109,10 @@ void DkFilePreference::createLayout()
     historyBox->setValue(qRound(DkSettingsManager::param().resources().historyMemory));
     connect(historyBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkFilePreference::onHistoryBoxValueChanged);
 
-    QLabel *hLabel =
-        new QLabel(tr("We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]").arg(historyBox->minimum()).arg(historyBox->maximum()),
-                   this);
+    QLabel *hLabel = new QLabel(tr("We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]")
+                                    .arg(historyBox->minimum())
+                                    .arg(historyBox->maximum()),
+                                this);
 
     DkGroupWidget *historyGroup = new DkGroupWidget(tr("History Size"), this);
     historyGroup->addWidget(historyBox);
@@ -1228,9 +1259,10 @@ void DkFileAssociationsPreference::createLayout()
 
     mModel = new QStandardItemModel(this);
     for (int rIdx = 1; rIdx < fileFilters.size(); rIdx++)
-        mModel->appendRow(getItems(fileFilters.at(rIdx),
-                                   checkFilter(fileFilters.at(rIdx), DkSettingsManager::param().app().browseFilters),
-                                   checkFilter(fileFilters.at(rIdx), DkSettingsManager::param().app().registerFilters)));
+        mModel->appendRow(
+            getItems(fileFilters.at(rIdx),
+                     checkFilter(fileFilters.at(rIdx), DkSettingsManager::param().app().browseFilters),
+                     checkFilter(fileFilters.at(rIdx), DkSettingsManager::param().app().registerFilters)));
 
     mModel->setHeaderData(0, Qt::Horizontal, tr("Filter"));
     mModel->setHeaderData(1, Qt::Horizontal, tr("Browse"));
@@ -1290,7 +1322,8 @@ void DkFileAssociationsPreference::onAssociateFilesClicked()
 
 bool DkFileAssociationsPreference::checkFilter(const QString &cFilter, const QStringList &filters) const
 {
-    if (filters.empty() && (DkSettingsManager::param().app().containerFilters.contains(cFilter) || cFilter.contains("ico")))
+    if (filters.empty()
+        && (DkSettingsManager::param().app().containerFilters.contains(cFilter) || cFilter.contains("ico")))
         return false;
 
     if (filters.empty())
@@ -1385,7 +1418,8 @@ void DkAdvancedPreference::createLayout()
     QVector<QRadioButton *> loadRawButtons;
     loadRawButtons.resize(DkSettings::raw_thumb_end);
     loadRawButtons[DkSettings::raw_thumb_always] = new QRadioButton(tr("Always Load JPG if Embedded"), this);
-    loadRawButtons[DkSettings::raw_thumb_if_large] = new QRadioButton(tr("Load JPG if it Fits the Screen Resolution"), this);
+    loadRawButtons[DkSettings::raw_thumb_if_large] = new QRadioButton(tr("Load JPG if it Fits the Screen Resolution"),
+                                                                      this);
     loadRawButtons[DkSettings::raw_thumb_never] = new QRadioButton(tr("Always Load RAW Data"), this);
 
     // check wrt the current settings
@@ -1438,7 +1472,10 @@ void DkAdvancedPreference::createLayout()
     sbNumThreads->setMinimum(1);
     sbNumThreads->setMaximum(100);
     sbNumThreads->setValue(DkSettingsManager::param().global().numThreads);
-    connect(sbNumThreads, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkAdvancedPreference::onNumThreadsValueChanged);
+    connect(sbNumThreads,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DkAdvancedPreference::onNumThreadsValueChanged);
 
     DkGroupWidget *threadsGroup = new DkGroupWidget(tr("Number of Threads"), this);
     threadsGroup->addWidget(sbNumThreads);

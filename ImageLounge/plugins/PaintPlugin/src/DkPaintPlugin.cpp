@@ -143,7 +143,8 @@ void getBlur(QPainterPath rect, QPainter *painter, QImage &img, int radius)
     scene.render(painter, selection, QRectF());
 }
 
-QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> image) const
+QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID,
+                                                               QSharedPointer<nmc::DkImageContainer> image) const
 {
     Q_UNUSED(runID);
 
@@ -257,7 +258,11 @@ void DkPaintViewPort::init()
     connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
     connect(paintToolbar, SIGNAL(modeChangeSignal(int)), this, SLOT(setMode(int)), Qt::UniqueConnection);
     connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
-    connect(paintToolbar, SIGNAL(textChangeSignal(const QString &)), this, SLOT(textChange(const QString &)), Qt::UniqueConnection);
+    connect(paintToolbar,
+            SIGNAL(textChangeSignal(const QString &)),
+            this,
+            SLOT(textChange(const QString &)),
+            Qt::UniqueConnection);
     connect(paintToolbar, SIGNAL(editFinishSignal()), this, SLOT(textEditFinsh()), Qt::UniqueConnection);
     connect(this, SIGNAL(editShowSignal(bool)), paintToolbar, SLOT(showLineEdit(bool)), Qt::UniqueConnection);
 
@@ -281,7 +286,8 @@ void DkPaintViewPort::undoLastPaint()
 void DkPaintViewPort::mousePressEvent(QMouseEvent *event)
 {
     // panning -> redirect to viewport
-    if (event->buttons() == Qt::LeftButton && (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning)) {
+    if (event->buttons() == Qt::LeftButton
+        && (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning)) {
         setCursor(Qt::ClosedHandCursor);
         event->setModifiers(Qt::NoModifier); // we want a 'normal' action in the viewport
         event->ignore();
@@ -408,7 +414,9 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     if (mWorldMatrix)
-        painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix)); // >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
+        painter.setWorldTransform(
+            (*mImgMatrix)
+            * (*mWorldMatrix)); // >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 
     for (int idx = 0; idx < paths.size(); idx++) {
         painter.setPen(pathsPen.at(idx));
@@ -470,7 +478,8 @@ QImage DkPaintViewPort::getPaintedImage()
                 for (int idx = 0; idx < paths.size(); idx++) {
                     painter.setPen(pathsPen.at(idx));
                     if (pathsMode.at(idx) == mode_arrow) {
-                        painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
+                        painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()),
+                                         QBrush(pathsPen.at(idx).color()));
                         painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
                     } else if (pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
                         painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
@@ -699,7 +708,8 @@ void DkPaintToolBar::createLayout()
     penCol = QColor(0, 0, 0);
     penColButton = new QPushButton(this);
     penColButton->setObjectName("penColButton");
-    penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
+    penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol)
+                                + "; border: 1px solid #888;}");
     penColButton->setToolTip(tr("Background Color"));
     penColButton->setStatusTip(penColButton->toolTip());
 
@@ -790,7 +800,8 @@ void DkPaintToolBar::setVisible(bool visible)
 void DkPaintToolBar::setPenColor(const QColor &col)
 {
     penCol = col;
-    penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
+    penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol)
+                                + "; border: 1px solid #888;}");
     penAlpha = col.alpha();
     alphaBox->setValue(col.alphaF() * 100);
 }
@@ -902,7 +913,8 @@ void DkPaintToolBar::on_penColButton_clicked()
 
     if (ok == QDialog::Accepted) {
         penCol = colorDialog->currentColor();
-        penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
+        penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol)
+                                    + "; border: 1px solid #888;}");
 
         QColor penColWA = penCol;
         penColWA.setAlphaF(penAlpha / 100.0);

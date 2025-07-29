@@ -113,7 +113,8 @@ QList<QAction *> PLUGIN_CLASS_NAME::pluginActions() const
  * @param plugin ID
  * @param image to be processed
  **/
-QSharedPointer<nmc::DkImageContainer> PLUGIN_CLASS_NAME::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const
+QSharedPointer<nmc::DkImageContainer> PLUGIN_CLASS_NAME::runPlugin(const QString &runID,
+                                                                   QSharedPointer<nmc::DkImageContainer> imgC) const
 {
     if (!imgC)
         return imgC;

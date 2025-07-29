@@ -52,8 +52,9 @@ class DkFakeMiniaturesPlugin : public QObject, nmc::DkPluginInterface
 public:
     QImage image() const override;
 
-    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(),
-                                                    QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
+    QSharedPointer<nmc::DkImageContainer> runPlugin(
+        const QString &runID = QString(),
+        QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 };
 
 };

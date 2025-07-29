@@ -522,7 +522,10 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
     mHistoryCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     updateGradientHistory();
-    connect(mHistoryCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkTransferToolBar::switchGradient);
+    connect(mHistoryCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkTransferToolBar::switchGradient);
     connect(mHistoryCombo, &QComboBox::customContextMenuRequested, this, &DkTransferToolBar::deleteGradientMenu);
 
     this->addWidget(mHistoryCombo);
@@ -564,7 +567,8 @@ DkTransferToolBar::~DkTransferToolBar()
 void DkTransferToolBar::createIcons()
 {
     // user needs to decide...
-    // this->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
+    // this->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(),
+    // DkSettingsManager::param().effectiveIconSize()));
 
     mToolBarIcons.resize(icon_toolbar_end);
 
@@ -698,7 +702,10 @@ void DkTransferToolBar::applyImageMode(int mode)
     if (!enabled)
         return;
 
-    disconnect(mChannelComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkTransferToolBar::changeChannel);
+    disconnect(mChannelComboBox,
+               QOverload<int>::of(&QComboBox::currentIndexChanged),
+               this,
+               &DkTransferToolBar::changeChannel);
     mChannelComboBox->clear();
 
     if (mode == mode_gray) {
@@ -712,7 +719,10 @@ void DkTransferToolBar::applyImageMode(int mode)
 
     mChannelComboBox->setCurrentIndex(0);
 
-    connect(mChannelComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkTransferToolBar::changeChannel);
+    connect(mChannelComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkTransferToolBar::changeChannel);
 }
 
 void DkTransferToolBar::pickColor(bool enabled)
@@ -821,7 +831,8 @@ DkCropToolBar::DkCropToolBar(const QString &title, QWidget *parent /* = 0 */)
     createIcons();
     createLayout();
 
-    setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
+    setIconSize(
+        QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
     setObjectName("cropToolBar");
 }
 
@@ -875,11 +886,17 @@ void DkCropToolBar::createIcons()
     if (!DkSettingsManager::param().display().defaultIconColor) {
         // now colorize all icons
         for (int idx = 0; idx < mIcons.size(); idx++) {
-            mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param().effectiveIconSize(this), QIcon::Normal, QIcon::On),
+            mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param()
+                                                                                 .effectiveIconSize(this),
+                                                                             QIcon::Normal,
+                                                                             QIcon::On),
                                                           DkSettingsManager::param().display().iconColor),
                                   QIcon::Normal,
                                   QIcon::On);
-            mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param().effectiveIconSize(this), QIcon::Normal, QIcon::Off),
+            mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param()
+                                                                                 .effectiveIconSize(this),
+                                                                             QIcon::Normal,
+                                                                             QIcon::Off),
                                                           DkSettingsManager::param().display().iconColor),
                                   QIcon::Normal,
                                   QIcon::Off);
@@ -919,7 +936,10 @@ void DkCropToolBar::createLayout()
     mHorValBox->setSpecialValueText("  ");
     mHorValBox->setToolTip(tr("Horizontal Constraint"));
     mHorValBox->setStatusTip(mHorValBox->toolTip());
-    connect(mHorValBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkCropToolBar::onHorValBoxValueChanged);
+    connect(mHorValBox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DkCropToolBar::onHorValBoxValueChanged);
 
     QAction *swapAction = new QAction(DkImage::loadIcon(":/nomacs/img/swap.svg"), tr("Swap"), this);
     swapAction->setToolTip(tr("Swap Dimensions"));
@@ -930,18 +950,25 @@ void DkCropToolBar::createLayout()
     mVerValBox->setSpecialValueText("  ");
     mVerValBox->setToolTip(tr("Vertical Constraint"));
     mVerValBox->setStatusTip(mVerValBox->toolTip());
-    connect(mVerValBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkCropToolBar::onVerValBoxValueChanged);
+    connect(mVerValBox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DkCropToolBar::onVerValBoxValueChanged);
 
     mAngleBox = new QDoubleSpinBox(this);
     mAngleBox->setSuffix(dk_degree_str);
     mAngleBox->setMinimum(-180);
     mAngleBox->setMaximum(180);
-    connect(mAngleBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkCropToolBar::onAngleBoxValueChanged);
+    connect(mAngleBox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DkCropToolBar::onAngleBoxValueChanged);
 
     // background color
     mBgCol = QColor(0, 0, 0, 0);
     mBgColButton = new QPushButton(this);
-    mBgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(mBgCol) + "; border: 1px solid #888;}");
+    mBgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(mBgCol)
+                                + "; border: 1px solid #888;}");
     mBgColButton->setToolTip(tr("Background Color"));
     mBgColButton->setStatusTip(mBgColButton->toolTip());
     connect(mBgColButton, &QPushButton::clicked, this, &DkCropToolBar::onBgColButtonClicked);
@@ -957,7 +984,10 @@ void DkCropToolBar::createLayout()
     mGuideBox->addItems(guides);
     mGuideBox->setToolTip(tr("Show Guides in the Preview"));
     mGuideBox->setStatusTip(mGuideBox->toolTip());
-    connect(mGuideBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkCropToolBar::onGuideBoxCurrentIndexChanged);
+    connect(mGuideBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkCropToolBar::onGuideBoxCurrentIndexChanged);
 
     mInvertAction = new QAction(mIcons[invert_icon], tr("Invert Crop Tool Color"), this);
     mInvertAction->setCheckable(true);
@@ -1080,7 +1110,8 @@ void DkCropToolBar::onBgColButtonClicked()
 
     if (ok == QDialog::Accepted) {
         mBgCol = mColorDialog->currentColor();
-        mBgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(mBgCol) + "; border: 1px solid #888;}");
+        mBgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(mBgCol)
+                                    + "; border: 1px solid #888;}");
         emit colorSignal(mBgCol);
     }
 }
@@ -1288,7 +1319,9 @@ void DkToolBarManager::showDefaultToolBar(bool show, bool permanent)
 
     if (permanent)
         DkSettingsManager::param().app().showToolBar = show;
-    DkActionManager::instance().action(DkActionManager::menu_panel_toolbar)->setChecked(DkSettingsManager::param().app().showToolBar);
+    DkActionManager::instance()
+        .action(DkActionManager::menu_panel_toolbar)
+        ->setChecked(DkSettingsManager::param().app().showToolBar);
 
     mToolBar->setVisible(show);
 }

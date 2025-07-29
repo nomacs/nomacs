@@ -599,7 +599,8 @@ public:
     };
 
 public slots:
-    void setInfo(const QString &message, const DkBatchInfoWidget::InfoMode &mode = DkBatchInfoWidget::InfoMode::info_message);
+    void setInfo(const QString &message,
+                 const DkBatchInfoWidget::InfoMode &mode = DkBatchInfoWidget::InfoMode::info_message);
 
 protected:
     void createLayout();
@@ -645,7 +646,8 @@ public slots:
     void applyDefault();
 
 signals:
-    void infoSignal(const QString &message, const DkBatchInfoWidget::InfoMode &mode = DkBatchInfoWidget::InfoMode::info_message) const;
+    void infoSignal(const QString &message,
+                    const DkBatchInfoWidget::InfoMode &mode = DkBatchInfoWidget::InfoMode::info_message) const;
 
 protected:
     void createLayout(DkThumbLoader *);

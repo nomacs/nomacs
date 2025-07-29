@@ -1,10 +1,12 @@
 ---
+#
+# C/C++ style based on KDE ECM configuration:
+# https://invent.kde.org/frameworks/extra-cmake-modules/-/blob/a239cd2068aa6eee936349f2f5cb21faf5b8cf14/kde-modules/clang-format.cmake
+#
 # SPDX-FileCopyrightText: 2019 Christoph Cullmann <cullmann@kde.org>
 # SPDX-FileCopyrightText: 2019 Gernot Gebhard <gebhard@absint.com>
-#
 # SPDX-License-Identifier: MIT
-
-# This file got automatically created by ECM, do not edit
+#
 # See https://clang.llvm.org/docs/ClangFormatStyleOptions.html for the config options
 # and https://community.kde.org/Policies/Frameworks_Coding_Style#Clang-format_automatic_code_formatting
 # for clang-format tips & tricks
@@ -29,8 +31,8 @@ Standard: Cpp11
 # 4 spaces indent
 TabWidth: 4
 
-# 2 * 80 wide lines
-ColumnLimit: 160
+# line wrapping, this was 160, see discussion #1193
+ColumnLimit: 120
 
 # sort includes inside line separated groups
 SortIncludes: true
@@ -47,7 +49,7 @@ AlignAfterOpenBracket: Align
 # don't move all parameters to new line
 AllowAllParametersOfDeclarationOnNextLine: false
 
-# no single line functions
+# no single line function definitions
 AllowShortFunctionsOnASingleLine: None
 
 # no single line enums
@@ -56,15 +58,15 @@ AllowShortEnumsOnASingleLine: false
 # always break before you encounter multi line strings
 AlwaysBreakBeforeMultilineStrings: true
 
-# don't move arguments to own lines if they are not all on the same
-BinPackArguments: false
+# when wrapping comma-separated things, all args/params go on a separate line
+BinPackArguments: false 
+BinPackParameters: false 
 
-# don't move parameters to own lines if they are not all on the same
-BinPackParameters: false
-
-# In case we have an if statement with multiple lines the operator should be at the beginning of the line
-# but we do not want to break assignments
+# when wrapping a long expression, put the operators at the beginning of the line,
+# but do not break after "=" operator
 BreakBeforeBinaryOperators: NonAssignment
+PenaltyBreakAssignment: 100000
+PenaltyBreakBeforeFirstCallParameter: 100000
 
 # format C++11 braced lists like function calls
 Cpp11BracedListStyle: true
@@ -92,3 +94,7 @@ AllowShortLambdasOnASingleLine: Empty
 
 # We do not want clang-format to put all arguments on a new line
 AllowAllArgumentsOnNextLine: false
+
+# never break after return type of a function declaration
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 1000000

@@ -112,7 +112,8 @@ QVector<DkPackage> DkXmlUpdateChecker::updatesAvailable(QXmlStreamReader &localX
     }
 
     if (localPackages.empty() || remotePackages.empty())
-        qDebug() << "WARNING: I could not find any packages. local (" << localPackages.size() << ") remote (" << remotePackages.size() << ")";
+        qDebug() << "WARNING: I could not find any packages. local (" << localPackages.size() << ") remote ("
+                 << remotePackages.size() << ")";
 
     return updatePackages;
 }
@@ -129,7 +130,8 @@ QVector<DkPackage> DkXmlUpdateChecker::parse(QXmlStreamReader &reader) const
             pName = reader.text().toString();
         }
         // e.g. <Version>3.0.0-3</Version>
-        else if (reader.tokenType() == QXmlStreamReader::StartElement && reader.qualifiedName().toString() == "Version") {
+        else if (reader.tokenType() == QXmlStreamReader::StartElement
+                 && reader.qualifiedName().toString() == "Version") {
             reader.readNext();
 
             if (!pName.isEmpty()) {
@@ -162,7 +164,8 @@ void DkUpdater::checkForUpdates()
     if (DkSettingsManager::param().sync().disableUpdateInteraction) {
         QMessageBox::critical(DkUtils::getMainWindow(),
                               tr("Updates Disabled"),
-                              tr("nomacs updates are disabled.\nPlease contact your system administrator for further information."),
+                              tr("nomacs updates are disabled.\nPlease contact your system administrator for further "
+                                 "information."),
                               QMessageBox::Ok);
         return;
     }
@@ -263,7 +266,8 @@ void DkUpdater::replyFinished(QNetworkReply *reply)
 
             QString msg = tr("A new version") + " (" + sl[0] + ") " + tr("is available");
             msg = msg + "<br>" + tr("Do you want to download and install it now?");
-            msg = msg + "<br>" + tr("For more information see ") + " <a href=\"https://nomacs.org\">https://nomacs.org</a>";
+            msg = msg + "<br>" + tr("For more information see ")
+                + " <a href=\"https://nomacs.org\">https://nomacs.org</a>";
             mNomacsSetupUrl = url;
             mSetupVersion = version;
             qDebug() << "nomacs setup url:" << mNomacsSetupUrl;
@@ -371,7 +375,8 @@ void DkTranslationUpdater::checkForUpdates()
     if (DkSettingsManager::param().sync().disableUpdateInteraction) {
         QMessageBox::critical(DkUtils::getMainWindow(),
                               tr("Updates Disabled"),
-                              tr("nomacs updates are disabled.\nPlease contact your system administrator for further information."),
+                              tr("nomacs updates are disabled.\nPlease contact your system administrator for further "
+                                 "information."),
                               QMessageBox::Ok);
         return;
     }
@@ -390,8 +395,8 @@ void DkTranslationUpdater::checkForUpdates()
         mAccessManager.setProxy(listOfProxies[0]);
     }
 
-    QUrl url("https://nomacs.org/translations/" + DkSettingsManager::param().global().language + "/nomacs_" + DkSettingsManager::param().global().language
-             + ".qm");
+    QUrl url("https://nomacs.org/translations/" + DkSettingsManager::param().global().language + "/nomacs_"
+             + DkSettingsManager::param().global().language + ".qm");
     qInfo() << "checking for new translations at " << url;
     mReply = mAccessManager.get(QNetworkRequest(url));
     connect(mReply, &QNetworkReply::downloadProgress, this, &DkTranslationUpdater::updateDownloadProgress);
@@ -426,11 +431,12 @@ void DkTranslationUpdater::replyFinished(QNetworkReply *reply)
     QDateTime lastModifiedRemote = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
 
     QDir storageLocation = DkUtils::getTranslationPath();
-    QString translationName =
-        qtTranslation ? "qt_" + DkSettingsManager::param().global().language + ".qm" : "nomacs_" + DkSettingsManager::param().global().language + ".qm";
+    QString translationName = qtTranslation ? "qt_" + DkSettingsManager::param().global().language + ".qm"
+                                            : "nomacs_" + DkSettingsManager::param().global().language + ".qm";
 
     if (isRemoteFileNewer(lastModifiedRemote, translationName)) {
-        QString basename = qtTranslation ? "qt_" + DkSettingsManager::param().global().language : "nomacs_" + DkSettingsManager::param().global().language;
+        QString basename = qtTranslation ? "qt_" + DkSettingsManager::param().global().language
+                                         : "nomacs_" + DkSettingsManager::param().global().language;
         QString extension = ".qm";
 
         if (!storageLocation.exists()) {

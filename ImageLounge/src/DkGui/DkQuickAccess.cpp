@@ -136,7 +136,10 @@ bool DkQuickAccess::execute(const QString &cmd) const
 DkQuickAccessEdit::DkQuickAccessEdit(QWidget *parent)
     : QLineEdit("", parent)
 {
-    QString shortcutText = DkActionManager::instance().action(DkActionManager::menu_file_quick_launch)->shortcut().toString();
+    QString shortcutText = DkActionManager::instance()
+                               .action(DkActionManager::menu_file_quick_launch)
+                               ->shortcut()
+                               .toString();
     setPlaceholderText(tr("Quick Launch (%1)").arg(shortcutText));
     setMinimumWidth(150);
     setMaximumWidth(350);

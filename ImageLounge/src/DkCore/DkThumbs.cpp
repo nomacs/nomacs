@@ -61,7 +61,8 @@ std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT
     int orientation = metaData.getOrientationDegrees();
 
     const bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
-    const bool shouldTransform = !disableTransform && orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set;
+    const bool shouldTransform = !disableTransform && orientation != DkMetaDataT::or_invalid
+        && orientation != DkMetaDataT::or_not_set;
     if (shouldTransform) {
         if (orientation != 0) {
             QTransform rotationMatrix;
@@ -228,7 +229,10 @@ DkThumbLoader::DkThumbLoader()
     mIdleWatchers.reserve(mWatchers.size());
     for (auto &ele : mWatchers) {
         mIdleWatchers.push_back(&ele);
-        connect(&ele, &QFutureWatcher<LoadThumbnailResultLocal>::finished, this, &DkThumbLoader::onThumbnailLoadFinished);
+        connect(&ele,
+                &QFutureWatcher<LoadThumbnailResultLocal>::finished,
+                this,
+                &DkThumbLoader::onThumbnailLoadFinished);
     }
 }
 

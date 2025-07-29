@@ -67,7 +67,8 @@ public:
 
     QString toString() const;
 
-    static QVector<QSharedPointer<DkBatchInfo>> filter(const QVector<QSharedPointer<DkBatchInfo>> &infos, const QString &id);
+    static QVector<QSharedPointer<DkBatchInfo>> filter(const QVector<QSharedPointer<DkBatchInfo>> &infos,
+                                                       const QString &id);
     friend DllCoreExport QDataStream &operator<<(QDataStream &s, const DkBatchInfo &b);
     friend DllCoreExport QDebug operator<<(QDebug d, const DkBatchInfo &b);
 

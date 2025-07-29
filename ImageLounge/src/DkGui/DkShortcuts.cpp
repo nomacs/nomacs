@@ -61,7 +61,10 @@ void DkShortcutEventFilter::reserveKeys(const QWidget *target, const QVector<QKe
     instance()->mReservedKeys.insert(name, keys);
 }
 
-static bool resolveShortcut(const QWidget *target, const QSet<const QWidget *> &skip, const QKeySequence &keySeq, int depth = 0)
+static bool resolveShortcut(const QWidget *target,
+                            const QSet<const QWidget *> &skip,
+                            const QKeySequence &keySeq,
+                            int depth = 0)
 {
     if (!target->isVisible())
         return false;
@@ -69,14 +72,16 @@ static bool resolveShortcut(const QWidget *target, const QSet<const QWidget *> &
         return false;
 
     // breadth-first resolution descending into children
-    // qDebug().noquote() << "[shortcut] resolving:" << keySeq << QString(' ').repeated(depth * 2) << target->metaObject()->className() << target->objectName();
+    // qDebug().noquote() << "[shortcut] resolving:" << keySeq << QString(' ').repeated(depth * 2) <<
+    // target->metaObject()->className() << target->objectName();
     for (QAction *a : target->actions()) {
         if (!a->isEnabled())
             continue;
 
         for (QKeySequence &s : a->shortcuts())
             if (QKeySequence::ExactMatch == s.matches(keySeq)) {
-                qDebug() << "[shortcuts] resolved ambiguous" << keySeq << "=>" << target->metaObject()->className() << target->objectName() << a->text();
+                qDebug() << "[shortcuts] resolved ambiguous" << keySeq << "=>" << target->metaObject()->className()
+                         << target->objectName() << a->text();
                 a->trigger();
                 return true;
             }
@@ -140,8 +145,8 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
             w = static_cast<QWidget *>(o);
         }
 
-        qWarning() << "[shortcuts] " << target->metaObject()->className() << target->objectName() << "unable to resolve ambiguous shortcut" << evt->shortcutId()
-                   << evt->key();
+        qWarning() << "[shortcuts] " << target->metaObject()->className() << target->objectName()
+                   << "unable to resolve ambiguous shortcut" << evt->shortcutId() << evt->key();
 
         return false;
     }
@@ -172,7 +177,8 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
 
         for (QKeySequence &s : a->shortcuts())
             if (QKeySequence::ExactMatch == s.matches(keySeq)) {
-                qDebug() << "[shortcuts] " << target->metaObject()->className() << "allowing own action:" << a->text() << keySeq;
+                qDebug() << "[shortcuts] " << target->metaObject()->className() << "allowing own action:" << a->text()
+                         << keySeq;
                 return false;
             }
     }
@@ -256,7 +262,8 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
                 reservedName = widget->objectName();
                 reserved = true;
             } else {
-                qDebug() << "[shortcuts]" << target->metaObject()->className() << target->objectName() << "allowing shortcut" << keySeq;
+                qDebug() << "[shortcuts]" << target->metaObject()->className() << target->objectName()
+                         << "allowing shortcut" << keySeq;
                 return false;
             }
         }
@@ -273,7 +280,8 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
     }
 
     // filename characters can be used to jump around in item views
-    if (!reserved && (reservedType == &QTreeView::staticMetaObject || reservedType == &QAbstractItemView::staticMetaObject)) {
+    if (!reserved
+        && (reservedType == &QTreeView::staticMetaObject || reservedType == &QAbstractItemView::staticMetaObject)) {
         const QString text = keyEvent->text();
         if (!text.isEmpty() && keyEvent->modifiers() == Qt::NoModifier) {
             if (text[0].isLower() || text[0].isNumber())
@@ -283,8 +291,8 @@ bool DkShortcutEventFilter::eventFilter(QObject *target, QEvent *e)
 
     // we have a conflict with global shortcut, do not allow it
     if (reserved) {
-        qDebug() << "[shortcuts] " << target->metaObject()->className() << target->objectName() << "blocking" << keySeq << "reserved by"
-                 << reservedType->className() << reservedName;
+        qDebug() << "[shortcuts] " << target->metaObject()->className() << target->objectName() << "blocking" << keySeq
+                 << "reserved by" << reservedType->className() << reservedName;
         e->accept();
         return true;
     }

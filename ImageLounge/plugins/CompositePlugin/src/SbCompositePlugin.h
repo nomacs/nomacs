@@ -105,8 +105,9 @@ public:
 
     // DkPluginInterface
     QImage image() const override;
-    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(),
-                                                    QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
+    QSharedPointer<nmc::DkImageContainer> runPlugin(
+        const QString &runID = QString(),
+        QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
     virtual bool closesOnImageChange()
     {
         return false;
@@ -134,9 +135,11 @@ protected:
 public slots:
     void onImageChanged(int channel); // fetch new image from respective channel
     void onNewAlpha(QImage _alpha); // update alpha (don't trigger buildComposite())
-    void onViewportGotImage(); // get image from the viewport, split it into channels, assign them to the channel widgets
+    void onViewportGotImage(); // get image from the viewport, split it into channels, assign them to the channel
+                               // widgets
     void onDockWidgetClose(); // close plugin, ask for apply/cancel (this is buggy)
-    void onDockLocationChanged(Qt::DockWidgetArea a); // switches between vertical / horizontal layout depending on the current dock area
+    void onDockLocationChanged(
+        Qt::DockWidgetArea a); // switches between vertical / horizontal layout depending on the current dock area
     void onPushButtonApply(); // close plugin and apply
     void onPushButtonCancel(); // close plugin and cancel
 };

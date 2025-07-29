@@ -71,7 +71,8 @@ DkMessageBox::~DkMessageBox()
     settings.endGroup();
 }
 
-// Modified from https://github.com/qt/qtbase/blob/cca658d4821b6d7378df13c29d1dab53c44359ac/src/widgets/dialogs/qmessagebox.cpp#L2735C1-L2761C2
+// Modified from
+// https://github.com/qt/qtbase/blob/cca658d4821b6d7378df13c29d1dab53c44359ac/src/widgets/dialogs/qmessagebox.cpp#L2735C1-L2761C2
 QPixmap msgBoxStandardIcon(QMessageBox::Icon icon)
 {
     QStyle *style = QApplication::style();
@@ -99,13 +100,16 @@ QPixmap msgBoxStandardIcon(QMessageBox::Icon icon)
     return tmpIcon.pixmap(QSize(iconSize, iconSize), qApp->devicePixelRatio());
 }
 
-void DkMessageBox::createLayout(QMessageBox::Icon userIcon, const QString &userText, QMessageBox::StandardButtons buttons)
+void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
+                                const QString &userText,
+                                QMessageBox::StandardButtons buttons)
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
 
     // schamlos von qmessagebox.cpp geklaut
     textLabel = new QLabel(userText);
-    textLabel->setTextInteractionFlags(Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, 0, this)));
+    textLabel->setTextInteractionFlags(
+        Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, 0, this)));
 
     textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     textLabel->setOpenExternalLinks(true);

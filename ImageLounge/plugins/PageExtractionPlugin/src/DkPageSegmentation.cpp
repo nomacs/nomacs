@@ -148,7 +148,8 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
                 for (int i = 0; i < (int)contours.size(); i++) {
                     double cArea = contourArea(cv::Mat(contours[i]));
 
-                    if (fabs(cArea) > mMinArea * scale * scale && (!mMaxArea || fabs(cArea) < mMaxArea * (scale * scale))) {
+                    if (fabs(cArea) > mMinArea * scale * scale
+                        && (!mMaxArea || fabs(cArea) < mMaxArea * (scale * scale))) {
                         std::vector<cv::Point> cHull;
                         cv::convexHull(cv::Mat(contours[i]), cHull, false);
                         hull.push_back(cHull);
@@ -184,8 +185,8 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
                 // Note: absolute value of an area is used because
                 // area may be positive or negative - in accordance with the
                 // contour orientation
-                if (approx.size() == 4 && fabs(cArea) > mMinArea * scale * scale && (!mMaxArea || fabs(cArea) < mMaxArea * scale * scale)
-                    && isContourConvex(cv::Mat(approx))) {
+                if (approx.size() == 4 && fabs(cArea) > mMinArea * scale * scale
+                    && (!mMaxArea || fabs(cArea) < mMaxArea * scale * scale) && isContourConvex(cv::Mat(approx))) {
                     DkPolyRect cr(approx);
                     // moutc << mMinArea*scale*scale << " < " << fabs(cArea) << " < " << mMaxArea*scale*scale << dkendl;
 
@@ -339,7 +340,8 @@ void DkPageSegmentation::filterDuplicates(std::vector<DkPolyRect> &rects, float 
                 filtered.push_back(rects[idx]);
         }
 
-        qDebug() << "[DkPageSegmentation] " << rects.size() - filtered.size() << " rectangles removed, remaining: " << filtered.size();
+        qDebug() << "[DkPageSegmentation] " << rects.size() - filtered.size()
+                 << " rectangles removed, remaining: " << filtered.size();
         rects = filtered;
     }
 }

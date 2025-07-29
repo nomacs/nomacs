@@ -79,7 +79,9 @@ public:
         tab_end
     };
 
-    DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int idx = -1, QObject *parent = 0);
+    DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(),
+              int idx = -1,
+              QObject *parent = 0);
     DkTabInfo(TabMode mode, int idx = -1, QObject *parent = 0);
     ~DkTabInfo();
 

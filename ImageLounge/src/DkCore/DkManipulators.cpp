@@ -92,18 +92,24 @@ void DkManipulatorManager::createManipulators(QWidget *parent)
     mpls[m_auto_adjust] = QSharedPointer<DkAutoAdjustManipulator>::create(action);
 
     // normalize
-    action = new QAction(DkImage::loadIcon(":/nomacs/img/normalize.svg", size), QObject::tr("Nor&malize Image"), parent);
+    action = new QAction(DkImage::loadIcon(":/nomacs/img/normalize.svg", size),
+                         QObject::tr("Nor&malize Image"),
+                         parent);
     action->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_N);
     action->setStatusTip(QObject::tr("Normalize the Image"));
     mpls[m_normalize] = QSharedPointer<DkNormalizeManipulator>::create(action);
 
     // flip horizontal
-    action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-horizontal.svg", size), QObject::tr("Flip &Horizontal"), parent);
+    action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-horizontal.svg", size),
+                         QObject::tr("Flip &Horizontal"),
+                         parent);
     action->setStatusTip(QObject::tr("Flip Image Horizontally"));
     mpls[m_flip_h] = QSharedPointer<DkFlipHManipulator>::create(action);
 
     // flip vertical
-    action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-vertical.svg", size), QObject::tr("Flip &Vertical"), parent);
+    action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-vertical.svg", size),
+                         QObject::tr("Flip &Vertical"),
+                         parent);
     action->setStatusTip(QObject::tr("Flip Image Vertically"));
     mpls[m_flip_v] = QSharedPointer<DkFlipVManipulator>::create(action);
 
@@ -114,12 +120,16 @@ void DkManipulatorManager::createManipulators(QWidget *parent)
 
     // extended --------------------------------------------------------------------
     // tiny planet
-    action = new QAction(DkImage::loadIcon(":/nomacs/img/tiny-planet.svg", size), QObject::tr("&Tiny Planet..."), parent);
+    action = new QAction(DkImage::loadIcon(":/nomacs/img/tiny-planet.svg", size),
+                         QObject::tr("&Tiny Planet..."),
+                         parent);
     action->setStatusTip(QObject::tr("Create a Tiny Planet"));
     mpls[m_tiny_planet] = QSharedPointer<DkTinyPlanetManipulator>::create(action);
 
     // tiny planet
-    action = new QAction(DkImage::loadIcon(":/nomacs/img/bucket.svg", size), QObject::tr("&Background Color..."), parent);
+    action = new QAction(DkImage::loadIcon(":/nomacs/img/bucket.svg", size),
+                         QObject::tr("&Background Color..."),
+                         parent);
     action->setStatusTip(QObject::tr("Add a background color"));
     mpls[m_color] = QSharedPointer<DkColorManipulator>::create(action);
 
@@ -149,7 +159,9 @@ void DkManipulatorManager::createManipulators(QWidget *parent)
     mpls[m_threshold] = QSharedPointer<DkThresholdManipulator>::create(action);
 
     // hue/saturation
-    action = new QAction(DkImage::loadIcon(":/nomacs/img/sliders.svg", size), QObject::tr("&Hue/Saturation..."), parent);
+    action = new QAction(DkImage::loadIcon(":/nomacs/img/sliders.svg", size),
+                         QObject::tr("&Hue/Saturation..."),
+                         parent);
     action->setStatusTip(QObject::tr("Change Hue and Saturation"));
     mpls[m_hue] = QSharedPointer<DkHueManipulator>::create(action);
 

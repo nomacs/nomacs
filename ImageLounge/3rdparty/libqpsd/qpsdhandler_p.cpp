@@ -337,7 +337,10 @@ QImage QPsdHandler::processGrayscale8(QByteArray &imageData, quint32 width, quin
     return result;
 }
 
-QImage QPsdHandler::processGrayscale8WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel)
+QImage QPsdHandler::processGrayscale8WithAlpha(QByteArray &imageData,
+                                               quint32 width,
+                                               quint32 height,
+                                               quint64 totalBytesPerChannel)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit Grayscale with Alpha";
@@ -382,7 +385,10 @@ QImage QPsdHandler::processGrayscale16(QByteArray &imageData, quint32 width, qui
     return result;
 }
 
-QImage QPsdHandler::processGrayscale16WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel)
+QImage QPsdHandler::processGrayscale16WithAlpha(QByteArray &imageData,
+                                                quint32 width,
+                                                quint32 height,
+                                                quint64 totalBytesPerChannel)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit Grayscale with Alpha";
@@ -487,7 +493,10 @@ QImage QPsdHandler::processRGB16(QByteArray &imageData, quint32 width, quint32 h
     return result;
 }
 
-QImage QPsdHandler::processRGB8WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel)
+QImage QPsdHandler::processRGB8WithAlpha(QByteArray &imageData,
+                                         quint32 width,
+                                         quint32 height,
+                                         quint64 totalBytesPerChannel)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit RGB with Alpha";
@@ -527,7 +536,10 @@ QImage QPsdHandler::processRGB8WithAlpha(QByteArray &imageData, quint32 width, q
     return result;
 }
 
-QImage QPsdHandler::processRGB16WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel)
+QImage QPsdHandler::processRGB16WithAlpha(QByteArray &imageData,
+                                          quint32 width,
+                                          quint32 height,
+                                          quint64 totalBytesPerChannel)
 {
 #ifdef QT_DEBUG
     qDebug() << "16-bit RGB with Alpha";
@@ -611,7 +623,10 @@ QImage QPsdHandler::processCMYK8(QByteArray &imageData, quint32 width, quint32 h
     return result;
 }
 
-QImage QPsdHandler::processCMYK8WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel)
+QImage QPsdHandler::processCMYK8WithAlpha(QByteArray &imageData,
+                                          quint32 width,
+                                          quint32 height,
+                                          quint64 totalBytesPerChannel)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit CMYK with Alpha";
@@ -660,7 +675,11 @@ QImage QPsdHandler::processCMYK16(QByteArray &imageData, quint32 width, quint32 
             magenta16 = ((*magenta8 << 8) + *(magenta8 + 1)) * scale;
             yellow16 = ((*yellow8 << 8) + *(yellow8 + 1)) * scale;
             key16 = ((*key8 << 8) + *(key8 + 1)) * scale;
-            *p = QColor::fromCmyk(255 - (quint8)cyan16, 255 - (quint8)magenta16, 255 - (quint8)yellow16, 255 - (quint8)key16).rgba();
+            *p = QColor::fromCmyk(255 - (quint8)cyan16,
+                                  255 - (quint8)magenta16,
+                                  255 - (quint8)yellow16,
+                                  255 - (quint8)key16)
+                     .rgba();
             ++p;
             cyan8 += 2;
             magenta8 += 2;
@@ -671,7 +690,10 @@ QImage QPsdHandler::processCMYK16(QByteArray &imageData, quint32 width, quint32 
     return result;
 }
 
-QImage QPsdHandler::processCMYK16WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel)
+QImage QPsdHandler::processCMYK16WithAlpha(QByteArray &imageData,
+                                           quint32 width,
+                                           quint32 height,
+                                           quint64 totalBytesPerChannel)
 {
 #ifdef QT_DEBUG
     qDebug() << "16-bit CMYK with Alpha";
@@ -694,7 +716,12 @@ QImage QPsdHandler::processCMYK16WithAlpha(QByteArray &imageData, quint32 width,
             yellow16 = ((*yellow8 << 8) + *(yellow8 + 1)) * scale;
             key16 = ((*key8 << 8) + *(key8 + 1)) * scale;
             alpha16 = ((*alpha8 << 8) + *(alpha8 + 1)) * scale;
-            *p = QColor::fromCmyk(255 - (quint8)cyan16, 255 - (quint8)magenta16, 255 - (quint8)yellow16, 255 - (quint8)key16, 255 - (quint8)alpha16).rgba();
+            *p = QColor::fromCmyk(255 - (quint8)cyan16,
+                                  255 - (quint8)magenta16,
+                                  255 - (quint8)yellow16,
+                                  255 - (quint8)key16,
+                                  255 - (quint8)alpha16)
+                     .rgba();
             ++p;
             cyan8 += 2;
             magenta8 += 2;
@@ -749,7 +776,10 @@ QImage QPsdHandler::processLAB8(QByteArray &imageData, quint32 width, quint32 he
     return result;
 }
 
-QImage QPsdHandler::processLAB8WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel)
+QImage QPsdHandler::processLAB8WithAlpha(QByteArray &imageData,
+                                         quint32 width,
+                                         quint32 height,
+                                         quint64 totalBytesPerChannel)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit LAB with Alpha";
@@ -804,7 +834,10 @@ QImage QPsdHandler::processLAB16(QByteArray &imageData, quint32 width, quint32 h
     return result;
 }
 
-QImage QPsdHandler::processLAB16WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel)
+QImage QPsdHandler::processLAB16WithAlpha(QByteArray &imageData,
+                                          quint32 width,
+                                          quint32 height,
+                                          quint64 totalBytesPerChannel)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit LAB with Alpha";

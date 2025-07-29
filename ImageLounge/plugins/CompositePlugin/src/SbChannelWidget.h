@@ -58,7 +58,9 @@ protected:
             QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
             QPoint bottomRightCorner = sr.bottomLeft();
 
-            QToolTip::showText(mapToGlobal(QPoint(bottomRightCorner.x(), bottomRightCorner.y())), QString("%1%").arg(value()), this);
+            QToolTip::showText(mapToGlobal(QPoint(bottomRightCorner.x(), bottomRightCorner.y())),
+                               QString("%1%").arg(value()),
+                               this);
         }
     }
 };
@@ -80,7 +82,9 @@ public:
     SbChannelWidget(Channel c, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     ~SbChannelWidget();
     cv::Mat getImg(); // return the channel content
-    void setImg(cv::Mat _img = cv::Mat(), QString _name = ""); // "override" from outside. call with empty mat --> reset. also resets intensity slider.
+    void setImg(
+        cv::Mat _img = cv::Mat(),
+        QString _name = ""); // "override" from outside. call with empty mat --> reset. also resets intensity slider.
 
     const Channel c; // so that this channel knows which one it is
 
@@ -94,7 +98,8 @@ protected:
     QLabel *filenameLabel;
     SbIntensitySlider *intSlider;
 
-    void loadImage(QString file = ""); // load file with DkBasicLoader, convert to grayscale, set as img, emit imageChanged()
+    void loadImage(
+        QString file = ""); // load file with DkBasicLoader, convert to grayscale, set as img, emit imageChanged()
     void buildUI(); // setup and connect UI elements
     void updateThumbnail(); // update channel thumbnail using img
 

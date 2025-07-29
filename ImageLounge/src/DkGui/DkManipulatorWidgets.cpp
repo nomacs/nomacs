@@ -53,9 +53,11 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
 {
     // create widgets
     DkActionManager &am = DkActionManager::instance();
-    mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
+    mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet),
+                                       this);
     mWidgets << new DkBlurWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_blur), this);
-    mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
+    mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask),
+                                        this);
     mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
     mWidgets << new DkResizeWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_resize), this);
     mWidgets << new DkThresholdWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_threshold), this);
@@ -98,12 +100,14 @@ void DkManipulatorWidget::createLayout()
         group->addButton(entry);
     }
 
-    QString scrollbarStyle = QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
+    QString scrollbarStyle = QString("QScrollBar:vertical {border: 1px solid "
+                                     + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
                                      + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
-        + QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
-                  + "; min-height: 0px;}")
+        + QString("QScrollBar::handle:vertical {background: "
+                  + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; min-height: 0px;}")
         + QString("QScrollBar::add-line:vertical {height: 0px;}")
-        + QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: 1px;}")
+        + QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: "
+                  "1px;}")
         + QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}");
 
     QScrollArea *actionScroller = new QScrollArea(this);
@@ -401,9 +405,9 @@ QSharedPointer<DkResizeManipulator> DkResizeWidget::manipulator() const
 void DkResizeWidget::onObjectNameChanged(const QString &name)
 {
     if (name == "darkManipulator") {
-        // this is a hack: if we don't do this, nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QAbstractItemView get's applied
-        // I have the feeling, that this is a Qt issue
-        // without this line, all styles are applied to the QComboBox but not to its drop down list (QAbstractItemView)
+        // this is a hack: if we don't do this, nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QAbstractItemView
+        // get's applied I have the feeling, that this is a Qt issue without this line, all styles are applied to the
+        // QComboBox but not to its drop down list (QAbstractItemView)
         mIplBox->setStyleSheet(mIplBox->styleSheet() + " ");
     }
 }
@@ -425,7 +429,10 @@ void DkResizeWidget::createLayout()
     mIplBox->addItem(tr("Bicubic (4x4 interpolatia)"), DkImage::ipl_cubic);
     mIplBox->addItem(tr("Lanczos (8x8 interpolation)"), DkImage::ipl_lanczos);
     mIplBox->setCurrentIndex(1);
-    connect(mIplBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkResizeWidget::onIplBoxCurrentIndexChanged);
+    connect(mIplBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkResizeWidget::onIplBoxCurrentIndexChanged);
 
     QCheckBox *cbGamma = new QCheckBox(tr("Gamma Correction"), this);
     connect(cbGamma, &QCheckBox::toggled, this, &DkResizeWidget::onGammaCorrectionToggled);

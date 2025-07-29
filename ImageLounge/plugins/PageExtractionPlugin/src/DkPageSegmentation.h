@@ -56,7 +56,9 @@ public:
     virtual QImage getCropped(const QImage &img) const;
     virtual void draw(cv::Mat &img, const cv::Scalar &col = cv::Scalar(255, 222, 0)) const;
     virtual void draw(QImage &img, const QColor &col = QColor(255, 222, 0)) const;
-    virtual void draw(cv::Mat &img, const std::vector<DkPolyRect> &rects, const cv::Scalar &col = cv::Scalar(255, 222, 0)) const;
+    virtual void draw(cv::Mat &img,
+                      const std::vector<DkPolyRect> &rects,
+                      const cv::Scalar &col = cv::Scalar(255, 222, 0)) const;
     DkPolyRect getMaxRect() const;
 
     bool looseDetection;

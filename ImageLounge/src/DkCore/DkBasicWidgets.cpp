@@ -393,7 +393,8 @@ void DkColorChooser::enableAlpha(bool enable)
 void DkColorChooser::setColor(const QColor &color)
 {
     mColor = color;
-    mColorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color) + "; border: 1px solid #888; min-height: 24px}");
+    mColorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color)
+                                + "; border: 1px solid #888; min-height: 24px}");
     mResetButton->setEnabled(color != mDefaultColor);
 }
 
@@ -645,7 +646,8 @@ void DkColorPane::setPos(const QPoint &pos)
 
 double DkColorPane::brightness(const QColor &col) const
 {
-    return std::sqrt(col.redF() * col.redF() * 0.241 + col.greenF() * col.greenF() * 0.691 + col.blueF() * col.blueF() * 0.068);
+    return std::sqrt(col.redF() * col.redF() * 0.241 + col.greenF() * col.greenF() * 0.691
+                     + col.blueF() * col.blueF() * 0.068);
 }
 
 // -------------------------------------------------------------------- DkColorPicker
@@ -675,7 +677,9 @@ void DkColorPicker::createLayout()
     mColorPreview = new QLabel("", this);
     mColorPreview->setFixedHeight(bs);
 
-    QPushButton *mMenu = new QPushButton(DkImage::loadIcon(":/nomacs/img/bars.svg", QSize(bs, bs), Qt::white), "", this);
+    QPushButton *mMenu = new QPushButton(DkImage::loadIcon(":/nomacs/img/bars.svg", QSize(bs, bs), Qt::white),
+                                         "",
+                                         this);
     mMenu->setObjectName("flatWhite");
     mMenu->setFlat(true);
     mMenu->setFixedSize(bs, bs);
@@ -772,7 +776,10 @@ void DkRectWidget::setSizeOnly(bool sizeOnly)
 
 QRect DkRectWidget::rect() const
 {
-    return QRect(mSpCropRect[crop_x]->value(), mSpCropRect[crop_y]->value(), mSpCropRect[crop_width]->value(), mSpCropRect[crop_height]->value());
+    return QRect(mSpCropRect[crop_x]->value(),
+                 mSpCropRect[crop_y]->value(),
+                 mSpCropRect[crop_width]->value(),
+                 mSpCropRect[crop_height]->value());
 }
 
 void DkRectWidget::updateRect()

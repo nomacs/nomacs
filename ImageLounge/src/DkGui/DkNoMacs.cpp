@@ -202,7 +202,10 @@ void DkNoMacs::init()
     }
 
     // connections to the image loader
-    connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, this, QOverload<QSharedPointer<DkImageContainerT>>::of(&DkNoMacs::setWindowTitle));
+    connect(getTabWidget(),
+            &DkCentralWidget::imageUpdatedSignal,
+            this,
+            QOverload<QSharedPointer<DkImageContainerT>>::of(&DkNoMacs::setWindowTitle));
     connect(getTabWidget(), &DkCentralWidget::thumbViewLoadedSignal, this, [this](const QString &path) {
         setWindowTitle(path);
     });
@@ -214,7 +217,8 @@ void DkNoMacs::init()
     if (!nmc::DkSettingsManager::param().global().setupPath.isEmpty()
         && QApplication::applicationVersion() == nmc::DkSettingsManager::param().global().setupVersion) {
         // ask for exists - otherwise we always try to delete it if the user deleted it
-        if (!QFileInfo(nmc::DkSettingsManager::param().global().setupPath).exists() || QFile::remove(nmc::DkSettingsManager::param().global().setupPath)) {
+        if (!QFileInfo(nmc::DkSettingsManager::param().global().setupPath).exists()
+            || QFile::remove(nmc::DkSettingsManager::param().global().setupPath)) {
             nmc::DkSettingsManager::param().global().setupPath = "";
             nmc::DkSettingsManager::param().global().setupVersion = "";
             nmc::DkSettingsManager::param().save();
@@ -272,10 +276,16 @@ void DkNoMacs::createActions()
     connect(am.action(DkActionManager::menu_file_quick_launch), &QAction::triggered, this, &DkNoMacs::openQuickLaunch);
     connect(am.action(DkActionManager::menu_file_open_list), &QAction::triggered, this, &DkNoMacs::openFileList);
     connect(am.action(DkActionManager::menu_file_save_list), &QAction::triggered, this, &DkNoMacs::saveFileList);
-    connect(am.action(DkActionManager::menu_file_rename), &QAction::triggered, getTabWidget(), &DkCentralWidget::renameFile);
+    connect(am.action(DkActionManager::menu_file_rename),
+            &QAction::triggered,
+            getTabWidget(),
+            &DkCentralWidget::renameFile);
     connect(am.action(DkActionManager::menu_file_goto), &QAction::triggered, this, &DkNoMacs::goTo);
 
-    connect(am.action(DkActionManager::menu_file_show_recent), &QAction::triggered, getTabWidget(), &DkCentralWidget::showRecentFiles);
+    connect(am.action(DkActionManager::menu_file_show_recent),
+            &QAction::triggered,
+            getTabWidget(),
+            &DkCentralWidget::showRecentFiles);
     connect(am.action(DkActionManager::menu_file_new_instance), &QAction::triggered, this, [this]() {
         newInstance();
     });
@@ -316,17 +326,29 @@ void DkNoMacs::createActions()
     connect(am.action(DkActionManager::menu_view_fit_frame), &QAction::triggered, this, &DkNoMacs::fitFrame);
     connect(am.action(DkActionManager::menu_view_fullscreen), &QAction::triggered, this, &DkNoMacs::toggleFullScreen);
     connect(am.action(DkActionManager::menu_view_frameless), &QAction::toggled, this, &DkNoMacs::restartFrameless);
-    connect(am.action(DkActionManager::menu_panel_transfertoolbar), &QAction::toggled, this, &DkNoMacs::restartWithPseudoColor);
-    connect(am.action(DkActionManager::menu_view_opacity_change), &QAction::triggered, this, &DkNoMacs::showOpacityDialog);
+    connect(am.action(DkActionManager::menu_panel_transfertoolbar),
+            &QAction::toggled,
+            this,
+            &DkNoMacs::restartWithPseudoColor);
+    connect(am.action(DkActionManager::menu_view_opacity_change),
+            &QAction::triggered,
+            this,
+            &DkNoMacs::showOpacityDialog);
     connect(am.action(DkActionManager::menu_view_opacity_up), &QAction::triggered, this, &DkNoMacs::opacityUp);
     connect(am.action(DkActionManager::menu_view_opacity_down), &QAction::triggered, this, &DkNoMacs::opacityDown);
-    connect(am.action(DkActionManager::menu_view_opacity_an), &QAction::triggered, this, &DkNoMacs::animateChangeOpacity);
+    connect(am.action(DkActionManager::menu_view_opacity_an),
+            &QAction::triggered,
+            this,
+            &DkNoMacs::animateChangeOpacity);
     connect(am.action(DkActionManager::menu_view_lock_window), &QAction::triggered, this, &DkNoMacs::lockWindow);
 
     connect(am.action(DkActionManager::menu_tools_thumbs), &QAction::triggered, this, &DkNoMacs::computeThumbsBatch);
     connect(am.action(DkActionManager::menu_tools_filter), &QAction::triggered, this, &DkNoMacs::find);
     connect(am.action(DkActionManager::menu_tools_export_tiff), &QAction::triggered, this, &DkNoMacs::exportTiff);
-    connect(am.action(DkActionManager::menu_tools_extract_archive), &QAction::triggered, this, &DkNoMacs::extractImagesFromArchive);
+    connect(am.action(DkActionManager::menu_tools_extract_archive),
+            &QAction::triggered,
+            this,
+            &DkNoMacs::extractImagesFromArchive);
     connect(am.action(DkActionManager::menu_tools_train_format), &QAction::triggered, this, &DkNoMacs::trainFormat);
 
     connect(am.action(DkActionManager::sc_test_rec), &QAction::triggered, this, &DkNoMacs::loadRecursion);
@@ -336,10 +358,16 @@ void DkNoMacs::createActions()
 
     // help menu
     connect(am.action(DkActionManager::menu_help_about), &QAction::triggered, this, &DkNoMacs::aboutDialog);
-    connect(am.action(DkActionManager::menu_help_documentation), &QAction::triggered, this, &DkNoMacs::openDocumentation);
+    connect(am.action(DkActionManager::menu_help_documentation),
+            &QAction::triggered,
+            this,
+            &DkNoMacs::openDocumentation);
     connect(am.action(DkActionManager::menu_help_bug), &QAction::triggered, this, &DkNoMacs::bugReport);
     connect(am.action(DkActionManager::menu_help_update), &QAction::triggered, this, &DkNoMacs::checkForUpdate);
-    connect(am.action(DkActionManager::menu_help_update_translation), &QAction::triggered, this, &DkNoMacs::updateTranslations);
+    connect(am.action(DkActionManager::menu_help_update_translation),
+            &QAction::triggered,
+            this,
+            &DkNoMacs::updateTranslations);
 
     connect(am.appManager(), &DkAppManager::openFileSignal, this, &DkNoMacs::openFileWith);
 }
@@ -624,8 +652,8 @@ void DkNoMacs::enterFullScreen()
     getTabWidget()->showTabs(false);
     restoreDocks();
 
-    qInfo() << "before enter fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
-            << "windowState:" << windowState();
+    qInfo() << "before enter fullscreen appMode:" << appMode << "geometry:" << geometry()
+            << "normalGeometry:" << normalGeometry() << "windowState:" << windowState();
 
     mWasMaximized = isMaximized();
 
@@ -637,8 +665,8 @@ void DkNoMacs::enterFullScreen()
 
     showFullScreen();
 
-    qInfo() << "after enter fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
-            << "windowState:" << windowState();
+    qInfo() << "after enter fullscreen appMode:" << appMode << "geometry:" << geometry()
+            << "normalGeometry:" << normalGeometry() << "windowState:" << windowState();
 
     update();
 }
@@ -675,16 +703,16 @@ void DkNoMacs::exitFullScreen()
         DkFadeHelper::enableAnimations(true);
         setUpdatesEnabled(true);
 
-        qInfo() << "before exit fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
-                << "windowState:" << windowState();
+        qInfo() << "before exit fullscreen appMode:" << appMode << "geometry:" << geometry()
+                << "normalGeometry:" << normalGeometry() << "windowState:" << windowState();
 
         if (mWasMaximized)
             showMaximized();
         else
             showNormal();
 
-        qInfo() << "after exit fullscreen appMode:" << appMode << "geometry:" << geometry() << "normalGeometry:" << normalGeometry()
-                << "windowState:" << windowState();
+        qInfo() << "after exit fullscreen appMode:" << appMode << "geometry:" << geometry()
+                << "normalGeometry:" << normalGeometry() << "windowState:" << windowState();
 
         update(); // if no resize is triggered, the viewport won't change its color
     }
@@ -1098,7 +1126,8 @@ void DkNoMacs::showLogDock(bool show, bool saveSettings)
     }
 
     mLogDock->setVisible(show, saveSettings);
-    qInfoClean() << QStringLiteral("Say \"Hi\" to ") << QApplication::applicationName() << " " << QApplication::applicationVersion();
+    qInfoClean() << QStringLiteral("Say \"Hi\" to ") << QApplication::applicationName() << " "
+                 << QApplication::applicationVersion();
 }
 
 void DkNoMacs::showThumbsDock(bool show)
@@ -1186,8 +1215,12 @@ void DkNoMacs::openFile()
     openFilters.prepend(tr("All Files (*.*)"));
 
     // load system default open dialog
-    QStringList filePaths =
-        QFileDialog::getOpenFileNames(this, tr("Open Image"), getTabWidget()->getCurrentDir(), openFilters.join(";;"), nullptr, DkDialog::fileDialogOptions());
+    QStringList filePaths = QFileDialog::getOpenFileNames(this,
+                                                          tr("Open Image"),
+                                                          getTabWidget()->getCurrentDir(),
+                                                          openFilters.join(";;"),
+                                                          nullptr,
+                                                          DkDialog::fileDialogOptions());
 
     if (filePaths.isEmpty())
         return;
@@ -1238,8 +1271,12 @@ void DkNoMacs::openFileList()
     openFilters.append(tr("All files (*.*)"));
 
     // load system default open dialog
-    QString fileName =
-        QFileDialog::getOpenFileName(this, tr("Open Tabs"), getTabWidget()->getCurrentDir(), openFilters.join(";;"), nullptr, DkDialog::fileDialogOptions());
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open Tabs"),
+                                                    getTabWidget()->getCurrentDir(),
+                                                    openFilters.join(";;"),
+                                                    nullptr,
+                                                    DkDialog::fileDialogOptions());
 
     if (fileName.isEmpty())
         return;
@@ -1304,7 +1341,11 @@ void DkNoMacs::openQuickLaunch()
     }
 
     if (tb)
-        connect(tb->getQuickAccess(), &DkQuickAccessEdit::executeSignal, mQuickAccess, &DkQuickAccess::execute, Qt::UniqueConnection);
+        connect(tb->getQuickAccess(),
+                &DkQuickAccessEdit::executeSignal,
+                mQuickAccess,
+                &DkQuickAccess::execute,
+                Qt::UniqueConnection);
 
     mQuickAccess->addDirs(DkSettingsManager::param().global().recentFolders);
     mQuickAccess->addFiles(DkSettingsManager::param().global().recentFiles);
@@ -1339,8 +1380,9 @@ void DkNoMacs::find(bool filterAction)
         return;
 
     if (filterAction) {
-        int db = (QObject::sender() == DkActionManager::instance().action(DkActionManager::menu_tools_filter)) ? DkSearchDialog::filter_button
-                                                                                                               : DkSearchDialog::find_button;
+        int db = (QObject::sender() == DkActionManager::instance().action(DkActionManager::menu_tools_filter))
+            ? DkSearchDialog::filter_button
+            : DkSearchDialog::find_button;
         qDebug() << "default button: " << db;
         DkSearchDialog *searchDialog = new DkSearchDialog(this);
         searchDialog->setDefaultButton(db);
@@ -1348,13 +1390,18 @@ void DkNoMacs::find(bool filterAction)
         searchDialog->setFiles(getTabWidget()->getCurrentImageLoader()->getFileNames());
         searchDialog->setPath(getTabWidget()->getCurrentImageLoader()->getDirPath());
 
-        connect(searchDialog, &DkSearchDialog::filterSignal, getTabWidget()->getCurrentImageLoader().data(), &DkImageLoader::setFolderFilter);
+        connect(searchDialog,
+                &DkSearchDialog::filterSignal,
+                getTabWidget()->getCurrentImageLoader().data(),
+                &DkImageLoader::setFolderFilter);
         connect(searchDialog, &DkSearchDialog::loadFileSignal, this, [this](const QString &path) {
             getTabWidget()->load(path);
         });
         int answer = searchDialog->exec();
 
-        DkActionManager::instance().action(DkActionManager::menu_tools_filter)->setChecked(answer == DkSearchDialog::filter_button);
+        DkActionManager::instance()
+            .action(DkActionManager::menu_tools_filter)
+            ->setChecked(answer == DkSearchDialog::filter_button);
     } else {
         // remove the filter
         getTabWidget()->getCurrentImageLoader()->setFolderFilter(QString());
@@ -1392,7 +1439,8 @@ void DkNoMacs::changeSorting(bool change)
         if (idx < DkActionManager::menu_sort_ascending)
             sortActions[idx]->setChecked(idx == DkSettingsManager::param().global().sortMode);
         else if (idx >= DkActionManager::menu_sort_ascending)
-            sortActions[idx]->setChecked(idx - DkActionManager::menu_sort_ascending == DkSettingsManager::param().global().sortDir);
+            sortActions[idx]->setChecked(idx - DkActionManager::menu_sort_ascending
+                                         == DkSettingsManager::param().global().sortDir);
     }
 }
 
@@ -1420,7 +1468,8 @@ void DkNoMacs::trainFormat()
 
     if (okPressed && getTabWidget()->getCurrentImageLoader()) {
         getTabWidget()->getCurrentImageLoader()->load(mTrainDialog->getAcceptedFile());
-        getTabWidget()->restart(); // quick & dirty, but currently he messes up the filteredFileList if the same folder was already loaded
+        getTabWidget()->restart(); // quick & dirty, but currently he messes up the filteredFileList if the same folder
+                                   // was already loaded
     }
 }
 
@@ -1749,7 +1798,8 @@ void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool e
     QString title;
 
     if (DkSettingsManager::param().global().extendedTabs && (getTabWidget()->getTabs().count() > 1)) {
-        title.append(QString::number(getTabWidget()->getActiveTab() + 1) + "/" + QString::number(getTabWidget()->getTabs().count()) + " - ");
+        title.append(QString::number(getTabWidget()->getActiveTab() + 1) + "/"
+                     + QString::number(getTabWidget()->getTabs().count()) + " - ");
     }
 
     QFileInfo fInfo(filePath);
@@ -1829,7 +1879,8 @@ void DkNoMacs::checkForUpdate(bool silent)
 
     // do we really need to check for update?
     if (!silent
-        || (!DkSettingsManager::param().sync().updateDialogShown && QDate::currentDate() > DkSettingsManager::param().sync().lastUpdateCheck
+        || (!DkSettingsManager::param().sync().updateDialogShown
+            && QDate::currentDate() > DkSettingsManager::param().sync().lastUpdateCheck
             && DkSettingsManager::param().sync().checkForUpdates)) {
         DkTimer dt;
 
@@ -1935,11 +1986,24 @@ void DkNoMacs::updateTranslations()
     }
 
     if (!mProgressDialogTranslations) {
-        mProgressDialogTranslations = new QProgressDialog(tr("Downloading new translations..."), tr("Cancel"), 0, 100, this);
+        mProgressDialogTranslations = new QProgressDialog(tr("Downloading new translations..."),
+                                                          tr("Cancel"),
+                                                          0,
+                                                          100,
+                                                          this);
         mProgressDialogTranslations->setWindowIcon(windowIcon());
-        connect(mProgressDialogTranslations, &QProgressDialog::canceled, mTranslationUpdater, &DkTranslationUpdater::cancelUpdate);
-        connect(mTranslationUpdater, &DkTranslationUpdater::downloadProgress, this, &DkNoMacs::updateProgressTranslations);
-        connect(mTranslationUpdater, &DkTranslationUpdater::downloadFinished, mProgressDialogTranslations, &QProgressDialog::close);
+        connect(mProgressDialogTranslations,
+                &QProgressDialog::canceled,
+                mTranslationUpdater,
+                &DkTranslationUpdater::cancelUpdate);
+        connect(mTranslationUpdater,
+                &DkTranslationUpdater::downloadProgress,
+                this,
+                &DkNoMacs::updateProgressTranslations);
+        connect(mTranslationUpdater,
+                &DkTranslationUpdater::downloadFinished,
+                mProgressDialogTranslations,
+                &QProgressDialog::close);
     }
     // mProgressDialogTranslations->setWindowModality(Qt::ApplicationModal);
 
@@ -2019,7 +2083,10 @@ void DkNoMacsSync::createActions()
     const auto localCM = dynamic_cast<DkLocalClientManager *>(cm);
     if (localCM != nullptr) {
         connect(this, &DkNoMacsSync::sendArrangeSignal, localCM, &DkLocalClientManager::sendArrangeInstances);
-        connect(this, &DkNoMacsSync::sendQuitLocalClientsSignal, localCM, &DkLocalClientManager::sendQuitMessageToPeers);
+        connect(this,
+                &DkNoMacsSync::sendQuitLocalClientsSignal,
+                localCM,
+                &DkLocalClientManager::sendQuitMessageToPeers);
     }
 
     connect(cm, &DkClientManager::clientConnectedSignal, this, &DkNoMacsSync::newClientConnected);
@@ -2032,7 +2099,8 @@ void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event)
     int dist = QPoint(event->pos() - mMousePos).manhattanLength();
 
     // create drag sync action
-    if (event->buttons() == Qt::LeftButton && dist > QApplication::startDragDistance() && event->modifiers() == (Qt::ControlModifier | Qt::AltModifier)) {
+    if (event->buttons() == Qt::LeftButton && dist > QApplication::startDragDistance()
+        && event->modifiers() == (Qt::ControlModifier | Qt::AltModifier)) {
         qDebug() << "generating a drag event...";
 
         auto cm = dynamic_cast<DkLocalClientManager *>(DkSyncManager::inst().client());

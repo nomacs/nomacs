@@ -374,10 +374,20 @@ void DkBatchInput::createLayout(DkThumbLoader *thumbLoader)
     widgetLayout->addWidget(mInputTabs, 1, 1);
     setLayout(widgetLayout);
 
-    connect(mThumbScrollWidget->getThumbWidget(), &DkThumbScene::selectionChanged, this, &DkBatchInput::selectionChanged);
-    connect(mThumbScrollWidget, &DkThumbScrollWidget::batchProcessFilesSignal, mInputTextEdit, &DkInputTextEdit::appendFiles);
+    connect(mThumbScrollWidget->getThumbWidget(),
+            &DkThumbScene::selectionChanged,
+            this,
+            &DkBatchInput::selectionChanged);
+    connect(mThumbScrollWidget,
+            &DkThumbScrollWidget::batchProcessFilesSignal,
+            mInputTextEdit,
+            &DkInputTextEdit::appendFiles);
     connect(mThumbScrollWidget, &DkThumbScrollWidget::updateDirSignal, this, &DkBatchInput::setDir);
-    connect(mThumbScrollWidget, &DkThumbScrollWidget::filterChangedSignal, mLoader.data(), &DkImageLoader::setFolderFilter, Qt::UniqueConnection);
+    connect(mThumbScrollWidget,
+            &DkThumbScrollWidget::filterChangedSignal,
+            mLoader.data(),
+            &DkImageLoader::setFolderFilter,
+            Qt::UniqueConnection);
 
     connect(mInputTextEdit, &DkInputTextEdit::fileListChangedSignal, this, &DkBatchInput::selectionChanged);
 
@@ -409,8 +419,10 @@ void DkBatchInput::updateDir(QVector<QSharedPointer<DkImageContainerT>> thumbs)
 void DkBatchInput::browse()
 {
     // load system default open dialog
-    QString dirName =
-        QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mCDirPath, QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
+    QString dirName = QFileDialog::getExistingDirectory(this,
+                                                        tr("Open an Image Directory"),
+                                                        mCDirPath,
+                                                        QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
     if (dirName.isEmpty())
         return;
@@ -765,12 +777,15 @@ void DkBatchOutput::createLayout()
 
     // overwrite existing
     mCbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
-    mCbOverwriteExisting->setToolTip(tr("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!"));
+    mCbOverwriteExisting->setToolTip(
+        tr("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!"));
     connect(mCbOverwriteExisting, &QCheckBox::clicked, this, &DkBatchOutput::changed);
 
     // overwrite existing
     mCbDoNotSave = new QCheckBox(tr("Do not Save Output Images"));
-    mCbDoNotSave->setToolTip(tr("If checked, output images are not saved at all.\nThis option is only useful if plugins save sidecar files - so be careful!"));
+    mCbDoNotSave->setToolTip(
+        tr("If checked, output images are not saved at all.\nThis option is only useful if plugins save sidecar files "
+           "- so be careful!"));
     connect(mCbDoNotSave, &QCheckBox::clicked, this, &DkBatchOutput::changed);
 
     // Use Input Folder
@@ -780,7 +795,8 @@ void DkBatchOutput::createLayout()
 
     // delete original
     mCbDeleteOriginal = new QCheckBox(tr("Delete Input Files"));
-    mCbDeleteOriginal->setToolTip(tr("If checked, the original file will be deleted if the conversion was successful.\n So be careful!"));
+    mCbDeleteOriginal->setToolTip(
+        tr("If checked, the original file will be deleted if the conversion was successful.\n So be careful!"));
 
     QWidget *cbWidget = new QWidget(this);
     QVBoxLayout *cbLayout = new QVBoxLayout(cbWidget);
@@ -823,13 +839,19 @@ void DkBatchOutput::createLayout()
     mCbExtension = new QComboBox(this);
     mCbExtension->addItem(tr("Keep Extension"));
     mCbExtension->addItem(tr("Convert To"));
-    connect(mCbExtension, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkBatchOutput::extensionCBChanged);
+    connect(mCbExtension,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkBatchOutput::extensionCBChanged);
 
     mCbNewExtension = new QComboBox(this);
     mCbNewExtension->addItems(DkSettingsManager::param().app().saveFilters);
     mCbNewExtension->setFixedWidth(150);
     mCbNewExtension->setEnabled(false);
-    connect(mCbNewExtension, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkBatchOutput::parameterChanged);
+    connect(mCbNewExtension,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkBatchOutput::parameterChanged);
 
     mCbCompression = new QComboBox(this);
     updateCBCompression();
@@ -879,7 +901,11 @@ void DkBatchOutput::createLayout()
 
 void DkBatchOutput::updateCBCompression()
 {
-    const QString quality_label[5] = {tr("Best Quality"), tr("High Quality"), tr("Medium Quality"), tr("Low Quality"), tr("Bad Quality")};
+    const QString quality_label[5] = {tr("Best Quality"),
+                                      tr("High Quality"),
+                                      tr("Medium Quality"),
+                                      tr("Low Quality"),
+                                      tr("Bad Quality")};
     int quality[5];
 
     const QString extStr = mCbNewExtension->currentText();
@@ -916,8 +942,10 @@ void DkBatchOutput::browse()
     QString dirGuess = (mOutputlineEdit->text().isEmpty()) ? mInputDirectory : mOutputlineEdit->text();
 
     // load system default open dialog
-    QString dirName =
-        QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), dirGuess, QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
+    QString dirName = QFileDialog::getExistingDirectory(this,
+                                                        tr("Open an Image Directory"),
+                                                        dirGuess,
+                                                        QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
     if (dirName.isEmpty())
         return;
@@ -1017,7 +1045,8 @@ void DkBatchOutput::parameterChanged()
 {
     // enable/disable compression combo
     QString extStr = mCbNewExtension->currentText();
-    mCbCompression->setEnabled(extStr.contains(QRegularExpression("(avif|jpg|jp2|jxl|webp)", QRegularExpression::CaseInsensitiveOption)));
+    mCbCompression->setEnabled(
+        extStr.contains(QRegularExpression("(avif|jpg|jp2|jxl|webp)", QRegularExpression::CaseInsensitiveOption)));
 
     updateCBCompression();
     updateFileLabelPreview();
@@ -1297,7 +1326,10 @@ void DkProfileWidget::createLayout()
 {
     mProfileList = new QListWidget(this);
     mProfileList->setObjectName("profileList");
-    connect(mProfileList, &QListWidget::itemSelectionChanged, this, &DkProfileWidget::onProfileListItemSelectionChanged);
+    connect(mProfileList,
+            &QListWidget::itemSelectionChanged,
+            this,
+            &DkProfileWidget::onProfileListItemSelectionChanged);
 
     mSummary = new DkProfileSummaryWidget(this);
 
@@ -1437,7 +1469,10 @@ void DkProfileWidget::deleteCurrentProfile()
     QFile profile(DkBatchProfile::profileNameToPath(currentProfile()));
 
     if (!profile.remove()) {
-        QMessageBox::critical(this, tr("Deleting Profile"), tr("Sorry, I cannot delete %1").arg(currentProfile()), QMessageBox::Ok);
+        QMessageBox::critical(this,
+                              tr("Deleting Profile"),
+                              tr("Sorry, I cannot delete %1").arg(currentProfile()),
+                              QMessageBox::Ok);
         return;
     }
 
@@ -1447,7 +1482,8 @@ void DkProfileWidget::deleteCurrentProfile()
 
 void DkProfileWidget::exportCurrentProfile()
 {
-    QString expPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QDir::separator() + currentProfile() + "." + DkBatchProfile::extension();
+    QString expPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QDir::separator()
+        + currentProfile() + "." + DkBatchProfile::extension();
 
     QString sPath = QFileDialog::getSaveFileName(this,
                                                  tr("Export Batch Profile"),
@@ -1473,8 +1509,10 @@ void DkProfileWidget::saveProfile()
 
     // is the profile name unique?
     if (!mProfileList->findItems(text, Qt::MatchExactly).isEmpty()) {
-        QMessageBox::StandardButton button =
-            QMessageBox::information(this, tr("Profile Already Exists"), tr("Do you want to overwrite %1?").arg(text), QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::StandardButton button = QMessageBox::information(this,
+                                                                      tr("Profile Already Exists"),
+                                                                      tr("Do you want to overwrite %1?").arg(text),
+                                                                      QMessageBox::Yes | QMessageBox::No);
 
         if (button == QMessageBox::No) {
             saveProfile(); // start over
@@ -1546,7 +1584,10 @@ void DkBatchPluginWidget::createLayout()
     layout->addWidget(mSettingsEditor, 1, 1);
 
     connect(mModel, &QStandardItemModel::itemChanged, this, &DkBatchPluginWidget::itemChanged);
-    connect(pluginList->selectionModel(), &QItemSelectionModel::selectionChanged, this, &DkBatchPluginWidget::selectionChanged);
+    connect(pluginList->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            this,
+            &DkBatchPluginWidget::selectionChanged);
 }
 
 bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlugin)
@@ -1821,7 +1862,10 @@ void DkBatchManipulatorWidget::createLayout()
     layout->addWidget(rightWidget, 1, 1);
 
     connect(mModel, &QStandardItemModel::itemChanged, this, &DkBatchManipulatorWidget::itemChanged);
-    connect(manipulatorList->selectionModel(), &QItemSelectionModel::selectionChanged, this, &DkBatchManipulatorWidget::selectionChanged);
+    connect(manipulatorList->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            this,
+            &DkBatchManipulatorWidget::selectionChanged);
 }
 
 void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager &manager)
@@ -1847,7 +1891,11 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager &manager)
         mSettingsLayout->addWidget(w);
 
     for (QAction *a : manager.actions())
-        connect(a, &QAction::triggered, this, QOverload<>::of(&DkBatchManipulatorWidget::selectManipulator), Qt::UniqueConnection);
+        connect(a,
+                &QAction::triggered,
+                this,
+                QOverload<>::of(&DkBatchManipulatorWidget::selectManipulator),
+                Qt::UniqueConnection);
 }
 
 bool DkBatchManipulatorWidget::loadProperties(QSharedPointer<DkManipulatorBatch> batchManipulators)
@@ -2099,10 +2147,19 @@ void DkBatchTransformWidget::createLayout()
     layout->setColumnStretch(3, 10);
     layout->addWidget(mCbCropRectCenter, 11, 0);
 
-    connect(mResizeComboMode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkBatchTransformWidget::modeChanged);
-    connect(mResizeSbPercent, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkBatchTransformWidget::updateHeader);
+    connect(mResizeComboMode,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkBatchTransformWidget::modeChanged);
+    connect(mResizeSbPercent,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DkBatchTransformWidget::updateHeader);
     connect(mResizeSbPx, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkBatchTransformWidget::updateHeader);
-    connect(mResizeSbZoomHeightPx, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkBatchTransformWidget::updateHeader);
+    connect(mResizeSbZoomHeightPx,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DkBatchTransformWidget::updateHeader);
 
     connect(mRotateGroup, &QButtonGroup::idClicked, this, &DkBatchTransformWidget::updateHeader);
     connect(mCbCropMetadata, &QCheckBox::clicked, this, &DkBatchTransformWidget::updateHeader);
@@ -2130,7 +2187,8 @@ void DkBatchTransformWidget::applyDefault()
 bool DkBatchTransformWidget::hasUserInput() const
 {
     return !mRbRotate0->isChecked() || mCbCropMetadata->isChecked() || mCbCropRectangle->isChecked()
-        || !(mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() == 100.0);
+        || !(mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default
+             && mResizeSbPercent->value() == 100.0);
 }
 
 bool DkBatchTransformWidget::requiresUserInput() const
@@ -2145,16 +2203,21 @@ void DkBatchTransformWidget::updateHeader() const
     else {
         QString txt;
 
-        if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() != 100.0) {
+        if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default
+            && mResizeSbPercent->value() != 100.0) {
             txt += tr("Resize by: %1%").arg(QString::number(mResizeSbPercent->value()));
         }
 
         else if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_zoom) {
-            txt += tr("Zoom to: %1 px by %2 px").arg(QString::number(mResizeSbPx->value())).arg(QString::number(mResizeSbZoomHeightPx->value()));
+            txt += tr("Zoom to: %1 px by %2 px")
+                       .arg(QString::number(mResizeSbPx->value()))
+                       .arg(QString::number(mResizeSbZoomHeightPx->value()));
         }
 
         else if (mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_default) {
-            txt += tr("Resize %1 to: %2 px").arg(mResizeComboMode->itemText(mResizeComboMode->currentIndex())).arg(QString::number(mResizeSbPx->value()));
+            txt += tr("Resize %1 to: %2 px")
+                       .arg(mResizeComboMode->itemText(mResizeComboMode->currentIndex()))
+                       .arg(QString::number(mResizeSbPx->value()));
         }
 
         if (getAngle() != 0) {
@@ -2204,8 +2267,10 @@ void DkBatchTransformWidget::modeChanged()
     mCbCropRectangle->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom);
 
     // Crop rect and crop center only available when crop rectangle is active
-    mCropRectWidget->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom && mCbCropRectangle->isChecked());
-    mCbCropRectCenter->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom && mCbCropRectangle->isChecked());
+    mCropRectWidget->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom
+                                && mCbCropRectangle->isChecked());
+    mCbCropRectCenter->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom
+                                  && mCbCropRectangle->isChecked());
 
     if (!mCbCropRectCenter->isEnabled())
         mCbCropRectCenter->setChecked(false);
@@ -2273,10 +2338,11 @@ bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> bat
 
     // crop
     mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
-    mCbCropRectangle->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom && batchTransform->cropFromRectangle());
+    mCbCropRectangle->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom
+                                 && batchTransform->cropFromRectangle());
     mCropRectWidget->setRect(batchTransform->cropRectangle());
-    mCbCropRectCenter->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom && batchTransform->cropMetatdata()
-                                  && batchTransform->cropRectCenter());
+    mCbCropRectCenter->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom
+                                  && batchTransform->cropMetatdata() && batchTransform->cropRectCenter());
 
     // resize
     mResizeComboMode->setCurrentIndex(batchTransform->mode());
@@ -2595,7 +2661,8 @@ DkBatchOutput *DkBatchWidget::outputWidget() const
 
 DkBatchManipulatorWidget *DkBatchWidget::manipulatorWidget() const
 {
-    DkBatchManipulatorWidget *w = dynamic_cast<DkBatchManipulatorWidget *>(mWidgets[batch_manipulator]->contentWidget());
+    DkBatchManipulatorWidget *w = dynamic_cast<DkBatchManipulatorWidget *>(
+        mWidgets[batch_manipulator]->contentWidget());
     if (!w)
         qCritical() << "cannot cast to DkBatchManipulatorWidget";
 
@@ -2667,7 +2734,8 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
     // check if we are good to go
     if (strict && inputWidget()->getSelectedFiles().empty()) {
         emit infoSignal(tr("Please select files for processing."), DkBatchInfoWidget::InfoMode::info_warning);
-        // QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
+        // QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."),
+        // QMessageBox::Ok, QMessageBox::Ok);
         return DkBatchConfig();
     }
 
@@ -2684,7 +2752,8 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
         QString outputDirPath = outputWidget()->getOutputDirectory();
 
         if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower()
-            && !(outputWidget()->overwriteMode() & DkSaveInfo::mode_overwrite || outputWidget()->overwriteMode() & DkSaveInfo::mode_do_not_save_output)) {
+            && !(outputWidget()->overwriteMode() & DkSaveInfo::mode_overwrite
+                 || outputWidget()->overwriteMode() & DkSaveInfo::mode_do_not_save_output)) {
             emit infoSignal(tr("Please check 'Overwrite Existing Files' or choose a different output directory."));
             // QMessageBox::information(mw, tr("Wrong Configuration"),
             //	tr("Please check 'Overwrite Existing Files' or choose a different output directory."),
@@ -2699,7 +2768,9 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
     si.setInputDirIsOutputDir(outputWidget()->useInputDir());
     si.setCompression(outputWidget()->getCompression());
 
-    DkBatchConfig config(inputWidget()->getSelectedFilesBatch(), outputWidget()->getOutputDirectory(), outputWidget()->getFilePattern());
+    DkBatchConfig config(inputWidget()->getSelectedFilesBatch(),
+                         outputWidget()->getOutputDirectory(),
+                         outputWidget()->getFilePattern());
     config.setSaveInfo(si);
 
     if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
@@ -2722,30 +2793,37 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
     if (strict && !config.isOk()) {
         if (config.getOutputDirPath().isEmpty()) {
             emit infoSignal(tr("Please select an output directory."), DkBatchInfoWidget::InfoMode::info_warning);
-            // QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+            // QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok,
+            // QMessageBox::Ok);
             return DkBatchConfig();
         } else if (!QDir(config.getOutputDirPath()).exists()) {
-            emit infoSignal(tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), DkBatchInfoWidget::InfoMode::info_critical);
-            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
+            emit infoSignal(tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()),
+                            DkBatchInfoWidget::InfoMode::info_critical);
+            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()),
+            // QMessageBox::Ok, QMessageBox::Ok);
             return DkBatchConfig();
         } else if (config.getFileList().empty()) {
             emit infoSignal(tr("Sorry, I cannot find files to process."), DkBatchInfoWidget::InfoMode::info_critical);
-            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
+            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok,
+            // QMessageBox::Ok);
             return DkBatchConfig();
         } else if (config.getFileNamePattern().isEmpty()) {
             emit infoSignal(tr("Sorry, the file pattern is empty."), DkBatchInfoWidget::InfoMode::info_critical);
-            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
+            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok,
+            // QMessageBox::Ok);
             return DkBatchConfig();
         }
         // else if (config.getOutputDir() == QDir()) {
-        //	QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output directory\n%1").arg(config.getOutputDir().absolutePath()),
+        //	QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output
+        // directory\n%1").arg(config.getOutputDir().absolutePath()),
         // QMessageBox::Ok, QMessageBox::Ok); 	return;
         // }
 
         qDebug() << "config not ok - canceling";
-        emit infoSignal(tr("Sorry, I cannot start processing - please check the configuration."), DkBatchInfoWidget::InfoMode::info_critical);
-        // QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok,
-        // QMessageBox::Ok);
+        emit infoSignal(tr("Sorry, I cannot start processing - please check the configuration."),
+                        DkBatchInfoWidget::InfoMode::info_critical);
+        // QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the
+        // configuration."), QMessageBox::Ok, QMessageBox::Ok);
         return DkBatchConfig();
     }
 
@@ -2834,8 +2912,10 @@ void DkBatchWidget::stopProcessing()
     int numProcessed = mBatchProcessing->getNumProcessed();
     int numItems = mBatchProcessing->getNumItems();
 
-    DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning : DkBatchInfoWidget::InfoMode::info_message;
-    mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures), im);
+    DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning
+                                                       : DkBatchInfoWidget::InfoMode::info_message;
+    mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures),
+                         im);
 
     mLogNeedsUpdate = false;
     mLogUpdateTimer.stop();
@@ -2890,7 +2970,11 @@ void DkBatchWidget::changeWidget(DkBatchContainer *widget)
             mContentTitle->setText(cw->headerWidget()->text());
             mContentInfo->setText(cw->headerWidget()->info());
             cw->headerWidget()->setChecked(true);
-            connect(cw->headerWidget(), &DkBatchTabButton::infoChanged, mContentInfo, &QLabel::setText, Qt::UniqueConnection);
+            connect(cw->headerWidget(),
+                    &DkBatchTabButton::infoChanged,
+                    mContentInfo,
+                    &QLabel::setText,
+                    Qt::UniqueConnection);
         }
     }
 }
@@ -2917,8 +3001,8 @@ void DkBatchWidget::saveProfile(const QString &profilePath) const
     DkBatchConfig bc = createBatchConfig(false); // false: no input/output must be profided
 
     // if (!bc.isOk()) {
-    //	QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings, since they are incomplete..."));
-    //	return;
+    //	QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the
+    // settings, since they are incomplete...")); 	return;
     // }
 
     // allow saving without functions (i.e. image conversions)
@@ -3007,7 +3091,8 @@ void DkBatchWidget::widgetChanged()
 {
     if (mWidgets[batch_output] && mWidgets[batch_input]) {
         QString inputDirPath = dynamic_cast<DkBatchInput *>(mWidgets[batch_input]->contentWidget())->getDir();
-        QString outputDirPath = dynamic_cast<DkBatchOutput *>(mWidgets[batch_output]->contentWidget())->getOutputDirectory();
+        QString outputDirPath = dynamic_cast<DkBatchOutput *>(mWidgets[batch_output]->contentWidget())
+                                    ->getOutputDirectory();
 
         // TODO: shouldn't we enable it always?
         // mButtonWidget->playButton()->setEnabled(inputDirPath == "" || outputDirPath == "");

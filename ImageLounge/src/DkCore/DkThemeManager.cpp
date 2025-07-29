@@ -226,7 +226,8 @@ public:
             //     numDarker++;
         }
 
-        // qDebug("REMAP: minDiff:%f maxDiff:%f diffRange:%f lighter:%d darker:%d", minDiff, maxDiff, maxDiff - minDiff, numLighter, numDarker);
+        // qDebug("REMAP: minDiff:%f maxDiff:%f diffRange:%f lighter:%d darker:%d", minDiff, maxDiff, maxDiff - minDiff,
+        // numLighter, numDarker);
 
         // keep this, might prove useful
         //
@@ -711,7 +712,9 @@ void DkThemeManager::applyTheme()
             palette.setDisabledColor(QPalette::Link, QPalette::Base);
             palette.setDisabledColor(QPalette::LinkVisited, QPalette::Base);
 
-            palette.setForegroundColor(QPalette::PlaceholderText, QPalette::Base, sysPalette.color(QPalette::PlaceholderText));
+            palette.setForegroundColor(QPalette::PlaceholderText,
+                                       QPalette::Base,
+                                       sysPalette.color(QPalette::PlaceholderText));
             palette.setDisabledColor(QPalette::PlaceholderText, QPalette::Base);
         }
 

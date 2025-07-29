@@ -52,8 +52,9 @@ void SbChannelWidget::loadImage(QString file)
                 std::memcpy(aimage.scanLine(y), alpha_tmp.constScanLine(y), aimage.width());
             }
 
-            // emit newAlpha(qImg.alphaChannel());		//aparently alphaChannel() is obsolete, however I don't know what else to use
-            // emit newAlpha(qImg.convertToFormat(QImage::Format_Alpha8));		//because that doesn't seem to work as expected..
+            // emit newAlpha(qImg.alphaChannel());		//aparently alphaChannel() is obsolete, however I don't know
+            // what else to use emit newAlpha(qImg.convertToFormat(QImage::Format_Alpha8));		//because that doesn't
+            // seem to work as expected..
             emit newAlpha(aimage);
         } else {
             emit newAlpha(QImage());

@@ -385,7 +385,9 @@ void DkPluginContainer::run()
 
         vPlugin->setVisible(true);
         emit runPlugin(vPlugin, false);
-    } else if (p && (p->interfaceType() == DkPluginInterface::interface_basic || p->interfaceType() == DkPluginInterface::interface_batch)) {
+    } else if (p
+               && (p->interfaceType() == DkPluginInterface::interface_basic
+                   || p->interfaceType() == DkPluginInterface::interface_batch)) {
         QAction *a = qobject_cast<QAction *>(QObject::sender());
 
         if (a)
@@ -667,11 +669,20 @@ void DkPluginTableWidget::createLayout()
     }
 
     DkDescriptionEdit *descriptionEdit = new DkDescriptionEdit(mModel, mProxyModel, mTableView->selectionModel(), this);
-    connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, descriptionEdit, &DkDescriptionEdit::selectionChanged);
+    connect(mTableView->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            descriptionEdit,
+            &DkDescriptionEdit::selectionChanged);
     connect(mProxyModel, &QSortFilterProxyModel::dataChanged, descriptionEdit, &DkDescriptionEdit::dataChanged);
 
-    DkDescriptionImage *descriptionImg = new DkDescriptionImage(mModel, mProxyModel, mTableView->selectionModel(), this);
-    connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, descriptionImg, &DkDescriptionImage::selectionChanged);
+    DkDescriptionImage *descriptionImg = new DkDescriptionImage(mModel,
+                                                                mProxyModel,
+                                                                mTableView->selectionModel(),
+                                                                this);
+    connect(mTableView->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            descriptionImg,
+            &DkDescriptionImage::selectionChanged);
     connect(mProxyModel, &QSortFilterProxyModel::dataChanged, descriptionImg, &DkDescriptionImage::dataChanged);
 
     QWidget *descWidget = new QWidget(this);
@@ -842,8 +853,10 @@ static QRect CheckBoxRect(const QStyleOptionViewItem &viewItemStyleOptions)
 {
     QStyleOptionButton checkBoxStyleOption;
     QRect checkBoxRect = QApplication::style()->subElementRect(QStyle::SE_CheckBoxIndicator, &checkBoxStyleOption);
-    QPoint checkBoxPoint(viewItemStyleOptions.rect.x() + viewItemStyleOptions.rect.width() / 2 - checkBoxRect.width() / 2,
-                         viewItemStyleOptions.rect.y() + viewItemStyleOptions.rect.height() / 2 - checkBoxRect.height() / 2);
+    QPoint checkBoxPoint(viewItemStyleOptions.rect.x() + viewItemStyleOptions.rect.width() / 2
+                             - checkBoxRect.width() / 2,
+                         viewItemStyleOptions.rect.y() + viewItemStyleOptions.rect.height() / 2
+                             - checkBoxRect.height() / 2);
     return QRect(checkBoxPoint, checkBoxRect.size());
 }
 
@@ -853,7 +866,9 @@ DkPluginCheckBoxDelegate::DkPluginCheckBoxDelegate(QObject *parent)
     mParentTable = static_cast<QTableView *>(parent);
 }
 
-void DkPluginCheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void DkPluginCheckBoxDelegate::paint(QPainter *painter,
+                                     const QStyleOptionViewItem &option,
+                                     const QModelIndex &index) const
 {
     if (option.state & QStyle::State_Selected) {
         if (mParentTable->hasFocus())
@@ -861,7 +876,8 @@ void DkPluginCheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewIt
         else
             painter->fillRect(option.rect, option.palette.window());
     }
-    // else if (index.row() % 2 == 1) painter->fillRect(option.rect, option.palette.alternateBase());	// already done automatically
+    // else if (index.row() % 2 == 1) painter->fillRect(option.rect, option.palette.alternateBase());	// already done
+    // automatically
 
     bool checked = index.model()->data(index, Qt::DisplayRole).toBool();
 
@@ -877,7 +893,10 @@ void DkPluginCheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     QApplication::style()->drawControl(QStyle::CE_CheckBox, &checkBoxStyleOption, painter);
 }
 
-bool DkPluginCheckBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+bool DkPluginCheckBoxDelegate::editorEvent(QEvent *event,
+                                           QAbstractItemModel *model,
+                                           const QStyleOptionViewItem &option,
+                                           const QModelIndex &index)
 {
     if ((event->type() == QEvent::MouseButtonRelease) || (event->type() == QEvent::MouseButtonDblClick)) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
@@ -888,7 +907,8 @@ bool DkPluginCheckBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *mo
             return true;
         }
     } else if (event->type() == QEvent::KeyPress) {
-        if (static_cast<QKeyEvent *>(event)->key() != Qt::Key_Space && static_cast<QKeyEvent *>(event)->key() != Qt::Key_Select) {
+        if (static_cast<QKeyEvent *>(event)->key() != Qt::Key_Space
+            && static_cast<QKeyEvent *>(event)->key() != Qt::Key_Select) {
             return false;
         }
     } else
@@ -907,8 +927,10 @@ static QRect PushButtonRect(const QStyleOptionViewItem &viewItemStyleOptions)
     QRect pushButtonRect = viewItemStyleOptions.rect;
     // pushButtonRect.setHeight(pushButtonRect.height() - 2);
     // pushButtonRect.setWidth(pushButtonRect.width() - 2);
-    QPoint pushButtonPoint(viewItemStyleOptions.rect.x() + viewItemStyleOptions.rect.width() / 2 - pushButtonRect.width() / 2,
-                           viewItemStyleOptions.rect.y() + viewItemStyleOptions.rect.height() / 2 - pushButtonRect.height() / 2);
+    QPoint pushButtonPoint(viewItemStyleOptions.rect.x() + viewItemStyleOptions.rect.width() / 2
+                               - pushButtonRect.width() / 2,
+                           viewItemStyleOptions.rect.y() + viewItemStyleOptions.rect.height() / 2
+                               - pushButtonRect.height() / 2);
     return QRect(pushButtonPoint, pushButtonRect.size());
 }
 
@@ -938,7 +960,10 @@ void DkPushButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     QApplication::style()->drawControl(QStyle::CE_PushButton, &pushButtonStyleOption, painter);
 }
 
-bool DkPushButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option, const QModelIndex &index)
+bool DkPushButtonDelegate::editorEvent(QEvent *event,
+                                       QAbstractItemModel *,
+                                       const QStyleOptionViewItem &option,
+                                       const QModelIndex &index)
 {
     if ((event->type() == QEvent::MouseButtonRelease) || (event->type() == QEvent::MouseButtonPress)) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
@@ -947,7 +972,8 @@ bool DkPushButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *, cons
             return false;
         }
     } else if (event->type() == QEvent::KeyPress) {
-        if (static_cast<QKeyEvent *>(event)->key() != Qt::Key_Space && static_cast<QKeyEvent *>(event)->key() != Qt::Key_Select) {
+        if (static_cast<QKeyEvent *>(event)->key() != Qt::Key_Space
+            && static_cast<QKeyEvent *>(event)->key() != Qt::Key_Select) {
             mPushButonState = QStyle::State_Raised;
             return false;
         }
@@ -969,7 +995,10 @@ bool DkPushButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *, cons
 //**********************************************************************************
 // DkDescriptionEdit : text edit connected to tableView selection and models
 //**********************************************************************************
-DkDescriptionEdit::DkDescriptionEdit(QAbstractTableModel *data, QSortFilterProxyModel *proxy, QItemSelectionModel *selection, QWidget *parent)
+DkDescriptionEdit::DkDescriptionEdit(QAbstractTableModel *data,
+                                     QSortFilterProxyModel *proxy,
+                                     QItemSelectionModel *selection,
+                                     QWidget *parent)
     : QTextEdit(parent)
 {
     mParentTable = static_cast<DkPluginTableWidget *>(parent);
@@ -1013,7 +1042,10 @@ void DkDescriptionEdit::selectionChanged(const QItemSelection &, const QItemSele
 // DkDescriptionImage : image label connected to tableView selection and models
 //**********************************************************************************
 
-DkDescriptionImage::DkDescriptionImage(QAbstractTableModel *data, QSortFilterProxyModel *proxy, QItemSelectionModel *selection, QWidget *parent)
+DkDescriptionImage::DkDescriptionImage(QAbstractTableModel *data,
+                                       QSortFilterProxyModel *proxy,
+                                       QItemSelectionModel *selection,
+                                       QWidget *parent)
     : QLabel(parent)
 {
     mParentTable = static_cast<DkPluginTableWidget *>(parent);
@@ -1119,8 +1151,9 @@ void DkPluginManager::clear()
 void DkPluginManager::loadPlugins()
 {
     //// DEBUG --------------------------------------------------------------------
-    // nmc::DkDependencyWalker dw("C:/VSProjects/READ/nomacs/build2015-x64/Debug/plugins/writerIdentificationPlugin.dll");
-    // if (!dw.findDependencies())
+    // nmc::DkDependencyWalker
+    // dw("C:/VSProjects/READ/nomacs/build2015-x64/Debug/plugins/writerIdentificationPlugin.dll"); if
+    // (!dw.findDependencies())
     //	qWarning() << "could not find dependencies for" << dw.filePath();
 
     // qDebug() << "all dependencies:" << dw.dependencies();
@@ -1239,7 +1272,9 @@ QVector<QSharedPointer<DkPluginContainer>> DkPluginManager::getBatchPlugins() co
     for (auto plugin : mPlugins) {
         DkPluginInterface *p = plugin->plugin();
 
-        if (p && (p->interfaceType() == DkPluginInterface::interface_basic || p->interfaceType() == DkPluginInterface::interface_batch)) {
+        if (p
+            && (p->interfaceType() == DkPluginInterface::interface_basic
+                || p->interfaceType() == DkPluginInterface::interface_batch)) {
             plugins.append(plugin);
         }
     }

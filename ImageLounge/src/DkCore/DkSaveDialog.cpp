@@ -78,7 +78,9 @@ void DkTifDialog::init()
     vBox->addWidget(compressionButton);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                     Qt::Horizontal,
+                                                     this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, this, &DkTifDialog::accept);
@@ -259,7 +261,10 @@ void DkCompressDialog::createLayout()
     mCompressionCombo->addItem(tr("Low Quality"));
     mCompressionCombo->addItem(tr("Bad Quality"));
     mCompressionCombo->setCurrentIndex(1);
-    connect(mCompressionCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkCompressDialog::drawPreview);
+    connect(mCompressionCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkCompressDialog::drawPreview);
 
     // lossless
     mCbLossless = new QCheckBox(tr("Lossless Compression"), this);
@@ -291,7 +296,9 @@ void DkCompressDialog::createLayout()
     previewLayout->addWidget(mPreviewSizeLabel, 5, 1);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                     Qt::Horizontal,
+                                                     this);
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     buttons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
     buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
@@ -431,7 +438,8 @@ void DkCompressDialog::updateFileSizeLabel(float bufferSize, QSize bufferImgSize
     float rawBufferSize = bufferImgSize.width() * bufferImgSize.height() * depth / 8.0f;
     float rawImgSize = factor * (mImg.width() * mImg.height() * depth / 8.0f);
 
-    mPreviewSizeLabel->setText(tr("File Size: ~%1").arg(DkUtils::readableByte(rawImgSize * bufferSize / rawBufferSize)));
+    mPreviewSizeLabel->setText(
+        tr("File Size: ~%1").arg(DkUtils::readableByte(rawImgSize * bufferSize / rawBufferSize)));
 }
 
 void DkCompressDialog::imageHasAlpha(bool hasAlpha)

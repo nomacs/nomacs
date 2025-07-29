@@ -125,13 +125,20 @@ public:
      * @note does not incorporate the ascending/descending mode (always ascending),
      *       to sort descending, reverse the array after sorting.
      */
-    static std::function<bool(const QSharedPointer<DkImageContainer> &, const QSharedPointer<DkImageContainer> &)> compareFunc();
+    static std::function<bool(const QSharedPointer<DkImageContainer> &, const QSharedPointer<DkImageContainer> &)>
+    compareFunc();
 
 protected:
-    QSharedPointer<DkBasicLoader> loadImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
-    void
-    saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
-    QString saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
+    QSharedPointer<DkBasicLoader> loadImageIntern(const QString &filePath,
+                                                  QSharedPointer<DkBasicLoader> loader,
+                                                  const QSharedPointer<QByteArray> fileBuffer);
+    void saveMetaDataIntern(const QString &filePath,
+                            QSharedPointer<DkBasicLoader> loader,
+                            QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
+    QString saveImageIntern(const QString &filePath,
+                            QSharedPointer<DkBasicLoader> loader,
+                            QImage saveImg,
+                            int compression);
     void setFile(const DkFileInfo &fileInfo);
     void init();
 

@@ -431,7 +431,8 @@ void DkMetaDataDock::onFilterTextChanged(const QString &filterText)
     if (!filterText.isEmpty())
         mTreeView->expandAll();
 
-    mProxyModel->setFilterRegularExpression(QRegularExpression(QRegularExpression::escape(filterText), QRegularExpression::CaseInsensitiveOption));
+    mProxyModel->setFilterRegularExpression(
+        QRegularExpression(QRegularExpression::escape(filterText), QRegularExpression::CaseInsensitiveOption));
 }
 
 void DkMetaDataDock::updateEntries(QSharedPointer<DkMetaDataT> metadata)
@@ -668,7 +669,9 @@ QStringList DkMetaDataSelection::getSelectedKeys() const
     return selKeys;
 }
 
-void DkMetaDataSelection::createEntries(QSharedPointer<DkMetaDataT> metaData, QStringList &outKeys, QStringList &outValues) const
+void DkMetaDataSelection::createEntries(QSharedPointer<DkMetaDataT> metaData,
+                                        QStringList &outKeys,
+                                        QStringList &outValues) const
 {
     if (!metaData)
         return;
@@ -714,19 +717,24 @@ void DkMetaDataHUD::createLayout()
     titleLayout->addWidget(titleLabel);
     titleLayout->addWidget(titleSeparator);
 
-    QString scrollbarStyle = QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
+    QString scrollbarStyle = QString("QScrollBar:vertical {border: 1px solid "
+                                     + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
                                      + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
-        + QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
-                  + "; min-height: 0px;}")
+        + QString("QScrollBar::handle:vertical {background: "
+                  + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; min-height: 0px;}")
         + QString("QScrollBar::add-line:vertical {height: 0px;}")
-        + QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: 1px;}")
+        + QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: "
+                  "1px;}")
         + QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}")
-        + QString("QScrollBar:horizontal {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
+        + QString("QScrollBar:horizontal {border: 1px solid "
+                  + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
                   + "; background: rgba(0,0,0,0); height: 7px; margin: 0 0 0 0;}") // horizontal
-        + QString("QScrollBar::handle:horizontal {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
-                  + "; min-width: 0px;}")
+        + QString("QScrollBar::handle:horizontal {background: "
+                  + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; min-width: 0px;}")
         + QString("QScrollBar::add-line:horizontal {width: 0px;}")
-        + QString("QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: rgba(0,0,0,0); height: 1px;}")
+        + QString("QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: rgba(0,0,0,0); "
+                  "height: "
+                  "1px;}")
         + QString("QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {width: 0;}");
 
     mScrollArea = new DkResizableScrollArea(this);
@@ -949,7 +957,9 @@ void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */)
 {
     if (numColumns == -1 && mNumColumns == -1) {
         int numLines = 6;
-        numColumns = ((float)mEntryKeyLabels.size() + numLines - 1) / numLines > 2 ? qRound(((float)mEntryKeyLabels.size() + numLines - 1) / numLines) : 2;
+        numColumns = ((float)mEntryKeyLabels.size() + numLines - 1) / numLines > 2
+            ? qRound(((float)mEntryKeyLabels.size() + numLines - 1) / numLines)
+            : 2;
     } else if (numColumns == -1) {
         numColumns = mNumColumns;
     }
@@ -1101,7 +1111,9 @@ void DkMetaDataHUD::changeKeys()
     selWidget->setSelectedKeys(mKeyValues);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                     Qt::Horizontal,
+                                                     this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
@@ -1124,7 +1136,14 @@ void DkMetaDataHUD::changeKeys()
 void DkMetaDataHUD::changeNumColumns()
 {
     bool ok;
-    int val = QInputDialog::getInt(this, tr("Number of Columns"), tr("Number of columns (-1 is default)"), mNumColumns, -1, 20, 1, &ok);
+    int val = QInputDialog::getInt(this,
+                                   tr("Number of Columns"),
+                                   tr("Number of columns (-1 is default)"),
+                                   mNumColumns,
+                                   -1,
+                                   20,
+                                   1,
+                                   &ok);
 
     if (ok) {
         mNumColumns = val;
@@ -1156,7 +1175,9 @@ void DkCommentTextEdit::paintEvent(QPaintEvent *e)
     if (toPlainText().isEmpty() && !viewport()->hasFocus()) {
         QPainter p(viewport());
         p.setOpacity(0.5);
-        p.drawText(QRect(QPoint(), viewport()->size()), Qt::AlignHCenter | Qt::AlignVCenter, tr("Click here to add notes"));
+        p.drawText(QRect(QPoint(), viewport()->size()),
+                   Qt::AlignHCenter | Qt::AlignVCenter,
+                   tr("Click here to add notes"));
     }
 
     QTextEdit::paintEvent(e);
@@ -1177,12 +1198,14 @@ void DkCommentWidget::createLayout()
     titleLabel->setObjectName("commentTitleLabel");
 
     // TODO: move to stylesheet.css
-    QString scrollbarStyle = QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
+    QString scrollbarStyle = QString("QScrollBar:vertical {border: 1px solid "
+                                     + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
                                      + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
-        + QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor)
-                  + "; min-height: 0px;}")
+        + QString("QScrollBar::handle:vertical {background: "
+                  + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; min-height: 0px;}")
         + QString("QScrollBar::add-line:vertical {height: 0px;}")
-        + QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: 1px;}")
+        + QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: "
+                  "1px;}")
         + QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}");
 
     mCommentLabel = new DkCommentTextEdit(this);
@@ -1194,13 +1217,15 @@ void DkCommentWidget::createLayout()
 
     auto *cancelButton = new QPushButton(this);
     cancelButton->setFlat(true);
-    cancelButton->setIcon(DkImage::loadIcon(":/nomacs/img/trash.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
+    cancelButton->setIcon(
+        DkImage::loadIcon(":/nomacs/img/trash.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
     cancelButton->setToolTip(tr("Discard Changes (ESC)"));
     connect(cancelButton, &QPushButton::clicked, this, &DkCommentWidget::onCancelButtonClicked);
 
     auto *saveButton = new QPushButton(this);
     saveButton->setFlat(true);
-    saveButton->setIcon(DkImage::loadIcon(":/nomacs/img/save.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
+    saveButton->setIcon(
+        DkImage::loadIcon(":/nomacs/img/save.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
     saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
     connect(saveButton, &QPushButton::clicked, this, &DkCommentWidget::onSaveButtonClicked);
 

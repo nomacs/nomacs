@@ -203,7 +203,10 @@ class DkThumbLabel : public QGraphicsObject
     Q_OBJECT
 
 public:
-    DkThumbLabel(DkThumbLoader *thumbLoader, const DkFileInfo &fileInfo, bool fillSquare, QGraphicsItem *parent = nullptr);
+    DkThumbLabel(DkThumbLoader *thumbLoader,
+                 const DkFileInfo &fileInfo,
+                 bool fillSquare,
+                 QGraphicsItem *parent = nullptr);
     ~DkThumbLabel();
 
     QRectF boundingRect() const override;
@@ -452,7 +455,11 @@ class DkThumbPreviewLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkThumbPreviewLabel(const QString &filePath, DkThumbLoader *thumbLoader, int thumbSize = 100, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    DkThumbPreviewLabel(const QString &filePath,
+                        DkThumbLoader *thumbLoader,
+                        int thumbSize = 100,
+                        QWidget *parent = 0,
+                        Qt::WindowFlags f = Qt::WindowFlags());
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);

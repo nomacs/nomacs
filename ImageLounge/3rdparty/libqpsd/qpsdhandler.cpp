@@ -131,8 +131,9 @@ bool QPsdHandler::read(QImage *image)
         return false;
 
 #ifdef QT_DEBUG
-    qDebug() << "format: " << format() << "\ncolor mode: " << colorMode << "\ndepth: " << depth << "\nchannels: " << channels
-             << "\ncompression: " << compression << "\nwidth: " << width << "\nheight: " << height << "\ntotalBytesPerChannel: " << totalBytesPerChannel
+    qDebug() << "format: " << format() << "\ncolor mode: " << colorMode << "\ndepth: " << depth
+             << "\nchannels: " << channels << "\ncompression: " << compression << "\nwidth: " << width
+             << "\nheight: " << height << "\ntotalBytesPerChannel: " << totalBytesPerChannel
              << "\nimage data: " << imageData.size();
 #endif
 

@@ -74,7 +74,10 @@ void DkSettingsWidget::clear()
     mSettingsModel->clear();
 }
 
-void DkSettingsWidget::changeSetting(QSettings &settings, const QString &key, const QVariant &value, const QStringList &groups)
+void DkSettingsWidget::changeSetting(QSettings &settings,
+                                     const QString &key,
+                                     const QVariant &value,
+                                     const QStringList &groups)
 {
     QStringList groupsClean = groups;
     groupsClean.pop_front(); // remove default group: settings
@@ -106,7 +109,9 @@ void DkSettingsWidget::removeSetting(QSettings &settings, const QString &key, co
         settings.endGroup();
 }
 
-void DkSettingsWidget::onSettingsModelSettingChanged(const QString &key, const QVariant &value, const QStringList &groups)
+void DkSettingsWidget::onSettingsModelSettingChanged(const QString &key,
+                                                     const QVariant &value,
+                                                     const QStringList &groups)
 {
     emit changeSettingSignal(key, value, groups);
 }
@@ -167,7 +172,8 @@ void DkSettingsWidget::filter(const QString &filterText)
     if (!filterText.isEmpty())
         mTreeView->expandAll();
 
-    mProxyModel->setFilterRegularExpression(QRegularExpression(QRegularExpression::escape(filterText), QRegularExpression::CaseInsensitiveOption));
+    mProxyModel->setFilterRegularExpression(
+        QRegularExpression(QRegularExpression::escape(filterText), QRegularExpression::CaseInsensitiveOption));
     qDebug() << "filtering: " << filterText;
 }
 
