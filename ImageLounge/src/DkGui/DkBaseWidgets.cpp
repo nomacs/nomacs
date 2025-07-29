@@ -85,7 +85,8 @@ bool DkFadeHelper::getCurrentDisplaySetting()
         return false;
     }
 
-    if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= mDisplayBits->size()) {
+    if (DkSettingsManager::param().app().currentAppMode < 0
+        || DkSettingsManager::param().app().currentAppMode >= mDisplayBits->size()) {
         qWarning() << "[fade] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
         return false;
     }
@@ -104,8 +105,8 @@ bool DkFadeHelper::isFadeEnabled() const
 
 void DkFadeHelper::fade(bool show, bool saveSetting)
 {
-    qDebug().nospace() << "[fade] " << mWidget->metaObject()->className() << " show=" << show << " save=" << saveSetting << " showing=" << mShowing
-                       << " hiding=" << mHiding << " visible=" << mWidget->isVisible();
+    qDebug().nospace() << "[fade] " << mWidget->metaObject()->className() << " show=" << show << " save=" << saveSetting
+                       << " showing=" << mShowing << " hiding=" << mHiding << " visible=" << mWidget->isVisible();
 
     if (mDisplayBits && saveSetting) {
         int bit = DkSettingsManager::param().app().currentAppMode;
@@ -339,8 +340,9 @@ void DkLabel::stop()
 
 void DkLabel::updateStyleSheet()
 {
-    QLabel::setStyleSheet("QLabel{color: " + mTextCol.name() + "; margin: " + QString::number(mMargin.y()) + "px " + QString::number(mMargin.x()) + "px "
-                          + QString::number(mMargin.y()) + "px " + QString::number(mMargin.x()) + "px;}");
+    QLabel::setStyleSheet("QLabel{color: " + mTextCol.name() + "; margin: " + QString::number(mMargin.y()) + "px "
+                          + QString::number(mMargin.x()) + "px " + QString::number(mMargin.y()) + "px "
+                          + QString::number(mMargin.x()) + "px;}");
 }
 
 void DkLabel::paintEvent(QPaintEvent *event)
@@ -468,7 +470,8 @@ bool DkDockWidget::getCurrentDisplaySetting() const
 
 bool DkDockWidget::testDisplaySettings(const QBitArray &displaySettingsBits)
 {
-    if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= displaySettingsBits.size()) {
+    if (DkSettingsManager::param().app().currentAppMode < 0
+        || DkSettingsManager::param().app().currentAppMode >= displaySettingsBits.size()) {
         qDebug() << "[WARNING] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
         return false;
     }
@@ -486,7 +489,8 @@ void DkDockWidget::setVisible(bool visible, bool saveSetting)
         mAction->blockSignals(false);
     }
 
-    if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
+    if (saveSetting && displaySettingsBits
+        && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
         displaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, visible);
     }
 }

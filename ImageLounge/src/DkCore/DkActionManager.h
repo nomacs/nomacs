@@ -95,7 +95,10 @@ protected:
     void assignIcon(QAction *app) const;
     bool containsApp(QVector<QAction *> apps, const QString &appName) const;
 
-    QString searchForSoftware(const QString &organization, const QString &application, const QString &pathKey = "", const QString &exeName = "") const;
+    QString searchForSoftware(const QString &organization,
+                              const QString &application,
+                              const QString &pathKey = "",
+                              const QString &exeName = "") const;
     void findDefaultSoftware();
 
     QVector<QString> mDefaultNames;

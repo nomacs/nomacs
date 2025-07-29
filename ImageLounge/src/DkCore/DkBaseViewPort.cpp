@@ -308,7 +308,8 @@ QImage DkBaseViewPort::getImage() const
 QSize DkBaseViewPort::getImageSize() const
 {
     if (mSvg) {
-        // qDebug() << "win: " << size() << "svg:" << mSvg->defaultSize() << "scaled:" << mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
+        // qDebug() << "win: " << size() << "svg:" << mSvg->defaultSize() << "scaled:" <<
+        // mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
         return mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
     }
 
@@ -353,7 +354,8 @@ void DkBaseViewPort::paintEvent(QPaintEvent *event)
         //// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
         if (!mForceFastRendering && // force?
             mImgMatrix.m11() * mWorldMatrix.m11() - DBL_EPSILON > 1.0 && // @100% ?
-            mImgMatrix.m11() * mWorldMatrix.m11() <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) { // > max zoom level
+            mImgMatrix.m11() * mWorldMatrix.m11()
+                <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) { // > max zoom level
             painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
         }
 
@@ -635,12 +637,14 @@ QTransform DkBaseViewPort::getScaledImageMatrix(const QSize &size) const
     if (mImgRect.width() == 0 || mImgRect.height() == 0)
         s = 1.0f;
     else
-        s = (ratioImg > ratioWin) ? (float)size.width() / (float)mImgRect.width() : (float)size.height() / (float)mImgRect.height();
+        s = (ratioImg > ratioWin) ? (float)size.width() / (float)mImgRect.width()
+                                  : (float)size.height() / (float)mImgRect.height();
 
     imgMatrix.scale(s, s);
 
     QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
-    imgMatrix.translate((size.width() - imgViewRect.width()) * 0.5f / s, (size.height() - imgViewRect.height()) * 0.5f / s);
+    imgMatrix.translate((size.width() - imgViewRect.width()) * 0.5f / s,
+                        (size.height() - imgViewRect.height()) * 0.5f / s);
 
     return imgMatrix;
 }

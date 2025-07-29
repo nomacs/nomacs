@@ -155,7 +155,10 @@ public:
     void filter(const QString &filterText);
     void expandAll();
 
-    static void changeSetting(QSettings &settings, const QString &key, const QVariant &value, const QStringList &groups);
+    static void changeSetting(QSettings &settings,
+                              const QString &key,
+                              const QVariant &value,
+                              const QStringList &groups);
     static void removeSetting(QSettings &settings, const QString &key, const QStringList &groups);
 
 signals:

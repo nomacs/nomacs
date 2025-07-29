@@ -168,7 +168,8 @@ QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedP
     if (!imgC)
         return QSharedPointer<DkImageContainerT>();
 
-    QSharedPointer<DkImageContainerT> imgCT = QSharedPointer<DkImageContainerT>(new DkImageContainerT(imgC->fileInfo()));
+    QSharedPointer<DkImageContainerT> imgCT = QSharedPointer<DkImageContainerT>(
+        new DkImageContainerT(imgC->fileInfo()));
 
     imgCT->mLoader = imgC->getLoader();
     imgCT->mEdited = imgC->isEdited();
@@ -216,7 +217,8 @@ DkRotatingRect DkImageContainer::cropRect()
     return DkRotatingRect();
 }
 
-std::function<bool(const QSharedPointer<DkImageContainer> &, const QSharedPointer<DkImageContainer> &)> DkImageContainer::compareFunc()
+std::function<bool(const QSharedPointer<DkImageContainer> &, const QSharedPointer<DkImageContainer> &)>
+DkImageContainer::compareFunc()
 {
     // select from the assortment of QFileInfo functions; if there isn't one use this one
     // future: exif, custom sorting, etc can all be tied in here, need not be QFileInfo
@@ -317,7 +319,9 @@ bool DkImageContainer::hasMovie() const
             return false;
         suffix = target.suffix();
     }
-    return suffix.contains(QRegularExpression("(apng|avif|gif|jxl|mng|webp)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return suffix.contains(
+               QRegularExpression("(apng|avif|gif|jxl|mng|webp)", QRegularExpression::CaseInsensitiveOption))
+        != 0;
 }
 
 bool DkImageContainer::hasSvg() const
@@ -376,7 +380,8 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &
         return {};
     }
 
-    if (fInfo.suffix().contains("psd")) // for now just psd's are not cached because their file might be way larger than the part we need to read
+    if (fInfo.suffix().contains("psd")) // for now just psd's are not cached because their file might be way larger than
+                                        // the part we need to read
         return {};
 
     //
@@ -404,8 +409,9 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &
     return ba;
 }
 
-QSharedPointer<DkBasicLoader>
-DkImageContainer::loadImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer)
+QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QString &filePath,
+                                                                QSharedPointer<DkBasicLoader> loader,
+                                                                const QSharedPointer<QByteArray> fileBuffer)
 {
     try {
         loader->loadGeneral(filePath, fileBuffer, true, false);
@@ -416,7 +422,10 @@ DkImageContainer::loadImageIntern(const QString &filePath, QSharedPointer<DkBasi
     return loader;
 }
 
-QString DkImageContainer::saveImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression)
+QString DkImageContainer::saveImageIntern(const QString &filePath,
+                                          QSharedPointer<DkBasicLoader> loader,
+                                          QImage saveImg,
+                                          int compression)
 {
     return loader->save(filePath, saveImg, compression);
 }
@@ -429,7 +438,9 @@ void DkImageContainer::saveMetaData()
     saveMetaDataIntern(filePath(), mLoader, mFileBuffer);
 }
 
-void DkImageContainer::saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer)
+void DkImageContainer::saveMetaDataIntern(const QString &filePath,
+                                          QSharedPointer<DkBasicLoader> loader,
+                                          QSharedPointer<QByteArray> fileBuffer)
 {
     // TODO this shouldn't be used without notifying the user, see issue #799
     loader->saveMetaData(filePath, fileBuffer);
@@ -477,9 +488,8 @@ DkImageContainerT::~DkImageContainerT()
 
     // This dtor is where saveMetaData() used to be called, which called the "dangerous" overload of saveMetaData(),
     // which is dangerous because it updates the file. We consider this to be a bug.
-    // The other place where the file was silently updated in the background was the release() routine, called on unload.
-    // All changes should be explicitly committed, including exif notes.
-    // See issue #799. [2022, PSE]
+    // The other place where the file was silently updated in the background was the release() routine, called on
+    // unload. All changes should be explicitly committed, including exif notes. See issue #799. [2022, PSE]
 
     // we have to wait here
     mSaveMetaDataWatcher.blockSignals(true);
@@ -583,7 +593,11 @@ void DkImageContainerT::fetchFile()
     }
 
     mFetchingBuffer = true; // saves the threaded call
-    connect(&mBufferWatcher, &QFutureWatcher<QSharedPointer<QByteArray>>::finished, this, &DkImageContainerT::bufferLoaded, Qt::UniqueConnection);
+    connect(&mBufferWatcher,
+            &QFutureWatcher<QSharedPointer<QByteArray>>::finished,
+            this,
+            &DkImageContainerT::bufferLoaded,
+            Qt::UniqueConnection);
     mBufferWatcher.setFuture(QtConcurrent::run([file = mFileInfo] {
         return loadFileToBuffer(file);
     }));
@@ -623,7 +637,11 @@ void DkImageContainerT::fetchImage()
     qInfoClean() << "loading " << filePath();
     mFetchingImage = true;
 
-    connect(&mImageWatcher, &QFutureWatcher<QSharedPointer<DkBasicLoader>>::finished, this, &DkImageContainerT::imageLoaded, Qt::UniqueConnection);
+    connect(&mImageWatcher,
+            &QFutureWatcher<QSharedPointer<DkBasicLoader>>::finished,
+            this,
+            &DkImageContainerT::imageLoaded,
+            Qt::UniqueConnection);
 
     mImageWatcher.setFuture(QtConcurrent::run([&] {
         return loadImageIntern(filePath(), mLoader, mFileBuffer);
@@ -701,7 +719,11 @@ void DkImageContainerT::downloadFile(const QUrl &url)
 
         qInfo() << "Downloading " << url << "to file:" << saveFile;
         mFileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, saveFile, this));
-        connect(mFileDownloader.data(), &FileDownloader::downloaded, this, &DkImageContainerT::fileDownloaded, Qt::UniqueConnection);
+        connect(mFileDownloader.data(),
+                &FileDownloader::downloaded,
+                this,
+                &DkImageContainerT::fileDownloaded,
+                Qt::UniqueConnection);
     } else
         mFileDownloader->downloadFile(url);
 }
@@ -808,7 +830,11 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
     qDebug() << "attempting to save: " << filePath;
 
     mFileUpdateTimer.stop();
-    connect(&mSaveImageWatcher, &QFutureWatcher<QString>::finished, this, &DkImageContainerT::savingFinished, Qt::UniqueConnection);
+    connect(&mSaveImageWatcher,
+            &QFutureWatcher<QString>::finished,
+            this,
+            &DkImageContainerT::savingFinished,
+            Qt::UniqueConnection);
 
     mSaveImageWatcher.setFuture(QtConcurrent::run([&, filePath, saveImg, compression] {
         return saveImageIntern(filePath, mLoader, saveImg, compression);
@@ -833,7 +859,8 @@ void DkImageContainerT::savingFinished()
         if (mFileBuffer)
             mFileBuffer->clear(); // do a complete clear?
 
-        if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty() || dirPath() == sInfo.dirPath()) {
+        if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty()
+            || dirPath() == sInfo.dirPath()) {
             setFile(sInfo);
             emit fileSavedSignal(savePath, true, false);
         } else {
@@ -882,7 +909,9 @@ void DkImageContainerT::setHistoryIndex(int idx)
     emit imageUpdatedSignal();
 }
 
-void DkImageContainerT::setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName)
+void DkImageContainerT::setMetaData(QSharedPointer<DkMetaDataT> editedMetaData,
+                                    const QImage &img,
+                                    const QString &editName)
 {
     // Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
     getLoader()->setEditMetaData(editedMetaData, img, editName);

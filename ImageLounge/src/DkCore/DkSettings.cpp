@@ -72,20 +72,32 @@ DkSettings::DkSettings()
 
 void DkSettings::init()
 {
-    scamDataDesc = QStringList() << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Image Size") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Orientation")
-                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Make") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Model")
-                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Aperture Value") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "ISO")
-                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Flash") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Focal Length")
-                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Exposure Mode") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Exposure Time")
+    scamDataDesc = QStringList() << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Image Size")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Orientation")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Make")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Model")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Aperture Value")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "ISO")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Flash")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Focal Length")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Exposure Mode")
+                                 << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Exposure Time")
                                  << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Compression");
 
-    sdescriptionDesc = QStringList() << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Rating") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "User Comment")
-                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Date Time") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Date Time Original")
-                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Image Description") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Creator")
-                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Creator Title") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "City")
-                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Country") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Headline")
-                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Caption") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Copyright")
-                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Keywords") << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Path")
+    sdescriptionDesc = QStringList() << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Rating")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "User Comment")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Date Time")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Date Time Original")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Image Description")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Creator")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Creator Title")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "City")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Country")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Headline")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Caption")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Copyright")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Keywords")
+                                     << QT_TRANSLATE_NOOP("nmc::DkMetaData", "Path")
                                      << QT_TRANSLATE_NOOP("nmc::DkMetaData", "File Size");
 }
 
@@ -429,7 +441,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     global_p.setupVersion = settings.value("setupVersion", global_p.setupVersion).toString();
     global_p.zoomOnWheel = settings.value("zoomOnWheel", global_p.zoomOnWheel).toBool();
     global_p.horZoomSkips = settings.value("horZoomSkips", global_p.horZoomSkips).toBool();
-    global_p.doubleClickForFullscreen = settings.value("doubleClickForFullscreen", global_p.doubleClickForFullscreen).toBool();
+    global_p.doubleClickForFullscreen = settings.value("doubleClickForFullscreen", global_p.doubleClickForFullscreen)
+                                            .toBool();
     global_p.showBgImage = settings.value("showBgImage", global_p.showBgImage).toBool();
 
     settings.endGroup();
@@ -439,19 +452,22 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
     display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
     display_p.zoomToFit = settings.value("zoomToFit", display_p.zoomToFit).toBool();
-    display_p.highlightColor = QColor::fromRgba(settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
+    display_p.highlightColor = QColor::fromRgba(
+        settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
     display_p.hudBgColor = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.hudBgColor.rgba()).toInt());
     display_p.hudFgdColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.hudFgdColor.rgba()).toInt());
     display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
     display_p.fgColor = QColor::fromRgba(settings.value("fgColorNoMacsRGBA", display_p.fgColor.rgba()).toInt());
     display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
-    display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
+    display_p.bgColorFrameless = QColor::fromRgba(
+        settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
     display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
     display_p.iconSize = settings.value("iconSize", display_p.iconSize).toInt();
     display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
     // display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
     display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
-    display_p.highQualityAntiAliasing = settings.value("highQualityAntiAliasing", display_p.highQualityAntiAliasing).toBool();
+    display_p.highQualityAntiAliasing = settings.value("highQualityAntiAliasing", display_p.highQualityAntiAliasing)
+                                            .toBool();
     display_p.showCrop = settings.value("showCrop", display_p.showCrop).toBool();
     display_p.histogramStyle = settings.value("histogramStyle", display_p.histogramStyle).toInt();
     display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
@@ -465,8 +481,10 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.animationDuration = settings.value("fadeSec", display_p.animationDuration).toFloat();
     display_p.alwaysAnimate = settings.value("alwaysAnimate", display_p.alwaysAnimate).toBool();
     display_p.transition = (TransitionMode)settings.value("transition", display_p.transition).toInt();
-    display_p.defaultBackgroundColor = settings.value("defaultBackgroundColor", display_p.defaultBackgroundColor).toBool();
-    display_p.defaultForegroundColor = settings.value("defaultForegroundColor", display_p.defaultForegroundColor).toBool();
+    display_p.defaultBackgroundColor = settings.value("defaultBackgroundColor", display_p.defaultBackgroundColor)
+                                           .toBool();
+    display_p.defaultForegroundColor = settings.value("defaultForegroundColor", display_p.defaultForegroundColor)
+                                           .toBool();
     display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
     display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
     display_p.animateWidgets = settings.value("animateWidgets", display_p.animateWidgets).toBool();
@@ -486,7 +504,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
     slideShow_p.showPlayer = settings.value("showPlayer", slideShow_p.showPlayer).toBool();
     slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
-    slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColorRGBA", slideShow_p.backgroundColor.rgba()).toInt());
+    slideShow_p.backgroundColor = QColor::fromRgba(
+        settings.value("backgroundColorRGBA", slideShow_p.backgroundColor.rgba()).toInt());
     slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
     QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
 
@@ -498,7 +517,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     settings.beginGroup("SynchronizeSettings");
 
     sync_p.checkForUpdates = settings.value("checkForUpdates", sync_p.checkForUpdates).toBool();
-    sync_p.disableUpdateInteraction = settings.value("disableUpdateInteraction", sync_p.disableUpdateInteraction).toBool();
+    sync_p.disableUpdateInteraction = settings.value("disableUpdateInteraction", sync_p.disableUpdateInteraction)
+                                          .toBool();
     sync_p.updateDialogShown = settings.value("updateDialogShown", sync_p.updateDialogShown).toBool();
     sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
     sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
@@ -1117,7 +1137,8 @@ void DkSettingsManager::init()
         std::cout << "log is saved to: " << nmc::DkUtils::getLogFilePath().toStdString() << std::endl;
 
     qInfo() << "Hi there";
-    qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() << " v" << QApplication::applicationVersion()
+    qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName()
+                 << " v" << QApplication::applicationVersion()
                  << (nmc::DkSettingsManager::param().isPortable() ? " (portable)" : " (installed)");
 }
 
@@ -1219,7 +1240,8 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps)
 
     // TODO: this is still not working for me on win8??
     QString capName = "Capabilities";
-    QString capPath = "Software\\" + QApplication::organizationName() + "\\" + QApplication::applicationName() + "\\" + capName;
+    QString capPath = "Software\\" + QApplication::organizationName() + "\\" + QApplication::applicationName() + "\\"
+        + capName;
     QSettings settings("HKEY_CURRENT_USER\\" + capPath, QSettings::NativeFormat);
 
     settings.setValue("ApplicationDescription", QObject::tr("nomacs - Image Lounge is a lightweight image viewer."));
@@ -1262,7 +1284,11 @@ void DkFileFilterHandling::showDefaultSoftware() const
 {
 #ifdef Q_OS_WIN
     IApplicationActivationManager *manager = 0;
-    CoCreateInstance(CLSID_ApplicationActivationManager, 0, CLSCTX_LOCAL_SERVER, IID_IApplicationActivationManager, (LPVOID *)&manager);
+    CoCreateInstance(CLSID_ApplicationActivationManager,
+                     0,
+                     CLSCTX_LOCAL_SERVER,
+                     IID_IApplicationActivationManager,
+                     (LPVOID *)&manager);
 
     if (manager) {
         DWORD pid = GetCurrentProcessId();
@@ -1300,7 +1326,8 @@ QString DkFileFilterHandling::registerProgID(const QString &ext, const QString &
         settings.beginGroup("shell");
         settings.beginGroup("open");
         settings.beginGroup("command");
-        settings.setValue("Default", "\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\" \"%1\"");
+        settings.setValue("Default",
+                          "\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\" \"%1\"");
         settings.endGroup();
         settings.endGroup();
         settings.endGroup();
@@ -1324,7 +1351,8 @@ QString DkFileFilterHandling::getIconID(const QString &ext) const
         return "2";
     } else if (ext.contains(".png")) {
         return "3";
-    } else if (ext.contains(".tif") || ext.contains(".tiff") || ext.contains(".bmp") || ext.contains(".pgm") || ext.contains(".webp")) {
+    } else if (ext.contains(".tif") || ext.contains(".tiff") || ext.contains(".bmp") || ext.contains(".pgm")
+               || ext.contains(".webp")) {
         return "4";
     } else if (!DkSettingsManager::param().app().rawFilters.filter(ext).empty()) {
         return "5";
@@ -1425,7 +1453,8 @@ void DkFileFilterHandling::setAsDefaultApp(const QString &ext, const QString &pr
 {
 #ifdef Q_OS_WIN
 
-    QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts", QSettings::NativeFormat);
+    QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts",
+                       QSettings::NativeFormat);
     settings.beginGroup(ext);
 
     if (add) {

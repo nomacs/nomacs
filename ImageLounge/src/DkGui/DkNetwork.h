@@ -177,8 +177,10 @@ protected slots:
     virtual void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection *connection) = 0;
     virtual void connectionStopSynchronized(DkConnection *connection) = 0;
     virtual void connectionSentNewTitle(DkConnection *connection, const QString &newTitle);
-    virtual void
-    connectionReceivedTransformation(DkConnection *connection, const QTransform &transform, const QTransform &imgTransform, const QPointF &canvasSize);
+    virtual void connectionReceivedTransformation(DkConnection *connection,
+                                                  const QTransform &transform,
+                                                  const QTransform &imgTransform,
+                                                  const QPointF &canvasSize);
     virtual void connectionReceivedPosition(DkConnection *connection, const QRect &rect, bool opacity, bool overlaid);
     virtual void connectionReceivedNewFile(DkConnection *connection, qint16 op, const QString &filename);
     virtual void connectionReceivedGoodBye(DkConnection *connection);

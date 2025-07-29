@@ -44,7 +44,9 @@ QImage DkFakeMiniaturesPlugin::image() const
  * @param plug-in ID
  * @param current imgC in the Nomacs viewport
  **/
-QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const
+QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(
+    const QString &runID,
+    QSharedPointer<nmc::DkImageContainer> imgC) const
 {
     qDebug() << "run id" << runID;
     if (imgC) {

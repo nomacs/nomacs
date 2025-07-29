@@ -99,8 +99,9 @@ public:
     /// <param name="runID">The run identifier.</param>
     /// <param name="imgC">The image container to be processed.</param>
     /// <returns>A processed image container</returns>
-    virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(),
-                                                       QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
+    virtual QSharedPointer<DkImageContainer> runPlugin(
+        const QString &runID = QString(),
+        QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
 
     QMainWindow *getMainWindow() const
     {
@@ -126,8 +127,9 @@ public:
         return interface_batch;
     };
 
-    virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(),
-                                                       QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const
+    virtual QSharedPointer<DkImageContainer> runPlugin(
+        const QString &runID = QString(),
+        QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const
     {
         QSharedPointer<DkBatchInfo> dummy;
         DkSaveInfo saveInfo;
@@ -141,11 +143,14 @@ public:
         return runPlugin(runID, imgC, saveInfo, dummy);
     };
 
-    virtual QSharedPointer<DkImageContainer>
-    runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC, const DkSaveInfo &saveInfo, QSharedPointer<DkBatchInfo> &batchInfo) const = 0;
+    virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID,
+                                                       QSharedPointer<DkImageContainer> imgC,
+                                                       const DkSaveInfo &saveInfo,
+                                                       QSharedPointer<DkBatchInfo> &batchInfo) const = 0;
 
     virtual void preLoadPlugin() const = 0; // is called before batch processing
-    virtual void postLoadPlugin(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const = 0; // is called after batch processing
+    virtual void postLoadPlugin(
+        const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const = 0; // is called after batch processing
 
     virtual QString name() const = 0; // is needed for settings
     virtual QString settingsFilePath() const

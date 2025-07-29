@@ -142,11 +142,13 @@ void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray
             return;
         }
 
-        if (mExifImg->exifData().empty() && mExifImg->xmpData().empty() && mExifImg->iptcData().empty() && mExifImg->iptcData().empty()) {
+        if (mExifImg->exifData().empty() && mExifImg->xmpData().empty() && mExifImg->iptcData().empty()
+            && mExifImg->iptcData().empty()) {
             qDebug() << "[Exiv2] metadata is empty";
             return;
         }
-        qDebug() << "[Exiv2] metadata loaded" << mExifImg->mimeType().c_str() << mExifImg->pixelWidth() << mExifImg->pixelHeight();
+        qDebug() << "[Exiv2] metadata loaded" << mExifImg->mimeType().c_str() << mExifImg->pixelWidth()
+                 << mExifImg->pixelHeight();
 
     } catch (...) {
         qDebug() << "[Exiv2] could not read metadata";
@@ -197,7 +199,8 @@ bool DkMetaDataT::saveMetaData(const DkFileInfo &fileInfo, bool force)
     // Open image file for WRITING, save it with modified metadata
     QFile file(fileInfo.path());
     if (!file.open(QFile::WriteOnly)) {
-        qWarning() << "[DkMetaDataT] could not open for writing:" << fileInfo.fileName() << file.error() << file.errorString();
+        qWarning() << "[DkMetaDataT] could not open for writing:" << fileInfo.fileName() << file.error()
+                   << file.errorString();
         return false;
     }
 
@@ -266,15 +269,18 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
 
 #if ((((EXIV2_MAJOR_VERSION) << 16) + ((EXIV2_MINOR_VERSION) << 8) + (EXIV2_PATCH_VERSION)) >= (28 << 8))
     if (!exifBuf.empty()) {
-        QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray(reinterpret_cast<const char *>(exifBuf.c_data()), exifBuf.size()));
+        QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(
+            new QByteArray(reinterpret_cast<const char *>(exifBuf.c_data()), exifBuf.size()));
 #else
     if (exifBuf.pData_) {
-        QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray(reinterpret_cast<const char *>(exifBuf.pData_), exifBuf.size_));
+        QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(
+            new QByteArray(reinterpret_cast<const char *>(exifBuf.pData_), exifBuf.size_));
 #endif
         if (tmp->size() > qRound(ba->size() * 0.5f))
             ba = tmp;
         else
-            return false; // catch exif bug - observed e.g. for hasselblad RAW (3fr) files - see: Bug #995 (http://dev.exiv2.org/issues/995)
+            return false; // catch exif bug - observed e.g. for hasselblad RAW (3fr) files - see: Bug #995
+                          // (http://dev.exiv2.org/issues/995)
     } else
         return false;
 
@@ -473,7 +479,8 @@ QString DkMetaDataT::getNativeExifValue(const QString &key, bool humanReadable) 
         }
 
         if (pos != exifData.end() && pos->count() != 0) {
-            if (pos->count() < 2000) { // diem: this is about performance - adobe obviously embeds whole images into tiff exiv data
+            if (pos->count()
+                < 2000) { // diem: this is about performance - adobe obviously embeds whole images into tiff exiv data
 
                 // qDebug() << "pos count: " << pos->count();
                 // Exiv2::Value::AutoPtr v = pos->getValue();
@@ -815,17 +822,21 @@ bool DkMetaDataT::isLoaded() const
 
 bool DkMetaDataT::isTiff() const
 {
-    return mFileInfo.suffix().contains(QRegularExpression("(tif|tiff)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(tif|tiff)", QRegularExpression::CaseInsensitiveOption))
+        != 0;
 }
 
 bool DkMetaDataT::isJpg() const
 {
-    return mFileInfo.suffix().contains(QRegularExpression("(jpg|jpeg)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(jpg|jpeg)", QRegularExpression::CaseInsensitiveOption))
+        != 0;
 }
 
 bool DkMetaDataT::isRaw() const
 {
-    return mFileInfo.suffix().contains(QRegularExpression("(nef|crw|cr2|arw)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(
+               QRegularExpression("(nef|crw|cr2|arw)", QRegularExpression::CaseInsensitiveOption))
+        != 0;
 }
 
 bool DkMetaDataT::isAVIF() const
@@ -835,7 +846,8 @@ bool DkMetaDataT::isAVIF() const
 
 bool DkMetaDataT::isHEIF() const
 {
-    return mFileInfo.suffix().contains(QRegularExpression("(heic|heif)", QRegularExpression::CaseInsensitiveOption)) != 0;
+    return mFileInfo.suffix().contains(QRegularExpression("(heic|heif)", QRegularExpression::CaseInsensitiveOption))
+        != 0;
 }
 
 bool DkMetaDataT::isJXL() const
@@ -1267,7 +1279,9 @@ bool DkMetaDataT::updateImageMetaData(const QImage &img, bool reset_orientation)
 
     success &= setExifValue("Exif.Image.ImageWidth", QString::number(img.width()));
     success &= setExifValue("Exif.Image.ImageLength", QString::number(img.height()));
-    success &= setExifValue("Exif.Image.ProcessingSoftware", qApp->organizationName() + " - " + qApp->applicationName() + " " + qApp->applicationVersion());
+    success &= setExifValue("Exif.Image.ProcessingSoftware",
+                            qApp->organizationName() + " - " + qApp->applicationName() + " "
+                                + qApp->applicationVersion());
 
     // TODO: convert Date Time to Date Time Original and set new Date Time
 
@@ -1289,7 +1303,8 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo)
         return false;
 
     try {
-        if (mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite && mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amWrite)
+        if (mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite
+            && mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amWrite)
             return false;
 
         Exiv2::ExifData &exifData = mExifImg->exifData();
@@ -1299,7 +1314,8 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo)
 
             // TODO: save utf8 strings
             // QByteArray ba = taginfo.toUtf8();
-            // Exiv2::DataValue val((const byte*)ba.data(), taginfo.size(), Exiv2::ByteOrder::bigEndian, Exiv2::TypeId::unsignedByte);
+            // Exiv2::DataValue val((const byte*)ba.data(), taginfo.size(), Exiv2::ByteOrder::bigEndian,
+            // Exiv2::TypeId::unsignedByte);
 
             // tag.setValue(&val);
             if (!tag.setValue(taginfo.toStdString())) {
@@ -1379,8 +1395,9 @@ void DkMetaDataT::printMetaData() const
 
     Exiv2::XmpData::iterator endI3 = xmpData.end();
     for (Exiv2::XmpData::iterator md = xmpData.begin(); md != endI3; ++md) {
-        std::cout << std::setw(44) << std::setfill(' ') << std::left << md->key() << " " << "0x" << std::setw(4) << std::setfill('0') << std::right << std::hex
-                  << md->tag() << " " << std::setw(9) << std::setfill(' ') << std::left << md->typeName() << " " << std::dec << std::setw(3)
+        std::cout << std::setw(44) << std::setfill(' ') << std::left << md->key() << " " << "0x" << std::setw(4)
+                  << std::setfill('0') << std::right << std::hex << md->tag() << " " << std::setw(9)
+                  << std::setfill(' ') << std::left << md->typeName() << " " << std::dec << std::setw(3)
                   << std::setfill(' ') << std::right << md->count() << "  " << std::dec << md->value() << std::endl;
     }
 
@@ -1568,10 +1585,12 @@ void DkMetaDataHelper::init()
     mDescSearchTags.append("FileSize");
 
     for (int i = 0; i < DkSettingsManager::param().translatedCamData().size(); i++)
-        mTranslatedCamTags << qApp->translate("nmc::DkMetaData", DkSettingsManager::param().translatedCamData().at(i).toLatin1());
+        mTranslatedCamTags << qApp->translate("nmc::DkMetaData",
+                                              DkSettingsManager::param().translatedCamData().at(i).toLatin1());
 
     for (int i = 0; i < DkSettingsManager::param().translatedDescriptionData().size(); i++)
-        mTranslatedDescTags << qApp->translate("nmc::DkMetaData", DkSettingsManager::param().translatedDescriptionData().at(i).toLatin1());
+        mTranslatedDescTags << qApp->translate("nmc::DkMetaData",
+                                               DkSettingsManager::param().translatedDescriptionData().at(i).toLatin1());
 
     mExposureModes.append(QObject::tr("not defined"));
     mExposureModes.append(QObject::tr("manual"));
@@ -1672,9 +1691,10 @@ QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData)
     QStringList sList = value.split('/');
 
     if (sList.size() == 2) {
-        double val =
-            pow(1.4142,
-                sList[0].toDouble() / sList[1].toDouble()); // see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
+        double val = pow(1.4142,
+                         sList[0].toDouble()
+                             / sList[1].toDouble()); // see the exif documentation (e.g.
+                                                     // http://www.media.mit.edu/pia/Research/deepview/exif.html)
         value = QString::fromStdString(DkUtils::stringify(val, 1));
     }
 
@@ -1884,7 +1904,9 @@ QString DkMetaDataHelper::translateKey(const QString &key) const
     return translatedKey;
 }
 
-QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaData, const QString &key, const QString &value) const
+QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaData,
+                                              const QString &key,
+                                              const QString &value) const
 {
     QString rValue = value;
 

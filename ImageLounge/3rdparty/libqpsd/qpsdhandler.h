@@ -73,9 +73,15 @@ private:
     };
     QImage processBitmap(QByteArray &imageData, quint32 width, quint32 height);
     QImage processGrayscale8(QByteArray &imageData, quint32 width, quint32 height);
-    QImage processGrayscale8WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel);
+    QImage processGrayscale8WithAlpha(QByteArray &imageData,
+                                      quint32 width,
+                                      quint32 height,
+                                      quint64 totalBytesPerChannel);
     QImage processGrayscale16(QByteArray &imageData, quint32 width, quint32 height);
-    QImage processGrayscale16WithAlpha(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel);
+    QImage processGrayscale16WithAlpha(QByteArray &imageData,
+                                       quint32 width,
+                                       quint32 height,
+                                       quint64 totalBytesPerChannel);
     QImage processIndexed(QByteArray &colorData, QByteArray &imageData, quint32 width, quint32 height);
     QImage processRGB8(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel);
     QImage processRGB16(QByteArray &imageData, quint32 width, quint32 height, quint64 totalBytesPerChannel);

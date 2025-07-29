@@ -43,8 +43,9 @@ public:
 
     QList<QAction *> createActions(QWidget *parent) override;
     QList<QAction *> pluginActions() const override;
-    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(),
-                                                    QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
+    QSharedPointer<nmc::DkImageContainer> runPlugin(
+        const QString &runID = QString(),
+        QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
 
     enum {
         ID_ACTION1,

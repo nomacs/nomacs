@@ -75,13 +75,14 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject *parent)
     statusTips.resize(id_end);
 
     statusTips[id_crop_to_page] = tr("Finds a page in a document image and then crops the image to that page.");
-    statusTips[id_crop_to_metadata] = tr("Finds a page in a document image and then saves the coordinates to the XMP metadata.");
+    statusTips[id_crop_to_metadata] = tr(
+        "Finds a page in a document image and then saves the coordinates to the XMP metadata.");
     statusTips[id_draw_to_page] = tr("Finds a page in a document image and then draws the found document boundaries.");
     // statusTips[id_eval_page] = tr("Loads GT and computes the Jaccard index.");
     mMenuStatusTips = statusTips.toList();
 
-    // QFileInfo resPath(QDir("dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss") + ".txt");
-    // mResultPath = resPath.absoluteFilePath();
+    // QFileInfo resPath(QDir("dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd
+    // HH-mm-ss") + ".txt"); mResultPath = resPath.absoluteFilePath();
 
     // save default settings
     nmc::DefaultSettings settings;
@@ -131,10 +132,11 @@ QList<QAction *> DkPageExtractionPlugin::pluginActions() const
  * @param plugin ID
  * @param image to be processed
  **/
-QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString &runID,
-                                                                        QSharedPointer<nmc::DkImageContainer> imgC,
-                                                                        const nmc::DkSaveInfo &saveInfo,
-                                                                        QSharedPointer<nmc::DkBatchInfo> &batchInfo) const
+QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
+    const QString &runID,
+    QSharedPointer<nmc::DkImageContainer> imgC,
+    const nmc::DkSaveInfo &saveInfo,
+    QSharedPointer<nmc::DkBatchInfo> &batchInfo) const
 {
     if (!mRunIDs.contains(runID) || !imgC)
         return imgC;

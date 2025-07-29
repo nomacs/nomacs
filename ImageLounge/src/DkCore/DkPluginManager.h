@@ -331,7 +331,8 @@ private:
     DkPluginTableWidget *mParentTable = 0;
 };
 
-// checkbox delegate based on code from http://stackoverflow.com/questions/3363190/qt-qtableview-how-to-have-a-checkbox-only-column
+// checkbox delegate based on code from
+// http://stackoverflow.com/questions/3363190/qt-qtableview-how-to-have-a-checkbox-only-column
 class DkPluginCheckBoxDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
@@ -339,7 +340,10 @@ class DkPluginCheckBoxDelegate : public QStyledItemDelegate
 public:
     DkPluginCheckBoxDelegate(QObject *parent = 0);
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+    bool editorEvent(QEvent *event,
+                     QAbstractItemModel *model,
+                     const QStyleOptionViewItem &option,
+                     const QModelIndex &index);
 
 private:
     QTableView *mParentTable = 0;
@@ -353,7 +357,10 @@ class DkPushButtonDelegate : public QStyledItemDelegate
 public:
     DkPushButtonDelegate(QObject *parent = 0);
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+    bool editorEvent(QEvent *event,
+                     QAbstractItemModel *model,
+                     const QStyleOptionViewItem &option,
+                     const QModelIndex &index);
 
 signals:
     void buttonClicked(const QModelIndex &index) const;
@@ -370,7 +377,10 @@ class DkDescriptionEdit : public QTextEdit
     Q_OBJECT
 
 public:
-    DkDescriptionEdit(QAbstractTableModel *data, QSortFilterProxyModel *proxy, QItemSelectionModel *selection, QWidget *parent = 0);
+    DkDescriptionEdit(QAbstractTableModel *data,
+                      QSortFilterProxyModel *proxy,
+                      QItemSelectionModel *selection,
+                      QWidget *parent = 0);
 
 public slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
@@ -390,7 +400,10 @@ class DkDescriptionImage : public QLabel
     Q_OBJECT
 
 public:
-    DkDescriptionImage(QAbstractTableModel *data, QSortFilterProxyModel *proxy, QItemSelectionModel *selection, QWidget *parent = 0);
+    DkDescriptionImage(QAbstractTableModel *data,
+                       QSortFilterProxyModel *proxy,
+                       QItemSelectionModel *selection,
+                       QWidget *parent = 0);
 
 public slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);

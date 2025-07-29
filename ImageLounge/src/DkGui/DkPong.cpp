@@ -504,7 +504,8 @@ void DkPongPort::gameLoop()
         // check if somebody won
         if (mPlayer1.score() >= mS->totalScore() || mPlayer2.score() >= mS->totalScore()) {
             pauseGame();
-            mLargeInfo->setText(tr("%1 won!").arg(mPlayer1.score() > mPlayer2.score() ? mPlayer1.name() : mPlayer2.name()));
+            mLargeInfo->setText(
+                tr("%1 won!").arg(mPlayer1.score() > mPlayer2.score() ? mPlayer1.name() : mPlayer2.name()));
             mSmallInfo->setText(tr("Hit <SPACE> to start a new Game"));
         } else
             startCountDown();
@@ -544,10 +545,12 @@ void DkPongPort::keyPressEvent(QKeyEvent *event)
 
 void DkPongPort::keyReleaseEvent(QKeyEvent *event)
 {
-    if ((event->key() == Qt::Key_Up && !event->isAutoRepeat()) || (event->key() == Qt::Key_Down && !event->isAutoRepeat())) {
+    if ((event->key() == Qt::Key_Up && !event->isAutoRepeat())
+        || (event->key() == Qt::Key_Down && !event->isAutoRepeat())) {
         mPlayer2.setSpeed(0);
     }
-    if ((event->key() == Qt::Key_W && !event->isAutoRepeat()) || (event->key() == Qt::Key_S && !event->isAutoRepeat())) {
+    if ((event->key() == Qt::Key_W && !event->isAutoRepeat())
+        || (event->key() == Qt::Key_S && !event->isAutoRepeat())) {
         mPlayer1.setSpeed(0);
     }
 
@@ -616,7 +619,9 @@ bool DkBall::move(DkPongPlayer &player1, DkPongPlayer &player2)
         if (DkMath::distAngle(dir.angle(), 0.0) > 0.01)
             dir.rotate(0.7);
 
-        double mod = (player1.pos() != INT_MAX) ? (player1.rect().center().y() - player1.pos()) / (float)mS->field().height() : 0;
+        double mod = (player1.pos() != INT_MAX)
+            ? (player1.rect().center().y() - player1.pos()) / (float)mS->field().height()
+            : 0;
         dir.y += (float)mod * mS->unit();
     } else if (player2.rect().intersects(mRect) && dir.x > 0) {
         dir.rotate((nAngle * 2) + magic);
@@ -625,7 +630,9 @@ bool DkBall::move(DkPongPlayer &player1, DkPongPlayer &player2)
         if (DkMath::distAngle(dir.angle(), 0.0) > 0.01)
             dir.rotate(0.7);
 
-        double mod = (player2.pos() != INT_MAX) ? (player2.rect().center().y() - player2.pos()) / (float)mS->field().height() : 0;
+        double mod = (player2.pos() != INT_MAX)
+            ? (player2.rect().center().y() - player2.pos()) / (float)mS->field().height()
+            : 0;
         dir.y += (float)mod * mS->unit();
     }
     // collision detection left & right

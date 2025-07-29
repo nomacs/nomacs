@@ -105,7 +105,8 @@ int main(int argc, char *argv[])
 
     // init settings
     nmc::DkSettingsManager::instance().init();
-    nmc::DkMetaDataHelper::initialize(); // this line makes the XmpParser thread-save - so don't delete it even if you seem to know what you do
+    nmc::DkMetaDataHelper::initialize(); // this line makes the XmpParser thread-save - so don't delete it even if you
+                                         // seem to know what you do
 
     // uncomment this for the single instance feature...
     //// check for single instance
@@ -136,13 +137,19 @@ int main(int argc, char *argv[])
     QCommandLineOption privateOpt(QStringList() << "p" << "private", QObject::tr("Start in private mode."));
     parser.addOption(privateOpt);
 
-    QCommandLineOption modeOpt(QStringList() << "m" << "mode", QObject::tr("Set the viewing mode <mode>."), QObject::tr("default | frameless | pseudocolor"));
+    QCommandLineOption modeOpt(QStringList() << "m" << "mode",
+                               QObject::tr("Set the viewing mode <mode>."),
+                               QObject::tr("default | frameless | pseudocolor"));
     parser.addOption(modeOpt);
 
-    QCommandLineOption batchOpt(QStringList() << "batch", QObject::tr("Batch processing of <batch-settings.pnm>."), QObject::tr("batch-settings-path"));
+    QCommandLineOption batchOpt(QStringList() << "batch",
+                                QObject::tr("Batch processing of <batch-settings.pnm>."),
+                                QObject::tr("batch-settings-path"));
     parser.addOption(batchOpt);
 
-    QCommandLineOption batchLogOpt(QStringList() << "batch-log", QObject::tr("Saves batch log to <log-path.txt>."), QObject::tr("log-path.txt"));
+    QCommandLineOption batchLogOpt(QStringList() << "batch-log",
+                                   QObject::tr("Saves batch log to <log-path.txt>."),
+                                   QObject::tr("log-path.txt"));
     parser.addOption(batchLogOpt);
 
     QCommandLineOption importSettingsOpt(QStringList() << "import-settings",
@@ -150,10 +157,13 @@ int main(int argc, char *argv[])
                                          QObject::tr("settings-path.ini"));
     parser.addOption(importSettingsOpt);
 
-    QCommandLineOption registerFilesOpt(QStringList() << "register-files", QObject::tr("Register file associations (Windows only)."));
+    QCommandLineOption registerFilesOpt(QStringList() << "register-files",
+                                        QObject::tr("Register file associations (Windows only)."));
     parser.addOption(registerFilesOpt);
 
-    QCommandLineOption listFormatsOpt(QStringList("list-formats"), QObject::tr("List available image formats"), "csv | plist | xdg");
+    QCommandLineOption listFormatsOpt(QStringList("list-formats"),
+                                      QObject::tr("List available image formats"),
+                                      "csv | plist | xdg");
     listFormatsOpt.setFlags(QCommandLineOption::ShortOptionStyle);
     parser.addOption(listFormatsOpt);
 
@@ -296,8 +306,9 @@ int main(int argc, char *argv[])
         w = new nmc::DkNoMacsIpl();
     }
 
-    qInfo() << "init window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode << "maximized:" << w->isMaximized()
-            << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry() << "windowState:" << w->windowState();
+    qInfo() << "init window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode
+            << "maximized:" << w->isMaximized() << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry()
+            << "windowState:" << w->windowState();
 
     if (nmc::DkSettings::modeIsFullscreen(mode))
         w->showFullScreen();
@@ -308,8 +319,9 @@ int main(int argc, char *argv[])
 
     const bool maximized = w->isMaximized(); // check if show* actually maximized us
 
-    qInfo() << "show window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode << "maximized:" << w->isMaximized()
-            << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry() << "windowState:" << w->windowState();
+    qInfo() << "show window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode
+            << "maximized:" << w->isMaximized() << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry()
+            << "windowState:" << w->windowState();
 
     while (!w->isActiveWindow() && dt.elapsed() < 5000) {
         qDebug() << "waiting for active window";
@@ -317,8 +329,9 @@ int main(int argc, char *argv[])
         qApp->processEvents();
     }
 
-    qInfo() << "active window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode << "maximized:" << w->isMaximized()
-            << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry() << "windowState:" << w->windowState();
+    qInfo() << "active window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode
+            << "maximized:" << w->isMaximized() << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry()
+            << "windowState:" << w->windowState();
 
     qInfo() << "window font:" << w->font();
     qInfo() << "system font:" << qApp->font();
@@ -375,7 +388,10 @@ int main(int argc, char *argv[])
     try {
         rVal = app.exec();
     } catch (const std::bad_alloc &) {
-        QMessageBox::critical(0, QObject::tr("Critical Error"), QObject::tr("Sorry, nomacs ran out of memory..."), QMessageBox::Ok);
+        QMessageBox::critical(0,
+                              QObject::tr("Critical Error"),
+                              QObject::tr("Sorry, nomacs ran out of memory..."),
+                              QMessageBox::Ok);
     }
 
     // restore message handler, workaround for: https://github.com/nomacs/nomacs/issues/874

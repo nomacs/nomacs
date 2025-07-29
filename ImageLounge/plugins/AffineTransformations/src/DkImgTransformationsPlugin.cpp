@@ -74,7 +74,9 @@ bool DkImgTransformationsPlugin::hideHUD() const
  * @param run ID
  * @param current image in the Nomacs mViewport
  **/
-QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const
+QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(
+    const QString &runID,
+    QSharedPointer<nmc::DkImageContainer> imgC) const
 {
     Q_UNUSED(runID);
 
@@ -198,7 +200,8 @@ QPoint DkImgTransformationsViewPort::map(const QPointF &pos)
 void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
 {
     // panning -> redirect to mViewport
-    if (event->buttons() == Qt::LeftButton && (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning)) {
+    if (event->buttons() == Qt::LeftButton
+        && (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning)) {
         setCursor(Qt::ClosedHandCursor);
         event->setModifiers(Qt::NoModifier); // we want a 'normal' action in the mViewport
         event->ignore();
@@ -231,7 +234,8 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
             nmc::DkVector xn(map(event->pos()));
             xn = c - xn;
 
-            if ((xn.angle() > imgRatioAngle && xn.angle() < PI - imgRatioAngle) || (xn.angle() < -imgRatioAngle && xn.angle() > -(PI - imgRatioAngle))) {
+            if ((xn.angle() > imgRatioAngle && xn.angle() < PI - imgRatioAngle)
+                || (xn.angle() < -imgRatioAngle && xn.angle() > -(PI - imgRatioAngle))) {
                 setCursor(Qt::SizeVerCursor);
                 shearValuesDir = QPointF(0, 1);
             } else
@@ -269,15 +273,20 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
                     if (intrIdx == 2 || intrIdx == 3 || intrIdx == 5)
                         sign = -1;
                     scaleValues.setY(
-                        qMin(2.5, qMax(0.1, (initSize.height() * 0.5 + sign * (initPoint.y() - map(event->pos()).y())) / (initSize.height() * 0.5))));
+                        qMin(2.5,
+                             qMax(0.1,
+                                  (initSize.height() * 0.5 + sign * (initPoint.y() - map(event->pos()).y()))
+                                      / (initSize.height() * 0.5))));
                 }
 
                 sign = 1;
                 if ((intrIdx >= 6) || (intrIdx < 4)) {
                     if (intrIdx == 2 || intrIdx == 1 || intrIdx == 7)
                         sign = -1;
-                    scaleValues.setX(
-                        qMin(2.5, qMax(0.1, (initSize.width() * 0.5 + sign * (initPoint.x() - map(event->pos()).x())) / (initSize.width() * 0.5))));
+                    scaleValues.setX(qMin(2.5,
+                                          qMax(0.1,
+                                               (initSize.width() * 0.5 + sign * (initPoint.x() - map(event->pos()).x()))
+                                                   / (initSize.width() * 0.5))));
                 }
 
                 imgTransformationsToolbar->setScaleValue(scaleValues);
@@ -323,7 +332,8 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
             nmc::DkVector xn(map(event->pos()));
             xn = c - xn;
 
-            if ((xn.angle() > imgRatioAngle && xn.angle() < PI - imgRatioAngle) || (xn.angle() < -imgRatioAngle && xn.angle() > -(PI - imgRatioAngle)))
+            if ((xn.angle() > imgRatioAngle && xn.angle() < PI - imgRatioAngle)
+                || (xn.angle() < -imgRatioAngle && xn.angle() > -(PI - imgRatioAngle)))
                 setCursor(Qt::SizeVerCursor);
             else
                 setCursor(Qt::SizeHorCursor);
@@ -406,7 +416,8 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
         int signY = (shearValues.y() < 0) ? -1 : 1;
 
         affineTransform.reset();
-        affineTransform.translate(signX * (inImage.width() / 2 - transfRect.width() / 2), signY * (inImage.height() / 2 - transfRect.height() / 2));
+        affineTransform.translate(signX * (inImage.width() / 2 - transfRect.width() / 2),
+                                  signY * (inImage.height() / 2 - transfRect.height() / 2));
         affineTransform.shear(shearValues.x(), shearValues.y());
 
         painter.fillRect(affineTransform.mapRect(inImage.rect()), Qt::white);
@@ -427,7 +438,9 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
         intrRect->draw(&painter);
     } else if (selectedMode == mode_rotate) {
         if (angleLinesEnabled) {
-            QPen linePen(nmc::DkSettingsManager::param().display().highlightColor, qCeil(2.0 * imgRect.width() / 1000.0), Qt::SolidLine);
+            QPen linePen(nmc::DkSettingsManager::param().display().highlightColor,
+                         qCeil(2.0 * imgRect.width() / 1000.0),
+                         Qt::SolidLine);
             QColor hCAlpha(50, 50, 50);
             hCAlpha.setAlpha(200);
 
@@ -435,7 +448,8 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
             QVector<QVector4D> lines = skewEstimator.getLines();
             QVector<int> lineTypes = skewEstimator.getLineTypes();
             for (int i = 0; i < lines.size(); i++) {
-                (lineTypes.at(i)) ? linePen.setColor(nmc::DkSettingsManager::param().display().highlightColor) : linePen.setColor(hCAlpha);
+                (lineTypes.at(i)) ? linePen.setColor(nmc::DkSettingsManager::param().display().highlightColor)
+                                  : linePen.setColor(hCAlpha);
                 painter.setPen(linePen);
                 painter.drawLine(QPointF(lines.at(i).x(), lines.at(i).y()), QPointF(lines.at(i).z(), lines.at(i).w()));
             }
@@ -443,20 +457,42 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
 
         painter.restore();
         if (rotCropEnabled) {
-            double newHeight = -((double)(inImage.height()) - (double)(inImage.width()) * qAbs(qTan(rotationValue * PI / 180)))
-                / (qAbs(qTan(rotationValue * PI / 180)) * qAbs(qSin(rotationValue * PI / 180)) - qAbs(qCos(rotationValue * PI / 180)));
-            QSize cropSize =
-                QSize(qRound(((double)(inImage.width()) - newHeight * qAbs(qSin(rotationValue * PI / 180))) / qAbs(qCos(rotationValue * PI / 180))),
-                      qRound(newHeight));
-            QRect cropRect = QRect(QPointF(rotationCenter.x() - 0.5 * cropSize.width(), rotationCenter.y() - 0.5 * cropSize.height()).toPoint(), cropSize);
+            double newHeight = -((double)(inImage.height())
+                                 - (double)(inImage.width()) * qAbs(qTan(rotationValue * PI / 180)))
+                / (qAbs(qTan(rotationValue * PI / 180)) * qAbs(qSin(rotationValue * PI / 180))
+                   - qAbs(qCos(rotationValue * PI / 180)));
+            QSize cropSize = QSize(qRound(((double)(inImage.width()) - newHeight * qAbs(qSin(rotationValue * PI / 180)))
+                                          / qAbs(qCos(rotationValue * PI / 180))),
+                                   qRound(newHeight));
+            QRect cropRect = QRect(QPointF(rotationCenter.x() - 0.5 * cropSize.width(),
+                                           rotationCenter.y() - 0.5 * cropSize.height())
+                                       .toPoint(),
+                                   cropSize);
 
             if (cropSize.width() <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width())
-                && cropSize.height() <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width())) {
+                && cropSize.height()
+                    <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width())) {
                 QBrush cropBrush = QBrush(QColor(128, 128, 128, 200));
-                painter.fillRect(imgRectT.left(), imgRectT.top(), imgRectT.width(), -imgRectT.top() + cropRect.top(), cropBrush);
-                painter.fillRect(imgRectT.left(), cropRect.bottom() + 1, imgRectT.width(), -cropRect.bottom() + imgRectT.bottom(), cropBrush);
-                painter.fillRect(imgRectT.left(), cropRect.top(), cropRect.left() - imgRectT.left(), cropRect.height(), cropBrush);
-                painter.fillRect(cropRect.right() + 1, cropRect.top(), -cropRect.right() + imgRectT.right(), cropRect.height(), cropBrush);
+                painter.fillRect(imgRectT.left(),
+                                 imgRectT.top(),
+                                 imgRectT.width(),
+                                 -imgRectT.top() + cropRect.top(),
+                                 cropBrush);
+                painter.fillRect(imgRectT.left(),
+                                 cropRect.bottom() + 1,
+                                 imgRectT.width(),
+                                 -cropRect.bottom() + imgRectT.bottom(),
+                                 cropBrush);
+                painter.fillRect(imgRectT.left(),
+                                 cropRect.top(),
+                                 cropRect.left() - imgRectT.left(),
+                                 cropRect.height(),
+                                 cropBrush);
+                painter.fillRect(cropRect.right() + 1,
+                                 cropRect.top(),
+                                 -cropRect.right() + imgRectT.right(),
+                                 cropRect.height(),
+                                 cropBrush);
 
                 painter.drawRect(cropRect);
             }
@@ -541,8 +577,10 @@ QImage DkImgTransformationsViewPort::getTransformedImage()
             } else if (selectedMode == mode_rotate) {
                 double diag = qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width());
                 double initAngle = qAcos(inImage.width() / diag) * 180 / PI;
-                affineTransform.translate(0.5 * inImage.width() - diag * 0.5 * qCos((initAngle + rotationValue) * PI / 180.0),
-                                          0.5 * inImage.height() - diag * 0.5 * qSin((initAngle + rotationValue) * PI / 180.0));
+                affineTransform.translate(0.5 * inImage.width()
+                                              - diag * 0.5 * qCos((initAngle + rotationValue) * PI / 180.0),
+                                          0.5 * inImage.height()
+                                              - diag * 0.5 * qSin((initAngle + rotationValue) * PI / 180.0));
                 affineTransform.rotate(rotationValue);
                 affineTransform.translate(-inImage.width() / 2, -inImage.height() / 2);
 
@@ -562,16 +600,22 @@ QImage DkImgTransformationsViewPort::getTransformedImage()
                     QRect croppedImageRect = paintedImage.rect();
 
                     QSize cropSize = QSize();
-                    double newHeight = -((double)(inImage.height()) - (double)(inImage.width()) * qAbs(qTan(rotationValue * PI / 180)))
-                        / (qAbs(qTan(rotationValue * PI / 180)) * qAbs(qSin(rotationValue * PI / 180)) - qAbs(qCos(rotationValue * PI / 180)));
-                    cropSize =
-                        QSize(qRound(((double)(inImage.width()) - newHeight * qAbs(qSin(rotationValue * PI / 180))) / qAbs(qCos(rotationValue * PI / 180))),
-                              qRound(newHeight));
-                    if (cropSize.width() <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width())
-                        && cropSize.height() <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width()))
-                        croppedImageRect =
-                            QRect(QPointF(0.5 * paintedImage.width() - 0.5 * cropSize.width(), 0.5 * paintedImage.height() - 0.5 * cropSize.height()).toPoint(),
-                                  cropSize);
+                    double newHeight = -((double)(inImage.height())
+                                         - (double)(inImage.width()) * qAbs(qTan(rotationValue * PI / 180)))
+                        / (qAbs(qTan(rotationValue * PI / 180)) * qAbs(qSin(rotationValue * PI / 180))
+                           - qAbs(qCos(rotationValue * PI / 180)));
+                    cropSize = QSize(qRound(
+                                         ((double)(inImage.width()) - newHeight * qAbs(qSin(rotationValue * PI / 180)))
+                                         / qAbs(qCos(rotationValue * PI / 180))),
+                                     qRound(newHeight));
+                    if (cropSize.width()
+                            <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width())
+                        && cropSize.height()
+                            <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width()))
+                        croppedImageRect = QRect(QPointF(0.5 * paintedImage.width() - 0.5 * cropSize.width(),
+                                                         0.5 * paintedImage.height() - 0.5 * cropSize.height())
+                                                     .toPoint(),
+                                                 cropSize);
                     QImage croppedImage = paintedImage.copy(croppedImageRect);
 
                     return croppedImage;
@@ -585,7 +629,8 @@ QImage DkImgTransformationsViewPort::getTransformedImage()
                 int signY = (shearValues.y() < 0) ? -1 : 1;
 
                 affineTransform.reset();
-                affineTransform.translate(signX*(inImage.width()/2-transfRect.width()/2), signY*(inImage.height()/2-transfRect.height()/2));
+                affineTransform.translate(signX*(inImage.width()/2-transfRect.width()/2),
+                signY*(inImage.height()/2-transfRect.height()/2));
                 affineTransform.shear(shearValues.x(),shearValues.y());
                 */
                 QImage paintedImage = QImage(affineTransform.mapRect(inImage.rect()).size(), inImage.format());
@@ -741,7 +786,9 @@ void DkImgTransformationsViewPort::setVisible(bool visible)
 }
 
 /*-----------------------------------DkImgTransformationsToolBar ---------------------------------------------*/
-DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString &title, int defaultMode, QWidget *parent /* = 0 */)
+DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString &title,
+                                                         int defaultMode,
+                                                         QWidget *parent /* = 0 */)
     : QToolBar(title, parent)
 {
     createIcons();
@@ -846,7 +893,8 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     showLinesBox->setObjectName("showLinesBox");
     showLinesBox->setCheckState(Qt::Checked);
     showLinesBox->setToolTip(tr("Show lines for angle detection."));
-    showLinesBox->setStatusTip(tr("Show lines (red) for angle detection. Green lines correspond to the selected angle."));
+    showLinesBox->setStatusTip(
+        tr("Show lines (red) for angle detection. Green lines correspond to the selected angle."));
 
     // crop rotated image
     cropEnabledBox = new QCheckBox(tr("Crop Image"), this);
@@ -877,7 +925,8 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
 
     // crop customization
     QStringList guides;
-    guides << QT_TRANSLATE_NOOP("nmc::DkImgTransformationsToolBar", "Guides") << QT_TRANSLATE_NOOP("nmc::DkImgTransformationsToolBar", "Rule of Thirds")
+    guides << QT_TRANSLATE_NOOP("nmc::DkImgTransformationsToolBar", "Guides")
+           << QT_TRANSLATE_NOOP("nmc::DkImgTransformationsToolBar", "Rule of Thirds")
            << QT_TRANSLATE_NOOP("nmc::DkImgTransformationsToolBar", "Grid");
     guideBox = new QComboBox(this);
     guideBox->addItems(guides);

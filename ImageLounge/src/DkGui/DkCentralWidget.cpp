@@ -269,12 +269,22 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     connect(am.action(DkActionManager::menu_view_first_tab), &QAction::triggered, this, [this]() {
         setActiveTab(0);
     });
-    connect(am.action(DkActionManager::menu_view_previous_tab), &QAction::triggered, this, &DkCentralWidget::previousTab);
+    connect(am.action(DkActionManager::menu_view_previous_tab),
+            &QAction::triggered,
+            this,
+            &DkCentralWidget::previousTab);
     connect(am.action(DkActionManager::menu_edit_paste), &QAction::triggered, this, &DkCentralWidget::pasteImage);
 
     connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
         bool ok = false;
-        int idx = QInputDialog::getInt(this, tr("Go to Tab"), tr("Go to tab number: "), getActiveTab() + 1, 1, getTabs().count(), 1, &ok);
+        int idx = QInputDialog::getInt(this,
+                                       tr("Go to Tab"),
+                                       tr("Go to tab number: "),
+                                       getActiveTab() + 1,
+                                       1,
+                                       getTabs().count(),
+                                       1,
+                                       &ok);
 
         if (ok)
             setActiveTab(idx - 1);
@@ -286,7 +296,10 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     connect(am.action(DkActionManager::menu_tools_batch), &QAction::triggered, this, [this]() {
         openBatch();
     });
-    connect(am.action(DkActionManager::menu_panel_thumbview), &QAction::triggered, this, &DkCentralWidget::showThumbView);
+    connect(am.action(DkActionManager::menu_panel_thumbview),
+            &QAction::triggered,
+            this,
+            &DkCentralWidget::showThumbView);
 
 #ifdef WITH_PLUGINS
     if (am.pluginActionManager())
@@ -344,10 +357,16 @@ void DkCentralWidget::createLayout()
     connect(mTabbar, &QTabBar::tabCloseRequested, this, &DkCentralWidget::tabCloseRequested);
     connect(mTabbar, &QTabBar::tabMoved, this, &DkCentralWidget::tabMoved);
 
-    connect(this, &DkCentralWidget::imageHasGPSSignal, DkActionManager::instance().action(DkActionManager::menu_view_gps_map), &QAction::setEnabled);
+    connect(this,
+            &DkCentralWidget::imageHasGPSSignal,
+            DkActionManager::instance().action(DkActionManager::menu_view_gps_map),
+            &QAction::setEnabled);
 
     // preferences
-    connect(am.action(DkActionManager::menu_edit_preferences), &QAction::triggered, this, &DkCentralWidget::openPreferences);
+    connect(am.action(DkActionManager::menu_edit_preferences),
+            &QAction::triggered,
+            this,
+            &DkCentralWidget::openPreferences);
 }
 
 void DkCentralWidget::saveSettings(bool saveTabs) const
@@ -454,7 +473,10 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
         if (l != loader)
             mTabInfos.at(tIdx)->deactivate();
 
-        disconnect(loader.data(), QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal), this, &DkCentralWidget::imageLoaded);
+        disconnect(loader.data(),
+                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
+                   this,
+                   &DkCentralWidget::imageLoaded);
         disconnect(loader.data(),
                    QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
                    this,
@@ -480,8 +502,16 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
             this,
             &DkCentralWidget::imageUpdatedSignal,
             Qt::UniqueConnection);
-    connect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal, Qt::UniqueConnection);
-    connect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress, Qt::UniqueConnection);
+    connect(loader.data(),
+            &DkImageLoader::imageHasGPSSignal,
+            this,
+            &DkCentralWidget::imageHasGPSSignal,
+            Qt::UniqueConnection);
+    connect(loader.data(),
+            &DkImageLoader::updateSpinnerSignalDelayed,
+            this,
+            &DkCentralWidget::showProgress,
+            Qt::UniqueConnection);
     connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab, Qt::UniqueConnection);
 }
 
@@ -502,7 +532,9 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
     QSize s(22, 22);
 
     // general preferences
-    DkPreferenceTabWidget *tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg", s), tr("General"), this);
+    DkPreferenceTabWidget *tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg", s),
+                                                           tr("General"),
+                                                           this);
     DkGeneralPreference *gp = new DkGeneralPreference(this);
     connect(gp, &DkGeneralPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(gp);
@@ -808,15 +840,29 @@ void DkCentralWidget::showThumbView(bool show)
             if (tabInfo->getImage())
                 tw->getThumbWidget()->ensureVisible(tabInfo->getImage()->filePath());
 
-            connect(tw, &DkThumbScrollWidget::updateDirSignal, tabInfo->getImageLoader().data(), &DkImageLoader::loadDirRecursive, Qt::UniqueConnection);
-            connect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter, Qt::UniqueConnection);
+            connect(tw,
+                    &DkThumbScrollWidget::updateDirSignal,
+                    tabInfo->getImageLoader().data(),
+                    &DkImageLoader::loadDirRecursive,
+                    Qt::UniqueConnection);
+            connect(tw,
+                    &DkThumbScrollWidget::filterChangedSignal,
+                    tabInfo->getImageLoader().data(),
+                    &DkImageLoader::setFolderFilter,
+                    Qt::UniqueConnection);
             emit thumbViewLoadedSignal(tabInfo->getImageLoader().data()->getDirPath());
         }
 
     } else {
         if (auto tw = getThumbScrollWidget()) {
-            disconnect(tw, &DkThumbScrollWidget::updateDirSignal, tabInfo->getImageLoader().data(), &DkImageLoader::loadDirRecursive);
-            disconnect(tw, &DkThumbScrollWidget::filterChangedSignal, tabInfo->getImageLoader().data(), &DkImageLoader::setFolderFilter);
+            disconnect(tw,
+                       &DkThumbScrollWidget::updateDirSignal,
+                       tabInfo->getImageLoader().data(),
+                       &DkImageLoader::loadDirRecursive);
+            disconnect(tw,
+                       &DkThumbScrollWidget::filterChangedSignal,
+                       tabInfo->getImageLoader().data(),
+                       &DkImageLoader::setFolderFilter);
         }
     }
 }
@@ -1361,7 +1407,12 @@ void DkCentralWidget::renameFile()
     const QString baseName = fileInfo.completeBaseName();
 
     bool ok = false;
-    QString newFileName = QInputDialog::getText(this, tr("Rename: %1").arg(fileInfo.fileName()), tr("New File Name:"), QLineEdit::Normal, baseName, &ok);
+    QString newFileName = QInputDialog::getText(this,
+                                                tr("Rename: %1").arg(fileInfo.fileName()),
+                                                tr("New File Name:"),
+                                                QLineEdit::Normal,
+                                                baseName,
+                                                &ok);
 
     if (!ok || newFileName.isEmpty() || newFileName == baseName)
         return;

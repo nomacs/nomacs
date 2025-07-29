@@ -440,7 +440,8 @@ DkFileInfoList filterInfoList(const QString &query, const DkFileInfoList &list)
     DkFileInfoList result = list;
 
     for (int idx = 0; idx < keywords.size(); idx++) {
-        // Detect and correct special case where a space is leading or trailing the search term - this should be significant
+        // Detect and correct special case where a space is leading or trailing the search term - this should be
+        // significant
         if (idx == 0 && keywords.size() > 1 && keywords[idx].size() == 0)
             keywords[idx] = " " + keywords[idx + 1];
         if (idx == keywords.size() - 1 && keywords.size() > 2 && keywords[idx].size() == 0)
@@ -458,7 +459,8 @@ DkFileInfoList filterInfoList(const QString &query, const DkFileInfoList &list)
 
         // globbing, anchored, case-insensitive
         if (result.isEmpty()) {
-            regExp = QRegularExpression(QRegularExpression::wildcardToRegularExpression(query), QRegularExpression::CaseInsensitiveOption);
+            regExp = QRegularExpression(QRegularExpression::wildcardToRegularExpression(query),
+                                        QRegularExpression::CaseInsensitiveOption);
             if (regExp.isValid())
                 result = filterFileName(regExp, list);
         }

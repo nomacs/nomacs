@@ -142,7 +142,8 @@ QString DkBatchInfo::toString() const
 /// <param name="infos">The infos.</param>
 /// <param name="id">The ID.</param>
 /// <returns>Filtered Batch Infos for a specified module which has runID id.</returns>
-QVector<QSharedPointer<DkBatchInfo>> DkBatchInfo::filter(const QVector<QSharedPointer<DkBatchInfo>> &infos, const QString &id)
+QVector<QSharedPointer<DkBatchInfo>> DkBatchInfo::filter(const QVector<QSharedPointer<DkBatchInfo>> &infos,
+                                                         const QString &id)
 {
     QVector<QSharedPointer<DkBatchInfo>> fInfos;
 
@@ -163,7 +164,9 @@ DkSaveInfo::DkSaveInfo(const QString &filePathIn, const QString &filePathOut)
 void DkSaveInfo::createBackupFilePath()
 {
     QFileInfo buFile(mFilePathOut);
-    mBackupPath = QFileInfo(buFile.absolutePath(), buFile.baseName() + QUuid::createUuid().toString() + "." + buFile.suffix()).absoluteFilePath();
+    mBackupPath = QFileInfo(buFile.absolutePath(),
+                            buFile.baseName() + QUuid::createUuid().toString() + "." + buFile.suffix())
+                      .absoluteFilePath();
 }
 
 void DkSaveInfo::clearBackupFilePath()

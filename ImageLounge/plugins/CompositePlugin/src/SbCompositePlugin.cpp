@@ -58,7 +58,8 @@ QImage SbCompositePlugin::image() const
  * @param plugin ID
  * @param image to be processed
  **/
-QSharedPointer<nmc::DkImageContainer> SbCompositePlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const
+QSharedPointer<nmc::DkImageContainer> SbCompositePlugin::runPlugin(const QString &runID,
+                                                                   QSharedPointer<nmc::DkImageContainer> imgC) const
 {
     Q_UNUSED(runID);
 
@@ -157,17 +158,22 @@ void SbCompositePlugin::buildUI()
     // dock widget & scroll area setup
     dockWidget = new SbCompositeDockWidget(tr("Composite Plugin"));
     QSettings settings;
-    Qt::DockWidgetArea dockLocation = static_cast<Qt::DockWidgetArea>(settings.value("sbCompWidgetLocation", Qt::LeftDockWidgetArea).toInt());
+    Qt::DockWidgetArea dockLocation = static_cast<Qt::DockWidgetArea>(
+        settings.value("sbCompWidgetLocation", Qt::LeftDockWidgetArea).toInt());
 
     scrollArea = new QScrollArea(dockWidget);
-    scrollArea->setMinimumSize(SbChannelWidget::THUMB_MAX_SIZE + 50, SbChannelWidget::THUMB_MAX_SIZE + 100); // very dirty
+    scrollArea->setMinimumSize(SbChannelWidget::THUMB_MAX_SIZE + 50,
+                               SbChannelWidget::THUMB_MAX_SIZE + 100); // very dirty
     scrollArea->setWidget(mainWidget);
     scrollArea->setWidgetResizable(true);
 
     dockWidget->setWidget(scrollArea);
 
     connect(dockWidget, SIGNAL(closed()), this, SLOT(onDockWidgetClose()));
-    connect(dockWidget, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(onDockLocationChanged(Qt::DockWidgetArea)));
+    connect(dockWidget,
+            SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
+            this,
+            SLOT(onDockLocationChanged(Qt::DockWidgetArea)));
 
     QMainWindow *mainWindow = getMainWindow();
     if (mainWindow)
@@ -180,7 +186,10 @@ QImage SbCompositePlugin::buildComposite() const
     if (alpha.empty()) {
         cv::merge(channels, 3, composite);
     } else {
-        cv::Mat bgra[4] = {channels[2], channels[1], channels[0], alpha}; // when merging 4 channels, blue and red are reversed again.. why..
+        cv::Mat bgra[4] = {channels[2],
+                           channels[1],
+                           channels[0],
+                           alpha}; // when merging 4 channels, blue and red are reversed again.. why..
         cv::merge(bgra, 4, composite);
     }
     return DkImage::mat2QImage(composite);

@@ -75,7 +75,8 @@ void DkConnection::sendStartSynchronizeMessage()
         qDebug() << "mSynchronizedPeersServerPorts: " << mSynchronizedPeersServerPorts[i];
         ds << mSynchronizedPeersServerPorts[i];
     }
-    // QByteArray data = "SYNCHRONIZE" + SeparatorToken + QByteArray::number(synchronize.size()) + SeparatorToken + synchronize;
+    // QByteArray data = "SYNCHRONIZE" + SeparatorToken + QByteArray::number(synchronize.size()) + SeparatorToken +
+    // synchronize;
     QByteArray data = "STARTSYNCHRONIZE";
     data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
     qDebug() << "sending startsynchronize:" << data;
@@ -88,9 +89,13 @@ void DkConnection::sendStopSynchronizeMessage()
     if (mState == Synchronized) { // only send message if connection is synchronized
         // qDebug() << "sending disable synchronize Message to " << this->peerName() << ":" << this->peerPort();
         QByteArray synchronize = "disable synchronizing";
-        // QByteArray data = "DISABLESYNCHRONIZE" + SeparatorToken + QByteArray::number(synchronize.size()) + SeparatorToken + synchronize;
+        // QByteArray data = "DISABLESYNCHRONIZE" + SeparatorToken + QByteArray::number(synchronize.size()) +
+        // SeparatorToken + synchronize;
         QByteArray data = "STOPSYNCHRONIZE";
-        data.append(SeparatorToken).append(QByteArray::number(synchronize.size())).append(SeparatorToken).append(synchronize);
+        data.append(SeparatorToken)
+            .append(QByteArray::number(synchronize.size()))
+            .append(SeparatorToken)
+            .append(synchronize);
         if (write(data) == data.size())
             mIsSynchronizeMessageSent = false;
         mState = ReadyForUse;
@@ -100,10 +105,12 @@ void DkConnection::sendStopSynchronizeMessage()
 void DkConnection::sendNewTitleMessage(const QString &newtitle)
 {
     mCurrentTitle = newtitle;
-    // qDebug() << "sending new Title (\"" << newtitle << "\") Message to " << this->peerName() << ":" << this->peerPort();
+    // qDebug() << "sending new Title (\"" << newtitle << "\") Message to " << this->peerName() << ":" <<
+    // this->peerPort();
 
     QByteArray newTitleBA = newtitle.toUtf8();
-    // QByteArray data = "NEWTITLE" + SeparatorToken + QByteArray::number(newTitleBA.size()) + SeparatorToken + newTitleBA;
+    // QByteArray data = "NEWTITLE" + SeparatorToken + QByteArray::number(newTitleBA.size()) + SeparatorToken +
+    // newTitleBA;
     QByteArray data = "NEWTITLE";
     data.append(SeparatorToken).append(QByteArray::number(newTitleBA.size())).append(SeparatorToken).append(newTitleBA);
     write(data);
@@ -302,7 +309,8 @@ void DkConnection::checkState()
             sendGreetingMessage(mCurrentTitle);
 
         mState = ReadyForUse;
-        mPortOfPeer = peerPort(); // save peer port ... otherwise connections where this instance is server can not be removed from peerList
+        mPortOfPeer = peerPort(); // save peer port ... otherwise connections where this instance is server can not be
+                                  // removed from peerList
 
         readGreetingMessage();
 

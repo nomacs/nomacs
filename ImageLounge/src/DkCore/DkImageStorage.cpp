@@ -101,8 +101,11 @@ float DkImage::getBufferSizeFloat(const QSize &imgSize, const int depth)
  * @param interpolation the interpolation method
  * @return QImage the resized image
  **/
-QImage
-DkImage::resizeImage(const QImage &img, const QSize &newSize, double factor /* = 1.0 */, int interpolation /* = ipl_cubic */, bool correctGamma /* = true */)
+QImage DkImage::resizeImage(const QImage &img,
+                            const QSize &newSize,
+                            double factor /* = 1.0 */,
+                            int interpolation /* = ipl_cubic */,
+                            bool correctGamma /* = true */)
 {
     QSize nSize = newSize;
 
@@ -355,7 +358,11 @@ QImage rotateImageCVMat(const QImage &imgIn, cv::RotateFlags rot, int type)
     for (auto &key : imgIn.textKeys())
         imgOut.setText(key, imgIn.text(key));
 
-    const cv::Mat matIn = cv::Mat(imgIn.height(), imgIn.width(), type, (uchar *)imgIn.constBits(), imgIn.bytesPerLine());
+    const cv::Mat matIn = cv::Mat(imgIn.height(),
+                                  imgIn.width(),
+                                  type,
+                                  (uchar *)imgIn.constBits(),
+                                  imgIn.bytesPerLine());
     cv::Mat matOut = cv::Mat(imgOut.height(), imgOut.width(), type, imgOut.bits(), imgOut.bytesPerLine());
 
     cv::rotate(matIn, matOut, rot);
@@ -523,7 +530,8 @@ QVector<numFmt> DkImage::getGamma2LinearTable(int maxVal)
         if (i <= 0.04045) {
             gammaTable.append((numFmt)(qRound(i / 12.92 * maxVal)));
         } else {
-            gammaTable.append(pow((i + a) / (1 + a), 2.4) * maxVal > 0 ? (numFmt)(pow((i + a) / (1 + a), 2.4) * maxVal) : 0);
+            gammaTable.append(pow((i + a) / (1 + a), 2.4) * maxVal > 0 ? (numFmt)(pow((i + a) / (1 + a), 2.4) * maxVal)
+                                                                       : 0);
         }
     }
 
@@ -628,7 +636,8 @@ bool DkImage::autoAdjustImage(QImage &img)
     if (img.format() <= QImage::Format_Indexed8) {
         qDebug() << "[Auto Adjust] Grayscale - switching to Normalize: " << img.format();
         return normImage(img);
-    } else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB32 && img.format() != QImage::Format_RGB888) {
+    } else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB32
+               && img.format() != QImage::Format_RGB888) {
         qDebug() << "[Auto Adjust] Format not supported: " << img.format();
         return false;
     }
@@ -953,7 +962,10 @@ QImage DkImage::bgColor(const QImage &src, const QColor &col)
     return dst;
 }
 
-QByteArray DkImage::extractImageFromDataStream(const QByteArray &ba, const QByteArray &beginSignature, const QByteArray &endSignature, bool debugOutput)
+QByteArray DkImage::extractImageFromDataStream(const QByteArray &ba,
+                                               const QByteArray &beginSignature,
+                                               const QByteArray &endSignature,
+                                               bool debugOutput)
 {
     int bIdx = ba.indexOf(beginSignature);
 
@@ -1267,7 +1279,11 @@ QImage DkImage::mat2QImage(cv::Mat img)
         img.convertTo(img, CV_8U, 255);
 
     if (img.type() == CV_8UC1) {
-        qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_Indexed8); // opencv uses size_t for scaling in x64 applications
+        qImg = QImage(img.data,
+                      (int)img.cols,
+                      (int)img.rows,
+                      (int)img.step,
+                      QImage::Format_Indexed8); // opencv uses size_t for scaling in x64 applications
         // Mat tmp;
         // cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
         // img = tmp;
@@ -1323,7 +1339,12 @@ void DkImage::mapGammaTable(cv::Mat &img, const QVector<unsigned short> &gammaTa
     qDebug() << "gamma computation takes: " << dt;
 }
 
-void DkImage::logPolar(const cv::Mat &src, cv::Mat &dst, cv::Point2d center, double scaleLog, double angle, double scale)
+void DkImage::logPolar(const cv::Mat &src,
+                       cv::Mat &dst,
+                       cv::Point2d center,
+                       double scaleLog,
+                       double angle,
+                       double scale)
 {
     cv::Mat mapx, mapy;
 
@@ -1498,7 +1519,11 @@ DkImageStorage::DkImageStorage(const QImage &img)
 
     init();
 
-    connect(&mFutureWatcher, &QFutureWatcher<QImage>::finished, this, &DkImageStorage::imageComputed, Qt::UniqueConnection);
+    connect(&mFutureWatcher,
+            &QFutureWatcher<QImage>::finished,
+            this,
+            &DkImageStorage::imageComputed,
+            Qt::UniqueConnection);
     connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing),
             &QAction::toggled,
             this,

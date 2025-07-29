@@ -174,9 +174,11 @@ void DkFakeMiniaturesDialog::createImgPreview()
     else
         scaledImg = *mImg;
 
-    imgPreview =
-        applyMiniaturesFilter(scaledImg,
-                              QRect(INIT_X, qRound(INIT_Y * scaledImg.height()), INIT_WIDTH * scaledImg.width(), qRound(INIT_HEIGHT * scaledImg.height())));
+    imgPreview = applyMiniaturesFilter(scaledImg,
+                                       QRect(INIT_X,
+                                             qRound(INIT_Y * scaledImg.height()),
+                                             INIT_WIDTH * scaledImg.width(),
+                                             qRound(INIT_HEIGHT * scaledImg.height())));
 
     previewLabel->setImgRect(previewImgRect);
 }
@@ -262,7 +264,8 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
         Mat tempImg(blurImg);
         cvtColor(imgHsv, blurImg, cv::COLOR_HSV2RGB);
 
-        if (tempImg.type() == CV_8UC4) { // the retImg is always CV_8UC3, so for pics in CV_8UC4 we need to add one channel
+        if (tempImg.type()
+            == CV_8UC4) { // the retImg is always CV_8UC3, so for pics in CV_8UC4 we need to add one channel
             std::vector<Mat> inImgCh;
             split(tempImg, inImgCh);
             std::vector<Mat> retImgCh;
@@ -336,7 +339,9 @@ Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel)
 
             // compute mean kernel
             if (area && itgrl32Ptr && ks > 1)
-                tmp = (float)(*(itgrl32Ptr + top + right) + *(itgrl32Ptr + bottom + left) - *(itgrl32Ptr + top + left) - *(itgrl32Ptr + bottom + right)) / area;
+                tmp = (float)(*(itgrl32Ptr + top + right) + *(itgrl32Ptr + bottom + left) - *(itgrl32Ptr + top + left)
+                              - *(itgrl32Ptr + bottom + right))
+                    / area;
             else
                 tmp = srcPtr[cIdx];
 
@@ -396,7 +401,8 @@ void DkFakeMiniaturesDialog::setImage(const QImage *img)
 QImage DkFakeMiniaturesDialog::getImage()
 {
     QRect rescaledRect = previewLabel->getROI();
-    rescaledRect.moveTo(rescaledRect.topLeft().x() - previewImgRect.topLeft().x(), rescaledRect.topLeft().y() - previewImgRect.topLeft().y());
+    rescaledRect.moveTo(rescaledRect.topLeft().x() - previewImgRect.topLeft().x(),
+                        rescaledRect.topLeft().y() - previewImgRect.topLeft().y());
     if (rMin < 1) {
         rescaledRect.moveTo(qRound(rescaledRect.topLeft().x() / rMin), qRound(rescaledRect.topLeft().y() / rMin));
         rescaledRect.setWidth(qRound(rescaledRect.width() / rMin));
@@ -422,7 +428,8 @@ QImage DkFakeMiniaturesDialog::getImage()
 void DkFakeMiniaturesDialog::redrawImgPreview()
 {
     QRect rescaledRect = previewLabel->getROI();
-    rescaledRect.moveTo(rescaledRect.topLeft().x() - previewImgRect.topLeft().x(), rescaledRect.topLeft().y() - previewImgRect.topLeft().y());
+    rescaledRect.moveTo(rescaledRect.topLeft().x() - previewImgRect.topLeft().x(),
+                        rescaledRect.topLeft().y() - previewImgRect.topLeft().y());
     setImagePreview(applyMiniaturesFilter(getScaledImg(), rescaledRect));
     drawImgPreview();
 };
@@ -462,8 +469,8 @@ void DkPreviewLabel::mouseMoveEvent(QMouseEvent *e)
 {
     if (selectionStarted) {
         QPoint pos = e->pos();
-        if (pos.x() > previewImgRect.topLeft().x() && pos.x() < previewImgRect.bottomRight().x() && pos.y() > previewImgRect.topLeft().y()
-            && pos.y() < previewImgRect.bottomRight().y()) {
+        if (pos.x() > previewImgRect.topLeft().x() && pos.x() < previewImgRect.bottomRight().x()
+            && pos.y() > previewImgRect.topLeft().y() && pos.y() < previewImgRect.bottomRight().y()) {
             selectionRect.setBottomRight(pos);
         }
         repaint();
@@ -618,10 +625,13 @@ DkKernelSize::DkKernelSize(QWidget *parent, DkFakeMiniaturesDialog *parentDialog
     slider->setOrientation(Qt::Horizontal);
     slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
 
-    slider->setStyleSheet(QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-                          + QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8) ") + QString(";} ")
-                          + QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: "
-                                    "1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+    slider->setStyleSheet(
+        QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
+        + QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8) ")
+        + QString(";} ")
+        + QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, "
+                  "stop:1 #e6e6e6); border: "
+                  "1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
 
     sliderSpinBox = new QSpinBox(this);
     sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
@@ -669,10 +679,12 @@ DkSaturation::DkSaturation(QWidget *parent, DkFakeMiniaturesDialog *parentDialog
     slider->setOrientation(Qt::Horizontal);
     slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
 
-    slider->setStyleSheet(QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-                          + QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #00ffff);} ")
-                          + QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: "
-                                    "1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+    slider->setStyleSheet(
+        QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
+        + QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #00ffff);} ")
+        + QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, "
+                  "stop:1 #e6e6e6); border: "
+                  "1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
 
     sliderSpinBox = new QSpinBox(this);
     sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);

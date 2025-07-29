@@ -335,7 +335,10 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
         float sf = 1.0f;
         if (prepareProperties(img.size(), size, sf, logStrings)) {
             img = DkImage::resizeImage(img, size, sf, mResizeIplMethod, mResizeCorrectGamma);
-            logStrings.append(QObject::tr("%1 image resized to %2 x %3.").arg(name()).arg(img.rect().width()).arg(img.rect().height()));
+            logStrings.append(QObject::tr("%1 image resized to %2 x %3.")
+                                  .arg(name())
+                                  .arg(img.rect().width())
+                                  .arg(img.rect().height()));
             changed = true;
         }
     }
@@ -386,7 +389,10 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
     return true;
 }
 
-bool DkBatchTransform::prepareProperties(const QSize &imgSize, QSize &size, float &scaleFactor, QStringList &logStrings) const
+bool DkBatchTransform::prepareProperties(const QSize &imgSize,
+                                         QSize &size,
+                                         float &scaleFactor,
+                                         QStringList &logStrings) const
 {
     float sf = 1.0f;
     QSize normalizedSize = imgSize;
@@ -431,10 +437,14 @@ bool DkBatchTransform::prepareProperties(const QSize &imgSize, QSize &size, floa
     sf = mResizeScaleFactor / normalizedSize.width();
 
     if (sf > 1.0 && mResizeProperty == resize_prop_decrease_only) {
-        logStrings.append(QObject::tr("%1 I need to increase the image size, but the option is set to 'decrease only' -> skipping.").arg(name()));
+        logStrings.append(
+            QObject::tr("%1 I need to increase the image size, but the option is set to 'decrease only' -> skipping.")
+                .arg(name()));
         return false;
     } else if (sf < 1.0f && mResizeProperty == resize_prop_increase_only) {
-        logStrings.append(QObject::tr("%1 I need to decrease the image size, but the option is set to 'increase only' -> skipping.").arg(name()));
+        logStrings.append(
+            QObject::tr("%1 I need to decrease the image size, but the option is set to 'increase only' -> skipping.")
+                .arg(name()));
         return false;
     } else if (sf == 1.0f) {
         logStrings.append(QObject::tr("%1 image size matches scale factor -> skipping.").arg(name()));
@@ -615,7 +625,9 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container,
             DkPluginInterface *plugin = pluginContainer->plugin();
 
             // check if it is ok
-            if (plugin && (plugin->interfaceType() == DkPluginInterface::interface_basic || plugin->interfaceType() == DkPluginInterface::interface_batch)) {
+            if (plugin
+                && (plugin->interfaceType() == DkPluginInterface::interface_basic
+                    || plugin->interfaceType() == DkPluginInterface::interface_batch)) {
                 // apply the plugin
                 QSharedPointer<DkImageContainer> result;
 
@@ -628,7 +640,9 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container,
                     if (bPlugin)
                         result = bPlugin->runPlugin(runID, container, saveInfo, info);
                     else
-                        logStrings.append(QObject::tr("%1 Cannot cast batch plugin %2.").arg(name()).arg(pluginContainer->pluginName()));
+                        logStrings.append(QObject::tr("%1 Cannot cast batch plugin %2.")
+                                              .arg(name())
+                                              .arg(pluginContainer->pluginName()));
 
                     batchInfos << info;
                 }
@@ -636,9 +650,11 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container,
                 if (result && result->hasImage())
                     container = result;
                 else
-                    logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(pluginContainer->pluginName()));
+                    logStrings.append(
+                        QObject::tr("%1 Cannot apply %2.").arg(name()).arg(pluginContainer->pluginName()));
             } else
-                logStrings.append(QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(pluginContainer->pluginName()));
+                logStrings.append(
+                    QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(pluginContainer->pluginName()));
         } else
             logStrings.append(QObject::tr("%1 Cannot apply plugin because it is NULL.").arg(name()));
     }
@@ -702,7 +718,9 @@ void DkPluginBatch::loadAllPlugins()
     }
 }
 
-void DkPluginBatch::loadPlugin(const QString &pluginString, QSharedPointer<DkPluginContainer> &plugin, QString &runID) const
+void DkPluginBatch::loadPlugin(const QString &pluginString,
+                               QSharedPointer<DkPluginContainer> &plugin,
+                               QString &runID) const
 {
     QString uiSeparator = " | ";
 
@@ -765,7 +783,9 @@ bool DkBatchProcess::compute()
     // check errors
     if ((mSaveInfo.mode() & DkSaveInfo::mode_do_not_save_output) == 0 && // do not save is not set
         (fInfoOut.exists() && mSaveInfo.mode() == DkSaveInfo::mode_skip_existing)) {
-        mLogStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(mSaveInfo.outputFilePath()));
+        mLogStrings.append(
+            QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)")
+                .arg(mSaveInfo.outputFilePath()));
         mFailure++;
         return mFailure == 0;
     } else if (!fInfoIn.exists()) {
@@ -780,7 +800,8 @@ bool DkBatchProcess::compute()
     }
 
     // rename operation?
-    if (mProcessFunctions.empty() && mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && fInfoIn.suffix() == fInfoOut.suffix()) {
+    if (mProcessFunctions.empty() && mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath()
+        && fInfoIn.suffix() == fInfoOut.suffix()) {
         if (!renameFile())
             mFailure++;
         return mFailure == 0;
@@ -844,7 +865,8 @@ bool DkBatchProcess::process()
 
     // early break
     if (mSaveInfo.mode() & DkSaveInfo::mode_do_not_save_output) {
-        mLogStrings.append(QObject::tr("%1 not saved - option 'Do not Save' is checked...").arg(mSaveInfo.outputFilePath()));
+        mLogStrings.append(
+            QObject::tr("%1 not saved - option 'Do not Save' is checked...").arg(mSaveInfo.outputFilePath()));
         return true;
     }
 
@@ -885,13 +907,15 @@ bool DkBatchProcess::renameFile()
             mLogStrings.append(QObject::tr("Original filename added to Exif"));
     }
 
-    // Note: if two images are renamed at the same time to the same name, one image is lost -> see Qt comment Race Condition
+    // Note: if two images are renamed at the same time to the same name, one image is lost -> see Qt comment Race
+    // Condition
     if (!file.rename(mSaveInfo.outputFilePath())) {
         mLogStrings.append(QObject::tr("Error: could not rename file"));
         mLogStrings.append(file.errorString());
         return false;
     } else
-        mLogStrings.append(QObject::tr("Renaming: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
+        mLogStrings.append(
+            QObject::tr("Renaming: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
 
     return true;
 }
@@ -947,7 +971,8 @@ static QString copyFileIntern(const DkFileInfo &inFileInfo, const DkFileInfo &ou
 bool DkBatchProcess::copyFile()
 {
     if (mSaveInfo.mode() == DkSaveInfo::mode_do_not_save_output) {
-        mLogStrings.append(QObject::tr("I should copy the file, but 'Do not Save' is checked - so I will do nothing..."));
+        mLogStrings.append(
+            QObject::tr("I should copy the file, but 'Do not Save' is checked - so I will do nothing..."));
         return false;
     }
 
@@ -974,7 +999,8 @@ bool DkBatchProcess::copyFile()
         if (exifUpdated && md->saveMetaData(mSaveInfo.outputFilePath()))
             mLogStrings.append(QObject::tr("Original filename added to Exif"));
 
-        mLogStrings.append(QObject::tr("Copying: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
+        mLogStrings.append(
+            QObject::tr("Copying: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
     }
 
     if (!deleteOrRestoreExisting()) {
@@ -1000,7 +1026,8 @@ bool DkBatchProcess::prepareDeleteExisting()
         QFile file(mSaveInfo.outputFilePath());
 
         if (!file.rename(mSaveInfo.backupFilePath())) {
-            mLogStrings.append(QObject::tr("Error: could not rename existing file to %1").arg(mSaveInfo.backupFilePath()));
+            mLogStrings.append(
+                QObject::tr("Error: could not rename existing file to %1").arg(mSaveInfo.backupFilePath()));
             mLogStrings.append(file.errorString());
             mSaveInfo.clearBackupFilePath();
             return false;
@@ -1028,11 +1055,13 @@ bool DkBatchProcess::deleteOrRestoreExisting()
         QFile file(mSaveInfo.backupFilePath());
 
         if (!file.rename(mSaveInfo.outputFilePath())) {
-            mLogStrings.append(QObject::tr("Ui - a lot of things went wrong. Your original file can be found here: %1").arg(mSaveInfo.backupFilePath()));
+            mLogStrings.append(QObject::tr("Ui - a lot of things went wrong. Your original file can be found here: %1")
+                                   .arg(mSaveInfo.backupFilePath()));
             mLogStrings.append(file.errorString());
             return false;
         } else {
-            mLogStrings.append(QObject::tr("I could not save to %1 so I restored the original file.").arg(mSaveInfo.outputFilePath()));
+            mLogStrings.append(
+                QObject::tr("I could not save to %1 so I restored the original file.").arg(mSaveInfo.outputFilePath()));
         }
     }
 
@@ -1055,7 +1084,8 @@ bool DkBatchProcess::deleteOriginalFile()
             return false;
         }
     } else if (mFailure)
-        mLogStrings.append(QObject::tr("I did not delete the original because I detected %1 failure(s).").arg(mFailure));
+        mLogStrings.append(
+            QObject::tr("I did not delete the original because I detected %1 failure(s).").arg(mFailure));
 
     return true;
 }
@@ -1095,7 +1125,10 @@ DkBatchProcessing::DkBatchProcessing(const DkBatchConfig &config, QWidget *paren
 {
     mBatchConfig = config;
 
-    connect(&mBatchWatcher, &QFutureWatcher<void>::progressValueChanged, this, &DkBatchProcessing::progressValueChanged);
+    connect(&mBatchWatcher,
+            &QFutureWatcher<void>::progressValueChanged,
+            this,
+            &DkBatchProcessing::progressValueChanged);
     connect(&mBatchWatcher, &QFutureWatcher<void>::finished, this, &DkBatchProcessing::finished);
 }
 

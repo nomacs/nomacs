@@ -428,6 +428,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     QRectF getImageRect() const;
+    // get matrix that resizes the image to the current mViewport
     QTransform getScaledImageMatrix();
 };
 
@@ -533,7 +534,9 @@ public:
     virtual void setVisible(bool visible) override;
 
 signals:
-    void cropImageSignal(const DkRotatingRect &cropArea, const QColor &bgCol = QColor(0, 0, 0, 0), bool cropToMetaData = false) const;
+    void cropImageSignal(const DkRotatingRect &cropArea,
+                         const QColor &bgCol = QColor(0, 0, 0, 0),
+                         bool cropToMetaData = false) const;
     void angleSignal(double angle) const;
     void aRatioSignal(const QPointF &aRatio) const;
     void updateRectSignal(const QRect &r) const;

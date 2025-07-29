@@ -97,7 +97,10 @@ signals:
     void connectionStopSynchronize(DkConnection *connection) const;
     void connectionTitleHasChanged(DkConnection *connection, const QString &newTitle) const;
     void connectionNewPosition(DkConnection *connection, QRect position, bool opacity, bool overlaid) const;
-    void connectionNewTransform(DkConnection *connection, QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
+    void connectionNewTransform(DkConnection *connection,
+                                QTransform transform,
+                                QTransform imgTransform,
+                                QPointF canvasSize) const;
     void connectionNewFile(DkConnection *connection, qint16 op, const QString &filename) const;
     void connectionGoodBye(DkConnection *connection) const;
     void connectionShowStatusMessage(DkConnection *connection, const QString &msg) const;

@@ -152,7 +152,8 @@ double DkSkewEstimator::getSkewAngle()
 
         weightsHor += weightsVer;
 
-        double retAngle = computeSkewAngle(weightsHor, qSqrt(matGray.rows * matGray.rows + matGray.cols * matGray.cols));
+        double retAngle = computeSkewAngle(weightsHor,
+                                           qSqrt(matGray.rows * matGray.rows + matGray.cols * matGray.cols));
 
         progress->setValue(100);
         progress->deleteLater();
@@ -178,17 +179,17 @@ cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralS
             if (progress->wasCanceled())
                 break;
             for (int c = W2 + qCeil(delta / 2); c < integral.cols - W2 - qCeil(delta / 2); c++) {
-                double mean1 = integral.at<double>(r - H2, c - W2) + integral.at<double>(r - 1, c + W2) - integral.at<double>(r - H2, c + W2)
-                    - integral.at<double>(r - 1, c - W2);
-                double mean2 = integral.at<double>(r + 1, c - W2) + integral.at<double>(r + H2, c + W2) - integral.at<double>(r + 1, c + W2)
-                    - integral.at<double>(r + H2, c - W2);
+                double mean1 = integral.at<double>(r - H2, c - W2) + integral.at<double>(r - 1, c + W2)
+                    - integral.at<double>(r - H2, c + W2) - integral.at<double>(r - 1, c - W2);
+                double mean2 = integral.at<double>(r + 1, c - W2) + integral.at<double>(r + H2, c + W2)
+                    - integral.at<double>(r + 1, c + W2) - integral.at<double>(r + H2, c - W2);
                 mean1 /= (2 * W2 * H2);
                 mean2 /= (2 * W2 * H2);
 
-                double var1 = integralSq.at<double>(r - H2, c - W2) + integralSq.at<double>(r - 1, c + W2) - integralSq.at<double>(r - H2, c + W2)
-                    - integralSq.at<double>(r - 1, c - W2);
-                double var2 = integralSq.at<double>(r + 1, c - W2) + integralSq.at<double>(r + H2, c + W2) - integralSq.at<double>(r + 1, c + W2)
-                    - integralSq.at<double>(r + H2, c - W2);
+                double var1 = integralSq.at<double>(r - H2, c - W2) + integralSq.at<double>(r - 1, c + W2)
+                    - integralSq.at<double>(r - H2, c + W2) - integralSq.at<double>(r - 1, c - W2);
+                double var2 = integralSq.at<double>(r + 1, c - W2) + integralSq.at<double>(r + H2, c + W2)
+                    - integralSq.at<double>(r + 1, c + W2) - integralSq.at<double>(r + H2, c - W2);
                 var1 /= (2 * W2 * H2);
                 var2 /= (2 * W2 * H2);
 
@@ -208,17 +209,17 @@ cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralS
                 break;
 
             for (int c = H2 + qCeil(delta / 2); c < integral.cols - H2 - qCeil(delta / 2); c++) {
-                double mean1 = integral.at<double>(r - W2, c - H2) + integral.at<double>(r + W2, c - 1) - integral.at<double>(r + W2, c - H2)
-                    - integral.at<double>(r - W2, c - 1);
-                double mean2 = integral.at<double>(r - W2, c + 1) + integral.at<double>(r + W2, c + H2) - integral.at<double>(r + W2, c + 1)
-                    - integral.at<double>(r - W2, c + H2);
+                double mean1 = integral.at<double>(r - W2, c - H2) + integral.at<double>(r + W2, c - 1)
+                    - integral.at<double>(r + W2, c - H2) - integral.at<double>(r - W2, c - 1);
+                double mean2 = integral.at<double>(r - W2, c + 1) + integral.at<double>(r + W2, c + H2)
+                    - integral.at<double>(r + W2, c + 1) - integral.at<double>(r - W2, c + H2);
                 mean1 /= (2 * W2 * H2);
                 mean2 /= (2 * W2 * H2);
 
-                double var1 = integralSq.at<double>(r - W2, c - H2) + integralSq.at<double>(r + W2, c - 1) - integralSq.at<double>(r + W2, c - H2)
-                    - integralSq.at<double>(r - W2, c - 1);
-                double var2 = integralSq.at<double>(r - W2, c + 1) + integralSq.at<double>(r + W2, c + H2) - integralSq.at<double>(r + W2, c + 1)
-                    - integralSq.at<double>(r - W2, c + H2);
+                double var1 = integralSq.at<double>(r - W2, c - H2) + integralSq.at<double>(r + W2, c - 1)
+                    - integralSq.at<double>(r + W2, c - H2) - integralSq.at<double>(r - W2, c - 1);
+                double var2 = integralSq.at<double>(r - W2, c + 1) + integralSq.at<double>(r + W2, c + H2)
+                    - integralSq.at<double>(r + W2, c + 1) - integralSq.at<double>(r - W2, c + H2);
                 var1 /= (2 * W2 * H2);
                 var2 /= (2 * W2 * H2);
 
@@ -324,7 +325,13 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 {
     std::vector<cv::Vec4i> lines;
     QVector4D maxLine = QVector4D();
-    HoughLinesP(edgeMap, lines, 1, CV_PI / 180, 50, minLineLength, 20); // params: rho resolution, theta resolution, threshold, min Line length, max line gap
+    HoughLinesP(edgeMap,
+                lines,
+                1,
+                CV_PI / 180,
+                50,
+                minLineLength,
+                20); // params: rho resolution, theta resolution, threshold, min Line length, max line gap
 
     QVector<QVector3D> computedWeights = QVector<QVector3D>();
     int lastValue = progress->value();
@@ -390,8 +397,10 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
                                 QPointF centerPoint = QPointF(0.5 * (x1 + x2), 0.5 * (y1 + y2));
                                 currMax = QVector3D((float)sumVal,
                                                     (float)(-rotationFactor * lineAngle),
-                                                    (float)qSqrt((edgeMap.cols * 0.5 - centerPoint.x()) * (edgeMap.cols * 0.5 - centerPoint.x())
-                                                                 + (edgeMap.rows * 0.5 - centerPoint.y()) * (edgeMap.rows * 0.5 - centerPoint.y())));
+                                                    (float)qSqrt((edgeMap.cols * 0.5 - centerPoint.x())
+                                                                     * (edgeMap.cols * 0.5 - centerPoint.x())
+                                                                 + (edgeMap.rows * 0.5 - centerPoint.y())
+                                                                     * (edgeMap.rows * 0.5 - centerPoint.y())));
                                 maxLine = QVector4D((float)x1, (float)y1, (float)x2, (float)y2);
                             }
 
@@ -455,8 +464,10 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
                                 QPointF centerPoint = QPointF(0.5 * (x1 + x2), 0.5 * (y1 + y2));
                                 currMax = QVector3D((float)sumVal,
                                                     (float)(rotationFactor * lineAngle),
-                                                    (float)qSqrt((edgeMap.rows * 0.5 - centerPoint.x()) * (edgeMap.rows * 0.5 - centerPoint.x())
-                                                                 + (edgeMap.cols * 0.5 - centerPoint.y()) * (edgeMap.cols * 0.5 - centerPoint.y())));
+                                                    (float)qSqrt((edgeMap.rows * 0.5 - centerPoint.x())
+                                                                     * (edgeMap.rows * 0.5 - centerPoint.x())
+                                                                 + (edgeMap.cols * 0.5 - centerPoint.y())
+                                                                     * (edgeMap.cols * 0.5 - centerPoint.y())));
                                 maxLine = QVector4D((float)y1, (float)x1, (float)y2, (float)x2);
                             }
 
@@ -499,8 +510,8 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
             thrWeights.append(QVector3D((float)qSqrt((weights.at(i).x() / maxWeight - eta) / (1 - eta)),
                                         (float)(weights.at(i).y() / M_PI * 180),
                                         (float)(weights.at(i).z() / imgDiagonal)));
-            // thrWeights.append(QVector3D((weights.at(i).x()/maxWeight - eta) * (weights.at(i).x()/maxWeight - eta), weights.at(i).y() / M_PI * 180,
-            // weights.at(i).z() / imgDiagonal));
+            // thrWeights.append(QVector3D((weights.at(i).x()/maxWeight - eta) * (weights.at(i).x()/maxWeight - eta),
+            // weights.at(i).y() / M_PI * 180, weights.at(i).z() / imgDiagonal));
         }
 
     QVector<QPointF> saliencyVec = QVector<QPointF>();
@@ -510,7 +521,8 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
 
         for (int i = 0; i < thrWeights.size(); i++) {
             saliency += thrWeights.at(i).x() * qExp(-thrWeights.at(i).z())
-                * qExp(-0.5 * ((skewAngle - thrWeights.at(i).y()) * (skewAngle - thrWeights.at(i).y())) / (sigma * sigma));
+                * qExp(-0.5 * ((skewAngle - thrWeights.at(i).y()) * (skewAngle - thrWeights.at(i).y()))
+                       / (sigma * sigma));
         }
 
         saliencyVec.append(QPointF(skewAngle, saliency));

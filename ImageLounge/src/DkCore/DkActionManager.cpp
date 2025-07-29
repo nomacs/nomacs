@@ -285,7 +285,10 @@ void DkAppManager::assignIcon(QAction *app) const
 #endif
 }
 
-QString DkAppManager::searchForSoftware(const QString &organization, const QString &application, const QString &pathKey, const QString &exeName) const
+QString DkAppManager::searchForSoftware(const QString &organization,
+                                        const QString &application,
+                                        const QString &pathKey,
+                                        const QString &exeName) const
 {
     // qDebug() << "searching for: " << organization;
 
@@ -956,7 +959,9 @@ void DkActionManager::createIcons()
     mFileIcons[icon_file_next] = DkImage::loadIcon(":/nomacs/img/next.svg");
     mFileIcons[icon_file_filter] = DkImage::loadIcon();
     mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/filter.svg"), QIcon::Normal, QIcon::On);
-    mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/filter-disabled.svg"), QIcon::Normal, QIcon::Off);
+    mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/filter-disabled.svg"),
+                                           QIcon::Normal,
+                                           QIcon::Off);
     mFileIcons[icon_file_find] = DkImage::loadIcon(":/nomacs/img/find.svg");
 
     mEditIcons.resize(icon_edit_end);
@@ -1000,7 +1005,8 @@ void DkActionManager::createActions(QWidget *parent)
     mFileActions[menu_file_open_dir]->setStatusTip(QObject::tr("Open a directory"));
 
     mFileActions[menu_file_open_list] = new QAction(QObject::tr("&Open Tabs"), parent);
-    mFileActions[menu_file_open_list]->setStatusTip(QObject::tr("Open a text file containing a list of filepaths, and open tabs for them"));
+    mFileActions[menu_file_open_list]->setStatusTip(
+        QObject::tr("Open a text file containing a list of filepaths, and open tabs for them"));
 
     mFileActions[menu_file_quick_launch] = new QAction(QObject::tr("&Quick Launch"), parent);
 #ifdef Q_OS_WIN
@@ -1009,7 +1015,8 @@ void DkActionManager::createActions(QWidget *parent)
     mFileActions[menu_file_quick_launch]->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_L));
 #endif
     mFileActions[menu_file_app_manager] = new QAction(QObject::tr("&Manage Applications"), parent);
-    mFileActions[menu_file_app_manager]->setStatusTip(QObject::tr("Manage Applications which are Automatically Opened"));
+    mFileActions[menu_file_app_manager]->setStatusTip(
+        QObject::tr("Manage Applications which are Automatically Opened"));
     mFileActions[menu_file_app_manager]->setShortcut(QKeySequence(shortcut_app_manager));
 
     mFileActions[menu_file_rename] = new QAction(QObject::tr("Re&name"), parent);
@@ -1032,7 +1039,8 @@ void DkActionManager::createActions(QWidget *parent)
     mFileActions[menu_file_save_copy]->setStatusTip(QObject::tr("Copy the Image"));
 
     mFileActions[menu_file_save_list] = new QAction(QObject::tr("&Save Tabs"), parent);
-    mFileActions[menu_file_save_list]->setStatusTip(QObject::tr("Save a newline separated list of the filenames of the open tabs"));
+    mFileActions[menu_file_save_list]->setStatusTip(
+        QObject::tr("Save a newline separated list of the filenames of the open tabs"));
 
     mFileActions[menu_file_save_web] = new QAction(QObject::tr("&Save for Web"), parent);
     mFileActions[menu_file_save_web]->setStatusTip(QObject::tr("Save an Image for Web Applications"));
@@ -1086,25 +1094,29 @@ void DkActionManager::createActions(QWidget *parent)
     mSortActions[menu_sort_filename]->setObjectName("menu_sort_filename");
     mSortActions[menu_sort_filename]->setStatusTip(QObject::tr("Sort by Filename"));
     mSortActions[menu_sort_filename]->setCheckable(true);
-    mSortActions[menu_sort_filename]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_filename);
+    mSortActions[menu_sort_filename]->setChecked(DkSettingsManager::param().global().sortMode
+                                                 == DkSettings::sort_filename);
 
     mSortActions[menu_sort_file_size] = new QAction(QObject::tr("by File &Size"), parent);
     mSortActions[menu_sort_file_size]->setObjectName("menu_sort_file_size");
     mSortActions[menu_sort_file_size]->setStatusTip(QObject::tr("Sort by File Size"));
     mSortActions[menu_sort_file_size]->setCheckable(true);
-    mSortActions[menu_sort_file_size]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_file_size);
+    mSortActions[menu_sort_file_size]->setChecked(DkSettingsManager::param().global().sortMode
+                                                  == DkSettings::sort_file_size);
 
     mSortActions[menu_sort_date_created] = new QAction(QObject::tr("by Date &Created"), parent);
     mSortActions[menu_sort_date_created]->setObjectName("menu_sort_date_created");
     mSortActions[menu_sort_date_created]->setStatusTip(QObject::tr("Sort by Date Created"));
     mSortActions[menu_sort_date_created]->setCheckable(true);
-    mSortActions[menu_sort_date_created]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_date_created);
+    mSortActions[menu_sort_date_created]->setChecked(DkSettingsManager::param().global().sortMode
+                                                     == DkSettings::sort_date_created);
 
     mSortActions[menu_sort_date_modified] = new QAction(QObject::tr("by Date Modified"), parent);
     mSortActions[menu_sort_date_modified]->setObjectName("menu_sort_date_modified");
     mSortActions[menu_sort_date_modified]->setStatusTip(QObject::tr("Sort by Date Last Modified"));
     mSortActions[menu_sort_date_modified]->setCheckable(true);
-    mSortActions[menu_sort_date_modified]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_date_modified);
+    mSortActions[menu_sort_date_modified]->setChecked(DkSettingsManager::param().global().sortMode
+                                                      == DkSettings::sort_date_modified);
 
     mSortActions[menu_sort_random] = new QAction(QObject::tr("Random"), parent);
     mSortActions[menu_sort_random]->setObjectName("menu_sort_random");
@@ -1127,13 +1139,18 @@ void DkActionManager::createActions(QWidget *parent)
     // edit actions
     mEditActions.resize(menu_edit_end);
 
-    mEditActions[menu_edit_rotate_cw] = new QAction(mEditIcons[icon_edit_rotate_cw], QObject::tr("9&0%1 Clockwise").arg(dk_degree_str), parent);
+    mEditActions[menu_edit_rotate_cw] = new QAction(mEditIcons[icon_edit_rotate_cw],
+                                                    QObject::tr("9&0%1 Clockwise").arg(dk_degree_str),
+                                                    parent);
     mEditActions[menu_edit_rotate_cw]->setShortcut(QKeySequence(shortcut_rotate_cw));
     mEditActions[menu_edit_rotate_cw]->setStatusTip(QObject::tr("rotate the image 90%1 clockwise").arg(dk_degree_str));
 
-    mEditActions[menu_edit_rotate_ccw] = new QAction(mEditIcons[icon_edit_rotate_ccw], QObject::tr("&90%1 Counter Clockwise").arg(dk_degree_str), parent);
+    mEditActions[menu_edit_rotate_ccw] = new QAction(mEditIcons[icon_edit_rotate_ccw],
+                                                     QObject::tr("&90%1 Counter Clockwise").arg(dk_degree_str),
+                                                     parent);
     mEditActions[menu_edit_rotate_ccw]->setShortcut(QKeySequence(shortcut_rotate_ccw));
-    mEditActions[menu_edit_rotate_ccw]->setStatusTip(QObject::tr("rotate the image 90%1 counter clockwise").arg(dk_degree_str));
+    mEditActions[menu_edit_rotate_ccw]->setStatusTip(
+        QObject::tr("rotate the image 90%1 counter clockwise").arg(dk_degree_str));
 
     mEditActions[menu_edit_rotate_180] = new QAction(QObject::tr("180%1").arg(dk_degree_str), parent);
     mEditActions[menu_edit_rotate_180]->setStatusTip(QObject::tr("rotate the image by 180%1").arg(dk_degree_str));
@@ -1219,7 +1236,8 @@ void DkActionManager::createActions(QWidget *parent)
     mPanelActions[menu_panel_overview]->setShortcut(QKeySequence(shortcut_show_overview));
     mPanelActions[menu_panel_overview]->setStatusTip(QObject::tr("Shows the Zoom Overview"));
     mPanelActions[menu_panel_overview]->setCheckable(true);
-    mPanelActions[menu_panel_overview]->setChecked(DkSettingsManager::param().app().showOverview.testBit(DkSettingsManager::param().app().currentAppMode));
+    mPanelActions[menu_panel_overview]->setChecked(
+        DkSettingsManager::param().app().showOverview.testBit(DkSettingsManager::param().app().currentAppMode));
 
     mPanelActions[menu_panel_player] = new QAction(QObject::tr("Pla&yer"), parent);
     mPanelActions[menu_panel_player]->setShortcut(QKeySequence(shortcut_show_player));
@@ -1321,11 +1339,15 @@ void DkActionManager::createActions(QWidget *parent)
     mViewActions[menu_view_last_tab] = new QAction(QObject::tr("La&st Tab"), parent);
     mViewActions[menu_view_last_tab]->setStatusTip(QObject::tr("Switch to last tab"));
 
-    mViewActions[menu_view_fullscreen] = new QAction(mViewIcons[icon_view_fullscreen], QObject::tr("Fu&ll Screen"), parent);
+    mViewActions[menu_view_fullscreen] = new QAction(mViewIcons[icon_view_fullscreen],
+                                                     QObject::tr("Fu&ll Screen"),
+                                                     parent);
     mViewActions[menu_view_fullscreen]->setShortcut(QKeySequence(shortcut_full_screen_ff));
     mViewActions[menu_view_fullscreen]->setStatusTip(QObject::tr("Full Screen"));
 
-    mViewActions[menu_view_reset] = new QAction(mViewIcons[icon_view_reset], QObject::tr("&Fit Image to Window"), parent);
+    mViewActions[menu_view_reset] = new QAction(mViewIcons[icon_view_reset],
+                                                QObject::tr("&Fit Image to Window"),
+                                                parent);
     mViewActions[menu_view_reset]->setShortcut(QKeySequence(shortcut_reset_view));
     mViewActions[menu_view_reset]->setStatusTip(QObject::tr("Zoom image to fit window"));
 
@@ -1349,7 +1371,8 @@ void DkActionManager::createActions(QWidget *parent)
 
     mViewActions[menu_view_tp_pattern] = new QAction(QObject::tr("&Transparency Pattern"), parent);
     mViewActions[menu_view_tp_pattern]->setShortcut(QKeySequence(shortcut_tp_pattern));
-    mViewActions[menu_view_tp_pattern]->setStatusTip(QObject::tr("if checked, a pattern will be displayed for transparent objects"));
+    mViewActions[menu_view_tp_pattern]->setStatusTip(
+        QObject::tr("if checked, a pattern will be displayed for transparent objects"));
     mViewActions[menu_view_tp_pattern]->setCheckable(true);
     mViewActions[menu_view_tp_pattern]->setChecked(DkSettingsManager::param().display().tpPattern);
 
@@ -1385,21 +1408,29 @@ void DkActionManager::createActions(QWidget *parent)
     mViewActions[menu_view_slideshow]->setStatusTip(QObject::tr("Start/Pause the slideshow"));
     mViewActions[menu_view_slideshow]->setShortcut(QKeySequence(shortcut_view_slideshow));
 
-    mViewActions[menu_view_movie_pause] = new QAction(mViewIcons[icon_view_movie_play], QObject::tr("&Pause Movie"), parent);
+    mViewActions[menu_view_movie_pause] = new QAction(mViewIcons[icon_view_movie_play],
+                                                      QObject::tr("&Pause Movie"),
+                                                      parent);
     mViewActions[menu_view_movie_pause]->setStatusTip(QObject::tr("pause the current movie"));
     mViewActions[menu_view_movie_pause]->setCheckable(true);
     mViewActions[menu_view_movie_pause]->setChecked(false);
 
-    mViewActions[menu_view_movie_prev] = new QAction(mViewIcons[icon_view_movie_prev], QObject::tr("P&revious Frame"), parent);
+    mViewActions[menu_view_movie_prev] = new QAction(mViewIcons[icon_view_movie_prev],
+                                                     QObject::tr("P&revious Frame"),
+                                                     parent);
     mViewActions[menu_view_movie_prev]->setStatusTip(QObject::tr("show previous frame"));
 
-    mViewActions[menu_view_movie_next] = new QAction(mViewIcons[icon_view_movie_next], QObject::tr("&Next Frame"), parent);
+    mViewActions[menu_view_movie_next] = new QAction(mViewIcons[icon_view_movie_next],
+                                                     QObject::tr("&Next Frame"),
+                                                     parent);
     mViewActions[menu_view_movie_next]->setStatusTip(QObject::tr("show next frame"));
 
     mViewActions[menu_view_monitors] = new QAction(QObject::tr("Choose &Monitor"), parent);
     mViewActions[menu_view_monitors]->setStatusTip(QObject::tr("Choose the Monitor to run nomacs"));
 
-    mViewActions[menu_view_gps_map] = new QAction(mViewIcons[icon_view_gps], QObject::tr("Show Image Location"), parent);
+    mViewActions[menu_view_gps_map] = new QAction(mViewIcons[icon_view_gps],
+                                                  QObject::tr("Show Image Location"),
+                                                  parent);
     mViewActions[menu_view_gps_map]->setStatusTip(QObject::tr("shows where the image was taken in Google maps"));
     mViewActions[menu_view_gps_map]->setEnabled(false);
 
@@ -1453,7 +1484,8 @@ void DkActionManager::createActions(QWidget *parent)
     mHelpActions[menu_help_update]->setDisabled(DkSettingsManager::param().sync().disableUpdateInteraction);
 
     mHelpActions[menu_help_update_translation] = new QAction(QObject::tr("&Update Translation"), parent);
-    mHelpActions[menu_help_update_translation]->setStatusTip(QObject::tr("Checks for a new version of the translations of the current language"));
+    mHelpActions[menu_help_update_translation]->setStatusTip(
+        QObject::tr("Checks for a new version of the translations of the current language"));
     mHelpActions[menu_help_update_translation]->setDisabled(DkSettingsManager::param().sync().disableUpdateInteraction);
 
     // sync actions
@@ -1494,40 +1526,60 @@ void DkActionManager::createActions(QWidget *parent)
     mPreviewActions[preview_select_all]->setShortcut(QKeySequence::SelectAll);
     mPreviewActions[preview_select_all]->setCheckable(true);
 
-    mPreviewActions[preview_zoom_in] = new QAction(DkImage::loadIcon(":/nomacs/img/zoom-in.svg"), QObject::tr("Zoom &In"), parent);
+    mPreviewActions[preview_zoom_in] = new QAction(DkImage::loadIcon(":/nomacs/img/zoom-in.svg"),
+                                                   QObject::tr("Zoom &In"),
+                                                   parent);
     mPreviewActions[preview_zoom_in]->setShortcut(QKeySequence::ZoomIn);
 
-    mPreviewActions[preview_zoom_out] = new QAction(DkImage::loadIcon(":/nomacs/img/zoom-out.svg"), QObject::tr("Zoom &Out"), parent);
+    mPreviewActions[preview_zoom_out] = new QAction(DkImage::loadIcon(":/nomacs/img/zoom-out.svg"),
+                                                    QObject::tr("Zoom &Out"),
+                                                    parent);
     mPreviewActions[preview_zoom_out]->setShortcut(QKeySequence::ZoomOut);
 
-    mPreviewActions[preview_display_squares] = new QAction(DkImage::loadIcon(":/nomacs/img/rects.svg"), QObject::tr("Display &Squares"), parent);
+    mPreviewActions[preview_display_squares] = new QAction(DkImage::loadIcon(":/nomacs/img/rects.svg"),
+                                                           QObject::tr("Display &Squares"),
+                                                           parent);
     mPreviewActions[preview_display_squares]->setCheckable(true);
     mPreviewActions[preview_display_squares]->setChecked(DkSettingsManager::param().display().displaySquaredThumbs);
 
-    mPreviewActions[preview_show_labels] = new QAction(DkImage::loadIcon(":/nomacs/img/show-filename.svg"), QObject::tr("Show &Filename"), parent);
+    mPreviewActions[preview_show_labels] = new QAction(DkImage::loadIcon(":/nomacs/img/show-filename.svg"),
+                                                       QObject::tr("Show &Filename"),
+                                                       parent);
     mPreviewActions[preview_show_labels]->setCheckable(true);
     mPreviewActions[preview_show_labels]->setChecked(DkSettingsManager::param().display().showThumbLabel);
 
     mPreviewActions[preview_filter] = new QAction(QObject::tr("&Filter"), parent);
     mPreviewActions[preview_filter]->setShortcut(QKeySequence::Find);
 
-    mPreviewActions[preview_delete] = new QAction(DkImage::loadIcon(":/nomacs/img/trash.svg"), QObject::tr("&Delete"), parent);
+    mPreviewActions[preview_delete] = new QAction(DkImage::loadIcon(":/nomacs/img/trash.svg"),
+                                                  QObject::tr("&Delete"),
+                                                  parent);
     mPreviewActions[preview_delete]->setShortcut(QKeySequence::Delete);
 
-    mPreviewActions[preview_copy] = new QAction(DkImage::loadIcon(":/nomacs/img/copy.svg"), QObject::tr("&Copy"), parent);
+    mPreviewActions[preview_copy] = new QAction(DkImage::loadIcon(":/nomacs/img/copy.svg"),
+                                                QObject::tr("&Copy"),
+                                                parent);
     mPreviewActions[preview_copy]->setShortcut(QKeySequence::Copy);
 
-    mPreviewActions[preview_paste] = new QAction(DkImage::loadIcon(":/nomacs/img/paste.svg"), QObject::tr("&Paste"), parent);
+    mPreviewActions[preview_paste] = new QAction(DkImage::loadIcon(":/nomacs/img/paste.svg"),
+                                                 QObject::tr("&Paste"),
+                                                 parent);
     mPreviewActions[preview_paste]->setShortcut(QKeySequence::Paste);
 
-    mPreviewActions[preview_rename] = new QAction(DkImage::loadIcon(":/nomacs/img/rename.svg"), QObject::tr("&Rename"), parent);
+    mPreviewActions[preview_rename] = new QAction(DkImage::loadIcon(":/nomacs/img/rename.svg"),
+                                                  QObject::tr("&Rename"),
+                                                  parent);
     mPreviewActions[preview_rename]->setShortcut(QKeySequence(Qt::Key_F2));
 
-    mPreviewActions[preview_batch] = new QAction(DkImage::loadIcon(":/nomacs/img/batch-processing.svg"), QObject::tr("&Batch Process"), parent);
+    mPreviewActions[preview_batch] = new QAction(DkImage::loadIcon(":/nomacs/img/batch-processing.svg"),
+                                                 QObject::tr("&Batch Process"),
+                                                 parent);
     mPreviewActions[preview_batch]->setToolTip(QObject::tr("Adds selected files to batch processing."));
     mPreviewActions[preview_batch]->setShortcut(QKeySequence(Qt::Key_B));
 
-    mPreviewActions[preview_print] = new QAction(DkImage::loadIcon(":/nomacs/img/print.svg"), QObject::tr("&Batch Print"), parent);
+    mPreviewActions[preview_print] = new QAction(DkImage::loadIcon(":/nomacs/img/print.svg"),
+                                                 QObject::tr("&Batch Print"),
+                                                 parent);
     mPreviewActions[preview_print]->setToolTip(QObject::tr("Prints selected files."));
     mPreviewActions[preview_print]->setShortcut(QKeySequence::Print);
 
@@ -1733,7 +1785,8 @@ void DkActionManager::enableImageActions(bool enable) const
     action(DkActionManager::menu_panel_exif)->setEnabled(enable);
     action(DkActionManager::menu_panel_overview)->setEnabled(enable);
     action(DkActionManager::menu_panel_player)->setEnabled(enable);
-    // action(DkActionManager::menu_panel_thumbview)->setEnabled(enable);	// if we don't disable the thumbnail preview, we can toggle it with SHIFT+T
+    // action(DkActionManager::menu_panel_thumbview)->setEnabled(enable);	// if we don't disable the thumbnail
+    // preview, we can toggle it with SHIFT+T
 
     action(DkActionManager::menu_view_slideshow)->setEnabled(enable);
     action(DkActionManager::menu_view_fullscreen)->setEnabled(enable);

@@ -228,7 +228,8 @@ void DkTcpMenu::updatePeers()
     for (int idx = 0; idx < newPeers.size(); idx++) {
         DkPeer *currentPeer = newPeers[idx];
 
-        QString title = (mNoClientsFound) ? currentPeer->title : currentPeer->clientName % QString(": ") % currentPeer->title;
+        QString title = (mNoClientsFound) ? currentPeer->title
+                                          : currentPeer->clientName % QString(": ") % currentPeer->title;
 
         DkTcpAction *peerEntry = new DkTcpAction(currentPeer, title, this);
         if (!mNoClientsFound)

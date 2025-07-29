@@ -222,7 +222,8 @@ void DkRotatingRect::setSize(const QSizeF &s)
 
     mRect = r;
 
-    // assigning a QRectF to a QPolygonF results in a closed polygon - but we want it to be open so remove the last point
+    // assigning a QRectF to a QPolygonF results in a closed polygon - but we want it to be open so remove the last
+    // point
     mRect.pop_back();
 
     rotate(angle);
@@ -360,7 +361,10 @@ DkRotatingRect DkRotatingRect::fromExifRect(const QRectF &rect, const QSize &siz
 {
     double a = CV_PI * 0.5 - angle;
 
-    QRectF rt(rect.left() * size.width(), rect.top() * size.height(), rect.width() * size.width(), rect.height() * size.height());
+    QRectF rt(rect.left() * size.width(),
+              rect.top() * size.height(),
+              rect.width() * size.width(),
+              rect.height() * size.height());
 
     //
     DkVector ul = rt.topLeft() - rt.center();
@@ -386,7 +390,8 @@ void DkRotatingRect::transform(const QTransform &translation, const QTransform &
     p = translation.inverted().map(p);
 
     // Check the order or vertexes
-    float signedArea = (float)((p[1].x() - p[0].x()) * (p[2].y() - p[0].y()) - (p[1].y() - p[0].y()) * (p[2].x() - p[0].x()));
+    float signedArea = (float)((p[1].x() - p[0].x()) * (p[2].y() - p[0].y())
+                               - (p[1].y() - p[0].y()) * (p[2].x() - p[0].x()));
     // If it's wrong, just change it
     if (signedArea > 0) {
         QPointF tmp = p[1];

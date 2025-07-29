@@ -405,7 +405,10 @@ protected slots:
     void keySequenceChanged(const QKeySequence &keySequence);
 
 protected:
-    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+    bool editorEvent(QEvent *event,
+                     QAbstractItemModel *model,
+                     const QStyleOptionViewItem &option,
+                     const QModelIndex &index) override;
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     void *mItem;
@@ -733,7 +736,10 @@ signals:
 
 protected:
     void updatePostProcess();
-    bool postProcessMosaic(float multiply = 0.3f, float screen = 0.5f, float saturation = 0.5f, bool computePreview = true);
+    bool postProcessMosaic(float multiply = 0.3f,
+                           float screen = 0.5f,
+                           float saturation = 0.5f,
+                           bool computePreview = true);
     void createLayout();
     void enableMosaicSave(bool enable);
     void enableAll(bool enable);
@@ -906,7 +912,10 @@ protected:
 
     void createLayout();
     void userFeedback(const QString &msg, bool error = false);
-    QStringList extractFilesWithProgress(const QString &fileCompressed, const QStringList &files, const QString &dir, bool removeSubfolders);
+    QStringList extractFilesWithProgress(const QString &fileCompressed,
+                                         const QStringList &files,
+                                         const QString &dir,
+                                         bool removeSubfolders);
 
     DkFileValidator mFileValidator;
     QDialogButtonBox *mButtons = 0;

@@ -238,7 +238,8 @@ void DkControlWidget::init()
     mHudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
     mHudLayout->addWidget(mFolderScroll, top_scroll, left_thumbs, 1, hor_pos_end);
 
-    //// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
+    //// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events
+    /// correctly
     // QHBoxLayout* editLayout = new QHBoxLayout(widgets[crop_widget]);
     // editLayout->setContentsMargins(0,0,0,0);
     // editLayout->addWidget(cropWidget);
@@ -263,7 +264,10 @@ void DkControlWidget::connectWidgets()
         return;
 
     // thumbs widget
-    connect(mFilePreview, &DkFilePreview::loadFileSignal, mViewport, QOverload<const QString &>::of(&DkViewPort::loadFile));
+    connect(mFilePreview,
+            &DkFilePreview::loadFileSignal,
+            mViewport,
+            QOverload<const QString &>::of(&DkViewPort::loadFile));
     connect(mFilePreview, &DkFilePreview::changeFileSignal, mViewport, &DkViewPort::loadFileFast);
     connect(mFilePreview, &DkFilePreview::positionChangeSignal, this, &DkControlWidget::changeThumbNailPosition);
 
@@ -302,7 +306,10 @@ void DkControlWidget::connectWidgets()
     connect(mCommentWidget, &DkCommentWidget::showInfoSignal, this, [this](const QString &msg) {
         setInfo(msg);
     });
-    connect(mCommentWidget, QOverload<>::of(&DkCommentWidget::commentSavedSignal), this, &DkControlWidget::setCommentSaved);
+    connect(mCommentWidget,
+            QOverload<>::of(&DkCommentWidget::commentSavedSignal),
+            this,
+            &DkControlWidget::setCommentSaved);
     connect(this, &DkControlWidget::imageUpdatedSignal, mCommentWidget, &DkCommentWidget::resetComment);
 
     // mViewport
@@ -318,7 +325,10 @@ void DkControlWidget::connectWidgets()
                 QOverload<DkViewPortInterface *, bool>::of(&DkPluginActionManager::runPlugin),
                 this,
                 &DkControlWidget::setPluginWidget);
-        connect(am.pluginActionManager(), &DkPluginActionManager::applyPluginChanges, this, &DkControlWidget::applyPluginChanges);
+        connect(am.pluginActionManager(),
+                &DkPluginActionManager::applyPluginChanges,
+                this,
+                &DkControlWidget::applyPluginChanges);
     }
 
     // actions
@@ -330,7 +340,10 @@ void DkControlWidget::connectWidgets()
     connect(am.action(DkActionManager::menu_panel_exif), &QAction::toggled, this, &DkControlWidget::showMetaData);
     connect(am.action(DkActionManager::menu_panel_info), &QAction::toggled, this, &DkControlWidget::showFileInfo);
     connect(am.action(DkActionManager::menu_panel_histogram), &QAction::toggled, this, &DkControlWidget::showHistogram);
-    connect(am.action(DkActionManager::menu_panel_comment), &QAction::toggled, this, &DkControlWidget::showCommentWidget);
+    connect(am.action(DkActionManager::menu_panel_comment),
+            &QAction::toggled,
+            this,
+            &DkControlWidget::showCommentWidget);
     connect(am.action(DkActionManager::menu_panel_toggle), &QAction::toggled, this, &DkControlWidget::toggleHUD);
 }
 
@@ -418,7 +431,8 @@ void DkControlWidget::showScroller(bool visible)
     if (visible && !mFolderScroll->isVisible())
         mFolderScroll->show();
     else if (!visible && mFolderScroll->isVisible())
-        mFolderScroll->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
+        mFolderScroll->hide(
+            !mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showMetaData(bool visible)
@@ -430,7 +444,8 @@ void DkControlWidget::showMetaData(bool visible)
         mMetaDataInfo->show();
         qDebug() << "showing metadata...";
     } else if (!visible && mMetaDataInfo->isVisible())
-        mMetaDataInfo->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
+        mMetaDataInfo->hide(
+            !mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showFileInfo(bool visible)
@@ -441,7 +456,8 @@ void DkControlWidget::showFileInfo(bool visible)
     if (visible && !mFileInfoLabel->isVisible())
         mFileInfoLabel->show();
     else if (!visible && mFileInfoLabel->isVisible())
-        mFileInfoLabel->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
+        mFileInfoLabel->hide(
+            !mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showPlayer(bool visible)
@@ -511,7 +527,8 @@ void DkControlWidget::showCommentWidget(bool visible)
     if (visible && !mCommentWidget->isVisible()) {
         mCommentWidget->show();
     } else if (!visible && mCommentWidget->isVisible()) {
-        mCommentWidget->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the mViewport
+        mCommentWidget->hide(
+            !mViewport->getImage().isNull()); // do not save settings if we have no image in the mViewport
     }
 }
 
@@ -580,8 +597,11 @@ bool DkControlWidget::closePlugin(bool askForSaving, bool force)
             bool applyChanges = true;
 
             if (askForSaving) {
-                DkMessageBox *msgBox =
-                    new DkMessageBox(QMessageBox::Question, tr("Closing Plugin"), tr("Apply plugin changes?"), QMessageBox::Yes | QMessageBox::No, this);
+                DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
+                                                        tr("Closing Plugin"),
+                                                        tr("Apply plugin changes?"),
+                                                        QMessageBox::Yes | QMessageBox::No,
+                                                        this);
                 msgBox->setDefaultButton(QMessageBox::Yes);
                 msgBox->setObjectName("SavePluginChanges");
 
@@ -590,7 +610,8 @@ bool DkControlWidget::closePlugin(bool askForSaving, bool force)
             }
 
             if (applyChanges)
-                pluginImage = DkImageContainerT::fromImageContainer(vPlugin->runPlugin("", mViewport->imageContainer()));
+                pluginImage = DkImageContainerT::fromImageContainer(
+                    vPlugin->runPlugin("", mViewport->imageContainer()));
         } else
             qDebug() << "[DkControlWidget] I cannot close a plugin if the image container is NULL";
     }
@@ -652,12 +673,28 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
 
         // NOTE: unique connections can no longer use lambdas, this was unreliable
         // in practice and is now a fatal error in debug builds of nomacs
-        connect(mPluginViewport, &DkPluginViewPort::closePlugin, this, &DkControlWidget::pluginClosed, Qt::UniqueConnection);
-        connect(mPluginViewport, &DkPluginViewPort::loadFile, this, &DkControlWidget::pluginLoadFile, Qt::UniqueConnection);
+        connect(mPluginViewport,
+                &DkPluginViewPort::closePlugin,
+                this,
+                &DkControlWidget::pluginClosed,
+                Qt::UniqueConnection);
+        connect(mPluginViewport,
+                &DkPluginViewPort::loadFile,
+                this,
+                &DkControlWidget::pluginLoadFile,
+                Qt::UniqueConnection);
 
         // TODO: will this copy without using reference?
-        connect(mPluginViewport, &DkPluginViewPort::loadImage, this, &DkControlWidget::pluginLoadImage, Qt::UniqueConnection);
-        connect(mPluginViewport, &DkPluginViewPort::showInfo, this, &DkControlWidget::pluginMessage, Qt::UniqueConnection);
+        connect(mPluginViewport,
+                &DkPluginViewPort::loadImage,
+                this,
+                &DkControlWidget::pluginLoadImage,
+                Qt::UniqueConnection);
+        connect(mPluginViewport,
+                &DkPluginViewPort::showInfo,
+                this,
+                &DkControlWidget::pluginMessage,
+                Qt::UniqueConnection);
     }
 
     setAttribute(Qt::WA_TransparentForMouseEvents, !removeWidget && pluginWidget->hideHUD());
@@ -769,7 +806,8 @@ void DkControlWidget::setFullScreen(bool fullscreen)
 {
     showWidgetsSettings();
 
-    if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->getCurrentDisplaySetting() && !mPlayer->isPlaying())
+    if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->getCurrentDisplaySetting()
+        && !mPlayer->isPlaying())
         mPlayer->showTemporarily();
 }
 

@@ -673,7 +673,8 @@ public:
 
     double cosv(const DkVector &vec) const
     {
-        return (this->x * vec.x + this->y * vec.y) / (sqrt(this->x * this->x + this->y * this->y) * sqrt(vec.x * vec.x + vec.y * vec.y));
+        return (this->x * vec.x + this->y * vec.y)
+            / (sqrt(this->x * this->x + this->y * this->y) * sqrt(vec.x * vec.x + vec.y * vec.y));
     };
 
     /**

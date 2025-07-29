@@ -163,8 +163,11 @@ protected:
             img.convertTo(img, CV_8U, 255);
 
         if (img.type() == CV_8UC1) {
-            qImg =
-                QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_Indexed8); // opencv uses size_t if for scaling in x64 applications
+            qImg = QImage(img.data,
+                          (int)img.cols,
+                          (int)img.rows,
+                          (int)img.step,
+                          QImage::Format_Indexed8); // opencv uses size_t if for scaling in x64 applications
             // Mat tmp;
             // cvtColor(mImg, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
             // mImg = tmp;

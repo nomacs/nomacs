@@ -120,7 +120,8 @@ QDebug qWarningClean()
 namespace nmc
 {
 
-// code based on: http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
+// code based on:
+// http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
 double DkMemory::getTotalMemory()
 {
     double mem = -1;
@@ -238,7 +239,8 @@ bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensi
         // this fixes #469
         if (s1[sIdx] == '0' || s2[sIdx] == '0') {
             for (int idx = sIdx - 1; idx >= 0; idx--) {
-                if (s1[idx] != '0' && s1[idx].isDigit()) { // find the last non-zero number (just check one string they are the same)
+                if (s1[idx] != '0'
+                    && s1[idx].isDigit()) { // find the last non-zero number (just check one string they are the same)
                     prefix = s1[idx];
                     break;
                 } else if (s1[idx] != '0')
@@ -360,8 +362,12 @@ bool DkUtils::compFileSize(const DkFileInfo &lhf, const DkFileInfo &rhf)
 
 bool DkUtils::compRandom(const DkFileInfo &lhf, const DkFileInfo &rhf)
 {
-    return QCryptographicHash::hash(lhf.path().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed), QCryptographicHash::Algorithm::Md5)
-        > QCryptographicHash::hash(rhf.path().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed), QCryptographicHash::Algorithm::Md5);
+    return QCryptographicHash::hash(lhf.path().toUtf8()
+                                        + QByteArray::number(DkSettingsManager::param().global().sortSeed),
+                                    QCryptographicHash::Algorithm::Md5)
+        > QCryptographicHash::hash(rhf.path().toUtf8()
+                                       + QByteArray::number(DkSettingsManager::param().global().sortSeed),
+                                   QCryptographicHash::Algorithm::Md5);
 }
 
 void DkUtils::addLanguages(QComboBox *langCombo, QStringList &languages)
@@ -439,9 +445,9 @@ void DkUtils::initializeDebug()
         qInstallMessageHandler(qtMessageOutput);
 
     // format message output
-    QString p =
-        "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}"
-        "%{if-fatal}[ERROR] %{endif}%{if-debug}[DEBUG] %{endif}%{message}";
+    QString
+        p = "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}"
+            "%{if-fatal}[ERROR] %{endif}%{if-debug}[DEBUG] %{endif}%{message}";
     qSetMessagePattern(p);
 }
 
@@ -571,7 +577,8 @@ QString DkUtils::getBuildInfo()
     info += QSysInfo::prettyProductName() + ", " + memory + "\n";
 
     // library versions (dynamic version where possible)
-    info += "Qt " + QString(qVersion()) + ", " + qApp->platformName() + ", scale=" + QString::number(qApp->devicePixelRatio(), 10, 2) + "\n";
+    info += "Qt " + QString(qVersion()) + ", " + qApp->platformName()
+        + ", scale=" + QString::number(qApp->devicePixelRatio(), 10, 2) + "\n";
     info += "Exiv2 " + QString(Exiv2::version()) + "\n";
 
 #ifdef WITH_LIBRAW
@@ -783,7 +790,8 @@ bool DkUtils::isSavable(const QString &fileName)
     QStringList cleanSaveFilters = suffixOnly(DkSettingsManager::param().app().saveFilters);
 
     for (const QString &cFilter : cleanSaveFilters) {
-        QRegularExpression exp = QRegularExpression(QRegularExpression::wildcardToRegularExpression(cFilter), QRegularExpression::CaseInsensitiveOption);
+        QRegularExpression exp = QRegularExpression(QRegularExpression::wildcardToRegularExpression(cFilter),
+                                                    QRegularExpression::CaseInsensitiveOption);
 
         qDebug() << "checking extension: " << exp;
 
@@ -997,8 +1005,8 @@ QString DkUtils::colorToCssHex(const QColor &color, bool alpha)
 
 QString DkUtils::colorToString(const QColor &col)
 {
-    return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + ","
-        + QString::number((float)col.alpha() / 255.0f * 100.0f) + "%)";
+    return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue())
+        + "," + QString::number((float)col.alpha() / 255.0f * 100.0f) + "%)";
 }
 
 QStringList DkUtils::filterStringList(const QString &query, const QStringList &list)
@@ -1008,7 +1016,8 @@ QStringList DkUtils::filterStringList(const QString &query, const QStringList &l
     QStringList resultList = list;
 
     for (int idx = 0; idx < queries.size(); idx++) {
-        // Detect and correct special case where a space is leading or trailing the search term - this should be significant
+        // Detect and correct special case where a space is leading or trailing the search term - this should be
+        // significant
         if (idx == 0 && queries.size() > 1 && queries[idx].size() == 0)
             queries[idx] = " " + queries[idx + 1];
         if (idx == queries.size() - 1 && queries.size() > 2 && queries[idx].size() == 0)
@@ -1025,7 +1034,8 @@ QStringList DkUtils::filterStringList(const QString &query, const QStringList &l
 
         if (resultList.empty()) {
             QString wildcardExp = QRegularExpression::wildcardToRegularExpression(query);
-            QRegularExpression re(QRegularExpression::anchoredPattern(wildcardExp), QRegularExpression::CaseInsensitiveOption);
+            QRegularExpression re(QRegularExpression::anchoredPattern(wildcardExp),
+                                  QRegularExpression::CaseInsensitiveOption);
             resultList = list.filter(re);
         }
     }
@@ -1186,7 +1196,8 @@ DkFileNameConverter::DkFileNameConverter(const QString &p)
 
         if (ch == '<') {
             if (type != Token::Text) {
-                qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", expecting token text at index " << i;
+                qWarning() << "DkFileNameConverter parse pattern failed: " << pattern
+                           << ", expecting token text at index " << i;
                 return;
             }
             if (token.size() != 0) {
@@ -1216,7 +1227,8 @@ DkFileNameConverter::DkFileNameConverter(const QString &p)
                 break;
 
             default:
-                qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", expecting token tag name or number at index " << i;
+                qWarning() << "DkFileNameConverter parse pattern failed: " << pattern
+                           << ", expecting token tag name or number at index " << i;
                 return;
             }
 
@@ -1253,7 +1265,8 @@ DkFileNameConverter::DkFileNameConverter(const QString &p)
 
     if (pattern.size() > start) {
         if (type != Token::Text) {
-            qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", expecting token text at index " << pattern.size();
+            qWarning() << "DkFileNameConverter parse pattern failed: " << pattern << ", expecting token text at index "
+                       << pattern.size();
             return;
         }
         QStringView token = pattern.sliced(start, pattern.size() - start);

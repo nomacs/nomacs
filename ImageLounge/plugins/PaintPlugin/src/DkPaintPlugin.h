@@ -86,8 +86,9 @@ public:
     QLineF getShorterLine(QPainterPath line, const int thickness);
     void getBlur(QPainterPath rect, QPainter *painter, QImage &img, int radius);
 
-    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(),
-                                                    QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
+    QSharedPointer<nmc::DkImageContainer> runPlugin(
+        const QString &runID = QString(),
+        QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
     nmc::DkPluginViewPort *getViewPort() override;
     bool createViewPort(QWidget *parent) override;
 

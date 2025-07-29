@@ -95,13 +95,22 @@ public:
     static void mapGammaTable(cv::Mat &img, const QVector<unsigned short> &gammaTable);
     static void gammaToLinear(cv::Mat &img);
     static void linearToGamma(cv::Mat &img);
-    static void logPolar(const cv::Mat &src, cv::Mat &dst, cv::Point2d center, double scaleLog, double angle, double scale = 1.0);
+    static void logPolar(const cv::Mat &src,
+                         cv::Mat &dst,
+                         cv::Point2d center,
+                         double scaleLog,
+                         double angle,
+                         double scale = 1.0);
     static void tinyPlanet(QImage &img, double scaleLog, double angle, QSize s, bool invert = false);
 #endif
 
     static QString getBufferSize(const QSize &imgSize, const int depth);
     static float getBufferSizeFloat(const QSize &imgSize, const int depth);
-    static QImage resizeImage(const QImage &img, const QSize &newSize, double factor = 1.0, int interpolation = ipl_cubic, bool correctGamma = true);
+    static QImage resizeImage(const QImage &img,
+                              const QSize &newSize,
+                              double factor = 1.0,
+                              int interpolation = ipl_cubic,
+                              bool correctGamma = true);
 
     template<typename numFmt>
     static QVector<numFmt> getGamma2LinearTable(int maxVal = USHRT_MAX);
@@ -123,7 +132,9 @@ public:
     static QImage rotateImage(const QImage &img, double angle);
     static QImage grayscaleImage(const QImage &img);
     static QPixmap colorizePixmap(const QPixmap &icon, const QColor &col, float opacity = 1.0f);
-    static QPixmap loadIcon(const QString &filePath = QString(), const QSize &size = QSize(), const QColor &col = QColor());
+    static QPixmap loadIcon(const QString &filePath = QString(),
+                            const QSize &size = QSize(),
+                            const QColor &col = QColor());
     static QPixmap loadIcon(const QString &filePath, const QColor &col, const QSize &size = QSize());
     static QPixmap loadFromSvg(const QString &filePath, const QSize &size);
     static QImage createThumb(const QImage &img, int maxSize = -1);
