@@ -79,3 +79,16 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           git clang-format --diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} 2>&1
+      
+      - name: Setup gersemi
+        run: |
+          python -m venv ~/.gersemi
+          source ~/.gersemi/bin/activate
+          pip install gersemi==0.21.0
+
+      - name: Check gersemi
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          source ~/.gersemi/bin/activate
+          ./scripts/format-cmake.sh --check --diff --quiet 2>&1
+
