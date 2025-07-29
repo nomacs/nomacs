@@ -1,10 +1,8 @@
-
 # check cmake requirements
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required(VERSION 3.10)
 
 if(COMMAND cmake_policy)
-	cmake_policy(SET CMP0003 NEW)
-
+    cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
 project(nomacs)
@@ -19,9 +17,9 @@ set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
 set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})
 
 if(CMAKE_CL_64)
-	SET(NMC_ARCHITECTURE "x64")
+    set(NMC_ARCHITECTURE "x64")
 else()
-	SET(NMC_ARCHITECTURE "x86")
+    set(NMC_ARCHITECTURE "x86")
 endif()
 
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
@@ -55,21 +53,19 @@ option(USE_SYSTEM_QUAZIP "QuaZip will not be compiled from source" ON) # ignored
 option(ENABLE_PCH "Enable precompiled headers" OFF)
 
 # Codecov
-if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
+if(ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
     include("cmake/CodeCoverage.cmake")
     setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
 endif()
 
 # load paths from the user file if exists
-if (EXISTS ${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
+if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
     include(${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
-
-elseif (MSVC)
-
+elseif(MSVC)
     set(DEPENDENCY_PATH "" CACHE STRING "Select the path where all dependencies are built")
 
     # windows needs some hints here...
-    if (NOT "${DEPENDENCY_PATH}" STREQUAL "")
+    if(NOT "${DEPENDENCY_PATH}" STREQUAL "")
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/exiv2/")
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/opencv/")
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/quazip/")
@@ -80,12 +76,12 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
-	# Codecov
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -pthread -g -O0 -fprofile-arcs -ftest-coverage")
+if(ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
+    # Codecov
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -pthread -g -O0 -fprofile-arcs -ftest-coverage")
 endif()
 
-if (NOT DEFINED QT_VERSION_MAJOR)
+if(NOT DEFINED QT_VERSION_MAJOR)
     add_definitions(-DQT_VERSION_MAJOR="6")
 endif()
 
@@ -95,22 +91,22 @@ endif()
 # find Qt
 NMC_FINDQT()
 
-if (NOT ENABLE_QT_DEBUG)
-	message (STATUS "disabling qt debug messages")
-	add_definitions(-DQT_NO_DEBUG_OUTPUT)
+if(NOT ENABLE_QT_DEBUG)
+    message(STATUS "disabling qt debug messages")
+    add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
 if(MSVC)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Win.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Win.cmake)
 elseif(APPLE)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mac.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mac.cmake)
 elseif(UNIX)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Unix.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Unix.cmake)
 elseif(MINGW)
-  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mingw.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mingw.cmake)
 else()
-	message(STATUS "build system unkown ... fallback to unix")
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Unix.cmake)
+    message(STATUS "build system unkown ... fallback to unix")
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Unix.cmake)
 endif()
 
 file(GLOB NOMACS_EXE_SOURCES "src/*.cpp")
@@ -128,64 +124,72 @@ file(GLOB CORE_HEADERS "src/DkCore/*.h")
 file(GLOB NOMACS_THEMES "src/themes/*.css")
 
 # gather information for building
-include_directories (
-	${EXIV2_INCLUDE_DIRS}
-	${LIBRAW_INCLUDE_DIRECTORY}
-	${CMAKE_BINARY_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/src
-	${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore
-	${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui
-	${TIFF_INCLUDE_DIR}
-	${TIFF_CONFIG_DIR}
-	${QUAZIP_INCLUDE_DIR}
-	${QUAZIP_ZLIB_INCLUDE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd	# needed for linux psd hack
-	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/drif
+include_directories(
+    ${EXIV2_INCLUDE_DIRS}
+    ${LIBRAW_INCLUDE_DIRECTORY}
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui
+    ${TIFF_INCLUDE_DIR}
+    ${TIFF_CONFIG_DIR}
+    ${QUAZIP_INCLUDE_DIR}
+    ${QUAZIP_ZLIB_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd # needed for linux psd hack
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/drif
 )
 
-if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
-	execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_HEADERS OUTPUT_VARIABLE qt_install_headers)
-	include_directories (BEFORE ${qt_install_headers})
-	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
-endif (APPLE)
+if(APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
+    execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_HEADERS OUTPUT_VARIABLE qt_install_headers)
+    include_directories(BEFORE ${qt_install_headers})
+    set(NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
+endif(APPLE)
 
-IF(NOT ENABLE_PLUGINS)
-	LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/DkPluginManager.cpp)
-	LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/DkPluginManager.h)
-ENDIF(NOT ENABLE_PLUGINS)
+if(NOT ENABLE_PLUGINS)
+    list(REMOVE_ITEM GUI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/DkPluginManager.cpp)
+    list(REMOVE_ITEM GUI_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/DkPluginManager.h)
+endif(NOT ENABLE_PLUGINS)
 
 # Try to get revision from Git head
 set(NOMACS_REVISION "")
 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../.git)
-	execute_process(COMMAND git rev-parse --short HEAD
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		OUTPUT_VARIABLE NOMACS_REVISION_HASH
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(
+        COMMAND git rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE NOMACS_REVISION_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 
-	execute_process(COMMAND git log -n 1 --pretty=%cd --date=short
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		OUTPUT_VARIABLE NOMACS_REVISION_DATE
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(
+        COMMAND git log -n 1 --pretty=%cd --date=short
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE NOMACS_REVISION_DATE
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 
-	set(NOMACS_REVISION "${NOMACS_REVISION_HASH}, ${NOMACS_REVISION_DATE}")
+    set(NOMACS_REVISION "${NOMACS_REVISION_HASH}, ${NOMACS_REVISION_DATE}")
 
-	execute_process(COMMAND git diff-index --quiet HEAD ${CMAKE_CURRENT_SOURCE_DIR}/src
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		RESULT_VARIABLE NOMACS_SRC_MODIFIED
-		ERROR_QUIET)
+    execute_process(
+        COMMAND git diff-index --quiet HEAD ${CMAKE_CURRENT_SOURCE_DIR}/src
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE NOMACS_SRC_MODIFIED
+        ERROR_QUIET
+    )
 
-	if(NOT NOMACS_SRC_MODIFIED EQUAL 0) 
-		set(NOMACS_REVISION "${NOMACS_REVISION}, custom")
-	endif()
+    if(NOT NOMACS_SRC_MODIFIED EQUAL 0)
+        set(NOMACS_REVISION "${NOMACS_REVISION}, custom")
+    endif()
 endif()
 
 message(STATUS "revision is " ${NOMACS_REVISION})
 
-
 # create version file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore/DkVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/DkVersion.h)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore/DkVersion.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/src/DkCore/DkVersion.cpp)
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore/DkVersion.cpp.in
+    ${CMAKE_CURRENT_BINARY_DIR}/src/DkCore/DkVersion.cpp
+)
 list(APPEND CORE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/src/DkCore/DkVersion.cpp)
 
 set(NOMACS_FORMS src/nomacs.ui)
@@ -195,68 +199,68 @@ file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")
 
 qt_add_resources(NOMACS_RCC ${NOMACS_RESOURCES})
 
-if (${ENABLE_TRANSLATIONS})
-	qt_add_translation(NOMACS_QM ${NOMACS_TRANSLATIONS})
+if(${ENABLE_TRANSLATIONS})
+    qt_add_translation(NOMACS_QM ${NOMACS_TRANSLATIONS})
 endif()
 
 if(MSVC)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/WinBuildTarget-qt6.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/WinBuildTarget-qt6.cmake)
 elseif(APPLE)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MacBuildTarget.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MacBuildTarget.cmake)
 elseif(MINGW)
-  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MingwBuildTarget.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MingwBuildTarget.cmake)
 elseif(UNIX)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
 else()
-	message(STATUS "build system unkown ... fallback to unix")
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
+    message(STATUS "build system unkown ... fallback to unix")
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
 endif()
 
 # get the version stored in version.cache
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/utils/version.cache NOMACS_CACHED_VERSION)
 string(STRIP "${NOMACS_CACHED_VERSION}" NOMACS_CACHED_VERSION)
 string(REGEX MATCH "^version:(.*)$" HAS_MATCH ${NOMACS_CACHED_VERSION})
-if (HAS_MATCH)
-  set(NOMACS_CACHED_VERSION ${CMAKE_MATCH_1})
+if(HAS_MATCH)
+    set(NOMACS_CACHED_VERSION ${CMAKE_MATCH_1})
 else()
-  message(FATAL_ERROR "I could not parse version.cache")
+    message(FATAL_ERROR "I could not parse version.cache")
 endif()
 
-if (ENABLE_PCH)
-	target_precompile_headers(${DLL_CORE_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:prefix.h>)
-	message(WARNING "!!Precompiled header should only be used for development!!")
+if(ENABLE_PCH)
+    target_precompile_headers(${DLL_CORE_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:prefix.h>)
+    message(WARNING "!!Precompiled header should only be used for development!!")
 endif()
 
 # add build incrementer command if requested
-if (ENABLE_INCREMENTER AND Python_FOUND)
+if(ENABLE_INCREMENTER AND Python_FOUND)
+    add_custom_command(
+        TARGET ${DLL_CORE_NAME}
+        PRE_BUILD
+        COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionincrement.py ${NOMACS_VERSION}
+    )
 
     add_custom_command(
-        TARGET ${DLL_CORE_NAME} PRE_BUILD 
-        COMMAND ${Python_EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionincrement.py
-        ${NOMACS_VERSION})
-
-    add_custom_command(
-        TARGET ${DLL_CORE_NAME} PRE_BUILD
-        COMMAND ${Python_EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py
-        ${CMAKE_BINARY_DIR}/DkVersion.h)
+        TARGET ${DLL_CORE_NAME}
+        PRE_BUILD
+        COMMAND
+            ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py ${CMAKE_BINARY_DIR}/DkVersion.h
+    )
 
     # I am having issues with the PRE_BUILD above
     # if version increment is off, we just need to run the update once (for version won't change)
     # so let's do that:
     execute_process(
-        COMMAND ${Python_EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py
-        ${CMAKE_BINARY_DIR}/DkVersion.h)
+        COMMAND
+            ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py ${CMAKE_BINARY_DIR}/DkVersion.h
+    )
 
     message(WARNING "build incrementer enabled, using version.cache: \"${NOMACS_CACHED_VERSION}\"")
 else()
-  # NOTE: the appveyor windows builds rely on version.cache for the installer and msi version numbers
-  if (NOT NOMACS_CACHED_VERSION STREQUAL NOMACS_FULL_VERSION)
-    message(FATAL_ERROR "version.cache mismatch \"${NOMACS_CACHED_VERSION}\", it should be ${NOMACS_FULL_VERSION}")
-  endif()
-  message(STATUS "nomacs version is ${NOMACS_FULL_VERSION}")
+    # NOTE: the appveyor windows builds rely on version.cache for the installer and msi version numbers
+    if(NOT NOMACS_CACHED_VERSION STREQUAL NOMACS_FULL_VERSION)
+        message(FATAL_ERROR "version.cache mismatch \"${NOMACS_CACHED_VERSION}\", it should be ${NOMACS_FULL_VERSION}")
+    endif()
+    message(STATUS "nomacs version is ${NOMACS_FULL_VERSION}")
 endif()
 
 NMC_INSTALL()
@@ -270,61 +274,63 @@ NMC_COPY_FILES()
 # endforeach()
 
 if(ENABLE_PLUGINS)
+    if(NOT EXISTS ${PLUGINS_DIR})
+        set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
+    else()
+        message(STATUS "${PLUGINS_DIR} is defined")
+    endif()
 
-	if (NOT EXISTS ${PLUGINS_DIR})
-		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
-	else ()
-		message(STATUS "${PLUGINS_DIR} is defined")
-	endif()
+    if(NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
+        set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
+    elseif(NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
+        # set the snapcraft/flathub dir
+        set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
+    endif()
 
-	if (NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
-		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
-	elseif (NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
-		# set the snapcraft/flathub dir
-		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
-	endif ()
+    if(EXISTS "${PLUGINS_DIR}/CMakeLists.txt")
+        message(STATUS "using plugin directory: ${PLUGINS_DIR}")
+        set(NOMACS_FOUND true)
+        set(NOMACS_VARS_ALREADY_SET true)
+        add_subdirectory(${PLUGINS_DIR} "${CMAKE_CURRENT_BINARY_DIR}/nomacs-plugins")
 
-	if(EXISTS "${PLUGINS_DIR}/CMakeLists.txt")
-		message(STATUS "using plugin directory: ${PLUGINS_DIR}")
-		set(NOMACS_FOUND true)
-		set(NOMACS_VARS_ALREADY_SET true)
-		add_subdirectory(${PLUGINS_DIR} "${CMAKE_CURRENT_BINARY_DIR}/nomacs-plugins")
-
-		if(APPLE)
-			NMC_BUNDLE_COPY_PLUGINS()
-		endif()
-	else()
-		message(STATUS "I failed to locate plugins in: ${PLUGINS_DIR}")
-		message(WARNING "plugins directory not found, not building plugins. You have to check out the nomacs-plugins git to the 'plugins' folder if you want to build them")
-		SET(ENABLE_PLUGINS OFF)
-	endif()
+        if(APPLE)
+            nmc_bundle_copy_plugins()
+        endif()
+    else()
+        message(STATUS "I failed to locate plugins in: ${PLUGINS_DIR}")
+        message(
+            WARNING
+            "plugins directory not found, not building plugins. You have to check out the nomacs-plugins git to the 'plugins' folder if you want to build them"
+        )
+        set(ENABLE_PLUGINS OFF)
+    endif()
 endif()
 
-if (ENABLE_TESTING AND NOT UNIX)
-	set(ENABLE_TESTING OFF)
-	message(WARNING "testing is only supported on unix")
-elseif (ENABLE_TESTING)
-	find_package(GTest)
-	if(GTEST_FOUND)
-		enable_testing()
-		add_subdirectory(tests EXCLUDE_FROM_ALL)
-	else()
-		set(ENABLE_TESTING OFF)
-		message(WARNING "GTest not found, disabling testing.")
-	endif()
+if(ENABLE_TESTING AND NOT UNIX)
+    set(ENABLE_TESTING OFF)
+    message(WARNING "testing is only supported on unix")
+elseif(ENABLE_TESTING)
+    find_package(GTest)
+    if(GTEST_FOUND)
+        enable_testing()
+        add_subdirectory(tests EXCLUDE_FROM_ALL)
+    else()
+        set(ENABLE_TESTING OFF)
+        message(WARNING "GTest not found, disabling testing.")
+    endif()
 endif()
 
-if (ENABLE_BENCHMARK AND NOT UNIX)
-	set(ENABLE_BENCHMARK OFF)
-	message(WARNING "benchmark is only supported on unix")
-elseif (ENABLE_BENCHMARK)
-	find_package(benchmark)
-	if(benchmark_FOUND)
-		add_subdirectory(benchmarks EXCLUDE_FROM_ALL)
-	else()
-		set(ENABLE_BENCHMARK OFF)
-		message(WARNING "benchmark not found, disabling benchmark.")
-	endif()
+if(ENABLE_BENCHMARK AND NOT UNIX)
+    set(ENABLE_BENCHMARK OFF)
+    message(WARNING "benchmark is only supported on unix")
+elseif(ENABLE_BENCHMARK)
+    find_package(benchmark)
+    if(benchmark_FOUND)
+        add_subdirectory(benchmarks EXCLUDE_FROM_ALL)
+    else()
+        set(ENABLE_BENCHMARK OFF)
+        message(WARNING "benchmark not found, disabling benchmark.")
+    endif()
 endif()
 
 # get rid of VSCode warning (when using MSBuild)
@@ -332,58 +338,57 @@ endif()
 set(ignoreMe "${CMAKE_EXPORT_COMPILE_COMMANDS}")
 
 # status
-MESSAGE(STATUS "")
-MESSAGE(STATUS "----------------------------------------------------------------------------------")
-MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <https://nomacs.org>")
+message(STATUS "")
+message(STATUS "----------------------------------------------------------------------------------")
+message(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <https://nomacs.org>")
 message(STATUS " Qt version: ${Qt${QT_DEFAULT_MAJOR_VERSION}_VERSION}")
 
+if(OpenCV_FOUND)
+    message(STATUS " nomacs will be compiled with OPENCV support .................. YES")
+else()
+    message(STATUS " nomacs will be compiled with OPENCV support .................. NO")
+endif()
 
-IF(OpenCV_FOUND)
-    MESSAGE(STATUS " nomacs will be compiled with OPENCV support .................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will be compiled with OPENCV support .................. NO")
-ENDIF()
+if(LIBRAW_FOUND)
+    message(STATUS " nomacs will be compiled with LIBRAW support .................. YES")
+else()
+    message(STATUS " nomacs will be compiled with LIBRAW support .................. NO")
+endif()
 
-IF(LIBRAW_FOUND)
-    MESSAGE(STATUS " nomacs will be compiled with LIBRAW support .................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will be compiled with LIBRAW support .................. NO")
-ENDIF()
+if(ENABLE_TIFF)
+    message(STATUS " nomacs will be compiled with extended TIFF support ........... YES")
+else()
+    message(STATUS " nomacs will be compiled with extended TIFF support ........... NO")
+endif()
 
-IF(ENABLE_TIFF)
-    MESSAGE(STATUS " nomacs will be compiled with extended TIFF support ........... YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will be compiled with extended TIFF support ........... NO")
-ENDIF()
+if(ENABLE_PLUGINS)
+    message(STATUS " nomacs will be compiled with plugin support .................. YES")
+else()
+    message(STATUS " nomacs will be compiled with plugin support .................. NO")
+endif()
 
-IF(ENABLE_PLUGINS)
-    MESSAGE(STATUS " nomacs will be compiled with plugin support .................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will be compiled with plugin support .................. NO")
-ENDIF()
+if(ENABLE_TRANSLATIONS)
+    message(STATUS " nomacs will be compiled with Translations .................... YES")
+else()
+    message(STATUS " nomacs will be compiled with Translations .................... NO")
+endif()
 
-IF(ENABLE_TRANSLATIONS)
-    MESSAGE(STATUS " nomacs will be compiled with Translations .................... YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will be compiled with Translations .................... NO")
-ENDIF()
+if(ENABLE_QUAZIP)
+    message(STATUS " nomacs will be compiled with QuaZip support .................. YES")
+else()
+    message(STATUS " nomacs will be compiled with QuaZip support .................. NO")
+endif()
 
-IF(ENABLE_QUAZIP)
-    MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. NO")
-ENDIF()
+if(ENABLE_TESTING)
+    message(STATUS " nomacs tests ................................................. YES")
+else()
+    message(STATUS " nomacs tests ................................................. NO")
+endif()
 
-IF(ENABLE_TESTING)
-    MESSAGE(STATUS " nomacs tests ................................................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs tests ................................................. NO")
-ENDIF()
+if(ENABLE_BENCHMARK)
+    message(STATUS " nomacs benchmarks ............................................ YES")
+else()
+    message(STATUS " nomacs benchmarks ............................................ NO")
+endif()
 
-IF(ENABLE_BENCHMARK)
-    MESSAGE(STATUS " nomacs benchmarks ............................................ YES")
-ELSE()
-    MESSAGE(STATUS " nomacs benchmarks ............................................ NO")
-ENDIF()
-
-MESSAGE(STATUS "----------------------------------------------------------------------------------")
+message(STATUS "----------------------------------------------------------------------------------")

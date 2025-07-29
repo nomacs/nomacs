@@ -11,9 +11,4 @@ target_link_libraries(
     Qt${QT_VERSION_MAJOR}::Gui
 )
 
-add_custom_target(
-    bench
-    COMMAND core_benchmarks
-    DEPENDS core_benchmarks
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-)
+add_custom_target(bench COMMAND core_benchmarks DEPENDS core_benchmarks WORKING_DIRECTORY ${CMAKE_BINARY_DIR})

@@ -15,7 +15,11 @@ target_link_libraries(${DLL_CORE_NAME} shlwapi)
 set_target_properties(${BINARY_NAME} PROPERTIES LINK_FLAGS_DEBUG "-mconsole")
 set_target_properties(${DLL_CORE_NAME} PROPERTIES LINK_FLAGS_DEBUG "-mconsole")
 
-set(MINGW_PACKAGER ${CMAKE_CURRENT_LIST_DIR}/MingwPackager.sh ${NOMACS_FULL_VERSION} ${QT_VERSION_MAJOR} ${CMAKE_BUILD_TYPE})
+set(MINGW_PACKAGER
+    ${CMAKE_CURRENT_LIST_DIR}/MingwPackager.sh
+    ${NOMACS_FULL_VERSION}
+    ${QT_VERSION_MAJOR}
+    ${CMAKE_BUILD_TYPE}
+)
 
 add_custom_target(collect COMMAND ${MINGW_PACKAGER})
-
