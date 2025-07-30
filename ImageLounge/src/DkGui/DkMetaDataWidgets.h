@@ -229,11 +229,7 @@ class DkCommentTextEdit : public QTextEdit
 public:
     DkCommentTextEdit(QWidget *parent = 0);
 
-signals:
-    void focusLost() const;
-
 protected:
-    void focusOutEvent(QFocusEvent *focusEvent) override;
     void paintEvent(QPaintEvent *e) override;
 };
 
@@ -250,7 +246,6 @@ public:
 
 public slots:
     void onCommentLabelTextChanged();
-    void onCommentLabelFocusLost();
     void onSaveButtonClicked();
     void onCancelButtonClicked();
 
