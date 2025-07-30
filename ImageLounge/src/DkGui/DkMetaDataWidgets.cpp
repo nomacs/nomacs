@@ -1156,12 +1156,6 @@ DkCommentTextEdit::DkCommentTextEdit(QWidget *parent /* = 0 */)
 {
 }
 
-void DkCommentTextEdit::focusOutEvent(QFocusEvent *focusEvent)
-{
-    emit focusLost();
-    QTextEdit::focusOutEvent(focusEvent);
-}
-
 void DkCommentTextEdit::paintEvent(QPaintEvent *e)
 {
     if (toPlainText().isEmpty() && !viewport()->hasFocus()) {
@@ -1205,7 +1199,6 @@ void DkCommentWidget::createLayout()
     mCommentLabel->setStyleSheet(scrollbarStyle + mCommentLabel->styleSheet());
     mCommentLabel->setToolTip(tr("Enter your notes here. They will be saved to the image metadata."));
     connect(mCommentLabel, &DkCommentTextEdit::textChanged, this, &DkCommentWidget::onCommentLabelTextChanged);
-    connect(mCommentLabel, &DkCommentTextEdit::focusLost, this, &DkCommentWidget::onCommentLabelFocusLost);
 
     auto *cancelButton = new QPushButton(this);
     cancelButton->setFlat(true);
@@ -1296,11 +1289,6 @@ void DkCommentWidget::saveComment()
 void DkCommentWidget::onCommentLabelTextChanged()
 {
     mTextEdited = text() != mOldText;
-}
-
-void DkCommentWidget::onCommentLabelFocusLost()
-{
-    // We don't want to do anything when changing focus
 }
 
 void DkCommentWidget::onSaveButtonClicked()
