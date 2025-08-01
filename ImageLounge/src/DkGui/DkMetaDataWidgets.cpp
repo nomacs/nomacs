@@ -1245,56 +1245,26 @@ void DkCommentWidget::createLayout()
     setCursor(Qt::ArrowCursor);
 }
 
-void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData)
+void DkCommentWidget::setText(const QString &comment)
 {
-    mMetaData = metaData;
-    initComment(metaData->getDescription());
-}
-
-void DkCommentWidget::initComment(const QString &description)
-{
-    mOldText = description;
+    mOldText = comment;
     resetComment();
 }
 
 void DkCommentWidget::resetComment()
 {
     // First, reset comment text (triggering changed event, but not edited event)
-    mOldText = mMetaData->getDescription();
     mCommentLabel->setText(mOldText);
     mCommentLabel->clearFocus();
-    // Reset internal state (this panel only)
-    mTextEdited = false;
-    // Just like in any typical webform, "cancel"/"reset" shouldn't save anything
-}
-
-QString DkCommentWidget::text() const
-{
-    return mCommentLabel->toPlainText();
-}
-
-void DkCommentWidget::saveComment()
-{
-    if (mTextEdited && mCommentLabel->toPlainText() != mMetaData->getDescription() && mMetaData) {
-        if (!mMetaData->setDescription(text()) && !text().isEmpty()) {
-            emit showInfoSignal(tr("Sorry, I cannot save comments for this image format."));
-            return;
-        }
-        initComment(text());
-
-        emit commentSavedSignal();
-    }
 }
 
 void DkCommentWidget::onCommentLabelTextChanged()
 {
-    mTextEdited = text() != mOldText;
 }
 
 void DkCommentWidget::onSaveButtonClicked()
 {
-    saveComment();
-    mCommentLabel->clearFocus();
+    emit commentSavedSignal(mCommentLabel->toPlainText());
 }
 
 void DkCommentWidget::onCancelButtonClicked()
