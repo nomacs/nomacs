@@ -1200,31 +1200,31 @@ void DkCommentWidget::createLayout()
     mCommentLabel->setToolTip(tr("Enter your notes here. They will be saved to the image metadata."));
     connect(mCommentLabel, &DkCommentTextEdit::textChanged, this, &DkCommentWidget::onCommentLabelTextChanged);
 
-    auto *cancelButton = new QPushButton(this);
-    cancelButton->setFlat(true);
-    cancelButton->setIcon(
+    mDiscardAction = new QAction(this);
+    mDiscardAction->setShortcut(Qt::Key_Escape);
+    connect(mDiscardAction, &QAction::triggered, this, &DkCommentWidget::discardChanges);
+
+    mSaveAction = new QAction(this);
+    mSaveAction->setShortcut(Qt::CTRL | Qt::Key_Return);
+    connect(mSaveAction, &QAction::triggered, this, &DkCommentWidget::save);
+
+    mDiscardButton = new QPushButton(this);
+    mDiscardButton->setFlat(true);
+    mDiscardButton->setIcon(
         DkImage::loadIcon(":/nomacs/img/trash.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
-    cancelButton->setToolTip(tr("Discard Changes (ESC)"));
-    connect(cancelButton, &QPushButton::clicked, this, &DkCommentWidget::onCancelButtonClicked);
+    mDiscardButton->setToolTip(tr("Discard Changes (ESC)"));
+    connect(mDiscardButton, &QPushButton::clicked, mDiscardAction, &QAction::trigger);
 
-    auto *saveButton = new QPushButton(this);
-    saveButton->setFlat(true);
-    saveButton->setIcon(
+    mSaveButton = new QPushButton(this);
+    mSaveButton->setFlat(true);
+    mSaveButton->setIcon(
         DkImage::loadIcon(":/nomacs/img/save.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
-    saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
-    connect(saveButton, &QPushButton::clicked, this, &DkCommentWidget::onSaveButtonClicked);
-
-    auto *cancelAction = new QAction(this);
-    cancelAction->setShortcut(Qt::Key_Escape);
-    connect(cancelAction, &QAction::triggered, cancelButton, &QPushButton::animateClick);
-
-    auto *saveAction = new QAction(this);
-    saveAction->setShortcut(Qt::CTRL | Qt::Key_Return);
-    connect(saveAction, &QAction::triggered, saveButton, &QPushButton::animateClick);
+    mSaveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
+    connect(mSaveButton, &QPushButton::clicked, mSaveAction, &QAction::trigger);
 
     auto *actionFilter = new DkActionEventFilter(this);
-    actionFilter->addAction(cancelAction);
-    actionFilter->addAction(saveAction);
+    actionFilter->addAction(mDiscardAction);
+    actionFilter->addAction(mSaveAction);
     mCommentLabel->installEventFilter(actionFilter);
 
     auto *titleWidget = new QWidget(this);
@@ -1234,8 +1234,8 @@ void DkCommentWidget::createLayout()
     titleLayout->setSpacing(0);
     titleLayout->addWidget(titleLabel);
     titleLayout->addStretch();
-    titleLayout->addWidget(cancelButton, 0, Qt::AlignVCenter);
-    titleLayout->addWidget(saveButton, 0, Qt::AlignVCenter);
+    titleLayout->addWidget(mDiscardButton, 0, Qt::AlignVCenter);
+    titleLayout->addWidget(mSaveButton, 0, Qt::AlignVCenter);
 
     auto *layout = new QVBoxLayout(this);
     layout->addWidget(titleWidget);
@@ -1260,14 +1260,19 @@ void DkCommentWidget::resetComment()
 
 void DkCommentWidget::onCommentLabelTextChanged()
 {
+    const bool edited = mCommentLabel->toPlainText() != mOldText;
+    mSaveButton->setVisible(edited);
+    mDiscardButton->setVisible(edited);
+    mSaveAction->setEnabled(edited);
+    mDiscardAction->setEnabled(edited);
 }
 
-void DkCommentWidget::onSaveButtonClicked()
+void DkCommentWidget::save()
 {
     emit commentSavedSignal(mCommentLabel->toPlainText());
 }
 
-void DkCommentWidget::onCancelButtonClicked()
+void DkCommentWidget::discardChanges()
 {
     resetComment();
 }

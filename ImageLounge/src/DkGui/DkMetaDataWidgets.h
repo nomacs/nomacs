@@ -236,8 +236,8 @@ public:
 
 public slots:
     void onCommentLabelTextChanged();
-    void onSaveButtonClicked();
-    void onCancelButtonClicked();
+    void save();
+    void discardChanges();
 
 signals:
     void commentSavedSignal(const QString &comment) const;
@@ -246,7 +246,11 @@ private:
     void createLayout();
     void resetComment();
 
-    DkCommentTextEdit *mCommentLabel = nullptr;
     QString mOldText;
+    DkCommentTextEdit *mCommentLabel = nullptr;
+    QAction *mDiscardAction = nullptr;
+    QAction *mSaveAction = nullptr;
+    QPushButton *mDiscardButton = nullptr;
+    QPushButton *mSaveButton = nullptr;
 };
 }
