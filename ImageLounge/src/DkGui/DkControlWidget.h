@@ -171,7 +171,7 @@ signals:
     void imageUpdatedSignal();
 
 protected slots:
-    void setCommentSaved();
+    void setCommentSaved(const QString &comment);
 
     // signals from viewport plugins
     void pluginClosed(bool askForSaving);
