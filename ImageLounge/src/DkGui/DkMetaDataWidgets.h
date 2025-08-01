@@ -232,28 +232,21 @@ public:
     explicit DkCommentWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     ~DkCommentWidget() override = default;
 
-    void setMetaData(QSharedPointer<DkMetaDataT> metaData);
-    QString text() const;
+    void setText(const QString &comment);
 
 public slots:
     void onCommentLabelTextChanged();
     void onSaveButtonClicked();
     void onCancelButtonClicked();
 
-    void initComment(const QString &description);
-    void resetComment();
-    void saveComment();
-
 signals:
-    void showInfoSignal(const QString &msg) const;
-    void commentSavedSignal() const;
+    void commentSavedSignal(const QString &comment) const;
 
-protected:
+private:
     void createLayout();
+    void resetComment();
 
     DkCommentTextEdit *mCommentLabel = nullptr;
-    QSharedPointer<DkMetaDataT> mMetaData;
-    bool mTextEdited = false;
     QString mOldText;
 };
 }

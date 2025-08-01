@@ -298,14 +298,21 @@ void DkControlWidget::connectWidgets()
     });
 
     // comment widget
-    connect(mCommentWidget, &DkCommentWidget::showInfoSignal, this, [this](const QString &msg) {
-        setInfo(msg);
+    connect(mCommentWidget, &DkCommentWidget::commentSavedSignal, this, &DkControlWidget::setCommentSaved);
+    connect(this, &DkControlWidget::imageUpdatedSignal, this, [this]() {
+        const auto imgC = mViewport->imageContainer();
+        if (!imgC) {
+            return;
+        }
+
+        const auto metaData = imgC->getMetaData();
+
+        if (!metaData) {
+            return;
+        }
+
+        mCommentWidget->setText(metaData->getDescription());
     });
-    connect(mCommentWidget,
-            QOverload<>::of(&DkCommentWidget::commentSavedSignal),
-            this,
-            &DkControlWidget::setCommentSaved);
-    connect(this, &DkControlWidget::imageUpdatedSignal, mCommentWidget, &DkCommentWidget::resetComment);
 
     // mViewport
     connect(mViewport, &DkViewPort::infoSignal, this, [this](const QString &msg) {
@@ -342,8 +349,17 @@ void DkControlWidget::connectWidgets()
     connect(am.action(DkActionManager::menu_panel_toggle), &QAction::toggled, this, &DkControlWidget::toggleHUD);
 }
 
-void DkControlWidget::setCommentSaved()
+void DkControlWidget::setCommentSaved(const QString &comment)
 {
+    const auto metaData = mViewport->imageContainer()->getMetaData();
+    if (!metaData || comment == metaData->getDescription()) {
+        return;
+    }
+
+    if (!metaData->setDescription(comment) && !comment.isEmpty()) {
+        setInfo(tr("Sorry, I cannot save comments for this image format."));
+        return;
+    }
     mViewport->imageContainer()->setMetaData(tr("File comment"));
 }
 
@@ -724,7 +740,7 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
     mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
     mFileInfoLabel->setEdited(imgC->isEdited());
     mFileInfoLabel->updateRating(metaData->getRating());
-    mCommentWidget->setMetaData(metaData); // reset
+    mCommentWidget->setText(metaData->getDescription()); // reset
 
     connect(imgC.get(), &DkImageContainerT::imageUpdatedSignal, this, &DkControlWidget::imageUpdatedSignal);
 }
