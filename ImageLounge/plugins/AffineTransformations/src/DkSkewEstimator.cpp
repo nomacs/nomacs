@@ -514,7 +514,8 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
 
     QVector<QPointF> saliencyVec = QVector<QPointF>();
 
-    for (double skewAngle = -30; skewAngle <= 30.001; skewAngle += 0.1) {
+    for (int step = -300; step <= 300; ++step) {
+        double skewAngle = 0.1 * step;
         double saliency = 0;
 
         for (int i = 0; i < thrWeights.size(); i++) {

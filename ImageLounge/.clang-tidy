@@ -27,6 +27,7 @@ FormatStyle:              none
 SystemHeaders:            false
 
 Checks: "\
+cert-*,\
 misc-definitions-in-headers,\
 modernize-deprecated-headers,\
 modernize-make-shared,\
