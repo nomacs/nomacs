@@ -109,6 +109,7 @@ DRIFAPI uint32_t drifGetSize(const uint32_t w, const uint32_t h, const uint32_t 
 #endif // DRIF_API_H_INC
 
 // DRIF Private
+// NOLINTBEGIN(misc-definitions-in-headers)
 #ifdef DRIF_IMAGE_IMPL
 
 // DRIF footer structure
@@ -287,3 +288,4 @@ uint32_t drifGetSize(const uint32_t w, const uint32_t h, const uint32_t f)
 }
 
 #endif
+// NOLINTEND(misc-definitions-in-headers)
