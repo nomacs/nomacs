@@ -27,6 +27,7 @@ FormatStyle:              none
 SystemHeaders:            false
 
 Checks: "\
+modernize-deprecated-headers,\
 modernize-make-shared,\
 modernize-make-unique,\
 modernize-use-bool-literals,\

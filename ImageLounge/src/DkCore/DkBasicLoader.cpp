@@ -53,7 +53,6 @@
 #include <QRegularExpression>
 #include <QtConcurrentRun>
 
-#include <assert.h>
 #include <qmath.h>
 
 // opencv
@@ -1156,7 +1155,7 @@ QVector<DkEditImage> *DkBasicLoader::history()
 
 DkEditImage DkBasicLoader::lastEdit() const
 {
-    assert(mImageIndex >= 0 && mImageIndex < mImages.size());
+    Q_ASSERT(mImageIndex >= 0 && mImageIndex < mImages.size());
     return mImages[mImageIndex];
 }
 

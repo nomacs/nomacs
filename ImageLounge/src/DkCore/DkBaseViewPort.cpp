@@ -48,9 +48,6 @@
 
 #pragma warning(pop) // no warnings from includes - end
 
-#include <cassert>
-#include <float.h>
-
 namespace nmc
 {
 // DkBaseViewport --------------------------------------------------------------------

@@ -96,8 +96,6 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
-#include <assert.h>
-
 #include <iostream>
 
 namespace nmc
@@ -2073,7 +2071,7 @@ void DkNoMacsSync::createActions()
     connect(am.action(DkActionManager::menu_sync_arrange), &QAction::triggered, this, &DkNoMacs::tcpSendArrange);
 
     auto cm = DkSyncManager::inst().client();
-    assert(cm);
+    Q_ASSERT(cm);
 
     // just for local client
     const auto localCM = dynamic_cast<DkLocalClientManager *>(cm);
@@ -2100,7 +2098,7 @@ void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event)
         qDebug() << "generating a drag event...";
 
         auto cm = dynamic_cast<DkLocalClientManager *>(DkSyncManager::inst().client());
-        assert(cm);
+        Q_ASSERT(cm);
         auto md = cm->mimeData();
 
         QDrag *drag = new QDrag(this);
