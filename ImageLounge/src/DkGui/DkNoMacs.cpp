@@ -166,9 +166,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     // qDebug() << "Sorry Fermat, but the Simpsons are right.";
 }
 
-DkNoMacs::~DkNoMacs()
-{
-}
+DkNoMacs::~DkNoMacs() = default;
 
 void DkNoMacs::init()
 {
@@ -2062,9 +2060,7 @@ DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WindowFlags flags)
 {
 }
 
-DkNoMacsSync::~DkNoMacsSync()
-{
-}
+DkNoMacsSync::~DkNoMacsSync() = default;
 
 void DkNoMacsSync::createActions()
 {
@@ -2214,9 +2210,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     DkActionManager::instance().action(DkActionManager::menu_view_fit_frame)->setEnabled(false);
 }
 
-DkNoMacsFrameless::~DkNoMacsFrameless()
-{
-}
+DkNoMacsFrameless::~DkNoMacsFrameless() = default;
 
 void DkNoMacsFrameless::createContextMenu()
 {
@@ -2332,8 +2326,5 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
     am.action(DkActionManager::menu_panel_transfertoolbar)->blockSignals(false);
 }
 
-DkNoMacsContrast::~DkNoMacsContrast()
-{
-}
-
+DkNoMacsContrast::~DkNoMacsContrast() = default;
 }

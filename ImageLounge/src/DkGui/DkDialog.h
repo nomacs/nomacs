@@ -286,7 +286,7 @@ class DkResizeDialog : public QDialog
 
 public:
     DkResizeDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkResizeDialog(){};
+    ~DkResizeDialog() = default;
 
     enum {
         ipl_nearest,

@@ -69,9 +69,7 @@ public:
         inteface_end,
     };
 
-    virtual ~DkPluginInterface()
-    {
-    }
+    virtual ~DkPluginInterface() = default;
 
     virtual QImage image() const = 0;
 

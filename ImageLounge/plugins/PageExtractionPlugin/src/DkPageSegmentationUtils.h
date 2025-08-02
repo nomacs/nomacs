@@ -111,7 +111,7 @@ public:
     /**
      * Default destructor.
      **/
-    ~DkBox(){};
+    ~DkBox() = default;
 
     void getStorageBuffer(char **buffer, size_t &length) const
     {
@@ -390,7 +390,7 @@ public:
     DkIPoint ry;
     int in;
 
-    DkVertex(){};
+    DkVertex() = default;
 
     DkVertex(DkIPoint ip, DkIPoint rx, DkIPoint ry)
     {
@@ -471,9 +471,7 @@ protected:
 class PageExtractor
 {
 public:
-    PageExtractor()
-    {
-    }
+    PageExtractor() = default;
 
     void findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &rects);
 

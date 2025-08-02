@@ -377,9 +377,7 @@ void DkPongPort::pauseGame(bool pause)
     mSmallInfo->setVisible(pause);
 }
 
-DkPongPort::~DkPongPort()
-{
-}
+DkPongPort::~DkPongPort() = default;
 
 QSharedPointer<DkPongSettings> DkPongPort::settings() const
 {

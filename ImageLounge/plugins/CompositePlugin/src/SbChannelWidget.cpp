@@ -15,9 +15,7 @@ SbChannelWidget::SbChannelWidget(Channel c, QWidget *parent, Qt::WindowFlags f)
     setImg();
 }
 
-SbChannelWidget::~SbChannelWidget()
-{
-}
+SbChannelWidget::~SbChannelWidget() = default;
 
 cv::Mat SbChannelWidget::getImg()
 {

@@ -157,9 +157,7 @@ DkTcpMenu::DkTcpMenu(const QString &title, QWidget *parent)
     connect(this, &DkTcpMenu::synchronizeWithSignal, DkSyncManager::inst().client(), &DkClientManager::synchronizeWith);
 }
 
-DkTcpMenu::~DkTcpMenu()
-{
-}
+DkTcpMenu::~DkTcpMenu() = default;
 
 void DkTcpMenu::addTcpAction(QAction *tcpAction)
 {
@@ -272,9 +270,7 @@ DkTcpAction::DkTcpAction(DkPeer *peer, const QIcon &icon, const QString &text, Q
     init();
 }
 
-DkTcpAction::~DkTcpAction()
-{
-}
+DkTcpAction::~DkTcpAction() = default;
 
 void DkTcpAction::init()
 {

@@ -461,9 +461,7 @@ bool DkBatchTransform::prepareProperties(const QSize &imgSize,
 }
 
 // DkManipulatorBatch --------------------------------------------------------------------
-DkManipulatorBatch::DkManipulatorBatch()
-{
-}
+DkManipulatorBatch::DkManipulatorBatch() = default;
 
 void DkManipulatorBatch::saveSettings(QSettings &settings) const
 {
@@ -529,9 +527,7 @@ DkManipulatorManager DkManipulatorBatch::manager() const
 
 #ifdef WITH_PLUGINS
 // DkPluginBatch --------------------------------------------------------------------
-DkPluginBatch::DkPluginBatch()
-{
-}
+DkPluginBatch::DkPluginBatch() = default;
 
 void DkPluginBatch::setProperties(const QStringList &pluginList)
 {

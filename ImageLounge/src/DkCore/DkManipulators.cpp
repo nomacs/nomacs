@@ -65,9 +65,7 @@ QAction *DkBaseManipulator::action() const
 }
 
 // DkManipulatorManager --------------------------------------------------------------------
-DkManipulatorManager::DkManipulatorManager()
-{
-}
+DkManipulatorManager::DkManipulatorManager() = default;
 
 void DkManipulatorManager::createManipulators(QWidget *parent)
 {

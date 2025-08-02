@@ -45,9 +45,7 @@ DkRotatingRect::DkRotatingRect(QRectF rect)
         mRect = rect;
 }
 
-DkRotatingRect::~DkRotatingRect()
-{
-}
+DkRotatingRect::~DkRotatingRect() = default;
 
 bool DkRotatingRect::isEmpty() const
 {

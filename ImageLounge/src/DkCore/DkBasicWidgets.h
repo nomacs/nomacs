@@ -137,7 +137,7 @@ public:
                    QString text = "Color",
                    QWidget *parent = nullptr,
                    Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkColorChooser(){};
+    virtual ~DkColorChooser() = default;
 
     void setColor(const QColor &color); // will not emit
     void setDefaultColor(const QColor &color); // will not emit

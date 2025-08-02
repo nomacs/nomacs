@@ -96,10 +96,7 @@ DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject *parent)
     mTabIdx = idx;
 }
 
-DkTabInfo::~DkTabInfo()
-{
-    // qDebug() << "tab at: " << mTabIdx << " released...";
-}
+DkTabInfo::~DkTabInfo() = default;
 
 bool DkTabInfo::operator==(const DkTabInfo &o) const
 {
@@ -313,9 +310,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     dm->setCentralWidget(this);
 }
 
-DkCentralWidget::~DkCentralWidget()
-{
-}
+DkCentralWidget::~DkCentralWidget() = default;
 
 void DkCentralWidget::createLayout()
 {
