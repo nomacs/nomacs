@@ -80,7 +80,7 @@ class DllCoreExport DkViewPort : public DkBaseViewPort
 
 public:
     DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
-    virtual ~DkViewPort();
+    ~DkViewPort() override;
 
     void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false) override;
 
@@ -191,7 +191,7 @@ public slots:
     virtual void loadImage(QSharedPointer<DkImageContainerT> img);
     virtual void setEditedImage(const QImage &newImg, const QString &editName);
     virtual void setEditedImage(QSharedPointer<DkImageContainerT> img);
-    virtual void setImage(QImage newImg) override;
+    void setImage(QImage newImg) override;
 
     void settingsChanged();
     void pauseMovie(bool paused);
@@ -201,19 +201,19 @@ public slots:
     void nextMovieFrame();
     void previousMovieFrame();
     void animateFade();
-    virtual void togglePattern(bool show) override;
+    void togglePattern(bool show) override;
 
 protected:
     // events
-    virtual void dragLeaveEvent(QDragLeaveEvent *event) override;
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void wheelEvent(QWheelEvent *event) override;
-    virtual bool event(QEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
-    virtual void leaveEvent(QEvent *event) override;
+    void dragLeaveEvent(QDragLeaveEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    bool event(QEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void leaveEvent(QEvent *event) override;
 
     bool mTestLoaded = false;
     bool mGestureStarted = false;
@@ -268,27 +268,27 @@ class DllCoreExport DkViewPortFrameless : public DkViewPort
 
 public:
     DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
-    virtual ~DkViewPortFrameless();
+    ~DkViewPortFrameless() override;
 
-    virtual void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false) override;
+    void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false) override;
 
 public slots:
-    virtual void resetView() override;
+    void resetView() override;
     virtual void moveView(QPointF);
 
 protected:
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
     // functions
-    virtual void updateImageMatrix() override;
-    virtual void draw(QPainter &painter, double opacity = 1.0) override;
+    void updateImageMatrix() override;
+    void draw(QPainter &painter, double opacity = 1.0) override;
     void drawFrame(QPainter &painter);
-    virtual void drawBackground(QPainter &painter) override;
+    void drawBackground(QPainter &painter) override;
     void controlImagePosition(float lb = -1, float ub = -1) override;
-    virtual void centerImage() override;
+    void centerImage() override;
 
     // variables
     QVector<QAction *> mStartActions;
@@ -303,7 +303,7 @@ class DllCoreExport DkViewPortContrast : public DkViewPort
 
 public:
     DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
-    virtual ~DkViewPortContrast();
+    ~DkViewPortContrast() override;
 
 signals:
     void tFSliderAdded(qreal pos) const;
@@ -316,14 +316,14 @@ public slots:
     void enableTF(bool enable);
     QImage getImage() const override;
 
-    virtual void setImage(QImage newImg) override;
+    void setImage(QImage newImg) override;
 
 protected:
-    virtual void draw(QPainter &painter, double opacity = 1.0) override;
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void keyPressEvent(QKeyEvent *event) override;
+    void draw(QPainter &painter, double opacity = 1.0) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     QImage mFalseColorImg;

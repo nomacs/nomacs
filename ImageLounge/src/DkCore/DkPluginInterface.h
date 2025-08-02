@@ -120,14 +120,14 @@ public:
 class DkBatchPluginInterface : public DkPluginInterface
 {
 public:
-    virtual int interfaceType() const
+    int interfaceType() const override
     {
         return interface_batch;
     };
 
-    virtual QSharedPointer<DkImageContainer> runPlugin(
+    QSharedPointer<DkImageContainer> runPlugin(
         const QString &runID = QString(),
-        QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const
+        QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override
     {
         QSharedPointer<DkBatchInfo> dummy;
         DkSaveInfo saveInfo;
@@ -176,7 +176,7 @@ public:
 class DkViewPortInterface : public DkPluginInterface
 {
 public:
-    virtual int interfaceType() const
+    int interfaceType() const override
     {
         return interface_viewport;
     };
@@ -225,7 +225,7 @@ signals:
     void showInfo(const QString &msg) const;
 
 protected:
-    virtual void closeEvent(QCloseEvent *event)
+    void closeEvent(QCloseEvent *event) override
     {
         emit closePlugin();
         QWidget::closeEvent(event);

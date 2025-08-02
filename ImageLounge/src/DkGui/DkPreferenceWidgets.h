@@ -240,7 +240,7 @@ class DkFileAssociationsPreference : public DkWidget
 
 public:
     DkFileAssociationsPreference(QWidget *parent = nullptr);
-    virtual ~DkFileAssociationsPreference();
+    ~DkFileAssociationsPreference() override;
 public slots:
     void onFileModelItemChanged(QStandardItem *);
     void onOpenDefaultClicked() const;

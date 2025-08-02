@@ -282,7 +282,7 @@ class DllCoreExport DkLabel : public QLabel
 
 public:
     DkLabel(const QString &text = QString(), QWidget *parent = nullptr);
-    virtual ~DkLabel();
+    ~DkLabel() override;
 
     virtual void showTimed(int time = 3000);
     virtual void setText(const QString &msg, int time = 3000);
@@ -318,7 +318,7 @@ protected:
 
     // functions
     virtual void init();
-    virtual void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
     virtual void draw(QPainter *painter);
 
     // for my children...
@@ -345,7 +345,7 @@ public:
     int minimumWidth();
 
 protected:
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     void updateElision();
@@ -358,7 +358,7 @@ class DkLabelBg : public DkLabel
 
 public:
     DkLabelBg(const QString &text = QString(), QWidget *parent = nullptr);
-    virtual ~DkLabelBg() = default;
+    ~DkLabelBg() override = default;
 };
 
 // label widget that can fade in/out on QWidget::setVisible()
@@ -376,7 +376,7 @@ class DllCoreExport DkDockWidget : public QDockWidget
 
 public:
     DkDockWidget(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkDockWidget();
+    ~DkDockWidget() override;
 
     void registerAction(QAction *action);
     void setDisplaySettings(QBitArray *displayBits);
@@ -391,7 +391,7 @@ public:
     virtual void setVisible(bool visible, bool saveSetting);
 
 protected:
-    virtual void closeEvent(QCloseEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
     QBitArray *displaySettingsBits;
     QAction *mAction = nullptr;
@@ -408,11 +408,11 @@ public:
 
     void updateSize();
 
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 
 protected:
-    bool eventFilter(QObject *o, QEvent *e);
+    bool eventFilter(QObject *o, QEvent *e) override;
 };
 
 }

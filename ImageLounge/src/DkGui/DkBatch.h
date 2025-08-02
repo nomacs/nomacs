@@ -210,15 +210,15 @@ public:
     QStringList getSelectedFilesBatch();
     DkInputTextEdit *getInputEdit() const;
 
-    virtual bool hasUserInput() const override
+    bool hasUserInput() const override
     {
         return mHUserInput;
     };
-    virtual bool requiresUserInput() const override
+    bool requiresUserInput() const override
     {
         return mRUserInput;
     };
-    virtual void applyDefault() override;
+    void applyDefault() override;
 
     void changeTab(int tabIdx) const;
     void startProcessing();
@@ -312,8 +312,8 @@ class DkBatchOutput : public DkBatchContent
 public:
     DkBatchOutput(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
-    virtual bool hasUserInput() const override;
-    virtual bool requiresUserInput() const override
+    bool hasUserInput() const override;
+    bool requiresUserInput() const override
     {
         return mRUserInput;
     };
@@ -615,7 +615,7 @@ class DkBatchWidget : public DkWidget
 
 public:
     DkBatchWidget(DkThumbLoader *thumbLoader, const QString &currentDirectory = QString(), QWidget *parent = nullptr);
-    ~DkBatchWidget();
+    ~DkBatchWidget() override;
 
     enum batchWidgets {
         batch_input,

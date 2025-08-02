@@ -69,7 +69,7 @@ class DllCoreExport DkImageLoader : public QObject
 
 public:
     DkImageLoader();
-    virtual ~DkImageLoader();
+    ~DkImageLoader() override;
 
     DkFileInfoList updateSubFolders(const QString &rootDirPath);
 

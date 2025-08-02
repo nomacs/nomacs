@@ -49,10 +49,10 @@ public:
     {
         setObjectName("CompositeDockWidget"); // fixes saving...
     }
-    ~SbCompositeDockWidget() = default;
+    ~SbCompositeDockWidget() override = default;
 
 protected:
-    void closeEvent(QCloseEvent *)
+    void closeEvent(QCloseEvent *) override
     {
         emit closed();
     }
@@ -97,7 +97,7 @@ public:
         : QObject(parent)
     {
     }
-    ~SbCompositePlugin() = default;
+    ~SbCompositePlugin() override = default;
 
     // DkPluginInterface
     QImage image() const override;
@@ -112,7 +112,7 @@ public:
     // DkViewPortInterface
     bool createViewPort(QWidget *parent) override;
     DkPluginViewPort *getViewPort() override;
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
 
 protected:
     SbCompositeDockWidget *dockWidget = nullptr;
