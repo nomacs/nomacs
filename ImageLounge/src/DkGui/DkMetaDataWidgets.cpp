@@ -841,16 +841,13 @@ QStringList DkMetaDataHUD::getDefaultKeys() const
     return keyValues;
 }
 
-void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkImageContainerT> cImg)
+void DkMetaDataHUD::setMetaData(QSharedPointer<DkMetaDataT> metaData)
 {
-    if (cImg) {
-        mMetaData = cImg->getMetaData();
-
+    mMetaData = metaData;
+    if (isVisible()) {
         // only update if I am visible
-        if (isVisible())
-            updateMetaData(mMetaData);
-    } else
-        mMetaData = QSharedPointer<DkMetaDataT>();
+        updateMetaData(mMetaData);
+    }
 }
 
 void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData)

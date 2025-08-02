@@ -171,7 +171,7 @@ public:
     };
 
 public slots:
-    void updateMetaData(const QSharedPointer<DkImageContainerT> cImg = QSharedPointer<DkImageContainerT>());
+    void setMetaData(QSharedPointer<DkMetaDataT> metaData);
     void updateMetaData(const QSharedPointer<DkMetaDataT> cImg);
     void changeKeys();
     void changeNumColumns();

@@ -722,12 +722,13 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
     if (mPluginViewport)
         mPluginViewport->updateImageContainer(imgC);
 
-    mMetaDataInfo->updateMetaData(imgC);
-
-    if (!imgC)
+    if (!imgC) {
+        mMetaDataInfo->setMetaData(nullptr);
         return;
+    }
 
     QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
+    mMetaDataInfo->setMetaData(metaData);
 
     QString dateString = metaData->getExifValue("DateTimeOriginal");
     mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
