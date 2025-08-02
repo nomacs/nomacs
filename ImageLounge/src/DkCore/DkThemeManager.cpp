@@ -155,12 +155,12 @@ static Point3f pointOnVector(const Point3f &a, const Point3f &b, float c)
 // color palette calculations
 class DkPalette
 {
-    DkPalette() = delete;
-
 private:
     const QPalette mIn; // basis palette (usually system theme palette)
     QPalette mOut; // output palette
 public:
+    DkPalette() = delete;
+
     DkPalette(const QPalette &p)
         : mIn(p)
     {
