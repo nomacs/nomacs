@@ -96,8 +96,6 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
-#include <iostream>
-
 namespace nmc
 {
 
@@ -1586,21 +1584,8 @@ void DkNoMacs::newInstance(const QString &filePath)
     QProcess::startDetached(exe, args);
 }
 
-void tagWall(const std::list<std::string> &code)
-{
-    for (auto line : code)
-        std::cout << line << std::endl;
-}
-
 void DkNoMacs::loadRecursion()
 {
-    std::list<std::string> code;
-    code.push_back("void tagWall(const std::list<std::string>& code) {");
-    code.push_back("	for (auto line : code)");
-    code.push_back("		std::cout << line << std::endl;");
-    code.push_back("}");
-    tagWall(code);
-
     QImage img = grab().toImage();
 
     if (getTabWidget()->getViewPort())
