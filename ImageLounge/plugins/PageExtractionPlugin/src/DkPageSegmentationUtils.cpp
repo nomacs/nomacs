@@ -201,7 +201,7 @@ void DkIntersectPoly::getVertices(const std::vector<nmc::DkVector> &vec, std::ve
         DkIPoint cEdgeY = (vecTmp[idx].y < vecTmp[nIdx].y) ? DkIPoint(vecTmp[idx].y, vecTmp[nIdx].y)
                                                            : DkIPoint(vecTmp[nIdx].y, vecTmp[idx].y);
 
-        ip->push_back(DkVertex(vecTmp[idx], cEdgeX, cEdgeY));
+        ip->emplace_back(vecTmp[idx], cEdgeX, cEdgeY);
     }
 };
 
@@ -238,7 +238,7 @@ bool DkPolyRect::empty() const
 void DkPolyRect::toDkVectors(const std::vector<cv::Point> &pts, std::vector<nmc::DkVector> &dkPts) const
 {
     for (int idx = 0; idx < (int)pts.size(); idx++)
-        dkPts.push_back(nmc::DkVector(pts.at(idx)));
+        dkPts.emplace_back(pts.at(idx));
 }
 
 void DkPolyRect::computeMaxCosine()
@@ -496,7 +496,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
         for (size_t j = i + 1; j < EPs.size(); j++) {
             // test for orthogonality
             if (abs(angleDiff(EPs[i].theta_k, EPs[j].theta_k) - (CV_PI * 0.5)) < orthoTol) {
-                IPs.push_back(IntermediatePeak{EPs[i], EPs[j]});
+                IPs.emplace_back(EPs[i], EPs[j]);
             }
         }
     }
