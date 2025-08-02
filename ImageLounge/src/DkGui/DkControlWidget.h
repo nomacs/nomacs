@@ -148,8 +148,8 @@ public slots:
 
     void update();
 
-signals:
-    void imageUpdatedSignal();
+private:
+    void onImageContainerInternalUpdated();
 
 protected slots:
     void setCommentSaved(const QString &comment);
