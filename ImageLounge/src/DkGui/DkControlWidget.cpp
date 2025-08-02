@@ -304,20 +304,6 @@ void DkControlWidget::connectWidgets()
 
     // comment widget
     connect(mCommentWidget, &DkCommentWidget::commentSavedSignal, this, &DkControlWidget::setCommentSaved);
-    connect(this, &DkControlWidget::imageUpdatedSignal, this, [this]() {
-        const auto imgC = mViewport->imageContainer();
-        if (!imgC) {
-            return;
-        }
-
-        const auto metaData = imgC->getMetaData();
-
-        if (!metaData) {
-            return;
-        }
-
-        mCommentWidget->setText(metaData->getDescription());
-    });
 
     // mViewport
     connect(mViewport, &DkViewPort::infoSignal, this, [this](const QString &msg) {
@@ -729,6 +715,13 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
 
 void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
 {
+    if (mImgC) {
+        disconnect(imgC.get(),
+                   &DkImageContainerT::imageUpdatedSignal,
+                   this,
+                   &DkControlWidget::onImageContainerInternalUpdated);
+    }
+
     mImgC = imgC;
 
     if (mPluginViewport)
@@ -747,7 +740,10 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
     mFileInfoLabel->updateRating(metaData->getRating());
     mCommentWidget->setText(metaData->getDescription()); // reset
 
-    connect(imgC.get(), &DkImageContainerT::imageUpdatedSignal, this, &DkControlWidget::imageUpdatedSignal);
+    connect(imgC.get(),
+            &DkImageContainerT::imageUpdatedSignal,
+            this,
+            &DkControlWidget::onImageContainerInternalUpdated);
 }
 
 void DkControlWidget::setInfo(const QString &msg, int time, int location)
@@ -930,4 +926,18 @@ void DkControlWidget::keyReleaseEvent(QKeyEvent *event)
     QWidget::keyReleaseEvent(event);
 }
 
+void DkControlWidget::onImageContainerInternalUpdated()
+{
+    // This is called on a signal from a valid DkImageContainerT,
+    // meaning mImgC should always be not null.
+    Q_ASSERT(mImgC);
+
+    const auto metaData = mImgC->getMetaData();
+
+    if (!metaData) {
+        return;
+    }
+
+    mCommentWidget->setText(metaData->getDescription());
+}
 }
