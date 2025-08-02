@@ -31,6 +31,7 @@ modernize-deprecated-headers,\
 modernize-make-shared,\
 modernize-make-unique,\
 modernize-use-bool-literals,\
+modernize-use-emplace,\
 modernize-use-equals-default,\
 modernize-use-equals-delete,\
 modernize-use-nullptr,\
