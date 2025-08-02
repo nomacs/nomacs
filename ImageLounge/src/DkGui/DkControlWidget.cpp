@@ -727,15 +727,7 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
         return;
     }
 
-    QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
-    mMetaDataInfo->setMetaData(metaData);
-
-    QString dateString = metaData->getExifValue("DateTimeOriginal");
-    mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
-    mFileInfoLabel->setEdited(imgC->isEdited());
-    mFileInfoLabel->updateRating(metaData->getRating());
-    mCommentWidget->setText(metaData->getDescription()); // reset
-
+    onImageContainerInternalUpdated();
     connect(imgC.get(),
             &DkImageContainerT::imageUpdatedSignal,
             this,
@@ -929,11 +921,18 @@ void DkControlWidget::onImageContainerInternalUpdated()
     Q_ASSERT(mImgC);
 
     const auto metaData = mImgC->getMetaData();
+    mMetaDataInfo->setMetaData(metaData);
 
     if (!metaData) {
         return;
     }
 
     mCommentWidget->setText(metaData->getDescription());
+
+    QString dateString = metaData->getExifValue("DateTimeOriginal");
+    mFileInfoLabel->updateInfo(mImgC->filePath(), "", dateString, metaData->getRating());
+    mFileInfoLabel->setEdited(mImgC->isEdited());
+    mFileInfoLabel->updateRating(metaData->getRating());
+    mCommentWidget->setText(metaData->getDescription()); // reset
 }
 }
