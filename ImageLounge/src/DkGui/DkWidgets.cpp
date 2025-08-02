@@ -1097,13 +1097,12 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget *parent)
 
 void DkFileInfoLabel::createLayout()
 {
-    mLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-    mLayout->setSpacing(2);
+    auto layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    layout->setSpacing(2);
 
-    mLayout->addWidget(mTitleLabel);
-    mLayout->addWidget(mDateLabel);
-    mLayout->addWidget(mRatingLabel);
-    // mLayout->addStretch();
+    layout->addWidget(mTitleLabel);
+    layout->addWidget(mDateLabel);
+    layout->addWidget(mRatingLabel);
 }
 
 void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
@@ -1158,32 +1157,22 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
     updateWidth();
 }
 
-void DkFileInfoLabel::setEdited(bool edited)
-{
-    if (!isVisible() || !edited)
-        return;
-
-    QString cFileName = mTitleLabel->text() + "*";
-    this->mTitleLabel->setText(cFileName);
-}
-
-void DkFileInfoLabel::updateInfo(const QString &filePath, const QString &attr, const QString &date, const int rating)
+void DkFileInfoLabel::updateInfo(const QString &filePath, const QString &date, int rating, bool edited)
 {
     mFilePath = filePath;
-    updateTitle(filePath, attr);
+    updateTitle(filePath, edited);
     updateDate(date);
     updateRating(rating);
 
     updateWidth();
 }
 
-void DkFileInfoLabel::updateTitle(const QString &filePath, const QString &attr)
+void DkFileInfoLabel::updateTitle(const QString &filePath, bool edited)
 {
-    updateDate();
-    mTitleLabel->setText(QFileInfo(filePath).fileName() + " " + attr);
+    QString txt = edited ? "*" : "";
+    txt += QFileInfo(filePath).fileName();
+    mTitleLabel->setText(txt);
     mTitleLabel->setAlignment(Qt::AlignRight);
-
-    updateWidth();
 }
 
 void DkFileInfoLabel::updateDate(const QString &date)
@@ -1192,8 +1181,6 @@ void DkFileInfoLabel::updateDate(const QString &date)
 
     mDateLabel->setText(dateConverted);
     mDateLabel->setAlignment(Qt::AlignRight);
-
-    updateWidth();
 }
 
 void DkFileInfoLabel::updateRating(const int rating)

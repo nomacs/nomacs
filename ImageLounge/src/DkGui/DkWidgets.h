@@ -119,12 +119,7 @@ public:
     explicit DkFileInfoLabel(QWidget *parent = nullptr);
     ~DkFileInfoLabel() override = default;
 
-    void createLayout();
-    void updateInfo(const QString &filePath, const QString &attr, const QString &date, const int rating);
-    void updateTitle(const QString &filePath, const QString &attr);
-    void updateDate(const QString &date = QString());
-    void updateRating(const int rating);
-    void setEdited(bool edited);
+    void updateInfo(const QString &filePath, const QString &date, int rating, bool edited);
 
 public slots:
     void setVisible(bool visible, bool saveSettings = true) override;
@@ -132,15 +127,17 @@ public slots:
 signals:
     void ratingEdited(int rating);
 
-protected:
+private:
     QString mFilePath;
-
-    QBoxLayout *mLayout;
     QLabel *mTitleLabel;
     QLabel *mDateLabel;
     DkRatingLabel *mRatingLabel;
 
+    void createLayout();
     void updateWidth();
+    void updateTitle(const QString &filePath, bool edited);
+    void updateDate(const QString &date = QString());
+    void updateRating(const int rating);
 };
 
 class DkPlayer : public DkFadeWidget
