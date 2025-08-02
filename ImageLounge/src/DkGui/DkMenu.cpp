@@ -247,7 +247,7 @@ void DkTcpMenu::updatePeers()
 
 // DkTcpAction --------------------------------------------------------------------
 DkTcpAction::DkTcpAction()
-    : QAction(0)
+    : QAction(nullptr)
 {
 }
 
@@ -278,7 +278,7 @@ DkTcpAction::~DkTcpAction()
 
 void DkTcpAction::init()
 {
-    tcpActions = 0;
+    tcpActions = nullptr;
     setObjectName("tcpAction");
     setCheckable(true);
     setChecked(peer->isSynchronized());

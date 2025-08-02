@@ -1104,7 +1104,7 @@ DkSettingsManager::~DkSettingsManager()
 {
     if (mParams) {
         delete mParams;
-        mParams = 0;
+        mParams = nullptr;
     }
 }
 

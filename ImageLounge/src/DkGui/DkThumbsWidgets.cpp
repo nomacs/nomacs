@@ -1848,9 +1848,9 @@ void DkThumbsView::mouseReleaseEvent(QMouseEvent *event)
 
     DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos()), QTransform()));
 
-    if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != 0) {
+    if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != nullptr) {
         scene->selectThumbs(true, lastShiftIdx, scene->findThumb(itemClicked));
-    } else if (itemClicked != 0) {
+    } else if (itemClicked != nullptr) {
         lastShiftIdx = scene->findThumb(itemClicked);
     } else
         lastShiftIdx = -1;

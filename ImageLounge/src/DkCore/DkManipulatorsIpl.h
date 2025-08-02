@@ -56,7 +56,7 @@ namespace nmc
 class DkGrayScaleManipulator : public DkBaseManipulator
 {
 public:
-    DkGrayScaleManipulator(QAction *action = 0);
+    DkGrayScaleManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -65,7 +65,7 @@ public:
 class DkAutoAdjustManipulator : public DkBaseManipulator
 {
 public:
-    DkAutoAdjustManipulator(QAction *action = 0);
+    DkAutoAdjustManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -74,7 +74,7 @@ public:
 class DkNormalizeManipulator : public DkBaseManipulator
 {
 public:
-    DkNormalizeManipulator(QAction *action = 0);
+    DkNormalizeManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -83,7 +83,7 @@ public:
 class DkInvertManipulator : public DkBaseManipulator
 {
 public:
-    DkInvertManipulator(QAction *action = 0);
+    DkInvertManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -92,7 +92,7 @@ public:
 class DkFlipHManipulator : public DkBaseManipulator
 {
 public:
-    DkFlipHManipulator(QAction *action = 0);
+    DkFlipHManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -101,7 +101,7 @@ public:
 class DkFlipVManipulator : public DkBaseManipulator
 {
 public:
-    DkFlipVManipulator(QAction *action = 0);
+    DkFlipVManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;

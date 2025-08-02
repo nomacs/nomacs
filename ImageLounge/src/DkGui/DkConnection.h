@@ -65,7 +65,7 @@ class DllCoreExport DkConnection : public QTcpSocket
     Q_OBJECT
 
 public:
-    DkConnection(QObject *parent = 0);
+    DkConnection(QObject *parent = nullptr);
     ~DkConnection(){
         // qDebug() << "connection destructed...";
     };
@@ -175,7 +175,7 @@ class DllCoreExport DkLocalConnection : public DkConnection
     Q_OBJECT
 
 public:
-    DkLocalConnection(QObject *parent = 0);
+    DkLocalConnection(QObject *parent = nullptr);
 
     quint16 getLocalTcpServerPort()
     {

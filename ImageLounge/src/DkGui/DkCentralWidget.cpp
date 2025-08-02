@@ -611,7 +611,7 @@ void DkCentralWidget::createViewPort()
         return;
     }
 
-    DkViewPort *vp = 0;
+    DkViewPort *vp = nullptr;
 
     if (parent() && parent()->objectName() == "DkNoMacsFrameless")
         vp = new DkViewPortFrameless(&mThumbLoader, this);

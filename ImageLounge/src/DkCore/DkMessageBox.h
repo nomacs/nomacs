@@ -58,7 +58,7 @@ public:
                  const QString &title,
                  const QString &text,
                  QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
-                 QWidget *parent = 0,
+                 QWidget *parent = nullptr,
                  Qt::WindowFlags f = Qt::Dialog);
 
     ~DkMessageBox();

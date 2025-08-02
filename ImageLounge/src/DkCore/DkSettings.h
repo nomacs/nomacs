@@ -354,10 +354,10 @@ public:
     bool isPortable();
     QString settingsPath() const;
 
-    double dpiScaleFactor(QWidget *w = 0) const;
-    int effectiveIconSize(QWidget *w = 0) const;
-    int effectiveThumbSize(QWidget *w = 0) const;
-    int effectiveThumbPreviewSize(QWidget *w = 0) const;
+    double dpiScaleFactor(QWidget *w = nullptr) const;
+    int effectiveIconSize(QWidget *w = nullptr) const;
+    int effectiveThumbSize(QWidget *w = nullptr) const;
+    int effectiveThumbPreviewSize(QWidget *w = nullptr) const;
 
     App &app();
     Global &global();
@@ -427,7 +427,7 @@ private:
     DkSettingsManager();
 
     // QSettings* mSettings = 0;
-    DkSettings *mParams = 0;
+    DkSettings *mParams = nullptr;
 };
 
 class DkZoomConfig

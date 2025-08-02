@@ -63,7 +63,7 @@ public:
            bool sychronized = false,
            const QString &clientName = "",
            bool showInMenu = false,
-           QObject *parent = NULL);
+           QObject *parent = nullptr);
 
     ~DkPeer();
 
@@ -132,7 +132,7 @@ class DkClientManager : public QObject
 {
     Q_OBJECT
 public:
-    DkClientManager(const QString &title, QObject *parent = 0);
+    DkClientManager(const QString &title, QObject *parent = nullptr);
     ~DkClientManager();
     virtual QList<DkPeer *> getPeerList() = 0;
 
@@ -204,7 +204,7 @@ class DkLocalClientManager : public DkClientManager
     Q_OBJECT
 
 public:
-    DkLocalClientManager(const QString &title, QObject *parent = 0);
+    DkLocalClientManager(const QString &title, QObject *parent = nullptr);
     QList<DkPeer *> getPeerList();
     quint16 getServerPort() const;
 
@@ -241,7 +241,7 @@ class DkLocalTcpServer : public QTcpServer
     Q_OBJECT
 
 public:
-    DkLocalTcpServer(QObject *parent = 0);
+    DkLocalTcpServer(QObject *parent = nullptr);
 
 signals:
     void serverReiceivedNewConnection(int DkDescriptor);
@@ -264,7 +264,7 @@ public:
 private:
     DkSyncManager();
 
-    DkLocalClientManager *mClient = 0;
+    DkLocalClientManager *mClient = nullptr;
 };
 
 }

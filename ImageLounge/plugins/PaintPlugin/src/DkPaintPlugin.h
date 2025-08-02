@@ -105,7 +105,7 @@ class DkPaintViewPort : public nmc::DkPluginViewPort
     Q_OBJECT
 
 public:
-    DkPaintViewPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkPaintViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkPaintViewPort();
 
     QBrush getBrush() const;
@@ -186,7 +186,7 @@ public:
         icons_end,
     };
 
-    DkPaintToolBar(const QString &title, QWidget *parent = 0);
+    DkPaintToolBar(const QString &title, QWidget *parent = nullptr);
     virtual ~DkPaintToolBar();
 
     void setPenColor(const QColor &col);

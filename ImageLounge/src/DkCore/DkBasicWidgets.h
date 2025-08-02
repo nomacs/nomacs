@@ -66,7 +66,7 @@ class DllCoreExport DkSlider : public DkWidget
     Q_OBJECT
 
 public:
-    DkSlider(QString title = "", QWidget *parent = 0);
+    DkSlider(QString title = "", QWidget *parent = nullptr);
 
     QSlider *getSlider() const;
     void setMinimum(int minValue);
@@ -97,7 +97,7 @@ class DllCoreExport DkDoubleSlider : public DkWidget
     Q_OBJECT
 
 public:
-    DkDoubleSlider(const QString &title = "", QWidget *parent = 0);
+    DkDoubleSlider(const QString &title = "", QWidget *parent = nullptr);
 
     QSlider *getSlider() const;
     void setMinimum(double minValue);
@@ -135,7 +135,7 @@ class DllCoreExport DkColorChooser : public DkWidget
 public:
     DkColorChooser(QColor defaultColor = QColor(),
                    QString text = "Color",
-                   QWidget *parent = 0,
+                   QWidget *parent = nullptr,
                    Qt::WindowFlags flags = Qt::WindowFlags());
     virtual ~DkColorChooser(){};
 
@@ -154,9 +154,9 @@ signals:
     void colorChanged(const QColor &color); // user changed the color for any reason
 
 protected:
-    QColorDialog *mColorDialog = 0;
-    QPushButton *mColorButton = 0;
-    QPushButton *mResetButton = 0;
+    QColorDialog *mColorDialog = nullptr;
+    QPushButton *mColorButton = nullptr;
+    QPushButton *mResetButton = nullptr;
 
     QColor mColor, mDefaultColor;
     const QString mText;
@@ -169,7 +169,7 @@ class DllCoreExport DkColorEdit : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorEdit(const QColor &col = QColor(), QWidget *parent = 0);
+    DkColorEdit(const QColor &col = QColor(), QWidget *parent = nullptr);
 
     void setColor(const QColor &col);
     QColor color() const;
@@ -203,7 +203,7 @@ class DllCoreExport DkColorPane : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorPane(QWidget *parent = 0);
+    DkColorPane(QWidget *parent = nullptr);
 
     QColor color() const;
     double hue() const;
@@ -238,7 +238,7 @@ class DllCoreExport DkColorPicker : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorPicker(QWidget *parent = 0);
+    DkColorPicker(QWidget *parent = nullptr);
 
     QColor color() const;
 
@@ -253,10 +253,10 @@ protected:
     void contextMenuEvent(QContextMenuEvent *cme) override;
     void createLayout();
 
-    DkColorPane *mColorPane = 0;
-    QLabel *mColorPreview = 0;
-    QMenu *mContextMenu = 0;
-    DkColorEdit *mColorEdit = 0;
+    DkColorPane *mColorPane = nullptr;
+    QLabel *mColorPreview = nullptr;
+    QMenu *mContextMenu = nullptr;
+    DkColorEdit *mColorEdit = nullptr;
 };
 
 class DllCoreExport DkRectWidget : public DkWidget
@@ -264,7 +264,7 @@ class DllCoreExport DkRectWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkRectWidget(const QRect &r = QRect(), QWidget *parent = 0);
+    DkRectWidget(const QRect &r = QRect(), QWidget *parent = nullptr);
 
     QRect rect() const;
 

@@ -164,7 +164,7 @@ protected:
 
     PluginType mType = type_unknown;
 
-    QMenu *mPluginMenu = 0;
+    QMenu *mPluginMenu = nullptr;
 
     QSharedPointer<QPluginLoader> mLoader = QSharedPointer<QPluginLoader>();
 
@@ -178,7 +178,7 @@ class DllCoreExport DkPluginActionManager : public QObject
     Q_OBJECT
 
 public:
-    DkPluginActionManager(QObject *parent = 0);
+    DkPluginActionManager(QObject *parent = nullptr);
 
     void setMenu(QMenu *menu);
     QMenu *menu() const;
@@ -207,7 +207,7 @@ protected:
 
     QVector<QAction *> mPluginActions;
     QVector<QAction *> mPluginDummyActions;
-    QMenu *mMenu = 0;
+    QMenu *mMenu = nullptr;
     QVector<QMenu *> mPluginSubMenus;
 };
 
@@ -258,7 +258,7 @@ class DllCoreExport DkPluginManagerDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkPluginManagerDialog(QWidget *parent = 0);
+    DkPluginManagerDialog(QWidget *parent = nullptr);
     ~DkPluginManagerDialog();
 
     void deleteInstance(QSharedPointer<DkPluginContainer> plugin);
@@ -298,11 +298,11 @@ public slots:
 private:
     void createLayout();
 
-    DkPluginManagerDialog *mPluginManager = 0;
-    QSortFilterProxyModel *mProxyModel = 0;
-    QAbstractTableModel *mModel = 0;
-    QTableView *mTableView = 0;
-    QLineEdit *mFilterEdit = 0;
+    DkPluginManagerDialog *mPluginManager = nullptr;
+    QSortFilterProxyModel *mProxyModel = nullptr;
+    QAbstractTableModel *mModel = nullptr;
+    QTableView *mTableView = nullptr;
+    QLineEdit *mFilterEdit = nullptr;
 
 protected slots:
     void filterTextChanged();
@@ -315,7 +315,7 @@ class DkInstalledPluginsModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    DkInstalledPluginsModel(QObject *parent = 0);
+    DkInstalledPluginsModel(QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent) const override;
     int columnCount(const QModelIndex &parent) const override;
@@ -328,7 +328,7 @@ public:
 
 private:
     QSharedPointer<DkPluginContainer> mPluginToInsert;
-    DkPluginTableWidget *mParentTable = 0;
+    DkPluginTableWidget *mParentTable = nullptr;
 };
 
 // checkbox delegate based on code from
@@ -338,7 +338,7 @@ class DkPluginCheckBoxDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-    DkPluginCheckBoxDelegate(QObject *parent = 0);
+    DkPluginCheckBoxDelegate(QObject *parent = nullptr);
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     bool editorEvent(QEvent *event,
                      QAbstractItemModel *model,
@@ -346,7 +346,7 @@ public:
                      const QModelIndex &index);
 
 private:
-    QTableView *mParentTable = 0;
+    QTableView *mParentTable = nullptr;
 };
 
 // pushbutton delegate : adds mButtons in the table column
@@ -355,7 +355,7 @@ class DkPushButtonDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-    DkPushButtonDelegate(QObject *parent = 0);
+    DkPushButtonDelegate(QObject *parent = nullptr);
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     bool editorEvent(QEvent *event,
                      QAbstractItemModel *model,
@@ -366,7 +366,7 @@ signals:
     void buttonClicked(const QModelIndex &index) const;
 
 private:
-    QTableView *mParentTable = 0;
+    QTableView *mParentTable = nullptr;
     int mCRow = -1;
     QStyle::State mPushButonState = QStyle::State_Enabled;
 };
@@ -380,17 +380,17 @@ public:
     DkDescriptionEdit(QAbstractTableModel *data,
                       QSortFilterProxyModel *proxy,
                       QItemSelectionModel *selection,
-                      QWidget *parent = 0);
+                      QWidget *parent = nullptr);
 
 public slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
-    QAbstractTableModel *mDataModel = 0;
-    QSortFilterProxyModel *mProxyModel = 0;
-    QItemSelectionModel *mSelectionModel = 0;
-    DkPluginTableWidget *mParentTable = 0;
+    QAbstractTableModel *mDataModel = nullptr;
+    QSortFilterProxyModel *mProxyModel = nullptr;
+    QItemSelectionModel *mSelectionModel = nullptr;
+    DkPluginTableWidget *mParentTable = nullptr;
     void updateText();
 };
 
@@ -403,17 +403,17 @@ public:
     DkDescriptionImage(QAbstractTableModel *data,
                        QSortFilterProxyModel *proxy,
                        QItemSelectionModel *selection,
-                       QWidget *parent = 0);
+                       QWidget *parent = nullptr);
 
 public slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
-    QAbstractTableModel *mDataModel = 0;
-    QSortFilterProxyModel *mProxyModel = 0;
-    QItemSelectionModel *mSelectionModel = 0;
-    DkPluginTableWidget *mParentTable = 0;
+    QAbstractTableModel *mDataModel = nullptr;
+    QSortFilterProxyModel *mProxyModel = nullptr;
+    QItemSelectionModel *mSelectionModel = nullptr;
+    DkPluginTableWidget *mParentTable = nullptr;
     QPixmap mDefaultImage;
     void updateImage();
 };

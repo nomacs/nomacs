@@ -86,7 +86,7 @@ class DllCoreExport DkUpdater : public QObject
 public:
     bool silent;
 
-    DkUpdater(QObject *parent = 0);
+    DkUpdater(QObject *parent = nullptr);
 
 public slots:
     void checkForUpdates();
@@ -112,8 +112,8 @@ protected:
     QNetworkAccessManager mAccessManagerVersion;
     QNetworkAccessManager mAccessManagerSetup;
 
-    QNetworkReply *mReply = 0;
-    QNetworkCookieJar *mCookie = 0;
+    QNetworkReply *mReply = nullptr;
+    QNetworkCookieJar *mCookie = nullptr;
 
     QUrl mNomacsSetupUrl;
     QString mSetupVersion;
@@ -125,7 +125,7 @@ class DllCoreExport DkTranslationUpdater : public QObject
     Q_OBJECT
 
 public:
-    DkTranslationUpdater(bool silent = false, QObject *parent = 0);
+    DkTranslationUpdater(bool silent = false, QObject *parent = nullptr);
     bool silent;
 
 public slots:
@@ -147,8 +147,8 @@ private:
 
     qint64 mTotal, mTotalQt, mReceived, mReceivedQt;
     QNetworkAccessManager mAccessManager;
-    QNetworkReply *mReply = 0;
-    QNetworkReply *mReplyQt = 0;
+    QNetworkReply *mReply = nullptr;
+    QNetworkReply *mReplyQt = nullptr;
 };
 
 }

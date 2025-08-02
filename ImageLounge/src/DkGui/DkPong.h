@@ -161,7 +161,7 @@ class DllCoreExport DkScoreLabel : public QLabel
 
 public:
     DkScoreLabel(Qt::Alignment align = Qt::AlignLeft,
-                 QWidget *parent = 0,
+                 QWidget *parent = nullptr,
                  QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 protected:
@@ -177,7 +177,7 @@ class DllCoreExport DkPongPort : public QGraphicsView
     Q_OBJECT
 
 public:
-    DkPongPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkPongPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     virtual ~DkPongPort();
 
     QSharedPointer<DkPongSettings> settings() const;
@@ -224,7 +224,7 @@ class DllCoreExport DkPong : public QMainWindow
     Q_OBJECT
 
 public:
-    DkPong(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkPong(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     virtual ~DkPong(){};
 
 protected:

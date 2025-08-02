@@ -707,7 +707,7 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
     mViewport->setPaintWidget(dynamic_cast<QWidget *>(mPluginViewport), removeWidget);
 
     if (removeWidget) {
-        mPluginViewport = 0;
+        mPluginViewport = nullptr;
     }
 }
 

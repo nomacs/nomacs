@@ -724,11 +724,11 @@ bool DkBasicLoader::loadTIFF(const QString &filePath, QImage &img, QSharedPointe
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
-    TIFF *tiff = 0;
+    TIFF *tiff = nullptr;
 
 // TODO: currently TIFFStreamOpen can only be linked on Windows?!
 #if defined(Q_OS_WIN)
@@ -1228,11 +1228,11 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
-    TIFF *tiff = 0;
+    TIFF *tiff = nullptr;
 
 #if defined(Q_OS_WIN)
     std::istringstream is(ba ? ba->toStdString() : "");
@@ -1309,8 +1309,8 @@ bool DkBasicLoader::loadPageAt(int pageIdx)
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
     TIFF *tiff = TIFFOpen(mFile.toLatin1(), "r");

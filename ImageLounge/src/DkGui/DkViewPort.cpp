@@ -1533,7 +1533,7 @@ void DkViewPort::copyImage()
 QMimeData *DkViewPort::createMime() const
 {
     if (getImage().isNull() || !mLoader)
-        return 0;
+        return nullptr;
 
     // NOTE: if we do the file:/// thingy, we will get into problems with mounted drives (e.g. //hermes...)
     QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
@@ -1624,7 +1624,7 @@ void DkViewPort::rotate180()
 void DkViewPort::loadLena()
 {
     bool ok;
-    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, 0, &ok);
+    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, nullptr, &ok);
 
     // pass phrase
     if (ok && !text.isEmpty() && text == "lenna") {

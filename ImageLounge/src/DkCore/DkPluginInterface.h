@@ -106,7 +106,7 @@ public:
     QMainWindow *getMainWindow() const
     {
         QWidgetList widgets = QApplication::topLevelWidgets();
-        QMainWindow *win = 0;
+        QMainWindow *win = nullptr;
 
         for (int idx = 0; idx < widgets.size(); idx++) {
             if (widgets.at(idx)->inherits("QMainWindow")) {
@@ -201,7 +201,7 @@ class DllCoreExport DkPluginViewPort : public DkWidget
     Q_OBJECT
 
 public:
-    DkPluginViewPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags())
+    DkPluginViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
         : DkWidget(parent, flags)
     {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -252,8 +252,8 @@ protected:
         return mWorldMatrix->inverted().map(pos);
     };
 
-    QTransform *mWorldMatrix = 0;
-    QTransform *mImgMatrix = 0;
+    QTransform *mWorldMatrix = nullptr;
+    QTransform *mImgMatrix = nullptr;
 };
 
 }

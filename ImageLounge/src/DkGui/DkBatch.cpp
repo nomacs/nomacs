@@ -1711,7 +1711,7 @@ void DkBatchPluginWidget::addPlugins(QStandardItemModel *model) const
 
 void DkBatchPluginWidget::selectPlugin(const QString &pluginName)
 {
-    mCurrentPlugin = 0; // unset
+    mCurrentPlugin = nullptr; // unset
     QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPluginByName(pluginName);
 
     if (!plugin || !plugin->batchPlugin()) {

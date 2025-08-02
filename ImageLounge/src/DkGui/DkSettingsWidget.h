@@ -99,7 +99,7 @@ class DkSettingsProxyModel : public QSortFilterProxyModel
     Q_OBJECT
 
 public:
-    DkSettingsProxyModel(QObject *parent = 0);
+    DkSettingsProxyModel(QObject *parent = nullptr);
     virtual ~DkSettingsProxyModel()
     {
     }
@@ -113,7 +113,7 @@ class DkSettingsModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    DkSettingsModel(QObject *parent = 0);
+    DkSettingsModel(QObject *parent = nullptr);
     ~DkSettingsModel();
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;

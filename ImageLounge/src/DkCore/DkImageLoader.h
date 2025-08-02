@@ -180,7 +180,7 @@ protected:
     bool mTimerBlockedUpdate = false;
     QString mCurrentDir;
     QString mCopyDir;
-    QFileSystemWatcher *mDirWatcher = 0;
+    QFileSystemWatcher *mDirWatcher = nullptr;
     QStringList mSubFolders;
     QVector<QSharedPointer<DkImageContainerT>> mImages;
     QSharedPointer<DkImageContainerT> mCurrentImage;

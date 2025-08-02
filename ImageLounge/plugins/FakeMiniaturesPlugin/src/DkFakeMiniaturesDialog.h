@@ -66,7 +66,7 @@ class DkFakeMiniaturesDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkFakeMiniaturesDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkFakeMiniaturesDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkFakeMiniaturesDialog();
     bool wasOkPressed()
     {
@@ -192,7 +192,7 @@ class DkPreviewLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *parent = 0);
+    DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *parent = nullptr);
     ~DkPreviewLabel();
     void setImgRect(QRect rect);
     QRect getROI()

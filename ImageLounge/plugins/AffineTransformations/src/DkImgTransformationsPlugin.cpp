@@ -133,7 +133,7 @@ DkImgTransformationsViewPort::~DkImgTransformationsViewPort()
     // however, then we have lot's of toolbars in memory if the user opens the plugin again and again
     if (imgTransformationsToolbar) {
         delete imgTransformationsToolbar;
-        imgTransformationsToolbar = 0;
+        imgTransformationsToolbar = nullptr;
     }
 }
 

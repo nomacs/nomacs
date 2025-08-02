@@ -150,7 +150,7 @@ QAction *DkAppManager::createAction(const QString &filePath)
 {
     QFileInfo file(filePath);
     if (!file.exists())
-        return 0;
+        return nullptr;
 
     QAction *newApp = new QAction(file.baseName(), parent());
     newApp->setToolTip(QDir::fromNativeSeparators(file.filePath()));
@@ -167,7 +167,7 @@ QAction *DkAppManager::findAction(const QString &appPath) const
             return mApps.at(idx);
     }
 
-    return 0;
+    return nullptr;
 }
 
 void DkAppManager::findDefaultSoftware()

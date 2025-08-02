@@ -84,7 +84,7 @@ signals:
 protected:
     void createLayout();
 
-    DkResizableScrollArea *mCentralScroller = 0;
+    DkResizableScrollArea *mCentralScroller = nullptr;
     QPushButton *mInfoButton;
 
     QIcon mIcon;
@@ -115,8 +115,8 @@ protected:
     QVector<DkTabEntryWidget *> mTabEntries;
     QVector<DkPreferenceTabWidget *> mWidgets;
 
-    QStackedLayout *mCentralLayout = 0;
-    QVBoxLayout *mTabLayout = 0;
+    QStackedLayout *mCentralLayout = nullptr;
+    QVBoxLayout *mTabLayout = nullptr;
 };
 
 class DkGroupWidget : public DkWidget
@@ -134,7 +134,7 @@ protected:
     void createLayout();
 
     QString mTitle;
-    QVBoxLayout *mContentLayout = 0;
+    QVBoxLayout *mContentLayout = nullptr;
 };
 
 class DkGeneralPreference : public DkWidget
@@ -142,7 +142,7 @@ class DkGeneralPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkGeneralPreference(QWidget *parent = 0);
+    DkGeneralPreference(QWidget *parent = nullptr);
 
 public slots:
     void onShowRecentFilesToggled(bool checked) const;
@@ -179,7 +179,7 @@ class DkDisplayPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkDisplayPreference(QWidget *parent = 0);
+    DkDisplayPreference(QWidget *parent = nullptr);
 
 public slots:
     void onInterpolationBoxValueChanged(int value) const;
@@ -207,8 +207,8 @@ protected:
     void createLayout();
     void paintEvent(QPaintEvent *ev) override;
 
-    QWidget *mZoomLevels = 0;
-    QLineEdit *mZoomLevelsEdit = 0;
+    QWidget *mZoomLevels = nullptr;
+    QLineEdit *mZoomLevelsEdit = nullptr;
 };
 
 class DkFilePreference : public DkWidget
@@ -216,7 +216,7 @@ class DkFilePreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkFilePreference(QWidget *parent = 0);
+    DkFilePreference(QWidget *parent = nullptr);
 
 public slots:
     void onDirChooserDirectoryChanged(const QString &dirPath) const;
@@ -239,7 +239,7 @@ class DkFileAssociationsPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkFileAssociationsPreference(QWidget *parent = 0);
+    DkFileAssociationsPreference(QWidget *parent = nullptr);
     virtual ~DkFileAssociationsPreference();
 public slots:
     void onFileModelItemChanged(QStandardItem *);
@@ -258,7 +258,7 @@ protected:
     void writeSettings() const;
 
     bool mSaveSettings = false;
-    QStandardItemModel *mModel = 0;
+    QStandardItemModel *mModel = nullptr;
 };
 
 class DkAdvancedPreference : public DkWidget
@@ -266,7 +266,7 @@ class DkAdvancedPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkAdvancedPreference(QWidget *parent = 0);
+    DkAdvancedPreference(QWidget *parent = nullptr);
 
 public slots:
     void onLoadRawButtonClicked(int buttonId) const;
@@ -292,7 +292,7 @@ class DkEditorPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkEditorPreference(QWidget *parent = 0);
+    DkEditorPreference(QWidget *parent = nullptr);
 
 signals:
     void infoSignal(const QString &msg) const;

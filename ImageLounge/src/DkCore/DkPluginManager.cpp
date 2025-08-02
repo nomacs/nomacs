@@ -490,7 +490,7 @@ DkPluginInterface *DkPluginContainer::plugin() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     DkPluginInterface *pi = qobject_cast<DkPluginInterface *>(mLoader->instance());
 
@@ -506,7 +506,7 @@ DkBatchPluginInterface *DkPluginContainer::batchPlugin() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     return qobject_cast<DkBatchPluginInterface *>(mLoader->instance());
 }
@@ -515,7 +515,7 @@ DkViewPortInterface *DkPluginContainer::pluginViewPort() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     return qobject_cast<DkViewPortInterface *>(mLoader->instance());
 }
