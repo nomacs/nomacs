@@ -1998,9 +1998,7 @@ FileDownloader::FileDownloader(const QUrl &imageUrl, const QString &filePath, QO
     downloadFile(imageUrl);
 }
 
-FileDownloader::~FileDownloader()
-{
-}
+FileDownloader::~FileDownloader() = default;
 
 void FileDownloader::downloadFile(const QUrl &url)
 {

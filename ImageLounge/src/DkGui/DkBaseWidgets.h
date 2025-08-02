@@ -358,7 +358,7 @@ class DkLabelBg : public DkLabel
 
 public:
     DkLabelBg(const QString &text = QString(), QWidget *parent = nullptr);
-    virtual ~DkLabelBg(){};
+    virtual ~DkLabelBg() = default;
 };
 
 // label widget that can fade in/out on QWidget::setVisible()

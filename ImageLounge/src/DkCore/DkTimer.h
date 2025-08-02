@@ -60,9 +60,7 @@ public:
      * Initializes the class and stops the clock.
      **/
     DkTimer();
-    virtual ~DkTimer()
-    {
-    }
+    virtual ~DkTimer() = default;
 
     friend DllCoreExport QDataStream &operator<<(QDataStream &s, const DkTimer &t);
     friend DllCoreExport QDebug operator<<(QDebug d, const DkTimer &timer);

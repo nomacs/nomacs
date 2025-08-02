@@ -87,9 +87,7 @@ class DkMetaDataProxyModel : public QSortFilterProxyModel
 
 public:
     DkMetaDataProxyModel(QObject *parent = nullptr);
-    virtual ~DkMetaDataProxyModel()
-    {
-    }
+    virtual ~DkMetaDataProxyModel() = default;
 
 protected:
     virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
@@ -243,7 +241,7 @@ class DkCommentWidget : public DkFadeLabel
 
 public:
     DkCommentWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~DkCommentWidget(){};
+    ~DkCommentWidget() = default;
 
     void setMetaData(QSharedPointer<DkMetaDataT> metaData);
     QString text() const;

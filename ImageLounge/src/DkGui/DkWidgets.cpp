@@ -112,9 +112,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget *parent)
     mMouseDown = false;
 }
 
-DkFolderScrollBar::~DkFolderScrollBar()
-{
-}
+DkFolderScrollBar::~DkFolderScrollBar() = default;
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> images)
 {
@@ -2140,9 +2138,7 @@ DkHistogram::DkHistogram(QWidget *parent)
     mContextMenu->addAction(showStats);
 }
 
-DkHistogram::~DkHistogram()
-{
-}
+DkHistogram::~DkHistogram() = default;
 
 /**
  * Paints the image histogram

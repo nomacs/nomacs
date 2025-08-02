@@ -67,7 +67,7 @@ class DkMetaDataT;
 class DllCoreExport DkAbstractBatch
 {
 public:
-    DkAbstractBatch(){};
+    DkAbstractBatch() = default;
 
     virtual void setProperties(...) {};
     virtual void saveSettings(QSettings &) const {};
@@ -267,7 +267,7 @@ protected:
 class DllCoreExport DkBatchConfig
 {
 public:
-    DkBatchConfig(){};
+    DkBatchConfig() = default;
     DkBatchConfig(const QStringList &fileList, const QString &outputDir, const QString &fileNamePattern);
 
     virtual void saveSettings(QSettings &settings) const;

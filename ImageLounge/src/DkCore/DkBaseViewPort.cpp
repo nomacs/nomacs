@@ -113,9 +113,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent)
     connect(mHideCursorTimer, &QTimer::timeout, this, &DkBaseViewPort::hideCursor);
 }
 
-DkBaseViewPort::~DkBaseViewPort()
-{
-}
+DkBaseViewPort::~DkBaseViewPort() = default;
 
 void DkBaseViewPort::zoomConstraints(double minZoom, double maxZoom)
 {

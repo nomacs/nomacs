@@ -2080,9 +2080,7 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
     mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
 }
 
-DkViewPortFrameless::~DkViewPortFrameless()
-{
-}
+DkViewPortFrameless::~DkViewPortFrameless() = default;
 
 void DkViewPortFrameless::zoom(double factor, const QPointF &center, bool force)
 {
@@ -2403,9 +2401,7 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
 
-DkViewPortContrast::~DkViewPortContrast()
-{
-}
+DkViewPortContrast::~DkViewPortContrast() = default;
 
 void DkViewPortContrast::changeChannel(int channel)
 {

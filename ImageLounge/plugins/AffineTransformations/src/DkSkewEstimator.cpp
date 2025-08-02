@@ -52,9 +52,7 @@ DkSkewEstimator::DkSkewEstimator(QWidget *mainWin)
     selectedLines.clear();
 }
 
-DkSkewEstimator::~DkSkewEstimator()
-{
-}
+DkSkewEstimator::~DkSkewEstimator() = default;
 
 void DkSkewEstimator::setImage(QImage inImage)
 {

@@ -66,9 +66,7 @@ class DllCoreExport DkConnection : public QTcpSocket
 
 public:
     DkConnection(QObject *parent = nullptr);
-    ~DkConnection(){
-        // qDebug() << "connection destructed...";
-    };
+    ~DkConnection() = default;
 
     void release()
     {

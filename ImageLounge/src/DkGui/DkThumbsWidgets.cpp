@@ -944,9 +944,7 @@ void DkThumbLabel::onThumbnailLoadFailed(const QString &filePath)
     update();
 }
 
-DkThumbLabel::~DkThumbLabel()
-{
-}
+DkThumbLabel::~DkThumbLabel() = default;
 
 void DkThumbLabel::updateTooltip(const QImage &thumb, bool fromExif)
 {

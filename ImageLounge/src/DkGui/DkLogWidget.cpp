@@ -121,9 +121,7 @@ void DkLogDock::createLayout()
     setWidget(logWidget);
 }
 
-DkMessageQueuer::DkMessageQueuer()
-{
-}
+DkMessageQueuer::DkMessageQueuer() = default;
 
 void DkMessageQueuer::log(QtMsgType type, const QString &msg)
 {
