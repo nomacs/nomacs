@@ -2545,7 +2545,7 @@ QStringList DkRecentDir::filePaths(int max) const
         list = mFiles.mid(0, max);
 
     QStringList paths;
-    for (auto &info : qAsConst(list))
+    for (auto &info : std::as_const(list))
         paths.append(info.path());
 
     return paths;
