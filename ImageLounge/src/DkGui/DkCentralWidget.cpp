@@ -787,7 +787,7 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
     int idx = mTabbar->currentIndex();
 
     if (idx == -1) {
-        addTab(img, 0);
+        addTab(img, false);
     } else if (idx > mTabInfos.size())
         addTab(img, idx);
     else {

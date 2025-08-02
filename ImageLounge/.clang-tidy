@@ -31,6 +31,7 @@ modernize-use-nullptr,\
 modernize-use-equals-default,\
 modernize-use-equals-delete,\
 modernize-use-override,\
+modernize-use-bool-literals,\
 "
 
 CheckOptions:
