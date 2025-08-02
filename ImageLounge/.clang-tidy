@@ -1,0 +1,47 @@
+---
+# clang-tidy commit steps:
+#
+#   From the build directory:
+#   $ cmake -D CMAKE_EXPORT_COMPILE_COMMANDS=ON [...] ../ImageLounge
+#   $ run-clang-tidy-18 -p ./ -header-filter=.* -fix *
+#
+#   Check that it made no changes, if it did that must be resolved first.
+#
+#   Process ONE check on all sources and auto-apply fixes:
+#   $ run-clang-tidy-18 -p ./ -config={} -header-filter=.* -checks=modernize-use-nullptr -fix *
+#
+#   Reformat sources, from the top directory (nomacs.git/):
+#   $ ./scripts/format-cpp.sh --verbose -i
+#
+#   Review and test changes, make any necessary manual cleanups
+#   Add the check and options to .clang-tidy
+#   Add ONE commit for this check, including the modified .clang-tidy
+#
+HeaderFilterRegex:        '.*'
+FormatStyle:              none
+SystemHeaders:            false
+
+Checks: "\
+modernize-use-nullptr,\
+"
+
+CheckOptions:
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.MemberPrefix
+    value: m
+  - key: readability-identifier-naming.GlobalVariablePattern
+    value: '^g[A-Z][a-zA-z0-9]*$'
+
+
+# readability-identifier-naming\
+
+# Checks: "\
+# ,modernize-*\
+# ,-modernize-loop-convert\
+# ,-modernize-return-braced-init-list\
+# ,-modernize-use-nodiscard\
+# ,-modernize-use-trailing-return-type\
+#"
+
+...
