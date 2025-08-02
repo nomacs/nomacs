@@ -67,7 +67,7 @@ public:
 
 private:
     DkThumbsThreadPool();
-    DkThumbsThreadPool(const DkThumbsThreadPool &);
+    DkThumbsThreadPool(const DkThumbsThreadPool &) = delete;
 
     QThreadPool *mPool;
 };

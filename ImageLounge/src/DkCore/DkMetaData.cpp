@@ -65,7 +65,7 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
     metaDataN->mFileInfo = mFileInfo;
     metaDataN->mExifState = mExifState;
 
-    if (mExifImg.get() != 0) {
+    if (mExifImg.get() != nullptr) {
         // ImageFactory::create(type) may crash even if old Image object has that type
         try {
             // Load new Exiv2::Image object
@@ -129,7 +129,7 @@ void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray
         return;
     }
 
-    if (mExifImg.get() == 0) {
+    if (mExifImg.get() == nullptr) {
         qDebug() << "[Exiv2] image could not be opened for exif data extraction";
         return;
     }
@@ -249,7 +249,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
         return false;
     }
 
-    if (exifImgN.get() == 0) {
+    if (exifImgN.get() == nullptr) {
         qDebug() << "image could not be opened for exif data extraction";
         return false;
     }
@@ -1031,7 +1031,7 @@ void DkMetaDataT::setThumbnail(QImage thumb)
             // whipe all exif data of the thumbnail
             auto exifImgThumb = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba.constData()), ba.size());
 
-            if (exifImgThumb.get() != 0 && exifImgThumb->good())
+            if (exifImgThumb.get() != nullptr && exifImgThumb->good())
                 exifImgThumb->clearExifData();
         } catch (...) {
             qDebug() << "could not clear the thumbnail exif info";

@@ -63,7 +63,7 @@ class DkImageContainer;
 class DllCoreExport DkBaseManipulator
 {
 public:
-    DkBaseManipulator(QAction *action = 0);
+    DkBaseManipulator(QAction *action = nullptr);
 
     QString name() const;
     QAction *action() const;
@@ -78,7 +78,7 @@ public:
     virtual void loadSettings(QSettings &settings);
 
 private:
-    QAction *mAction = 0;
+    QAction *mAction = nullptr;
     bool mIsSelected = false;
 };
 
@@ -102,7 +102,7 @@ public:
 
 private:
     bool mDirty = false;
-    QWidget *mWidget = 0;
+    QWidget *mWidget = nullptr;
 };
 
 class DllCoreExport DkManipulatorManager

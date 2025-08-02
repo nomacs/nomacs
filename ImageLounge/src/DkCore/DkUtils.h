@@ -540,7 +540,7 @@ private:
 class DllCoreExport TreeItem
 {
 public:
-    TreeItem(const QVector<QVariant> &data, TreeItem *parent = 0);
+    TreeItem(const QVector<QVariant> &data, TreeItem *parent = nullptr);
     ~TreeItem();
 
     void appendChild(TreeItem *child);
@@ -564,7 +564,7 @@ public:
 private:
     QVector<TreeItem *> childItems;
     QVector<QVariant> itemData;
-    TreeItem *parentItem = 0;
+    TreeItem *parentItem = nullptr;
 
     void parentList(QStringList &parentKeys) const;
 };

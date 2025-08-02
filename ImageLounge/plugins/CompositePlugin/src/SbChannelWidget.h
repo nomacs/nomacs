@@ -37,17 +37,17 @@ class SbIntensitySlider : public QSlider
 {
     Q_OBJECT
 public:
-    SbIntensitySlider(QWidget *parent = 0)
+    SbIntensitySlider(QWidget *parent = nullptr)
         : QSlider(parent)
     {
     }
-    SbIntensitySlider(Qt::Orientation orientation, QWidget *parent = 0)
+    SbIntensitySlider(Qt::Orientation orientation, QWidget *parent = nullptr)
         : QSlider(orientation, parent)
     {
     }
 
 protected:
-    virtual void sliderChange(SliderChange change)
+    void sliderChange(SliderChange change) override
     {
         QSlider::sliderChange(change);
 
@@ -80,7 +80,7 @@ public:
     static const int THUMB_MAX_SIZE = 150;
 
     SbChannelWidget(Channel c, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~SbChannelWidget();
+    ~SbChannelWidget() override;
     cv::Mat getImg(); // return the channel content
     void setImg(
         cv::Mat _img = cv::Mat(),

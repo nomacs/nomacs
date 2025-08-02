@@ -59,7 +59,7 @@ class DllCoreExport DkWidget : public QWidget
     Q_OBJECT
 
 public:
-    DkWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -239,7 +239,7 @@ class DllCoreExport DkFadeWidget : public DkFadeMixin<DkWidget>
     Q_OBJECT
 
 public:
-    DkFadeWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkFadeWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     enum {
         pos_west,
@@ -281,8 +281,8 @@ class DllCoreExport DkLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkLabel(const QString &text = QString(), QWidget *parent = 0);
-    virtual ~DkLabel();
+    DkLabel(const QString &text = QString(), QWidget *parent = nullptr);
+    ~DkLabel() override;
 
     virtual void showTimed(int time = 3000);
     virtual void setText(const QString &msg, int time = 3000);
@@ -318,7 +318,7 @@ protected:
 
     // functions
     virtual void init();
-    virtual void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
     virtual void draw(QPainter *painter);
 
     // for my children...
@@ -333,7 +333,7 @@ class DllCoreExport DkElidedLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkElidedLabel(QWidget *parent = 0, const QString &text = QString());
+    DkElidedLabel(QWidget *parent = nullptr, const QString &text = QString());
 
     void setText(QString text);
     QString text() const
@@ -345,7 +345,7 @@ public:
     int minimumWidth();
 
 protected:
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     void updateElision();
@@ -357,8 +357,8 @@ class DkLabelBg : public DkLabel
     Q_OBJECT
 
 public:
-    DkLabelBg(const QString &text = QString(), QWidget *parent = 0);
-    virtual ~DkLabelBg(){};
+    DkLabelBg(const QString &text = QString(), QWidget *parent = nullptr);
+    ~DkLabelBg() override = default;
 };
 
 // label widget that can fade in/out on QWidget::setVisible()
@@ -367,7 +367,7 @@ class DkFadeLabel : public DkFadeMixin<DkLabel>
     Q_OBJECT
 
 public:
-    DkFadeLabel(const QString &text = QString(), QWidget *parent = 0);
+    DkFadeLabel(const QString &text = QString(), QWidget *parent = nullptr);
 };
 
 class DllCoreExport DkDockWidget : public QDockWidget
@@ -375,8 +375,8 @@ class DllCoreExport DkDockWidget : public QDockWidget
     Q_OBJECT
 
 public:
-    DkDockWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkDockWidget();
+    DkDockWidget(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkDockWidget() override;
 
     void registerAction(QAction *action);
     void setDisplaySettings(QBitArray *displayBits);
@@ -391,10 +391,10 @@ public:
     virtual void setVisible(bool visible, bool saveSetting);
 
 protected:
-    virtual void closeEvent(QCloseEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
     QBitArray *displaySettingsBits;
-    QAction *mAction = 0;
+    QAction *mAction = nullptr;
 };
 
 extern template class DkFadeMixin<DkLabel>;
@@ -404,15 +404,15 @@ class DllCoreExport DkResizableScrollArea : public QScrollArea
     Q_OBJECT
 
 public:
-    DkResizableScrollArea(QWidget *parent = 0);
+    DkResizableScrollArea(QWidget *parent = nullptr);
 
     void updateSize();
 
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 
 protected:
-    bool eventFilter(QObject *o, QEvent *e);
+    bool eventFilter(QObject *o, QEvent *e) override;
 };
 
 }

@@ -58,12 +58,12 @@ public:
                  const QString &title,
                  const QString &text,
                  QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
-                 QWidget *parent = 0,
+                 QWidget *parent = nullptr,
                  Qt::WindowFlags f = Qt::Dialog);
 
-    ~DkMessageBox();
+    ~DkMessageBox() override;
 
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
     void setDefaultButton(QMessageBox::StandardButton button);
     void setButtonText(QMessageBox::StandardButton button, const QString &text);
 

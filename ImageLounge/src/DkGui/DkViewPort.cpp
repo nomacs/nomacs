@@ -1533,7 +1533,7 @@ void DkViewPort::copyImage()
 QMimeData *DkViewPort::createMime() const
 {
     if (getImage().isNull() || !mLoader)
-        return 0;
+        return nullptr;
 
     // NOTE: if we do the file:/// thingy, we will get into problems with mounted drives (e.g. //hermes...)
     QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
@@ -1624,7 +1624,7 @@ void DkViewPort::rotate180()
 void DkViewPort::loadLena()
 {
     bool ok;
-    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, 0, &ok);
+    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, nullptr, &ok);
 
     // pass phrase
     if (ok && !text.isEmpty() && text == "lenna") {
@@ -2080,9 +2080,7 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
     mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
 }
 
-DkViewPortFrameless::~DkViewPortFrameless()
-{
-}
+DkViewPortFrameless::~DkViewPortFrameless() = default;
 
 void DkViewPortFrameless::zoom(double factor, const QPointF &center, bool force)
 {
@@ -2403,9 +2401,7 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
 
-DkViewPortContrast::~DkViewPortContrast()
-{
-}
+DkViewPortContrast::~DkViewPortContrast() = default;
 
 void DkViewPortContrast::changeChannel(int channel)
 {

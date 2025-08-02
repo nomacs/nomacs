@@ -65,8 +65,8 @@ class DllCoreExport DkConnection : public QTcpSocket
     Q_OBJECT
 
 public:
-    DkConnection(QObject *parent = 0);
-    ~DkConnection(){
+    DkConnection(QObject *parent = nullptr);
+    ~DkConnection() override{
         // qDebug() << "connection destructed...";
     };
 
@@ -175,7 +175,7 @@ class DllCoreExport DkLocalConnection : public DkConnection
     Q_OBJECT
 
 public:
-    DkLocalConnection(QObject *parent = 0);
+    DkLocalConnection(QObject *parent = nullptr);
 
     quint16 getLocalTcpServerPort()
     {
@@ -185,14 +185,14 @@ public:
     {
         mLocalTcpServerPort = localTcpServerPort;
     };
-    void sendGreetingMessage(const QString &currentTitle);
+    void sendGreetingMessage(const QString &currentTitle) override;
 
 signals:
     void connectionQuitReceived();
 
 protected slots:
-    void processReadyRead();
-    void processData();
+    void processReadyRead() override;
+    void processData() override;
 public slots:
     void sendQuitMessage();
 
@@ -203,8 +203,8 @@ protected:
     };
 
 private:
-    bool readProtocolHeader();
-    void readGreetingMessage();
+    bool readProtocolHeader() override;
+    void readGreetingMessage() override;
 
     quint16 mLocalTcpServerPort;
     LocalDataType mCurrentLocalDataType = Undefined;

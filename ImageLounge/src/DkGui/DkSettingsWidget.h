@@ -99,13 +99,11 @@ class DkSettingsProxyModel : public QSortFilterProxyModel
     Q_OBJECT
 
 public:
-    DkSettingsProxyModel(QObject *parent = 0);
-    virtual ~DkSettingsProxyModel()
-    {
-    }
+    DkSettingsProxyModel(QObject *parent = nullptr);
+    ~DkSettingsProxyModel() override = default;
 
 protected:
-    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 };
 
 class DkSettingsModel : public QAbstractItemModel
@@ -113,22 +111,22 @@ class DkSettingsModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    DkSettingsModel(QObject *parent = 0);
-    ~DkSettingsModel();
+    DkSettingsModel(QObject *parent = nullptr);
+    ~DkSettingsModel() override;
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &index) const override;
 
     // return item of the model
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     // edit functions
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
-    virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
     void addSettingsGroup(const DkSettingsGroup &group, const QString &parentName = "");
     void clear();

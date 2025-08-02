@@ -112,9 +112,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget *parent)
     mMouseDown = false;
 }
 
-DkFolderScrollBar::~DkFolderScrollBar()
-{
-}
+DkFolderScrollBar::~DkFolderScrollBar() = default;
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> images)
 {
@@ -244,7 +242,7 @@ void DkThumbsSaver::thumbLoaded()
         if (mPd) {
             mPd->close();
             mPd->deleteLater();
-            mPd = 0;
+            mPd = nullptr;
         }
         mStop = true;
 
@@ -2054,7 +2052,7 @@ void DkEditableRect::setVisible(bool visible)
 DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget *parent /* = 0*/, Qt::WindowFlags f /* = 0*/)
     : DkEditableRect(rect, parent, f)
 {
-    cropToolbar = 0;
+    cropToolbar = nullptr;
 }
 
 void DkCropWidget::createToolbar()
@@ -2140,9 +2138,7 @@ DkHistogram::DkHistogram(QWidget *parent)
     mContextMenu->addAction(showStats);
 }
 
-DkHistogram::~DkHistogram()
-{
-}
+DkHistogram::~DkHistogram() = default;
 
 /**
  * Paints the image histogram

@@ -58,7 +58,7 @@ class DkBaseManipulatorWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkBaseManipulatorExt> baseManipulator() const;
 
@@ -71,7 +71,7 @@ class DkTinyPlanetWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkTinyPlanetManipulator> manipulator() const;
 
@@ -89,7 +89,7 @@ class DkBlurWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkBlurManipulator> manipulator() const;
 
@@ -105,7 +105,7 @@ class DkUnsharpMaskWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkUnsharpMaskManipulator> manipulator() const;
 
@@ -122,7 +122,7 @@ class DkRotateWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkRotateManipulator> manipulator() const;
 
@@ -138,7 +138,7 @@ class DkResizeWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkResizeManipulator> manipulator() const;
 
@@ -159,7 +159,7 @@ class DkThresholdWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkThresholdManipulator> manipulator() const;
 
@@ -176,7 +176,7 @@ class DkHueWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkHueManipulator> manipulator() const;
 
@@ -194,7 +194,7 @@ class DkColorWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkColorManipulator> manipulator() const;
 
@@ -210,7 +210,7 @@ class DkExposureWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkExposureManipulator> manipulator() const;
 
@@ -251,7 +251,7 @@ class DkEditDock : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkEditDock(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkEditDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
 public slots:
     void setImage(QSharedPointer<DkImageContainerT> imgC);
@@ -259,7 +259,7 @@ public slots:
 protected:
     void createLayout();
 
-    DkManipulatorWidget *mMplWidget = 0;
+    DkManipulatorWidget *mMplWidget = nullptr;
 };
 
 }

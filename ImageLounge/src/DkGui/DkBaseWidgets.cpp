@@ -254,9 +254,7 @@ DkLabel::DkLabel(const QString &text, QWidget *parent)
     hide();
 }
 
-DkLabel::~DkLabel()
-{
-}
+DkLabel::~DkLabel() = default;
 
 void DkLabel::init()
 {
@@ -442,13 +440,11 @@ DkFadeLabel::DkFadeLabel(const QString &text, QWidget *parent)
 DkDockWidget::DkDockWidget(const QString &title, QWidget *parent /* = 0 */, Qt::WindowFlags flags /* = 0 */)
     : QDockWidget(title, parent, flags)
 {
-    displaySettingsBits = 0;
+    displaySettingsBits = nullptr;
     setObjectName("DkDockWidget");
 }
 
-DkDockWidget::~DkDockWidget()
-{
-}
+DkDockWidget::~DkDockWidget() = default;
 
 void DkDockWidget::registerAction(QAction *action)
 {

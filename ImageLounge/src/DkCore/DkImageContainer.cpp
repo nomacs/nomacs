@@ -58,9 +58,7 @@ DkImageContainer::DkImageContainer(const DkFileInfo &fileInfo)
     init();
 }
 
-DkImageContainer::~DkImageContainer()
-{
-}
+DkImageContainer::~DkImageContainer() = default;
 
 void DkImageContainer::init()
 {

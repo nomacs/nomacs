@@ -1084,10 +1084,10 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
     // saveToBuffer() is responsible for adding the exif data to the image buffer soup
     // which is then written to the specified file.
 
-    DkCompressDialog *jpgDialog = 0;
+    DkCompressDialog *jpgDialog = nullptr;
     QImage lSaveImg = saveImg;
 
-    DkTifDialog *tifDialog = 0;
+    DkTifDialog *tifDialog = nullptr;
 
     if (selectedFilter.contains("jxl")) {
         // jxl has to be before old jpeg to avoid triggering jpg_dialog for .JXL format

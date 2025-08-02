@@ -69,9 +69,7 @@ public:
         inteface_end,
     };
 
-    virtual ~DkPluginInterface()
-    {
-    }
+    virtual ~DkPluginInterface() = default;
 
     virtual QImage image() const = 0;
 
@@ -106,7 +104,7 @@ public:
     QMainWindow *getMainWindow() const
     {
         QWidgetList widgets = QApplication::topLevelWidgets();
-        QMainWindow *win = 0;
+        QMainWindow *win = nullptr;
 
         for (int idx = 0; idx < widgets.size(); idx++) {
             if (widgets.at(idx)->inherits("QMainWindow")) {
@@ -122,14 +120,14 @@ public:
 class DkBatchPluginInterface : public DkPluginInterface
 {
 public:
-    virtual int interfaceType() const
+    int interfaceType() const override
     {
         return interface_batch;
     };
 
-    virtual QSharedPointer<DkImageContainer> runPlugin(
+    QSharedPointer<DkImageContainer> runPlugin(
         const QString &runID = QString(),
-        QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const
+        QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override
     {
         QSharedPointer<DkBatchInfo> dummy;
         DkSaveInfo saveInfo;
@@ -178,7 +176,7 @@ public:
 class DkViewPortInterface : public DkPluginInterface
 {
 public:
-    virtual int interfaceType() const
+    int interfaceType() const override
     {
         return interface_viewport;
     };
@@ -201,7 +199,7 @@ class DllCoreExport DkPluginViewPort : public DkWidget
     Q_OBJECT
 
 public:
-    DkPluginViewPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags())
+    DkPluginViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
         : DkWidget(parent, flags)
     {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -227,7 +225,7 @@ signals:
     void showInfo(const QString &msg) const;
 
 protected:
-    virtual void closeEvent(QCloseEvent *event)
+    void closeEvent(QCloseEvent *event) override
     {
         emit closePlugin();
         QWidget::closeEvent(event);
@@ -252,8 +250,8 @@ protected:
         return mWorldMatrix->inverted().map(pos);
     };
 
-    QTransform *mWorldMatrix = 0;
-    QTransform *mImgMatrix = 0;
+    QTransform *mWorldMatrix = nullptr;
+    QTransform *mImgMatrix = nullptr;
 };
 
 }

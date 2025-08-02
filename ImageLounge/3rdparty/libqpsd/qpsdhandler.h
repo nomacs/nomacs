@@ -32,17 +32,17 @@ class QPsdHandler : public QImageIOHandler
 {
 public:
     QPsdHandler();
-    ~QPsdHandler();
+    ~QPsdHandler() override;
 
-    bool canRead() const;
-    bool read(QImage *image);
+    bool canRead() const override;
+    bool read(QImage *image) override;
     // bool write(const QImage &image);
 
     static bool canRead(QIODevice *device);
 
-    QVariant option(ImageOption option) const;
+    QVariant option(ImageOption option) const override;
     // void setOption(ImageOption option, const QVariant &value);
-    bool supportsOption(ImageOption option) const;
+    bool supportsOption(ImageOption option) const override;
 
 private:
     bool isValidSignature(quint32 signature);

@@ -177,7 +177,7 @@ class DllCoreExport DkBasicLoader : public QObject
 public:
     DkBasicLoader();
 
-    ~DkBasicLoader()
+    ~DkBasicLoader() override
     {
         release();
     };
@@ -503,9 +503,9 @@ class FileDownloader : public QObject
     Q_OBJECT
 
 public:
-    explicit FileDownloader(const QUrl &imageUrl, const QString &filePath = "", QObject *parent = 0);
+    explicit FileDownloader(const QUrl &imageUrl, const QString &filePath = "", QObject *parent = nullptr);
 
-    virtual ~FileDownloader();
+    ~FileDownloader() override;
 
     QSharedPointer<QByteArray> downloadedData() const;
     QUrl getUrl() const;

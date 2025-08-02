@@ -131,25 +131,25 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     am.createMenus(mMenu);
     am.enableImageActions(false);
 
-    mOpenDialog = 0;
-    mSaveDialog = 0;
-    mThumbSaver = 0;
-    mOpacityDialog = 0;
-    mUpdater = 0;
-    mTranslationUpdater = 0;
-    mExportTiffDialog = 0;
-    mUpdateDialog = 0;
-    mProgressDialog = 0;
-    mProgressDialogTranslations = 0;
-    mForceDialog = 0;
-    mTrainDialog = 0;
-    mExplorer = 0;
-    mMetaDataDock = 0;
-    mPrintPreviewDialog = 0;
-    mThumbsDock = 0;
-    mQuickAccess = 0;
+    mOpenDialog = nullptr;
+    mSaveDialog = nullptr;
+    mThumbSaver = nullptr;
+    mOpacityDialog = nullptr;
+    mUpdater = nullptr;
+    mTranslationUpdater = nullptr;
+    mExportTiffDialog = nullptr;
+    mUpdateDialog = nullptr;
+    mProgressDialog = nullptr;
+    mProgressDialogTranslations = nullptr;
+    mForceDialog = nullptr;
+    mTrainDialog = nullptr;
+    mExplorer = nullptr;
+    mMetaDataDock = nullptr;
+    mPrintPreviewDialog = nullptr;
+    mThumbsDock = nullptr;
+    mQuickAccess = nullptr;
 #ifdef WITH_QUAZIP
-    mArchiveExtractionDialog = 0;
+    mArchiveExtractionDialog = nullptr;
 #endif
 
     mOldGeometry = geometry();
@@ -166,9 +166,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     // qDebug() << "Sorry Fermat, but the Simpsons are right.";
 }
 
-DkNoMacs::~DkNoMacs()
-{
-}
+DkNoMacs::~DkNoMacs() = default;
 
 void DkNoMacs::init()
 {
@@ -1152,9 +1150,9 @@ void DkNoMacs::showThumbsDock(bool show)
             settings.setValue("thumbsDockLocation", QMainWindow::dockWidgetArea(mThumbsDock));
 
             mThumbsDock->hide();
-            mThumbsDock->setWidget(0);
+            mThumbsDock->setWidget(nullptr);
             mThumbsDock->deleteLater();
-            mThumbsDock = 0;
+            mThumbsDock = nullptr;
         }
         return;
     }
@@ -1909,7 +1907,7 @@ void DkNoMacs::showUpdaterMessage(QString msg, QString title)
 
 void DkNoMacs::showUpdateDialog(QString msg, QString title)
 {
-    if (mProgressDialog != 0 && !mProgressDialog->isHidden()) { // check if the progress bar is already open
+    if (mProgressDialog != nullptr && !mProgressDialog->isHidden()) { // check if the progress bar is already open
         showUpdaterMessage(tr("Already downloading update"), "update");
         return;
     }
@@ -2062,9 +2060,7 @@ DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WindowFlags flags)
 {
 }
 
-DkNoMacsSync::~DkNoMacsSync()
-{
-}
+DkNoMacsSync::~DkNoMacsSync() = default;
 
 void DkNoMacsSync::createActions()
 {
@@ -2214,9 +2210,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     DkActionManager::instance().action(DkActionManager::menu_view_fit_frame)->setEnabled(false);
 }
 
-DkNoMacsFrameless::~DkNoMacsFrameless()
-{
-}
+DkNoMacsFrameless::~DkNoMacsFrameless() = default;
 
 void DkNoMacsFrameless::createContextMenu()
 {
@@ -2332,8 +2326,5 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
     am.action(DkActionManager::menu_panel_transfertoolbar)->blockSignals(false);
 }
 
-DkNoMacsContrast::~DkNoMacsContrast()
-{
-}
-
+DkNoMacsContrast::~DkNoMacsContrast() = default;
 }

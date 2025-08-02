@@ -67,7 +67,16 @@ class DkMetaDataT;
 class DllCoreExport DkAbstractBatch
 {
 public:
-    DkAbstractBatch(){};
+    DkAbstractBatch() = default;
+
+    // ok, this is important:
+    // we are using the abstract class to process specialized items
+    // if we allow copy operations - we get slicing issues
+    // so we just allow pointers to the batch processing functions.
+    // but pointers result in threading issues - so we just use
+    // QSharedPointers -> problem solved : )
+    DkAbstractBatch(const DkAbstractBatch &o) = delete;
+    DkAbstractBatch &operator=(const DkAbstractBatch &o) = delete;
 
     virtual void setProperties(...) {};
     virtual void saveSettings(QSettings &) const {};
@@ -94,16 +103,6 @@ public:
     QString settingsName() const;
 
     static QSharedPointer<DkAbstractBatch> createFromName(const QString &settingsName);
-
-private:
-    // ok, this is important:
-    // we are using the abstract class to process specialized items
-    // if we allow copy operations - we get slicing issues
-    // so we just allow pointers to the batch processing functions.
-    // but pointers result in threading issues - so we just use
-    // QSharedPointers -> problem solved : )
-    DkAbstractBatch(const DkAbstractBatch &o);
-    DkAbstractBatch &operator=(const DkAbstractBatch &o);
 };
 
 #ifdef WITH_PLUGINS
@@ -112,18 +111,18 @@ class DllCoreExport DkPluginBatch : public DkAbstractBatch
 public:
     DkPluginBatch();
 
-    virtual void saveSettings(QSettings &settings) const override;
-    virtual void loadSettings(QSettings &settings) override;
+    void saveSettings(QSettings &settings) const override;
+    void loadSettings(QSettings &settings) override;
 
     virtual void preLoad();
-    virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const override;
+    void postLoad(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const override;
     virtual void setProperties(const QStringList &pluginList);
-    virtual bool compute(QSharedPointer<DkImageContainer> container,
-                         const DkSaveInfo &saveInfo,
-                         QStringList &logStrings,
-                         QVector<QSharedPointer<DkBatchInfo>> &batchInfos) const override;
-    virtual QString name() const override;
-    virtual bool isActive() const override;
+    bool compute(QSharedPointer<DkImageContainer> container,
+                 const DkSaveInfo &saveInfo,
+                 QStringList &logStrings,
+                 QVector<QSharedPointer<DkBatchInfo>> &batchInfos) const override;
+    QString name() const override;
+    bool isActive() const override;
     virtual QStringList pluginList() const;
 
 protected:
@@ -141,13 +140,13 @@ class DllCoreExport DkManipulatorBatch : public DkAbstractBatch
 public:
     DkManipulatorBatch();
 
-    virtual void saveSettings(QSettings &settings) const override;
-    virtual void loadSettings(QSettings &settings) override;
+    void saveSettings(QSettings &settings) const override;
+    void loadSettings(QSettings &settings) override;
 
     virtual void setProperties(const DkManipulatorManager &manager);
-    virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
-    virtual QString name() const override;
-    virtual bool isActive() const override;
+    bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
+    QString name() const override;
+    bool isActive() const override;
 
     DkManipulatorManager manager() const;
 
@@ -179,8 +178,8 @@ public:
         resize_prop_end
     };
 
-    virtual void saveSettings(QSettings &settings) const override;
-    virtual void loadSettings(QSettings &settings) override;
+    void saveSettings(QSettings &settings) const override;
+    void loadSettings(QSettings &settings) override;
 
     virtual void setProperties(int angle,
                                bool cropFromMetadata,
@@ -193,9 +192,9 @@ public:
                                int iplMethod = 1 /*DkImage::ipl_area*/,
                                bool correctGamma = false);
 
-    virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
-    virtual QString name() const override;
-    virtual bool isActive() const override;
+    bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
+    QString name() const override;
+    bool isActive() const override;
 
     int angle() const;
     bool cropMetatdata() const;
@@ -267,7 +266,7 @@ protected:
 class DllCoreExport DkBatchConfig
 {
 public:
-    DkBatchConfig(){};
+    DkBatchConfig() = default;
     DkBatchConfig(const QStringList &fileList, const QString &outputDir, const QString &fileNamePattern);
 
     virtual void saveSettings(QSettings &settings) const;
@@ -340,7 +339,7 @@ public:
         batch_item_end
     };
 
-    DkBatchProcessing(const DkBatchConfig &config = DkBatchConfig(), QWidget *parent = 0);
+    DkBatchProcessing(const DkBatchConfig &config = DkBatchConfig(), QWidget *parent = nullptr);
 
     void compute();
     static bool computeItem(DkBatchProcess &item);

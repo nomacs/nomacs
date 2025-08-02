@@ -93,9 +93,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject *parent)
 /**
  *	Destructor
  **/
-DkPageExtractionPlugin::~DkPageExtractionPlugin()
-{
-}
+DkPageExtractionPlugin::~DkPageExtractionPlugin() = default;
 
 QImage DkPageExtractionPlugin::image() const
 {

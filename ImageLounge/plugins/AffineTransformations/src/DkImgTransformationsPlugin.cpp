@@ -46,16 +46,12 @@ namespace nmp
 /**
  *	Constructor
  **/
-DkImgTransformationsPlugin::DkImgTransformationsPlugin()
-{
-}
+DkImgTransformationsPlugin::DkImgTransformationsPlugin() = default;
 
 /**
  *	Destructor
  **/
-DkImgTransformationsPlugin::~DkImgTransformationsPlugin()
-{
-}
+DkImgTransformationsPlugin::~DkImgTransformationsPlugin() = default;
 
 /**
  * Returns descriptive image
@@ -133,7 +129,7 @@ DkImgTransformationsViewPort::~DkImgTransformationsViewPort()
     // however, then we have lot's of toolbars in memory if the user opens the plugin again and again
     if (imgTransformationsToolbar) {
         delete imgTransformationsToolbar;
-        imgTransformationsToolbar = 0;
+        imgTransformationsToolbar = nullptr;
     }
 }
 
@@ -796,9 +792,7 @@ DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString &title,
     QMetaObject::connectSlotsByName(this);
 }
 
-DkImgTransformationsToolBar::~DkImgTransformationsToolBar()
-{
-}
+DkImgTransformationsToolBar::~DkImgTransformationsToolBar() = default;
 
 void DkImgTransformationsToolBar::createIcons()
 {
@@ -1238,9 +1232,7 @@ void DkInteractionRects::updateRects(QRect imgRect)
     intrRect.push_back(rect);
 }
 
-DkInteractionRects::~DkInteractionRects()
-{
-}
+DkInteractionRects::~DkInteractionRects() = default;
 
 void DkInteractionRects::draw(QPainter *painter)
 {

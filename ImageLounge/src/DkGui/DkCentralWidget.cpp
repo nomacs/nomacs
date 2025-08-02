@@ -313,9 +313,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     dm->setCentralWidget(this);
 }
 
-DkCentralWidget::~DkCentralWidget()
-{
-}
+DkCentralWidget::~DkCentralWidget() = default;
 
 void DkCentralWidget::createLayout()
 {
@@ -611,7 +609,7 @@ void DkCentralWidget::createViewPort()
         return;
     }
 
-    DkViewPort *vp = 0;
+    DkViewPort *vp = nullptr;
 
     if (parent() && parent()->objectName() == "DkNoMacsFrameless")
         vp = new DkViewPortFrameless(&mThumbLoader, this);

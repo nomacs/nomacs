@@ -81,7 +81,7 @@ protected:
     {
     }
 
-    bool eventFilter(QObject *target, QEvent *e);
+    bool eventFilter(QObject *target, QEvent *e) override;
 
     QHash<QString, QVector<QKeySequence>> mReservedKeys;
 };

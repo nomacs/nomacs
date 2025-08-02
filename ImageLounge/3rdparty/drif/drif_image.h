@@ -146,15 +146,15 @@ static int isDrifFmtValid(uint32_t f)
 uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t *f)
 {
     // check input params
-    if (NULL == szFileName || NULL == w || NULL == h || NULL == f)
-        return NULL;
+    if (nullptr == szFileName || nullptr == w || nullptr == h || nullptr == f)
+        return nullptr;
 
     // open file for reading
     FILE *fp = fopen(szFileName, "rb");
 
     // check if file opened ok
-    if (NULL == fp)
-        return NULL;
+    if (nullptr == fp)
+        return nullptr;
 
     // move to footer offeset
     fseek(fp, 0L, SEEK_END);
@@ -170,16 +170,16 @@ uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t 
     // check magic & format
     if (DRIF_MAGIC != footer->magic || !isDrifFmtValid(footer->f)) {
         fclose(fp);
-        return NULL;
+        return nullptr;
     }
 
     // read image
     uint32_t dataSize = drifGetSize(footer->w, footer->h, footer->f);
     void *img = malloc(dataSize);
 
-    if (NULL == img) {
+    if (nullptr == img) {
         fclose(fp);
-        return NULL;
+        return nullptr;
     }
 
     // move at file start
@@ -189,7 +189,7 @@ uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t 
 
     if (1 != nElem) {
         free(img);
-        return NULL;
+        return nullptr;
     }
 
     // export image info
@@ -203,7 +203,7 @@ uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t 
 int drifSaveImg(const char *szFileName, const uint32_t w, const uint32_t h, const uint32_t f, const void *data)
 {
     // check input params
-    if (NULL == szFileName || NULL == data)
+    if (nullptr == szFileName || nullptr == data)
         return DRIF_ERR_NULLPTR;
 
     // check params
@@ -222,7 +222,7 @@ int drifSaveImg(const char *szFileName, const uint32_t w, const uint32_t h, cons
     FILE *fp = fopen(szFileName, "wb");
 
     // check if file opened ok
-    if (NULL == fp)
+    if (nullptr == fp)
         return DRIF_ERR_WRITE_FILE;
 
     // prepare footer

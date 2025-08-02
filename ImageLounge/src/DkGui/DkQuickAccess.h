@@ -48,7 +48,7 @@ class DkQuickAccess : public QObject
     Q_OBJECT
 
 public:
-    DkQuickAccess(QObject *parent = 0);
+    DkQuickAccess(QObject *parent = nullptr);
 
     void addActions(const QVector<QAction *> &actions);
     void addDirs(const QStringList &dirPaths);
@@ -67,7 +67,7 @@ signals:
     void loadFileSignal(const QString &filePath) const;
 
 protected:
-    QStandardItemModel *mModel = 0;
+    QStandardItemModel *mModel = nullptr;
 
     QVector<QAction *> mActions;
     QStringList mFilePaths;
@@ -78,7 +78,7 @@ class DkQuickAccessEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    DkQuickAccessEdit(QWidget *parent = 0);
+    DkQuickAccessEdit(QWidget *parent = nullptr);
 
     void setModel(QStandardItemModel *model);
 

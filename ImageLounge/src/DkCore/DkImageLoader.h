@@ -69,7 +69,7 @@ class DllCoreExport DkImageLoader : public QObject
 
 public:
     DkImageLoader();
-    virtual ~DkImageLoader();
+    ~DkImageLoader() override;
 
     DkFileInfoList updateSubFolders(const QString &rootDirPath);
 
@@ -180,7 +180,7 @@ protected:
     bool mTimerBlockedUpdate = false;
     QString mCurrentDir;
     QString mCopyDir;
-    QFileSystemWatcher *mDirWatcher = 0;
+    QFileSystemWatcher *mDirWatcher = nullptr;
     QStringList mSubFolders;
     QVector<QSharedPointer<DkImageContainerT>> mImages;
     QSharedPointer<DkImageContainerT> mCurrentImage;

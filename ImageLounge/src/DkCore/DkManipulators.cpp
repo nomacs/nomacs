@@ -65,9 +65,7 @@ QAction *DkBaseManipulator::action() const
 }
 
 // DkManipulatorManager --------------------------------------------------------------------
-DkManipulatorManager::DkManipulatorManager()
-{
-}
+DkManipulatorManager::DkManipulatorManager() = default;
 
 void DkManipulatorManager::createManipulators(QWidget *parent)
 {
@@ -233,7 +231,7 @@ void DkManipulatorManager::loadSettings(QSettings &settings)
 {
     settings.beginGroup("Manipulators");
 
-    DkManipulatorManager::createManipulators(0);
+    DkManipulatorManager::createManipulators(nullptr);
 
     for (auto mpl : mManipulators)
         mpl->loadSettings(settings);

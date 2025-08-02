@@ -251,8 +251,8 @@ int main(int argc, char *argv[])
     nmc::DkSettingsManager::param().loadTranslation(translationNameQt, translatorQt);
     app.installTranslator(&translatorQt);
 
-    nmc::DkNoMacs *w = 0;
-    nmc::DkPong *pw = 0; // pong
+    nmc::DkNoMacs *w = nullptr;
+    nmc::DkPong *pw = nullptr; // pong
 
     if (parser.isSet(privateOpt))
         nmc::DkSettingsManager::param().app().privateMode = true;
@@ -388,14 +388,14 @@ int main(int argc, char *argv[])
     try {
         rVal = app.exec();
     } catch (const std::bad_alloc &) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(nullptr,
                               QObject::tr("Critical Error"),
                               QObject::tr("Sorry, nomacs ran out of memory..."),
                               QMessageBox::Ok);
     }
 
     // restore message handler, workaround for: https://github.com/nomacs/nomacs/issues/874
-    qInstallMessageHandler(0);
+    qInstallMessageHandler(nullptr);
 
     if (w)
         delete w; // we need delete so that settings are saved (from destructors)

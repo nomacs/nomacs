@@ -68,7 +68,7 @@ class DkLogDock : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkLogDock(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkLogDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
 protected:
     void createLayout();
@@ -79,7 +79,7 @@ class DkLogWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkLogWidget(QWidget *parent = 0);
+    DkLogWidget(QWidget *parent = nullptr);
 
 public slots:
     void log(const QString &msg);
