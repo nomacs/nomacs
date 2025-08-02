@@ -442,7 +442,7 @@ DkFadeLabel::DkFadeLabel(const QString &text, QWidget *parent)
 DkDockWidget::DkDockWidget(const QString &title, QWidget *parent /* = 0 */, Qt::WindowFlags flags /* = 0 */)
     : QDockWidget(title, parent, flags)
 {
-    displaySettingsBits = 0;
+    displaySettingsBits = nullptr;
     setObjectName("DkDockWidget");
 }
 

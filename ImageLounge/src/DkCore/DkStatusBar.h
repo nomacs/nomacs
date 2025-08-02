@@ -54,7 +54,7 @@ class DllCoreExport DkStatusBar : public QStatusBar
     Q_OBJECT
 
 public:
-    DkStatusBar(QWidget *parent = 0);
+    DkStatusBar(QWidget *parent = nullptr);
     ~DkStatusBar(){};
 
     enum StatusLabel {
@@ -95,7 +95,7 @@ public:
 private:
     DkStatusBarManager();
 
-    DkStatusBar *mStatusBar = 0;
+    DkStatusBar *mStatusBar = nullptr;
 };
 
 }

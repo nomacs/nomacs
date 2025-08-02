@@ -118,7 +118,9 @@ public:
         widget_end
     };
 
-    DkControlWidget(DkThumbLoader *thumbLoader, DkViewPort *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkControlWidget(DkThumbLoader *thumbLoader,
+                    DkViewPort *parent = nullptr,
+                    Qt::WindowFlags flags = Qt::WindowFlags());
     virtual ~DkControlWidget(){};
 
     void setFullScreen(bool fullscreen);
@@ -149,7 +151,7 @@ public slots:
     void showOverview(bool visible);
     void showHistogram(bool visible);
     void showCommentWidget(bool visible);
-    void switchWidget(QWidget *widget = 0);
+    void switchWidget(QWidget *widget = nullptr);
     void changeMetaDataPosition(int pos);
     void changeThumbNailPosition(int pos);
     void showScroller(bool visible);
@@ -215,7 +217,7 @@ protected:
     DkLabelBg *mBottomLabel;
     DkLabelBg *mBottomLeftLabel;
 
-    DkPluginViewPort *mPluginViewport = 0;
+    DkPluginViewPort *mPluginViewport = nullptr;
 
     QSharedPointer<DkImageContainerT> mImgC;
 

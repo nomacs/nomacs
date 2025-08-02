@@ -32,7 +32,7 @@ class QPsdPlugin : public QImageIOPlugin
 #endif // QT_VERSION >= 0x050000
 
 public:
-    QPsdPlugin(QObject *parent = 0);
+    QPsdPlugin(QObject *parent = nullptr);
     ~QPsdPlugin();
     QStringList keys() const;
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const;

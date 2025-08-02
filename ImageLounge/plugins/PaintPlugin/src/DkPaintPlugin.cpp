@@ -42,7 +42,7 @@ namespace nmp
  **/
 DkPaintPlugin::DkPaintPlugin()
 {
-    viewport = 0;
+    viewport = nullptr;
 }
 
 /**
@@ -213,7 +213,7 @@ DkPaintViewPort::~DkPaintViewPort()
     // however, then we have lot's of toolbars in memory if the user opens the plugin again and again
     if (paintToolbar) {
         delete paintToolbar;
-        paintToolbar = 0;
+        paintToolbar = nullptr;
     }
 }
 

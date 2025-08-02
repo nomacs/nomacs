@@ -103,7 +103,7 @@ public:
     void setVisible(bool visible) override;
 
 protected:
-    nmc::DkPluginViewPort *mViewport = 0;
+    nmc::DkPluginViewPort *mViewport = nullptr;
 };
 
 class DkImgTransformationsViewPort : public nmc::DkPluginViewPort
@@ -111,7 +111,7 @@ class DkImgTransformationsViewPort : public nmc::DkPluginViewPort
     Q_OBJECT
 
 public:
-    DkImgTransformationsViewPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkImgTransformationsViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkImgTransformationsViewPort();
 
     bool isCanceled();
@@ -195,7 +195,7 @@ public:
         guide_end,
     };
 
-    DkImgTransformationsToolBar(const QString &title, int defaultMode, QWidget *parent = 0);
+    DkImgTransformationsToolBar(const QString &title, int defaultMode, QWidget *parent = nullptr);
     virtual ~DkImgTransformationsToolBar();
 
     void setRotationValue(double val);
@@ -267,8 +267,8 @@ class DkInteractionRects : public QWidget
     Q_OBJECT
 
 public:
-    DkInteractionRects(QRect imgRect, QWidget *parent = 0, Qt::WindowFlags f = Qt::Widget);
-    DkInteractionRects(QWidget *parent = 0, Qt::WindowFlags f = Qt::Widget);
+    DkInteractionRects(QRect imgRect, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+    DkInteractionRects(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
     ~DkInteractionRects();
 
     void draw(QPainter *painter);

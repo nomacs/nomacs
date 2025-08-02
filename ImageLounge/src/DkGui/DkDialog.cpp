@@ -920,7 +920,7 @@ void DkResizeDialog::createLayout()
     mPreviewLabel->setMinimumHeight(100);
 
     // all text dialogs...
-    QDoubleValidator *doubleValidator = new QDoubleValidator(1, 1000000, 2, 0);
+    QDoubleValidator *doubleValidator = new QDoubleValidator(1, 1000000, 2, nullptr);
     doubleValidator->setRange(0, 100, 2);
 
     QWidget *resizeBoxes = new QWidget(this);
@@ -1502,7 +1502,7 @@ void DkResizeDialog::resizeEvent(QResizeEvent *re)
 DkShortcutDelegate::DkShortcutDelegate(QObject *parent)
     : QItemDelegate(parent)
 {
-    mItem = 0;
+    mItem = nullptr;
     mClearPm = DkImage::loadIcon(":/nomacs/img/close.svg");
 }
 
@@ -2514,9 +2514,9 @@ void DkExportTiffDialog::createLayout()
     QLabel *exportLabel = new QLabel(tr("Export Pages"));
     exportLabel->setAlignment(Qt::AlignRight);
 
-    mFromPage = new QSpinBox(0);
+    mFromPage = new QSpinBox(nullptr);
 
-    mToPage = new QSpinBox(0);
+    mToPage = new QSpinBox(nullptr);
 
     mOverwrite = new QCheckBox(tr("Overwrite"));
 
@@ -3309,7 +3309,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
 
             double maxVal = 0;
             cv::Point maxIdx;
-            cv::minMaxLoc(ccTmp, 0, &maxVal, 0, &maxIdx);
+            cv::minMaxLoc(ccTmp, nullptr, &maxVal, nullptr, &maxIdx);
             float *ccPtr = cc.ptr<float>(maxIdx.y);
 
             if (maxVal > ccPtr[maxIdx.x]) {

@@ -340,7 +340,7 @@ public:
         batch_item_end
     };
 
-    DkBatchProcessing(const DkBatchConfig &config = DkBatchConfig(), QWidget *parent = 0);
+    DkBatchProcessing(const DkBatchConfig &config = DkBatchConfig(), QWidget *parent = nullptr);
 
     void compute();
     static bool computeItem(DkBatchProcess &item);

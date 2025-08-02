@@ -67,7 +67,7 @@ class SbViewPort : public DkPluginViewPort
 {
     Q_OBJECT
 public:
-    SbViewPort(QWidget *parent = 0)
+    SbViewPort(QWidget *parent = nullptr)
         : DkPluginViewPort(parent){};
     void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) override
     {
@@ -95,7 +95,7 @@ class SbCompositePlugin : public QObject, DkViewPortInterface
     Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.SbCompositePlugin/0.1" FILE "SbCompositePlugin.json")
 
 public:
-    SbCompositePlugin(QObject *parent = 0)
+    SbCompositePlugin(QObject *parent = nullptr)
         : QObject(parent)
     {
     }
@@ -119,12 +119,12 @@ public:
     virtual void setVisible(bool visible) override;
 
 protected:
-    SbCompositeDockWidget *dockWidget = 0;
-    QScrollArea *scrollArea = 0;
-    QWidget *mainWidget = 0;
-    QBoxLayout *outerLayout = 0;
+    SbCompositeDockWidget *dockWidget = nullptr;
+    QScrollArea *scrollArea = nullptr;
+    QWidget *mainWidget = nullptr;
+    QBoxLayout *outerLayout = nullptr;
     QVector<SbChannelWidget *> channelWidgets;
-    SbViewPort *viewport = 0;
+    SbViewPort *viewport = nullptr;
     cv::Mat channels[3];
     cv::Mat alpha;
     bool apply = false;

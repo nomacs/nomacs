@@ -59,7 +59,7 @@ class DllCoreExport DkWidget : public QWidget
     Q_OBJECT
 
 public:
-    DkWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -239,7 +239,7 @@ class DllCoreExport DkFadeWidget : public DkFadeMixin<DkWidget>
     Q_OBJECT
 
 public:
-    DkFadeWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkFadeWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     enum {
         pos_west,
@@ -281,7 +281,7 @@ class DllCoreExport DkLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkLabel(const QString &text = QString(), QWidget *parent = 0);
+    DkLabel(const QString &text = QString(), QWidget *parent = nullptr);
     virtual ~DkLabel();
 
     virtual void showTimed(int time = 3000);
@@ -333,7 +333,7 @@ class DllCoreExport DkElidedLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkElidedLabel(QWidget *parent = 0, const QString &text = QString());
+    DkElidedLabel(QWidget *parent = nullptr, const QString &text = QString());
 
     void setText(QString text);
     QString text() const
@@ -357,7 +357,7 @@ class DkLabelBg : public DkLabel
     Q_OBJECT
 
 public:
-    DkLabelBg(const QString &text = QString(), QWidget *parent = 0);
+    DkLabelBg(const QString &text = QString(), QWidget *parent = nullptr);
     virtual ~DkLabelBg(){};
 };
 
@@ -367,7 +367,7 @@ class DkFadeLabel : public DkFadeMixin<DkLabel>
     Q_OBJECT
 
 public:
-    DkFadeLabel(const QString &text = QString(), QWidget *parent = 0);
+    DkFadeLabel(const QString &text = QString(), QWidget *parent = nullptr);
 };
 
 class DllCoreExport DkDockWidget : public QDockWidget
@@ -375,7 +375,7 @@ class DllCoreExport DkDockWidget : public QDockWidget
     Q_OBJECT
 
 public:
-    DkDockWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkDockWidget(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkDockWidget();
 
     void registerAction(QAction *action);
@@ -394,7 +394,7 @@ protected:
     virtual void closeEvent(QCloseEvent *event) override;
 
     QBitArray *displaySettingsBits;
-    QAction *mAction = 0;
+    QAction *mAction = nullptr;
 };
 
 extern template class DkFadeMixin<DkLabel>;
@@ -404,7 +404,7 @@ class DllCoreExport DkResizableScrollArea : public QScrollArea
     Q_OBJECT
 
 public:
-    DkResizableScrollArea(QWidget *parent = 0);
+    DkResizableScrollArea(QWidget *parent = nullptr);
 
     void updateSize();
 

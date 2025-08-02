@@ -57,7 +57,7 @@ class DkMetaDataModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    DkMetaDataModel(QObject *parent = 0);
+    DkMetaDataModel(QObject *parent = nullptr);
     ~DkMetaDataModel();
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const;
@@ -86,7 +86,7 @@ class DkMetaDataProxyModel : public QSortFilterProxyModel
     Q_OBJECT
 
 public:
-    DkMetaDataProxyModel(QObject *parent = 0);
+    DkMetaDataProxyModel(QObject *parent = nullptr);
     virtual ~DkMetaDataProxyModel()
     {
     }
@@ -100,7 +100,7 @@ class DkMetaDataDock : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkMetaDataDock(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkMetaDataDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkMetaDataDock();
 
 public slots:
@@ -116,11 +116,11 @@ protected:
     void getExpandedItemNames(const QModelIndex &index, QStringList &expandedNames);
     void expandRows(const QModelIndex &index, const QStringList &expandedNames);
 
-    QTreeView *mTreeView = 0;
-    DkMetaDataProxyModel *mProxyModel = 0;
-    QLineEdit *mFilterEdit = 0;
-    DkMetaDataModel *mModel = 0;
-    QLabel *mThumbNailLabel = 0;
+    QTreeView *mTreeView = nullptr;
+    DkMetaDataProxyModel *mProxyModel = nullptr;
+    QLineEdit *mFilterEdit = nullptr;
+    DkMetaDataModel *mModel = nullptr;
+    QLabel *mThumbNailLabel = nullptr;
     QStringList mExpandedNames;
 };
 
@@ -129,7 +129,7 @@ class DkMetaDataSelection : public DkWidget
     Q_OBJECT
 
 public:
-    DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget *parent = 0);
+    DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget *parent = nullptr);
 
     void setSelectedKeys(const QStringList &selKeys);
     QStringList getSelectedKeys() const;
@@ -159,7 +159,7 @@ class DkMetaDataHUD : public DkFadeWidget
     Q_OBJECT
 
 public:
-    DkMetaDataHUD(QWidget *parent = 0);
+    DkMetaDataHUD(QWidget *parent = nullptr);
     ~DkMetaDataHUD();
 
     void updateLabels(int numColumns = -1);
@@ -209,12 +209,12 @@ protected:
     // gui elements
     QVector<QLabel *> mEntryKeyLabels;
     QVector<QLabel *> mEntryValueLabels;
-    QGridLayout *mContentLayout = 0;
-    QWidget *mContentWidget = 0;
-    DkResizableScrollArea *mScrollArea = 0;
-    QWidget *mTitleWidget = 0;
+    QGridLayout *mContentLayout = nullptr;
+    QWidget *mContentWidget = nullptr;
+    DkResizableScrollArea *mScrollArea = nullptr;
+    QWidget *mTitleWidget = nullptr;
 
-    QMenu *mContextMenu = 0;
+    QMenu *mContextMenu = nullptr;
     QVector<QAction *> mActions;
 
     int mNumColumns = -1;
@@ -227,7 +227,7 @@ class DkCommentTextEdit : public QTextEdit
     Q_OBJECT
 
 public:
-    DkCommentTextEdit(QWidget *parent = 0);
+    DkCommentTextEdit(QWidget *parent = nullptr);
 
 signals:
     void focusLost() const;
@@ -242,7 +242,7 @@ class DkCommentWidget : public DkFadeLabel
     Q_OBJECT
 
 public:
-    DkCommentWidget(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    DkCommentWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     ~DkCommentWidget(){};
 
     void setMetaData(QSharedPointer<DkMetaDataT> metaData);

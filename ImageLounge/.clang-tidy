@@ -1,20 +1,25 @@
 ---
 # clang-tidy commit steps:
 #
-#   From the build directory:
+#   Configure clang-tidy and run checks (ignoring 3rd-party sources):
 #   $ cmake -D CMAKE_EXPORT_COMPILE_COMMANDS=ON [...] ../ImageLounge
-#   $ run-clang-tidy-18 -p ./ -header-filter=.* -fix *
+#   $ run-clang-tidy-18 -p ./ -header-filter=.* -fix ImageLounge/*
 #
 #   Check that it made no changes, if it did that must be resolved first.
 #
-#   Process ONE check on all sources and auto-apply fixes:
-#   $ run-clang-tidy-18 -p ./ -config={} -header-filter=.* -checks=modernize-use-nullptr -fix *
+#   Process ONE check, ignoring .clang-tidy, on all sources and auto-apply fixes:
+#   $ run-clang-tidy-18 -p ./ -header-filter=.* -config={} -checks=modernize-use-nullptr -fix ImageLounge/*
 #
 #   Reformat sources, from the top directory (nomacs.git/):
 #   $ ./scripts/format-cpp.sh --verbose -i
 #
 #   Review and test changes, make any necessary manual cleanups
+#
 #   Add the check and options to .clang-tidy
+#
+#   Run check using .clang-tidy config and see it did not change anything:
+#   $ run-clang-tidy-18 -p ./ -header-filter=.* -fix ImageLounge/*
+#
 #   Add ONE commit for this check, including the modified .clang-tidy
 #
 HeaderFilterRegex:        '.*'

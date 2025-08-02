@@ -64,7 +64,7 @@ public:
         dir_end,
     };
 
-    DkSkewEstimator(QWidget *mainWin = 0);
+    DkSkewEstimator(QWidget *mainWin = nullptr);
     ~DkSkewEstimator();
 
     double getSkewAngle();

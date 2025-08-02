@@ -64,7 +64,7 @@ public:
      * @param parent the parent widget.
      * @param timeToShow the time to show in ms. If set to -1 it acts like a QMenu.
      **/
-    DkMenuBar(QWidget *parent = 0, int timeToShow = 5000);
+    DkMenuBar(QWidget *parent = nullptr, int timeToShow = 5000);
 
     /**
      * Override method.
@@ -122,8 +122,8 @@ class DkTcpAction : public QAction
 
 public:
     DkTcpAction();
-    DkTcpAction(DkPeer *peer, QObject *parent = 0);
-    DkTcpAction(DkPeer *peer, const QString &text, QObject *parent = 0);
+    DkTcpAction(DkPeer *peer, QObject *parent = nullptr);
+    DkTcpAction(DkPeer *peer, const QString &text, QObject *parent = nullptr);
     DkTcpAction(DkPeer *peer, const QIcon &icon, const QString &text, QObject *parent);
     ~DkTcpAction();
 
@@ -148,7 +148,7 @@ class DkTcpMenu : public QMenu
     Q_OBJECT
 
 public:
-    DkTcpMenu(const QString &title = QString(), QWidget *parent = 0);
+    DkTcpMenu(const QString &title = QString(), QWidget *parent = nullptr);
     ~DkTcpMenu();
 
     void addTcpAction(QAction *tcpAction);

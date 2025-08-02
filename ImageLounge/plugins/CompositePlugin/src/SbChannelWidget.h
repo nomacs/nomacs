@@ -37,11 +37,11 @@ class SbIntensitySlider : public QSlider
 {
     Q_OBJECT
 public:
-    SbIntensitySlider(QWidget *parent = 0)
+    SbIntensitySlider(QWidget *parent = nullptr)
         : QSlider(parent)
     {
     }
-    SbIntensitySlider(Qt::Orientation orientation, QWidget *parent = 0)
+    SbIntensitySlider(Qt::Orientation orientation, QWidget *parent = nullptr)
         : QSlider(orientation, parent)
     {
     }

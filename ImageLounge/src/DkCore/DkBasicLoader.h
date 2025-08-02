@@ -503,7 +503,7 @@ class FileDownloader : public QObject
     Q_OBJECT
 
 public:
-    explicit FileDownloader(const QUrl &imageUrl, const QString &filePath = "", QObject *parent = 0);
+    explicit FileDownloader(const QUrl &imageUrl, const QString &filePath = "", QObject *parent = nullptr);
 
     virtual ~FileDownloader();
 

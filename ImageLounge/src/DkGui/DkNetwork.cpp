@@ -452,7 +452,7 @@ void DkLocalClientManager::synchronizeWith(quint16 peerId)
     emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 
     DkPeer *peer = mPeerList.getPeerById(peerId);
-    if (peer == 0 || peer->connection == 0) {
+    if (peer == nullptr || peer->connection == nullptr) {
         // qDebug() << "TcpClient: synchronizeWith: Peer is null or connection is null";
         return;
     }
@@ -756,7 +756,7 @@ DkPeer *DkPeerList::getPeerByServerport(quint16 port) const
         if (peer->peerServerPort == port)
             return peer;
     }
-    return 0;
+    return nullptr;
 }
 
 bool DkPeerList::alreadyConnectedTo(const QHostAddress &address, quint16 port) const
@@ -780,7 +780,7 @@ DkPeer *DkPeerList::getPeerByAddress(const QHostAddress &address, quint16 port) 
         if (peer->hostAddress == address && peer->localServerPort == port)
             return peer;
     }
-    return 0; // should not happen
+    return nullptr; // should not happen
 }
 
 void DkPeerList::print() const
@@ -800,7 +800,7 @@ void DkPeerList::print() const
 DkSyncManager::DkSyncManager()
 {
     DkTimer dt;
-    mClient = new DkLocalClientManager("nomacs | Image Lounge", 0);
+    mClient = new DkLocalClientManager("nomacs | Image Lounge", nullptr);
 
     qInfo() << "local client created in: " << dt; // takes 1 sec in the client thread
 }
@@ -815,7 +815,7 @@ DkClientManager *DkSyncManager::client()
 {
     if (!mClient) {
         qWarning() << "DkSyncManager::client() which is not created yet...";
-        return 0;
+        return nullptr;
     }
 
     return mClient;

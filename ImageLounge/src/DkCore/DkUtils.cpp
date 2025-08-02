@@ -526,7 +526,7 @@ QWidget *DkUtils::getMainWindow()
 {
     QWidgetList widgets = QApplication::topLevelWidgets();
 
-    QMainWindow *win = 0;
+    QMainWindow *win = nullptr;
 
     for (int idx = 0; idx < widgets.size(); idx++) {
         if (widgets.at(idx)->inherits("QMainWindow")) {
@@ -633,7 +633,7 @@ void DkUtils::mSleep(int ms)
     Sleep(uint(ms));
 #else
     struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, NULL);
+    nanosleep(&ts, nullptr);
 #endif
 }
 
@@ -1387,7 +1387,7 @@ bool TreeItem::contains(const QRegularExpression &regExp, int column, bool recur
 TreeItem *TreeItem::child(int row) const
 {
     if (row < 0 || row >= childItems.size())
-        return 0;
+        return nullptr;
 
     return childItems[row];
 }
@@ -1435,7 +1435,7 @@ void TreeItem::setData(const QVariant &value, int column)
 TreeItem *TreeItem::find(const QVariant &value, int column)
 {
     if (column < 0)
-        return 0;
+        return nullptr;
 
     if (column < itemData.size() && itemData[column] == value)
         return this;
@@ -1444,7 +1444,7 @@ TreeItem *TreeItem::find(const QVariant &value, int column)
         if (TreeItem *child = childItems[idx]->find(value, column))
             return child;
 
-    return 0;
+    return nullptr;
 }
 
 QStringList TreeItem::parentList() const

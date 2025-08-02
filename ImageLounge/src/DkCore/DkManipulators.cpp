@@ -233,7 +233,7 @@ void DkManipulatorManager::loadSettings(QSettings &settings)
 {
     settings.beginGroup("Manipulators");
 
-    DkManipulatorManager::createManipulators(0);
+    DkManipulatorManager::createManipulators(nullptr);
 
     for (auto mpl : mManipulators)
         mpl->loadSettings(settings);
