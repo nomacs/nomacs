@@ -115,19 +115,6 @@ public:
         mRating = rating;
         updateRating();
     };
-
-    void changeRating(int newRating)
-    {
-        mRating = newRating;
-        updateRating();
-        emit newRatingSignal(mRating);
-    };
-
-    int getRating()
-    {
-        return mRating;
-    };
-
 signals:
     void newRatingSignal(int rating);
 

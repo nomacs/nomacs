@@ -1081,7 +1081,8 @@ void DkRatingLabel::init()
 
         rating++;
         auto changeFunc = [this, rating] {
-            changeRating(rating);
+            setRating(rating);
+            emit newRatingSignal(rating);
         };
 
         connect(button, &DkButton::released, this, changeFunc);
@@ -1091,7 +1092,8 @@ void DkRatingLabel::init()
     }
 
     connect(am.action(DkActionManager::sc_star_rating_0), &QAction::triggered, this, [this] {
-        changeRating(0);
+        setRating(0);
+        emit newRatingSignal(0);
     });
 }
 
