@@ -64,8 +64,6 @@
 
 #pragma warning(pop) // no warnings from includes - end
 
-#include <assert.h>
-
 namespace nmc
 {
 
@@ -378,7 +376,7 @@ void DkLocalClientManager::synchronizeWithServerPort(quint16 port)
 
 void DkLocalClientManager::searchForOtherClients()
 {
-    assert(mServer);
+    Q_ASSERT(mServer);
 
     for (int i = local_tcp_port_start; i <= local_tcp_port_end; i++) {
         if (i == mServer->serverPort())

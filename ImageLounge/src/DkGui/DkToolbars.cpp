@@ -34,8 +34,6 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 
-#include <assert.h>
-
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QCheckBox>
@@ -1181,7 +1179,7 @@ void DkToolBarManager::createDefaultToolBar()
         return;
 
     auto nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     mToolBar = new DkMainToolBar(QObject::tr("Edit ToolBar"), nomacs);
     mToolBar->setObjectName("EditToolBar");
@@ -1264,7 +1262,7 @@ void DkToolBarManager::showToolBar(QToolBar *toolbar, bool show)
 
     showToolBarsTemporarily(!show);
     QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     if (show) {
         if (!mToolBar)
@@ -1284,7 +1282,7 @@ void DkToolBarManager::showToolBarsTemporarily(bool show)
             t->show();
     } else {
         QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-        assert(nomacs);
+        Q_ASSERT(nomacs);
 
         mHiddenToolBars.clear();
         QList<QToolBar *> tbs = nomacs->findChildren<QToolBar *>();
@@ -1321,7 +1319,7 @@ void DkToolBarManager::showDefaultToolBar(bool show, bool permanent)
 void DkToolBarManager::showMovieToolBar(bool show)
 {
     QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     // set movie toolbar into current toolbar
     if (mMovieToolbarArea == Qt::NoToolBarArea && show)
@@ -1345,7 +1343,7 @@ void DkToolBarManager::showMovieToolBar(bool show)
 void DkToolBarManager::createTransferToolBar()
 {
     QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     mTransferToolBar = new DkTransferToolBar(nomacs);
 

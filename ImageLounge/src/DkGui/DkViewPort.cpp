@@ -63,8 +63,6 @@
 #include <qmath.h>
 #pragma warning(pop) // no warnings from includes - end
 
-#include <assert.h>
-
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
@@ -1415,7 +1413,7 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end)
 
 void DkViewPort::swipeAction(int swipeGesture)
 {
-    assert(mController);
+    Q_ASSERT(mController);
 
     switch (swipeGesture) {
     case next_image:
@@ -1443,7 +1441,7 @@ void DkViewPort::swipeAction(int swipeGesture)
 
 void DkViewPort::setFullScreen(bool fullScreen)
 {
-    assert(mController);
+    Q_ASSERT(mController);
     mController->setFullScreen(fullScreen);
     toggleLena(fullScreen);
 
@@ -1954,7 +1952,7 @@ void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader)
 
 void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals)
 {
-    assert(mController);
+    Q_ASSERT(mController);
 
     if (!loader)
         return;
