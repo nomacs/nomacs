@@ -604,8 +604,8 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
     std::vector<double> tabSin(numAngle - 2);
     std::vector<double> tabCos(numAngle - 2);
 
-    float angle = 0.0f;
-    for (int n = 0; n < numAngle - 2; n++, angle += theta) {
+    for (int n = 0; n < numAngle - 2; ++n) {
+        float angle = theta * n;
         tabSin[n] = sin(static_cast<double>(angle));
         tabCos[n] = cos(static_cast<double>(angle));
     }
