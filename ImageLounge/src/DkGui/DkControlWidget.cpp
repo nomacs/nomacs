@@ -285,7 +285,7 @@ void DkControlWidget::connectWidgets()
     });
 
     // rating
-    connect(mFileInfoLabel->getRatingLabel(), &DkRatingLabel::newRatingSignal, this, &DkControlWidget::updateRating);
+    connect(mFileInfoLabel, &DkFileInfoLabel::ratingEdited, this, &DkControlWidget::updateRating);
 
     // playing
     connect(mPlayer, &DkPlayer::previousSignal, mViewport, &DkViewPort::loadPrevFileFast);
@@ -781,11 +781,9 @@ void DkControlWidget::settingsChanged()
 
 void DkControlWidget::updateRating(int rating)
 {
-    if (!mImgC)
+    if (!mImgC) {
         return;
-
-    if (mFileInfoLabel)
-        mFileInfoLabel->updateRating(rating);
+    }
 
     mImgC->setRating(rating);
 }
