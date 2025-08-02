@@ -47,7 +47,7 @@ public:
     }
 
 protected:
-    virtual void sliderChange(SliderChange change)
+    void sliderChange(SliderChange change) override
     {
         QSlider::sliderChange(change);
 
@@ -80,7 +80,7 @@ public:
     static const int THUMB_MAX_SIZE = 150;
 
     SbChannelWidget(Channel c, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~SbChannelWidget();
+    ~SbChannelWidget() override;
     cv::Mat getImg(); // return the channel content
     void setImg(
         cv::Mat _img = cv::Mat(),

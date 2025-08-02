@@ -61,9 +61,9 @@ public:
                  QWidget *parent = nullptr,
                  Qt::WindowFlags f = Qt::Dialog);
 
-    ~DkMessageBox();
+    ~DkMessageBox() override;
 
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
     void setDefaultButton(QMessageBox::StandardButton button);
     void setButtonText(QMessageBox::StandardButton button, const QString &text);
 

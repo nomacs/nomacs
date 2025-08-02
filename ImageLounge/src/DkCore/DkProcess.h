@@ -111,18 +111,18 @@ class DllCoreExport DkPluginBatch : public DkAbstractBatch
 public:
     DkPluginBatch();
 
-    virtual void saveSettings(QSettings &settings) const override;
-    virtual void loadSettings(QSettings &settings) override;
+    void saveSettings(QSettings &settings) const override;
+    void loadSettings(QSettings &settings) override;
 
     virtual void preLoad();
-    virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const override;
+    void postLoad(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const override;
     virtual void setProperties(const QStringList &pluginList);
-    virtual bool compute(QSharedPointer<DkImageContainer> container,
-                         const DkSaveInfo &saveInfo,
-                         QStringList &logStrings,
-                         QVector<QSharedPointer<DkBatchInfo>> &batchInfos) const override;
-    virtual QString name() const override;
-    virtual bool isActive() const override;
+    bool compute(QSharedPointer<DkImageContainer> container,
+                 const DkSaveInfo &saveInfo,
+                 QStringList &logStrings,
+                 QVector<QSharedPointer<DkBatchInfo>> &batchInfos) const override;
+    QString name() const override;
+    bool isActive() const override;
     virtual QStringList pluginList() const;
 
 protected:
@@ -140,13 +140,13 @@ class DllCoreExport DkManipulatorBatch : public DkAbstractBatch
 public:
     DkManipulatorBatch();
 
-    virtual void saveSettings(QSettings &settings) const override;
-    virtual void loadSettings(QSettings &settings) override;
+    void saveSettings(QSettings &settings) const override;
+    void loadSettings(QSettings &settings) override;
 
     virtual void setProperties(const DkManipulatorManager &manager);
-    virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
-    virtual QString name() const override;
-    virtual bool isActive() const override;
+    bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
+    QString name() const override;
+    bool isActive() const override;
 
     DkManipulatorManager manager() const;
 
@@ -178,8 +178,8 @@ public:
         resize_prop_end
     };
 
-    virtual void saveSettings(QSettings &settings) const override;
-    virtual void loadSettings(QSettings &settings) override;
+    void saveSettings(QSettings &settings) const override;
+    void loadSettings(QSettings &settings) override;
 
     virtual void setProperties(int angle,
                                bool cropFromMetadata,
@@ -192,9 +192,9 @@ public:
                                int iplMethod = 1 /*DkImage::ipl_area*/,
                                bool correctGamma = false);
 
-    virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
-    virtual QString name() const override;
-    virtual bool isActive() const override;
+    bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
+    QString name() const override;
+    bool isActive() const override;
 
     int angle() const;
     bool cropMetatdata() const;

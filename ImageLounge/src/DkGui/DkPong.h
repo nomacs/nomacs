@@ -165,7 +165,7 @@ public:
                  QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 protected:
-    void paintEvent(QPaintEvent *ev);
+    void paintEvent(QPaintEvent *ev) override;
     QFont mFont;
     Qt::Alignment mAlign;
 
@@ -178,7 +178,7 @@ class DllCoreExport DkPongPort : public QGraphicsView
 
 public:
     DkPongPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkPongPort();
+    ~DkPongPort() override;
 
     QSharedPointer<DkPongSettings> settings() const;
 
@@ -187,10 +187,10 @@ public slots:
     void countDown();
 
 protected:
-    virtual void paintEvent(QPaintEvent *event) override;
-    virtual void resizeEvent(QResizeEvent *event) override;
-    virtual void keyPressEvent(QKeyEvent *event) override;
-    virtual void keyReleaseEvent(QKeyEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
     void initGame();
     void togglePause();
@@ -225,7 +225,7 @@ class DllCoreExport DkPong : public QMainWindow
 
 public:
     DkPong(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkPong() = default;
+    ~DkPong() override = default;
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

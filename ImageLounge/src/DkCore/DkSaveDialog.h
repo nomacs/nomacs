@@ -90,7 +90,7 @@ public:
     };
 
     DkCompressDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkCompressDialog();
+    ~DkCompressDialog() override;
 
     void imageHasAlpha(bool hasAlpha);
     QColor getBackgroundColor() const;
@@ -98,7 +98,7 @@ public:
     float getResizeFactor();
     void setImage(const QImage &img);
     void setDialogMode(int dialogMode);
-    virtual void accept() override;
+    void accept() override;
 
 public slots:
     void setVisible(bool visible) override;

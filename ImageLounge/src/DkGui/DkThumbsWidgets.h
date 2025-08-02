@@ -86,7 +86,7 @@ public:
 
     DkFilePreview(DkThumbLoader *loader, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
-    ~DkFilePreview()
+    ~DkFilePreview() override
     {
         saveSettings();
     };
@@ -207,7 +207,7 @@ public:
                  const DkFileInfo &fileInfo,
                  bool fillSquare,
                  QGraphicsItem *parent = nullptr);
-    ~DkThumbLabel();
+    ~DkThumbLabel() override;
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -338,7 +338,7 @@ public:
     DkThumbScrollWidget(DkThumbLoader *thumbLoader,
                         QWidget *parent = nullptr,
                         Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkThumbScrollWidget();
+    ~DkThumbScrollWidget() override;
 
     DkThumbScene *getThumbWidget()
     {
@@ -352,7 +352,7 @@ public:
     }
 
 public slots:
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
     void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs);
     void setDir(const QString &dirPath);
     void enableSelectionActions();

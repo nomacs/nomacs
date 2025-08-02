@@ -85,7 +85,7 @@ public:
     // DkColorSlider(QWidget *parent);
     DkColorSlider(QWidget *parent, QColor color);
     DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int sliderWidth);
-    ~DkColorSlider();
+    ~DkColorSlider() override;
     QColor getColor();
     qreal getNormedPos();
     void setNormedPos(qreal pos);
@@ -100,12 +100,12 @@ signals:
     void colorChanged(DkColorSlider *slider) const;
 
 public slots:
-    virtual void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 protected:
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
     int mSliderWidth = 0, mSliderHeight = 0, mSliderHalfWidth = 0;
@@ -121,7 +121,7 @@ class DkGradient : public DkWidget
 
 public:
     DkGradient(QWidget *parent);
-    ~DkGradient();
+    ~DkGradient() override;
     QGradientStops getGradientStops();
     void insertSlider(qreal pos, QColor col = QColor());
     void reset();
@@ -137,10 +137,10 @@ public slots:
     void activateSlider(DkColorSlider *sender);
 
 protected:
-    virtual void paintEvent(QPaintEvent *event) override;
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void resizeEvent(QResizeEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     void init();
@@ -188,7 +188,7 @@ class DkTransferToolBar : public QToolBar
 
 public:
     DkTransferToolBar(QWidget *parent);
-    ~DkTransferToolBar();
+    ~DkTransferToolBar() override;
 
 signals:
     void pickColorRequest(bool enabled) const;
@@ -199,7 +199,7 @@ signals:
     void gradientChanged() const;
 
 public slots:
-    virtual void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
     void insertSlider(qreal pos);
     void setImageMode(int mode);
     void saveGradient();
@@ -215,7 +215,7 @@ protected slots:
     void switchGradient(int idx);
 
 protected:
-    virtual void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     void loadSettings();
     void saveSettings();
     void updateGradientHistory();
@@ -259,7 +259,7 @@ public:
     };
 
     DkCropToolBar(const QString &title, QWidget *parent = nullptr);
-    virtual ~DkCropToolBar();
+    ~DkCropToolBar() override;
 
     QColor getColor()
     {
@@ -284,7 +284,7 @@ public slots:
     void onInvertActionToggled(bool checked);
     void onInfoActionToggled(bool checked);
     void angleChanged(double val);
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
 
 signals:
     void panSignal(bool checked);

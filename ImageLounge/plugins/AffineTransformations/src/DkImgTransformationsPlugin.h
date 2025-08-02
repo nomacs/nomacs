@@ -88,7 +88,7 @@ class DkImgTransformationsPlugin : public QObject, nmc::DkViewPortInterface
 
 public:
     DkImgTransformationsPlugin();
-    ~DkImgTransformationsPlugin();
+    ~DkImgTransformationsPlugin() override;
 
     QImage image() const override;
     bool hideHUD() const override;
@@ -112,7 +112,7 @@ class DkImgTransformationsViewPort : public nmc::DkPluginViewPort
 
 public:
     DkImgTransformationsViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkImgTransformationsViewPort();
+    ~DkImgTransformationsViewPort() override;
 
     bool isCanceled();
     QImage getTransformedImage();
@@ -121,7 +121,7 @@ public slots:
     void setPanning(bool checked);
     void applyChangesAndClose();
     void discardChangesAndClose();
-    virtual void setVisible(bool visible);
+    void setVisible(bool visible) override;
     void setScaleXValue(double val);
     void setScaleYValue(double val);
     void setShearXValue(double val);
@@ -137,10 +137,10 @@ protected slots:
     void setMode(int mode);
 
 protected:
-    void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
     QPoint map(const QPointF &pos);
     virtual void init();
     void drawGuide(QPainter *painter, const QPolygonF &p, int paintMode);
@@ -196,7 +196,7 @@ public:
     };
 
     DkImgTransformationsToolBar(const QString &title, int defaultMode, QWidget *parent = nullptr);
-    virtual ~DkImgTransformationsToolBar();
+    ~DkImgTransformationsToolBar() override;
 
     void setRotationValue(double val);
     void setScaleValue(QPointF val);
@@ -221,7 +221,7 @@ public slots:
     void on_showLinesBox_stateChanged(int val);
     void on_autoRotateButton_clicked();
     void on_guideBox_currentIndexChanged(int val);
-    virtual void setVisible(bool visible);
+    void setVisible(bool visible) override;
 
 signals:
     void applySignal();
@@ -269,7 +269,7 @@ class DkInteractionRects : public QWidget
 public:
     DkInteractionRects(QRect imgRect, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
     DkInteractionRects(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
-    ~DkInteractionRects();
+    ~DkInteractionRects() override;
 
     void draw(QPainter *painter);
     void updateRects(QRect imgRect);

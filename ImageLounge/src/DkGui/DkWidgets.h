@@ -79,7 +79,7 @@ public:
     DkButton(const QString &text, QWidget *parent = nullptr);
     DkButton(const QIcon &icon, const QString &text, QWidget *parent = nullptr);
     DkButton(const QIcon &checkedIcon, const QIcon &uncheckedIcon, const QString &text, QWidget *parent = nullptr);
-    ~DkButton() = default;
+    ~DkButton() override = default;
 
     void adjustSize();
     void setFixedSize(QSize size);
@@ -145,7 +145,7 @@ class DkFileInfoLabel : public DkFadeLabel
 
 public:
     DkFileInfoLabel(QWidget *parent = nullptr);
-    ~DkFileInfoLabel() = default;
+    ~DkFileInfoLabel() override = default;
 
     void createLayout();
     void updateInfo(const QString &filePath, const QString &attr, const QString &date, const int rating);
@@ -156,7 +156,7 @@ public:
     DkRatingLabel *getRatingLabel();
 
 public slots:
-    virtual void setVisible(bool visible, bool saveSettings = true) override;
+    void setVisible(bool visible, bool saveSettings = true) override;
 
 protected:
     QString mFilePath;
@@ -179,7 +179,7 @@ public:
     };
 
     DkPlayer(QWidget *parent = nullptr);
-    ~DkPlayer() = default;
+    ~DkPlayer() override = default;
 
     void setTimeToDisplay(int ms = 1000);
 
@@ -219,7 +219,7 @@ class DkHudNavigation : public DkFadeWidget
 
 public:
     DkHudNavigation(QWidget *parent = nullptr);
-    ~DkHudNavigation() = default;
+    ~DkHudNavigation() override = default;
 
 signals:
     void nextSignal();
@@ -242,7 +242,7 @@ class DkFolderScrollBar : public DkFadeMixin<QSlider>
 
 public:
     DkFolderScrollBar(QWidget *parent = nullptr);
-    ~DkFolderScrollBar();
+    ~DkFolderScrollBar() override;
 
     virtual void setValue(int i);
 
@@ -311,7 +311,7 @@ public:
     DkSortFileProxyModel(QObject *parent = nullptr);
 
 protected:
-    virtual bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
 };
 
 class DllCoreExport DkExplorer : public DkDockWidget
@@ -320,7 +320,7 @@ class DllCoreExport DkExplorer : public DkDockWidget
 
 public:
     DkExplorer(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkExplorer();
+    ~DkExplorer() override;
 
     DkFileSystemModel *getModel()
     {
@@ -365,7 +365,7 @@ class DllCoreExport DkBrowseExplorer : public DkExplorer
 
 public:
     DkBrowseExplorer(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkBrowseExplorer();
+    ~DkBrowseExplorer() override;
 
 public slots:
     void browseClicked();
@@ -387,7 +387,7 @@ class DkOverview : public QLabel
 
 public:
     DkOverview(QWidget *parent = nullptr);
-    ~DkOverview() = default;
+    ~DkOverview() override = default;
 
     void setImage(const QImage &img)
     {
@@ -466,7 +466,7 @@ public:
                     DkRotatingRect *rect = nullptr,
                     QWidget *parent = nullptr,
                     Qt::WindowFlags f = Qt::WindowFlags());
-    virtual ~DkTransformRect() = default;
+    ~DkTransformRect() override = default;
 
     void draw(QPainter *painter);
 
@@ -515,7 +515,7 @@ public:
     };
 
     DkEditableRect(const QRectF &rect = QRect(), QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    virtual ~DkEditableRect() = default;
+    ~DkEditableRect() override = default;
 
     void reset();
 
@@ -534,7 +534,7 @@ public:
         mImgRect = imgRect;
     };
 
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
 
 signals:
     void cropImageSignal(const DkRotatingRect &cropArea,
@@ -603,7 +603,7 @@ public:
 
 public slots:
     void crop(bool cropToMetadata = false);
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
 
 signals:
     void hideSignal();
@@ -628,7 +628,7 @@ public:
     };
 
     DkHistogram(QWidget *parent);
-    ~DkHistogram();
+    ~DkHistogram() override;
 
     void drawHistogram(QImage img);
     void clearHistogram();
@@ -640,11 +640,11 @@ public slots:
     void onToggleStatsTriggered(bool show);
 
 protected:
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
-    virtual void contextMenuEvent(QContextMenuEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
     void loadSettings();
 
@@ -761,7 +761,7 @@ public:
         connect(timer, &QTimer::timeout, this, &DkDelayedInfo::sendInfo);
     }
 
-    virtual ~DkDelayedInfo()
+    ~DkDelayedInfo() override
     {
         if (timer && timer->isActive())
             timer->stop();
@@ -816,7 +816,7 @@ public:
     {
     }
 
-    ~DkDelayedMessage() = default;
+    ~DkDelayedMessage() override = default;
 
     void stop()
     {
@@ -888,7 +888,7 @@ class DllCoreExport DkGenericProfileWidget : public DkNamedWidget
 
 public:
     DkGenericProfileWidget(const QString &name, QWidget *parent, const QString &settingsPath = "");
-    virtual ~DkGenericProfileWidget();
+    ~DkGenericProfileWidget() override;
 
 public slots:
     void saveSettings() const;

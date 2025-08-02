@@ -125,7 +125,7 @@ public:
     DkTcpAction(DkPeer *peer, QObject *parent = nullptr);
     DkTcpAction(DkPeer *peer, const QString &text, QObject *parent = nullptr);
     DkTcpAction(DkPeer *peer, const QIcon &icon, const QString &text, QObject *parent);
-    ~DkTcpAction();
+    ~DkTcpAction() override;
 
     void init();
     void setTcpActions(QList<QAction *> *actions);
@@ -149,7 +149,7 @@ class DkTcpMenu : public QMenu
 
 public:
     DkTcpMenu(const QString &title = QString(), QWidget *parent = nullptr);
-    ~DkTcpMenu();
+    ~DkTcpMenu() override;
 
     void addTcpAction(QAction *tcpAction);
     void showNoClientsFound(bool show);
