@@ -225,7 +225,7 @@ class DllCoreExport DkPong : public QMainWindow
 
 public:
     DkPong(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkPong(){};
+    virtual ~DkPong() = default;
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

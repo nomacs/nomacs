@@ -25,13 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include <QElapsedTimer>
 #endif
 
-QPsdHandler::QPsdHandler()
-{
-}
+QPsdHandler::QPsdHandler() = default;
 
-QPsdHandler::~QPsdHandler()
-{
-}
+QPsdHandler::~QPsdHandler() = default;
 
 bool QPsdHandler::canRead() const
 {

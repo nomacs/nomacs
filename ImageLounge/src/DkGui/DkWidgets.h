@@ -79,7 +79,7 @@ public:
     DkButton(const QString &text, QWidget *parent = nullptr);
     DkButton(const QIcon &icon, const QString &text, QWidget *parent = nullptr);
     DkButton(const QIcon &checkedIcon, const QIcon &uncheckedIcon, const QString &text, QWidget *parent = nullptr);
-    ~DkButton(){};
+    ~DkButton() = default;
 
     void adjustSize();
     void setFixedSize(QSize size);
@@ -145,7 +145,7 @@ class DkFileInfoLabel : public DkFadeLabel
 
 public:
     DkFileInfoLabel(QWidget *parent = nullptr);
-    ~DkFileInfoLabel(){};
+    ~DkFileInfoLabel() = default;
 
     void createLayout();
     void updateInfo(const QString &filePath, const QString &attr, const QString &date, const int rating);
@@ -179,7 +179,7 @@ public:
     };
 
     DkPlayer(QWidget *parent = nullptr);
-    ~DkPlayer(){};
+    ~DkPlayer() = default;
 
     void setTimeToDisplay(int ms = 1000);
 
@@ -219,7 +219,7 @@ class DkHudNavigation : public DkFadeWidget
 
 public:
     DkHudNavigation(QWidget *parent = nullptr);
-    ~DkHudNavigation(){};
+    ~DkHudNavigation() = default;
 
 signals:
     void nextSignal();
@@ -387,7 +387,7 @@ class DkOverview : public QLabel
 
 public:
     DkOverview(QWidget *parent = nullptr);
-    ~DkOverview(){};
+    ~DkOverview() = default;
 
     void setImage(const QImage &img)
     {
@@ -466,7 +466,7 @@ public:
                     DkRotatingRect *rect = nullptr,
                     QWidget *parent = nullptr,
                     Qt::WindowFlags f = Qt::WindowFlags());
-    virtual ~DkTransformRect(){};
+    virtual ~DkTransformRect() = default;
 
     void draw(QPainter *painter);
 
@@ -515,7 +515,7 @@ public:
     };
 
     DkEditableRect(const QRectF &rect = QRect(), QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    virtual ~DkEditableRect(){};
+    virtual ~DkEditableRect() = default;
 
     void reset();
 
@@ -816,9 +816,7 @@ public:
     {
     }
 
-    ~DkDelayedMessage()
-    {
-    }
+    ~DkDelayedMessage() = default;
 
     void stop()
     {

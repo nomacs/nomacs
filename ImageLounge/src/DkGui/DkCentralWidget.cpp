@@ -313,9 +313,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     dm->setCentralWidget(this);
 }
 
-DkCentralWidget::~DkCentralWidget()
-{
-}
+DkCentralWidget::~DkCentralWidget() = default;
 
 void DkCentralWidget::createLayout()
 {

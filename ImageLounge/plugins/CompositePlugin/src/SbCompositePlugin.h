@@ -49,9 +49,7 @@ public:
     {
         setObjectName("CompositeDockWidget"); // fixes saving...
     }
-    ~SbCompositeDockWidget()
-    {
-    }
+    ~SbCompositeDockWidget() = default;
 
 protected:
     void closeEvent(QCloseEvent *)
@@ -99,9 +97,7 @@ public:
         : QObject(parent)
     {
     }
-    ~SbCompositePlugin()
-    {
-    }
+    ~SbCompositePlugin() = default;
 
     // DkPluginInterface
     QImage image() const override;

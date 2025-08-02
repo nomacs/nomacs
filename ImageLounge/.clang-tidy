@@ -28,6 +28,7 @@ SystemHeaders:            false
 
 Checks: "\
 modernize-use-nullptr,\
+modernize-use-equals-default,\
 "
 
 CheckOptions:

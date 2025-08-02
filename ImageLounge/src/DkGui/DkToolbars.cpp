@@ -173,9 +173,7 @@ void DkColorSlider::setActive(bool isActive)
     mIsActive = isActive;
 }
 
-DkColorSlider::~DkColorSlider()
-{
-}
+DkColorSlider::~DkColorSlider() = default;
 
 QColor DkColorSlider::getColor()
 {
@@ -237,9 +235,7 @@ DkGradient::DkGradient(QWidget *parent)
     init();
 }
 
-DkGradient::~DkGradient()
-{
-}
+DkGradient::~DkGradient() = default;
 
 void DkGradient::init()
 {
@@ -560,9 +556,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
         mGradient->setGradient(mOldGradients.first());
 }
 
-DkTransferToolBar::~DkTransferToolBar()
-{
-}
+DkTransferToolBar::~DkTransferToolBar() = default;
 
 void DkTransferToolBar::createIcons()
 {
@@ -1173,9 +1167,7 @@ void DkCropToolBar::onPanActionToggled(bool checked)
 }
 
 // -------------------------------------------------------------------- DkToolBarManager
-DkToolBarManager::DkToolBarManager()
-{
-}
+DkToolBarManager::DkToolBarManager() = default;
 
 DkToolBarManager &DkToolBarManager::inst()
 {

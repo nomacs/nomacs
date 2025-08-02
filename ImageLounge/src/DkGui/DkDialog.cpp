@@ -204,9 +204,7 @@ DkSplashScreen::DkSplashScreen(QWidget *parent, Qt::WindowFlags flags)
     });
 }
 
-DkSplashScreen::~DkSplashScreen()
-{
-}
+DkSplashScreen::~DkSplashScreen() = default;
 
 void DkSplashScreen::mousePressEvent(QMouseEvent *event)
 {

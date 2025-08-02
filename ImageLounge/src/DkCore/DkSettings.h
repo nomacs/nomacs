@@ -64,7 +64,7 @@ public:
 class DllCoreExport DkFileFilterHandling
 {
 public:
-    DkFileFilterHandling(){};
+    DkFileFilterHandling() = default;
     void registerNomacs(bool showDefaultApps = false);
     void registerFileType(const QString &filterString, const QString &attribute, bool add);
     void showDefaultSoftware() const;

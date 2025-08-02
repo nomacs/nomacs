@@ -48,9 +48,7 @@ DkPaintPlugin::DkPaintPlugin()
 /**
  *	Destructor
  **/
-DkPaintPlugin::~DkPaintPlugin()
-{
-}
+DkPaintPlugin::~DkPaintPlugin() = default;
 
 /**
  * Returns descriptive image

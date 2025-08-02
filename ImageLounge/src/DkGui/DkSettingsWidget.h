@@ -100,9 +100,7 @@ class DkSettingsProxyModel : public QSortFilterProxyModel
 
 public:
     DkSettingsProxyModel(QObject *parent = nullptr);
-    virtual ~DkSettingsProxyModel()
-    {
-    }
+    virtual ~DkSettingsProxyModel() = default;
 
 protected:
     virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;

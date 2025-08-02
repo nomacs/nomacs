@@ -628,9 +628,7 @@ DkPeer::DkPeer(quint16 port,
     connect(timer, &QTimer::timeout, this, &DkPeer::timerTimeout, Qt::UniqueConnection);
 }
 
-DkPeer::~DkPeer()
-{
-}
+DkPeer::~DkPeer() = default;
 
 void DkPeer::setSynchronized(bool flag)
 {
