@@ -1133,7 +1133,7 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
     // FIXME: this block is disabled because if you answer NO it would just keep recursing
     //        through setVisible(). Also the setting is not saved to file and no UI for it exists.
     //        To fix this it should have a context menu like other panels
-    if (0) {
+    if (false) {
         // nothing to display??
         if (!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name)
             && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)
