@@ -69,6 +69,15 @@ class DllCoreExport DkAbstractBatch
 public:
     DkAbstractBatch() = default;
 
+    // ok, this is important:
+    // we are using the abstract class to process specialized items
+    // if we allow copy operations - we get slicing issues
+    // so we just allow pointers to the batch processing functions.
+    // but pointers result in threading issues - so we just use
+    // QSharedPointers -> problem solved : )
+    DkAbstractBatch(const DkAbstractBatch &o) = delete;
+    DkAbstractBatch &operator=(const DkAbstractBatch &o) = delete;
+
     virtual void setProperties(...) {};
     virtual void saveSettings(QSettings &) const {};
     virtual void loadSettings(QSettings &) {};
@@ -94,16 +103,6 @@ public:
     QString settingsName() const;
 
     static QSharedPointer<DkAbstractBatch> createFromName(const QString &settingsName);
-
-private:
-    // ok, this is important:
-    // we are using the abstract class to process specialized items
-    // if we allow copy operations - we get slicing issues
-    // so we just allow pointers to the batch processing functions.
-    // but pointers result in threading issues - so we just use
-    // QSharedPointers -> problem solved : )
-    DkAbstractBatch(const DkAbstractBatch &o);
-    DkAbstractBatch &operator=(const DkAbstractBatch &o);
 };
 
 #ifdef WITH_PLUGINS
