@@ -89,14 +89,14 @@ public:
     };
 
 protected:
-    void focusInEvent(QFocusEvent *event)
+    void focusInEvent(QFocusEvent *event) override
     {
         QLineEdit::focusInEvent(event);
         selectAll();
         selectOnMousePressEvent = true;
     }
 
-    void mousePressEvent(QMouseEvent *event)
+    void mousePressEvent(QMouseEvent *event) override
     {
         QLineEdit::mousePressEvent(event);
         if (selectOnMousePressEvent) {
@@ -126,7 +126,7 @@ class DkSplashScreen : public QDialog
 
 public:
     DkSplashScreen(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkSplashScreen();
+    ~DkSplashScreen() override;
 
 private:
     QPoint mDragStart;
@@ -151,8 +151,8 @@ public:
     {
         mLastFile = lastFile;
     };
-    virtual void fixup(QString &input) const;
-    virtual State validate(QString &input, int &pos) const;
+    void fixup(QString &input) const override;
+    State validate(QString &input, int &pos) const override;
 
 protected:
     QString mLastFile;
@@ -211,7 +211,7 @@ public slots:
     void onAddButtonClicked();
     void onDeleteButtonClicked();
     void onRunButtonClicked();
-    virtual void accept() override;
+    void accept() override;
 
 signals:
     void openWithSignal(QAction *act);
@@ -250,7 +250,7 @@ public slots:
     void onFilterButtonPressed();
     void onResultListViewDoubleClicked(const QModelIndex &modelIndex);
     void onResultListViewClicked(const QModelIndex &modelIndex);
-    virtual void accept() override;
+    void accept() override;
 
 signals:
     void loadFileSignal(const QString &filePath) const;
@@ -286,7 +286,7 @@ class DkResizeDialog : public QDialog
 
 public:
     DkResizeDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkResizeDialog() = default;
+    ~DkResizeDialog() override = default;
 
     enum {
         ipl_nearest,
@@ -343,7 +343,7 @@ protected slots:
     void setVisible(bool visible) override;
 
 public slots:
-    virtual void accept() override;
+    void accept() override;
 
 protected:
     QImage mImg;
@@ -424,19 +424,19 @@ class DkShortcutsModel : public QAbstractItemModel
 
 public:
     DkShortcutsModel(QObject *parent = nullptr);
-    ~DkShortcutsModel();
+    ~DkShortcutsModel() override;
 
-    QModelIndex index(int row, int column, const QModelIndex &parent) const;
-    QModelIndex parent(const QModelIndex &index) const;
+    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+    QModelIndex parent(const QModelIndex &index) const override;
 
     // return item of the model
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
     void addDataActions(QVector<QAction *> actions, const QString &name);
 
@@ -572,8 +572,8 @@ signals:
     void dpiChanged(int dpi);
 
 protected:
-    virtual void wheelEvent(QWheelEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 private:
     QPrinter *mPrinter;
@@ -825,7 +825,7 @@ public:
     bool isLanguageChanged();
 
 public slots:
-    virtual void accept() override;
+    void accept() override;
 
 protected:
     void createLayout();

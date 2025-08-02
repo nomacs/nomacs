@@ -167,7 +167,7 @@ class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
 
 public:
     DkImageContainerT(const DkFileInfo &fileInfo = {});
-    virtual ~DkImageContainerT();
+    ~DkImageContainerT() override;
 
     void fetchFile();
     void cancel();
@@ -182,12 +182,12 @@ public:
     void saveMetaDataThreaded();
     bool isFileDownloaded() const;
 
-    virtual QSharedPointer<DkBasicLoader> getLoader() override;
+    QSharedPointer<DkBasicLoader> getLoader() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
-    virtual void undo() override;
-    virtual void redo() override;
-    virtual void setHistoryIndex(int idx) override;
+    void undo() override;
+    void redo() override;
+    void setHistoryIndex(int idx) override;
     void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName);
     void setMetaData(const QString &editName);
     void setEdited(bool edited = true);

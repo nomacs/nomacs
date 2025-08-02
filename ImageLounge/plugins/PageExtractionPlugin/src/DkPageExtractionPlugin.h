@@ -37,7 +37,7 @@ class DkPageExtractionPlugin : public QObject, nmc::DkBatchPluginInterface
 
 public:
     DkPageExtractionPlugin(QObject *parent = nullptr);
-    ~DkPageExtractionPlugin();
+    ~DkPageExtractionPlugin() override;
 
     QImage image() const override;
     QString name() const override;

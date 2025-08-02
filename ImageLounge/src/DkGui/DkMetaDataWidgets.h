@@ -58,18 +58,18 @@ class DkMetaDataModel : public QAbstractItemModel
 
 public:
     DkMetaDataModel(QObject *parent = nullptr);
-    ~DkMetaDataModel();
+    ~DkMetaDataModel() override;
 
-    QModelIndex index(int row, int column, const QModelIndex &parent) const;
-    QModelIndex parent(const QModelIndex &index) const;
+    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+    QModelIndex parent(const QModelIndex &index) const override;
 
     // return item of the model
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
     // virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
     virtual void addMetaData(QSharedPointer<DkMetaDataT> metaData);
@@ -87,10 +87,10 @@ class DkMetaDataProxyModel : public QSortFilterProxyModel
 
 public:
     DkMetaDataProxyModel(QObject *parent = nullptr);
-    virtual ~DkMetaDataProxyModel() = default;
+    ~DkMetaDataProxyModel() override = default;
 
 protected:
-    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 };
 
 class DkMetaDataDock : public DkDockWidget
@@ -99,7 +99,7 @@ class DkMetaDataDock : public DkDockWidget
 
 public:
     DkMetaDataDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkMetaDataDock();
+    ~DkMetaDataDock() override;
 
 public slots:
     void setImage(QSharedPointer<DkImageContainerT> imgC);
@@ -158,7 +158,7 @@ class DkMetaDataHUD : public DkFadeWidget
 
 public:
     DkMetaDataHUD(QWidget *parent = nullptr);
-    ~DkMetaDataHUD();
+    ~DkMetaDataHUD() override;
 
     void updateLabels(int numColumns = -1);
 
@@ -184,7 +184,7 @@ public slots:
     void changeNumColumns();
     void setToDefault();
     void newPosition();
-    virtual void setVisible(bool visible, bool saveSetting = true) override;
+    void setVisible(bool visible, bool saveSetting = true) override;
 
 signals:
     void positionChangeSignal(int newPos) const;
@@ -241,7 +241,7 @@ class DkCommentWidget : public DkFadeLabel
 
 public:
     DkCommentWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~DkCommentWidget() = default;
+    ~DkCommentWidget() override = default;
 
     void setMetaData(QSharedPointer<DkMetaDataT> metaData);
     QString text() const;

@@ -83,7 +83,7 @@ public:
               int idx = -1,
               QObject *parent = nullptr);
     DkTabInfo(TabMode mode, int idx = -1, QObject *parent = nullptr);
-    ~DkTabInfo();
+    ~DkTabInfo() override;
 
     bool operator==(const DkTabInfo &o) const;
 
@@ -126,7 +126,7 @@ class DllCoreExport DkCentralWidget : public DkWidget
 
 public:
     DkCentralWidget(QWidget *parent = nullptr);
-    ~DkCentralWidget();
+    ~DkCentralWidget() override;
 
     bool hasViewPort() const;
     DkViewPort *getViewPort() const;

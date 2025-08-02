@@ -123,7 +123,7 @@ class DllCoreExport DkNoMacs : public QMainWindow
     Q_OBJECT
 
 public:
-    virtual ~DkNoMacs();
+    ~DkNoMacs() override;
 
     virtual DkCentralWidget *getTabWidget() const;
 
@@ -297,7 +297,7 @@ class DllCoreExport DkNoMacsSync : public DkNoMacs
 
 public:
     DkNoMacsSync(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkNoMacsSync();
+    ~DkNoMacsSync() override;
 
 signals:
     void startRCServerSignal(bool start);
@@ -309,7 +309,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
     // gui
-    virtual void createActions() override;
+    void createActions() override;
 };
 
 class DllCoreExport DkNoMacsIpl : public DkNoMacsSync
@@ -327,14 +327,14 @@ class DllCoreExport DkNoMacsFrameless : public DkNoMacs
 
 public:
     DkNoMacsFrameless(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkNoMacsFrameless();
+    ~DkNoMacsFrameless() override;
 
 public slots:
     void chooseMonitor(bool force);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
-    virtual void createContextMenu() override;
+    void createContextMenu() override;
     void paintEvent(QPaintEvent *event) override;
 };
 
@@ -345,6 +345,6 @@ class DllCoreExport DkNoMacsContrast : public DkNoMacsSync
 public:
     DkNoMacsContrast(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
-    virtual ~DkNoMacsContrast();
+    ~DkNoMacsContrast() override;
 };
 }

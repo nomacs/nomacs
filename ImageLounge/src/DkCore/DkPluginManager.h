@@ -96,7 +96,7 @@ class DllCoreExport DkPluginContainer : public QObject
 
 public:
     DkPluginContainer(const QString &pluginPath);
-    ~DkPluginContainer();
+    ~DkPluginContainer() override;
 
     enum PluginType {
         type_unknown = 0,
@@ -259,7 +259,7 @@ class DllCoreExport DkPluginManagerDialog : public QDialog
 
 public:
     DkPluginManagerDialog(QWidget *parent = nullptr);
-    ~DkPluginManagerDialog();
+    ~DkPluginManagerDialog() override;
 
     void deleteInstance(QSharedPointer<DkPluginContainer> plugin);
     QMap<QString, QString> getPreviouslyInstalledPlugins();
@@ -286,7 +286,7 @@ class DkPluginTableWidget : public DkWidget
 
 public:
     DkPluginTableWidget(QWidget *parent);
-    ~DkPluginTableWidget();
+    ~DkPluginTableWidget() override;
 
     void clearTableFilters();
     void updateInstalledModel();
@@ -339,11 +339,11 @@ class DkPluginCheckBoxDelegate : public QStyledItemDelegate
 
 public:
     DkPluginCheckBoxDelegate(QObject *parent = nullptr);
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     bool editorEvent(QEvent *event,
                      QAbstractItemModel *model,
                      const QStyleOptionViewItem &option,
-                     const QModelIndex &index);
+                     const QModelIndex &index) override;
 
 private:
     QTableView *mParentTable = nullptr;
@@ -356,11 +356,11 @@ class DkPushButtonDelegate : public QStyledItemDelegate
 
 public:
     DkPushButtonDelegate(QObject *parent = nullptr);
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     bool editorEvent(QEvent *event,
                      QAbstractItemModel *model,
                      const QStyleOptionViewItem &option,
-                     const QModelIndex &index);
+                     const QModelIndex &index) override;
 
 signals:
     void buttonClicked(const QModelIndex &index) const;
