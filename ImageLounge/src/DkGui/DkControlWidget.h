@@ -167,11 +167,11 @@ public slots:
 
     void update();
 
-signals:
-    void imageUpdatedSignal();
+private:
+    void onImageContainerInternalUpdated();
 
 protected slots:
-    void setCommentSaved();
+    void setCommentSaved(const QString &comment);
 
     // signals from viewport plugins
     void pluginClosed(bool askForSaving);

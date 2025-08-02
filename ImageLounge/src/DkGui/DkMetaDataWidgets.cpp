@@ -846,16 +846,13 @@ QStringList DkMetaDataHUD::getDefaultKeys() const
     return keyValues;
 }
 
-void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkImageContainerT> cImg)
+void DkMetaDataHUD::setMetaData(QSharedPointer<DkMetaDataT> metaData)
 {
-    if (cImg) {
-        mMetaData = cImg->getMetaData();
-
+    mMetaData = metaData;
+    if (isVisible()) {
         // only update if I am visible
-        if (isVisible())
-            updateMetaData(mMetaData);
-    } else
-        mMetaData = QSharedPointer<DkMetaDataT>();
+        updateMetaData(mMetaData);
+    }
 }
 
 void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData)
@@ -1164,12 +1161,6 @@ DkCommentTextEdit::DkCommentTextEdit(QWidget *parent /* = 0 */)
 {
 }
 
-void DkCommentTextEdit::focusOutEvent(QFocusEvent *focusEvent)
-{
-    emit focusLost();
-    QTextEdit::focusOutEvent(focusEvent);
-}
-
 void DkCommentTextEdit::paintEvent(QPaintEvent *e)
 {
     if (toPlainText().isEmpty() && !viewport()->hasFocus()) {
@@ -1213,33 +1204,32 @@ void DkCommentWidget::createLayout()
     mCommentLabel->setStyleSheet(scrollbarStyle + mCommentLabel->styleSheet());
     mCommentLabel->setToolTip(tr("Enter your notes here. They will be saved to the image metadata."));
     connect(mCommentLabel, &DkCommentTextEdit::textChanged, this, &DkCommentWidget::onCommentLabelTextChanged);
-    connect(mCommentLabel, &DkCommentTextEdit::focusLost, this, &DkCommentWidget::onCommentLabelFocusLost);
 
-    auto *cancelButton = new QPushButton(this);
-    cancelButton->setFlat(true);
-    cancelButton->setIcon(
+    mDiscardAction = new QAction(this);
+    mDiscardAction->setShortcut(Qt::Key_Escape);
+    connect(mDiscardAction, &QAction::triggered, this, &DkCommentWidget::discardChanges);
+
+    mSaveAction = new QAction(this);
+    mSaveAction->setShortcut(Qt::CTRL | Qt::Key_Return);
+    connect(mSaveAction, &QAction::triggered, this, &DkCommentWidget::save);
+
+    mDiscardButton = new QPushButton(this);
+    mDiscardButton->setFlat(true);
+    mDiscardButton->setIcon(
         DkImage::loadIcon(":/nomacs/img/trash.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
-    cancelButton->setToolTip(tr("Discard Changes (ESC)"));
-    connect(cancelButton, &QPushButton::clicked, this, &DkCommentWidget::onCancelButtonClicked);
+    mDiscardButton->setToolTip(tr("Discard Changes (ESC)"));
+    connect(mDiscardButton, &QPushButton::clicked, mDiscardAction, &QAction::trigger);
 
-    auto *saveButton = new QPushButton(this);
-    saveButton->setFlat(true);
-    saveButton->setIcon(
+    mSaveButton = new QPushButton(this);
+    mSaveButton->setFlat(true);
+    mSaveButton->setIcon(
         DkImage::loadIcon(":/nomacs/img/save.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
-    saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
-    connect(saveButton, &QPushButton::clicked, this, &DkCommentWidget::onSaveButtonClicked);
-
-    auto *cancelAction = new QAction(this);
-    cancelAction->setShortcut(Qt::Key_Escape);
-    connect(cancelAction, &QAction::triggered, cancelButton, &QPushButton::animateClick);
-
-    auto *saveAction = new QAction(this);
-    saveAction->setShortcut(Qt::CTRL | Qt::Key_Return);
-    connect(saveAction, &QAction::triggered, saveButton, &QPushButton::animateClick);
+    mSaveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
+    connect(mSaveButton, &QPushButton::clicked, mSaveAction, &QAction::trigger);
 
     auto *actionFilter = new DkActionEventFilter(this);
-    actionFilter->addAction(cancelAction);
-    actionFilter->addAction(saveAction);
+    actionFilter->addAction(mDiscardAction);
+    actionFilter->addAction(mSaveAction);
     mCommentLabel->installEventFilter(actionFilter);
 
     QWidget *titleWidget = new QWidget(this);
@@ -1249,8 +1239,8 @@ void DkCommentWidget::createLayout()
     titleLayout->setSpacing(0);
     titleLayout->addWidget(titleLabel);
     titleLayout->addStretch();
-    titleLayout->addWidget(cancelButton, 0, Qt::AlignVCenter);
-    titleLayout->addWidget(saveButton, 0, Qt::AlignVCenter);
+    titleLayout->addWidget(mDiscardButton, 0, Qt::AlignVCenter);
+    titleLayout->addWidget(mSaveButton, 0, Qt::AlignVCenter);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(titleWidget);
@@ -1260,67 +1250,34 @@ void DkCommentWidget::createLayout()
     setCursor(Qt::ArrowCursor);
 }
 
-void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData)
+void DkCommentWidget::setText(const QString &comment)
 {
-    mMetaData = metaData;
-    initComment(metaData->getDescription());
-}
-
-void DkCommentWidget::initComment(const QString &description)
-{
-    mOldText = description;
+    mOldText = comment;
     resetComment();
 }
 
 void DkCommentWidget::resetComment()
 {
     // First, reset comment text (triggering changed event, but not edited event)
-    mOldText = mMetaData->getDescription();
     mCommentLabel->setText(mOldText);
     mCommentLabel->clearFocus();
-    // Reset internal state (this panel only)
-    mTextEdited = false;
-    // Just like in any typical webform, "cancel"/"reset" shouldn't save anything
-}
-
-QString DkCommentWidget::text() const
-{
-    return mCommentLabel->toPlainText();
-}
-
-void DkCommentWidget::saveComment()
-{
-    if (mTextEdited && mCommentLabel->toPlainText() != mMetaData->getDescription() && mMetaData) {
-        if (!mMetaData->setDescription(text()) && !text().isEmpty()) {
-            emit showInfoSignal(tr("Sorry, I cannot save comments for this image format."));
-            return;
-        }
-        initComment(text());
-
-        emit commentSavedSignal();
-        emit commentSavedSignal(tr("File comment"));
-    }
 }
 
 void DkCommentWidget::onCommentLabelTextChanged()
 {
-    mTextEdited = text() != mOldText;
-    if (mTextEdited)
-        emit commentEditedSignal();
+    const bool edited = mCommentLabel->toPlainText() != mOldText;
+    mSaveButton->setVisible(edited);
+    mDiscardButton->setVisible(edited);
+    mSaveAction->setEnabled(edited);
+    mDiscardAction->setEnabled(edited);
 }
 
-void DkCommentWidget::onCommentLabelFocusLost()
+void DkCommentWidget::save()
 {
-    // We don't want to do anything when changing focus
+    emit commentSavedSignal(mCommentLabel->toPlainText());
 }
 
-void DkCommentWidget::onSaveButtonClicked()
-{
-    saveComment();
-    mCommentLabel->clearFocus();
-}
-
-void DkCommentWidget::onCancelButtonClicked()
+void DkCommentWidget::discardChanges()
 {
     resetComment();
 }
