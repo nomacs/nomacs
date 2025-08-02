@@ -34,6 +34,8 @@
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h" // just needed for qInfo() #ifdef
+
+#include <memory>
 #include <utility>
 
 #pragma warning(push, 0)
@@ -537,9 +539,9 @@ DkBasicLoader::LoaderResult DkBasicLoader::loadQt(const QString &filePath,
 
     std::unique_ptr<QIODevice> device;
     if (ba && !ba->isEmpty())
-        device.reset(new QBuffer(ba.get()));
+        device = std::make_unique<QBuffer>(ba.get());
     else
-        device.reset(new QFile(filePath));
+        device = std::make_unique<QFile>(filePath);
 
     if (!device->open(QIODevice::ReadOnly)) {
         qWarning() << "[loadQt] failed to  open file:" << device->errorString();
