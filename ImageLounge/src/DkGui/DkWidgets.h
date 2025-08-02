@@ -116,14 +116,15 @@ public:
         updateRating();
     };
 signals:
-    void newRatingSignal(int rating);
+    void ratingEdited(int rating);
 
-protected:
+private:
     QVector<DkButton *> mStars;
     int mRating = 0;
 
     void updateRating();
     void init();
+    void editRating(int rating);
 };
 
 class DkFileInfoLabel : public DkFadeLabel
@@ -140,10 +141,12 @@ public:
     void updateDate(const QString &date = QString());
     void updateRating(const int rating);
     void setEdited(bool edited);
-    DkRatingLabel *getRatingLabel();
 
 public slots:
     virtual void setVisible(bool visible, bool saveSettings = true) override;
+
+signals:
+    void ratingEdited(int rating);
 
 protected:
     QString mFilePath;

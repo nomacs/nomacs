@@ -1081,8 +1081,7 @@ void DkRatingLabel::init()
 
         rating++;
         auto changeFunc = [this, rating] {
-            setRating(rating);
-            emit newRatingSignal(rating);
+            editRating(rating);
         };
 
         connect(button, &DkButton::released, this, changeFunc);
@@ -1092,9 +1091,17 @@ void DkRatingLabel::init()
     }
 
     connect(am.action(DkActionManager::sc_star_rating_0), &QAction::triggered, this, [this] {
-        setRating(0);
-        emit newRatingSignal(0);
+        editRating(0);
     });
+}
+
+void DkRatingLabel::editRating(int rating)
+{
+    if (mRating == rating) {
+        return;
+    }
+
+    emit ratingEdited(rating);
 }
 
 // title info + star label -------------------------------------------------------
@@ -1111,6 +1118,7 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget *parent)
     mDateLabel->setMouseTracking(true);
     mDateLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     mRatingLabel = new DkRatingLabel(0, this);
+    connect(mRatingLabel, &DkRatingLabel::ratingEdited, this, &DkFileInfoLabel::ratingEdited);
     setMinimumWidth(110);
     setCursor(Qt::ArrowCursor);
 
@@ -1187,11 +1195,6 @@ void DkFileInfoLabel::setEdited(bool edited)
 
     QString cFileName = mTitleLabel->text() + "*";
     this->mTitleLabel->setText(cFileName);
-}
-
-DkRatingLabel *DkFileInfoLabel::getRatingLabel()
-{
-    return mRatingLabel;
 }
 
 void DkFileInfoLabel::updateInfo(const QString &filePath, const QString &attr, const QString &date, const int rating)
