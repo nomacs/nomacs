@@ -382,7 +382,7 @@ void DkLocalClientManager::searchForOtherClients()
         if (i == mServer->serverPort())
             continue;
 
-        DkConnection *connection = createConnection();
+        DkConnection *connection = DkLocalClientManager::createConnection();
         connection->connectToHost(QHostAddress::LocalHost, (qint16)i);
     }
 }

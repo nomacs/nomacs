@@ -345,9 +345,9 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
 
-    virtual void createLayout();
-    virtual void writeSettings();
-    virtual void readSettings();
+    void createLayout();
+    void writeSettings();
+    void readSettings();
 
     QVBoxLayout *mLayout = nullptr;
     QTreeView *mFileTree = nullptr;
@@ -373,9 +373,9 @@ public slots:
     void setRootPath(const QString &root);
 
 protected:
-    void createLayout() override;
-    void readSettings() override;
-    void writeSettings() override;
+    void createLayout();
+    void readSettings();
+    void writeSettings();
 
     QString mRootPath;
     DkElidedLabel *mRootPathLabel;
