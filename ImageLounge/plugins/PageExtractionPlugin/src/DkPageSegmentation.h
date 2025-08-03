@@ -43,6 +43,7 @@ class DkPageSegmentation
 {
 public:
     explicit DkPageSegmentation(const cv::Mat &colImg = cv::Mat(), bool alternativeMethod = false);
+    virtual ~DkPageSegmentation() = default;
 
     virtual void compute();
     virtual void filterDuplicates(float overlap = 0.6f, float areaRatio = 0.5f);

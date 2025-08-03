@@ -64,6 +64,7 @@ class DllCoreExport DkBaseManipulator
 {
 public:
     explicit DkBaseManipulator(QAction *action = nullptr);
+    virtual ~DkBaseManipulator() = default;
 
     QString name() const;
     QAction *action() const;
