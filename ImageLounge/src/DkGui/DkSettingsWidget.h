@@ -58,7 +58,7 @@ namespace nmc
 class DllCoreExport DkSettingsEntry
 {
 public:
-    DkSettingsEntry(const QString &key = QString(), const QVariant &value = QVariant());
+    explicit DkSettingsEntry(const QString &key = QString(), const QVariant &value = QVariant());
 
     QString key() const;
 
@@ -75,7 +75,7 @@ protected:
 class DllCoreExport DkSettingsGroup
 {
 public:
-    DkSettingsGroup(const QString &name = QString());
+    explicit DkSettingsGroup(const QString &name = QString());
 
     bool isEmpty() const;
 
@@ -99,7 +99,7 @@ class DkSettingsProxyModel : public QSortFilterProxyModel
     Q_OBJECT
 
 public:
-    DkSettingsProxyModel(QObject *parent = nullptr);
+    explicit DkSettingsProxyModel(QObject *parent = nullptr);
     ~DkSettingsProxyModel() override = default;
 
 protected:
@@ -111,7 +111,7 @@ class DkSettingsModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    DkSettingsModel(QObject *parent = nullptr);
+    explicit DkSettingsModel(QObject *parent = nullptr);
     ~DkSettingsModel() override;
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
@@ -145,7 +145,7 @@ class DllCoreExport DkSettingsWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkSettingsWidget(QWidget *parent);
+    explicit DkSettingsWidget(QWidget *parent);
 
     void setSettingsPath(const QString &settings, const QString &parentName = "");
     void addSettingsGroup(const DkSettingsGroup &group);

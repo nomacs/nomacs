@@ -56,7 +56,7 @@ namespace nmc
 class DkGrayScaleManipulator : public DkBaseManipulator
 {
 public:
-    DkGrayScaleManipulator(QAction *action = nullptr);
+    explicit DkGrayScaleManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -65,7 +65,7 @@ public:
 class DkAutoAdjustManipulator : public DkBaseManipulator
 {
 public:
-    DkAutoAdjustManipulator(QAction *action = nullptr);
+    explicit DkAutoAdjustManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -74,7 +74,7 @@ public:
 class DkNormalizeManipulator : public DkBaseManipulator
 {
 public:
-    DkNormalizeManipulator(QAction *action = nullptr);
+    explicit DkNormalizeManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -83,7 +83,7 @@ public:
 class DkInvertManipulator : public DkBaseManipulator
 {
 public:
-    DkInvertManipulator(QAction *action = nullptr);
+    explicit DkInvertManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -92,7 +92,7 @@ public:
 class DkFlipHManipulator : public DkBaseManipulator
 {
 public:
-    DkFlipHManipulator(QAction *action = nullptr);
+    explicit DkFlipHManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -101,7 +101,7 @@ public:
 class DkFlipVManipulator : public DkBaseManipulator
 {
 public:
-    DkFlipVManipulator(QAction *action = nullptr);
+    explicit DkFlipVManipulator(QAction *action = nullptr);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -111,7 +111,7 @@ public:
 class DllCoreExport DkTinyPlanetManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkTinyPlanetManipulator(QAction *action);
+    explicit DkTinyPlanetManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -134,7 +134,7 @@ private:
 class DllCoreExport DkColorManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkColorManipulator(QAction *action);
+    explicit DkColorManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -149,7 +149,7 @@ private:
 class DllCoreExport DkBlurManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkBlurManipulator(QAction *action);
+    explicit DkBlurManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -164,7 +164,7 @@ private:
 class DllCoreExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkUnsharpMaskManipulator(QAction *action);
+    explicit DkUnsharpMaskManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -183,7 +183,7 @@ private:
 class DllCoreExport DkRotateManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkRotateManipulator(QAction *action);
+    explicit DkRotateManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -198,7 +198,7 @@ private:
 class DllCoreExport DkResizeManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkResizeManipulator(QAction *action);
+    explicit DkResizeManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -221,7 +221,7 @@ private:
 class DllCoreExport DkThresholdManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkThresholdManipulator(QAction *action);
+    explicit DkThresholdManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -240,7 +240,7 @@ private:
 class DllCoreExport DkHueManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkHueManipulator(QAction *action);
+    explicit DkHueManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;
@@ -263,7 +263,7 @@ private:
 class DllCoreExport DkExposureManipulator : public DkBaseManipulatorExt
 {
 public:
-    DkExposureManipulator(QAction *action);
+    explicit DkExposureManipulator(QAction *action);
 
     QImage apply(const QImage &img) const override;
     QString errorMessage() const override;

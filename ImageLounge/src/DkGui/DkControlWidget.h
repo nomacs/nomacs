@@ -118,9 +118,9 @@ public:
         widget_end
     };
 
-    DkControlWidget(DkThumbLoader *thumbLoader,
-                    DkViewPort *parent = nullptr,
-                    Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkControlWidget(DkThumbLoader *thumbLoader,
+                             DkViewPort *parent = nullptr,
+                             Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkControlWidget() override = default;
 
     void setFullScreen(bool fullscreen);

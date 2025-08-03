@@ -132,7 +132,7 @@ class DkClientManager : public QObject
 {
     Q_OBJECT
 public:
-    DkClientManager(const QString &title, QObject *parent = nullptr);
+    explicit DkClientManager(const QString &title, QObject *parent = nullptr);
     ~DkClientManager() override;
     virtual QList<DkPeer *> getPeerList() = 0;
 
@@ -204,7 +204,7 @@ class DkLocalClientManager : public DkClientManager
     Q_OBJECT
 
 public:
-    DkLocalClientManager(const QString &title, QObject *parent = nullptr);
+    explicit DkLocalClientManager(const QString &title, QObject *parent = nullptr);
     QList<DkPeer *> getPeerList() override;
     quint16 getServerPort() const;
 
@@ -241,7 +241,7 @@ class DkLocalTcpServer : public QTcpServer
     Q_OBJECT
 
 public:
-    DkLocalTcpServer(QObject *parent = nullptr);
+    explicit DkLocalTcpServer(QObject *parent = nullptr);
 
 signals:
     void serverReiceivedNewConnection(int DkDescriptor);

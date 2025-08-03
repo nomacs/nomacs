@@ -28,6 +28,11 @@ SystemHeaders:            false
 
 Checks: "\
 cert-*,\
+cppcoreguidelines-slicing,\
+fuchsia-statically-constructed-objects,\
+fuchsia-trailing-return,\
+fuchsia-virtual-inheritance,\
+google-explicit-constructor,\
 misc-definitions-in-headers,\
 modernize-deprecated-headers,\
 modernize-make-shared,\

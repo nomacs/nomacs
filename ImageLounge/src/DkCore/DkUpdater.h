@@ -55,7 +55,7 @@ namespace nmc
 class DkPackage
 {
 public:
-    DkPackage(const QString &name = "", const QString &version = "");
+    explicit DkPackage(const QString &name = "", const QString &version = "");
 
     bool isEmpty() const;
     bool operator==(const DkPackage &o) const;
@@ -86,7 +86,7 @@ class DllCoreExport DkUpdater : public QObject
 public:
     bool silent;
 
-    DkUpdater(QObject *parent = nullptr);
+    explicit DkUpdater(QObject *parent = nullptr);
 
 public slots:
     void checkForUpdates();
@@ -125,7 +125,7 @@ class DllCoreExport DkTranslationUpdater : public QObject
     Q_OBJECT
 
 public:
-    DkTranslationUpdater(bool silent = false, QObject *parent = nullptr);
+    explicit DkTranslationUpdater(bool silent = false, QObject *parent = nullptr);
     bool silent;
 
 public slots:

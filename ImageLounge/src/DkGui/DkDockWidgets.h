@@ -57,7 +57,7 @@ class DllCoreExport DkHistoryDock : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkHistoryDock(const QString &title = "", QWidget *parent = nullptr);
+    explicit DkHistoryDock(const QString &title = "", QWidget *parent = nullptr);
 
 public slots:
     void updateImage(QSharedPointer<DkImageContainerT> img);

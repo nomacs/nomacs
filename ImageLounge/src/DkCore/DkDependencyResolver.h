@@ -52,7 +52,7 @@ namespace nmc
 class DllCoreExport DkDllDependency
 {
 public:
-    DkDllDependency(const QString &filePath);
+    explicit DkDllDependency(const QString &filePath);
 
     bool findDependencies();
 

@@ -111,7 +111,7 @@ class DkImgTransformationsViewPort : public nmc::DkPluginViewPort
     Q_OBJECT
 
 public:
-    DkImgTransformationsViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkImgTransformationsViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkImgTransformationsViewPort() override;
 
     bool isCanceled();
@@ -267,8 +267,8 @@ class DkInteractionRects : public QWidget
     Q_OBJECT
 
 public:
-    DkInteractionRects(QRect imgRect, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
-    DkInteractionRects(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+    explicit DkInteractionRects(QRect imgRect, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+    explicit DkInteractionRects(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
     ~DkInteractionRects() override;
 
     void draw(QPainter *painter);

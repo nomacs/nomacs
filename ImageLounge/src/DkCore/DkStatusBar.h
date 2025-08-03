@@ -54,7 +54,7 @@ class DllCoreExport DkStatusBar : public QStatusBar
     Q_OBJECT
 
 public:
-    DkStatusBar(QWidget *parent = nullptr);
+    explicit DkStatusBar(QWidget *parent = nullptr);
     ~DkStatusBar() override = default;
 
     enum StatusLabel {

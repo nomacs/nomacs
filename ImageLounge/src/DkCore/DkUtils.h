@@ -485,7 +485,7 @@ public:
 class DllCoreExport DkFileNameConverter
 {
 public:
-    DkFileNameConverter(const QString &pattern);
+    explicit DkFileNameConverter(const QString &pattern);
 
     QString convert(const QString &file, int index) const;
 
@@ -536,7 +536,7 @@ private:
 class DllCoreExport TreeItem
 {
 public:
-    TreeItem(const QVector<QVariant> &data, TreeItem *parent = nullptr);
+    explicit TreeItem(const QVector<QVariant> &data, TreeItem *parent = nullptr);
     ~TreeItem();
 
     void appendChild(TreeItem *child);
@@ -570,7 +570,7 @@ class DllCoreExport TabMiddleMouseCloser : public QObject
     Q_OBJECT
 
 public:
-    TabMiddleMouseCloser(std::function<void(int)> callback)
+    explicit TabMiddleMouseCloser(std::function<void(int)> callback)
         : callback(callback){};
 
 protected:

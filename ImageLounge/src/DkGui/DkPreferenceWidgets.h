@@ -95,7 +95,7 @@ class DllCoreExport DkPreferenceWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkPreferenceWidget(QWidget *parent);
+    explicit DkPreferenceWidget(QWidget *parent);
 
     void addTabWidget(DkPreferenceTabWidget *tabWidget);
 
@@ -142,7 +142,7 @@ class DkGeneralPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkGeneralPreference(QWidget *parent = nullptr);
+    explicit DkGeneralPreference(QWidget *parent = nullptr);
 
 public slots:
     void onShowRecentFilesToggled(bool checked) const;
@@ -179,7 +179,7 @@ class DkDisplayPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkDisplayPreference(QWidget *parent = nullptr);
+    explicit DkDisplayPreference(QWidget *parent = nullptr);
 
 public slots:
     void onInterpolationBoxValueChanged(int value) const;
@@ -216,7 +216,7 @@ class DkFilePreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkFilePreference(QWidget *parent = nullptr);
+    explicit DkFilePreference(QWidget *parent = nullptr);
 
 public slots:
     void onDirChooserDirectoryChanged(const QString &dirPath) const;
@@ -239,7 +239,7 @@ class DkFileAssociationsPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkFileAssociationsPreference(QWidget *parent = nullptr);
+    explicit DkFileAssociationsPreference(QWidget *parent = nullptr);
     ~DkFileAssociationsPreference() override;
 public slots:
     void onFileModelItemChanged(QStandardItem *);
@@ -266,7 +266,7 @@ class DkAdvancedPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkAdvancedPreference(QWidget *parent = nullptr);
+    explicit DkAdvancedPreference(QWidget *parent = nullptr);
 
 public slots:
     void onLoadRawButtonClicked(int buttonId) const;
@@ -292,7 +292,7 @@ class DkEditorPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkEditorPreference(QWidget *parent = nullptr);
+    explicit DkEditorPreference(QWidget *parent = nullptr);
 
 signals:
     void infoSignal(const QString &msg) const;

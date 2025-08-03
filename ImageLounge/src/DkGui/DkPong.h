@@ -97,8 +97,9 @@ protected:
 class DllCoreExport DkPongPlayer
 {
 public:
-    DkPongPlayer(const QString &playerName = QObject::tr("Anonymous"),
-                 QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    explicit DkPongPlayer(
+        const QString &playerName = QObject::tr("Anonymous"),
+        QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
     void reset(const QPoint &pos);
     QRect rect() const;
@@ -132,7 +133,7 @@ protected:
 class DllCoreExport DkBall
 {
 public:
-    DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    explicit DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
     void reset();
     void updateSize();
@@ -160,9 +161,10 @@ class DllCoreExport DkScoreLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkScoreLabel(Qt::Alignment align = Qt::AlignLeft,
-                 QWidget *parent = nullptr,
-                 QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    explicit DkScoreLabel(
+        Qt::Alignment align = Qt::AlignLeft,
+        QWidget *parent = nullptr,
+        QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 protected:
     void paintEvent(QPaintEvent *ev) override;
@@ -177,7 +179,7 @@ class DllCoreExport DkPongPort : public QGraphicsView
     Q_OBJECT
 
 public:
-    DkPongPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkPongPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkPongPort() override;
 
     QSharedPointer<DkPongSettings> settings() const;
@@ -224,7 +226,7 @@ class DllCoreExport DkPong : public QMainWindow
     Q_OBJECT
 
 public:
-    DkPong(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkPong(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkPong() override = default;
 
 protected:

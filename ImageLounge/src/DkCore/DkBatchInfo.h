@@ -54,7 +54,7 @@ namespace nmc
 class DllCoreExport DkBatchInfo
 {
 public:
-    DkBatchInfo(const QString &id = QString(), const QString &filePath = QString());
+    explicit DkBatchInfo(const QString &id = QString(), const QString &filePath = QString());
 
     virtual bool isEmpty() const;
 
@@ -80,7 +80,7 @@ private:
 class DllCoreExport DkSaveInfo
 {
 public:
-    DkSaveInfo(const QString &filePathIn = QString(), const QString &filePathOut = QString());
+    explicit DkSaveInfo(const QString &filePathIn = QString(), const QString &filePathOut = QString());
 
     enum OverwriteMode {
         mode_skip_existing = 0x00,

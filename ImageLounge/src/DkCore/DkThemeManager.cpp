@@ -161,7 +161,7 @@ private:
 public:
     DkPalette() = delete;
 
-    DkPalette(const QPalette &p)
+    explicit DkPalette(const QPalette &p)
         : mIn(p)
     {
         mOut = mIn;

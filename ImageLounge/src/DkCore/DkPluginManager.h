@@ -70,7 +70,7 @@ enum installedPluginsColumns {
 class DkLibrary
 {
 public:
-    DkLibrary(const QString &name = QString());
+    explicit DkLibrary(const QString &name = QString());
 
     QString fullPath() const;
     QString name() const;
@@ -95,7 +95,7 @@ class DllCoreExport DkPluginContainer : public QObject
     Q_OBJECT
 
 public:
-    DkPluginContainer(const QString &pluginPath);
+    explicit DkPluginContainer(const QString &pluginPath);
     ~DkPluginContainer() override;
 
     enum PluginType {
@@ -178,7 +178,7 @@ class DllCoreExport DkPluginActionManager : public QObject
     Q_OBJECT
 
 public:
-    DkPluginActionManager(QObject *parent = nullptr);
+    explicit DkPluginActionManager(QObject *parent = nullptr);
 
     void setMenu(QMenu *menu);
     QMenu *menu() const;
@@ -258,7 +258,7 @@ class DllCoreExport DkPluginManagerDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkPluginManagerDialog(QWidget *parent = nullptr);
+    explicit DkPluginManagerDialog(QWidget *parent = nullptr);
     ~DkPluginManagerDialog() override;
 
     void deleteInstance(QSharedPointer<DkPluginContainer> plugin);
@@ -285,7 +285,7 @@ class DkPluginTableWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkPluginTableWidget(QWidget *parent);
+    explicit DkPluginTableWidget(QWidget *parent);
     ~DkPluginTableWidget() override;
 
     void clearTableFilters();
@@ -315,7 +315,7 @@ class DkInstalledPluginsModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    DkInstalledPluginsModel(QObject *parent = nullptr);
+    explicit DkInstalledPluginsModel(QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent) const override;
     int columnCount(const QModelIndex &parent) const override;
@@ -338,7 +338,7 @@ class DkPluginCheckBoxDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-    DkPluginCheckBoxDelegate(QObject *parent = nullptr);
+    explicit DkPluginCheckBoxDelegate(QObject *parent = nullptr);
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     bool editorEvent(QEvent *event,
                      QAbstractItemModel *model,
@@ -355,7 +355,7 @@ class DkPushButtonDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-    DkPushButtonDelegate(QObject *parent = nullptr);
+    explicit DkPushButtonDelegate(QObject *parent = nullptr);
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     bool editorEvent(QEvent *event,
                      QAbstractItemModel *model,

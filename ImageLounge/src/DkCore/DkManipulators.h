@@ -63,7 +63,7 @@ class DkImageContainer;
 class DllCoreExport DkBaseManipulator
 {
 public:
-    DkBaseManipulator(QAction *action = nullptr);
+    explicit DkBaseManipulator(QAction *action = nullptr);
 
     QString name() const;
     QAction *action() const;
@@ -92,7 +92,7 @@ private:
 class DllCoreExport DkBaseManipulatorExt : public DkBaseManipulator
 {
 public:
-    DkBaseManipulatorExt(QAction *action);
+    explicit DkBaseManipulatorExt(QAction *action);
 
     void setWidget(QWidget *widget);
     QWidget *widget() const;

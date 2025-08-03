@@ -65,7 +65,7 @@ class DllCoreExport DkConnection : public QTcpSocket
     Q_OBJECT
 
 public:
-    DkConnection(QObject *parent = nullptr);
+    explicit DkConnection(QObject *parent = nullptr);
     ~DkConnection() override = default;
 
     void release()
@@ -173,7 +173,7 @@ class DllCoreExport DkLocalConnection : public DkConnection
     Q_OBJECT
 
 public:
-    DkLocalConnection(QObject *parent = nullptr);
+    explicit DkLocalConnection(QObject *parent = nullptr);
 
     quint16 getLocalTcpServerPort()
     {

@@ -483,7 +483,7 @@ typedef struct {
 class DkTgaLoader
 {
 public:
-    DkTgaLoader(QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+    explicit DkTgaLoader(QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 
     QImage image() const;
     bool load();

@@ -48,7 +48,7 @@ class DkQuickAccess : public QObject
     Q_OBJECT
 
 public:
-    DkQuickAccess(QObject *parent = nullptr);
+    explicit DkQuickAccess(QObject *parent = nullptr);
 
     void addActions(const QVector<QAction *> &actions);
     void addDirs(const QStringList &dirPaths);
@@ -78,7 +78,7 @@ class DkQuickAccessEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    DkQuickAccessEdit(QWidget *parent = nullptr);
+    explicit DkQuickAccessEdit(QWidget *parent = nullptr);
 
     void setModel(QStandardItemModel *model);
 

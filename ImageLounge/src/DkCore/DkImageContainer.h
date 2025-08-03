@@ -68,7 +68,7 @@ public:
         loaded,
     };
 
-    DkImageContainer(const DkFileInfo &fileInfo);
+    explicit DkImageContainer(const DkFileInfo &fileInfo);
     virtual ~DkImageContainer();
 
     QImage image();
@@ -166,7 +166,7 @@ class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
     Q_DISABLE_COPY_MOVE(DkImageContainerT);
 
 public:
-    DkImageContainerT(const DkFileInfo &fileInfo = {});
+    explicit DkImageContainerT(const DkFileInfo &fileInfo = {});
     ~DkImageContainerT() override;
 
     void fetchFile();

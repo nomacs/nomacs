@@ -84,7 +84,7 @@ public:
         cm_end,
     };
 
-    DkFilePreview(DkThumbLoader *loader, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkFilePreview(DkThumbLoader *loader, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     ~DkFilePreview() override
     {
@@ -252,7 +252,7 @@ class DllCoreExport DkThumbScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
+    explicit DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
 
     void updateLayout();
     QStringList getSelectedFiles() const;
@@ -308,7 +308,7 @@ class DkThumbsView : public QGraphicsView
     Q_OBJECT
 
 public:
-    DkThumbsView(DkThumbScene *scene, QWidget *parent = nullptr);
+    explicit DkThumbsView(DkThumbScene *scene, QWidget *parent = nullptr);
 
 signals:
     void updateDirSignal(const QString &dir) const;
@@ -335,9 +335,9 @@ class DllCoreExport DkThumbScrollWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkThumbScrollWidget(DkThumbLoader *thumbLoader,
-                        QWidget *parent = nullptr,
-                        Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkThumbScrollWidget(DkThumbLoader *thumbLoader,
+                                 QWidget *parent = nullptr,
+                                 Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkThumbScrollWidget() override;
 
     DkThumbScene *getThumbWidget()
@@ -385,7 +385,7 @@ protected:
 class DkRecentDir
 {
 public:
-    DkRecentDir(const DkFileInfo &dir, const DkFileInfoList &files = {}, bool pinned = false);
+    explicit DkRecentDir(const DkFileInfo &dir, const DkFileInfoList &files = {}, bool pinned = false);
 
     // copy file paths from another dir
     void update(const DkRecentDir &dir);
@@ -519,7 +519,7 @@ class DllCoreExport DkRecentFilesWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkRecentFilesWidget(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
+    explicit DkRecentFilesWidget(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
 
     void registerAction(QAction *action)
     {

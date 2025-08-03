@@ -83,7 +83,7 @@ public:
      * Constructor.
      * @param r box as rect with upperleft corner and width and height.
      **/
-    DkBox(cv::Rect r)
+    explicit DkBox(cv::Rect r)
     {
         nmc::DkVector size((float)r.width, (float)r.height);
 
