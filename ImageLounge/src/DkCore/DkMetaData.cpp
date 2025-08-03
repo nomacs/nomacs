@@ -752,7 +752,7 @@ QString DkMetaDataT::getMimeType() const
     try {
         if (mExifImg)
             type = mExifImg->mimeType().c_str();
-    } catch (...) {
+    } catch (...) { // NOLINT nothing else we can do in catch
     }
     return type;
 }
