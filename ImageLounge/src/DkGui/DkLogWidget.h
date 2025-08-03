@@ -57,9 +57,11 @@ class DkMessageQueuer : public QObject
 public:
     DkMessageQueuer();
 
+    // called via qt message log callback
     void log(QtMsgType type, const QString &msg);
 
 signals:
+    // must use QueuedConnection since log() must be thread-safe
     void message(const QString &msg);
 };
 
