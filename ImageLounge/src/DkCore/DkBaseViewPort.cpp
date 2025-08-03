@@ -46,6 +46,8 @@
 // gestures
 #include <QSwipeGesture>
 
+#include <cfloat>
+
 #pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
