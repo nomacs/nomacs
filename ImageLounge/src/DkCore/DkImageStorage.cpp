@@ -183,7 +183,7 @@ QImage DkImage::resizeImage(const QImage &img,
 
         return qImg;
 
-    } catch (std::exception se) {
+    } catch (const std::exception &se) {
         return QImage();
     }
 
