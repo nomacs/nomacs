@@ -882,6 +882,7 @@ protected:
     QVector<double> mPoints;
 };
 
+#ifdef ENABLE_DEAD_CODE
 class DllCoreExport DkGenericProfileWidget : public DkNamedWidget
 {
     Q_OBJECT
@@ -914,6 +915,7 @@ protected:
     QString mSettingsGroup = "ILLEGAL_GENERIC_GROUP";
     QString mSettingsPath;
 };
+#endif // ENABLE_DEAD_CODE
 
 class DllCoreExport DkTabEntryWidget : public QPushButton
 {
