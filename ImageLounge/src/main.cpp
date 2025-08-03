@@ -252,7 +252,6 @@ int main(int argc, char *argv[])
     app.installTranslator(&translatorQt);
 
     nmc::DkNoMacs *w = nullptr;
-    nmc::DkPong *pw = nullptr; // pong
 
     if (parser.isSet(privateOpt))
         nmc::DkSettingsManager::param().app().privateMode = true;
@@ -299,9 +298,8 @@ int main(int argc, char *argv[])
         w = new nmc::DkNoMacsContrast();
         qDebug() << "this is the contrast nomacs...";
     } else if (parser.isSet(pongOpt)) {
-        pw = new nmc::DkPong();
-        int rVal = app.exec();
-        return rVal;
+        auto pong = std::make_unique<nmc::DkPong>();
+        return app.exec();
     } else {
         w = new nmc::DkNoMacsIpl();
     }
@@ -399,8 +397,6 @@ int main(int argc, char *argv[])
 
     if (w)
         delete w; // we need delete so that settings are saved (from destructors)
-    if (pw)
-        delete pw;
 
     return rVal;
 }
