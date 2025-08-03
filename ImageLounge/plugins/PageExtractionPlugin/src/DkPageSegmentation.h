@@ -37,8 +37,6 @@
 namespace nmp
 {
 
-class DkRotatingRect;
-
 class DkPageSegmentation
 {
 public:
