@@ -2596,9 +2596,9 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
 {
     // this code is from: http://www.paulbourke.net/dataformats/tga/
     // thanks!
-    Header header;
+    Header header = {};
 
-    const char *dataC = ba->data();
+    auto *dataC = (const uint8_t *)ba->data();
 
     /* Display the header fields */
     header.idlength = *dataC;
@@ -2608,16 +2608,16 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     header.datatypecode = *dataC;
     dataC++;
 
-    const short *dataS = (const short *)dataC;
+    auto *dataS = (const uint16_t *)dataC;
 
     header.colourmaporigin = *dataS;
     dataS++;
     header.colourmaplength = *dataS;
     dataS++;
-    dataC = (const char *)dataS;
+    dataC = (const uint8_t *)dataS;
     header.colourmapdepth = *dataC;
     dataC++;
-    dataS = (const short *)dataC;
+    dataS = (const uint16_t *)dataC;
     header.x_origin = *dataS;
     dataS++;
     header.y_origin = *dataS;
@@ -2626,7 +2626,7 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     dataS++;
     header.height = *dataS;
     dataS++;
-    dataC = (const char *)dataS;
+    dataC = (const uint8_t *)dataS;
     header.bitsperpixel = *dataC;
     dataC++;
     header.imagedescriptor = *dataC;
