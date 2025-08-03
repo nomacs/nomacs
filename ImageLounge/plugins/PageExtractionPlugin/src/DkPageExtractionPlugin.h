@@ -36,7 +36,7 @@ class DkPageExtractionPlugin : public QObject, nmc::DkBatchPluginInterface
     Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/3.2" FILE "DkPageExtractionPlugin.json")
 
 public:
-    DkPageExtractionPlugin(QObject *parent = nullptr);
+    explicit DkPageExtractionPlugin(QObject *parent = nullptr);
     ~DkPageExtractionPlugin() override;
 
     QImage image() const override;

@@ -653,7 +653,7 @@ bool DkUtils::tryExists(const DkFileInfo &file, int waitMs)
     class ExistsRunnable : public QRunnable
     {
     public:
-        ExistsRunnable(const DkFileInfo &file)
+        explicit ExistsRunnable(const DkFileInfo &file)
             : mFile(file)
         {
         }

@@ -199,7 +199,7 @@ class DllCoreExport DkPluginViewPort : public DkWidget
     Q_OBJECT
 
 public:
-    DkPluginViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
+    explicit DkPluginViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
         : DkWidget(parent, flags)
     {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);

@@ -98,7 +98,7 @@ protected:
 class DllCoreExport DkActionEventFilter : public QObject
 {
 public:
-    DkActionEventFilter(QObject *parent)
+    explicit DkActionEventFilter(QObject *parent)
         : QObject(parent)
     {
     }

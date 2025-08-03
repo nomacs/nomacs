@@ -57,7 +57,7 @@ class DkMetaDataModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    DkMetaDataModel(QObject *parent = nullptr);
+    explicit DkMetaDataModel(QObject *parent = nullptr);
     ~DkMetaDataModel() override;
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
@@ -86,7 +86,7 @@ class DkMetaDataProxyModel : public QSortFilterProxyModel
     Q_OBJECT
 
 public:
-    DkMetaDataProxyModel(QObject *parent = nullptr);
+    explicit DkMetaDataProxyModel(QObject *parent = nullptr);
     ~DkMetaDataProxyModel() override = default;
 
 protected:
@@ -98,7 +98,7 @@ class DkMetaDataDock : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkMetaDataDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkMetaDataDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkMetaDataDock() override;
 
 public slots:
@@ -127,7 +127,7 @@ class DkMetaDataSelection : public DkWidget
     Q_OBJECT
 
 public:
-    DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget *parent = nullptr);
+    explicit DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget *parent = nullptr);
 
     void setSelectedKeys(const QStringList &selKeys);
     QStringList getSelectedKeys() const;
@@ -157,7 +157,7 @@ class DkMetaDataHUD : public DkFadeWidget
     Q_OBJECT
 
 public:
-    DkMetaDataHUD(QWidget *parent = nullptr);
+    explicit DkMetaDataHUD(QWidget *parent = nullptr);
     ~DkMetaDataHUD() override;
 
     void updateLabels(int numColumns = -1);
@@ -225,7 +225,7 @@ class DkCommentTextEdit : public QTextEdit
     Q_OBJECT
 
 public:
-    DkCommentTextEdit(QWidget *parent = nullptr);
+    explicit DkCommentTextEdit(QWidget *parent = nullptr);
 
 signals:
     void focusLost() const;
@@ -240,7 +240,7 @@ class DkCommentWidget : public DkFadeLabel
     Q_OBJECT
 
 public:
-    DkCommentWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkCommentWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     ~DkCommentWidget() override = default;
 
     void setMetaData(QSharedPointer<DkMetaDataT> metaData);

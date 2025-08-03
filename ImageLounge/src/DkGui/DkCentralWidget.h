@@ -79,10 +79,10 @@ public:
         tab_end
     };
 
-    DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(),
-              int idx = -1,
-              QObject *parent = nullptr);
-    DkTabInfo(TabMode mode, int idx = -1, QObject *parent = nullptr);
+    explicit DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(),
+                       int idx = -1,
+                       QObject *parent = nullptr);
+    explicit DkTabInfo(TabMode mode, int idx = -1, QObject *parent = nullptr);
     ~DkTabInfo() override;
 
     bool operator==(const DkTabInfo &o) const;
@@ -125,7 +125,7 @@ class DllCoreExport DkCentralWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkCentralWidget(QWidget *parent = nullptr);
+    explicit DkCentralWidget(QWidget *parent = nullptr);
     ~DkCentralWidget() override;
 
     bool hasViewPort() const;

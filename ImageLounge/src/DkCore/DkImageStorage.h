@@ -164,7 +164,7 @@ class DllCoreExport DkImageStorage : public QObject
     Q_OBJECT
 
 public:
-    DkImageStorage(const QImage &img = QImage());
+    explicit DkImageStorage(const QImage &img = QImage());
 
     enum ComputeState {
         l_not_computed,

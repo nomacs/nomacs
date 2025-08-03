@@ -79,7 +79,7 @@ class DllCoreExport DkViewPort : public DkBaseViewPort
     Q_OBJECT
 
 public:
-    DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
+    explicit DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPort() override;
 
     void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false) override;
@@ -267,7 +267,7 @@ class DllCoreExport DkViewPortFrameless : public DkViewPort
     Q_OBJECT
 
 public:
-    DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
+    explicit DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPortFrameless() override;
 
     void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false) override;
@@ -302,7 +302,7 @@ class DllCoreExport DkViewPortContrast : public DkViewPort
     Q_OBJECT
 
 public:
-    DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
+    explicit DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPortContrast() override;
 
 signals:

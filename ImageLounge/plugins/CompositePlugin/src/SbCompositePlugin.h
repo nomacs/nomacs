@@ -44,7 +44,9 @@ class SbCompositeDockWidget : public QDockWidget
 {
     Q_OBJECT
 public:
-    SbCompositeDockWidget(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
+    explicit SbCompositeDockWidget(const QString &title,
+                                   QWidget *parent = nullptr,
+                                   Qt::WindowFlags flags = Qt::WindowFlags())
         : QDockWidget(title, parent, flags)
     {
         setObjectName("CompositeDockWidget"); // fixes saving...
@@ -65,7 +67,7 @@ class SbViewPort : public DkPluginViewPort
 {
     Q_OBJECT
 public:
-    SbViewPort(QWidget *parent = nullptr)
+    explicit SbViewPort(QWidget *parent = nullptr)
         : DkPluginViewPort(parent){};
     void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) override
     {
@@ -93,7 +95,7 @@ class SbCompositePlugin : public QObject, DkViewPortInterface
     Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.SbCompositePlugin/0.1" FILE "SbCompositePlugin.json")
 
 public:
-    SbCompositePlugin(QObject *parent = nullptr)
+    explicit SbCompositePlugin(QObject *parent = nullptr)
         : QObject(parent)
     {
     }

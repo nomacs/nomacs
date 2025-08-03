@@ -65,7 +65,7 @@ class DllCoreExport DkAppManager : public QObject
     Q_OBJECT
 
 public:
-    DkAppManager(QWidget *parent = nullptr);
+    explicit DkAppManager(QWidget *parent = nullptr);
     ~DkAppManager() override;
 
     void setActions(QVector<QAction *> actions);

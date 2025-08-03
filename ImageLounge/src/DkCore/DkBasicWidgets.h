@@ -66,7 +66,7 @@ class DllCoreExport DkSlider : public DkWidget
     Q_OBJECT
 
 public:
-    DkSlider(QString title = "", QWidget *parent = nullptr);
+    explicit DkSlider(QString title = "", QWidget *parent = nullptr);
 
     QSlider *getSlider() const;
     void setMinimum(int minValue);
@@ -97,7 +97,7 @@ class DllCoreExport DkDoubleSlider : public DkWidget
     Q_OBJECT
 
 public:
-    DkDoubleSlider(const QString &title = "", QWidget *parent = nullptr);
+    explicit DkDoubleSlider(const QString &title = "", QWidget *parent = nullptr);
 
     QSlider *getSlider() const;
     void setMinimum(double minValue);
@@ -133,10 +133,10 @@ class DllCoreExport DkColorChooser : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorChooser(QColor defaultColor = QColor(),
-                   QString text = "Color",
-                   QWidget *parent = nullptr,
-                   Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkColorChooser(QColor defaultColor = QColor(),
+                            QString text = "Color",
+                            QWidget *parent = nullptr,
+                            Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkColorChooser() override = default;
 
     void setColor(const QColor &color); // will not emit
@@ -169,7 +169,7 @@ class DllCoreExport DkColorEdit : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorEdit(const QColor &col = QColor(), QWidget *parent = nullptr);
+    explicit DkColorEdit(const QColor &col = QColor(), QWidget *parent = nullptr);
 
     void setColor(const QColor &col);
     QColor color() const;
@@ -203,7 +203,7 @@ class DllCoreExport DkColorPane : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorPane(QWidget *parent = nullptr);
+    explicit DkColorPane(QWidget *parent = nullptr);
 
     QColor color() const;
     double hue() const;
@@ -238,7 +238,7 @@ class DllCoreExport DkColorPicker : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorPicker(QWidget *parent = nullptr);
+    explicit DkColorPicker(QWidget *parent = nullptr);
 
     QColor color() const;
 
@@ -264,7 +264,7 @@ class DllCoreExport DkRectWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkRectWidget(const QRect &r = QRect(), QWidget *parent = nullptr);
+    explicit DkRectWidget(const QRect &r = QRect(), QWidget *parent = nullptr);
 
     QRect rect() const;
 

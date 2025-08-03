@@ -62,7 +62,7 @@ class DkMainToolBar : public QToolBar
     Q_OBJECT
 
 public:
-    DkMainToolBar(const QString &title, QWidget *parent = nullptr);
+    explicit DkMainToolBar(const QString &title, QWidget *parent = nullptr);
 
     void allActionsAdded(); // fast fix for now
     void setQuickAccessModel(QStandardItemModel *model);
@@ -120,7 +120,7 @@ class DkGradient : public DkWidget
     Q_OBJECT
 
 public:
-    DkGradient(QWidget *parent);
+    explicit DkGradient(QWidget *parent);
     ~DkGradient() override;
     QGradientStops getGradientStops();
     void insertSlider(qreal pos, QColor col = QColor());
@@ -187,7 +187,7 @@ class DkTransferToolBar : public QToolBar
     Q_OBJECT
 
 public:
-    DkTransferToolBar(QWidget *parent);
+    explicit DkTransferToolBar(QWidget *parent);
     ~DkTransferToolBar() override;
 
 signals:
@@ -258,7 +258,7 @@ public:
         icons_end,
     };
 
-    DkCropToolBar(const QString &title, QWidget *parent = nullptr);
+    explicit DkCropToolBar(const QString &title, QWidget *parent = nullptr);
     ~DkCropToolBar() override;
 
     QColor getColor()

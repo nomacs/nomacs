@@ -233,7 +233,7 @@ protected:
 class DllCoreExport DkBatchProcess
 {
 public:
-    DkBatchProcess(const DkSaveInfo &saveInfo = DkSaveInfo());
+    explicit DkBatchProcess(const DkSaveInfo &saveInfo = DkSaveInfo());
 
     void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch>> processes);
     bool compute(); // do the work
@@ -339,7 +339,7 @@ public:
         batch_item_end
     };
 
-    DkBatchProcessing(const DkBatchConfig &config = DkBatchConfig(), QWidget *parent = nullptr);
+    explicit DkBatchProcessing(const DkBatchConfig &config = DkBatchConfig(), QWidget *parent = nullptr);
 
     void compute();
     static bool computeItem(DkBatchProcess &item);
@@ -391,7 +391,7 @@ protected:
 class DllCoreExport DkBatchProfile
 {
 public:
-    DkBatchProfile(const QString &profileDir = QString());
+    explicit DkBatchProfile(const QString &profileDir = QString());
 
     static DkBatchConfig loadProfile(const QString &profilePath);
     static bool saveProfile(const QString &profilePath, const DkBatchConfig &batchConfig);

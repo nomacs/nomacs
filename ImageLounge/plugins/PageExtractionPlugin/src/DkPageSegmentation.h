@@ -42,7 +42,7 @@ class DkRotatingRect;
 class DkPageSegmentation
 {
 public:
-    DkPageSegmentation(const cv::Mat &colImg = cv::Mat(), bool alternativeMethod = false);
+    explicit DkPageSegmentation(const cv::Mat &colImg = cv::Mat(), bool alternativeMethod = false);
 
     virtual void compute();
     virtual void filterDuplicates(float overlap = 0.6f, float areaRatio = 0.5f);

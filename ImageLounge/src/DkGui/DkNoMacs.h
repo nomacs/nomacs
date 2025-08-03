@@ -100,7 +100,7 @@ class DkNomacsOSXEventFilter : public QObject
     Q_OBJECT
 
 public:
-    DkNomacsOSXEventFilter(QObject *parent = nullptr);
+    explicit DkNomacsOSXEventFilter(QObject *parent = nullptr);
 
 signals:
     void loadFile(const QString &fi) const;
@@ -276,7 +276,7 @@ protected:
     QProcess mProcess;
 
     // functions
-    DkNoMacs(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkNoMacs(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     virtual void init();
 
@@ -296,7 +296,7 @@ class DllCoreExport DkNoMacsSync : public DkNoMacs
     Q_OBJECT
 
 public:
-    DkNoMacsSync(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkNoMacsSync(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkNoMacsSync() override;
 
 signals:
@@ -317,7 +317,7 @@ class DllCoreExport DkNoMacsIpl : public DkNoMacsSync
     Q_OBJECT
 
 public:
-    DkNoMacsIpl(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkNoMacsIpl(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     void paintEvent(QPaintEvent *event) override;
 };
 
@@ -326,7 +326,7 @@ class DllCoreExport DkNoMacsFrameless : public DkNoMacs
     Q_OBJECT
 
 public:
-    DkNoMacsFrameless(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkNoMacsFrameless(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkNoMacsFrameless() override;
 
 public slots:
@@ -343,7 +343,7 @@ class DllCoreExport DkNoMacsContrast : public DkNoMacsSync
     Q_OBJECT
 
 public:
-    DkNoMacsContrast(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkNoMacsContrast(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     ~DkNoMacsContrast() override;
 };

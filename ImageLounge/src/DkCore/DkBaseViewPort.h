@@ -72,7 +72,7 @@ public:
         swipes_end
     };
 
-    DkBaseViewPort(QWidget *parent = nullptr);
+    explicit DkBaseViewPort(QWidget *parent = nullptr);
     ~DkBaseViewPort() override;
 
     void zoomConstraints(double minZoom = 0.01, double maxZoom = 100.0);
