@@ -2900,22 +2900,26 @@ void DkBatchWidget::stopProcessing()
 {
     inputWidget()->stopProcessing();
 
-    if (mBatchProcessing)
-        mBatchProcessing->postLoad();
-
     mProgressBar->hide();
     mProgressBar->reset();
     mButtonWidget->logButton()->setEnabled(true);
     mButtonWidget->setPaused(true);
 
-    int numFailures = mBatchProcessing->getNumFailures();
-    int numProcessed = mBatchProcessing->getNumProcessed();
-    int numItems = mBatchProcessing->getNumItems();
+    if (mBatchProcessing) {
+        mBatchProcessing->postLoad();
 
-    DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning
-                                                       : DkBatchInfoWidget::InfoMode::info_message;
-    mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures),
-                         im);
+        int numFailures = mBatchProcessing->getNumFailures();
+        int numProcessed = mBatchProcessing->getNumProcessed();
+        int numItems = mBatchProcessing->getNumItems();
+
+        DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning
+                                                           : DkBatchInfoWidget::InfoMode::info_message;
+        mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.") // indent
+                                 .arg(numProcessed)
+                                 .arg(numItems)
+                                 .arg(numFailures),
+                             im);
+    }
 
     mLogNeedsUpdate = false;
     mLogUpdateTimer.stop();
