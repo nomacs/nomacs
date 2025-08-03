@@ -1489,20 +1489,17 @@ void DkThumbScene::selectThumb(int idx, bool select)
 void DkThumbScene::copySelected() const
 {
     QStringList fileList = getSelectedFiles();
-
     if (fileList.empty())
         return;
 
-    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+    for (QString cStr : fileList)
+        urls.append(QUrl::fromLocalFile(cStr));
 
-    if (!fileList.empty()) {
-        QList<QUrl> urls;
-        for (QString cStr : fileList)
-            urls.append(QUrl::fromLocalFile(cStr));
-        mimeData->setUrls(urls);
-        QClipboard *clipboard = QApplication::clipboard();
-        clipboard->setMimeData(mimeData);
-    }
+    auto *mimeData = new QMimeData();
+    mimeData->setUrls(urls);
+
+    QApplication::clipboard()->setMimeData(mimeData);
 }
 
 void DkThumbScene::pasteImages() const
