@@ -19,7 +19,6 @@
 #if 1
 
 // DkUtils.h / DkSettings.h
-#include <assert.h>
 #include <functional>
 #include <memory>
 
