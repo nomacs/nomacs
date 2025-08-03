@@ -55,6 +55,7 @@ class DllCoreExport DkBatchInfo
 {
 public:
     explicit DkBatchInfo(const QString &id = QString(), const QString &filePath = QString());
+    virtual ~DkBatchInfo() = default;
 
     virtual bool isEmpty() const;
 

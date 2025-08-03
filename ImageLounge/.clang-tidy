@@ -29,6 +29,7 @@ SystemHeaders:            false
 Checks: "\
 cert-*,\
 cppcoreguidelines-slicing,\
+cppcoreguidelines-virtual-class-destructor,\
 fuchsia-statically-constructed-objects,\
 fuchsia-trailing-return,\
 fuchsia-virtual-inheritance,\

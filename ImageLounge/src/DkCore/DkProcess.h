@@ -68,6 +68,7 @@ class DllCoreExport DkAbstractBatch
 {
 public:
     DkAbstractBatch() = default;
+    virtual ~DkAbstractBatch() = default;
 
     // ok, this is important:
     // we are using the abstract class to process specialized items
@@ -268,6 +269,7 @@ class DllCoreExport DkBatchConfig
 public:
     DkBatchConfig() = default;
     DkBatchConfig(const QStringList &fileList, const QString &outputDir, const QString &fileNamePattern);
+    virtual ~DkBatchConfig() = default;
 
     virtual void saveSettings(QSettings &settings) const;
     virtual void loadSettings(QSettings &settings);
