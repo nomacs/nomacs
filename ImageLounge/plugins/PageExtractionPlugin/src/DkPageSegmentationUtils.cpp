@@ -83,11 +83,11 @@ double DkIntersectPoly::compute()
                 int64 a1 = -area(ipA[idxA].ip, ipB[idxB].ip, ipB[idxB + 1].ip);
                 int64 a2 = area(ipA[idxA + 1].ip, ipB[idxB].ip, ipB[idxB + 1].ip);
 
-                if (a1 < 0 == a2 < 0) {
+                if ((a1 < 0) == (a2 < 0)) {
                     int64 a3 = area(ipB[idxB].ip, ipA[idxA].ip, ipA[idxA + 1].ip);
                     int64 a4 = -area(ipB[idxB + 1].ip, ipA[idxA].ip, ipA[idxA + 1].ip);
 
-                    if (a3 < 0 == a4 < 0) {
+                    if ((a3 < 0) == (a4 < 0)) {
                         if (a1 < 0) {
                             cross(ipA[idxA],
                                   ipA[idxA + 1],
@@ -134,7 +134,7 @@ void DkIntersectPoly::inness(std::vector<DkVertex> ipA, std::vector<DkVertex> ip
     for (int idx = (int)ipB.size() - 2; idx >= 0; idx--) {
         if (ipB[idx].rx.x < p.x && p.x < ipB[idx].rx.y) {
             bool sgn = 0 < area(p, ipB[idx].ip, ipB[idx + 1].ip);
-            s += (sgn != ipB[idx].ip.x < ipB[idx + 1].ip.x) ? 0 : (sgn ? -1 : 1);
+            s += (sgn != (ipB[idx].ip.x < ipB[idx + 1].ip.x)) ? 0 : (sgn ? -1 : 1);
         }
     }
 
