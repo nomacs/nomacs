@@ -138,7 +138,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    virtual void init();
+    void init();
 
     void loadSettings();
     void saveSettings() const;

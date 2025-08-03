@@ -142,7 +142,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     QPoint map(const QPointF &pos);
-    virtual void init();
+    void init();
     void drawGuide(QPainter *painter, const QPolygonF &p, int paintMode);
 
     bool cancelTriggered;

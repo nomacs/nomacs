@@ -252,8 +252,8 @@ protected:
     // functions
     virtual int swipeRecognition(QPoint start, QPoint end);
     virtual void swipeAction(int swipeGesture);
-    virtual void createShortcuts();
 
+    void createShortcuts();
     void drawPolygon(QPainter &painter, const QPolygon &polygon);
     void drawBackground(QPainter &painter) override;
     void updateImageMatrix() override;

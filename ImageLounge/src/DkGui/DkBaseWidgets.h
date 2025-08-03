@@ -317,7 +317,7 @@ protected:
     bool mBlocked;
 
     // functions
-    virtual void init();
+    void init();
     void paintEvent(QPaintEvent *event) override;
     virtual void draw(QPainter *painter);
 
