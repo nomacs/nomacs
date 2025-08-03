@@ -1368,7 +1368,6 @@ void DkBatchProcessing::cancel()
 }
 
 // DkBatchProfile --------------------------------------------------------------------
-QString DkBatchProfile::ext = "pnm"; // profile file extension
 
 DkBatchProfile::DkBatchProfile(const QString &profileDir)
 {
@@ -1406,7 +1405,7 @@ QString DkBatchProfile::defaultProfilePath()
 
 QString DkBatchProfile::profileNameToPath(const QString &profileName)
 {
-    return defaultProfilePath() + QDir::separator() + profileName + "." + ext;
+    return defaultProfilePath() + QDir::separator() + profileName + "." + fileSuffix();
 }
 
 QStringList DkBatchProfile::profileNames()
@@ -1424,7 +1423,7 @@ QStringList DkBatchProfile::profileNames()
 QStringList DkBatchProfile::index(const QString &profileDir) const
 {
     QStringList exts;
-    exts << "*." + ext;
+    exts << "*." + fileSuffix();
 
     QDir pd(profileDir);
     QStringList profiles = pd.entryList(exts, QDir::Files, QDir::Name);
@@ -1442,9 +1441,9 @@ QString DkBatchProfile::makeUserFriendly(const QString &profilePath)
     return pName;
 }
 
-QString DkBatchProfile::extension()
+QString DkBatchProfile::fileSuffix()
 {
-    return ext;
+    return "pnm";
 }
 
 }

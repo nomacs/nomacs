@@ -398,7 +398,7 @@ public:
     static QString defaultProfilePath();
     static QString profileNameToPath(const QString &profileName);
     static QString makeUserFriendly(const QString &profilePath);
-    static QString extension();
+    static QString fileSuffix();
 
     QStringList profileNames();
 
@@ -407,7 +407,5 @@ protected:
 
     QString mProfileDir;
     QStringList mProfilePaths;
-    static QString ext;
 };
-
 }
