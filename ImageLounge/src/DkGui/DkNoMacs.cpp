@@ -385,9 +385,11 @@ DkCentralWidget *DkNoMacs::getTabWidget() const
 // Qt how-to
 void DkNoMacs::closeEvent(QCloseEvent *event)
 {
-    DkCentralWidget *cw = static_cast<DkCentralWidget *>(centralWidget());
+    DkCentralWidget *cw = getTabWidget();
+    if (!cw)
+        return;
 
-    if (cw && cw->getTabs().size() > 1) {
+    if (cw->getTabs().size() > 1) {
         DkMessageBox *msg = new DkMessageBox(QMessageBox::Question,
                                              tr("Quit nomacs"),
                                              tr("Do you want nomacs to save your tabs?"),
