@@ -2736,6 +2736,8 @@ void DkProgressBar::animatePoint(double &xVal)
     xVal += speed;
 }
 
+#ifdef ENABLE_DEAD_CODE
+
 // DkGenericProfileWidget --------------------------------------------------------------------
 DkGenericProfileWidget::DkGenericProfileWidget(const QString &name, QWidget *parent, const QString &settingsPath)
     : DkNamedWidget(name, parent)
@@ -2917,6 +2919,7 @@ void DkGenericProfileWidget::paintEvent(QPaintEvent *ev)
     } else
         DkNamedWidget::paintEvent(ev);
 }
+#endif // ENABLE_DEAD_CODE
 
 // DkTabEntryWidget --------------------------------------------------------------------
 DkTabEntryWidget::DkTabEntryWidget(const QIcon &icon, const QString &text, QWidget *parent)
