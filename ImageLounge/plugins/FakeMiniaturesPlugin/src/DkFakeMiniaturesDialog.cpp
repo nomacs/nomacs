@@ -38,9 +38,9 @@ namespace nmp
 #ifdef WITH_OPENCV
 // I know - but I just want to get rid of these little issues...
 #if (CV_MAJOR_VERSION > 3)
-int DIST_C = cv::DIST_C;
+constexpr int DIST_C = cv::DIST_C;
 #else
-int DIST_C = CV_DIST_C;
+constexpr int DIST_C = CV_DIST_C;
 #endif
 #endif
 
