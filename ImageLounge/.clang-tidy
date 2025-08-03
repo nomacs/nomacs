@@ -28,6 +28,14 @@ SystemHeaders:            false
 
 Checks: "\
 cert-*,\
+concurrency-mt-unsafe,\
+cppcoreguidelines-avoid-goto,\
+cppcoreguidelines-avoid-non-const-global-variables,\
+-cppcoreguidelines-init-variables,\
+cppcoreguidelines-interfaces-global-init,\
+cppcoreguidelines-misleading-capture-by-value,\
+cppcoreguidelines-missing-std-forward,\
+cppcoreguidelines-rvalue-reference-param-not-moved,\
 cppcoreguidelines-slicing,\
 cppcoreguidelines-virtual-class-destructor,\
 fuchsia-statically-constructed-objects,\

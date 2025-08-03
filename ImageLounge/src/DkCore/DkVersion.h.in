@@ -24,7 +24,7 @@
 namespace nmc
 {
 // run-time revision of nomacs
-extern char const *revisionString;
+extern char const * const revisionString;
 }
 
 #endif
