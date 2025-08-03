@@ -78,7 +78,7 @@ public:
     DkAbstractBatch(const DkAbstractBatch &o) = delete;
     DkAbstractBatch &operator=(const DkAbstractBatch &o) = delete;
 
-    virtual void setProperties(...) {};
+    void setProperties() {};
     virtual void saveSettings(QSettings &) const {};
     virtual void loadSettings(QSettings &) {};
     virtual bool compute(QSharedPointer<DkImageContainer> container,
@@ -116,7 +116,7 @@ public:
 
     virtual void preLoad();
     void postLoad(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const override;
-    virtual void setProperties(const QStringList &pluginList);
+    void setProperties(const QStringList &pluginList);
     bool compute(QSharedPointer<DkImageContainer> container,
                  const DkSaveInfo &saveInfo,
                  QStringList &logStrings,
@@ -143,7 +143,7 @@ public:
     void saveSettings(QSettings &settings) const override;
     void loadSettings(QSettings &settings) override;
 
-    virtual void setProperties(const DkManipulatorManager &manager);
+    void setProperties(const DkManipulatorManager &manager);
     bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
     QString name() const override;
     bool isActive() const override;
@@ -181,16 +181,16 @@ public:
     void saveSettings(QSettings &settings) const override;
     void loadSettings(QSettings &settings) override;
 
-    virtual void setProperties(int angle,
-                               bool cropFromMetadata,
-                               QRect cropRect,
-                               bool cropRectCenter,
-                               float scaleFactor,
-                               float zoomHeight,
-                               const ResizeMode &mode = resize_mode_default,
-                               const ResizeProperty &prop = resize_prop_default,
-                               int iplMethod = 1 /*DkImage::ipl_area*/,
-                               bool correctGamma = false);
+    void setProperties(int angle,
+                       bool cropFromMetadata,
+                       QRect cropRect,
+                       bool cropRectCenter,
+                       float scaleFactor,
+                       float zoomHeight,
+                       const ResizeMode &mode = resize_mode_default,
+                       const ResizeProperty &prop = resize_prop_default,
+                       int iplMethod = 1 /*DkImage::ipl_area*/,
+                       bool correctGamma = false);
 
     bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
     QString name() const override;
