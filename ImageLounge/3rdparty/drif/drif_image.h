@@ -164,7 +164,10 @@ uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t 
 
     // read footer
     char buffer[DRIF_FOOTER_SZ] = {0};
-    fread((void *)buffer, DRIF_FOOTER_SZ, 1, fp);
+    if (1 != fread((void *)buffer, DRIF_FOOTER_SZ, 1, fp)) {
+        fclose(fp);
+        return nullptr;
+    }
 
     drif_footer_t *footer = (drif_footer_t *)buffer;
 
