@@ -27,6 +27,9 @@ FormatStyle:              none
 SystemHeaders:            false
 
 Checks: "\
+bugprone-chained-comparison,\
+bugprone-empty-catch,\
+bugprone-forward-declaration-namespace,\
 cert-*,\
 concurrency-mt-unsafe,\
 cppcoreguidelines-avoid-goto,\
