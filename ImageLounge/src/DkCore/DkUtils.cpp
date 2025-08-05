@@ -415,8 +415,9 @@ void DkUtils::addLanguages(QComboBox *langCombo, QStringList &languages)
 /// <param name="type">The message type (QtDebugMsg are not written to the log).</param>
 /// <param name="context">Additional information about a log message</param>
 /// <param name="msg">The message.</param>
-void qtMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+static void qtMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    // NOTE: this function must be thread-safe
     if (!DkSettingsManager::param().app().useLogFile)
         return;
 
@@ -425,11 +426,15 @@ void qtMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 void DkUtils::logToFile(QtMsgType type, const QString &msg)
 {
+    // NOTE: this function must be thread-safe
+    Q_UNUSED(type)
+
     static QString filePath;
 
     if (filePath.isEmpty())
         filePath = DkUtils::getLogFilePath();
 
+    // FIXME: keep log file open, in a thread-safe way
     QFile outFile(filePath);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
         printf("cannot open %s for logging\n", filePath.toStdString().c_str());

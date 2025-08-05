@@ -1277,6 +1277,8 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps)
     if (showDefaultApps) {
         showDefaultSoftware();
     }
+#else
+    Q_UNUSED(showDefaultApps)
 #endif
 }
 
@@ -1338,6 +1340,10 @@ QString DkFileFilterHandling::registerProgID(const QString &ext, const QString &
 
     return nomacsKey;
 #else
+    Q_UNUSED(ext)
+    Q_UNUSED(friendlyName)
+    Q_UNUSED(add)
+
     return QString();
 #endif
 }
@@ -1363,7 +1369,6 @@ QString DkFileFilterHandling::getIconID(const QString &ext) const
 void DkFileFilterHandling::registerExtension(const QString &ext, const QString &progKey, bool add)
 {
 #ifdef Q_OS_WIN
-
     QSettings settings2("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\", QSettings::NativeFormat);
     settings2.beginGroup(ext);
     // if (add)
@@ -1375,13 +1380,16 @@ void DkFileFilterHandling::registerExtension(const QString &ext, const QString &
         settings2.setValue(progKey, ""); // tell system that nomacs can handle this file type
     else
         settings2.remove(progKey);
+#else
+    Q_UNUSED(ext)
+    Q_UNUSED(progKey)
+    Q_UNUSED(add)
 #endif
 }
 
 void DkFileFilterHandling::registerFileType(const QString &filterString, const QString &attribute, bool add)
 {
 #ifdef Q_OS_WIN
-
     if (DkSettingsManager::param().app().privateMode)
         return;
 
@@ -1400,7 +1408,10 @@ void DkFileFilterHandling::registerFileType(const QString &filterString, const Q
         registerDefaultApp(extList.at(idx), progKey, add);
         setAsDefaultApp(extList.at(idx), progKey, add); // this is not working on Win8
     }
-
+#else
+    Q_UNUSED(filterString)
+    Q_UNUSED(attribute)
+    Q_UNUSED(add)
 #endif
 }
 
@@ -1434,9 +1445,10 @@ QStringList DkFileFilterHandling::getExtensions(const QString &filter, QString &
     return extList;
 }
 
-void DkFileFilterHandling::registerDefaultApp(const QString &ext, const QString &, bool add)
+void DkFileFilterHandling::registerDefaultApp(const QString &ext, const QString &progKey, bool add)
 {
 #ifdef Q_OS_WIN
+    Q_UNUSED(progKey)
 
     QSettings settings("HKEY_CURRENT_USER\\Software\\Classes\\Applications\\nomacs.exe", QSettings::NativeFormat);
 
@@ -1446,6 +1458,10 @@ void DkFileFilterHandling::registerDefaultApp(const QString &ext, const QString 
         // qDebug() << ext << "registered...";
     } else
         settings.remove(ext);
+#else
+    Q_UNUSED(ext)
+    Q_UNUSED(progKey)
+    Q_UNUSED(add)
 #endif
 }
 
@@ -1468,6 +1484,10 @@ void DkFileFilterHandling::setAsDefaultApp(const QString &ext, const QString &pr
         // qDebug() << "default app set";
     } else
         settings.setValue("Default", "");
+#else
+    Q_UNUSED(ext)
+    Q_UNUSED(progKey)
+    Q_UNUSED(add)
 #endif
 }
 

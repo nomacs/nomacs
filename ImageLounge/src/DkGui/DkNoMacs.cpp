@@ -933,6 +933,7 @@ void DkNoMacs::lockWindow(bool lock)
         SetWindowPos((HWND)this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
     }
 #else
+    Q_UNUSED(lock)
     // TODO: find corresponding command for linux etc
 
     // setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
@@ -1876,6 +1877,8 @@ void DkNoMacs::checkForUpdate(bool silent)
         mUpdater->checkForUpdates();
         qDebug() << "checking for updates takes: " << dt;
     }
+#else
+    Q_UNUSED(silent)
 #endif // !#ifndef Q_OS_LINUX
 }
 

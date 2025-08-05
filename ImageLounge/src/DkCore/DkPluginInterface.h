@@ -216,7 +216,10 @@ public:
         mImgMatrix = imgMatrix;
     };
 
-    virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) {}; // dummy
+    virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC)
+    {
+        Q_UNUSED(imgC);
+    }
 
 signals:
     void closePlugin(bool askForSaving = false) const;

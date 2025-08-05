@@ -171,7 +171,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     connect(mNavigationWidget, &DkHudNavigation::nextSignal, this, &DkViewPort::loadNextFileFast);
 
     // trivial connects
-    connect(this, &DkViewPort::movieLoadedSignal, [this](bool movie) {
+    connect(this, &DkViewPort::movieLoadedSignal, [](bool movie) {
         DkActionManager::instance().enableMovieActions(movie);
     });
 

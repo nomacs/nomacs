@@ -2478,7 +2478,6 @@ void DkRecentFilesWidget::updateList()
     QVBoxLayout *l = new QVBoxLayout(dummy);
 
     QVector<DkRecentDirWidget *> recentFiles;
-    int idx = 0;
 
     for (auto rd : fm.recentDirs()) {
         DkRecentDirWidget *rf = new DkRecentDirWidget(rd, mThumbLoader, dummy);
@@ -2489,7 +2488,6 @@ void DkRecentFilesWidget::updateList()
 
         recentFiles << rf;
         l->addWidget(rf);
-        idx++;
     }
 
     qInfo() << "list updated in" << dt;

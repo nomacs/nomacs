@@ -696,7 +696,6 @@ bool DkImage::autoAdjustImage(QImage &img)
         mPtr += pad;
     }
 
-    QColor ignoreChannel;
     bool ignoreR = maxR - minR == 0 || maxR - minR == 255;
     bool ignoreG = maxR - minR == 0 || maxG - minG == 255;
     bool ignoreB = maxR - minR == 0 || maxB - minB == 255;
