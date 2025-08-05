@@ -1396,7 +1396,7 @@ void DkBasicLoader::resetPageIdx()
     mPageIdx = 1;
 }
 
-void DkBasicLoader::convert32BitOrder(void *buffer, int width) const
+void DkBasicLoader::convert32BitOrder(void *buffer, uint32_t width) const
 {
 #ifdef WITH_LIBTIFF
     // code from Qt QTiffHandler

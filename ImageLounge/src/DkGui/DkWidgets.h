@@ -288,7 +288,7 @@ protected:
     QFileInfo mCurrentDir;
     QProgressDialog *mPd = nullptr;
     bool mStop = false;
-    int mNumSaved = false;
+    int mNumSaved = 0;
     std::vector<std::unique_ptr<QFutureWatcher<void>>> mWatchers{};
 };
 

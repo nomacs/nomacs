@@ -486,7 +486,7 @@ protected:
     const float minRelSideLength = 0.3f; // minimum length of final rectangle sides relative to smaller image dimension
     const double orthoTol = CV_PI / 9; // orthogonality tolerance
     const float cornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
-    const int numFinalRects = 3; // number of rectangles to return
+    const unsigned int numFinalRects = 3; // number of rectangles to return
 
     struct HoughLine {
         int acc;

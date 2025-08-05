@@ -238,7 +238,7 @@ void DkThumbsSaver::thumbLoaded()
     mNumSaved++;
     emit numFilesSignal(mNumSaved);
 
-    if (mNumSaved == mWatchers.size() || mStop) {
+    if ((unsigned int)mNumSaved == mWatchers.size() || mStop) {
         if (mPd) {
             mPd->close();
             mPd->deleteLater();
