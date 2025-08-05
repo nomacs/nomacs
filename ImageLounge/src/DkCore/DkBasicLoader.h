@@ -445,7 +445,7 @@ protected:
     /**
      * Convert ARGB buffer to ABGR
      */
-    void convert32BitOrder(void *buffer, int width) const;
+    void convert32BitOrder(void *buffer, uint32_t width) const;
 
     // bool mTraining;
 
