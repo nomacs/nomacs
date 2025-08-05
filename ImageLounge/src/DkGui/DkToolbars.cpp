@@ -317,7 +317,7 @@ void DkGradient::insertSlider(qreal pos, QColor col)
     // Inserts a new slider at position pos and calculates the color, interpolated from the closest neighbors.
 
     // Find the neighbors of the new slider, since we need it for the color interpolation:
-    QColor leftColor, rightColor, actColor;
+    QColor actColor;
     qreal dist;
     qreal initValue = DBL_MAX; // std::numeric_limits<qreal>::max();	// >DIR: fix for linux [9.2.2012 markus]
     qreal leftDist = initValue;

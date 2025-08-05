@@ -281,7 +281,8 @@ void DkAppManager::assignIcon(QAction *app) const
     DestroyIcon(smallIcon);
 
     app->setIcon(appIcon);
-
+#else
+    Q_UNUSED(app)
 #endif
 }
 

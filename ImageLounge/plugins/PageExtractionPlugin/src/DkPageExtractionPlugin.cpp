@@ -136,6 +136,9 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
     const nmc::DkSaveInfo &saveInfo,
     QSharedPointer<nmc::DkBatchInfo> &batchInfo) const
 {
+    Q_UNUSED(saveInfo);
+    Q_UNUSED(batchInfo);
+
     if (!mRunIDs.contains(runID) || !imgC)
         return imgC;
 

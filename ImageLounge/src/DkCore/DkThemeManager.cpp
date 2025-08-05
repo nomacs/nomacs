@@ -452,7 +452,6 @@ public:
 
     void printRole(QPalette::ColorRole role, const char *name) const
     {
-        QColor color = mOut.color(role);
         QString line;
         line += "   ";
         line += " " + ttySwatch(mIn.color(QPalette::Active, role));

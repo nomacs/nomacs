@@ -941,8 +941,6 @@ void DkImageLoader::copyUserFile()
     auto imgC = getCurrentImage();
 
     if (hasFile() && imgC) {
-        int filterIdx = -1;
-
         QString extension = imgC->fileInfo().suffix();
 
         // retrieve the extension name (that's more user friendly)
@@ -952,7 +950,6 @@ void DkImageLoader::copyUserFile()
         for (int idx = 1; idx < sF.size(); idx++) {
             if (exp.match(sF.at(idx)).hasMatch()) {
                 extension = sF.at(idx);
-                filterIdx = idx;
                 break;
             }
         }
