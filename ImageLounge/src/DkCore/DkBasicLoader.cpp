@@ -2138,15 +2138,22 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
 
         // unpack the data
         int error = iProcessor.unpack();
-        if (std::strcmp(iProcessor.version(), "0.13.5")
-            != 0) // fixes a bug specific to libraw 13 - version call is UNTESTED
-            iProcessor.raw2image();
-
-        if (error != LIBRAW_SUCCESS)
+        if (error != LIBRAW_SUCCESS) {
+            qWarning() << "[RAW] error in unpack:" << error;
             return false;
+        }
+
+        if (std::strcmp(iProcessor.version(), "0.13.5") != 0) {
+            // fixes a bug specific to libraw 13 - version call is UNTESTED
+            error = iProcessor.raw2image();
+            if (error != LIBRAW_SUCCESS)
+                qWarning() << "[RAW] error in raw2image:" << error;
+        }
 
         // develop using libraw
         error = iProcessor.dcraw_process();
+        if (error != LIBRAW_SUCCESS)
+            qWarning() << "[RAW] error in dcraw_process:" << error;
 
         auto rimg = iProcessor.dcraw_make_mem_image();
 
