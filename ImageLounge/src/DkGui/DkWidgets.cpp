@@ -3008,7 +3008,7 @@ void DkDisplayWidget::createLayout()
         bg->addButton(sb);
         mScreenButtons << sb;
     }
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) false positive on button group
 
 void DkDisplayWidget::updateLayout()
 {
