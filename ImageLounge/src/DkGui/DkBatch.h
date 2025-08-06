@@ -156,7 +156,7 @@ signals:
     void showSignal() const;
 
 protected:
-    virtual void createLayout();
+    void createLayout();
 
     DkBatchTabButton *mHeaderButton = nullptr;
     DkBatchContent *mBatchContent = nullptr;
@@ -239,7 +239,7 @@ signals:
     void changed() const;
 
 protected:
-    virtual void createLayout(DkThumbLoader *);
+    void createLayout(DkThumbLoader *);
 
     QString mCDirPath;
     QListView *mFileWidget = nullptr;
@@ -346,8 +346,8 @@ protected slots:
     void setDir(const QString &dirPath, bool updateLineEdit = true);
 
 protected:
-    virtual void createLayout();
-    virtual void updateCBCompression();
+    void createLayout();
+    void updateCBCompression();
     DkFilenameWidget *createFilenameWidget(const QString &tag = QString());
     void addFilenameWidget(const QString &tag = QString());
 
@@ -528,9 +528,9 @@ public:
 
     void transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const;
     bool loadProperties(QSharedPointer<DkBatchTransform> batchTransform);
-    bool hasUserInput() const override;
-    bool requiresUserInput() const override;
-    void applyDefault() override;
+    bool hasUserInput() const final; // called from constructor
+    bool requiresUserInput() const final; // may as well be final too
+    void applyDefault() final; // called from constructor
 
 public slots:
     void updateHeader() const;
