@@ -22,10 +22,6 @@
 #include <functional>
 #include <memory>
 
-#ifndef Q_OS_WIN
-#include <time.h>
-#endif
-
 #ifdef WITH_OPENCV
 #ifdef Q_OS_WIN
 #pragma warning(disable : 4996)
