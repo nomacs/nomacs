@@ -324,7 +324,7 @@ protected:
     // for my children...
     virtual void drawBackground(QPainter *) {};
     virtual void setTextToLabel();
-    virtual void updateStyleSheet();
+    void updateStyleSheet();
 };
 
 // label for long string we don't want to wrap around or scroll
