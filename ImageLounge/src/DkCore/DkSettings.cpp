@@ -1043,7 +1043,7 @@ QString DkSettings::settingsPath() const
 {
     if (!mSettingsPath.isEmpty())
         return mSettingsPath;
-
+#ifdef Q_OS_WIN
     QFileInfo fi(QCoreApplication::applicationDirPath(), "settings.ini");
 
     if (fi.exists())
@@ -1052,6 +1052,10 @@ QString DkSettings::settingsPath() const
     fi = QFileInfo(DkUtils::getAppDataPath(), "settings.ini");
 
     return fi.absoluteFilePath();
+#else
+    // NOTE: cannot use on Windows as it would recurse!
+    return DefaultSettings().fileName();
+#endif
 }
 
 DkSettings::App &DkSettings::app()
@@ -1492,10 +1496,15 @@ void DkFileFilterHandling::setAsDefaultApp(const QString &ext, const QString &pr
 }
 
 // -------------------------------------------------------------------- DefaultSettings
-#ifdef Q_OS_WIN
-// read the settings from a file on Windows
+
+#if defined(Q_OS_WIN)
 DefaultSettings::DefaultSettings()
     : QSettings(DkSettingsManager::instance().param().settingsPath(), QSettings::IniFormat)
+{
+}
+#elif defined(Q_OS_DARWIN)
+DefaultSettings::DefaultSettings()
+    : QSettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationDomain(), qApp->applicationName())
 {
 }
 #else

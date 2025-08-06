@@ -54,7 +54,19 @@ class QTranslator;
 
 namespace nmc
 {
-
+/**
+ * @brief Wrap QSettings to override format and location of settings file
+ * @note The settings format must be Ini or else backup/restore and other functions are broken,
+ *       see usages of DkSettings::settingsPath()
+ * @details
+ * Windows: read from "settings.ini", searching for it in a few spots.
+ *   <nomacs.exe path>\..\settings.ini => portable settings/override settings
+ *       or
+ *   C:\Users\<User>\AppData\...\nomacs\ImageLounge\settings.ini
+ *
+ * Linux/Others: read from system default location, but force to use .ini format.
+ *   the file extension might be .conf or .ini
+ */
 class DllCoreExport DefaultSettings : public QSettings
 {
 public:
