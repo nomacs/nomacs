@@ -31,8 +31,8 @@
 #include <QDebug>
 #include <QPointF>
 #include <QPolygonF>
+#include <cfloat>
 #include <cmath>
-#include <float.h>
 #include <iostream>
 #pragma warning(pop) // no warnings from includes - end
 

@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************************************/
 
 #pragma once
-#include <time.h>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QElapsedTimer>
