@@ -113,7 +113,7 @@ private:
     QList<QMenu *> mMenus;
     bool mActive = false;
     int mTimeToShow = 5000;
-    QPointer<QTimer> mTimerMenu;
+    QTimer *mTimerMenu = nullptr;
 };
 
 class DkTcpAction : public QAction

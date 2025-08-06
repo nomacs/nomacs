@@ -1805,13 +1805,12 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
         if (dist > QApplication::startDragDistance()) {
             QStringList fileList = scene->getSelectedFiles();
 
-            QMimeData *mimeData = new QMimeData;
-
             if (!fileList.empty()) {
                 QList<QUrl> urls;
                 for (QString fStr : fileList)
                     urls.append(QUrl::fromLocalFile(fStr));
 
+                QMimeData *mimeData = new QMimeData;
                 mimeData->setUrls(urls);
 
                 // create thumb image
@@ -1826,7 +1825,7 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
                     73); // 73: see https://www.youtube.com/watch?v=TIYMmbHik08
 
                 QDrag *drag = new QDrag(this);
-                drag->setMimeData(mimeData);
+                drag->setMimeData(mimeData); // noleak: takes ownership
                 drag->setPixmap(pm);
 
                 drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction, Qt::CopyAction);
@@ -2477,8 +2476,6 @@ void DkRecentFilesWidget::updateList()
     QWidget *dummy = new QWidget(this);
     QVBoxLayout *l = new QVBoxLayout(dummy);
 
-    QVector<DkRecentDirWidget *> recentFiles;
-
     for (auto rd : fm.recentDirs()) {
         DkRecentDirWidget *rf = new DkRecentDirWidget(rd, mThumbLoader, dummy);
         rf->setMaximumWidth(500);
@@ -2486,11 +2483,10 @@ void DkRecentFilesWidget::updateList()
         connect(rf, &DkRecentDirWidget::loadDirSignal, this, &DkRecentFilesWidget::loadDirSignal);
         connect(rf, &DkRecentDirWidget::removeSignal, this, &DkRecentFilesWidget::entryRemoved);
 
-        recentFiles << rf;
         l->addWidget(rf);
     }
 
-    qInfo() << "list updated in" << dt;
+    qInfo() << "list updated in" << dt; // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) false positive on layout
 
     mScrollArea->setWidget(dummy);
 }
