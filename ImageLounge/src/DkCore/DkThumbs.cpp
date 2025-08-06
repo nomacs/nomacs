@@ -309,7 +309,7 @@ void DkThumbLoader::onThumbnailLoadFinished()
 
     handleFinishedWatcher(w);
 
-    if (!res->valid) {
+    if (!res->valid) { // NOLINT(clang-analyzer-core.uninitialized.Branch) -- false positive
         emit thumbnailLoadFailed(res->filePath);
         mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size());
         return;
