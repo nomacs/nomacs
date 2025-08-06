@@ -83,11 +83,6 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject *parent)
 
     // QFileInfo resPath(QDir("dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd
     // HH-mm-ss") + ".txt"); mResultPath = resPath.absoluteFilePath();
-
-    // save default settings
-    nmc::DefaultSettings settings;
-    loadSettings(settings);
-    saveSettings(settings);
 }
 
 /**
@@ -210,10 +205,21 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 void DkPageExtractionPlugin::loadSettings(QSettings &settings)
 {
     settings.beginGroup(name());
-    int mIdx = settings.value("Method", mMethod).toInt();
-    if (mIdx >= 0 && mIdx < m_end)
-        mMethod = (MethodIndex)mIdx;
+
+    // we need valid default settings for Batch, but saveSettings() will never be called
+    int mIdx = settings.value("Method", -1).toInt();
+
+    bool reset = false;
+    if (mIdx < 0 || mIdx >= m_end) {
+        mIdx = 0;
+        reset = true;
+    }
+    mMethod = (MethodIndex)mIdx;
+
     settings.endGroup();
+
+    if (reset)
+        saveSettings(settings);
 }
 
 void DkPageExtractionPlugin::saveSettings(QSettings &settings) const
