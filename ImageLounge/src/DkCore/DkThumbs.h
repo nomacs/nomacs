@@ -28,11 +28,11 @@
 #pragma once
 
 #include <queue>
-#pragma warning(push, 0) // no warnings from includes - begin
+
 #include <QFutureWatcher>
 #include <QImage>
 #include <QSharedPointer>
-#pragma warning(pop) // no warnings from includes - end
+
 #include "DkMetaData.h"
 #include <QCache>
 #include <QThread>

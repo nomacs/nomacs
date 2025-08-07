@@ -47,7 +47,6 @@
 #include "DkPluginManager.h"
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QClipboard>
 #include <QDragEnterEvent>
@@ -66,8 +65,6 @@
 #endif
 #include <QStorageInfo>
 #endif
-
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

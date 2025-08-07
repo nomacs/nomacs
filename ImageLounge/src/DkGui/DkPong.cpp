@@ -29,7 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QDebug>
 #include <QKeyEvent>
@@ -39,7 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QTime>
 #include <QTimer>
 #include <QVector2D>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

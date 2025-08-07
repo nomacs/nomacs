@@ -29,12 +29,10 @@
 
 #include "DkBaseWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QCompleter>
 #include <QObject>
 #include <QToolBar>
 #include <QWidget>
-#pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251)
 

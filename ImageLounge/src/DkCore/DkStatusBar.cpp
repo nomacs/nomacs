@@ -30,9 +30,7 @@
 #include "DkActionManager.h"
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QLabel>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

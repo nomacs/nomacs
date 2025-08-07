@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma warning(push, 0)
-
 #include <QDir>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
@@ -23,7 +21,6 @@
 #include <QWidget>
 
 #include <opencv2/opencv.hpp>
-#pragma warning(pop, 0)
 
 #include "DkBasicLoader.h"
 #include "DkImageStorage.h"

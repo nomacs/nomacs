@@ -44,7 +44,6 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QBoxLayout>
@@ -101,8 +100,6 @@
 #ifdef WITH_QUAZIP
 #include <quazip/JlCompress.h>
 #endif
-
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

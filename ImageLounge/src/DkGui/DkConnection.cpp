@@ -28,14 +28,12 @@
 #include "DkConnection.h"
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QBuffer>
 #include <QByteArray>
 #include <QDebug>
 #include <QHostInfo>
 #include <QThread>
 #include <QTimer>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

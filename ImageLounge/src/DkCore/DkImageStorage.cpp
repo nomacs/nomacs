@@ -37,7 +37,6 @@
 #include <opencv2/core.hpp>
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitmap>
 #include <QColorSpace>
 #include <QDebug>
@@ -47,7 +46,6 @@
 #include <QTimer>
 #include <QtConcurrentRun>
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16

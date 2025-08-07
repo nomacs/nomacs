@@ -27,14 +27,12 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitArray>
 #include <QColor>
 #include <QDate>
 #include <QSettings>
 #include <QSharedPointer>
 #include <QVector>
-#pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251) // TODO: remove
 

@@ -28,9 +28,7 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes
 // Qt Includes
-#pragma warning(pop)
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT

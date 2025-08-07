@@ -27,7 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QColor>
 #include <QFutureWatcher>
 #include <QImage>
@@ -40,7 +39,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/imgproc/imgproc_c.h"
 #endif
-#pragma warning(pop) // no warnings from includes - end
 
 #ifdef Q_OS_WIN
 #pragma warning(disable : 4251) // TODO: remove

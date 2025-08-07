@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -39,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QStyleFactory>
 #include <QStyleHints>
 #include <cmath>
-#pragma warning(pop) // no warnings from includes - end
+
 #include <utility>
 
 namespace nmc

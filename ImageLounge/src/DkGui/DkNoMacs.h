@@ -30,10 +30,9 @@
 #pragma once
 
 // Qt
-#pragma warning(push, 0) // no warnings from includes - begin
+
 #include <QMainWindow>
 #include <QProcess>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkImageContainer.h"
 

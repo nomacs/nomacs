@@ -27,8 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-
 #include <QBoxLayout>
 #include <QDialog>
 #include <QLabel>
@@ -51,8 +49,6 @@
 
 using namespace cv;
 #endif
-
-#pragma warning(pop, 0) // no warnings from includes - end
 
 namespace nmp
 {

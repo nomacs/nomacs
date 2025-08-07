@@ -26,11 +26,9 @@
 
 #include "DkMath.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QString>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmp
 {

@@ -30,11 +30,9 @@
 // Qt defines
 #include "DkBaseWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QIcon>
 #include <QList>
 #include <QPushButton>
-#pragma warning(pop)
 
 #pragma warning(disable : 4251) // TODO: remove
 

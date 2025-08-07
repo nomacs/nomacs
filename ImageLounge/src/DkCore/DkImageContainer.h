@@ -29,12 +29,10 @@
 
 #include "DkFileInfo.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QFileInfo>
 #include <QFutureWatcher>
 #include <QSharedPointer>
 #include <QTimer>
-#pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251) // TODO: remove
 

@@ -30,10 +30,8 @@
 #include "DkBaseWidgets.h"
 #include "DkManipulators.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QObject>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

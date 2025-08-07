@@ -33,9 +33,7 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QTimer> // needed to construct mTimers
-#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

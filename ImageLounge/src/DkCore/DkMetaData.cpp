@@ -32,7 +32,6 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QBuffer>
 #include <QDebug>
@@ -41,7 +40,6 @@
 #include <QRegularExpression>
 #include <QTranslator>
 #include <QVector2D>
-#pragma warning(pop) // no warnings from includes - end
 
 #include <iostream>
 

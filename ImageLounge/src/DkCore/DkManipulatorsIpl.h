@@ -30,9 +30,7 @@
 
 #include "DkManipulators.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
-#pragma warning(pop)
 
 #pragma warning(disable : 4251) // TODO: remove
 

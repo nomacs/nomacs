@@ -42,7 +42,6 @@
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QButtonGroup>
@@ -71,7 +70,6 @@
 #include <QTextBlock>
 #include <QTextEdit>
 #include <QTreeView>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

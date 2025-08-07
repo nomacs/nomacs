@@ -31,7 +31,6 @@
 #include <optional>
 #include <vector>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDrag>
 #include <QFileInfo>
 #include <QGraphicsObject>
@@ -40,7 +39,6 @@
 #include <QPen>
 #include <QProcess>
 #include <QSharedPointer>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"

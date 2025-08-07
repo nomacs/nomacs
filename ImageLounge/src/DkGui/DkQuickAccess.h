@@ -27,13 +27,11 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QFileInfo>
 #include <QLineEdit>
 #include <QObject>
 #include <QStringList>
 #include <QVector>
-#pragma warning(pop) // no warnings from includes - end
 
 class QAction;
 class QStandardItemModel;

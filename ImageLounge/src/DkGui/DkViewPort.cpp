@@ -44,7 +44,6 @@
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -61,7 +60,6 @@
 #include <QtGlobal>
 
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifdef Q_OS_WIN
 #include <windows.h>

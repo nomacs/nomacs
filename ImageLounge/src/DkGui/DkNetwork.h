@@ -30,12 +30,10 @@
 #define local_tcp_port_start 45454
 #define local_tcp_port_end 45484
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QMutex>
 #include <QSharedPointer>
 #include <QTcpServer>
 #include <QThread>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkConnection.h"
 

@@ -33,10 +33,8 @@
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QSharedPointer>
 #include <QWidget>
-#pragma warning(pop)
 
 namespace nmc
 {

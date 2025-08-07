@@ -24,9 +24,7 @@
 
 #include "SbCompositePlugin.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
-#pragma warning(pop) // no warnings from includes - end
 
 /*******************************************************************************************************
  * SbCompositePlugin	- enter the plugin class name (e.g. DkPageExtractionPlugin)

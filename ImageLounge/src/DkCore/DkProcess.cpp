@@ -37,12 +37,10 @@
 
 #include "DkMetaData.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QWidget>
 #include <QtConcurrentMap>
-#pragma warning(pop) // no warnings from includes - end
 
 #include <cassert>
 

@@ -26,10 +26,8 @@
 
 #include "DkPageSegmentationUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDebug>
 #include <opencv2/imgproc/imgproc.hpp>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmp
 {

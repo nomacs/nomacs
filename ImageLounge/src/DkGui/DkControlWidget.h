@@ -31,10 +31,8 @@
 #include "DkImageContainer.h"
 #include "DkThumbs.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QSharedPointer>
 #include <QWidget>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

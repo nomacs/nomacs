@@ -27,12 +27,10 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAbstractTableModel>
 #include <QDockWidget>
 #include <QSortFilterProxyModel>
 #include <QTextEdit>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"

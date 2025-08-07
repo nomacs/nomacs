@@ -30,12 +30,10 @@ related links:
 
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
-#pragma warning(pop)
 
 namespace nmc
 {

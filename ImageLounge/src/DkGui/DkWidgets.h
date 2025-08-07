@@ -29,7 +29,6 @@
 
 #include "DkQt5Compat.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDockWidget>
 #include <QFileIconProvider>
 #include <QFileSystemModel>
@@ -42,7 +41,6 @@
 #include <QPushButton>
 #include <QSlider>
 #include <QSortFilterProxyModel>
-#pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251) // TODO: remove
 

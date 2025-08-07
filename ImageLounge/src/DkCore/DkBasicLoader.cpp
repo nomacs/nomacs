@@ -38,7 +38,6 @@
 #include <memory>
 #include <utility>
 
-#pragma warning(push, 0)
 #include <QBuffer>
 #include <QColorSpace>
 #include <QDebug>
@@ -94,8 +93,6 @@
 #pragma comment(lib, "oleaut32.lib")
 
 #endif // #ifdef Q_OS_WIN
-
-#pragma warning(pop)
 
 namespace nmc
 {
