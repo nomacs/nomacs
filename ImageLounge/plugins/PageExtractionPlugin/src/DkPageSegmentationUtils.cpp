@@ -863,7 +863,7 @@ cv::Mat PageExtractor::removeText(cv::Mat gray, float sigma, int selemSize, int 
     std::vector<cv::Mat> E_i_ex(8);
     cv::Mat H = cv::Mat::zeros(gray.size(), CV_8U);
     cv::Mat mask;
-    cv::Mat mask_factor = (cv::abs(sobel_h) > eps | cv::abs(sobel_v) > eps);
+    cv::Mat mask_factor = (cv::abs(sobel_h) > eps) | (cv::abs(sobel_v) > eps);
     cv::Mat M_text_inv;
     float rangeStart;
     float rangeEnd;
