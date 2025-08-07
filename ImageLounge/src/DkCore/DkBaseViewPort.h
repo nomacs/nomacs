@@ -196,10 +196,15 @@ protected:
     bool mBlockZooming = false;
     QTimer *mZoomTimer;
 
-    // functions
+    // draw the entire viewport
     virtual void draw(QPainter &painter, double opacity = 1.0);
-    virtual void drawPattern(QPainter &painter) const;
-    virtual void drawBackground(QPainter &painter);
+
+    // draw transparency pattern behind where the image will draw
+    virtual void drawTransparencyPattern(QPainter &painter) const;
+
+    // fill entire viewport with bg color, image draws on top
+    virtual void eraseBackground(QPainter &painter);
+
     virtual void updateImageMatrix();
     virtual QTransform getScaledImageMatrix() const;
     virtual QTransform getScaledImageMatrix(const QSize &size) const;
