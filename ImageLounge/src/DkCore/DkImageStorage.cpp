@@ -552,7 +552,10 @@ void DkImage::linearToGamma(QImage &img)
 
 void DkImage::mapGammaTable(QImage &img, const QVector<uchar> &gammaTable)
 {
-    DkTimer dt;
+    if (gammaTable.size() != 1 << 8) {
+        qCritical() << "invalid 8-bit gamma table";
+        return;
+    }
 
     // number of bytes per line used
     int bpl = (img.width() * img.depth() + 7) / 8;
@@ -564,21 +567,10 @@ void DkImage::mapGammaTable(QImage &img, const QVector<uchar> &gammaTable)
 
     for (int rIdx = 0; rIdx < img.height(); rIdx++) {
         for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
-            if (*mPtr < 0 || *mPtr > gammaTable.size()) {
-                qDebug() << "WRONG VALUE: " << *mPtr;
-                continue;
-            }
-            if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
-                qDebug() << "WRONG VALUE: " << *mPtr;
-                continue;
-            }
-
             *mPtr = gammaTable[*mPtr];
         }
         mPtr += pad;
     }
-
-    qDebug() << "gamma computation takes: " << dt;
 }
 
 bool DkImage::normImage(QImage &img)
@@ -1302,40 +1294,32 @@ QImage DkImage::mat2QImage(cv::Mat img)
 
 void DkImage::linearToGamma(cv::Mat &img)
 {
-    QVector<unsigned short> gt = getLinear2GammaTable<unsigned short>();
-    mapGammaTable(img, gt);
+    auto gammaTable = getLinear2GammaTable<uint16_t>();
+    mapGammaTable(img, gammaTable);
 }
 
 void DkImage::gammaToLinear(cv::Mat &img)
 {
-    QVector<unsigned short> gt = getGamma2LinearTable<unsigned short>();
-    mapGammaTable(img, gt);
+    auto gammaTable = getGamma2LinearTable<uint16_t>();
+    mapGammaTable(img, gammaTable);
 }
 
-void DkImage::mapGammaTable(cv::Mat &img, const QVector<unsigned short> &gammaTable)
+void DkImage::mapGammaTable(cv::Mat &img, const QVector<uint16_t> &gammaTable)
 {
-    DkTimer dt;
+    if (gammaTable.size() != 1 << 16) {
+        qCritical() << "invalid 16-bit gamma table";
+        return;
+    }
 
     for (int rIdx = 0; rIdx < img.rows; rIdx++) {
-        unsigned short *mPtr = img.ptr<unsigned short>(rIdx);
+        auto *mPtr = img.ptr<uint16_t>(rIdx);
 
         for (int cIdx = 0; cIdx < img.cols; cIdx++) {
             for (int channelIdx = 0; channelIdx < img.channels(); channelIdx++, mPtr++) {
-                if (*mPtr < 0 || *mPtr > gammaTable.size()) {
-                    qDebug() << "WRONG VALUE: " << *mPtr;
-                    continue;
-                }
-                if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
-                    qDebug() << "WRONG VALUE: " << *mPtr;
-                    continue;
-                }
-
                 *mPtr = gammaTable[*mPtr];
             }
         }
     }
-
-    qDebug() << "gamma computation takes: " << dt;
 }
 
 void DkImage::logPolar(const cv::Mat &src,

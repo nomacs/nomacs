@@ -308,7 +308,7 @@ void DkGeneralPreference::createLayout()
         const QColor *themeColor; // setting: system palette or theme css
         QColor *userColor; // setting: user modified color
         bool *isThemeColor; // setting: true if user modified a color
-        DkColorChooser *chooser;
+        DkColorChooser *chooser = nullptr;
     } colors[] =
         {{tr("Icon Color"), true, &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
          {tr("Foreground Color"), false, &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
