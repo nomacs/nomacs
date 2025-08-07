@@ -88,11 +88,11 @@ public:
     int size() const;
 
 protected:
-    QString mEditName;
+    QSharedPointer<DkMetaDataT> mMetaData;
     QImage mImg;
+    QString mEditName;
     bool mNewImg;
     bool mNewMetaData;
-    QSharedPointer<DkMetaDataT> mMetaData;
 };
 
 class DllCoreExport DkRawLoader
