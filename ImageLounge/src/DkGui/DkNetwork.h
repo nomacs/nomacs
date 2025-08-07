@@ -230,7 +230,7 @@ private slots:
     void connectionReceivedQuit();
 
 private:
-    DkLocalConnection *createConnection() override;
+    DkLocalConnection *createConnection() final; // called from constructor, prevent override in subclasses
     void searchForOtherClients();
 
     DkLocalTcpServer *mServer;
