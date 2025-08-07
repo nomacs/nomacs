@@ -107,8 +107,8 @@ DkEditImage::DkEditImage()
 {
 }
 DkEditImage::DkEditImage(const QImage &img, const QSharedPointer<DkMetaDataT> &metaData, const QString &editName)
-    : mImg(img)
-    , mMetaData(metaData)
+    : mMetaData(metaData)
+    , mImg(img)
     , mEditName(editName)
     , mNewImg(true)
     , mNewMetaData(false)
@@ -117,8 +117,8 @@ DkEditImage::DkEditImage(const QImage &img, const QSharedPointer<DkMetaDataT> &m
 }
 
 DkEditImage::DkEditImage(const QSharedPointer<DkMetaDataT> &metaData, const QImage &img, const QString &editName)
-    : mImg(img)
-    , mMetaData(metaData)
+    : mMetaData(metaData)
+    , mImg(img)
     , mEditName(editName)
     , mNewImg(false)
     , mNewMetaData(true)

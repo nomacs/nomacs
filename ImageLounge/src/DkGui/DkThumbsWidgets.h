@@ -473,7 +473,7 @@ protected:
     void mousePressEvent(QMouseEvent *ev) override;
 
     int mThumbSize = 100;
-    DkThumbLoader *mLoader;
+    DkThumbLoader *mLoader{};
     QString mFilePath;
 };
 

@@ -346,9 +346,9 @@ void DkDoubleSlider::setIntValue(int value)
 
 // DkColorChooser ------------------------------------
 DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget *parent, Qt::WindowFlags flags)
-    : mDefaultColor(defaultColor)
+    : DkWidget(parent, flags)
+    , mDefaultColor(defaultColor)
     , mText(text)
-    , DkWidget(parent, flags)
 {
     createLayout();
     enableAlpha(true);

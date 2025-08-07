@@ -2256,8 +2256,8 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
                                          QWidget *parent /* = 0 */,
                                          Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
-    , mFilePath{filePath}
     , mLoader{thumbLoader}
+    , mFilePath{filePath}
 
 {
     mThumbSize = thumbSize;
