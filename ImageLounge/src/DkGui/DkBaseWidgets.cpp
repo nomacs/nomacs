@@ -412,7 +412,7 @@ void DkElidedLabel::updateElision()
     QLabel::setText(clippedText);
 }
 
-QSize DkElidedLabel::minimumSizeHint()
+QSize DkElidedLabel::minimumSizeHint() const
 {
     return QSize(0, QLabel::minimumSizeHint().height());
 }

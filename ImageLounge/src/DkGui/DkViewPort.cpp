@@ -989,7 +989,7 @@ void DkViewPort::paintEvent(QPaintEvent *event)
         painter.setWorldMatrixEnabled(false);
     } else {
         if (!mDisabledBackground)
-            drawBackground(painter);
+            eraseBackground(painter);
     }
 
     // draw the cropping rect
@@ -1024,9 +1024,9 @@ void DkViewPort::leaveEvent(QEvent *event)
 }
 
 // drawing functions --------------------------------------------------------------------
-void DkViewPort::drawBackground(QPainter &painter)
+void DkViewPort::eraseBackground(QPainter &painter)
 {
-    DkBaseViewPort::drawBackground(painter);
+    DkBaseViewPort::eraseBackground(painter);
 
     // fit to mViewport
     QSize s = mImgBg.size();
@@ -2165,13 +2165,13 @@ void DkViewPortFrameless::draw(QPainter &painter, double)
 
         // opacity == 1.0f -> do not show pattern if we crossfade two images
         if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel())
-            drawPattern(painter);
+            drawTransparencyPattern(painter);
 
         painter.drawImage(mImgViewRect, img, QRect(QPoint(), img.size()));
     }
 }
 
-void DkViewPortFrameless::drawBackground(QPainter &painter)
+void DkViewPortFrameless::eraseBackground(QPainter &painter)
 {
     painter.setWorldTransform(mImgMatrix);
     painter.setBrush(QColor(127, 144, 144, 200));
@@ -2322,7 +2322,7 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
 }
 
-void DkViewPortFrameless::moveView(QPointF delta)
+void DkViewPortFrameless::moveView(const QPointF &delta)
 {
     // if no zoom is present -> the translation is like a move window
     if (mWorldMatrix.m11() == 1.0f) {
@@ -2496,7 +2496,7 @@ void DkViewPortContrast::draw(QPainter &painter, double opacity)
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
-        drawPattern(painter);
+        drawTransparencyPattern(painter);
 
     if (mDrawFalseColorImg)
         painter.drawImage(mImgViewRect, mFalseColorImg, mImgRect);

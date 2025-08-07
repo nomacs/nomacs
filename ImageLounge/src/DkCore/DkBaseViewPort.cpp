@@ -517,14 +517,14 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event)
 // protected functions --------------------------------------------------------------------
 void DkBaseViewPort::draw(QPainter &painter, double opacity)
 {
-    drawBackground(painter);
+    eraseBackground(painter);
 
     QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
     QImage img = mImgStorage.image(displayRect.size());
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
-        drawPattern(painter);
+        drawTransparencyPattern(painter);
 
     double oldOp = painter.opacity();
     painter.setOpacity(opacity);
@@ -550,7 +550,7 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
     painter.setOpacity(oldOp);
 }
 
-void DkBaseViewPort::drawPattern(QPainter &painter) const
+void DkBaseViewPort::drawTransparencyPattern(QPainter &painter) const
 {
     QBrush pt = mPattern;
 
@@ -564,7 +564,7 @@ void DkBaseViewPort::drawPattern(QPainter &painter) const
     painter.drawRect(mImgViewRect);
 }
 
-void DkBaseViewPort::drawBackground(QPainter &painter)
+void DkBaseViewPort::eraseBackground(QPainter &painter)
 {
     QBrush bgBrush = backgroundBrush();
 

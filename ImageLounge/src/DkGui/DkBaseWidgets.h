@@ -340,7 +340,7 @@ public:
     {
         return content;
     }
-    QSize minimumSizeHint();
+    QSize minimumSizeHint() const override;
     QSize minimumSize();
     int minimumWidth();
 

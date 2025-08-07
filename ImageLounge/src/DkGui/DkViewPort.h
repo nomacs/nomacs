@@ -255,7 +255,7 @@ protected:
 
     void createShortcuts();
     void drawPolygon(QPainter &painter, const QPolygon &polygon);
-    void drawBackground(QPainter &painter) override;
+    void eraseBackground(QPainter &painter) override;
     void updateImageMatrix() override;
     void showZoom();
     void toggleLena(bool fullscreen);
@@ -274,7 +274,7 @@ public:
 
 public slots:
     void resetView() override;
-    virtual void moveView(QPointF);
+    void moveView(const QPointF &delta) override;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -286,7 +286,7 @@ protected:
     void updateImageMatrix() override;
     void draw(QPainter &painter, double opacity = 1.0) override;
     void drawFrame(QPainter &painter);
-    void drawBackground(QPainter &painter) override;
+    void eraseBackground(QPainter &painter) override;
     void controlImagePosition(float lb = -1, float ub = -1) override;
     void centerImage() override;
 

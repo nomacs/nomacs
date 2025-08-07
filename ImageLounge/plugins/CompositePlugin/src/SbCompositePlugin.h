@@ -106,10 +106,10 @@ public:
     QSharedPointer<nmc::DkImageContainer> runPlugin(
         const QString &runID = QString(),
         QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
-    virtual bool closesOnImageChange()
+    bool closesOnImageChange() const override
     {
         return false;
-    } // actually I think this has no effect...
+    }
 
     // DkViewPortInterface
     bool createViewPort(QWidget *parent) override;
