@@ -92,7 +92,7 @@ void DkManipulatorWidget::createLayout()
         auto mpl = am.manipulatorManager().manipulatorExt(extIdx);
 
         DkTabEntryWidget *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
-        connect(entry, &DkTabEntryWidget::clicked, this, [=]() {
+        connect(entry, &DkTabEntryWidget::clicked, this, [this, mpl]() {
             selectManipulatorInner(mpl);
         });
 
