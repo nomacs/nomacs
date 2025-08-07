@@ -36,7 +36,6 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QCheckBox>
 #include <QDialog>
@@ -55,7 +54,6 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

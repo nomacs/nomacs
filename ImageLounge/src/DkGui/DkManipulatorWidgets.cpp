@@ -36,14 +36,12 @@
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QtGlobal>
-#pragma warning(pop)
 
 namespace nmc
 {

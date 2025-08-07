@@ -27,7 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDebug>
 #include <QImage>
 #include <QProgressDialog>
@@ -37,7 +36,6 @@
 #include <QtCore/qmath.h>
 #include <QtGlobal>
 #include <cmath>
-#pragma warning(pop) // no warnings from includes - end
 
 // opencv
 #ifdef WITH_OPENCV

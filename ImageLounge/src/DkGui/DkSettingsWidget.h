@@ -31,12 +31,10 @@
 #include "DkBaseWidgets.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QAbstractItemModel>
 #include <QSettings>
 #include <QSortFilterProxyModel>
 #include <QWidget>
-#pragma warning(pop)
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

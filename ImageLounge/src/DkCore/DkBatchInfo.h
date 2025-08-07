@@ -28,9 +28,7 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QObject>
-#pragma warning(pop)
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

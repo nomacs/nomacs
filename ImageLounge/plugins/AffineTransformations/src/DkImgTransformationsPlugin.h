@@ -27,8 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-
 #include <QAction>
 #include <QCheckBox>
 #include <QComboBox>
@@ -50,8 +48,6 @@
 #include <QVector4D>
 #include <QtCore/qmath.h>
 #include <QtPlugin>
-
-#pragma warning(pop, 0) // no warnings from includes - end
 
 #include "DkPluginInterface.h"
 #include "DkSkewEstimator.h"

@@ -28,7 +28,6 @@
 
 #include "DkBatchInfo.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
@@ -36,7 +35,6 @@
 #include <QSharedPointer>
 #include <QUuid>
 #include <QVector>
-#pragma warning(pop)
 
 namespace nmc
 {

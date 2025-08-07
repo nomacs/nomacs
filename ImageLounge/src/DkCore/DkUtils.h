@@ -30,14 +30,11 @@
 #include <cmath>
 #include <functional>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDebug>
 #include <QFileInfo>
 #include <QRegularExpression>
-#include <QVector>
-
 #include <QSharedMemory>
-#pragma warning(pop) // no warnings from includes - end
+#include <QVector>
 
 #pragma warning(disable : 4251) // dll interface missing
 #pragma warning(disable : 4714) // Qt's force inline

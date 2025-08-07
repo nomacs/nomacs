@@ -40,7 +40,6 @@
 #include <cassert>
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QColor>
 #include <QComboBox>
@@ -67,7 +66,6 @@
 #include <qmath.h>
 
 #include <QSystemSemaphore>
-#pragma warning(pop) // no warnings from includes - end
 
 #include <exiv2/version.hpp>
 

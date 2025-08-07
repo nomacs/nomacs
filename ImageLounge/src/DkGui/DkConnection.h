@@ -27,13 +27,11 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QHostAddress>
 #include <QImage>
 #include <QRect>
 #include <QTcpSocket>
 #include <QTransform>
-#pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251)
 

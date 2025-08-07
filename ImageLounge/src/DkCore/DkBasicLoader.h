@@ -27,13 +27,11 @@
 
 #pragma once
 
-#pragma warning(push, 0)
 #include <QFutureWatcher>
 #include <QImageReader>
 #include <QNetworkAccessManager>
 #include <QSharedPointer>
 #include <QUrl>
-#pragma warning(pop)
 
 #pragma warning(disable : 4251) // TODO: remove
 // #include "DkImageStorage.h"

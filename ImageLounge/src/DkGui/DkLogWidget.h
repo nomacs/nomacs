@@ -29,9 +29,7 @@
 
 #include "DkBaseWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QWidget>
-#pragma warning(pop)
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT

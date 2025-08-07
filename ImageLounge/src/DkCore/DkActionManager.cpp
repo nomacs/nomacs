@@ -43,7 +43,6 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -55,7 +54,6 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

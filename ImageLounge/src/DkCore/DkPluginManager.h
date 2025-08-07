@@ -27,7 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAbstractTableModel>
 #include <QDate>
 #include <QDialog>
@@ -36,7 +35,6 @@
 #include <QMap>
 #include <QStyledItemDelegate>
 #include <QTextEdit>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkPluginInterface.h"
 

@@ -34,7 +34,6 @@
 #include "DkTimer.h"
 #include "qpainter.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDir>
 #include <QFileInfo>
 #include <QImageReader>
@@ -42,7 +41,6 @@
 #include <QStringList>
 #include <QTimer>
 #include <QtConcurrentRun>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

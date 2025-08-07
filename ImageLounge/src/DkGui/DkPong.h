@@ -27,13 +27,11 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QGraphicsView>
 #include <QLabel>
 #include <QMainWindow>
 #include <QRect>
 #include <QSharedPointer>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkMath.h"
 #pragma warning(disable : 4251)

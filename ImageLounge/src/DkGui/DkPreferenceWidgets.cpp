@@ -38,7 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
 #include <QApplication>
 #include <QButtonGroup>
@@ -61,7 +60,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QTableView>
 #include <QVBoxLayout>
 #include <QtGlobal>
-#pragma warning(pop)
 
 namespace nmc
 {

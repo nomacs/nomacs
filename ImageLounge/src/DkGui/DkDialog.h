@@ -27,7 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDialog>
 #include <QDir>
 #include <QDoubleSpinBox>
@@ -37,7 +36,6 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QPrintPreviewWidget>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkBasicLoader.h"
 

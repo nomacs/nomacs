@@ -45,7 +45,6 @@
 #include <qpixmap.h>
 #include <qpixmapcache.h>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -67,7 +66,6 @@
 #include <QUrl>
 #include <QtGlobal>
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 #include <QStringBuilder>
 

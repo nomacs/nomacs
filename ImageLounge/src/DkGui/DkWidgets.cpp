@@ -39,7 +39,6 @@
 #include "DkUtils.h"
 #include <QtGlobal>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QBoxLayout>
@@ -96,7 +95,6 @@
 #include <QtConcurrentRun>
 #include <qmath.h>
 #include <qtconcurrentmap.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

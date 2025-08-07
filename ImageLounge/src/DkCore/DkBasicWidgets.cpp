@@ -33,7 +33,6 @@ related links:
 
 #include <cassert>
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QColorDialog>
 #include <QLabel>
 #include <QLineEdit>
@@ -46,7 +45,6 @@ related links:
 #include <QVBoxLayout>
 #include <QWidgetAction>
 #include <QtGlobal>
-#pragma warning(pop)
 
 namespace nmc
 {

@@ -32,7 +32,6 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QBuffer>
 #include <QButtonGroup>
 #include <QCheckBox>
@@ -45,7 +44,6 @@
 #include <QRadioButton>
 #include <QSettings>
 #include <QVBoxLayout>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

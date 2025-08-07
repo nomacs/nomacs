@@ -42,7 +42,6 @@
 #include "DkUtils.h"
 #include <utility>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QBuffer>
 #include <QByteArray>
@@ -91,8 +90,6 @@
 #elif defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
 #endif
-
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

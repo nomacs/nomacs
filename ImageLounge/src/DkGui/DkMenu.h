@@ -29,10 +29,8 @@
 
 #include "DkQt5Compat.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QMenuBar>
 #include <QPointer>
-#pragma warning(pop) // no warnings from includes - end
 
 // Qt includes
 class QTimer;

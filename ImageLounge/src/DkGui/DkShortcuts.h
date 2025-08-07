@@ -24,12 +24,10 @@
  *******************************************************************************************************/
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QHash>
 #include <QKeySequence>
 #include <QObject>
 #include <QVector>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

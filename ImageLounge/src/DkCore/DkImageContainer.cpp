@@ -33,13 +33,11 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDir>
 #include <QImage>
 #include <QObject>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
-#pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251) // TODO: remove
 

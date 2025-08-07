@@ -32,10 +32,6 @@
 #include "DkImageContainer.h"
 #include "DkManipulatorsIpl.h"
 
-#pragma warning(push, 0) // no warnings from includes
-
-#pragma warning(pop)
-
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
 #define DllExport Q_DECL_EXPORT

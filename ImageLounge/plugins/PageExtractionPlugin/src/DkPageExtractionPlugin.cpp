@@ -32,7 +32,6 @@
 #include "DkTimer.h"
 #include "DkUtils.h" // for qInfo compatibility
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QDateTime>
 #include <QDebug>
@@ -41,7 +40,6 @@
 #include <QUuid>
 
 #include <QXmlStreamReader>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmp
 {

@@ -40,7 +40,6 @@
 #pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
@@ -54,8 +53,6 @@
 #include <QTextStream>
 #include <QThread>
 #include <QTranslator>
-
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkCentralWidget.h"
 #include "DkDependencyResolver.h"

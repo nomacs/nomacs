@@ -27,14 +27,12 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDir>
 #include <QFileInfo>
 #include <QFutureWatcher>
 #include <QSharedPointer>
 #include <QStringList>
 #include <QUrl>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkBatchInfo.h"
 #include "DkManipulators.h"

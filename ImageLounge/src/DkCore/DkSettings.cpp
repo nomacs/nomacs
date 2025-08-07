@@ -29,7 +29,6 @@
 #include "DkUtils.h"
 #include "DkVersion.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <cassert>
 #include <iostream>
 
@@ -57,8 +56,6 @@
 #endif
 #include "shobjidl.h"
 #endif
-
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

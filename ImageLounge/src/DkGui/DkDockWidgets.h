@@ -31,9 +31,6 @@
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 
-#pragma warning(push, 0) // no warnings from includes
-#pragma warning(pop)
-
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT
