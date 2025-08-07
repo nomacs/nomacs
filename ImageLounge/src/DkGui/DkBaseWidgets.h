@@ -157,7 +157,6 @@ private:
 template<class QWidgetBase>
 class DkFadeMixin : public QWidgetBase, public DkFadeHelper
 {
-    Q_DISABLE_COPY_MOVE(DkFadeMixin<QWidgetBase>)
 public:
     DkFadeMixin() = delete;
 
