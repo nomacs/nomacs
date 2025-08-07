@@ -112,6 +112,7 @@ bool QPsdHandler::read(QImage *image)
             input.skipRawData(height * channels * 2);
         else if (format() == "psb")
             input.skipRawData(height * channels * 4);
+        [[fallthrough]];
     case RAW:
         imageData = readImageData(input, (Compression)compression, size);
         break;

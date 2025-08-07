@@ -235,7 +235,6 @@ QSize DkRotatingRect::size() const
     DkVector xV = DkVector(mRect[3] - mRect[0]).round();
     DkVector yV = DkVector(mRect[1] - mRect[0]).round();
 
-    QPointF ul = QPointF(qRound(mRect[0].x()), qRound(mRect[0].y()));
     QPointF s = QPointF(xV.norm(), yV.norm());
 
     double angle = xV.angle();
