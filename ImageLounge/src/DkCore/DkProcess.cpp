@@ -539,7 +539,7 @@ void DkPluginBatch::saveSettings(QSettings &settings) const
     settings.beginGroup(settingsName());
     settings.setValue("pluginList", mPluginList.join(";"));
 
-    for (const QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+    for (const QSharedPointer<DkPluginContainer> &plugin : mPlugins) {
         if (!plugin)
             continue;
 
