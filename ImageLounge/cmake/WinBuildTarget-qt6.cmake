@@ -314,8 +314,10 @@ if(Python_FOUND)
 endif()
 
 # set properties for Visual Studio Projects
-set(CMAKE_CXX_FLAGS_DEBUG "/Zc:wchar_t /W4 /EHsc ${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS_RELEASE "/Zc:wchar_t /W4 /O2 /EHsc -DDK_INSTALL -DQT_NO_DEBUG_OUTPUT ${CMAKE_CXX_FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_DEBUG "/MP /Zc:wchar_t /W4 /w14265 /w14826 /w15038 /EHsc ${CMAKE_CXX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_RELEASE
+    "/MP /Zc:wchar_t /W4 /w14265 /w14826 /w15038 /O2 /EHsc -DDK_INSTALL -DQT_NO_DEBUG_OUTPUT ${CMAKE_CXX_FLAGS_RELEASE}"
+)
 
 source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
 source_group("Translations" FILES ${NOMACS_TRANSLATIONS})
