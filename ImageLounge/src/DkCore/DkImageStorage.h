@@ -33,20 +33,10 @@
 #include <QObject>
 #include <QVector>
 
-// opencv
 #ifdef WITH_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/imgproc/imgproc_c.h"
-#endif
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4251) // TODO: remove
-#pragma warning(disable : 4714) // Qt's force inline
-#endif
-
-#if defined(__GNUC__) && defined(Q_OS_MAC) || defined(__clang__)
-#pragma GCC diagnostic ignored "-Winvalid-source-encoding"
 #endif
 
 #ifndef DllCoreExport

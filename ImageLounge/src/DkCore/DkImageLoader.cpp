@@ -77,14 +77,6 @@
 #include <QtConcurrentRun>
 #include <qmath.h>
 
-// opencv
-#ifdef WITH_OPENCV
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-#endif
-
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
 #elif defined(Q_OS_WIN) && !defined(SOCK_STREAM)

@@ -33,12 +33,6 @@
 #include <QTcpSocket>
 #include <QTransform>
 
-#pragma warning(disable : 4251)
-
-#ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
-
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT

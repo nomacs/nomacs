@@ -29,8 +29,6 @@
 
 #include <QStatusBar>
 
-#pragma warning(disable : 4251) // TODO: remove
-
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT

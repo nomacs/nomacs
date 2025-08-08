@@ -39,8 +39,6 @@
 #include <QRegularExpression>
 #include <QtConcurrentRun>
 
-#pragma warning(disable : 4251) // TODO: remove
-
 namespace nmc
 {
 // DkImageContainer --------------------------------------------------------------------

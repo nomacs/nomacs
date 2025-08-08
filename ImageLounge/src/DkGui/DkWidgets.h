@@ -42,8 +42,6 @@
 #include <QSlider>
 #include <QSortFilterProxyModel>
 
-#pragma warning(disable : 4251) // TODO: remove
-
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 #include "DkMath.h"

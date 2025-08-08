@@ -34,7 +34,6 @@
 #include <QSharedPointer>
 
 #include "DkMath.h"
-#pragma warning(disable : 4251)
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

@@ -30,8 +30,6 @@
 #include <QBuffer>
 #include <QGraphicsView>
 
-#pragma warning(disable : 4251) // TODO: remove
-
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 

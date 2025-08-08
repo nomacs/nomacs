@@ -44,10 +44,6 @@
 #endif
 #endif
 
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4251) // TODO: remove
-#endif
-
 class QStackedLayout;
 class QGridLayout;
 class QLabel;

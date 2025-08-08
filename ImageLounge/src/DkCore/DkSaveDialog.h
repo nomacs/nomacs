@@ -39,9 +39,6 @@
 #endif
 #endif
 
-#pragma warning(disable : 4251) // TODO: remove
-
-// Qt defines
 class QRadioButton;
 class QCheckBox;
 class QLabel;

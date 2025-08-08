@@ -32,8 +32,6 @@
 
 #include <QAction>
 
-#pragma warning(disable : 4251) // TODO: remove
-
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT
@@ -44,12 +42,8 @@
 #endif
 #endif
 
-// Qt defines
-
 namespace nmc
 {
-
-// nomacs defines
 
 class DkGrayScaleManipulator : public DkBaseManipulator
 {

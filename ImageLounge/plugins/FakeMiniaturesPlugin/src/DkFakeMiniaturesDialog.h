@@ -37,16 +37,9 @@
 #include <QSpinBox>
 #include <QWidget>
 
-// OpenCV
 #ifdef WITH_OPENCV
-
-#ifdef Q_WS_WIN
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-
 using namespace cv;
 #endif
 
