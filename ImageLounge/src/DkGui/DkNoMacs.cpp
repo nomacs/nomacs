@@ -1743,8 +1743,8 @@ void DkNoMacs::openFileWith(QAction *action)
         if (!io)
             return;
 
-        QByteArray data = io->readAll();
-        if (data.size() != tmpFile.write(data))
+        QByteArray bytes = io->readAll();
+        if (bytes.size() != tmpFile.write(bytes))
             return;
 
         fileInfo = DkFileInfo(tmpFilePath);
