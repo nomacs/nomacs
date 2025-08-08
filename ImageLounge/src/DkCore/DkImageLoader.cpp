@@ -933,7 +933,6 @@ void DkImageLoader::copyUserFile()
 {
     // the subsequent modals destroy the active window
     QWidget *dialogParent = DkUtils::getMainWindow();
-    QString saveName;
 
     auto imgC = getCurrentImage();
 
