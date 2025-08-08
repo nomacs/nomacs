@@ -77,7 +77,7 @@ class DkPaintPlugin : public QObject, nmc::DkViewPortInterface
 
 public:
     DkPaintPlugin();
-    ~DkPaintPlugin();
+    ~DkPaintPlugin() override;
 
     QImage image() const override;
     bool hideHUD() const override;
@@ -105,8 +105,8 @@ class DkPaintViewPort : public nmc::DkPluginViewPort
     Q_OBJECT
 
 public:
-    DkPaintViewPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkPaintViewPort();
+    explicit DkPaintViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkPaintViewPort() override;
 
     QBrush getBrush() const;
     QPen getPen() const;
@@ -122,7 +122,7 @@ public slots:
     void setPanning(bool checked);
     void applyChangesAndClose();
     void discardChangesAndClose();
-    virtual void setVisible(bool visible);
+    void setVisible(bool visible) override;
     void undoLastPaint();
 
 signals:
@@ -134,11 +134,11 @@ protected slots:
     void textEditFinsh();
 
 protected:
-    void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
-    virtual void init();
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void init();
 
     void loadSettings();
     void saveSettings() const;
@@ -186,8 +186,8 @@ public:
         icons_end,
     };
 
-    DkPaintToolBar(const QString &title, QWidget *parent = 0);
-    virtual ~DkPaintToolBar();
+    explicit DkPaintToolBar(const QString &title, QWidget *parent = nullptr);
+    ~DkPaintToolBar() override;
 
     void setPenColor(const QColor &col);
     void setPenWidth(int width);
@@ -211,7 +211,7 @@ public slots:
     void on_textInput_editingFinished();
     void on_undoAction_triggered();
     void showLineEdit(bool show);
-    virtual void setVisible(bool visible);
+    void setVisible(bool visible) override;
 
 signals:
     void applySignal();

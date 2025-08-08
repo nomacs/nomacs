@@ -43,7 +43,6 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -55,7 +54,6 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -150,7 +148,7 @@ QAction *DkAppManager::createAction(const QString &filePath)
 {
     QFileInfo file(filePath);
     if (!file.exists())
-        return 0;
+        return nullptr;
 
     QAction *newApp = new QAction(file.baseName(), parent());
     newApp->setToolTip(QDir::fromNativeSeparators(file.filePath()));
@@ -167,7 +165,7 @@ QAction *DkAppManager::findAction(const QString &appPath) const
             return mApps.at(idx);
     }
 
-    return 0;
+    return nullptr;
 }
 
 void DkAppManager::findDefaultSoftware()
@@ -281,7 +279,8 @@ void DkAppManager::assignIcon(QAction *app) const
     DestroyIcon(smallIcon);
 
     app->setIcon(appIcon);
-
+#else
+    Q_UNUSED(app)
 #endif
 }
 

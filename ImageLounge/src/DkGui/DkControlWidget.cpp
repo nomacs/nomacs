@@ -39,14 +39,12 @@
 #include "DkViewPort.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QGridLayout>
 #include <QMouseEvent>
 #include <QSharedPointer>
 #include <QStackedLayout>
 #include <QTransform>
 #include <QtGlobal>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -707,7 +705,7 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
     mViewport->setPaintWidget(dynamic_cast<QWidget *>(mPluginViewport), removeWidget);
 
     if (removeWidget) {
-        mPluginViewport = 0;
+        mPluginViewport = nullptr;
     }
 }
 

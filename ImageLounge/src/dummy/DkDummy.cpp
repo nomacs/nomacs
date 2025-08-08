@@ -28,9 +28,7 @@
 
 #include ".h"
 
-#pragma warning(push, 0) // no warnings from includes
 // Qt Includes
-#pragma warning(pop)
 
 namespace nmc
 {

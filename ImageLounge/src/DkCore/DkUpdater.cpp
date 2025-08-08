@@ -32,7 +32,6 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QApplication>
 #include <QCoreApplication>
 #include <QDebug>
@@ -52,8 +51,6 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
-
-#pragma warning(pop)
 
 namespace nmc
 {
@@ -86,9 +83,7 @@ QString DkPackage::name() const
 }
 
 // DkXmlUpdateChecker --------------------------------------------------------------------
-DkXmlUpdateChecker::DkXmlUpdateChecker()
-{
-}
+DkXmlUpdateChecker::DkXmlUpdateChecker() = default;
 
 QVector<DkPackage> DkXmlUpdateChecker::updatesAvailable(QXmlStreamReader &localXml, QXmlStreamReader &remoteXml) const
 {

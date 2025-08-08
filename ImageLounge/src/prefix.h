@@ -19,13 +19,8 @@
 #if 1
 
 // DkUtils.h / DkSettings.h
-#include <assert.h>
 #include <functional>
 #include <memory>
-
-#ifndef Q_OS_WIN
-#include <time.h>
-#endif
 
 #ifdef WITH_OPENCV
 #ifdef Q_OS_WIN

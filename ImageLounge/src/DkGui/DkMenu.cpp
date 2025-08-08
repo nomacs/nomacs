@@ -29,7 +29,6 @@
 #include "DkNetwork.h"
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QDebug>
 #include <QFileInfo>
@@ -38,7 +37,6 @@
 #include <QPointer>
 #include <QStringBuilder>
 #include <QTimer>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
@@ -157,9 +155,7 @@ DkTcpMenu::DkTcpMenu(const QString &title, QWidget *parent)
     connect(this, &DkTcpMenu::synchronizeWithSignal, DkSyncManager::inst().client(), &DkClientManager::synchronizeWith);
 }
 
-DkTcpMenu::~DkTcpMenu()
-{
-}
+DkTcpMenu::~DkTcpMenu() = default;
 
 void DkTcpMenu::addTcpAction(QAction *tcpAction)
 {
@@ -247,7 +243,7 @@ void DkTcpMenu::updatePeers()
 
 // DkTcpAction --------------------------------------------------------------------
 DkTcpAction::DkTcpAction()
-    : QAction(0)
+    : QAction(nullptr)
 {
 }
 
@@ -272,13 +268,11 @@ DkTcpAction::DkTcpAction(DkPeer *peer, const QIcon &icon, const QString &text, Q
     init();
 }
 
-DkTcpAction::~DkTcpAction()
-{
-}
+DkTcpAction::~DkTcpAction() = default;
 
 void DkTcpAction::init()
 {
-    tcpActions = 0;
+    tcpActions = nullptr;
     setObjectName("tcpAction");
     setCheckable(true);
     setChecked(peer->isSynchronized());

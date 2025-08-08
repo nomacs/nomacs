@@ -26,23 +26,20 @@
 
 #include "DkPageSegmentationUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 
 #include <QColor>
 #include <QImage>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmp
 {
 
-class DkRotatingRect;
-
 class DkPageSegmentation
 {
 public:
-    DkPageSegmentation(const cv::Mat &colImg = cv::Mat(), bool alternativeMethod = false);
+    explicit DkPageSegmentation(const cv::Mat &colImg = cv::Mat(), bool alternativeMethod = false);
+    virtual ~DkPageSegmentation() = default;
 
     virtual void compute();
     virtual void filterDuplicates(float overlap = 0.6f, float areaRatio = 0.5f);

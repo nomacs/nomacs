@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma warning(push, 0)
-
 #include <QDir>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
@@ -23,7 +21,6 @@
 #include <QWidget>
 
 #include <opencv2/opencv.hpp>
-#pragma warning(pop, 0)
 
 #include "DkBasicLoader.h"
 #include "DkImageStorage.h"
@@ -37,17 +34,17 @@ class SbIntensitySlider : public QSlider
 {
     Q_OBJECT
 public:
-    SbIntensitySlider(QWidget *parent = 0)
+    explicit SbIntensitySlider(QWidget *parent = nullptr)
         : QSlider(parent)
     {
     }
-    SbIntensitySlider(Qt::Orientation orientation, QWidget *parent = 0)
+    explicit SbIntensitySlider(Qt::Orientation orientation, QWidget *parent = nullptr)
         : QSlider(orientation, parent)
     {
     }
 
 protected:
-    virtual void sliderChange(SliderChange change)
+    void sliderChange(SliderChange change) override
     {
         QSlider::sliderChange(change);
 
@@ -79,8 +76,8 @@ public:
 
     static const int THUMB_MAX_SIZE = 150;
 
-    SbChannelWidget(Channel c, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~SbChannelWidget();
+    explicit SbChannelWidget(Channel c, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+    ~SbChannelWidget() override;
     cv::Mat getImg(); // return the channel content
     void setImg(
         cv::Mat _img = cv::Mat(),

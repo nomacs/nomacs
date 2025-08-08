@@ -31,9 +31,6 @@
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 
-#pragma warning(push, 0) // no warnings from includes
-#pragma warning(pop)
-
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT
@@ -57,7 +54,7 @@ class DllCoreExport DkHistoryDock : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkHistoryDock(const QString &title = "", QWidget *parent = 0);
+    explicit DkHistoryDock(const QString &title = "", QWidget *parent = nullptr);
 
 public slots:
     void updateImage(QSharedPointer<DkImageContainerT> img);

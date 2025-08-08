@@ -29,9 +29,7 @@
 
 #include "DkBaseWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QWidget>
-#pragma warning(pop)
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -57,9 +55,11 @@ class DkMessageQueuer : public QObject
 public:
     DkMessageQueuer();
 
+    // called via qt message log callback
     void log(QtMsgType type, const QString &msg);
 
 signals:
+    // must use QueuedConnection since log() must be thread-safe
     void message(const QString &msg);
 };
 
@@ -68,7 +68,7 @@ class DkLogDock : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkLogDock(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkLogDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
 protected:
     void createLayout();
@@ -79,7 +79,7 @@ class DkLogWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkLogWidget(QWidget *parent = 0);
+    explicit DkLogWidget(QWidget *parent = nullptr);
 
 public slots:
     void log(const QString &msg);

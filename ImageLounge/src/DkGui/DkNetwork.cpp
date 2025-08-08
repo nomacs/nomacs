@@ -32,7 +32,6 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAbstractButton>
 #include <QApplication>
 #include <QDebug>
@@ -61,10 +60,6 @@
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
 #endif
-
-#pragma warning(pop) // no warnings from includes - end
-
-#include <assert.h>
 
 namespace nmc
 {
@@ -378,7 +373,7 @@ void DkLocalClientManager::synchronizeWithServerPort(quint16 port)
 
 void DkLocalClientManager::searchForOtherClients()
 {
-    assert(mServer);
+    Q_ASSERT(mServer);
 
     for (int i = local_tcp_port_start; i <= local_tcp_port_end; i++) {
         if (i == mServer->serverPort())
@@ -452,7 +447,7 @@ void DkLocalClientManager::synchronizeWith(quint16 peerId)
     emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 
     DkPeer *peer = mPeerList.getPeerById(peerId);
-    if (peer == 0 || peer->connection == 0) {
+    if (peer == nullptr || peer->connection == nullptr) {
         // qDebug() << "TcpClient: synchronizeWith: Peer is null or connection is null";
         return;
     }
@@ -628,9 +623,7 @@ DkPeer::DkPeer(quint16 port,
     connect(timer, &QTimer::timeout, this, &DkPeer::timerTimeout, Qt::UniqueConnection);
 }
 
-DkPeer::~DkPeer()
-{
-}
+DkPeer::~DkPeer() = default;
 
 void DkPeer::setSynchronized(bool flag)
 {
@@ -652,10 +645,7 @@ void DkPeer::timerTimeout()
 }
 
 // DkPeerList --------------------------------------------------------------------
-DkPeerList::DkPeerList()
-{
-    // do nothing
-}
+DkPeerList::DkPeerList() = default;
 
 bool DkPeerList::addPeer(DkPeer *peer)
 {
@@ -756,7 +746,7 @@ DkPeer *DkPeerList::getPeerByServerport(quint16 port) const
         if (peer->peerServerPort == port)
             return peer;
     }
-    return 0;
+    return nullptr;
 }
 
 bool DkPeerList::alreadyConnectedTo(const QHostAddress &address, quint16 port) const
@@ -780,7 +770,7 @@ DkPeer *DkPeerList::getPeerByAddress(const QHostAddress &address, quint16 port) 
         if (peer->hostAddress == address && peer->localServerPort == port)
             return peer;
     }
-    return 0; // should not happen
+    return nullptr; // should not happen
 }
 
 void DkPeerList::print() const
@@ -800,7 +790,7 @@ void DkPeerList::print() const
 DkSyncManager::DkSyncManager()
 {
     DkTimer dt;
-    mClient = new DkLocalClientManager("nomacs | Image Lounge", 0);
+    mClient = new DkLocalClientManager("nomacs | Image Lounge", nullptr);
 
     qInfo() << "local client created in: " << dt; // takes 1 sec in the client thread
 }
@@ -815,7 +805,7 @@ DkClientManager *DkSyncManager::client()
 {
     if (!mClient) {
         qWarning() << "DkSyncManager::client() which is not created yet...";
-        return 0;
+        return nullptr;
     }
 
     return mClient;

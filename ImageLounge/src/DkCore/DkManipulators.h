@@ -28,10 +28,8 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
 #include <QSettings>
-#pragma warning(pop)
 
 #pragma warning(disable : 4251) // TODO: remove
 
@@ -63,7 +61,8 @@ class DkImageContainer;
 class DllCoreExport DkBaseManipulator
 {
 public:
-    DkBaseManipulator(QAction *action = 0);
+    explicit DkBaseManipulator(QAction *action = nullptr);
+    virtual ~DkBaseManipulator() = default;
 
     QString name() const;
     QAction *action() const;
@@ -78,7 +77,7 @@ public:
     virtual void loadSettings(QSettings &settings);
 
 private:
-    QAction *mAction = 0;
+    QAction *mAction = nullptr;
     bool mIsSelected = false;
 };
 
@@ -92,7 +91,7 @@ private:
 class DllCoreExport DkBaseManipulatorExt : public DkBaseManipulator
 {
 public:
-    DkBaseManipulatorExt(QAction *action);
+    explicit DkBaseManipulatorExt(QAction *action);
 
     void setWidget(QWidget *widget);
     QWidget *widget() const;
@@ -102,7 +101,7 @@ public:
 
 private:
     bool mDirty = false;
-    QWidget *mWidget = 0;
+    QWidget *mWidget = nullptr;
 };
 
 class DllCoreExport DkManipulatorManager

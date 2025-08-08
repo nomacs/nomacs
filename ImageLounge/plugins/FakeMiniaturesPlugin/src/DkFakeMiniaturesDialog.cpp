@@ -38,9 +38,9 @@ namespace nmp
 #ifdef WITH_OPENCV
 // I know - but I just want to get rid of these little issues...
 #if (CV_MAJOR_VERSION > 3)
-int DIST_C = cv::DIST_C;
+constexpr int DIST_C = cv::DIST_C;
 #else
-int DIST_C = CV_DIST_C;
+constexpr int DIST_C = CV_DIST_C;
 #endif
 #endif
 
@@ -53,9 +53,7 @@ DkFakeMiniaturesDialog::DkFakeMiniaturesDialog(QWidget *parent, Qt::WindowFlags 
     init();
 }
 
-DkFakeMiniaturesDialog::~DkFakeMiniaturesDialog()
-{
-}
+DkFakeMiniaturesDialog::~DkFakeMiniaturesDialog() = default;
 
 /**
  * initializes variables
@@ -445,9 +443,7 @@ DkPreviewLabel::DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *pa
     selectionStarted = false;
 };
 
-DkPreviewLabel::~DkPreviewLabel(){
-
-};
+DkPreviewLabel::~DkPreviewLabel() = default;
 
 void DkPreviewLabel::mousePressEvent(QMouseEvent *e)
 {
@@ -545,9 +541,7 @@ DkFakeMiniaturesToolWidget::DkFakeMiniaturesToolWidget(QWidget *parent, DkFakeMi
     connect(this, SIGNAL(redrawImgPreview()), parentDialog, SLOT(redrawImgPreview()));
 };
 
-DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget(){
-
-};
+DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget() = default;
 
 /**
  * slider spin box slot: update value and redraw image
@@ -652,9 +646,7 @@ DkKernelSize::DkKernelSize(QWidget *parent, DkFakeMiniaturesDialog *parentDialog
     maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
 };
 
-DkKernelSize::~DkKernelSize(){
-
-};
+DkKernelSize::~DkKernelSize() = default;
 
 /**************************************************************
  * DkSaturation: widget for changing saturation
@@ -705,8 +697,5 @@ DkSaturation::DkSaturation(QWidget *parent, DkFakeMiniaturesDialog *parentDialog
     maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
 };
 
-DkSaturation::~DkSaturation(){
-
-};
-
+DkSaturation::~DkSaturation() = default;
 };

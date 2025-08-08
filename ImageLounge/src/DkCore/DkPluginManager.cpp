@@ -34,7 +34,6 @@
 #include "DkUtils.h"
 #include "DkVersion.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QDebug>
 #include <QDir>
@@ -65,7 +64,6 @@
 #include <QWidget>
 #include <QXmlStreamReader>
 #include <QtGlobal>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
@@ -179,9 +177,7 @@ DkPluginContainer::DkPluginContainer(const QString &pluginPath)
     loadJson();
 }
 
-DkPluginContainer::~DkPluginContainer()
-{
-}
+DkPluginContainer::~DkPluginContainer() = default;
 
 bool operator<(const QSharedPointer<DkPluginContainer> &l, const QSharedPointer<DkPluginContainer> &r)
 {
@@ -490,7 +486,7 @@ DkPluginInterface *DkPluginContainer::plugin() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     DkPluginInterface *pi = qobject_cast<DkPluginInterface *>(mLoader->instance());
 
@@ -506,7 +502,7 @@ DkBatchPluginInterface *DkPluginContainer::batchPlugin() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     return qobject_cast<DkBatchPluginInterface *>(mLoader->instance());
 }
@@ -515,7 +511,7 @@ DkViewPortInterface *DkPluginContainer::pluginViewPort() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     return qobject_cast<DkViewPortInterface *>(mLoader->instance());
 }
@@ -543,9 +539,7 @@ DkPluginManagerDialog::DkPluginManagerDialog(QWidget *parent)
     init();
 }
 
-DkPluginManagerDialog::~DkPluginManagerDialog()
-{
-}
+DkPluginManagerDialog::~DkPluginManagerDialog() = default;
 
 /**
  * initialize plugin manager dialog - set sizes
@@ -616,9 +610,7 @@ DkPluginTableWidget::DkPluginTableWidget(QWidget *parent)
     createLayout();
 }
 
-DkPluginTableWidget::~DkPluginTableWidget()
-{
-}
+DkPluginTableWidget::~DkPluginTableWidget() = default;
 
 // create the main layout of the plugin manager
 void DkPluginTableWidget::createLayout()
@@ -1095,14 +1087,9 @@ DkPluginManager &DkPluginManager::instance()
     return inst;
 }
 
-DkPluginManager::DkPluginManager()
-{
-    // loadPlugins();
-}
+DkPluginManager::DkPluginManager() = default;
 
-DkPluginManager::~DkPluginManager()
-{
-}
+DkPluginManager::~DkPluginManager() = default;
 
 // returns map with id and interface
 QVector<QSharedPointer<DkPluginContainer>> DkPluginManager::getPlugins() const

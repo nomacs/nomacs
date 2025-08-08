@@ -47,7 +47,6 @@
 #include "DkPluginManager.h"
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QClipboard>
 #include <QDragEnterEvent>
@@ -66,8 +65,6 @@
 #endif
 #include <QStorageInfo>
 #endif
-
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -96,10 +93,7 @@ DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject *parent)
     mTabIdx = idx;
 }
 
-DkTabInfo::~DkTabInfo()
-{
-    // qDebug() << "tab at: " << mTabIdx << " released...";
-}
+DkTabInfo::~DkTabInfo() = default;
 
 bool DkTabInfo::operator==(const DkTabInfo &o) const
 {
@@ -313,9 +307,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     dm->setCentralWidget(this);
 }
 
-DkCentralWidget::~DkCentralWidget()
-{
-}
+DkCentralWidget::~DkCentralWidget() = default;
 
 void DkCentralWidget::createLayout()
 {
@@ -611,7 +603,7 @@ void DkCentralWidget::createViewPort()
         return;
     }
 
-    DkViewPort *vp = 0;
+    DkViewPort *vp = nullptr;
 
     if (parent() && parent()->objectName() == "DkNoMacsFrameless")
         vp = new DkViewPortFrameless(&mThumbLoader, this);
@@ -792,7 +784,7 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
     int idx = mTabbar->currentIndex();
 
     if (idx == -1) {
-        addTab(img, 0);
+        addTab(img, false);
     } else if (idx > mTabInfos.size())
         addTab(img, idx);
     else {

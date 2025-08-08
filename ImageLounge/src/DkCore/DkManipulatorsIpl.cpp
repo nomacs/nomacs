@@ -31,10 +31,8 @@
 #include "DkImageStorage.h"
 #include "DkMath.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QDebug>
 #include <QSharedPointer>
-#pragma warning(pop)
 
 namespace nmc
 {

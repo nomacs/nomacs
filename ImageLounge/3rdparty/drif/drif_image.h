@@ -109,6 +109,7 @@ DRIFAPI uint32_t drifGetSize(const uint32_t w, const uint32_t h, const uint32_t 
 #endif // DRIF_API_H_INC
 
 // DRIF Private
+// NOLINTBEGIN(misc-definitions-in-headers)
 #ifdef DRIF_IMAGE_IMPL
 
 // DRIF footer structure
@@ -146,15 +147,15 @@ static int isDrifFmtValid(uint32_t f)
 uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t *f)
 {
     // check input params
-    if (NULL == szFileName || NULL == w || NULL == h || NULL == f)
-        return NULL;
+    if (nullptr == szFileName || nullptr == w || nullptr == h || nullptr == f)
+        return nullptr;
 
     // open file for reading
     FILE *fp = fopen(szFileName, "rb");
 
     // check if file opened ok
-    if (NULL == fp)
-        return NULL;
+    if (nullptr == fp)
+        return nullptr;
 
     // move to footer offeset
     fseek(fp, 0L, SEEK_END);
@@ -163,23 +164,26 @@ uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t 
 
     // read footer
     char buffer[DRIF_FOOTER_SZ] = {0};
-    fread((void *)buffer, DRIF_FOOTER_SZ, 1, fp);
+    if (1 != fread((void *)buffer, DRIF_FOOTER_SZ, 1, fp)) {
+        fclose(fp);
+        return nullptr;
+    }
 
     drif_footer_t *footer = (drif_footer_t *)buffer;
 
     // check magic & format
     if (DRIF_MAGIC != footer->magic || !isDrifFmtValid(footer->f)) {
         fclose(fp);
-        return NULL;
+        return nullptr;
     }
 
     // read image
     uint32_t dataSize = drifGetSize(footer->w, footer->h, footer->f);
     void *img = malloc(dataSize);
 
-    if (NULL == img) {
+    if (nullptr == img) {
         fclose(fp);
-        return NULL;
+        return nullptr;
     }
 
     // move at file start
@@ -189,7 +193,7 @@ uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t 
 
     if (1 != nElem) {
         free(img);
-        return NULL;
+        return nullptr;
     }
 
     // export image info
@@ -203,7 +207,7 @@ uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t 
 int drifSaveImg(const char *szFileName, const uint32_t w, const uint32_t h, const uint32_t f, const void *data)
 {
     // check input params
-    if (NULL == szFileName || NULL == data)
+    if (nullptr == szFileName || nullptr == data)
         return DRIF_ERR_NULLPTR;
 
     // check params
@@ -222,7 +226,7 @@ int drifSaveImg(const char *szFileName, const uint32_t w, const uint32_t h, cons
     FILE *fp = fopen(szFileName, "wb");
 
     // check if file opened ok
-    if (NULL == fp)
+    if (nullptr == fp)
         return DRIF_ERR_WRITE_FILE;
 
     // prepare footer
@@ -287,3 +291,4 @@ uint32_t drifGetSize(const uint32_t w, const uint32_t h, const uint32_t f)
 }
 
 #endif
+// NOLINTEND(misc-definitions-in-headers)

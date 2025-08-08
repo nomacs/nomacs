@@ -28,7 +28,6 @@
 #include "DkMessageBox.h"
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QCheckBox>
 #include <QDebug>
@@ -40,7 +39,6 @@
 #include <QScreen>
 #include <QSettings>
 #include <QStyle>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
@@ -109,7 +107,7 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
     // schamlos von qmessagebox.cpp geklaut
     textLabel = new QLabel(userText);
     textLabel->setTextInteractionFlags(
-        Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, 0, this)));
+        Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, nullptr, this)));
 
     textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     textLabel->setOpenExternalLinks(true);
@@ -126,7 +124,7 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
 
     buttonBox = new QDialogButtonBox;
     buttonBox->setObjectName(QLatin1String("buttonBox"));
-    buttonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, 0, this) != 0);
+    buttonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, nullptr, this) != 0);
     QObject::connect(buttonBox, &QDialogButtonBox::clicked, this, &DkMessageBox::buttonClicked);
 
     buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));

@@ -39,7 +39,6 @@
 #include "DkUtils.h"
 #include <QtGlobal>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QBoxLayout>
@@ -96,7 +95,6 @@
 #include <QtConcurrentRun>
 #include <qmath.h>
 #include <qtconcurrentmap.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -112,9 +110,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget *parent)
     mMouseDown = false;
 }
 
-DkFolderScrollBar::~DkFolderScrollBar()
-{
-}
+DkFolderScrollBar::~DkFolderScrollBar() = default;
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> images)
 {
@@ -240,11 +236,11 @@ void DkThumbsSaver::thumbLoaded()
     mNumSaved++;
     emit numFilesSignal(mNumSaved);
 
-    if (mNumSaved == mWatchers.size() || mStop) {
+    if ((unsigned int)mNumSaved == mWatchers.size() || mStop) {
         if (mPd) {
             mPd->close();
             mPd->deleteLater();
-            mPd = 0;
+            mPd = nullptr;
         }
         mStop = true;
 
@@ -1135,7 +1131,7 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
     // FIXME: this block is disabled because if you answer NO it would just keep recursing
     //        through setVisible(). Also the setting is not saved to file and no UI for it exists.
     //        To fix this it should have a context menu like other panels
-    if (0) {
+    if (false) {
         // nothing to display??
         if (!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name)
             && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)
@@ -2054,7 +2050,7 @@ void DkEditableRect::setVisible(bool visible)
 DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget *parent /* = 0*/, Qt::WindowFlags f /* = 0*/)
     : DkEditableRect(rect, parent, f)
 {
-    cropToolbar = 0;
+    cropToolbar = nullptr;
 }
 
 void DkCropWidget::createToolbar()
@@ -2140,9 +2136,7 @@ DkHistogram::DkHistogram(QWidget *parent)
     mContextMenu->addAction(showStats);
 }
 
-DkHistogram::~DkHistogram()
-{
-}
+DkHistogram::~DkHistogram() = default;
 
 /**
  * Paints the image histogram
@@ -2740,6 +2734,8 @@ void DkProgressBar::animatePoint(double &xVal)
     xVal += speed;
 }
 
+#ifdef ENABLE_DEAD_CODE
+
 // DkGenericProfileWidget --------------------------------------------------------------------
 DkGenericProfileWidget::DkGenericProfileWidget(const QString &name, QWidget *parent, const QString &settingsPath)
     : DkNamedWidget(name, parent)
@@ -2921,6 +2917,7 @@ void DkGenericProfileWidget::paintEvent(QPaintEvent *ev)
     } else
         DkNamedWidget::paintEvent(ev);
 }
+#endif // ENABLE_DEAD_CODE
 
 // DkTabEntryWidget --------------------------------------------------------------------
 DkTabEntryWidget::DkTabEntryWidget(const QIcon &icon, const QString &text, QWidget *parent)
@@ -3009,7 +3006,7 @@ void DkDisplayWidget::createLayout()
         bg->addButton(sb);
         mScreenButtons << sb;
     }
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) false positive on button group
 
 void DkDisplayWidget::updateLayout()
 {

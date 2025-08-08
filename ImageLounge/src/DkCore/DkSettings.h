@@ -27,14 +27,12 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitArray>
 #include <QColor>
 #include <QDate>
 #include <QSettings>
 #include <QSharedPointer>
 #include <QVector>
-#pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251) // TODO: remove
 
@@ -54,7 +52,19 @@ class QTranslator;
 
 namespace nmc
 {
-
+/**
+ * @brief Wrap QSettings to override format and location of settings file
+ * @note The settings format must be Ini or else backup/restore and other functions are broken,
+ *       see usages of DkSettings::settingsPath()
+ * @details
+ * Windows: read from "settings.ini", searching for it in a few spots.
+ *   <nomacs.exe path>\..\settings.ini => portable settings/override settings
+ *       or
+ *   C:\Users\<User>\AppData\...\nomacs\ImageLounge\settings.ini
+ *
+ * Linux/Others: read from system default location, but force to use .ini format.
+ *   the file extension might be .conf or .ini
+ */
 class DllCoreExport DefaultSettings : public QSettings
 {
 public:
@@ -64,7 +74,7 @@ public:
 class DllCoreExport DkFileFilterHandling
 {
 public:
-    DkFileFilterHandling(){};
+    DkFileFilterHandling() = default;
     void registerNomacs(bool showDefaultApps = false);
     void registerFileType(const QString &filterString, const QString &attribute, bool add);
     void showDefaultSoftware() const;
@@ -354,10 +364,10 @@ public:
     bool isPortable();
     QString settingsPath() const;
 
-    double dpiScaleFactor(QWidget *w = 0) const;
-    int effectiveIconSize(QWidget *w = 0) const;
-    int effectiveThumbSize(QWidget *w = 0) const;
-    int effectiveThumbPreviewSize(QWidget *w = 0) const;
+    double dpiScaleFactor(QWidget *w = nullptr) const;
+    int effectiveIconSize(QWidget *w = nullptr) const;
+    int effectiveThumbSize(QWidget *w = nullptr) const;
+    int effectiveThumbPreviewSize(QWidget *w = nullptr) const;
 
     App &app();
     Global &global();
@@ -427,7 +437,7 @@ private:
     DkSettingsManager();
 
     // QSettings* mSettings = 0;
-    DkSettings *mParams = 0;
+    DkSettings *mParams = nullptr;
 };
 
 class DkZoomConfig

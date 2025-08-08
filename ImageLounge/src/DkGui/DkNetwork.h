@@ -30,12 +30,10 @@
 #define local_tcp_port_start 45454
 #define local_tcp_port_end 45484
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QMutex>
 #include <QSharedPointer>
 #include <QTcpServer>
 #include <QThread>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkConnection.h"
 
@@ -63,9 +61,9 @@ public:
            bool sychronized = false,
            const QString &clientName = "",
            bool showInMenu = false,
-           QObject *parent = NULL);
+           QObject *parent = nullptr);
 
-    ~DkPeer();
+    ~DkPeer() override;
 
     bool operator==(const DkPeer &peer) const;
 
@@ -132,8 +130,8 @@ class DkClientManager : public QObject
 {
     Q_OBJECT
 public:
-    DkClientManager(const QString &title, QObject *parent = 0);
-    ~DkClientManager();
+    explicit DkClientManager(const QString &title, QObject *parent = nullptr);
+    ~DkClientManager() override;
     virtual QList<DkPeer *> getPeerList() = 0;
 
 signals:
@@ -204,8 +202,8 @@ class DkLocalClientManager : public DkClientManager
     Q_OBJECT
 
 public:
-    DkLocalClientManager(const QString &title, QObject *parent = 0);
-    QList<DkPeer *> getPeerList();
+    explicit DkLocalClientManager(const QString &title, QObject *parent = nullptr);
+    QList<DkPeer *> getPeerList() override;
     quint16 getServerPort() const;
 
     QMimeData *mimeData() const;
@@ -216,21 +214,21 @@ signals:
     void sendQuitMessage();
 
 public slots:
-    void stopSynchronizeWith(quint16 peerId);
-    void synchronizeWithServerPort(quint16 port);
-    void synchronizeWith(quint16 peerId);
+    void stopSynchronizeWith(quint16 peerId) override;
+    void synchronizeWithServerPort(quint16 port) override;
+    void synchronizeWith(quint16 peerId) override;
     void sendArrangeInstances(bool overlaid);
     void sendQuitMessageToPeers();
     void connectToNomacs();
     void connectAll();
 
 private slots:
-    void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection *connection);
-    virtual void connectionStopSynchronized(DkConnection *connection);
+    void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection *connection) override;
+    void connectionStopSynchronized(DkConnection *connection) override;
     void connectionReceivedQuit();
 
 private:
-    DkLocalConnection *createConnection();
+    DkLocalConnection *createConnection() final; // called from constructor, prevent override in subclasses
     void searchForOtherClients();
 
     DkLocalTcpServer *mServer;
@@ -241,7 +239,7 @@ class DkLocalTcpServer : public QTcpServer
     Q_OBJECT
 
 public:
-    DkLocalTcpServer(QObject *parent = 0);
+    explicit DkLocalTcpServer(QObject *parent = nullptr);
 
 signals:
     void serverReiceivedNewConnection(int DkDescriptor);
@@ -264,7 +262,7 @@ public:
 private:
     DkSyncManager();
 
-    DkLocalClientManager *mClient = 0;
+    DkLocalClientManager *mClient = nullptr;
 };
 
 }

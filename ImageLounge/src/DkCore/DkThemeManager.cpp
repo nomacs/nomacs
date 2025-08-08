@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -39,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QStyleFactory>
 #include <QStyleHints>
 #include <cmath>
-#pragma warning(pop) // no warnings from includes - end
+
 #include <utility>
 
 namespace nmc
@@ -155,13 +154,13 @@ static Point3f pointOnVector(const Point3f &a, const Point3f &b, float c)
 // color palette calculations
 class DkPalette
 {
-    DkPalette() = delete;
-
 private:
     const QPalette mIn; // basis palette (usually system theme palette)
     QPalette mOut; // output palette
 public:
-    DkPalette(const QPalette &p)
+    DkPalette() = delete;
+
+    explicit DkPalette(const QPalette &p)
         : mIn(p)
     {
         mOut = mIn;
@@ -452,7 +451,6 @@ public:
 
     void printRole(QPalette::ColorRole role, const char *name) const
     {
-        QColor color = mOut.color(role);
         QString line;
         line += "   ";
         line += " " + ttySwatch(mIn.color(QPalette::Active, role));

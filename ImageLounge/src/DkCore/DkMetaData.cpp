@@ -32,7 +32,6 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QBuffer>
 #include <QDebug>
@@ -41,7 +40,6 @@
 #include <QRegularExpression>
 #include <QTranslator>
 #include <QVector2D>
-#pragma warning(pop) // no warnings from includes - end
 
 #include <iostream>
 
@@ -65,7 +63,7 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
     metaDataN->mFileInfo = mFileInfo;
     metaDataN->mExifState = mExifState;
 
-    if (mExifImg.get() != 0) {
+    if (mExifImg.get() != nullptr) {
         // ImageFactory::create(type) may crash even if old Image object has that type
         try {
             // Load new Exiv2::Image object
@@ -129,7 +127,7 @@ void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray
         return;
     }
 
-    if (mExifImg.get() == 0) {
+    if (mExifImg.get() == nullptr) {
         qDebug() << "[Exiv2] image could not be opened for exif data extraction";
         return;
     }
@@ -249,7 +247,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
         return false;
     }
 
-    if (exifImgN.get() == 0) {
+    if (exifImgN.get() == nullptr) {
         qDebug() << "image could not be opened for exif data extraction";
         return false;
     }
@@ -752,7 +750,7 @@ QString DkMetaDataT::getMimeType() const
     try {
         if (mExifImg)
             type = mExifImg->mimeType().c_str();
-    } catch (...) {
+    } catch (...) { // NOLINT nothing else we can do in catch
     }
     return type;
 }
@@ -780,7 +778,7 @@ QImage DkMetaDataT::getPreviewImage(int minPreviewWidth) const
         for (size_t idx = 0; idx < pList.size(); idx++) {
             if (pList[idx].width_ > (uint32_t)maxWidth && pList[idx].width_ > (uint32_t)minPreviewWidth) {
                 mIdx = (int)idx;
-                maxWidth = pList[idx].width_;
+                maxWidth = (int)pList[idx].width_;
             }
         }
 
@@ -1031,7 +1029,7 @@ void DkMetaDataT::setThumbnail(QImage thumb)
             // whipe all exif data of the thumbnail
             auto exifImgThumb = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba.constData()), ba.size());
 
-            if (exifImgThumb.get() != 0 && exifImgThumb->good())
+            if (exifImgThumb.get() != nullptr && exifImgThumb->good())
                 exifImgThumb->clearExifData();
         } catch (...) {
             qDebug() << "could not clear the thumbnail exif info";

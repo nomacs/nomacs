@@ -28,11 +28,9 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QNetworkReply>
 #include <QObject>
 #include <QString>
-#pragma warning(pop)
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -55,7 +53,7 @@ namespace nmc
 class DkPackage
 {
 public:
-    DkPackage(const QString &name = "", const QString &version = "");
+    explicit DkPackage(const QString &name = "", const QString &version = "");
 
     bool isEmpty() const;
     bool operator==(const DkPackage &o) const;
@@ -86,7 +84,7 @@ class DllCoreExport DkUpdater : public QObject
 public:
     bool silent;
 
-    DkUpdater(QObject *parent = 0);
+    explicit DkUpdater(QObject *parent = nullptr);
 
 public slots:
     void checkForUpdates();
@@ -112,8 +110,8 @@ protected:
     QNetworkAccessManager mAccessManagerVersion;
     QNetworkAccessManager mAccessManagerSetup;
 
-    QNetworkReply *mReply = 0;
-    QNetworkCookieJar *mCookie = 0;
+    QNetworkReply *mReply = nullptr;
+    QNetworkCookieJar *mCookie = nullptr;
 
     QUrl mNomacsSetupUrl;
     QString mSetupVersion;
@@ -125,7 +123,7 @@ class DllCoreExport DkTranslationUpdater : public QObject
     Q_OBJECT
 
 public:
-    DkTranslationUpdater(bool silent = false, QObject *parent = 0);
+    explicit DkTranslationUpdater(bool silent = false, QObject *parent = nullptr);
     bool silent;
 
 public slots:
@@ -147,8 +145,8 @@ private:
 
     qint64 mTotal, mTotalQt, mReceived, mReceivedQt;
     QNetworkAccessManager mAccessManager;
-    QNetworkReply *mReply = 0;
-    QNetworkReply *mReplyQt = 0;
+    QNetworkReply *mReply = nullptr;
+    QNetworkReply *mReplyQt = nullptr;
 };
 
 }

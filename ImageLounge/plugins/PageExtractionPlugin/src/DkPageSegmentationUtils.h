@@ -26,11 +26,9 @@
 
 #include "DkMath.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QString>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmp
 {
@@ -83,7 +81,7 @@ public:
      * Constructor.
      * @param r box as rect with upperleft corner and width and height.
      **/
-    DkBox(cv::Rect r)
+    explicit DkBox(cv::Rect r)
     {
         nmc::DkVector size((float)r.width, (float)r.height);
 
@@ -111,7 +109,7 @@ public:
     /**
      * Default destructor.
      **/
-    ~DkBox(){};
+    ~DkBox() = default;
 
     void getStorageBuffer(char **buffer, size_t &length) const
     {
@@ -390,7 +388,7 @@ public:
     DkIPoint ry;
     int in;
 
-    DkVertex(){};
+    DkVertex() = default;
 
     DkVertex(DkIPoint ip, DkIPoint rx, DkIPoint ry)
     {
@@ -471,9 +469,7 @@ protected:
 class PageExtractor
 {
 public:
-    PageExtractor()
-    {
-    }
+    PageExtractor() = default;
 
     void findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &rects);
 
@@ -488,7 +484,7 @@ protected:
     const float minRelSideLength = 0.3f; // minimum length of final rectangle sides relative to smaller image dimension
     const double orthoTol = CV_PI / 9; // orthogonality tolerance
     const float cornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
-    const int numFinalRects = 3; // number of rectangles to return
+    const unsigned int numFinalRects = 3; // number of rectangles to return
 
     struct HoughLine {
         int acc;

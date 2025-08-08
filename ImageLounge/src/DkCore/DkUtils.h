@@ -27,29 +27,20 @@
 
 #pragma once
 
+#include <cmath>
 #include <functional>
-#include <math.h>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDebug>
 #include <QFileInfo>
 #include <QRegularExpression>
-#include <QVector>
-
 #include <QSharedMemory>
-#pragma warning(pop) // no warnings from includes - end
+#include <QVector>
 
 #pragma warning(disable : 4251) // dll interface missing
 #pragma warning(disable : 4714) // Qt's force inline
 
-#include <assert.h> // convenience for minimal builds
-
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
-
-#ifndef Q_OS_WIN
-#include <time.h>
 #endif
 
 #ifdef WITH_OPENCV
@@ -85,8 +76,6 @@ DllCoreExport QDebug qWarningClean();
 #define qInfoClean() qDebug()
 #define qWarningClean() qDebug()
 #endif
-
-#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 
 // fixes Qt's damn no latin1 on tr() policy
 #define dk_degree_str QChar(0x00B0)
@@ -489,7 +478,7 @@ public:
 class DllCoreExport DkFileNameConverter
 {
 public:
-    DkFileNameConverter(const QString &pattern);
+    explicit DkFileNameConverter(const QString &pattern);
 
     QString convert(const QString &file, int index) const;
 
@@ -540,7 +529,7 @@ private:
 class DllCoreExport TreeItem
 {
 public:
-    TreeItem(const QVector<QVariant> &data, TreeItem *parent = 0);
+    explicit TreeItem(const QVector<QVariant> &data, TreeItem *parent = nullptr);
     ~TreeItem();
 
     void appendChild(TreeItem *child);
@@ -564,7 +553,7 @@ public:
 private:
     QVector<TreeItem *> childItems;
     QVector<QVariant> itemData;
-    TreeItem *parentItem = 0;
+    TreeItem *parentItem = nullptr;
 
     void parentList(QStringList &parentKeys) const;
 };
@@ -574,7 +563,7 @@ class DllCoreExport TabMiddleMouseCloser : public QObject
     Q_OBJECT
 
 public:
-    TabMiddleMouseCloser(std::function<void(int)> callback)
+    explicit TabMiddleMouseCloser(std::function<void(int)> callback)
         : callback(callback){};
 
 protected:

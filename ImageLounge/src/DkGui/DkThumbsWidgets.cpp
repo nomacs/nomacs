@@ -45,7 +45,6 @@
 #include <qpixmap.h>
 #include <qpixmapcache.h>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -67,7 +66,6 @@
 #include <QUrl>
 #include <QtGlobal>
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 #include <QStringBuilder>
 
@@ -311,7 +309,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
     // mouse over effect
     QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
 
-    for (int idx = 0; idx < mFiles.size(); idx++) {
+    for (int idx = 0; (unsigned int)idx < mFiles.size(); idx++) {
         const QString &filePath = mFiles[idx].path();
 
         const auto thumb = mThumbs.constFind(filePath);
@@ -602,7 +600,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
             if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
                 selected = idx;
 
-                if (selected < mFiles.size() && selected >= 0) {
+                if (selected >= 0 && (unsigned int)selected < mFiles.size()) {
                     // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()),
                     // DkSettingsManager::param().display().highlightColor, 0.3f);
 
@@ -839,7 +837,7 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
     int tIdx = -1;
 
-    for (int idx = 0; idx < mFiles.size(); idx++) {
+    for (int idx = 0; (unsigned int)idx < mFiles.size(); idx++) {
         if (mFiles[idx] == cImage->originalFileInfo()) {
             tIdx = idx;
             break;
@@ -944,9 +942,7 @@ void DkThumbLabel::onThumbnailLoadFailed(const QString &filePath)
     update();
 }
 
-DkThumbLabel::~DkThumbLabel()
-{
-}
+DkThumbLabel::~DkThumbLabel() = default;
 
 void DkThumbLabel::updateTooltip(const QImage &thumb, bool fromExif)
 {
@@ -1491,20 +1487,17 @@ void DkThumbScene::selectThumb(int idx, bool select)
 void DkThumbScene::copySelected() const
 {
     QStringList fileList = getSelectedFiles();
-
     if (fileList.empty())
         return;
 
-    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+    for (QString cStr : fileList)
+        urls.append(QUrl::fromLocalFile(cStr));
 
-    if (!fileList.empty()) {
-        QList<QUrl> urls;
-        for (QString cStr : fileList)
-            urls.append(QUrl::fromLocalFile(cStr));
-        mimeData->setUrls(urls);
-        QClipboard *clipboard = QApplication::clipboard();
-        clipboard->setMimeData(mimeData);
-    }
+    auto *mimeData = new QMimeData();
+    mimeData->setUrls(urls);
+
+    QApplication::clipboard()->setMimeData(mimeData);
 }
 
 void DkThumbScene::pasteImages() const
@@ -1810,13 +1803,12 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
         if (dist > QApplication::startDragDistance()) {
             QStringList fileList = scene->getSelectedFiles();
 
-            QMimeData *mimeData = new QMimeData;
-
             if (!fileList.empty()) {
                 QList<QUrl> urls;
                 for (QString fStr : fileList)
                     urls.append(QUrl::fromLocalFile(fStr));
 
+                QMimeData *mimeData = new QMimeData;
                 mimeData->setUrls(urls);
 
                 // create thumb image
@@ -1831,7 +1823,7 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
                     73); // 73: see https://www.youtube.com/watch?v=TIYMmbHik08
 
                 QDrag *drag = new QDrag(this);
-                drag->setMimeData(mimeData);
+                drag->setMimeData(mimeData); // noleak: takes ownership
                 drag->setPixmap(pm);
 
                 drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction, Qt::CopyAction);
@@ -1848,9 +1840,9 @@ void DkThumbsView::mouseReleaseEvent(QMouseEvent *event)
 
     DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos()), QTransform()));
 
-    if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != 0) {
+    if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != nullptr) {
         scene->selectThumbs(true, lastShiftIdx, scene->findThumb(itemClicked));
-    } else if (itemClicked != 0) {
+    } else if (itemClicked != nullptr) {
         lastShiftIdx = scene->findThumb(itemClicked);
     } else
         lastShiftIdx = -1;
@@ -2262,8 +2254,8 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
                                          QWidget *parent /* = 0 */,
                                          Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
-    , mFilePath{filePath}
     , mLoader{thumbLoader}
+    , mFilePath{filePath}
 
 {
     mThumbSize = thumbSize;
@@ -2482,9 +2474,6 @@ void DkRecentFilesWidget::updateList()
     QWidget *dummy = new QWidget(this);
     QVBoxLayout *l = new QVBoxLayout(dummy);
 
-    QVector<DkRecentDirWidget *> recentFiles;
-    int idx = 0;
-
     for (auto rd : fm.recentDirs()) {
         DkRecentDirWidget *rf = new DkRecentDirWidget(rd, mThumbLoader, dummy);
         rf->setMaximumWidth(500);
@@ -2492,12 +2481,10 @@ void DkRecentFilesWidget::updateList()
         connect(rf, &DkRecentDirWidget::loadDirSignal, this, &DkRecentFilesWidget::loadDirSignal);
         connect(rf, &DkRecentDirWidget::removeSignal, this, &DkRecentFilesWidget::entryRemoved);
 
-        recentFiles << rf;
         l->addWidget(rf);
-        idx++;
     }
 
-    qInfo() << "list updated in" << dt;
+    qInfo() << "list updated in" << dt; // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) false positive on layout
 
     mScrollArea->setWidget(dummy);
 }
@@ -2547,7 +2534,7 @@ QStringList DkRecentDir::filePaths(int max) const
         list = mFiles.mid(0, max);
 
     QStringList paths;
-    for (auto &info : qAsConst(list))
+    for (auto &info : std::as_const(list))
         paths.append(info.path());
 
     return paths;

@@ -44,7 +44,6 @@
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -61,9 +60,6 @@
 #include <QtGlobal>
 
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
-
-#include <assert.h>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -173,7 +169,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     connect(mNavigationWidget, &DkHudNavigation::nextSignal, this, &DkViewPort::loadNextFileFast);
 
     // trivial connects
-    connect(this, &DkViewPort::movieLoadedSignal, [this](bool movie) {
+    connect(this, &DkViewPort::movieLoadedSignal, [](bool movie) {
         DkActionManager::instance().enableMovieActions(movie);
     });
 
@@ -991,7 +987,7 @@ void DkViewPort::paintEvent(QPaintEvent *event)
         painter.setWorldMatrixEnabled(false);
     } else {
         if (!mDisabledBackground)
-            drawBackground(painter);
+            eraseBackground(painter);
     }
 
     // draw the cropping rect
@@ -1026,9 +1022,9 @@ void DkViewPort::leaveEvent(QEvent *event)
 }
 
 // drawing functions --------------------------------------------------------------------
-void DkViewPort::drawBackground(QPainter &painter)
+void DkViewPort::eraseBackground(QPainter &painter)
 {
-    DkBaseViewPort::drawBackground(painter);
+    DkBaseViewPort::eraseBackground(painter);
 
     // fit to mViewport
     QSize s = mImgBg.size();
@@ -1415,7 +1411,7 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end)
 
 void DkViewPort::swipeAction(int swipeGesture)
 {
-    assert(mController);
+    Q_ASSERT(mController);
 
     switch (swipeGesture) {
     case next_image:
@@ -1443,7 +1439,7 @@ void DkViewPort::swipeAction(int swipeGesture)
 
 void DkViewPort::setFullScreen(bool fullScreen)
 {
-    assert(mController);
+    Q_ASSERT(mController);
     mController->setFullScreen(fullScreen);
     toggleLena(fullScreen);
 
@@ -1533,7 +1529,7 @@ void DkViewPort::copyImage()
 QMimeData *DkViewPort::createMime() const
 {
     if (getImage().isNull() || !mLoader)
-        return 0;
+        return nullptr;
 
     // NOTE: if we do the file:/// thingy, we will get into problems with mounted drives (e.g. //hermes...)
     QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
@@ -1624,7 +1620,7 @@ void DkViewPort::rotate180()
 void DkViewPort::loadLena()
 {
     bool ok;
-    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, 0, &ok);
+    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, nullptr, &ok);
 
     // pass phrase
     if (ok && !text.isEmpty() && text == "lenna") {
@@ -1954,7 +1950,7 @@ void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader)
 
 void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals)
 {
-    assert(mController);
+    Q_ASSERT(mController);
 
     if (!loader)
         return;
@@ -2080,9 +2076,7 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
     mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
 }
 
-DkViewPortFrameless::~DkViewPortFrameless()
-{
-}
+DkViewPortFrameless::~DkViewPortFrameless() = default;
 
 void DkViewPortFrameless::zoom(double factor, const QPointF &center, bool force)
 {
@@ -2169,13 +2163,13 @@ void DkViewPortFrameless::draw(QPainter &painter, double)
 
         // opacity == 1.0f -> do not show pattern if we crossfade two images
         if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel())
-            drawPattern(painter);
+            drawTransparencyPattern(painter);
 
         painter.drawImage(mImgViewRect, img, QRect(QPoint(), img.size()));
     }
 }
 
-void DkViewPortFrameless::drawBackground(QPainter &painter)
+void DkViewPortFrameless::eraseBackground(QPainter &painter)
 {
     painter.setWorldTransform(mImgMatrix);
     painter.setBrush(QColor(127, 144, 144, 200));
@@ -2326,7 +2320,7 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
 }
 
-void DkViewPortFrameless::moveView(QPointF delta)
+void DkViewPortFrameless::moveView(const QPointF &delta)
 {
     // if no zoom is present -> the translation is like a move window
     if (mWorldMatrix.m11() == 1.0f) {
@@ -2403,9 +2397,7 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
 
-DkViewPortContrast::~DkViewPortContrast()
-{
-}
+DkViewPortContrast::~DkViewPortContrast() = default;
 
 void DkViewPortContrast::changeChannel(int channel)
 {
@@ -2502,7 +2494,7 @@ void DkViewPortContrast::draw(QPainter &painter, double opacity)
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
-        drawPattern(painter);
+        drawTransparencyPattern(painter);
 
     if (mDrawFalseColorImg)
         painter.drawImage(mImgViewRect, mFalseColorImg, mImgRect);

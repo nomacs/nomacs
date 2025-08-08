@@ -34,9 +34,6 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 
-#include <assert.h>
-
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QCheckBox>
 #include <QColor>
@@ -71,7 +68,6 @@
 #include <QGraphicsOpacityEffect>
 #include <QGridLayout>
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -173,9 +169,7 @@ void DkColorSlider::setActive(bool isActive)
     mIsActive = isActive;
 }
 
-DkColorSlider::~DkColorSlider()
-{
-}
+DkColorSlider::~DkColorSlider() = default;
 
 QColor DkColorSlider::getColor()
 {
@@ -237,9 +231,7 @@ DkGradient::DkGradient(QWidget *parent)
     init();
 }
 
-DkGradient::~DkGradient()
-{
-}
+DkGradient::~DkGradient() = default;
 
 void DkGradient::init()
 {
@@ -323,7 +315,7 @@ void DkGradient::insertSlider(qreal pos, QColor col)
     // Inserts a new slider at position pos and calculates the color, interpolated from the closest neighbors.
 
     // Find the neighbors of the new slider, since we need it for the color interpolation:
-    QColor leftColor, rightColor, actColor;
+    QColor actColor;
     qreal dist;
     qreal initValue = DBL_MAX; // std::numeric_limits<qreal>::max();	// >DIR: fix for linux [9.2.2012 markus]
     qreal leftDist = initValue;
@@ -560,9 +552,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
         mGradient->setGradient(mOldGradients.first());
 }
 
-DkTransferToolBar::~DkTransferToolBar()
-{
-}
+DkTransferToolBar::~DkTransferToolBar() = default;
 
 void DkTransferToolBar::createIcons()
 {
@@ -1173,9 +1163,7 @@ void DkCropToolBar::onPanActionToggled(bool checked)
 }
 
 // -------------------------------------------------------------------- DkToolBarManager
-DkToolBarManager::DkToolBarManager()
-{
-}
+DkToolBarManager::DkToolBarManager() = default;
 
 DkToolBarManager &DkToolBarManager::inst()
 {
@@ -1189,7 +1177,7 @@ void DkToolBarManager::createDefaultToolBar()
         return;
 
     auto nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     mToolBar = new DkMainToolBar(QObject::tr("Edit ToolBar"), nomacs);
     mToolBar->setObjectName("EditToolBar");
@@ -1272,7 +1260,7 @@ void DkToolBarManager::showToolBar(QToolBar *toolbar, bool show)
 
     showToolBarsTemporarily(!show);
     QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     if (show) {
         if (!mToolBar)
@@ -1292,7 +1280,7 @@ void DkToolBarManager::showToolBarsTemporarily(bool show)
             t->show();
     } else {
         QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-        assert(nomacs);
+        Q_ASSERT(nomacs);
 
         mHiddenToolBars.clear();
         QList<QToolBar *> tbs = nomacs->findChildren<QToolBar *>();
@@ -1329,7 +1317,7 @@ void DkToolBarManager::showDefaultToolBar(bool show, bool permanent)
 void DkToolBarManager::showMovieToolBar(bool show)
 {
     QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     // set movie toolbar into current toolbar
     if (mMovieToolbarArea == Qt::NoToolBarArea && show)
@@ -1353,7 +1341,7 @@ void DkToolBarManager::showMovieToolBar(bool show)
 void DkToolBarManager::createTransferToolBar()
 {
     QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     mTransferToolBar = new DkTransferToolBar(nomacs);
 

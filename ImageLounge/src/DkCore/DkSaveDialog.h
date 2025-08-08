@@ -27,9 +27,7 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDialog>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -62,7 +60,7 @@ class DllCoreExport DkTifDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkTifDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkTifDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     int getCompression() const;
 
@@ -89,8 +87,8 @@ public:
         dialog_end
     };
 
-    DkCompressDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkCompressDialog();
+    explicit DkCompressDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkCompressDialog() override;
 
     void imageHasAlpha(bool hasAlpha);
     QColor getBackgroundColor() const;
@@ -98,7 +96,7 @@ public:
     float getResizeFactor();
     void setImage(const QImage &img);
     void setDialogMode(int dialogMode);
-    virtual void accept() override;
+    void accept() override;
 
 public slots:
     void setVisible(bool visible) override;
@@ -135,14 +133,14 @@ protected:
     bool mHasAlpha = false;
     QColor mBgCol = QColor(255, 255, 255);
 
-    QCheckBox *mCbLossless = 0;
+    QCheckBox *mCbLossless = nullptr;
     // DkSlider* mSlider = 0;
-    DkColorChooser *mColChooser = 0;
-    QLabel *mPreviewLabel = 0;
-    QLabel *mPreviewSizeLabel = 0;
-    DkBaseViewPort *mOrigView = 0;
-    QComboBox *mSizeCombo = 0;
-    QComboBox *mCompressionCombo = 0;
+    DkColorChooser *mColChooser = nullptr;
+    QLabel *mPreviewLabel = nullptr;
+    QLabel *mPreviewSizeLabel = nullptr;
+    DkBaseViewPort *mOrigView = nullptr;
+    QComboBox *mSizeCombo = nullptr;
+    QComboBox *mCompressionCombo = nullptr;
 
     QImage mImg;
     QImage mNewImg;

@@ -27,9 +27,7 @@ QPsdPlugin::QPsdPlugin(QObject *parent)
 {
 }
 
-QPsdPlugin::~QPsdPlugin()
-{
-}
+QPsdPlugin::~QPsdPlugin() = default;
 
 QStringList QPsdPlugin::keys() const
 {

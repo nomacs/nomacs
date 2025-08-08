@@ -32,10 +32,6 @@
 #include "DkImageContainer.h"
 #include "DkManipulatorsIpl.h"
 
-#pragma warning(push, 0) // no warnings from includes
-
-#pragma warning(pop)
-
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
 #define DllExport Q_DECL_EXPORT
@@ -58,7 +54,7 @@ class DkBaseManipulatorWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkBaseManipulatorExt> baseManipulator() const;
 
@@ -71,7 +67,7 @@ class DkTinyPlanetWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkTinyPlanetManipulator> manipulator() const;
 
@@ -89,7 +85,7 @@ class DkBlurWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkBlurManipulator> manipulator() const;
 
@@ -105,7 +101,7 @@ class DkUnsharpMaskWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkUnsharpMaskManipulator> manipulator() const;
 
@@ -122,7 +118,7 @@ class DkRotateWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkRotateManipulator> manipulator() const;
 
@@ -138,7 +134,7 @@ class DkResizeWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkResizeManipulator> manipulator() const;
 
@@ -159,7 +155,7 @@ class DkThresholdWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkThresholdManipulator> manipulator() const;
 
@@ -176,7 +172,7 @@ class DkHueWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkHueManipulator> manipulator() const;
 
@@ -194,7 +190,7 @@ class DkColorWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkColorManipulator> manipulator() const;
 
@@ -210,7 +206,7 @@ class DkExposureWidget : public DkBaseManipulatorWidget
     Q_OBJECT
 
 public:
-    DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
+    explicit DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = nullptr);
 
     QSharedPointer<DkExposureManipulator> manipulator() const;
 
@@ -229,7 +225,7 @@ class DkManipulatorWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkManipulatorWidget(QWidget *parent = nullptr);
+    explicit DkManipulatorWidget(QWidget *parent = nullptr);
 
     void setImage(QSharedPointer<DkImageContainerT> imgC);
 
@@ -251,7 +247,7 @@ class DkEditDock : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkEditDock(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkEditDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
 public slots:
     void setImage(QSharedPointer<DkImageContainerT> imgC);
@@ -259,7 +255,7 @@ public slots:
 protected:
     void createLayout();
 
-    DkManipulatorWidget *mMplWidget = 0;
+    DkManipulatorWidget *mMplWidget = nullptr;
 };
 
 }

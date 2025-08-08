@@ -36,14 +36,12 @@
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QtGlobal>
-#pragma warning(pop)
 
 namespace nmc
 {
@@ -92,7 +90,7 @@ void DkManipulatorWidget::createLayout()
         auto mpl = am.manipulatorManager().manipulatorExt(extIdx);
 
         DkTabEntryWidget *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
-        connect(entry, &DkTabEntryWidget::clicked, this, [=]() {
+        connect(entry, &DkTabEntryWidget::clicked, this, [this, mpl]() {
             selectManipulatorInner(mpl);
         });
 

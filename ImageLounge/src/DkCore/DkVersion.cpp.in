@@ -4,5 +4,5 @@
 
 namespace nmc
 {
-char const *revisionString{"${NOMACS_REVISION}"};
+char const * const revisionString{"${NOMACS_REVISION}"};
 }

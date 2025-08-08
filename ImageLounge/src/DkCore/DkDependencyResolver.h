@@ -27,10 +27,8 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QString>
 #include <QStringList>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -52,7 +50,7 @@ namespace nmc
 class DllCoreExport DkDllDependency
 {
 public:
-    DkDllDependency(const QString &filePath);
+    explicit DkDllDependency(const QString &filePath);
 
     bool findDependencies();
 

@@ -80,8 +80,8 @@ public:
     // fast check if file has supported suffix
     static bool isContainer(const QFileInfo &fileInfo);
 
-    // construct from vfs-supported path
-    DkFileInfo(const QString &path = "");
+    // construct from vfs-supported path; allow type conversions here
+    DkFileInfo(const QString &path = QString()); // NOLINT(google-explicit-constructor)
 
     // construct from ordinary file info (non-zip, non-vfs etc)
     explicit DkFileInfo(const QFileInfo &info);
@@ -166,7 +166,7 @@ private:
     class ZipData
     {
     public:
-        ZipData(const QString &encodedFilePath);
+        explicit ZipData(const QString &encodedFilePath);
         ZipData(const QString &zipFile, const QuaZipFileInfo64 &info);
 
         static QString encodePath(const QString &zipFilePath, const QString &memberPath);
@@ -207,8 +207,8 @@ private:
         friend class DkFileInfo;
 
     private:
-        SharedData(const QString &path);
-        SharedData(const QFileInfo &info);
+        explicit SharedData(const QString &path);
+        explicit SharedData(const QFileInfo &info);
         SharedData(const QString &zipPath, const QuaZipFileInfo64 &info);
 
         QFileInfo mFileInfo; // isFromZip() => constructed from encodedPath()-formatted path
@@ -220,6 +220,6 @@ private:
 
     QSharedDataPointer<SharedData> d;
 
-    DkFileInfo(DkFileInfo::SharedData *shared);
+    explicit DkFileInfo(DkFileInfo::SharedData *shared);
 };
 }

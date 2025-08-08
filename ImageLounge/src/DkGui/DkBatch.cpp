@@ -42,7 +42,6 @@
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QButtonGroup>
@@ -71,7 +70,6 @@
 #include <QTextBlock>
 #include <QTextEdit>
 #include <QTreeView>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -1483,12 +1481,12 @@ void DkProfileWidget::deleteCurrentProfile()
 void DkProfileWidget::exportCurrentProfile()
 {
     QString expPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QDir::separator()
-        + currentProfile() + "." + DkBatchProfile::extension();
+        + currentProfile() + "." + DkBatchProfile::fileSuffix();
 
     QString sPath = QFileDialog::getSaveFileName(this,
                                                  tr("Export Batch Profile"),
                                                  expPath,
-                                                 tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::extension()),
+                                                 tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::fileSuffix()),
                                                  nullptr,
                                                  DkDialog::fileDialogOptions());
 
@@ -1711,7 +1709,7 @@ void DkBatchPluginWidget::addPlugins(QStandardItemModel *model) const
 
 void DkBatchPluginWidget::selectPlugin(const QString &pluginName)
 {
-    mCurrentPlugin = 0; // unset
+    mCurrentPlugin = nullptr; // unset
     QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPluginByName(pluginName);
 
     if (!plugin || !plugin->batchPlugin()) {
@@ -2900,22 +2898,26 @@ void DkBatchWidget::stopProcessing()
 {
     inputWidget()->stopProcessing();
 
-    if (mBatchProcessing)
-        mBatchProcessing->postLoad();
-
     mProgressBar->hide();
     mProgressBar->reset();
     mButtonWidget->logButton()->setEnabled(true);
     mButtonWidget->setPaused(true);
 
-    int numFailures = mBatchProcessing->getNumFailures();
-    int numProcessed = mBatchProcessing->getNumProcessed();
-    int numItems = mBatchProcessing->getNumItems();
+    if (mBatchProcessing) {
+        mBatchProcessing->postLoad();
 
-    DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning
-                                                       : DkBatchInfoWidget::InfoMode::info_message;
-    mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures),
-                         im);
+        int numFailures = mBatchProcessing->getNumFailures();
+        int numProcessed = mBatchProcessing->getNumProcessed();
+        int numItems = mBatchProcessing->getNumItems();
+
+        DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning
+                                                           : DkBatchInfoWidget::InfoMode::info_message;
+        mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.") // indent
+                                 .arg(numProcessed)
+                                 .arg(numItems)
+                                 .arg(numFailures),
+                             im);
+    }
 
     mLogNeedsUpdate = false;
     mLogUpdateTimer.stop();

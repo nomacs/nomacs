@@ -38,7 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
 #include <QApplication>
 #include <QButtonGroup>
@@ -61,7 +60,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QTableView>
 #include <QVBoxLayout>
 #include <QtGlobal>
-#pragma warning(pop)
 
 namespace nmc
 {
@@ -308,7 +306,7 @@ void DkGeneralPreference::createLayout()
         const QColor *themeColor; // setting: system palette or theme css
         QColor *userColor; // setting: user modified color
         bool *isThemeColor; // setting: true if user modified a color
-        DkColorChooser *chooser;
+        DkColorChooser *chooser = nullptr;
     } colors[] =
         {{tr("Icon Color"), true, &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
          {tr("Foreground Color"), false, &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
@@ -318,10 +316,10 @@ void DkGeneralPreference::createLayout()
     for (auto &c : colors) {
         c.chooser = new DkColorChooser(*c.themeColor, c.caption, this);
         c.chooser->setColor(*c.userColor);
-        connect(c.chooser, &DkColorChooser::colorAccepted, this, [this, c]() {
+        connect(c.chooser, &DkColorChooser::colorAccepted, this, [c]() {
             *c.isThemeColor = false;
         });
-        connect(c.chooser, &DkColorChooser::colorReset, this, [this, c]() {
+        connect(c.chooser, &DkColorChooser::colorReset, this, [c]() {
             *c.isThemeColor = true;
         });
         connect(c.chooser, &DkColorChooser::colorChanged, this, [this, c](const QColor &color) {
@@ -331,7 +329,7 @@ void DkGeneralPreference::createLayout()
             else
                 DkThemeManager::instance().applyTheme();
         });
-        connect(&tm, &DkThemeManager::themeApplied, this, [this, c] {
+        connect(&tm, &DkThemeManager::themeApplied, this, [c] {
             c.chooser->setDefaultColor(*c.themeColor); // reset uses new color
             if (*c.isThemeColor) // keep user color
                 c.chooser->setColor(*c.themeColor);
@@ -347,7 +345,7 @@ void DkGeneralPreference::createLayout()
         themeBox->addItem(tm.cleanThemeName(themeFile), themeFile);
     themeBox->setCurrentText(tm.cleanThemeName(tm.getCurrentThemeName()));
 
-    connect(themeBox, &QComboBox::currentTextChanged, this, [this, themeBox, colors](const QString &text) {
+    connect(themeBox, &QComboBox::currentTextChanged, this, [themeBox, colors](const QString &text) {
         (void)text;
         const QString themeFile = themeBox->currentData().toString();
         auto &tm = DkThemeManager::instance();
@@ -363,7 +361,7 @@ void DkGeneralPreference::createLayout()
         tr("Sets the appearance of buttons, checkboxes, etc. on the System theme or otherwise unstyled elements"));
     stylesBox->insertItems(0, tm.getStylePlugins());
     stylesBox->setCurrentText(display.stylePlugin);
-    connect(stylesBox, &QComboBox::currentTextChanged, this, [this, stylesBox](const QString &text) {
+    connect(stylesBox, &QComboBox::currentTextChanged, this, [](const QString &text) {
         DkThemeManager::instance().setStylePlugin(text);
         DkSettingsManager::param().display().stylePlugin = text;
     });
@@ -688,15 +686,16 @@ void DkGeneralPreference::onExportSettingsClicked()
     if (filePath.isEmpty())
         return;
 
-    // try copying setting
-    // NOTE: unfortunately this won't copy ini files on unix
+    // try copying settings file
     bool copied = false;
     QFile f(DkSettingsManager::instance().param().settingsPath());
     if (f.exists())
         copied = f.copy(filePath);
 
-    // save settings (here we lose settings such as [CustomShortcuts])
+    // if there is no settings file or some problem, copy from settings manager
+    // this will not include all settings as settings manager is often bypassed
     if (!copied) {
+        qWarning() << "I couldn't copy the settings file, some settings won't be exported";
         QSettings settings(filePath, QSettings::IniFormat);
         DkSettingsManager::instance().settings().save(settings, true);
     }

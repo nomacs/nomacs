@@ -29,12 +29,10 @@
 
 #include "DkBaseWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QCompleter>
 #include <QObject>
 #include <QToolBar>
 #include <QWidget>
-#pragma warning(pop) // no warnings from includes - end
 
 #pragma warning(disable : 4251)
 
@@ -62,7 +60,7 @@ class DkMainToolBar : public QToolBar
     Q_OBJECT
 
 public:
-    DkMainToolBar(const QString &title, QWidget *parent = 0);
+    explicit DkMainToolBar(const QString &title, QWidget *parent = nullptr);
 
     void allActionsAdded(); // fast fix for now
     void setQuickAccessModel(QStandardItemModel *model);
@@ -85,7 +83,7 @@ public:
     // DkColorSlider(QWidget *parent);
     DkColorSlider(QWidget *parent, QColor color);
     DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int sliderWidth);
-    ~DkColorSlider();
+    ~DkColorSlider() override;
     QColor getColor();
     qreal getNormedPos();
     void setNormedPos(qreal pos);
@@ -100,12 +98,12 @@ signals:
     void colorChanged(DkColorSlider *slider) const;
 
 public slots:
-    virtual void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 protected:
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
     int mSliderWidth = 0, mSliderHeight = 0, mSliderHalfWidth = 0;
@@ -120,8 +118,8 @@ class DkGradient : public DkWidget
     Q_OBJECT
 
 public:
-    DkGradient(QWidget *parent);
-    ~DkGradient();
+    explicit DkGradient(QWidget *parent);
+    ~DkGradient() override;
     QGradientStops getGradientStops();
     void insertSlider(qreal pos, QColor col = QColor());
     void reset();
@@ -137,10 +135,10 @@ public slots:
     void activateSlider(DkColorSlider *sender);
 
 protected:
-    virtual void paintEvent(QPaintEvent *event) override;
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void resizeEvent(QResizeEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     void init();
@@ -157,7 +155,7 @@ private:
     QLinearGradient mGradient;
     int mSliderWidth = 0, mHalfSliderWidth = 0;
 
-    DkColorSlider *mActiveSlider = 0;
+    DkColorSlider *mActiveSlider = nullptr;
     bool mIsActiveSliderExisting = false;
 };
 
@@ -187,8 +185,8 @@ class DkTransferToolBar : public QToolBar
     Q_OBJECT
 
 public:
-    DkTransferToolBar(QWidget *parent);
-    ~DkTransferToolBar();
+    explicit DkTransferToolBar(QWidget *parent);
+    ~DkTransferToolBar() override;
 
 signals:
     void pickColorRequest(bool enabled) const;
@@ -199,7 +197,7 @@ signals:
     void gradientChanged() const;
 
 public slots:
-    virtual void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
     void insertSlider(qreal pos);
     void setImageMode(int mode);
     void saveGradient();
@@ -215,7 +213,7 @@ protected slots:
     void switchGradient(int idx);
 
 protected:
-    virtual void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     void loadSettings();
     void saveSettings();
     void updateGradientHistory();
@@ -225,7 +223,7 @@ private:
     void applyImageMode(int mode);
     void enableToolBar(bool enable);
 
-    QCheckBox *mEnableTFCheckBox = 0;
+    QCheckBox *mEnableTFCheckBox = nullptr;
 
     QImage mShade;
     QImage mSliderImg, mActiveSliderImg;
@@ -233,13 +231,13 @@ private:
     QVector<QAction *> mToolBarActions;
     QVector<QIcon> mToolBarIcons;
 
-    DkGradient *mGradient = 0;
-    QComboBox *mChannelComboBox = 0;
+    DkGradient *mGradient = nullptr;
+    QComboBox *mChannelComboBox = nullptr;
 
-    QComboBox *mHistoryCombo = 0;
+    QComboBox *mHistoryCombo = nullptr;
     QVector<QLinearGradient> mOldGradients;
 
-    QGraphicsOpacityEffect *mEffect = 0;
+    QGraphicsOpacityEffect *mEffect = nullptr;
     int mImageMode = mode_uninitialized;
 };
 
@@ -258,8 +256,8 @@ public:
         icons_end,
     };
 
-    DkCropToolBar(const QString &title, QWidget *parent = 0);
-    virtual ~DkCropToolBar();
+    explicit DkCropToolBar(const QString &title, QWidget *parent = nullptr);
+    ~DkCropToolBar() override;
 
     QColor getColor()
     {
@@ -284,7 +282,7 @@ public slots:
     void onInvertActionToggled(bool checked);
     void onInfoActionToggled(bool checked);
     void angleChanged(double val);
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
 
 signals:
     void panSignal(bool checked);
@@ -303,19 +301,19 @@ protected:
     void createIcons();
     void saveSettings();
 
-    QComboBox *mRatioBox = 0;
-    QComboBox *mGuideBox = 0;
-    QAction *mInvertAction = 0;
-    QDoubleSpinBox *mHorValBox = 0;
-    QDoubleSpinBox *mVerValBox = 0;
-    QDoubleSpinBox *mAngleBox = 0;
-    QPushButton *mBgColButton = 0;
-    QColorDialog *mColorDialog = 0;
+    QComboBox *mRatioBox = nullptr;
+    QComboBox *mGuideBox = nullptr;
+    QAction *mInvertAction = nullptr;
+    QDoubleSpinBox *mHorValBox = nullptr;
+    QDoubleSpinBox *mVerValBox = nullptr;
+    QDoubleSpinBox *mAngleBox = nullptr;
+    QPushButton *mBgColButton = nullptr;
+    QColorDialog *mColorDialog = nullptr;
     QColor mBgCol;
-    QAction *mPanAction = 0;
-    QAction *mInfoAction = 0;
-    QCheckBox *mCbMeta = 0;
-    DkRectWidget *mCropRect = 0;
+    QAction *mPanAction = nullptr;
+    QAction *mInfoAction = nullptr;
+    QCheckBox *mCbMeta = nullptr;
+    DkRectWidget *mCropRect = nullptr;
 
     QVector<QIcon> mIcons; // needed for colorizing
 };
@@ -345,12 +343,12 @@ private:
     DkToolBarManager();
     void createDefaultToolBar();
 
-    DkMainToolBar *mToolBar = 0;
-    QToolBar *mMovieToolBar = 0;
+    DkMainToolBar *mToolBar = nullptr;
+    QToolBar *mMovieToolBar = nullptr;
     QVector<QToolBar *> mHiddenToolBars;
     Qt::ToolBarArea mMovieToolbarArea = Qt::NoToolBarArea;
 
-    DkTransferToolBar *mTransferToolBar = 0;
+    DkTransferToolBar *mTransferToolBar = nullptr;
 };
 
 }

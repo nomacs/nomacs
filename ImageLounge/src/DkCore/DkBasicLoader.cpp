@@ -34,9 +34,10 @@
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h" // just needed for qInfo() #ifdef
+
+#include <memory>
 #include <utility>
 
-#pragma warning(push, 0)
 #include <QBuffer>
 #include <QColorSpace>
 #include <QDebug>
@@ -51,7 +52,6 @@
 #include <QRegularExpression>
 #include <QtConcurrentRun>
 
-#include <assert.h>
 #include <qmath.h>
 
 // opencv
@@ -94,8 +94,6 @@
 
 #endif // #ifdef Q_OS_WIN
 
-#pragma warning(pop)
-
 namespace nmc
 {
 // DkEditImage --------------------------------------------------------------------
@@ -106,8 +104,8 @@ DkEditImage::DkEditImage()
 {
 }
 DkEditImage::DkEditImage(const QImage &img, const QSharedPointer<DkMetaDataT> &metaData, const QString &editName)
-    : mImg(img)
-    , mMetaData(metaData)
+    : mMetaData(metaData)
+    , mImg(img)
     , mEditName(editName)
     , mNewImg(true)
     , mNewMetaData(false)
@@ -116,8 +114,8 @@ DkEditImage::DkEditImage(const QImage &img, const QSharedPointer<DkMetaDataT> &m
 }
 
 DkEditImage::DkEditImage(const QSharedPointer<DkMetaDataT> &metaData, const QImage &img, const QString &editName)
-    : mImg(img)
-    , mMetaData(metaData)
+    : mMetaData(metaData)
+    , mImg(img)
     , mEditName(editName)
     , mNewImg(false)
     , mNewMetaData(true)
@@ -537,9 +535,9 @@ DkBasicLoader::LoaderResult DkBasicLoader::loadQt(const QString &filePath,
 
     std::unique_ptr<QIODevice> device;
     if (ba && !ba->isEmpty())
-        device.reset(new QBuffer(ba.get()));
+        device = std::make_unique<QBuffer>(ba.get());
     else
-        device.reset(new QFile(filePath));
+        device = std::make_unique<QFile>(filePath);
 
     if (!device->open(QIODevice::ReadOnly)) {
         qWarning() << "[loadQt] failed to  open file:" << device->errorString();
@@ -724,11 +722,11 @@ bool DkBasicLoader::loadTIFF(const QString &filePath, QImage &img, QSharedPointe
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
-    TIFF *tiff = 0;
+    TIFF *tiff = nullptr;
 
 // TODO: currently TIFFStreamOpen can only be linked on Windows?!
 #if defined(Q_OS_WIN)
@@ -1154,7 +1152,7 @@ QVector<DkEditImage> *DkBasicLoader::history()
 
 DkEditImage DkBasicLoader::lastEdit() const
 {
-    assert(mImageIndex >= 0 && mImageIndex < mImages.size());
+    Q_ASSERT(mImageIndex >= 0 && mImageIndex < mImages.size());
     return mImages[mImageIndex];
 }
 
@@ -1228,11 +1226,11 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
-    TIFF *tiff = 0;
+    TIFF *tiff = nullptr;
 
 #if defined(Q_OS_WIN)
     std::istringstream is(ba ? ba->toStdString() : "");
@@ -1309,8 +1307,8 @@ bool DkBasicLoader::loadPageAt(int pageIdx)
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
     TIFF *tiff = TIFFOpen(mFile.toLatin1(), "r");
@@ -1395,7 +1393,7 @@ void DkBasicLoader::resetPageIdx()
     mPageIdx = 1;
 }
 
-void DkBasicLoader::convert32BitOrder(void *buffer, int width) const
+void DkBasicLoader::convert32BitOrder(void *buffer, uint32_t width) const
 {
 #ifdef WITH_LIBTIFF
     // code from Qt QTiffHandler
@@ -1998,9 +1996,7 @@ FileDownloader::FileDownloader(const QUrl &imageUrl, const QString &filePath, QO
     downloadFile(imageUrl);
 }
 
-FileDownloader::~FileDownloader()
-{
-}
+FileDownloader::~FileDownloader() = default;
 
 void FileDownloader::downloadFile(const QUrl &url)
 {
@@ -2139,15 +2135,22 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
 
         // unpack the data
         int error = iProcessor.unpack();
-        if (std::strcmp(iProcessor.version(), "0.13.5")
-            != 0) // fixes a bug specific to libraw 13 - version call is UNTESTED
-            iProcessor.raw2image();
-
-        if (error != LIBRAW_SUCCESS)
+        if (error != LIBRAW_SUCCESS) {
+            qWarning() << "[RAW] error in unpack:" << error;
             return false;
+        }
+
+        if (std::strcmp(iProcessor.version(), "0.13.5") != 0) {
+            // fixes a bug specific to libraw 13 - version call is UNTESTED
+            error = iProcessor.raw2image();
+            if (error != LIBRAW_SUCCESS)
+                qWarning() << "[RAW] error in raw2image:" << error;
+        }
 
         // develop using libraw
         error = iProcessor.dcraw_process();
+        if (error != LIBRAW_SUCCESS)
+            qWarning() << "[RAW] error in dcraw_process:" << error;
 
         auto rimg = iProcessor.dcraw_make_mem_image();
 
@@ -2597,9 +2600,9 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
 {
     // this code is from: http://www.paulbourke.net/dataformats/tga/
     // thanks!
-    Header header;
+    Header header = {};
 
-    const char *dataC = ba->data();
+    auto *dataC = (const uint8_t *)ba->data();
 
     /* Display the header fields */
     header.idlength = *dataC;
@@ -2609,16 +2612,16 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     header.datatypecode = *dataC;
     dataC++;
 
-    const short *dataS = (const short *)dataC;
+    auto *dataS = (const uint16_t *)dataC;
 
     header.colourmaporigin = *dataS;
     dataS++;
     header.colourmaplength = *dataS;
     dataS++;
-    dataC = (const char *)dataS;
+    dataC = (const uint8_t *)dataS;
     header.colourmapdepth = *dataC;
     dataC++;
-    dataS = (const short *)dataC;
+    dataS = (const uint16_t *)dataC;
     header.x_origin = *dataS;
     dataS++;
     header.y_origin = *dataS;
@@ -2627,7 +2630,7 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     dataS++;
     header.height = *dataS;
     dataS++;
-    dataC = (const char *)dataS;
+    dataC = (const uint8_t *)dataS;
     header.bitsperpixel = *dataC;
     dataC++;
     header.imagedescriptor = *dataC;

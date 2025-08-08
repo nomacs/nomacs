@@ -28,9 +28,7 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QObject>
-#pragma warning(pop)
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -54,7 +52,8 @@ namespace nmc
 class DllCoreExport DkBatchInfo
 {
 public:
-    DkBatchInfo(const QString &id = QString(), const QString &filePath = QString());
+    explicit DkBatchInfo(const QString &id = QString(), const QString &filePath = QString());
+    virtual ~DkBatchInfo() = default;
 
     virtual bool isEmpty() const;
 
@@ -80,7 +79,7 @@ private:
 class DllCoreExport DkSaveInfo
 {
 public:
-    DkSaveInfo(const QString &filePathIn = QString(), const QString &filePathOut = QString());
+    explicit DkSaveInfo(const QString &filePathIn = QString(), const QString &filePathOut = QString());
 
     enum OverwriteMode {
         mode_skip_existing = 0x00,

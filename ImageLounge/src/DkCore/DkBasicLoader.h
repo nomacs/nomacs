@@ -27,13 +27,11 @@
 
 #pragma once
 
-#pragma warning(push, 0)
 #include <QFutureWatcher>
 #include <QImageReader>
 #include <QNetworkAccessManager>
 #include <QSharedPointer>
 #include <QUrl>
-#pragma warning(pop)
 
 #pragma warning(disable : 4251) // TODO: remove
 // #include "DkImageStorage.h"
@@ -88,11 +86,11 @@ public:
     int size() const;
 
 protected:
-    QString mEditName;
+    QSharedPointer<DkMetaDataT> mMetaData;
     QImage mImg;
+    QString mEditName;
     bool mNewImg;
     bool mNewMetaData;
-    QSharedPointer<DkMetaDataT> mMetaData;
 };
 
 class DllCoreExport DkRawLoader
@@ -177,7 +175,7 @@ class DllCoreExport DkBasicLoader : public QObject
 public:
     DkBasicLoader();
 
-    ~DkBasicLoader()
+    ~DkBasicLoader() override
     {
         release();
     };
@@ -445,7 +443,7 @@ protected:
     /**
      * Convert ARGB buffer to ABGR
      */
-    void convert32BitOrder(void *buffer, int width) const;
+    void convert32BitOrder(void *buffer, uint32_t width) const;
 
     // bool mTraining;
 
@@ -462,28 +460,28 @@ protected:
 namespace tga
 {
 typedef struct {
-    unsigned char r, g, b, a;
+    uint8_t r, g, b, a;
 } Pixel;
 
 typedef struct {
-    char idlength;
-    char colourmaptype;
-    char datatypecode;
-    short colourmaporigin;
-    short colourmaplength;
-    char colourmapdepth;
-    short x_origin;
-    short y_origin;
-    short width;
-    short height;
-    char bitsperpixel;
-    char imagedescriptor;
+    uint8_t idlength;
+    uint8_t colourmaptype;
+    uint8_t datatypecode;
+    uint16_t colourmaporigin;
+    uint16_t colourmaplength;
+    uint8_t colourmapdepth;
+    uint16_t x_origin;
+    uint16_t y_origin;
+    uint16_t width;
+    uint16_t height;
+    uint8_t bitsperpixel;
+    uint8_t imagedescriptor;
 } Header;
 
 class DkTgaLoader
 {
 public:
-    DkTgaLoader(QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+    explicit DkTgaLoader(QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 
     QImage image() const;
     bool load();
@@ -503,9 +501,9 @@ class FileDownloader : public QObject
     Q_OBJECT
 
 public:
-    explicit FileDownloader(const QUrl &imageUrl, const QString &filePath = "", QObject *parent = 0);
+    explicit FileDownloader(const QUrl &imageUrl, const QString &filePath = "", QObject *parent = nullptr);
 
-    virtual ~FileDownloader();
+    ~FileDownloader() override;
 
     QSharedPointer<QByteArray> downloadedData() const;
     QUrl getUrl() const;

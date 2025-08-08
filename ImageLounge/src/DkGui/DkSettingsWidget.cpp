@@ -30,13 +30,11 @@
 
 #include "DkActionManager.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QHeaderView>
 #include <QLineEdit>
 #include <QMenu>
 #include <QTreeView>
 #include <QVBoxLayout>
-#pragma warning(pop)
 
 namespace nmc
 {

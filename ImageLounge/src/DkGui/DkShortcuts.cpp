@@ -26,7 +26,6 @@
 #include "DkShortcuts.h"
 #include "DkTimer.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QDebug>
@@ -36,7 +35,7 @@
 #include <QMainWindow>
 #include <QSet>
 #include <QTreeView>
-#pragma warning(pop) // no warnings from includes - end
+
 #include <utility>
 
 namespace nmc

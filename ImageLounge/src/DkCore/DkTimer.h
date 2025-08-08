@@ -26,12 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************************************/
 
 #pragma once
-#include <time.h>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QElapsedTimer>
 #include <QObject>
-#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -60,9 +57,7 @@ public:
      * Initializes the class and stops the clock.
      **/
     DkTimer();
-    virtual ~DkTimer()
-    {
-    }
+    ~DkTimer() override = default;
 
     friend DllCoreExport QDataStream &operator<<(QDataStream &s, const DkTimer &t);
     friend DllCoreExport QDebug operator<<(QDebug d, const DkTimer &timer);

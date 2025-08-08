@@ -33,10 +33,8 @@
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QSharedPointer>
 #include <QWidget>
-#pragma warning(pop)
 
 namespace nmc
 {
@@ -65,9 +63,7 @@ QAction *DkBaseManipulator::action() const
 }
 
 // DkManipulatorManager --------------------------------------------------------------------
-DkManipulatorManager::DkManipulatorManager()
-{
-}
+DkManipulatorManager::DkManipulatorManager() = default;
 
 void DkManipulatorManager::createManipulators(QWidget *parent)
 {
@@ -233,7 +229,7 @@ void DkManipulatorManager::loadSettings(QSettings &settings)
 {
     settings.beginGroup("Manipulators");
 
-    DkManipulatorManager::createManipulators(0);
+    DkManipulatorManager::createManipulators(nullptr);
 
     for (auto mpl : mManipulators)
         mpl->loadSettings(settings);

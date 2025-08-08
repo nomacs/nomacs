@@ -31,10 +31,8 @@
 #include "DkBasicLoader.h"
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QListWidget>
 #include <QVBoxLayout>
-#pragma warning(pop)
 
 namespace nmc
 {

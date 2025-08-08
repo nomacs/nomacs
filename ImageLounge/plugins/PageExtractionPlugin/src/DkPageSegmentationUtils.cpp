@@ -26,16 +26,14 @@
 
 #include "DkPageSegmentationUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDebug>
 #include <opencv2/imgproc/imgproc.hpp>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmp
 {
 
 // DkIntersectPoly --------------------------------------------------------------------
-DkIntersectPoly::DkIntersectPoly(){};
+DkIntersectPoly::DkIntersectPoly() = default;
 
 DkIntersectPoly::DkIntersectPoly(std::vector<nmc::DkVector> vecA, std::vector<nmc::DkVector> vecB)
 {
@@ -83,11 +81,11 @@ double DkIntersectPoly::compute()
                 int64 a1 = -area(ipA[idxA].ip, ipB[idxB].ip, ipB[idxB + 1].ip);
                 int64 a2 = area(ipA[idxA + 1].ip, ipB[idxB].ip, ipB[idxB + 1].ip);
 
-                if (a1 < 0 == a2 < 0) {
+                if ((a1 < 0) == (a2 < 0)) {
                     int64 a3 = area(ipB[idxB].ip, ipA[idxA].ip, ipA[idxA + 1].ip);
                     int64 a4 = -area(ipB[idxB + 1].ip, ipA[idxA].ip, ipA[idxA + 1].ip);
 
-                    if (a3 < 0 == a4 < 0) {
+                    if ((a3 < 0) == (a4 < 0)) {
                         if (a1 < 0) {
                             cross(ipA[idxA],
                                   ipA[idxA + 1],
@@ -134,7 +132,7 @@ void DkIntersectPoly::inness(std::vector<DkVertex> ipA, std::vector<DkVertex> ip
     for (int idx = (int)ipB.size() - 2; idx >= 0; idx--) {
         if (ipB[idx].rx.x < p.x && p.x < ipB[idx].rx.y) {
             bool sgn = 0 < area(p, ipB[idx].ip, ipB[idx + 1].ip);
-            s += (sgn != ipB[idx].ip.x < ipB[idx + 1].ip.x) ? 0 : (sgn ? -1 : 1);
+            s += (sgn != (ipB[idx].ip.x < ipB[idx + 1].ip.x)) ? 0 : (sgn ? -1 : 1);
         }
     }
 
@@ -201,7 +199,7 @@ void DkIntersectPoly::getVertices(const std::vector<nmc::DkVector> &vec, std::ve
         DkIPoint cEdgeY = (vecTmp[idx].y < vecTmp[nIdx].y) ? DkIPoint(vecTmp[idx].y, vecTmp[nIdx].y)
                                                            : DkIPoint(vecTmp[nIdx].y, vecTmp[idx].y);
 
-        ip->push_back(DkVertex(vecTmp[idx], cEdgeX, cEdgeY));
+        ip->emplace_back(vecTmp[idx], cEdgeX, cEdgeY);
     }
 };
 
@@ -238,7 +236,7 @@ bool DkPolyRect::empty() const
 void DkPolyRect::toDkVectors(const std::vector<cv::Point> &pts, std::vector<nmc::DkVector> &dkPts) const
 {
     for (int idx = 0; idx < (int)pts.size(); idx++)
-        dkPts.push_back(nmc::DkVector(pts.at(idx)));
+        dkPts.emplace_back(pts.at(idx));
 }
 
 void DkPolyRect::computeMaxCosine()
@@ -496,7 +494,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
         for (size_t j = i + 1; j < EPs.size(); j++) {
             // test for orthogonality
             if (abs(angleDiff(EPs[i].theta_k, EPs[j].theta_k) - (CV_PI * 0.5)) < orthoTol) {
-                IPs.push_back(IntermediatePeak{EPs[i], EPs[j]});
+                IPs.emplace_back(EPs[i], EPs[j]);
             }
         }
     }
@@ -604,8 +602,8 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
     std::vector<double> tabSin(numAngle - 2);
     std::vector<double> tabCos(numAngle - 2);
 
-    float angle = 0.0f;
-    for (int n = 0; n < numAngle - 2; n++, angle += theta) {
+    for (int n = 0; n < numAngle - 2; ++n) {
+        float angle = theta * n;
         tabSin[n] = sin(static_cast<double>(angle));
         tabCos[n] = cos(static_cast<double>(angle));
     }
@@ -863,7 +861,7 @@ cv::Mat PageExtractor::removeText(cv::Mat gray, float sigma, int selemSize, int 
     std::vector<cv::Mat> E_i_ex(8);
     cv::Mat H = cv::Mat::zeros(gray.size(), CV_8U);
     cv::Mat mask;
-    cv::Mat mask_factor = (cv::abs(sobel_h) > eps | cv::abs(sobel_v) > eps);
+    cv::Mat mask_factor = (cv::abs(sobel_h) > eps) | (cv::abs(sobel_v) > eps);
     cv::Mat M_text_inv;
     float rangeStart;
     float rangeEnd;

@@ -27,7 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDialog>
 #include <QDir>
 #include <QDoubleSpinBox>
@@ -37,7 +36,6 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QPrintPreviewWidget>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkBasicLoader.h"
 
@@ -82,21 +80,21 @@ QFileDialog::Options fileDialogOptions();
 class DkSelectAllLineEdit : public QLineEdit
 {
 public:
-    DkSelectAllLineEdit(QWidget *parent = 0)
+    explicit DkSelectAllLineEdit(QWidget *parent = nullptr)
         : QLineEdit(parent)
     {
         selectOnMousePressEvent = false;
     };
 
 protected:
-    void focusInEvent(QFocusEvent *event)
+    void focusInEvent(QFocusEvent *event) override
     {
         QLineEdit::focusInEvent(event);
         selectAll();
         selectOnMousePressEvent = true;
     }
 
-    void mousePressEvent(QMouseEvent *event)
+    void mousePressEvent(QMouseEvent *event) override
     {
         QLineEdit::mousePressEvent(event);
         if (selectOnMousePressEvent) {
@@ -112,7 +110,7 @@ private:
 class DkSelectAllDoubleSpinBox : public QDoubleSpinBox
 {
 public:
-    DkSelectAllDoubleSpinBox(QWidget *parent = 0)
+    explicit DkSelectAllDoubleSpinBox(QWidget *parent = nullptr)
         : QDoubleSpinBox(parent)
     {
         DkSelectAllLineEdit *le = new DkSelectAllLineEdit(this);
@@ -125,8 +123,8 @@ class DkSplashScreen : public QDialog
     Q_OBJECT
 
 public:
-    DkSplashScreen(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkSplashScreen();
+    explicit DkSplashScreen(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkSplashScreen() override;
 
 private:
     QPoint mDragStart;
@@ -145,14 +143,14 @@ class DkFileValidator : public QValidator
     Q_OBJECT
 
 public:
-    DkFileValidator(const QString &lastFile = QString(), QObject *parent = 0);
+    explicit DkFileValidator(const QString &lastFile = QString(), QObject *parent = nullptr);
 
     void setLastFile(const QString &lastFile)
     {
         mLastFile = lastFile;
     };
-    virtual void fixup(QString &input) const;
-    virtual State validate(QString &input, int &pos) const;
+    void fixup(QString &input) const override;
+    State validate(QString &input, int &pos) const override;
 
 protected:
     QString mLastFile;
@@ -163,7 +161,7 @@ class DkTrainDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkTrainDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkTrainDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     QString getAcceptedFile()
     {
@@ -203,13 +201,15 @@ class DkAppManagerDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkAppManagerDialog(DkAppManager *manager = 0, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkAppManagerDialog(DkAppManager *manager = nullptr,
+                                QWidget *parent = nullptr,
+                                Qt::WindowFlags flags = Qt::WindowFlags());
 
 public slots:
     void onAddButtonClicked();
     void onDeleteButtonClicked();
     void onRunButtonClicked();
-    virtual void accept() override;
+    void accept() override;
 
 signals:
     void openWithSignal(QAction *act);
@@ -236,7 +236,7 @@ public:
         button_end,
     };
 
-    DkSearchDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkSearchDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     void setFiles(const QStringList &fileList);
     void setPath(const QString &dirPath);
@@ -248,7 +248,7 @@ public slots:
     void onFilterButtonPressed();
     void onResultListViewDoubleClicked(const QModelIndex &modelIndex);
     void onResultListViewClicked(const QModelIndex &modelIndex);
-    virtual void accept() override;
+    void accept() override;
 
 signals:
     void loadFileSignal(const QString &filePath) const;
@@ -259,12 +259,12 @@ protected:
     void init();
     QStringList makeViewable(const QStringList &resultList, bool forceAll = false);
 
-    QStringListModel *mStringModel = 0;
-    QListView *mResultListView = 0;
-    QLineEdit *mSearchBar = 0;
-    QDialogButtonBox *mButtons = 0;
+    QStringListModel *mStringModel = nullptr;
+    QListView *mResultListView = nullptr;
+    QLineEdit *mSearchBar = nullptr;
+    QDialogButtonBox *mButtons = nullptr;
 
-    QPushButton *mFilterButton = 0;
+    QPushButton *mFilterButton = nullptr;
 
     QString mCurrentSearch;
 
@@ -283,8 +283,8 @@ class DkResizeDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkResizeDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkResizeDialog(){};
+    explicit DkResizeDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkResizeDialog() override = default;
 
     enum {
         ipl_nearest,
@@ -341,30 +341,30 @@ protected slots:
     void setVisible(bool visible) override;
 
 public slots:
-    virtual void accept() override;
+    void accept() override;
 
 protected:
     QImage mImg;
-    QLabel *mPreviewLabel = 0;
+    QLabel *mPreviewLabel = nullptr;
 
-    DkBaseViewPort *mOrigView = 0;
+    DkBaseViewPort *mOrigView = nullptr;
 
     // resize gui:
-    QDoubleSpinBox *mWPixelSpin = 0;
-    QDoubleSpinBox *mHPixelSpin = 0;
-    DkButton *mLockButton = 0;
+    QDoubleSpinBox *mWPixelSpin = nullptr;
+    QDoubleSpinBox *mHPixelSpin = nullptr;
+    DkButton *mLockButton = nullptr;
 
-    QDoubleSpinBox *mWidthSpin = 0;
-    QDoubleSpinBox *mHeightSpin = 0;
-    QComboBox *mUnitBox = 0;
-    QComboBox *mSizeBox = 0;
-    DkButton *mLockButtonDim = 0;
+    QDoubleSpinBox *mWidthSpin = nullptr;
+    QDoubleSpinBox *mHeightSpin = nullptr;
+    QComboBox *mUnitBox = nullptr;
+    QComboBox *mSizeBox = nullptr;
+    DkButton *mLockButtonDim = nullptr;
 
-    QDoubleSpinBox *mResolutionSpin = 0;
-    QComboBox *mResUnitBox = 0;
-    QCheckBox *mResampleCheck = 0;
-    QCheckBox *mGammaCorrection = 0;
-    QComboBox *mResampleBox = 0;
+    QDoubleSpinBox *mResolutionSpin = nullptr;
+    QComboBox *mResUnitBox = nullptr;
+    QCheckBox *mResampleCheck = nullptr;
+    QCheckBox *mGammaCorrection = nullptr;
+    QComboBox *mResampleBox = nullptr;
 
     float mExifDpi = 72;
     QVector<float> mUnitFactor;
@@ -390,7 +390,7 @@ class DkShortcutDelegate : public QItemDelegate
     Q_OBJECT
 
 public:
-    DkShortcutDelegate(QObject *parent = 0);
+    explicit DkShortcutDelegate(QObject *parent = nullptr);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -421,20 +421,20 @@ class DkShortcutsModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    DkShortcutsModel(QObject *parent = 0);
-    ~DkShortcutsModel();
+    explicit DkShortcutsModel(QObject *parent = nullptr);
+    ~DkShortcutsModel() override;
 
-    QModelIndex index(int row, int column, const QModelIndex &parent) const;
-    QModelIndex parent(const QModelIndex &index) const;
+    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+    QModelIndex parent(const QModelIndex &index) const override;
 
     // return item of the model
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
     void addDataActions(QVector<QAction *> actions, const QString &name);
 
@@ -459,7 +459,7 @@ class DkShortcutsDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkShortcutsDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkShortcutsDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     void addActions(const QVector<QAction *> &actions, const QString &name);
 
@@ -483,7 +483,7 @@ class DkTextDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkTextDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkTextDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     void setText(const QStringList &text);
     QTextEdit *getTextEdit()
@@ -505,7 +505,7 @@ class DkUpdateDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkUpdateDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkUpdateDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     QLabel *upperLabel;
 
 signals:
@@ -525,7 +525,7 @@ protected:
 class DkPrintImage
 {
 public:
-    DkPrintImage(const QImage &img = QImage(), QPrinter *printer = 0);
+    explicit DkPrintImage(const QImage &img = QImage(), QPrinter *printer = nullptr);
 
     QImage image() const;
     void draw(QPainter &p, bool highQuality = false);
@@ -550,7 +550,9 @@ class DkPrintPreviewWidget : public QPrintPreviewWidget
     Q_OBJECT
 
 public:
-    DkPrintPreviewWidget(QPrinter *printer, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkPrintPreviewWidget(QPrinter *printer,
+                                  QWidget *parent = nullptr,
+                                  Qt::WindowFlags flags = Qt::WindowFlags());
 
     void setImage(const QImage &img);
     void addImage(const QImage &img);
@@ -570,8 +572,8 @@ signals:
     void dpiChanged(int dpi);
 
 protected:
-    virtual void wheelEvent(QWheelEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 private:
     QPrinter *mPrinter;
@@ -596,7 +598,7 @@ public:
         print_end,
     };
 
-    DkPrintPreviewDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkPrintPreviewDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     void setImage(const QImage &img);
     void addImage(const QImage &img);
@@ -619,10 +621,10 @@ private slots:
     void previewFitPage();
 
 private:
-    QSpinBox *mDpiBox = 0;
+    QSpinBox *mDpiBox = nullptr;
 
-    DkPrintPreviewWidget *mPreview = 0;
-    QPrinter *mPrinter = 0;
+    DkPrintPreviewWidget *mPreview = nullptr;
+    QPrinter *mPrinter = nullptr;
 
     QVector<QIcon> mIcons;
 };
@@ -632,7 +634,7 @@ class DkOpacityDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkOpacityDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkOpacityDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     int value() const;
 
 protected:
@@ -646,7 +648,7 @@ class DkExportTiffDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkExportTiffDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkExportTiffDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
 public slots:
     void onOpenButtonPressed();
@@ -705,7 +707,7 @@ class DkMosaicDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkMosaicDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkMosaicDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     QImage getImage();
 
 public slots:
@@ -750,28 +752,28 @@ protected:
     void dropEvent(QDropEvent *event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
 
-    DkBaseViewPort *mViewport = 0;
-    DkBaseViewPort *mPreview = 0;
-    QLabel *mFileLabel = 0;
-    QLabel *mFolderLabel = 0;
-    QLineEdit *mFilterEdit = 0;
-    QComboBox *mSuffixBox = 0;
-    QSpinBox *mNewWidthBox = 0;
-    QSpinBox *mNewHeightBox = 0;
-    QSpinBox *mNumPatchesV = 0;
-    QSpinBox *mNumPatchesH = 0;
-    QDialogButtonBox *mButtons = 0;
-    QProgressBar *mProgress = 0;
-    QLabel *mMsgLabel = 0;
-    QWidget *mControlWidget = 0;
-    QCheckBox *mOverwrite = 0;
-    QLabel *mRealResLabel = 0;
-    QLabel *mPatchResLabel = 0;
+    DkBaseViewPort *mViewport = nullptr;
+    DkBaseViewPort *mPreview = nullptr;
+    QLabel *mFileLabel = nullptr;
+    QLabel *mFolderLabel = nullptr;
+    QLineEdit *mFilterEdit = nullptr;
+    QComboBox *mSuffixBox = nullptr;
+    QSpinBox *mNewWidthBox = nullptr;
+    QSpinBox *mNewHeightBox = nullptr;
+    QSpinBox *mNumPatchesV = nullptr;
+    QSpinBox *mNumPatchesH = nullptr;
+    QDialogButtonBox *mButtons = nullptr;
+    QProgressBar *mProgress = nullptr;
+    QLabel *mMsgLabel = nullptr;
+    QWidget *mControlWidget = nullptr;
+    QCheckBox *mOverwrite = nullptr;
+    QLabel *mRealResLabel = nullptr;
+    QLabel *mPatchResLabel = nullptr;
 
-    QWidget *mSliderWidget = 0;
-    QSlider *mDarkenSlider = 0;
-    QSlider *mLightenSlider = 0;
-    QSlider *mSaturationSlider = 0;
+    QWidget *mSliderWidget = nullptr;
+    QSlider *mDarkenSlider = nullptr;
+    QSlider *mLightenSlider = nullptr;
+    QSlider *mSaturationSlider = nullptr;
 
     QString mFilePath;
     QString mSavePath;
@@ -801,7 +803,7 @@ class DkForceThumbDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkForceThumbDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkForceThumbDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     bool forceSave() const;
     void setDir(const QDir &fileInfo);
@@ -818,19 +820,19 @@ class DkWelcomeDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkWelcomeDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkWelcomeDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     bool isLanguageChanged();
 
 public slots:
-    virtual void accept() override;
+    void accept() override;
 
 protected:
     void createLayout();
 
-    QComboBox *mLanguageCombo = 0;
-    QCheckBox *mRegisterFilesCheckBox = 0;
-    QCheckBox *mSetAsDefaultCheckBox = 0;
+    QComboBox *mLanguageCombo = nullptr;
+    QCheckBox *mRegisterFilesCheckBox = nullptr;
+    QCheckBox *mSetAsDefaultCheckBox = nullptr;
     QStringList mLanguages;
     bool mLanguageChanged = false;
 };
@@ -868,7 +870,7 @@ class DkChooseMonitorDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkChooseMonitorDialog(QWidget *parent);
+    explicit DkChooseMonitorDialog(QWidget *parent);
 
     QRect screenRect() const;
     bool showDialog() const;
@@ -893,7 +895,7 @@ class DkArchiveExtractionDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkArchiveExtractionDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkArchiveExtractionDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     void setCurrentFile(const QString &filePath, bool isZip);
 
@@ -918,12 +920,12 @@ protected:
                                          bool removeSubfolders);
 
     DkFileValidator mFileValidator;
-    QDialogButtonBox *mButtons = 0;
-    QLineEdit *mArchivePathEdit = 0;
-    QLineEdit *mDirPathEdit = 0;
-    QListWidget *mFileListDisplay = 0;
-    QLabel *mFeedbackLabel = 0;
-    QCheckBox *mRemoveSubfolders = 0;
+    QDialogButtonBox *mButtons = nullptr;
+    QLineEdit *mArchivePathEdit = nullptr;
+    QLineEdit *mDirPathEdit = nullptr;
+    QListWidget *mFileListDisplay = nullptr;
+    QLabel *mFeedbackLabel = nullptr;
+    QCheckBox *mRemoveSubfolders = nullptr;
 
     QStringList mFileList;
     QString mFilePath;
@@ -935,7 +937,7 @@ class DkDialogManager : public QObject
     Q_OBJECT
 
 public:
-    DkDialogManager(QObject *parent = 0);
+    explicit DkDialogManager(QObject *parent = nullptr);
 
     void setCentralWidget(DkCentralWidget *cw);
 
@@ -946,7 +948,7 @@ public slots:
     void openPrintDialog() const;
 
 private:
-    DkCentralWidget *mCentralWidget = 0;
+    DkCentralWidget *mCentralWidget = nullptr;
 };
 
 }

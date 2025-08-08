@@ -40,7 +40,6 @@
 #pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
@@ -54,8 +53,6 @@
 #include <QTextStream>
 #include <QThread>
 #include <QTranslator>
-
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkCentralWidget.h"
 #include "DkDependencyResolver.h"
@@ -251,8 +248,7 @@ int main(int argc, char *argv[])
     nmc::DkSettingsManager::param().loadTranslation(translationNameQt, translatorQt);
     app.installTranslator(&translatorQt);
 
-    nmc::DkNoMacs *w = 0;
-    nmc::DkPong *pw = 0; // pong
+    nmc::DkNoMacs *w = nullptr;
 
     if (parser.isSet(privateOpt))
         nmc::DkSettingsManager::param().app().privateMode = true;
@@ -299,9 +295,8 @@ int main(int argc, char *argv[])
         w = new nmc::DkNoMacsContrast();
         qDebug() << "this is the contrast nomacs...";
     } else if (parser.isSet(pongOpt)) {
-        pw = new nmc::DkPong();
-        int rVal = app.exec();
-        return rVal;
+        auto pong = std::make_unique<nmc::DkPong>();
+        return app.exec();
     } else {
         w = new nmc::DkNoMacsIpl();
     }
@@ -388,19 +383,17 @@ int main(int argc, char *argv[])
     try {
         rVal = app.exec();
     } catch (const std::bad_alloc &) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(nullptr,
                               QObject::tr("Critical Error"),
                               QObject::tr("Sorry, nomacs ran out of memory..."),
                               QMessageBox::Ok);
     }
 
     // restore message handler, workaround for: https://github.com/nomacs/nomacs/issues/874
-    qInstallMessageHandler(0);
+    qInstallMessageHandler(nullptr);
 
     if (w)
         delete w; // we need delete so that settings are saved (from destructors)
-    if (pw)
-        delete pw;
 
     return rVal;
 }

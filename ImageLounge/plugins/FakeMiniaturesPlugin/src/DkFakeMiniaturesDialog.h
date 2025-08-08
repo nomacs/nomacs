@@ -27,8 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-
 #include <QBoxLayout>
 #include <QDialog>
 #include <QLabel>
@@ -52,8 +50,6 @@
 using namespace cv;
 #endif
 
-#pragma warning(pop, 0) // no warnings from includes - end
-
 namespace nmp
 {
 
@@ -66,8 +62,8 @@ class DkFakeMiniaturesDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkFakeMiniaturesDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkFakeMiniaturesDialog();
+    explicit DkFakeMiniaturesDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkFakeMiniaturesDialog() override;
     bool wasOkPressed()
     {
         return isOk;
@@ -112,7 +108,7 @@ protected:
 
     void init();
     void createLayout();
-    void showEvent(QShowEvent *event);
+    void showEvent(QShowEvent *event) override;
     void createImgPreview();
 
 #ifdef WITH_OPENCV
@@ -192,8 +188,8 @@ class DkPreviewLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *parent = 0);
-    ~DkPreviewLabel();
+    explicit DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *parent = nullptr);
+    ~DkPreviewLabel() override;
     void setImgRect(QRect rect);
     QRect getROI()
     {
@@ -201,12 +197,12 @@ public:
     };
 
 protected:
-    void paintEvent(QPaintEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseMoveEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void enterEvent(QEnterEvent *e);
-    void leaveEvent(QEvent *e);
+    void paintEvent(QPaintEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+    void enterEvent(QEnterEvent *e) override;
+    void leaveEvent(QEvent *e) override;
 
 private:
     bool selectionStarted;
@@ -222,7 +218,7 @@ class DkFakeMiniaturesToolWidget : public QWidget
 
 public:
     DkFakeMiniaturesToolWidget(QWidget *parent, DkFakeMiniaturesDialog *parentDialog);
-    ~DkFakeMiniaturesToolWidget();
+    ~DkFakeMiniaturesToolWidget() override;
 
     void setToolValue(int val);
     int getToolValue();
@@ -265,7 +261,7 @@ class DkKernelSize : public DkFakeMiniaturesToolWidget
 
 public:
     DkKernelSize(QWidget *parent, DkFakeMiniaturesDialog *parentDialog);
-    ~DkKernelSize();
+    ~DkKernelSize() override;
 };
 
 class DkSaturation : public DkFakeMiniaturesToolWidget
@@ -274,7 +270,7 @@ class DkSaturation : public DkFakeMiniaturesToolWidget
 
 public:
     DkSaturation(QWidget *parent, DkFakeMiniaturesDialog *parentDialog);
-    ~DkSaturation();
+    ~DkSaturation() override;
 };
 
 };

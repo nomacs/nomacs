@@ -27,7 +27,6 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QColor>
 #include <QFutureWatcher>
 #include <QImage>
@@ -40,7 +39,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/imgproc/imgproc_c.h"
 #endif
-#pragma warning(pop) // no warnings from includes - end
 
 #ifdef Q_OS_WIN
 #pragma warning(disable : 4251) // TODO: remove
@@ -92,7 +90,7 @@ public:
 #ifdef WITH_OPENCV
     static cv::Mat qImage2Mat(const QImage &img);
     static QImage mat2QImage(cv::Mat img);
-    static void mapGammaTable(cv::Mat &img, const QVector<unsigned short> &gammaTable);
+    static void mapGammaTable(cv::Mat &img, const QVector<uint16_t> &gammaTable);
     static void gammaToLinear(cv::Mat &img);
     static void linearToGamma(cv::Mat &img);
     static void logPolar(const cv::Mat &src,
@@ -164,7 +162,7 @@ class DllCoreExport DkImageStorage : public QObject
     Q_OBJECT
 
 public:
-    DkImageStorage(const QImage &img = QImage());
+    explicit DkImageStorage(const QImage &img = QImage());
 
     enum ComputeState {
         l_not_computed,
