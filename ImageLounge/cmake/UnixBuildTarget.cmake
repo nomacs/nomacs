@@ -5,8 +5,6 @@ endif()
 set(OUR_SO_VERSION "")
 set(OUR_VERSION "")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
-
 # create the targets
 set(BINARY_NAME ${PROJECT_NAME})
 set(DLL_CORE_NAME ${PROJECT_NAME}Core)

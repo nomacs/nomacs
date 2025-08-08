@@ -23,12 +23,8 @@
 #include <memory>
 
 #ifdef WITH_OPENCV
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
-#endif // WITH_OPENCV
+#endif
 
 #include <QAction>
 #include <QApplication>

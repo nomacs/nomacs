@@ -27,8 +27,6 @@
 
 #pragma once
 
-#pragma warning(disable : 4251) // TODO: remove
-
 #include <QImage>
 #include <QMessageBox>
 #include <QObject>

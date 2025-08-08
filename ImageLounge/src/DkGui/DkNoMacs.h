@@ -29,17 +29,10 @@
 
 #pragma once
 
-// Qt
-
 #include <QMainWindow>
 #include <QProcess>
 
 #include "DkImageContainer.h"
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#pragma warning(disable : 4251) // TODO: remove
-#endif
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

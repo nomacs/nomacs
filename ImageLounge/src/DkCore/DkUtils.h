@@ -36,23 +36,9 @@
 #include <QSharedMemory>
 #include <QVector>
 
-#pragma warning(disable : 4251) // dll interface missing
-#pragma warning(disable : 4714) // Qt's force inline
-
-#ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
-
 #ifdef WITH_OPENCV
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #else
-
-// #define int64 long long;
 #include <sstream>
 #define CV_PI 3.141592653589793238462643383279
 #endif

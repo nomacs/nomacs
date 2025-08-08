@@ -54,13 +54,7 @@
 
 #include <qmath.h>
 
-// opencv
 #ifdef WITH_OPENCV
-
-#ifdef Q_CC_MSVC
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 

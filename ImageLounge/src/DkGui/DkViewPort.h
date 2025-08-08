@@ -45,15 +45,6 @@
 #endif
 #endif
 
-#pragma warning(disable : 4275) // no dll interface of base class
-
-// OpenCV
-#ifdef WITH_OPENCV
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-#endif
-
 class QVBoxLayout;
 class QMimeData;
 class QPushButton;

@@ -33,20 +33,11 @@
 #include <QSharedPointer>
 #include <QUrl>
 
-#pragma warning(disable : 4251) // TODO: remove
-// #include "DkImageStorage.h"
-
 #ifndef Q_OS_WIN
 #include "qpsdhandler.h"
 #endif
 
-// opencv
 #ifdef WITH_OPENCV
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
 

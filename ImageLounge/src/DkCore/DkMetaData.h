@@ -35,10 +35,6 @@
 #include "DkFileInfo.h"
 #include "DkMath.h"
 
-#if defined(__clang__)
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
 #else
@@ -57,8 +53,6 @@
 #include <iomanip>
 
 #endif
-
-#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT

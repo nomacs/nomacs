@@ -34,8 +34,6 @@
 #include <QToolBar>
 #include <QWidget>
 
-#pragma warning(disable : 4251)
-
 // Qt defines
 class QCheckBox;
 class QComboBox;

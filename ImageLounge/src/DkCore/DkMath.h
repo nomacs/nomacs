@@ -34,22 +34,10 @@
 #include <cmath>
 #include <iostream>
 
-#ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
-
 #ifdef WITH_OPENCV
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #else
-
-// #define int64 long long;
 #define CV_PI 3.141592653589793238462643383279
-
 #endif
 
 #define DK_DEG2RAD 0.017453292519943

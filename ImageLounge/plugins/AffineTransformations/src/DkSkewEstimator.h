@@ -37,16 +37,9 @@
 #include <QtGlobal>
 #include <cmath>
 
-// opencv
 #ifdef WITH_OPENCV
-
-#ifdef WIN32
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-
 #endif
 
 namespace nmp
