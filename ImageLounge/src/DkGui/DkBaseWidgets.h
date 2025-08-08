@@ -230,8 +230,10 @@ protected:
     }
 };
 
+extern template class DkFadeMixin<DkWidget>; // speed up compilation/linking
+
 // widget that can fade in/out on QWidget::setVisible
-class DllCoreExport DkFadeWidget : public DkFadeMixin<DkWidget>
+class DkFadeWidget : public DkFadeMixin<DkWidget>
 {
     Q_OBJECT
 
@@ -253,8 +255,6 @@ protected:
     // functions
     void init();
 };
-
-extern template class DkFadeMixin<DkWidget>; // speed up compilation/linking
 
 // widget with name() method to represent the displayed name (e.g. prefs tab label)
 // as opposed to objectName() which should be used for identification in QSS, etc
@@ -358,6 +358,8 @@ public:
     ~DkLabelBg() override = default;
 };
 
+extern template class DkFadeMixin<DkLabel>;
+
 // label widget that can fade in/out on QWidget::setVisible()
 class DkFadeLabel : public DkFadeMixin<DkLabel>
 {
@@ -393,8 +395,6 @@ protected:
     QBitArray *displaySettingsBits;
     QAction *mAction = nullptr;
 };
-
-extern template class DkFadeMixin<DkLabel>;
 
 class DllCoreExport DkResizableScrollArea : public QScrollArea
 {
