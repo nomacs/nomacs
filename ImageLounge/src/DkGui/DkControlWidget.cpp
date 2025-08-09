@@ -290,7 +290,7 @@ void DkControlWidget::connectWidgets()
     });
 
     // rating
-    connect(mFileInfoLabel->getRatingLabel(), &DkRatingLabel::newRatingSignal, this, &DkControlWidget::updateRating);
+    connect(mFileInfoLabel, &DkFileInfoLabel::ratingEdited, this, &DkControlWidget::updateRating);
 
     // playing
     connect(mPlayer, &DkPlayer::previousSignal, mViewport, &DkViewPort::loadPrevFileFast);
@@ -303,14 +303,7 @@ void DkControlWidget::connectWidgets()
     });
 
     // comment widget
-    connect(mCommentWidget, &DkCommentWidget::showInfoSignal, this, [this](const QString &msg) {
-        setInfo(msg);
-    });
-    connect(mCommentWidget,
-            QOverload<>::of(&DkCommentWidget::commentSavedSignal),
-            this,
-            &DkControlWidget::setCommentSaved);
-    connect(this, &DkControlWidget::imageUpdatedSignal, mCommentWidget, &DkCommentWidget::resetComment);
+    connect(mCommentWidget, &DkCommentWidget::commentSavedSignal, this, &DkControlWidget::setCommentSaved);
 
     // mViewport
     connect(mViewport, &DkViewPort::infoSignal, this, [this](const QString &msg) {
@@ -347,8 +340,17 @@ void DkControlWidget::connectWidgets()
     connect(am.action(DkActionManager::menu_panel_toggle), &QAction::toggled, this, &DkControlWidget::toggleHUD);
 }
 
-void DkControlWidget::setCommentSaved()
+void DkControlWidget::setCommentSaved(const QString &comment)
 {
+    const auto metaData = mViewport->imageContainer()->getMetaData();
+    if (!metaData || comment == metaData->getDescription()) {
+        return;
+    }
+
+    if (!metaData->setDescription(comment) && !comment.isEmpty()) {
+        setInfo(tr("Sorry, I cannot save comments for this image format."));
+        return;
+    }
     mViewport->imageContainer()->setMetaData(tr("File comment"));
 }
 
@@ -713,25 +715,28 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
 
 void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
 {
+    if (mImgC) {
+        disconnect(mImgC.get(),
+                   &DkImageContainerT::imageUpdatedSignal,
+                   this,
+                   &DkControlWidget::onImageContainerInternalUpdated);
+    }
+
     mImgC = imgC;
 
     if (mPluginViewport)
         mPluginViewport->updateImageContainer(imgC);
 
-    mMetaDataInfo->updateMetaData(imgC);
-
-    if (!imgC)
+    if (!imgC) {
+        mMetaDataInfo->setMetaData(nullptr);
         return;
+    }
 
-    QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
-
-    QString dateString = metaData->getExifValue("DateTimeOriginal");
-    mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
-    mFileInfoLabel->setEdited(imgC->isEdited());
-    mFileInfoLabel->updateRating(metaData->getRating());
-    mCommentWidget->setMetaData(metaData); // reset
-
-    connect(imgC.get(), &DkImageContainerT::imageUpdatedSignal, this, &DkControlWidget::imageUpdatedSignal);
+    onImageContainerInternalUpdated();
+    connect(imgC.get(),
+            &DkImageContainerT::imageUpdatedSignal,
+            this,
+            &DkControlWidget::onImageContainerInternalUpdated);
 }
 
 void DkControlWidget::setInfo(const QString &msg, int time, int location)
@@ -781,11 +786,9 @@ void DkControlWidget::settingsChanged()
 
 void DkControlWidget::updateRating(int rating)
 {
-    if (!mImgC)
+    if (!mImgC) {
         return;
-
-    if (mFileInfoLabel)
-        mFileInfoLabel->updateRating(rating);
+    }
 
     mImgC->setRating(rating);
 }
@@ -914,4 +917,23 @@ void DkControlWidget::keyReleaseEvent(QKeyEvent *event)
     QWidget::keyReleaseEvent(event);
 }
 
+void DkControlWidget::onImageContainerInternalUpdated()
+{
+    // This is called on a signal from a valid DkImageContainerT,
+    // meaning mImgC should always be not null.
+    Q_ASSERT(mImgC);
+
+    const auto metaData = mImgC->getMetaData();
+    mMetaDataInfo->setMetaData(metaData);
+
+    if (!metaData) {
+        return;
+    }
+
+    mCommentWidget->setText(metaData->getDescription());
+
+    QString dateString = metaData->getExifValue("DateTimeOriginal");
+    mFileInfoLabel->updateInfo(mImgC->filePath(), dateString, metaData->getRating(), mImgC->isEdited());
+    mCommentWidget->setText(metaData->getDescription()); // reset
+}
 }

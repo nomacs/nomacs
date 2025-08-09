@@ -1702,10 +1702,13 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img)
         return;
     }
 
+    // TODO: why do we need unload here?
+    // At least it does not seem necessary for cropping.
     unloadImage(false);
     mLoader->setImage(img);
 }
 
+// TODO: the fileChange is very confusing.
 bool DkViewPort::unloadImage(bool fileChange)
 {
     if (DkSettingsManager::param().display().animationDuration > 0
@@ -1718,24 +1721,31 @@ bool DkViewPort::unloadImage(bool fileChange)
         mAnimationValue = 1.0f;
     }
 
-    int success = true;
+    bool success = true;
 
     if (!mController->applyPluginChanges(true)) // user wants to apply changes first
         return false;
 
-    if (fileChange)
+    if (fileChange) {
         success = mLoader->unloadFile(); // returns false if the user cancels
 
-    // notify controller
-    mController->updateImage({});
+        // notify controller
+        // Doing this is equivalent to ask the controler to change file to null,
+        // which we do not want if fileChannge is false.
+        mController->updateImage({});
+    }
 
-    if (success)
-        stopMovie();
+    if (!success) {
+        return false;
+    }
 
-    if (mSvg && success)
+    stopMovie();
+
+    if (mSvg) {
         mSvg = {};
+    }
 
-    return success != 0;
+    return true;
 }
 
 void DkViewPort::deactivate()

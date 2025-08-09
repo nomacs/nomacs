@@ -1203,29 +1203,29 @@ bool DkMetaDataT::setDescription(const QString &description)
     return setExifValue("Exif.Image.ImageDescription", description.toUtf8());
 }
 
-void DkMetaDataT::setRating(int r)
+bool DkMetaDataT::setRating(int r)
 {
     if (mExifState == not_loaded || mExifState == no_data || getRating() == r)
-        return;
+        return false;
 
-    std::string sRating, sRatingPercent;
-
-    if (r == 5) {
-        sRating = "5";
-        sRatingPercent = "99";
-    } else if (r == 4) {
-        sRating = "4";
-        sRatingPercent = "75";
-    } else if (r == 3) {
-        sRating = "3";
-        sRatingPercent = "50";
-    } else if (r == 2) {
-        sRating = "2";
-        sRatingPercent = "25";
-    } else if (r == 1) {
-        sRating = "1";
-        sRatingPercent = "1";
-    } else {
+    int16_t ratingPercent = 0;
+    switch (r) {
+    case 1:
+        ratingPercent = 1;
+        break;
+    case 2:
+        ratingPercent = 25;
+        break;
+    case 3:
+        ratingPercent = 50;
+        break;
+    case 4:
+        ratingPercent = 75;
+        break;
+    case 5:
+        ratingPercent = 99;
+        break;
+    default:
         r = 0;
     }
 
@@ -1234,12 +1234,12 @@ void DkMetaDataT::setRating(int r)
 
     if (r > 0) {
         exifData["Exif.Image.Rating"] = uint16_t(r);
-        exifData["Exif.Image.RatingPercent"] = uint16_t(r);
+        exifData["Exif.Image.RatingPercent"] = ratingPercent;
 
         auto v = Exiv2::Value::create(Exiv2::xmpText);
-        v->read(sRating);
+        v->read(std::to_string(r));
         xmpData.add(Exiv2::XmpKey("Xmp.xmp.Rating"), v.get());
-        v->read(sRatingPercent);
+        v->read(std::to_string(ratingPercent));
         xmpData.add(Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating"), v.get());
     } else {
         Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Rating");
@@ -1270,7 +1270,9 @@ void DkMetaDataT::setRating(int r)
         mExifState = dirty;
     } catch (...) {
         qDebug() << "[WARNING] I could not set the exif data for this image format...";
+        return false;
     }
+    return true;
 }
 
 bool DkMetaDataT::updateImageMetaData(const QImage &img, bool reset_orientation)
