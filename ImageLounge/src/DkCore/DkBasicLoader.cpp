@@ -2675,13 +2675,14 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     dataC += skipover;
 
     /* Read the image */
-    int bytes2read = header.bitsperpixel / 8; // save?
-    unsigned char p[5];
+    const int bytes2read = header.bitsperpixel / 8;
+    unsigned char p[5] = {}; // one pixel: up to 4 bytes (32-bits pixel), +1 for RLE compression
+
+    if (bytes2read > 4) // we already checked bitsperpixel, but make this more obvious
+        return false;
 
     for (int n = 0; n < header.width * header.height;) {
         if (header.datatypecode == 2) { /* Uncompressed */
-
-            // TODO: out-of-bounds not checked here...
             for (int bi = 0; bi < bytes2read; bi++, dataC++)
                 p[bi] = *dataC;
 
