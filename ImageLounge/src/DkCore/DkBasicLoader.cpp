@@ -1096,30 +1096,12 @@ bool DkBasicLoader::isMetaDataEdited()
 
 void DkBasicLoader::undo()
 {
-    // Change history index (for image()...)
-    if (mImageIndex > 0)
-        mImageIndex--;
-
-    // Get last history item with modified metadata (up until new history index)
-    QSharedPointer<DkMetaDataT> metaData(mMetaData);
-    metaData = lastMetaDataEdit(false, true);
-    // Update our current metadata object, which is also used elsewhere (pointer)
-    // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
-    mMetaData->update(metaData);
+    setHistoryIndex(mImageIndex - 1);
 }
 
 void DkBasicLoader::redo()
 {
-    // Change history index (for image()...)
-    if (mImageIndex < mImages.size() - 1)
-        mImageIndex++;
-
-    // Get last history item with modified metadata (up until new history index)
-    QSharedPointer<DkMetaDataT> metaData(mMetaData);
-    metaData = lastMetaDataEdit(false, true);
-    // Update our current metadata object, which is also used elsewhere (pointer)
-    // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
-    mMetaData->update(metaData);
+    setHistoryIndex(mImageIndex + 1);
 }
 
 QVector<DkEditImage> *DkBasicLoader::history()
@@ -1145,8 +1127,19 @@ void DkBasicLoader::setMinHistorySize(int size)
 
 void DkBasicLoader::setHistoryIndex(int idx)
 {
+    if (idx >= mImages.size() || idx < 0) {
+        qDebug() << "attempting to set history index to" << idx << "while the size is" << mImages.size();
+        return;
+    }
+
+    // Change history index (for image()...)
     mImageIndex = idx;
-    // TODO update mMetaData, see undo()
+
+    // Get last history item with modified metadata (up until new history index)
+    const QSharedPointer<DkMetaDataT> metaData = lastMetaDataEdit(false, true);
+    // Update our current metadata object, which is also used elsewhere (pointer)
+    // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
+    mMetaData->update(metaData);
 }
 
 QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath)
