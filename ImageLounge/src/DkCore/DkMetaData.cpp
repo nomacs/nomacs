@@ -1198,10 +1198,10 @@ bool DkMetaDataT::setDescription(const QString &description)
     return setExifValue("Exif.Image.ImageDescription", description.toUtf8());
 }
 
-void DkMetaDataT::setRating(int r)
+bool DkMetaDataT::setRating(int r)
 {
     if (mExifState == not_loaded || mExifState == no_data || getRating() == r)
-        return;
+        return false;
 
     int16_t ratingPercent = 0;
     switch (r) {
@@ -1265,7 +1265,9 @@ void DkMetaDataT::setRating(int r)
         mExifState = dirty;
     } catch (...) {
         qDebug() << "[WARNING] I could not set the exif data for this image format...";
+        return false;
     }
+    return true;
 }
 
 bool DkMetaDataT::updateImageMetaData(const QImage &img, bool reset_orientation)

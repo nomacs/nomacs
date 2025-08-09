@@ -121,7 +121,7 @@ public:
     void clearOrientation();
     void clearExifState();
     void setOrientation(int o);
-    void setRating(int r);
+    bool setRating(int r);
     bool setDescription(const QString &description);
     bool setExifValue(QString key, QString taginfo);
     bool updateImageMetaData(const QImage &img, bool reset_orientation = true);
