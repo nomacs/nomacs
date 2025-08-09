@@ -102,7 +102,7 @@ QList<QAction *> DkPageExtractionPlugin::createActions(QWidget *parent)
 {
     if (mActions.empty()) {
         for (int idx = 0; idx < id_end; idx++) {
-            QAction *ca = new QAction(mMenuNames[idx], parent);
+            auto *ca = new QAction(mMenuNames[idx], parent);
             ca->setObjectName(mMenuNames[idx]);
             ca->setStatusTip(mMenuStatusTips[idx]);
             ca->setData(mRunIDs[idx]); // runID needed for calling function runPlugin()

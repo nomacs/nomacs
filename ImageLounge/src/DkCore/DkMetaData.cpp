@@ -297,11 +297,11 @@ QString DkMetaDataT::getDescription() const
         return description;
 
     try {
-        Exiv2::ExifData &exifData = mExifImg->exifData();
+        const Exiv2::ExifData &exifData = mExifImg->exifData();
 
         if (!exifData.empty()) {
-            Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.ImageDescription");
-            Exiv2::ExifData::iterator pos = exifData.findKey(key);
+            const auto key = Exiv2::ExifKey("Exif.Image.ImageDescription");
+            const auto pos = exifData.findKey(key);
 
             if (pos != exifData.end() && pos->count() != 0) {
                 description = exiv2ToQString(pos->toString());
@@ -389,13 +389,13 @@ int DkMetaDataT::getRating() const
     float xmpRating = -1;
     float fRating = 0;
 
-    Exiv2::ExifData &exifData = mExifImg->exifData(); // Exif.Image.Rating  - short
-    Exiv2::XmpData &xmpData = mExifImg->xmpData(); // Xmp.xmp.Rating - text
+    const Exiv2::ExifData &exifData = mExifImg->exifData(); // Exif.Image.Rating  - short
+    const Exiv2::XmpData &xmpData = mExifImg->xmpData(); // Xmp.xmp.Rating - text
 
     // get Rating of Exif Tag
     if (!exifData.empty()) {
-        Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Rating");
-        Exiv2::ExifData::iterator pos = exifData.findKey(key);
+        const auto key = Exiv2::ExifKey("Exif.Image.Rating");
+        const auto pos = exifData.findKey(key);
 
         if (pos != exifData.end() && pos->count() != 0) {
             auto v = pos->getValue();
@@ -405,8 +405,8 @@ int DkMetaDataT::getRating() const
 
     // get Rating of Xmp Tag
     if (!xmpData.empty()) {
-        Exiv2::XmpKey key = Exiv2::XmpKey("Xmp.xmp.Rating");
-        Exiv2::XmpData::iterator pos = xmpData.findKey(key);
+        auto key = Exiv2::XmpKey("Xmp.xmp.Rating");
+        auto pos = xmpData.findKey(key);
 
         // xmp Rating tag
         if (pos != xmpData.end() && pos->count() != 0) {
@@ -463,13 +463,13 @@ QString DkMetaDataT::getNativeExifValue(const QString &key, bool humanReadable) 
     if (mExifState != loaded && mExifState != dirty)
         return info;
 
-    Exiv2::ExifData &exifData = mExifImg->exifData();
+    const Exiv2::ExifData &exifData = mExifImg->exifData();
 
     if (!exifData.empty()) {
-        Exiv2::ExifData::iterator pos;
+        Exiv2::ExifData::const_iterator pos;
 
         try {
-            Exiv2::ExifKey ekey = Exiv2::ExifKey(key.toStdString());
+            auto ekey = Exiv2::ExifKey(key.toStdString());
             pos = exifData.findKey(ekey);
 
         } catch (...) {
@@ -508,13 +508,13 @@ QString DkMetaDataT::getXmpValue(const QString &key) const
     if (mExifState != loaded && mExifState != dirty)
         return info;
 
-    Exiv2::XmpData &xmpData = mExifImg->xmpData();
+    const Exiv2::XmpData &xmpData = mExifImg->xmpData();
 
     if (!xmpData.empty()) {
-        Exiv2::XmpData::iterator pos;
+        Exiv2::XmpData::const_iterator pos;
 
         try {
-            Exiv2::XmpKey ekey = Exiv2::XmpKey(key.toStdString());
+            auto ekey = Exiv2::XmpKey(key.toStdString());
             pos = xmpData.findKey(ekey);
 
         } catch (...) {
@@ -522,7 +522,6 @@ QString DkMetaDataT::getXmpValue(const QString &key) const
         }
 
         if (pos != xmpData.end() && pos->count() != 0) {
-            auto v = pos->getValue();
             info = exiv2ToQString(pos->toString());
         }
     }
@@ -537,14 +536,14 @@ QString DkMetaDataT::getExifValue(const QString &key) const
     if (mExifState != loaded && mExifState != dirty)
         return info;
 
-    Exiv2::ExifData &exifData = mExifImg->exifData();
+    const Exiv2::ExifData &exifData = mExifImg->exifData();
     std::string sKey = key.toStdString();
 
     if (!exifData.empty()) {
-        Exiv2::ExifData::iterator pos;
+        Exiv2::ExifData::const_iterator pos;
 
         try {
-            Exiv2::ExifKey ekey = Exiv2::ExifKey("Exif.Image." + sKey);
+            auto ekey = Exiv2::ExifKey("Exif.Image." + sKey);
             pos = exifData.findKey(ekey);
 
             if (pos == exifData.end() || pos->count() == 0) {
@@ -577,13 +576,13 @@ QString DkMetaDataT::getIptcValue(const QString &key) const
     if (mExifState != loaded && mExifState != dirty)
         return info;
 
-    Exiv2::IptcData &iptcData = mExifImg->iptcData();
+    const Exiv2::IptcData &iptcData = mExifImg->iptcData();
 
     if (!iptcData.empty()) {
-        Exiv2::IptcData::iterator pos;
+        Exiv2::IptcData::const_iterator pos;
 
         try {
-            Exiv2::IptcKey ekey = Exiv2::IptcKey(key.toStdString());
+            auto ekey = Exiv2::IptcKey(key.toStdString());
             pos = iptcData.findKey(ekey);
         } catch (...) {
             return info;
@@ -865,7 +864,7 @@ QStringList DkMetaDataT::getExifKeys() const
     if (mExifState != loaded && mExifState != dirty)
         return exifKeys;
 
-    Exiv2::ExifData &exifData = mExifImg->exifData();
+    const Exiv2::ExifData &exifData = mExifImg->exifData();
 
     if (exifData.empty()) {
         return exifKeys;
@@ -888,14 +887,14 @@ QStringList DkMetaDataT::getXmpKeys() const
     if (mExifState != loaded && mExifState != dirty)
         return xmpKeys;
 
-    Exiv2::XmpData &xmpData = mExifImg->xmpData();
-    Exiv2::XmpData::const_iterator end = xmpData.end();
+    const Exiv2::XmpData &xmpData = mExifImg->xmpData();
+    const auto end = xmpData.end();
 
     if (xmpData.empty()) {
         return xmpKeys;
 
     } else {
-        for (Exiv2::XmpData::const_iterator i = xmpData.begin(); i != end; ++i) {
+        for (auto i = xmpData.begin(); i != end; ++i) {
             std::string tmp = i->key();
             xmpKeys << QString::fromStdString(tmp);
         }
@@ -911,13 +910,13 @@ QStringList DkMetaDataT::getIptcKeys() const
     if (mExifState != loaded && mExifState != dirty)
         return iptcKeys;
 
-    Exiv2::IptcData &iptcData = mExifImg->iptcData();
-    Exiv2::IptcData::iterator endI = iptcData.end();
+    const Exiv2::IptcData &iptcData = mExifImg->iptcData();
+    const auto endI = iptcData.end();
 
     if (iptcData.empty())
         return iptcKeys;
 
-    for (Exiv2::IptcData::iterator md = iptcData.begin(); md != endI; ++md) {
+    for (auto md = iptcData.begin(); md != endI; ++md) {
         std::string tmp = md->key();
         iptcKeys << QString::fromStdString(tmp);
     }
@@ -932,13 +931,13 @@ QStringList DkMetaDataT::getExifValues() const
     if (mExifState != loaded && mExifState != dirty)
         return QStringList();
 
-    Exiv2::ExifData &exifData = mExifImg->exifData();
-    Exiv2::ExifData::const_iterator end = exifData.end();
+    const Exiv2::ExifData &exifData = mExifImg->exifData();
+    const auto end = exifData.end();
 
     if (exifData.empty())
         return exifValues;
 
-    for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
+    for (auto i = exifData.begin(); i != end; ++i) {
         std::string tmp = i->value().toString();
         QString info = exiv2ToQString(tmp);
         exifValues << info;
@@ -954,12 +953,12 @@ QStringList DkMetaDataT::getIptcValues() const
     if (mExifState != loaded && mExifState != dirty)
         return iptcValues;
 
-    Exiv2::IptcData &iptcData = mExifImg->iptcData();
-    Exiv2::IptcData::iterator endI = iptcData.end();
+    const Exiv2::IptcData &iptcData = mExifImg->iptcData();
+    const auto endI = iptcData.end();
 
     if (iptcData.empty())
         return iptcValues;
-    for (Exiv2::IptcData::iterator md = iptcData.begin(); md != endI; ++md) {
+    for (auto md = iptcData.begin(); md != endI; ++md) {
         std::string tmp = md->value().toString();
         iptcValues << exiv2ToQString(tmp);
     }
@@ -1125,13 +1124,13 @@ void DkMetaDataT::setOrientation(int o)
     int orientation = 1;
 
     Exiv2::ExifData &exifData = mExifImg->exifData();
-    Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
+    const auto key = Exiv2::ExifKey("Exif.Image.Orientation");
 
     // this does not really work -> *.bmp images
     if (exifData.empty())
         exifData["Exif.Image.Orientation"] = uint16_t(1);
 
-    Exiv2::ExifData::iterator pos = exifData.findKey(key);
+    auto pos = exifData.findKey(key);
 
     if (pos == exifData.end() || pos->count() == 0) {
         exifData["Exif.Image.Orientation"] = uint16_t(1);
@@ -1139,7 +1138,7 @@ void DkMetaDataT::setOrientation(int o)
     }
 
     auto v = pos->getValue();
-    Exiv2::UShortValue *prv = dynamic_cast<Exiv2::UShortValue *>(v.release());
+    auto *prv = dynamic_cast<Exiv2::UShortValue *>(v.release());
     if (!prv)
         return;
 
@@ -1241,7 +1240,7 @@ void DkMetaDataT::setRating(int r)
         xmpData.add(Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating"), v.get());
     } else {
         Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Rating");
-        Exiv2::ExifData::iterator pos = exifData.findKey(key);
+        auto pos = exifData.findKey(key);
         if (pos != exifData.end())
             exifData.erase(pos);
 
@@ -1251,7 +1250,7 @@ void DkMetaDataT::setRating(int r)
             exifData.erase(pos);
 
         Exiv2::XmpKey key2 = Exiv2::XmpKey("Xmp.xmp.Rating");
-        Exiv2::XmpData::iterator pos2 = xmpData.findKey(key2);
+        auto pos2 = xmpData.findKey(key2);
         if (pos2 != xmpData.end())
             xmpData.erase(pos2);
 
@@ -1373,7 +1372,7 @@ void DkMetaDataT::printMetaData() const
     if (mExifState != loaded && mExifState != dirty)
         return;
 
-    Exiv2::XmpData &xmpData = mExifImg->xmpData();
+    const Exiv2::XmpData &xmpData = mExifImg->xmpData();
 
     qDebug() << "Exif------------------------------------------------------------------";
 
@@ -1391,8 +1390,8 @@ void DkMetaDataT::printMetaData() const
 
     qDebug() << "XMP------------------------------------------------------------------";
 
-    Exiv2::XmpData::iterator endI3 = xmpData.end();
-    for (Exiv2::XmpData::iterator md = xmpData.begin(); md != endI3; ++md) {
+    const auto endI3 = xmpData.end();
+    for (auto md = xmpData.begin(); md != endI3; ++md) {
         std::cout << std::setw(44) << std::setfill(' ') << std::left << md->key() << " " << "0x" << std::setw(4)
                   << std::setfill('0') << std::right << std::hex << md->tag() << " " << std::setw(9)
                   << std::setfill(' ') << std::left << md->typeName() << " " << std::dec << std::setw(3)
@@ -1532,7 +1531,7 @@ bool DkMetaDataT::setXMPValue(Exiv2::XmpData &xmpData, QString xmpKey, QString x
     // if (!xmpData.empty()) {
 
     Exiv2::XmpKey key = Exiv2::XmpKey(xmpKey.toStdString());
-    Exiv2::XmpData::iterator pos = xmpData.findKey(key);
+    auto pos = xmpData.findKey(key);
 
     // Update the tag if it is set:
     if (pos != xmpData.end() && pos->count() != 0) {

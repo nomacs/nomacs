@@ -636,12 +636,12 @@ bool DkImageLoader::unloadFile()
     // if we are either in rc or remote display mode & the directory does not exist - we received an image, so don't ask
     // the user
     if (mCurrentImage->isEdited()) {
-        DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
-                                                tr("Save Image"),
-                                                tr("Do you want to save changes to:\n%1")
-                                                    .arg(QFileInfo(mCurrentImage->filePath()).fileName()),
-                                                (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                                DkUtils::getMainWindow());
+        auto *msgBox = new DkMessageBox(QMessageBox::Question,
+                                        tr("Save Image"),
+                                        tr("Do you want to save changes to:\n%1")
+                                            .arg(QFileInfo(mCurrentImage->filePath()).fileName()),
+                                        (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                        DkUtils::getMainWindow());
 
         msgBox->setDefaultButton(QMessageBox::No);
         msgBox->setObjectName("saveEditDialog");
@@ -903,7 +903,7 @@ void DkImageLoader::saveFileWeb(const QImage &saveImg)
     if (fileName.isEmpty())
         return;
 
-    DkCompressDialog *jpgDialog = new DkCompressDialog(dialogParent);
+    auto *jpgDialog = new DkCompressDialog(dialogParent);
     jpgDialog->setDialogMode(DkCompressDialog::web_dialog);
     jpgDialog->imageHasAlpha(imgHasAlpha);
     jpgDialog->setImage(saveImg);
@@ -1005,11 +1005,11 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
     // don't ask the user if save was hit & the file format is supported for saving
     if (silent && !selectedFilter.isEmpty() && isEdited()) {
         fileName = filePath();
-        DkMessageBox *msg = new DkMessageBox(QMessageBox::Question,
-                                             tr("Overwrite File"),
-                                             tr("Do you want to overwrite:\n%1?").arg(fileName),
-                                             (QMessageBox::Yes | QMessageBox::No),
-                                             dialogParent);
+        auto *msg = new DkMessageBox(QMessageBox::Question,
+                                     tr("Overwrite File"),
+                                     tr("Do you want to overwrite:\n%1?").arg(fileName),
+                                     (QMessageBox::Yes | QMessageBox::No),
+                                     dialogParent);
         msg->setObjectName("overwriteDialog");
 
         answer = msg->exec();

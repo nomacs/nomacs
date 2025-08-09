@@ -270,7 +270,7 @@ DkTrainDialog::DkTrainDialog(QWidget *parent, Qt::WindowFlags flags)
 void DkTrainDialog::createLayout()
 {
     // first row
-    QLabel *newImageLabel = new QLabel(tr("Load New Image Format"), this);
+    auto *newImageLabel = new QLabel(tr("Load New Image Format"), this);
     mPathEdit = new QLineEdit(this);
     mPathEdit->setValidator(&mFileValidator);
     mPathEdit->setObjectName("DkWarningEdit");
@@ -279,7 +279,7 @@ void DkTrainDialog::createLayout()
         loadFile();
     });
 
-    QPushButton *openButton = new QPushButton(tr("&Browse"), this);
+    auto *openButton = new QPushButton(tr("&Browse"), this);
     connect(openButton, &QPushButton::pressed, this, &DkTrainDialog::openFile);
 
     mFeedbackLabel = new QLabel("", this);
@@ -298,15 +298,15 @@ void DkTrainDialog::createLayout()
     connect(mButtons, &QDialogButtonBox::accepted, this, &DkTrainDialog::accept);
     connect(mButtons, &QDialogButtonBox::rejected, this, &DkTrainDialog::reject);
 
-    QWidget *trainWidget = new QWidget(this);
-    QGridLayout *gdLayout = new QGridLayout(trainWidget);
+    auto *trainWidget = new QWidget(this);
+    auto *gdLayout = new QGridLayout(trainWidget);
     gdLayout->addWidget(newImageLabel, 0, 0);
     gdLayout->addWidget(mPathEdit, 1, 0);
     gdLayout->addWidget(openButton, 1, 1);
     gdLayout->addWidget(mFeedbackLabel, 2, 0, 1, 2);
     gdLayout->addWidget(mViewport, 3, 0, 1, 2);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(trainWidget);
     layout->addWidget(mButtons);
 }
@@ -478,20 +478,18 @@ void DkAppManagerDialog::createLayout()
     appTableView->resizeRowsToContents();
     appTableView->setWordWrap(false);
 
-    QPushButton *runButton = new QPushButton(tr("&Run"), this);
+    auto *runButton = new QPushButton(tr("&Run"), this);
     connect(runButton, &QPushButton::clicked, this, &DkAppManagerDialog::onRunButtonClicked);
 
-    QPushButton *addButton = new QPushButton(tr("&Add"), this);
+    auto *addButton = new QPushButton(tr("&Add"), this);
     connect(addButton, &QPushButton::clicked, this, &DkAppManagerDialog::onAddButtonClicked);
 
-    QPushButton *deleteButton = new QPushButton(tr("&Delete"), this);
+    auto *deleteButton = new QPushButton(tr("&Delete"), this);
     deleteButton->setShortcut(QKeySequence::Delete);
     connect(deleteButton, &QPushButton::clicked, this, &DkAppManagerDialog::onDeleteButtonClicked);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, this, &DkAppManagerDialog::accept);
@@ -500,7 +498,7 @@ void DkAppManagerDialog::createLayout()
     buttons->addButton(addButton, QDialogButtonBox::ActionRole);
     buttons->addButton(deleteButton, QDialogButtonBox::ActionRole);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(appTableView);
     layout->addWidget(buttons);
 }
@@ -508,7 +506,7 @@ void DkAppManagerDialog::createLayout()
 QList<QStandardItem *> DkAppManagerDialog::getItems(QAction *action)
 {
     QList<QStandardItem *> items;
-    QStandardItem *item = new QStandardItem(action->icon(), action->text().remove("&"));
+    auto *item = new QStandardItem(action->icon(), action->text().remove("&"));
     // item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled);
     items.append(item);
     item = new QStandardItem(action->toolTip());
@@ -617,9 +615,9 @@ void DkSearchDialog::init()
 
     mEndMessage = tr("Load All");
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
 
-    QCompleter *history = new QCompleter(DkSettingsManager::param().global().searchHistory, this);
+    auto *history = new QCompleter(DkSettingsManager::param().global().searchHistory, this);
     history->setCompletionMode(QCompleter::InlineCompletion);
     mSearchBar = new QLineEdit();
     mSearchBar->setToolTip(tr("Type search words or a regular expression"));
@@ -892,9 +890,9 @@ void DkResizeDialog::createLayout()
     double maxWidth = 500000;
     int decimals = 2;
 
-    QLabel *origLabelText = new QLabel(tr("Original"));
+    auto *origLabelText = new QLabel(tr("Original"));
     origLabelText->setAlignment(Qt::AlignHCenter);
-    QLabel *newLabel = new QLabel(tr("New"));
+    auto *newLabel = new QLabel(tr("New"));
     newLabel->setAlignment(Qt::AlignHCenter);
 
     // shows the original image
@@ -915,15 +913,15 @@ void DkResizeDialog::createLayout()
     mPreviewLabel->setMinimumHeight(100);
 
     // all text dialogs...
-    QDoubleValidator *doubleValidator = new QDoubleValidator(1, 1000000, 2, nullptr);
+    auto *doubleValidator = new QDoubleValidator(1, 1000000, 2, nullptr);
     doubleValidator->setRange(0, 100, 2);
 
-    QWidget *resizeBoxes = new QWidget(this);
+    auto *resizeBoxes = new QWidget(this);
     resizeBoxes->setGeometry(QRect(QPoint(40, 300), QSize(400, 170)));
 
-    QGridLayout *gridLayout = new QGridLayout(resizeBoxes);
+    auto *gridLayout = new QGridLayout(resizeBoxes);
 
-    QLabel *wPixelLabel = new QLabel(tr("Width: "), this);
+    auto *wPixelLabel = new QLabel(tr("Width: "), this);
     wPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mWPixelSpin = new DkSelectAllDoubleSpinBox(this);
     mWPixelSpin->setRange(minPx, maxPx);
@@ -941,7 +939,7 @@ void DkResizeDialog::createLayout()
     mLockButton->setChecked(true);
     connect(mLockButton, &DkButton::clicked, this, &DkResizeDialog::onLockButtonClicked);
 
-    QLabel *hPixelLabel = new QLabel(tr("Height: "), this);
+    auto *hPixelLabel = new QLabel(tr("Height: "), this);
     hPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mHPixelSpin = new DkSelectAllDoubleSpinBox(this);
     mHPixelSpin->setRange(minPx, maxPx);
@@ -971,7 +969,7 @@ void DkResizeDialog::createLayout()
     gridLayout->addWidget(mSizeBox, 0, ++rIdx);
 
     // Document dimensions
-    QLabel *widthLabel = new QLabel(tr("Width: "));
+    auto *widthLabel = new QLabel(tr("Width: "));
     widthLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mWidthSpin = new DkSelectAllDoubleSpinBox();
     mWidthSpin->setRange(minWidth, maxWidth);
@@ -989,7 +987,7 @@ void DkResizeDialog::createLayout()
     mLockButtonDim->setChecked(true);
     connect(mLockButtonDim, &DkButton::clicked, this, &DkResizeDialog::onLockButtonDimClicked);
 
-    QLabel *heightLabel = new QLabel(tr("Height: "));
+    auto *heightLabel = new QLabel(tr("Height: "));
     heightLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mHeightSpin = new DkSelectAllDoubleSpinBox();
     mHeightSpin->setRange(minWidth, maxWidth);
@@ -1021,7 +1019,7 @@ void DkResizeDialog::createLayout()
     gridLayout->addWidget(mUnitBox, 1, ++rIdx);
 
     // resolution
-    QLabel *resolutionLabel = new QLabel(tr("Resolution: "));
+    auto *resolutionLabel = new QLabel(tr("Resolution: "));
     resolutionLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mResolutionSpin = new DkSelectAllDoubleSpinBox();
     mResolutionSpin->setRange(minWidth, maxWidth);
@@ -1083,15 +1081,13 @@ void DkResizeDialog::createLayout()
     gridLayout->setColumnStretch(6, 1);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, this, &DkResizeDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, this, &DkResizeDialog::reject);
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
     layout->setColumnStretch(0, 1);
     layout->setColumnStretch(1, 1);
 
@@ -1167,7 +1163,7 @@ bool DkResizeDialog::resample()
 
 void DkResizeDialog::updateWidth()
 {
-    float pWidth = (float)mWPixelSpin->value();
+    auto pWidth = (float)mWPixelSpin->value();
 
     if (mSizeBox->currentIndex() == size_percent)
         pWidth = (float)qRound(pWidth / 100 * mImg.width());
@@ -1179,7 +1175,7 @@ void DkResizeDialog::updateWidth()
 
 void DkResizeDialog::updateHeight()
 {
-    float pHeight = (float)mHPixelSpin->value();
+    auto pHeight = (float)mHPixelSpin->value();
 
     if (mSizeBox->currentIndex() == size_percent)
         pHeight = (float)qRound(pHeight / 100 * mImg.height());
@@ -1192,8 +1188,8 @@ void DkResizeDialog::updateHeight()
 void DkResizeDialog::updateResolution()
 {
     qDebug() << "updating resolution...";
-    float wPixel = (float)mWPixelSpin->value();
-    float width = (float)mWidthSpin->value();
+    auto wPixel = (float)mWPixelSpin->value();
+    auto width = (float)mWidthSpin->value();
 
     float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
     float resolution = wPixel / width * units;
@@ -1202,7 +1198,7 @@ void DkResizeDialog::updateResolution()
 
 void DkResizeDialog::updatePixelHeight()
 {
-    float height = (float)mHeightSpin->value();
+    auto height = (float)mHeightSpin->value();
 
     // *1000/10 is for more beautiful values
     float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
@@ -1215,7 +1211,7 @@ void DkResizeDialog::updatePixelHeight()
 
 void DkResizeDialog::updatePixelWidth()
 {
-    float width = (float)mWidthSpin->value();
+    auto width = (float)mWidthSpin->value();
 
     float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
     float pixelWidth = (mSizeBox->currentIndex() != size_percent)
@@ -1543,7 +1539,7 @@ bool DkShortcutDelegate::editorEvent(QEvent *event,
 {
     // did the user click the x?
     if (event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent *e = (QMouseEvent *)event;
+        const auto *e = static_cast<QMouseEvent *>(event);
         int clickX = e->pos().x();
         int clickY = e->pos().y();
 
@@ -1566,7 +1562,7 @@ void DkShortcutDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // calling before means, that our x is always in front
     QItemDelegate::paint(painter, option, index);
 
-    TreeItem *ti = static_cast<TreeItem *>(index.internalPointer());
+    const auto *ti = static_cast<TreeItem *>(index.internalPointer());
 
     if (index.column() == 1 && ti && !ti->data(1).toString().isEmpty()) {
         QRect r = option.rect;
@@ -1630,7 +1626,7 @@ QModelIndex DkShortcutsModel::parent(const QModelIndex &index) const
     if (!index.isValid())
         return QModelIndex();
 
-    TreeItem *childItem = static_cast<TreeItem *>(index.internalPointer());
+    auto *childItem = static_cast<TreeItem *>(index.internalPointer());
     TreeItem *parentItem = childItem->parent();
 
     if (parentItem == mRootItem)
@@ -1669,7 +1665,7 @@ QVariant DkShortcutsModel::data(const QModelIndex &index, int role) const
     }
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+        auto *item = static_cast<TreeItem *>(index.internalPointer());
         return item->data(index.column());
     }
 
@@ -1690,16 +1686,16 @@ bool DkShortcutsModel::setData(const QModelIndex &index, const QVariant &value, 
         return false;
 
     if (index.column() == 1) {
-        QKeySequence ks = value.value<QKeySequence>();
+        auto ks = value.value<QKeySequence>();
         TreeItem *duplicate = mRootItem->find(ks, index.column());
         if (duplicate)
             duplicate->setData(QKeySequence(), index.column());
         // if (!duplicate) qDebug() << ks << " no duplicate found...";
 
-        TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+        auto *item = static_cast<TreeItem *>(index.internalPointer());
         item->setData(ks, index.column());
     } else {
-        TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+        auto *item = static_cast<TreeItem *>(index.internalPointer());
         item->setData(value, index.column());
     }
 
@@ -1728,7 +1724,7 @@ void DkShortcutsModel::addDataActions(QVector<QAction *> actions, const QString 
     QVector<QVariant> menuData;
     menuData << name;
 
-    TreeItem *menuItem = new TreeItem(menuData, mRootItem);
+    auto *menuItem = new TreeItem(menuData, mRootItem);
 
     for (int idx = 0; idx < actions.size(); idx++) {
         // skip NULL actions - this should never happen!
@@ -1742,7 +1738,7 @@ void DkShortcutsModel::addDataActions(QVector<QAction *> actions, const QString 
         QVector<QVariant> actionData;
         actionData << text << actions[idx]->shortcut();
 
-        TreeItem *dataItem = new TreeItem(actionData, menuItem);
+        auto *dataItem = new TreeItem(actionData, menuItem);
         menuItem->appendChild(dataItem);
     }
 
@@ -1827,8 +1823,8 @@ void DkShortcutsModel::saveActions() const
 
         // loop all action entries
         for (int mIdx = 0; mIdx < cMenu->childCount(); mIdx++) {
-            TreeItem *cItem = cMenu->child(mIdx);
-            QKeySequence ks = cItem->data(1).value<QKeySequence>();
+            const TreeItem *cItem = cMenu->child(mIdx);
+            auto ks = cItem->data(1).value<QKeySequence>();
 
             if (cActions.at(mIdx)->shortcut() != ks) {
                 if (cActions.at(mIdx)->text().isEmpty()) {
@@ -1857,10 +1853,10 @@ void DkShortcutsDialog::createLayout()
 {
     setWindowTitle(tr("Keyboard Shortcuts"));
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
 
     // register our special shortcut editor
-    QItemEditorFactory *factory = new QItemEditorFactory;
+    auto *factory = new QItemEditorFactory;
 
     QItemEditorCreatorBase *shortcutListCreator = new QStandardItemEditorCreator<QKeySequenceEdit>();
 
@@ -1871,9 +1867,9 @@ void DkShortcutsDialog::createLayout()
     // create our beautiful shortcut view
     mModel = new DkShortcutsModel(this);
 
-    DkShortcutDelegate *scDelegate = new DkShortcutDelegate(this);
+    auto *scDelegate = new DkShortcutDelegate(this);
 
-    QTreeView *treeView = new QTreeView(this);
+    auto *treeView = new QTreeView(this);
     treeView->setModel(mModel);
     treeView->setItemDelegate(scDelegate);
     treeView->setAlternatingRowColors(true);
@@ -1897,9 +1893,7 @@ void DkShortcutsDialog::createLayout()
     connect(scDelegate, &DkShortcutDelegate::clearDuplicateSignal, mModel, &DkShortcutsModel::clearDuplicateInfo);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     buttons->addButton(mDefaultButton, QDialogButtonBox::ActionRole);
@@ -1956,7 +1950,7 @@ void DkTextDialog::createLayout()
 {
     textEdit = new QTextEdit(this);
 
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
     buttons->button(QDialogButtonBox::Ok)->setDefault(true); // ok is auto-default
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&Save"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
@@ -1965,7 +1959,7 @@ void DkTextDialog::createLayout()
     connect(buttons, &QDialogButtonBox::rejected, this, &DkTextDialog::reject);
 
     // dialog layout
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(textEdit);
     layout->addWidget(buttons);
 }
@@ -2032,12 +2026,12 @@ void DkUpdateDialog::createLayout()
     setFixedHeight(150);
     setWindowTitle(tr("nomacs updater"));
 
-    QGridLayout *gridlayout = new QGridLayout;
+    auto *gridlayout = new QGridLayout;
     upperLabel = new QLabel;
     upperLabel->setOpenExternalLinks(true);
 
-    QWidget *lowerWidget = new QWidget;
-    QHBoxLayout *hbox = new QHBoxLayout;
+    auto *lowerWidget = new QWidget;
+    auto *hbox = new QHBoxLayout;
     okButton = new QPushButton(tr("Install Now"));
     cancelButton = new QPushButton(tr("Cancel"));
     hbox->addStretch();
@@ -2122,13 +2116,13 @@ void DkPrintPreviewDialog::createIcons()
 
 void DkPrintPreviewDialog::createLayout()
 {
-    QAction *fitWidth = new QAction(mIcons[print_fit_width], tr("Fit Width"), this);
-    QAction *fitPage = new QAction(mIcons[print_fit_page], tr("Fit Page"), this);
+    auto *fitWidth = new QAction(mIcons[print_fit_width], tr("Fit Width"), this);
+    auto *fitPage = new QAction(mIcons[print_fit_page], tr("Fit Page"), this);
 
-    QAction *zoomIn = new QAction(mIcons[print_zoom_in], tr("Zoom in"), this);
+    auto *zoomIn = new QAction(mIcons[print_zoom_in], tr("Zoom in"), this);
     zoomIn->setShortcut(Qt::Key_Plus);
 
-    QAction *zoomOut = new QAction(mIcons[print_zoom_out], tr("Zoom out"), this);
+    auto *zoomOut = new QAction(mIcons[print_zoom_out], tr("Zoom out"), this);
     zoomOut->setShortcut(Qt::Key_Minus);
 
     QString zoomTip = tr("keep ALT key pressed to zoom with the mouse wheel");
@@ -2142,18 +2136,18 @@ void DkPrintPreviewDialog::createLayout()
     mDpiBox->setSingleStep(100);
 
     // Portrait/Landscape
-    QAction *prt = new QAction(mIcons[print_portrait], tr("Portrait"), this);
+    auto *prt = new QAction(mIcons[print_portrait], tr("Portrait"), this);
     prt->setObjectName("portrait");
 
-    QAction *lsc = new QAction(mIcons[print_landscape], tr("Landscape"), this);
+    auto *lsc = new QAction(mIcons[print_landscape], tr("Landscape"), this);
     lsc->setObjectName("landscape");
 
     // Print
-    QAction *pageSetup = new QAction(mIcons[print_setup], tr("Page setup"), this);
-    QAction *printAction = new QAction(mIcons[print_printer], tr("Print"), this);
+    auto *pageSetup = new QAction(mIcons[print_setup], tr("Page setup"), this);
+    auto *printAction = new QAction(mIcons[print_printer], tr("Print"), this);
 
     // create toolbar
-    QToolBar *toolbar = new QToolBar(tr("Print Preview"), this);
+    auto *toolbar = new QToolBar(tr("Print Preview"), this);
 
     toolbar->addAction(fitWidth);
     toolbar->addAction(fitPage);
@@ -2174,12 +2168,12 @@ void DkPrintPreviewDialog::createLayout()
         QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
     // Cannot use the actions' triggered signal here, since it doesn't autorepeat
-    QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomIn));
+    auto *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomIn));
     zoomInButton->setAutoRepeat(true);
     zoomInButton->setAutoRepeatInterval(200);
     zoomInButton->setAutoRepeatDelay(200);
 
-    QToolButton *zoomOutButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomOut));
+    auto *zoomOutButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomOut));
     zoomOutButton->setAutoRepeat(true);
     zoomOutButton->setAutoRepeatInterval(200);
     zoomOutButton->setAutoRepeatDelay(200);
@@ -2196,11 +2190,11 @@ void DkPrintPreviewDialog::createLayout()
     connect(printAction, &QAction::triggered, this, &DkPrintPreviewDialog::print);
     connect(pageSetup, &QAction::triggered, this, &DkPrintPreviewDialog::pageSetup);
 
-    QMainWindow *mw = new QMainWindow();
+    auto *mw = new QMainWindow();
     mw->addToolBar(toolbar);
     mw->setCentralWidget(mPreview);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(mw);
 
@@ -2256,7 +2250,7 @@ void DkPrintPreviewDialog::print()
     // TODO: move from QRect to smth else
     QRect pr = mPrinter->pageLayout().paintRectPixels(mPrinter->resolution());
 
-    QPrintDialog *pDialog = new QPrintDialog(mPrinter, this);
+    auto *pDialog = new QPrintDialog(mPrinter, this);
 
     if (pDialog->exec() == QDialog::Accepted) {
         // if the page rect is changed - we have to newly fit the images...
@@ -2406,15 +2400,13 @@ DkOpacityDialog::DkOpacityDialog(QWidget *parent, Qt::WindowFlags f)
 
 void DkOpacityDialog::createLayout()
 {
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
 
     slider = new DkSlider(tr("Window Opacity"), this);
     slider->setMinimum(5);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, this, &DkOpacityDialog::accept);
@@ -2477,25 +2469,25 @@ void DkExportTiffDialog::createLayout()
     mMsgLabel->hide();
 
     // open handles
-    QLabel *openLabel = new QLabel(tr("Multi-Page TIFF:"), this);
+    auto *openLabel = new QLabel(tr("Multi-Page TIFF:"), this);
     openLabel->setAlignment(Qt::AlignRight);
 
-    QPushButton *openButton = new QPushButton(tr("&Browse"), this);
+    auto *openButton = new QPushButton(tr("&Browse"), this);
     connect(openButton, &QPushButton::pressed, this, &DkExportTiffDialog::onOpenButtonPressed);
 
     mTiffLabel = new QLabel(tr("No Multi-Page TIFF loaded"), this);
 
     // save handles
-    QLabel *saveLabel = new QLabel(tr("Save Folder:"), this);
+    auto *saveLabel = new QLabel(tr("Save Folder:"), this);
     saveLabel->setAlignment(Qt::AlignRight);
 
-    QPushButton *saveButton = new QPushButton(tr("&Browse"), this);
+    auto *saveButton = new QPushButton(tr("&Browse"), this);
     connect(saveButton, &QPushButton::pressed, this, &DkExportTiffDialog::onSaveButtonPressed);
 
     mFolderLabel = new QLabel(tr("Specify a Save Folder"), this);
 
     // file name handles
-    QLabel *fileLabel = new QLabel(tr("Filename:"), this);
+    auto *fileLabel = new QLabel(tr("Filename:"), this);
     fileLabel->setAlignment(Qt::AlignRight);
 
     mFileEdit = new QLineEdit("tiff_page", this);
@@ -2506,7 +2498,7 @@ void DkExportTiffDialog::createLayout()
     mSuffixBox->setCurrentIndex(DkSettingsManager::param().app().saveFilters.indexOf(QRegularExpression(".*tif.*")));
 
     // export handles
-    QLabel *exportLabel = new QLabel(tr("Export Pages"));
+    auto *exportLabel = new QLabel(tr("Export Pages"));
     exportLabel->setAlignment(Qt::AlignRight);
 
     mFromPage = new QSpinBox(nullptr);
@@ -2516,7 +2508,7 @@ void DkExportTiffDialog::createLayout()
     mOverwrite = new QCheckBox(tr("Overwrite"));
 
     mControlWidget = new QWidget(this);
-    QGridLayout *controlLayout = new QGridLayout(mControlWidget);
+    auto *controlLayout = new QGridLayout(mControlWidget);
     controlLayout->addWidget(openLabel, 0, 0);
     controlLayout->addWidget(openButton, 0, 1, 1, 2);
     controlLayout->addWidget(mTiffLabel, 0, 3, 1, 2);
@@ -2550,7 +2542,7 @@ void DkExportTiffDialog::createLayout()
     connect(mButtons, &QDialogButtonBox::accepted, this, &DkExportTiffDialog::accept);
     connect(mButtons, &QDialogButtonBox::rejected, this, &DkExportTiffDialog::reject);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(mViewport);
     layout->addWidget(mProgress);
     layout->addWidget(mMsgLabel);
@@ -2803,7 +2795,7 @@ void DkMosaicDialog::createLayout()
     connect(mSaturationSlider, &QSlider::valueChanged, this, &DkMosaicDialog::onSaturationSliderValueChanged);
 
     mSliderWidget = new QWidget(this);
-    QGridLayout *sliderLayout = new QGridLayout(mSliderWidget);
+    auto *sliderLayout = new QGridLayout(mSliderWidget);
     sliderLayout->addWidget(new QLabel(tr("Darken")), 0, 0);
     sliderLayout->addWidget(new QLabel(tr("Lighten")), 0, 1);
     sliderLayout->addWidget(new QLabel(tr("Saturation")), 0, 2);
@@ -2814,27 +2806,27 @@ void DkMosaicDialog::createLayout()
     mSliderWidget->hide();
 
     // open handles
-    QLabel *openLabel = new QLabel(tr("Mosaic Image:"), this);
+    auto *openLabel = new QLabel(tr("Mosaic Image:"), this);
     openLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-    QPushButton *openButton = new QPushButton(tr("&Browse"), this);
+    auto *openButton = new QPushButton(tr("&Browse"), this);
     openButton->setToolTip(tr("Choose which image to mosaic."));
     connect(openButton, &QPushButton::pressed, this, &DkMosaicDialog::onOpenButtonPressed);
 
     mFileLabel = new QLabel(tr("No Image loaded"), this);
 
     // save handles
-    QLabel *saveLabel = new QLabel(tr("Mosaic Elements Folder:"), this);
+    auto *saveLabel = new QLabel(tr("Mosaic Elements Folder:"), this);
     saveLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-    QPushButton *dbButton = new QPushButton(tr("&Browse"), this);
+    auto *dbButton = new QPushButton(tr("&Browse"), this);
     dbButton->setToolTip(tr("Specify the root folder of images used for mosaic elements."));
     connect(dbButton, &QPushButton::pressed, this, &DkMosaicDialog::onDbButtonPressed);
 
     mFolderLabel = new QLabel(tr("Specify an Image Database"), this);
 
     // resolution handles
-    QLabel *sizeLabel = new QLabel(tr("Resolution:"));
+    auto *sizeLabel = new QLabel(tr("Resolution:"));
     sizeLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mNewWidthBox = new QSpinBox();
     mNewWidthBox->setToolTip(tr("Pixel Width"));
@@ -2857,7 +2849,7 @@ void DkMosaicDialog::createLayout()
     mRealResLabel = new QLabel("");
 
     // num patch handles
-    QLabel *patchLabel = new QLabel(tr("Patches:"));
+    auto *patchLabel = new QLabel(tr("Patches:"));
     patchLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mNumPatchesH = new QSpinBox(this);
     mNumPatchesH->setToolTip(tr("Number of Horizontal Patches"));
@@ -2882,7 +2874,7 @@ void DkMosaicDialog::createLayout()
     mPatchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
 
     // file filters
-    QLabel *filterLabel = new QLabel(tr("Filters:"), this);
+    auto *filterLabel = new QLabel(tr("Filters:"), this);
     filterLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
     mFilterEdit = new QLineEdit("", this);
@@ -2896,7 +2888,7 @@ void DkMosaicDialog::createLayout()
     mSuffixBox->addItems(filters);
 
     mControlWidget = new QWidget(this);
-    QGridLayout *controlLayout = new QGridLayout(mControlWidget);
+    auto *controlLayout = new QGridLayout(mControlWidget);
     controlLayout->addWidget(openLabel, 0, 0);
     controlLayout->addWidget(openButton, 0, 1, 1, 2);
     controlLayout->addWidget(mFileLabel, 0, 3, 1, 2);
@@ -2932,8 +2924,8 @@ void DkMosaicDialog::createLayout()
     mPreview->setPanControl(QPointF(0.0f, 0.0f));
     mPreview->hide();
 
-    QWidget *viewports = new QWidget(this);
-    QHBoxLayout *viewLayout = new QHBoxLayout(viewports);
+    auto *viewports = new QWidget(this);
+    auto *viewLayout = new QHBoxLayout(viewports);
     viewLayout->addWidget(mViewport);
     viewLayout->addWidget(mPreview);
 
@@ -2949,7 +2941,7 @@ void DkMosaicDialog::createLayout()
     connect(mButtons, &QDialogButtonBox::rejected, this, &DkMosaicDialog::reject);
     mButtons->button(QDialogButtonBox::Save)->setEnabled(false);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(viewports);
     layout->addWidget(mProgress);
     layout->addWidget(mSliderWidget);
@@ -3305,7 +3297,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
             double maxVal = 0;
             cv::Point maxIdx;
             cv::minMaxLoc(ccTmp, nullptr, &maxVal, nullptr, &maxIdx);
-            float *ccPtr = cc.ptr<float>(maxIdx.y);
+            auto *ccPtr = cc.ptr<float>(maxIdx.y);
 
             if (maxVal > ccPtr[maxIdx.x]) {
                 cv::Mat pPatch = pImg.rowRange(maxIdx.y * patchResO, maxIdx.y * patchResO + patchResO)
@@ -3407,7 +3399,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
 void DkMosaicDialog::matchPatch(const cv::Mat &img, const cv::Mat &thumb, int patchRes, cv::Mat &cc)
 {
     for (int rIdx = 0; rIdx < cc.rows; rIdx++) {
-        float *ccPtr = cc.ptr<float>(rIdx);
+        auto *ccPtr = cc.ptr<float>(rIdx);
         const cv::Mat imgStrip = img.rowRange(rIdx * patchRes, rIdx * patchRes + patchRes);
 
         for (int cIdx = 0; cIdx < cc.cols; cIdx++) {
@@ -3571,8 +3563,8 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */,
 
         // multiply the two images
         for (int rIdx = 0; rIdx < origR.rows; rIdx++) {
-            const unsigned char *mosaicPtr = mosaicR.ptr<unsigned char>(rIdx);
-            unsigned char *origPtr = origR.ptr<unsigned char>(rIdx);
+            const auto *mosaicPtr = mosaicR.ptr<unsigned char>(rIdx);
+            auto *origPtr = origR.ptr<unsigned char>(rIdx);
 
             if (!computePreview)
                 emit updateProgress(qRound((float)rIdx / origR.rows * 100));
@@ -3687,7 +3679,7 @@ DkForceThumbDialog::DkForceThumbDialog(QWidget *parent /* = 0 */, Qt::WindowFlag
 
 void DkForceThumbDialog::createLayout()
 {
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
 
     infoLabel = new QLabel();
     infoLabel->setAlignment(Qt::AlignHCenter);
@@ -3696,9 +3688,7 @@ void DkForceThumbDialog::createLayout()
     cbForceSave->setToolTip("If checked, existing thumbnails will be replaced");
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, this, &DkForceThumbDialog::accept);
@@ -3730,9 +3720,9 @@ DkWelcomeDialog::DkWelcomeDialog(QWidget *parent, Qt::WindowFlags f)
 
 void DkWelcomeDialog::createLayout()
 {
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
 
-    QLabel *welcomeLabel = new QLabel(tr("Welcome to nomacs, please choose your preferred language below."), this);
+    auto *welcomeLabel = new QLabel(tr("Welcome to nomacs, please choose your preferred language below."), this);
 
     mLanguageCombo = new QComboBox(this);
     DkUtils::addLanguages(mLanguageCombo, mLanguages);
@@ -3744,9 +3734,7 @@ void DkWelcomeDialog::createLayout()
     mSetAsDefaultCheckBox->setChecked(!DkSettingsManager::param().isPortable());
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, this, &DkWelcomeDialog::accept);
@@ -3808,10 +3796,9 @@ DkArchiveExtractionDialog::DkArchiveExtractionDialog(QWidget *parent, Qt::Window
 void DkArchiveExtractionDialog::createLayout()
 {
     // archive file path
-    QLabel *archiveLabel = new QLabel(tr("Archive (%1)")
-                                          .arg(DkSettingsManager::param().app().containerRawFilters.replace(" *",
-                                                                                                            ", *")),
-                                      this);
+    auto *archiveLabel = new QLabel(tr("Archive (%1)")
+                                        .arg(DkSettingsManager::param().app().containerRawFilters.replace(" *", ", *")),
+                                    this);
     mArchivePathEdit = new QLineEdit(this);
     mArchivePathEdit->setObjectName("DkWarningEdit");
     mArchivePathEdit->setValidator(&mFileValidator);
@@ -3820,16 +3807,16 @@ void DkArchiveExtractionDialog::createLayout()
         loadArchive();
     });
 
-    QPushButton *openArchiveButton = new QPushButton(tr("&Browse"));
+    auto *openArchiveButton = new QPushButton(tr("&Browse"));
     connect(openArchiveButton, &QPushButton::pressed, this, &DkArchiveExtractionDialog::openArchive);
 
     // dir file path
-    QLabel *dirLabel = new QLabel(tr("Extract to"));
+    auto *dirLabel = new QLabel(tr("Extract to"));
     mDirPathEdit = new QLineEdit();
     mDirPathEdit->setValidator(&mFileValidator);
     connect(mDirPathEdit, &QLineEdit::textChanged, this, &DkArchiveExtractionDialog::dirTextChanged);
 
-    QPushButton *openDirButton = new QPushButton(tr("&Browse"));
+    auto *openDirButton = new QPushButton(tr("&Browse"));
     connect(openDirButton, &QPushButton::pressed, this, &DkArchiveExtractionDialog::openDir);
 
     mFeedbackLabel = new QLabel("", this);
@@ -3853,8 +3840,8 @@ void DkArchiveExtractionDialog::createLayout()
     connect(mButtons, &QDialogButtonBox::accepted, this, &DkArchiveExtractionDialog::accept);
     connect(mButtons, &QDialogButtonBox::rejected, this, &DkArchiveExtractionDialog::reject);
 
-    QWidget *extractWidget = new QWidget(this);
-    QGridLayout *gdLayout = new QGridLayout(extractWidget);
+    auto *extractWidget = new QWidget(this);
+    auto *gdLayout = new QGridLayout(extractWidget);
     gdLayout->addWidget(archiveLabel, 0, 0);
     gdLayout->addWidget(mArchivePathEdit, 1, 0);
     gdLayout->addWidget(openArchiveButton, 1, 1);
@@ -3865,7 +3852,7 @@ void DkArchiveExtractionDialog::createLayout()
     gdLayout->addWidget(mFileListDisplay, 5, 0, 1, 2);
     gdLayout->addWidget(mRemoveSubfolders, 6, 0, 1, 2);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(extractWidget);
     layout->addWidget(mButtons);
 }
@@ -4140,7 +4127,7 @@ void DkDialogManager::openShortcutsDialog() const
 {
     DkActionManager &am = DkActionManager::instance();
 
-    DkShortcutsDialog *shortcutsDialog = new DkShortcutsDialog(DkUtils::getMainWindow());
+    auto *shortcutsDialog = new DkShortcutsDialog(DkUtils::getMainWindow());
     shortcutsDialog->addActions(am.fileActions(), am.fileMenu()->title());
     shortcutsDialog->addActions(am.openWithActions(), am.openWithMenu()->title());
     shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
@@ -4180,7 +4167,7 @@ void DkDialogManager::openAppManager() const
 {
     DkActionManager &am = DkActionManager::instance();
 
-    DkAppManagerDialog *appManagerDialog = new DkAppManagerDialog(am.appManager(), DkUtils::getMainWindow());
+    auto *appManagerDialog = new DkAppManagerDialog(am.appManager(), DkUtils::getMainWindow());
     connect(appManagerDialog,
             &DkAppManagerDialog::openWithSignal,
             am.appManager(),
@@ -4200,8 +4187,8 @@ void DkDialogManager::openMosaicDialog() const
     }
 
 #ifdef WITH_OPENCV
-    DkMosaicDialog *mosaicDialog = new DkMosaicDialog(DkUtils::getMainWindow(),
-                                                      Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
+    auto *mosaicDialog = new DkMosaicDialog(DkUtils::getMainWindow(),
+                                            Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
     mosaicDialog->setFile(mCentralWidget->getCurrentFilePath());
 
     int response = mosaicDialog->exec();
@@ -4233,7 +4220,7 @@ void DkDialogManager::openPrintDialog() const
         return;
     }
 
-    DkPrintPreviewDialog *previewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
+    auto *previewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
     previewDialog->setImage(imgC->image());
 
     // load all pages of tiffs
@@ -4367,7 +4354,7 @@ DkSvgSizeDialog::DkSvgSizeDialog(const QSize &size, QWidget *parent)
 
 void DkSvgSizeDialog::createLayout()
 {
-    QLabel *wl = new QLabel(tr("width:"), this);
+    auto *wl = new QLabel(tr("width:"), this);
 
     mSizeBox.resize(b_end);
 
@@ -4377,7 +4364,7 @@ void DkSvgSizeDialog::createLayout()
             this,
             &DkSvgSizeDialog::onWidthValueChanged);
 
-    QLabel *hl = new QLabel(tr("height:"), this);
+    auto *hl = new QLabel(tr("height:"), this);
 
     mSizeBox[b_height] = new QSpinBox(this);
     connect(mSizeBox[b_height],
@@ -4401,7 +4388,7 @@ void DkSvgSizeDialog::createLayout()
     connect(buttons, &QDialogButtonBox::accepted, this, &DkSvgSizeDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, this, &DkSvgSizeDialog::reject);
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
     layout->addWidget(wl, 1, 1);
     layout->addWidget(mSizeBox[b_width], 1, 2);
     layout->addWidget(hl, 1, 3);
@@ -4462,7 +4449,7 @@ void DkChooseMonitorDialog::createLayout()
     connect(buttons, &QDialogButtonBox::accepted, this, &DkChooseMonitorDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, this, &DkChooseMonitorDialog::reject);
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
     layout->setRowStretch(0, 1);
     layout->addWidget(mDisplayWidget, 1, 1);
     layout->addWidget(mCbRemember, 2, 1);

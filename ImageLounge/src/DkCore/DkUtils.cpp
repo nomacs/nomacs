@@ -1479,7 +1479,7 @@ void TreeItem::setParent(TreeItem *parent)
 bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        const auto *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::MiddleButton) {
             auto tabbar = static_cast<QTabBar *>(obj);
             for (int i = 0; i < tabbar->count(); i++) {

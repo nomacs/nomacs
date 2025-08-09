@@ -79,18 +79,18 @@ void DkFakeMiniaturesDialog::init()
 void DkFakeMiniaturesDialog::createLayout()
 {
     // central widget - preview image
-    QWidget *centralWidget = new QWidget(this);
+    auto *centralWidget = new QWidget(this);
     // previewLabel = new QLabel(centralWidget);
     previewLabel = new DkPreviewLabel(this, centralWidget);
     previewLabel->setGeometry(QRect(QPoint(previewMargin, previewMargin), QSize(previewWidth, previewHeight)));
 
     // east widget - sliders
-    QWidget *eastWidget = new QWidget(this);
+    auto *eastWidget = new QWidget(this);
     eastWidget->setMinimumWidth(toolsWidth);
     eastWidget->setMaximumWidth(toolsWidth);
     eastWidget->setFixedHeight(previewHeight);
     eastWidget->setContentsMargins(0, 10, 10, 0);
-    QVBoxLayout *toolsLayout = new QVBoxLayout(eastWidget);
+    auto *toolsLayout = new QVBoxLayout(eastWidget);
     toolsLayout->setContentsMargins(0, 0, 0, 0);
 
     kernelSizeWidget = new DkKernelSize(eastWidget, this);
@@ -99,16 +99,16 @@ void DkFakeMiniaturesDialog::createLayout()
     toolsLayout->addWidget(kernelSizeWidget);
     toolsLayout->addWidget(saturationWidget);
 
-    QSpacerItem *spacer = new QSpacerItem(20, 280, QSizePolicy::Minimum, QSizePolicy::Minimum);
+    auto *spacer = new QSpacerItem(20, 280, QSizePolicy::Minimum, QSizePolicy::Minimum);
     toolsLayout->addItem(spacer);
 
     // bottom widget - buttons
     // QWidget* bottomWidget = new QWidget(eastWidget);
-    QHBoxLayout *bottomWidgetHBoxLayout = new QHBoxLayout();
+    auto *bottomWidgetHBoxLayout = new QHBoxLayout();
 
-    QPushButton *buttonOk = new QPushButton(tr("&Ok"));
+    auto *buttonOk = new QPushButton(tr("&Ok"));
     connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
-    QPushButton *buttonCancel = new QPushButton(tr("&Cancel"));
+    auto *buttonCancel = new QPushButton(tr("&Cancel"));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 
     bottomWidgetHBoxLayout->addWidget(buttonOk);
@@ -118,15 +118,15 @@ void DkFakeMiniaturesDialog::createLayout()
 
     eastWidget->setLayout(toolsLayout);
 
-    QWidget *dummy = new QWidget(this);
-    QHBoxLayout *cLayout = new QHBoxLayout(dummy);
+    auto *dummy = new QWidget(this);
+    auto *cLayout = new QHBoxLayout(dummy);
     cLayout->setContentsMargins(0, 0, 0, 0);
     // cLayout->setSpacing(0);
 
     cLayout->addWidget(centralWidget);
     cLayout->addWidget(eastWidget);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(dummy);
     // layout->addWidget(buttons);
@@ -156,7 +156,7 @@ void DkFakeMiniaturesDialog::createImgPreview()
     } else
         lt = QPoint(qRound((previewWidth - mImg->width()) / 2.0f), qRound((previewHeight - mImg->height()) / 2.0f));
 
-    QSize imgSizeScaled = QSize(mImg->size());
+    auto imgSizeScaled = QSize(mImg->size());
     if (rMin < 1)
         imgSizeScaled *= rMin;
 
@@ -246,7 +246,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
         split(imgHsv, imgHsvCh);
 
         for (int row = 0; row < imgHsv.rows; row++) {
-            unsigned char *ptr = imgHsvCh[1].ptr<unsigned char>(row);
+            auto *ptr = imgHsvCh[1].ptr<unsigned char>(row);
 
             for (int col = 0; col < imgHsv.cols; col++) {
                 float tmp = (float)ptr[col] * satFactor;
@@ -301,7 +301,7 @@ Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel)
     const unsigned int *itgrl32Ptr = integralImg.ptr<unsigned int>();
 
     for (int rIdx = 0; rIdx < src.rows; rIdx++) {
-        unsigned char *blurPtr = blurImg.ptr<unsigned char>(rIdx); // assuming unsigned char
+        auto *blurPtr = blurImg.ptr<unsigned char>(rIdx); // assuming unsigned char
         const float *depthPtr = depthImg.ptr<float>(rIdx);
         const unsigned char *srcPtr = src.ptr<unsigned char>(rIdx);
 

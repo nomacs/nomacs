@@ -99,7 +99,7 @@ void DkMainToolBar::closeQuickAccess()
 void DkMainToolBar::allActionsAdded()
 {
     // right align search filters
-    QWidget *spacer = new QWidget(this);
+    auto *spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     addWidget(spacer);
     // addWidget(quickFilterEdit);
@@ -303,7 +303,7 @@ void DkGradient::resizeEvent(QResizeEvent *event)
 
 void DkGradient::addSlider(qreal pos, QColor color)
 {
-    DkColorSlider *actSlider = new DkColorSlider(this, pos, color, mSliderWidth);
+    auto *actSlider = new DkColorSlider(this, pos, color, mSliderWidth);
     mSliders.append(actSlider);
     connect(actSlider, &DkColorSlider::sliderMoved, this, &DkGradient::moveSlider);
     connect(actSlider, &DkColorSlider::colorChanged, this, &DkGradient::changeColor);
@@ -507,7 +507,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
 
     mHistoryCombo = new QComboBox(this);
 
-    QAction *delGradientAction = new QAction(tr("Delete"), mHistoryCombo);
+    auto *delGradientAction = new QAction(tr("Delete"), mHistoryCombo);
     connect(delGradientAction, &QAction::triggered, this, &DkTransferToolBar::deleteGradient);
 
     mHistoryCombo->addAction(delGradientAction);
@@ -646,8 +646,8 @@ void DkTransferToolBar::loadSettings()
 
 void DkTransferToolBar::deleteGradientMenu(QPoint pos)
 {
-    QMenu *cm = new QMenu(this);
-    QAction *delAction = new QAction("Delete", this);
+    auto *cm = new QMenu(this);
+    auto *delAction = new QAction("Delete", this);
     connect(delAction, &QAction::triggered, this, &DkTransferToolBar::deleteGradient);
     cm->popup(mHistoryCombo->mapToGlobal(pos));
     cm->exec();
@@ -900,11 +900,11 @@ void DkCropToolBar::createLayout()
     enterSc.append(QKeySequence(Qt::Key_Enter));
     enterSc.append(QKeySequence(Qt::Key_Return));
 
-    QAction *cropAction = new QAction(mIcons[crop_icon], tr("Crop (ENTER)"), this);
+    auto *cropAction = new QAction(mIcons[crop_icon], tr("Crop (ENTER)"), this);
     cropAction->setShortcuts(enterSc);
     connect(cropAction, &QAction::triggered, this, &DkCropToolBar::onCropActionTriggered);
 
-    QAction *cancelAction = new QAction(mIcons[cancel_icon], tr("Cancel (ESC)"), this);
+    auto *cancelAction = new QAction(mIcons[cancel_icon], tr("Cancel (ESC)"), this);
     cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
     connect(cancelAction, &QAction::triggered, this, &DkCropToolBar::onCancelActionTriggered);
 
@@ -931,7 +931,7 @@ void DkCropToolBar::createLayout()
             this,
             &DkCropToolBar::onHorValBoxValueChanged);
 
-    QAction *swapAction = new QAction(DkImage::loadIcon(":/nomacs/img/swap.svg"), tr("Swap"), this);
+    auto *swapAction = new QAction(DkImage::loadIcon(":/nomacs/img/swap.svg"), tr("Swap"), this);
     swapAction->setToolTip(tr("Swap Dimensions"));
     swapAction->setStatusTip(swapAction->toolTip());
     connect(swapAction, &QAction::triggered, this, &DkCropToolBar::onSwapActionTriggered);
@@ -1259,7 +1259,7 @@ void DkToolBarManager::showToolBar(QToolBar *toolbar, bool show)
         return;
 
     showToolBarsTemporarily(!show);
-    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    auto *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
     Q_ASSERT(nomacs);
 
     if (show) {
@@ -1279,7 +1279,7 @@ void DkToolBarManager::showToolBarsTemporarily(bool show)
         for (QToolBar *t : mHiddenToolBars)
             t->show();
     } else {
-        QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+        auto *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
         Q_ASSERT(nomacs);
 
         mHiddenToolBars.clear();
@@ -1316,7 +1316,7 @@ void DkToolBarManager::showDefaultToolBar(bool show, bool permanent)
 
 void DkToolBarManager::showMovieToolBar(bool show)
 {
-    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    auto *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
     Q_ASSERT(nomacs);
 
     // set movie toolbar into current toolbar
@@ -1340,7 +1340,7 @@ void DkToolBarManager::showMovieToolBar(bool show)
 
 void DkToolBarManager::createTransferToolBar()
 {
-    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    auto *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
     Q_ASSERT(nomacs);
 
     mTransferToolBar = new DkTransferToolBar(nomacs);

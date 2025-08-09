@@ -113,7 +113,7 @@ public:
     explicit DkSelectAllDoubleSpinBox(QWidget *parent = nullptr)
         : QDoubleSpinBox(parent)
     {
-        DkSelectAllLineEdit *le = new DkSelectAllLineEdit(this);
+        auto *le = new DkSelectAllLineEdit(this);
         setLineEdit(le);
     };
 };

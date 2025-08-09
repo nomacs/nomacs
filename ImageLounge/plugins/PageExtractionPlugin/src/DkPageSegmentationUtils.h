@@ -122,7 +122,7 @@ public:
             delete *buffer;
         }
 
-        float *newFStream = (float *)newStream;
+        auto *newFStream = (float *)newStream;
 
         int pos = 0;
         newFStream[pos] = uc.x;
@@ -140,7 +140,7 @@ public:
 
     const char *setSorageBuffer(const char *buffer)
     {
-        const float *fBuffer = (const float *)buffer;
+        const auto *fBuffer = (const float *)buffer;
         int pos = 0;
         uc.x = fBuffer[pos];
         pos++;

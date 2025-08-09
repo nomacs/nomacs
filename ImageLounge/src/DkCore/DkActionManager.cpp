@@ -115,7 +115,7 @@ void DkAppManager::loadSettings()
 
     for (int idx = 0; idx < size; idx++) {
         settings.setArrayIndex(idx);
-        QAction *action = new QAction(parent());
+        auto *action = new QAction(parent());
         action->setText(settings.value("appName", "").toString());
         action->setToolTip(settings.value("appPath", "").toString());
         action->setObjectName(settings.value("objectName", "").toString());
@@ -150,7 +150,7 @@ QAction *DkAppManager::createAction(const QString &filePath)
     if (!file.exists())
         return nullptr;
 
-    QAction *newApp = new QAction(file.baseName(), parent());
+    auto *newApp = new QAction(file.baseName(), parent());
     newApp->setToolTip(QDir::fromNativeSeparators(file.filePath()));
     assignIcon(newApp);
     connect(newApp, &QAction::triggered, this, &DkAppManager::openTriggered);
@@ -176,7 +176,7 @@ void DkAppManager::findDefaultSoftware()
     if (!containsApp(mApps, mDefaultNames[app_photohsop])) {
         appPath = searchForSoftware("Adobe", "Photoshop", "ApplicationPath");
         if (!appPath.isEmpty()) {
-            QAction *a = new QAction(QObject::tr("&Photoshop"), parent());
+            auto *a = new QAction(QObject::tr("&Photoshop"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
             a->setObjectName(mDefaultNames[app_photohsop]);
             mApps.append(a);
@@ -187,7 +187,7 @@ void DkAppManager::findDefaultSoftware()
         // Picasa
         appPath = searchForSoftware("Google", "Picasa", "Directory");
         if (!appPath.isEmpty()) {
-            QAction *a = new QAction(QObject::tr("Pic&asa"), parent());
+            auto *a = new QAction(QObject::tr("Pic&asa"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
             a->setObjectName(mDefaultNames[app_picasa]);
             mApps.append(a);
@@ -198,7 +198,7 @@ void DkAppManager::findDefaultSoftware()
         // Picasa Photo Viewer
         appPath = searchForSoftware("Google", "Picasa", "Directory", "PicasaPhotoViewer.exe");
         if (!appPath.isEmpty()) {
-            QAction *a = new QAction(QObject::tr("Picasa Ph&oto Viewer"), parent());
+            auto *a = new QAction(QObject::tr("Picasa Ph&oto Viewer"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
             a->setObjectName(mDefaultNames[app_picasa_viewer]);
             mApps.append(a);
@@ -209,7 +209,7 @@ void DkAppManager::findDefaultSoftware()
         // IrfanView
         appPath = searchForSoftware("IrfanView", "shell");
         if (!appPath.isEmpty()) {
-            QAction *a = new QAction(QObject::tr("&IrfanView"), parent());
+            auto *a = new QAction(QObject::tr("&IrfanView"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
             a->setObjectName(mDefaultNames[app_irfan_view]);
             mApps.append(a);
@@ -219,7 +219,7 @@ void DkAppManager::findDefaultSoftware()
     if (!containsApp(mApps, mDefaultNames[app_explorer])) {
         appPath = "C:/Windows/explorer.exe";
         if (QFileInfo(appPath).exists()) {
-            QAction *a = new QAction(QObject::tr("&Explorer"), parent());
+            auto *a = new QAction(QObject::tr("&Explorer"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
             a->setObjectName(mDefaultNames[app_explorer]);
             mApps.append(a);
@@ -331,7 +331,7 @@ QString DkAppManager::searchForSoftware(const QString &organization,
 
 void DkAppManager::openTriggered() const
 {
-    QAction *a = static_cast<QAction *>(QObject::sender());
+    auto *a = static_cast<QAction *>(QObject::sender());
 
     if (a)
         openFileSignal(a);

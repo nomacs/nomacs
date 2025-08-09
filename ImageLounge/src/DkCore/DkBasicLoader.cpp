@@ -597,8 +597,8 @@ bool DkBasicLoader::loadROH(const QString &filePath, QImage &img, QSharedPointer
     unsigned char sByte; // second byte
 
     try {
-        const unsigned char *pData = (const unsigned char *)ba->constData();
-        unsigned char *buffer = new unsigned char[rohW * rohH];
+        const auto *pData = (const unsigned char *)ba->constData();
+        auto *buffer = new unsigned char[rohW * rohH];
 
         if (!buffer)
             return imgLoaded;
@@ -1391,7 +1391,7 @@ void DkBasicLoader::convert32BitOrder(void *buffer, uint32_t width) const
 {
 #ifdef WITH_LIBTIFF
     // code from Qt QTiffHandler
-    uint32_t *target = reinterpret_cast<uint32_t *>(buffer);
+    auto *target = reinterpret_cast<uint32_t *>(buffer);
     for (uint32_t x = 0; x < width; ++x) {
         uint32_t p = target[x];
         // convert between ARGB and ABGR
@@ -1486,7 +1486,7 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
         QBuffer fileBuffer(ba.data());
         // size_t s = fileBuffer.size();
         fileBuffer.open(QIODevice::WriteOnly);
-        QImageWriter *imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
+        auto *imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
 
         if (compression >= 0) { // -1 -> use Qt's default
             imgWriter->setCompression(compression);
@@ -1789,7 +1789,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString &filePath,
 
     // read header & get a pointer to the first image
     int fileCount, vecSize;
-    const unsigned char *imgPtr = (const unsigned char *)ba->constData();
+    const auto *imgPtr = (const unsigned char *)ba->constData();
     if (!readHeader(&imgPtr, fileCount, vecSize))
         return false;
 
@@ -1892,7 +1892,7 @@ cv::Mat DkBasicLoader::getPatch(const unsigned char **dataPtr, QSize patchSize) 
 
     // ok, take just the second byte
     for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
-        unsigned char *ptr8U = img8U.ptr<unsigned char>(rIdx);
+        auto *ptr8U = img8U.ptr<unsigned char>(rIdx);
 
         for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
             ptr8U[cIdx] = **dataPtr;
@@ -1920,7 +1920,7 @@ int DkBasicLoader::mergeVecFiles(const QStringList &vecFilePaths, QString &saveF
         }
 
         int fileCount, vecSize;
-        const unsigned char *dataPtr = (const unsigned char *)ba->constData();
+        const auto *dataPtr = (const unsigned char *)ba->constData();
         if (!readHeader(&dataPtr, fileCount, vecSize)) {
             qDebug() << "could not read header, skipping: " << fInfo.fileName();
             continue;
@@ -1947,7 +1947,7 @@ int DkBasicLoader::mergeVecFiles(const QStringList &vecFilePaths, QString &saveF
     if (!vecCount)
         return vecCount;
 
-    unsigned int *header = new unsigned int[3];
+    auto *header = new unsigned int[3];
     header[0] = totalFileCount;
     header[1] = lastVecSize;
     header[2] = 0;
@@ -2328,15 +2328,15 @@ void DkRawLoader::detectSpecialCamera(const LibRaw &iProcessor)
 cv::Mat DkRawLoader::demosaic(LibRaw &iProcessor) const
 {
     cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC1);
-    double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
+    const auto dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
 
     // normalize all image values
     for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
-        unsigned short *ptrRaw = rawMat.ptr<unsigned short>(rIdx);
+        auto *ptrRaw = rawMat.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
             int colIdx = iProcessor.COLOR(rIdx, cIdx);
-            double val = (double)(iProcessor.imgdata.image[(rawMat.cols * rIdx) + cIdx][colIdx]);
+            auto val = (double)(iProcessor.imgdata.image[(rawMat.cols * rIdx) + cIdx][colIdx]);
 
             // normalize the value w.r.t the black point defined
             val = (val - iProcessor.imgdata.color.black) / dynamicRange;
@@ -2346,7 +2346,7 @@ cv::Mat DkRawLoader::demosaic(LibRaw &iProcessor) const
 
     // no demosaicing
     if (mIsChromatic) {
-        unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
+        auto type = (unsigned long)iProcessor.imgdata.idata.filters;
         type = type & 255;
 
         cv::Mat rgbImg;
@@ -2376,16 +2376,16 @@ cv::Mat DkRawLoader::demosaic(LibRaw &iProcessor) const
 cv::Mat DkRawLoader::prepareImg(const LibRaw &iProcessor) const
 {
     cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC3, cv::Scalar(0));
-    double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
+    const auto dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
 
     // normalization function
-    auto normalize = [&](double val) {
+    const auto normalize = [&](double val) {
         val = (val - iProcessor.imgdata.color.black) / dynamicRange;
         return clip<unsigned short>(val * USHRT_MAX);
     };
 
     for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
-        unsigned short *ptrI = rawMat.ptr<unsigned short>(rIdx);
+        auto *ptrI = rawMat.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
             *ptrI = normalize(iProcessor.imgdata.image[rawMat.cols * rIdx + cIdx][0]);
@@ -2405,7 +2405,7 @@ cv::Mat DkRawLoader::whiteMultipliers(const LibRaw &iProcessor) const
     // get camera white balance multipliers
     cv::Mat wm(1, 4, CV_32FC1);
 
-    float *wmp = wm.ptr<float>();
+    auto *wmp = wm.ptr<float>();
 
     for (int idx = 0; idx < wm.cols; idx++)
         wmp[idx] = iProcessor.imgdata.color.cam_mul[idx];
@@ -2442,10 +2442,10 @@ cv::Mat DkRawLoader::gammaTable(const LibRaw &iProcessor) const
     double cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
 
     // read gamma value and create gamma table
-    double gamma = (double)iProcessor.imgdata.params.gamm[0];
+    const auto gamma = (double)iProcessor.imgdata.params.gamm[0];
 
     cv::Mat gmt(1, USHRT_MAX, CV_16UC1);
-    unsigned short *gmtp = gmt.ptr<unsigned short>();
+    auto *gmtp = gmt.ptr<unsigned short>();
 
     for (int idx = 0; idx < gmt.cols; idx++) {
         gmtp[idx] = clip<unsigned short>(
@@ -2464,13 +2464,13 @@ void DkRawLoader::whiteBalance(const LibRaw &iProcessor, cv::Mat &img) const
     assert(wb.cols == 4);
 
     for (int rIdx = 0; rIdx < img.rows; rIdx++) {
-        unsigned short *ptr = img.ptr<unsigned short>(rIdx);
+        auto *ptr = img.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < img.cols; cIdx++) {
             // apply white balance correction
-            unsigned short r = clip<unsigned short>(*ptr * wbp[0]);
-            unsigned short g = clip<unsigned short>(*(ptr + 1) * wbp[1]);
-            unsigned short b = clip<unsigned short>(*(ptr + 2) * wbp[2]);
+            auto r = clip<unsigned short>(*ptr * wbp[0]);
+            auto g = clip<unsigned short>(*(ptr + 1) * wbp[1]);
+            auto b = clip<unsigned short>(*(ptr + 2) * wbp[2]);
 
             // apply color correction
             int cr = qRound(iProcessor.imgdata.color.rgb_cam[0][0] * r + iProcessor.imgdata.color.rgb_cam[0][1] * g
@@ -2499,7 +2499,7 @@ void DkRawLoader::gammaCorrection(const LibRaw &iProcessor, cv::Mat &img) const
     assert(gt.cols == USHRT_MAX);
 
     for (int rIdx = 0; rIdx < img.rows; rIdx++) {
-        unsigned short *ptr = img.ptr<unsigned short>(rIdx);
+        auto *ptr = img.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < img.cols * img.channels(); cIdx++) {
             // values close to 0 are treated linear
@@ -2662,7 +2662,7 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
         return false;
     }
 
-    Pixel *pixels = new Pixel[header.width * header.height * sizeof(Pixel)];
+    auto *pixels = new Pixel[header.width * header.height * sizeof(Pixel)];
 
     if (!pixels) {
         qWarning() << "[TGA] could not allocate" << header.width * header.height * sizeof(Pixel) / 1024 << "KB";

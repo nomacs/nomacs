@@ -126,7 +126,7 @@ void SbCompositePlugin::buildUI()
     outerLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
     for (int i = 0; i < 3; i++) {
-        SbChannelWidget *cw = new SbChannelWidget(static_cast<SbChannelWidget::Channel>(i), mainWidget);
+        auto *cw = new SbChannelWidget(static_cast<SbChannelWidget::Channel>(i), mainWidget);
         channelWidgets.append(cw);
     }
 
@@ -136,12 +136,12 @@ void SbCompositePlugin::buildUI()
         outerLayout->addWidget(s);
     }
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
-    QPushButton *applyButton = new QPushButton("apply");
+    auto *buttonLayout = new QHBoxLayout();
+    auto *applyButton = new QPushButton("apply");
     applyButton->setIcon(QIcon(":/CompositePlugin/img/description.png"));
     applyButton->setIconSize(QSize(24, 24));
     connect(applyButton, SIGNAL(released()), this, SLOT(onPushButtonApply()));
-    QPushButton *cancelButton = new QPushButton("cancel");
+    auto *cancelButton = new QPushButton("cancel");
     cancelButton->setIcon(QIcon(":/CompositePlugin/img/close.svg"));
     cancelButton->setIconSize(QSize(24, 24));
     connect(cancelButton, SIGNAL(released()), this, SLOT(onPushButtonCancel()));

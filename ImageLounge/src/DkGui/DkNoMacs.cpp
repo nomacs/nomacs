@@ -376,8 +376,7 @@ void DkNoMacs::clearFolderHistory()
 
 DkCentralWidget *DkNoMacs::getTabWidget() const
 {
-    DkCentralWidget *cw = dynamic_cast<DkCentralWidget *>(centralWidget());
-    return cw;
+    return dynamic_cast<DkCentralWidget *>(centralWidget());
 }
 
 // Qt how-to
@@ -388,11 +387,11 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
         return;
 
     if (cw->getTabs().size() > 1) {
-        DkMessageBox *msg = new DkMessageBox(QMessageBox::Question,
-                                             tr("Quit nomacs"),
-                                             tr("Do you want nomacs to save your tabs?"),
-                                             (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                             this);
+        auto *msg = new DkMessageBox(QMessageBox::Question,
+                                     tr("Quit nomacs"),
+                                     tr("Do you want nomacs to save your tabs?"),
+                                     (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                     this);
         msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
         msg->setButtonText(QMessageBox::No, tr("&Quit"));
         msg->setObjectName("saveTabsDialog");
@@ -896,9 +895,7 @@ void DkNoMacs::animateOpacityUp()
 // >DIR: diem - why can't we put it in mViewport?
 void DkNoMacs::animateChangeOpacity()
 {
-    float newO = (float)windowOpacity();
-
-    if (newO >= 1.0f)
+    if (windowOpacity() >= 1.0)
         animateOpacityDown();
     else
         animateOpacityUp();
@@ -1162,7 +1159,7 @@ void DkNoMacs::showThumbsDock(bool show)
         addDockWidget(mThumbsDock->getDockLocationSettings(Qt::TopDockWidgetArea), mThumbsDock);
         thumbsDockAreaChanged();
 
-        QLabel *thumbsTitle = new QLabel(mThumbsDock);
+        auto *thumbsTitle = new QLabel(mThumbsDock);
         thumbsTitle->setObjectName("thumbsTitle");
         thumbsTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         thumbsTitle->setPixmap(QPixmap(":/nomacs/img/widget-separator.png").scaled(QSize(16, 4)));
@@ -1379,7 +1376,7 @@ void DkNoMacs::find(bool filterAction)
             ? DkSearchDialog::filter_button
             : DkSearchDialog::find_button;
         qDebug() << "default button: " << db;
-        DkSearchDialog *searchDialog = new DkSearchDialog(this);
+        auto *searchDialog = new DkSearchDialog(this);
         searchDialog->setDefaultButton(db);
 
         searchDialog->setFiles(getTabWidget()->getCurrentImageLoader()->getFileNames());
@@ -1569,7 +1566,7 @@ void DkNoMacs::newInstance(const QString &filePath)
     QString exe = QApplication::applicationFilePath();
     QStringList args;
 
-    QAction *a = static_cast<QAction *>(sender());
+    auto *a = static_cast<QAction *>(sender());
 
     if (a && a == DkActionManager::instance().action(DkActionManager::menu_file_private_instance))
         args.append("-p");
@@ -1642,7 +1639,7 @@ void DkNoMacs::onWindowLoaded()
 
     if (firstTime) {
         // here are some first time requests
-        DkWelcomeDialog *wecomeDialog = new DkWelcomeDialog(this);
+        auto *wecomeDialog = new DkWelcomeDialog(this);
         wecomeDialog->exec();
 
         settings.setValue("AppSettings/firstTime.nomacs.3", false);
@@ -1679,7 +1676,7 @@ void DkNoMacs::keyReleaseEvent(QKeyEvent *event)
 bool DkNoMacs::eventFilter(QObject *, QEvent *event)
 {
     if (event->type() == QEvent::ShortcutOverride) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        auto *keyEvent = static_cast<QKeyEvent *>(event);
 
         // consume esc key if fullscreen is on
         if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
@@ -2030,7 +2027,7 @@ void DkNoMacs::openPluginManager()
         return;
     }
 
-    DkPluginManagerDialog *pluginDialog = new DkPluginManagerDialog(this);
+    auto *pluginDialog = new DkPluginManagerDialog(this);
     pluginDialog->exec();
     pluginDialog->deleteLater();
 
@@ -2089,7 +2086,7 @@ void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event)
         Q_ASSERT(cm);
         auto md = cm->mimeData();
 
-        QDrag *drag = new QDrag(this);
+        auto *drag = new QDrag(this);
         drag->setMimeData(md);
         drag->exec(Qt::CopyAction | Qt::MoveAction);
     } else
@@ -2130,7 +2127,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     DkSettingsManager::param().app().appMode = DkSettings::mode_default;
 
     // init members
-    DkCentralWidget *cw = new DkCentralWidget(this);
+    auto *cw = new DkCentralWidget(this);
     setCentralWidget(cw);
 
     init();
@@ -2163,7 +2160,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     setAttribute(Qt::WA_TranslucentBackground, true);
 
     // init members
-    DkCentralWidget *cw = new DkCentralWidget(this);
+    auto *cw = new DkCentralWidget(this);
     setCentralWidget(cw);
 
     init();
@@ -2235,7 +2232,7 @@ void DkNoMacsFrameless::chooseMonitor(bool force)
     QRect screenRect = oldScreen->availableGeometry();
 
     if (qApp->screens().count() > 1) {
-        DkChooseMonitorDialog *cmd = new DkChooseMonitorDialog(this);
+        auto *cmd = new DkChooseMonitorDialog(this);
         cmd->setWindowTitle(tr("Choose a Monitor"));
 
         if (force || cmd->showDialog()) {
@@ -2268,13 +2265,14 @@ void DkNoMacsFrameless::chooseMonitor(bool force)
 bool DkNoMacsFrameless::eventFilter(QObject *, QEvent *event)
 {
     if (event->type() == QEvent::ShortcutOverride) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        const auto *keyEvent = static_cast<QKeyEvent *>(event);
 
         // consume esc key if fullscreen is on
-        if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
-            exitFullScreen();
-            return true;
-        } else if (keyEvent->key() == Qt::Key_Escape) {
+        if (keyEvent->key() == Qt::Key_Escape) {
+            if (isFullScreen()) {
+                exitFullScreen();
+                return true;
+            }
             close();
             return true;
         }
@@ -2295,7 +2293,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
     DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;
 
     // init members
-    DkCentralWidget *cw = new DkCentralWidget(this);
+    auto *cw = new DkCentralWidget(this);
     setCentralWidget(cw);
 
     init();

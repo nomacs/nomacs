@@ -53,8 +53,8 @@ void DkHistoryDock::createLayout()
         QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
     connect(mHistoryList, &QListWidget::itemClicked, this, &DkHistoryDock::onHistoryListItemClicked);
 
-    QWidget *contentWidget = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(contentWidget);
+    auto *contentWidget = new QWidget(this);
+    auto *layout = new QVBoxLayout(contentWidget);
     layout->addWidget(mHistoryList);
 
     setWidget(contentWidget);
@@ -78,7 +78,7 @@ void DkHistoryDock::updateList(QSharedPointer<DkImageContainerT> img)
 
     for (int idx = 0; idx < history->size(); idx++) {
         const DkEditImage &eImg = history->at(idx);
-        QListWidgetItem *item = new QListWidgetItem(QIcon(":/nomacs/img/nomacs.svg"), eImg.editName());
+        auto *item = new QListWidgetItem(QIcon(":/nomacs/img/nomacs.svg"), eImg.editName());
         item->setFlags(idx <= hIdx ? Qt::ItemIsEnabled : Qt::NoItemFlags);
 
         mHistoryList->addItem(item);

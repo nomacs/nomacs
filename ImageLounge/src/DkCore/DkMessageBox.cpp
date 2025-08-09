@@ -125,7 +125,7 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
 
     buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
 
-    QGridLayout *grid = new QGridLayout;
+    auto *grid = new QGridLayout;
 #if 1
     grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
     grid->addWidget(textLabel, 0, 1, 1, 1);

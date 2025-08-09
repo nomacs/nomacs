@@ -385,8 +385,8 @@ bool DkBaseViewPort::event(QEvent *event)
 
 bool DkBaseViewPort::gestureEvent(QGestureEvent *event)
 {
-    if (QGesture *swipeG = event->gesture(Qt::SwipeGesture)) {
-        QSwipeGesture *swipe = static_cast<QSwipeGesture *>(swipeG);
+    if (const QGesture *swipeG = event->gesture(Qt::SwipeGesture)) {
+        const auto *swipe = static_cast<const QSwipeGesture *>(swipeG);
 
         // thanks qt documentation : )
         if (swipe->state() == Qt::GestureFinished) {
@@ -396,7 +396,7 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent *event)
                 qDebug() << "here comes the next image function...";
         }
         qDebug() << "swiping...";
-    } else if (QPinchGesture *pinch = static_cast<QPinchGesture *>(event->gesture(Qt::PinchGesture))) {
+    } else if (const auto *pinch = static_cast<QPinchGesture *>(event->gesture(Qt::PinchGesture))) {
         double scale = pinch->lastScaleFactor();
 
         if (fabs(scale - 1.0) > FLT_EPSILON) {

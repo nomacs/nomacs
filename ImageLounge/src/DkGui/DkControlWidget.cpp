@@ -139,19 +139,19 @@ void DkControlWidget::init()
     mFolderScroll->registerAction(am.action(DkActionManager::menu_panel_scroller));
 
     // dummy - needed for three equal columns @markus: do not delete!
-    QWidget *dw = new QWidget(this);
+    auto *dw = new QWidget(this);
     dw->setMouseTracking(true);
-    QBoxLayout *dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
+    auto *dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
     dLayout->setContentsMargins(0, 0, 0, 0);
     dLayout->addWidget(mBottomLabel);
     dLayout->addStretch();
 
     // zoom widget
-    QWidget *bw = new QWidget(this);
+    auto *bw = new QWidget(this);
     bw->setMouseTracking(true);
     // bw->setMinimumHeight(40);
     // bw->setMaximumHeight(80);
-    QVBoxLayout *zLayout = new QVBoxLayout(bw);
+    auto *zLayout = new QVBoxLayout(bw);
     zLayout->setAlignment(Qt::AlignBottom);
     zLayout->setContentsMargins(0, 0, 0, 20);
     zLayout->setSpacing(0);
@@ -160,9 +160,9 @@ void DkControlWidget::init()
     zLayout->addWidget(mCommentWidget);
 
     // left column widget
-    QWidget *leftWidget = new QWidget(this);
+    auto *leftWidget = new QWidget(this);
     leftWidget->setMouseTracking(true);
-    QBoxLayout *ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, leftWidget);
+    auto *ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, leftWidget);
     ulLayout->setContentsMargins(0, 0, 0, 0);
     ulLayout->setSpacing(0);
     ulLayout->addWidget(mZoomWidget);
@@ -171,44 +171,44 @@ void DkControlWidget::init()
     ulLayout->addWidget(dw);
 
     // center column
-    QWidget *center = new QWidget(this);
+    auto *center = new QWidget(this);
     center->setMouseTracking(true);
-    QVBoxLayout *cLayout = new QVBoxLayout(center);
+    auto *cLayout = new QVBoxLayout(center);
     cLayout->setContentsMargins(0, 0, 0, 0);
     cLayout->setAlignment(Qt::AlignBottom);
     cLayout->addWidget(mPlayer);
 
     // rating widget
-    QWidget *rw = new QWidget(this);
+    auto *rw = new QWidget(this);
     rw->setMouseTracking(true);
     rw->setMinimumSize(0, 0);
-    QBoxLayout *rLayout = new QBoxLayout(QBoxLayout::RightToLeft, rw);
+    auto *rLayout = new QBoxLayout(QBoxLayout::RightToLeft, rw);
     rLayout->setContentsMargins(0, 0, 0, 17);
     rLayout->addStretch();
 
     // file info
-    QWidget *fw = new QWidget(this);
+    auto *fw = new QWidget(this);
     fw->setContentsMargins(0, 0, 0, 30);
     fw->setMouseTracking(true);
     fw->setMinimumSize(0, 0);
-    QBoxLayout *rwLayout = new QBoxLayout(QBoxLayout::RightToLeft, fw);
+    auto *rwLayout = new QBoxLayout(QBoxLayout::RightToLeft, fw);
     rwLayout->setContentsMargins(0, 0, 0, 0);
     rwLayout->addWidget(mFileInfoLabel);
     rwLayout->addStretch();
 
     // right column
-    QWidget *hw = new QWidget(this);
+    auto *hw = new QWidget(this);
     hw->setContentsMargins(0, 10, 10, 0);
     hw->setMouseTracking(true);
-    QBoxLayout *hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
+    auto *hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
     hwLayout->setContentsMargins(0, 0, 0, 0);
     hwLayout->addWidget(mHistogram);
     hwLayout->addStretch();
 
     // right column
-    QWidget *rightWidget = new QWidget(this);
+    auto *rightWidget = new QWidget(this);
     rightWidget->setMouseTracking(true);
-    QBoxLayout *lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
+    auto *lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
     lrLayout->setContentsMargins(0, 0, 0, 0);
     lrLayout->addWidget(hw);
     lrLayout->addStretch();
@@ -595,11 +595,11 @@ bool DkControlWidget::closePlugin(bool askForSaving, bool force)
             bool applyChanges = true;
 
             if (askForSaving) {
-                DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
-                                                        tr("Closing Plugin"),
-                                                        tr("Apply plugin changes?"),
-                                                        QMessageBox::Yes | QMessageBox::No,
-                                                        this);
+                auto *msgBox = new DkMessageBox(QMessageBox::Question,
+                                                tr("Closing Plugin"),
+                                                tr("Apply plugin changes?"),
+                                                QMessageBox::Yes | QMessageBox::No,
+                                                this);
                 msgBox->setDefaultButton(QMessageBox::Yes);
                 msgBox->setObjectName("SavePluginChanges");
 

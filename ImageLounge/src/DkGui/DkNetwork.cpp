@@ -82,16 +82,16 @@ void DkClientManager::connectionReadyForUse(quint16 peerServerPort, const QStrin
     // << peerServerPort;
 
     mNewPeerId++;
-    DkPeer *peer = new DkPeer(connection->peerPort(),
-                              mNewPeerId,
-                              connection->peerAddress(),
-                              peerServerPort,
-                              title,
-                              connection,
-                              false,
-                              "",
-                              false,
-                              this);
+    auto *peer = new DkPeer(connection->peerPort(),
+                            mNewPeerId,
+                            connection->peerAddress(),
+                            peerServerPort,
+                            title,
+                            connection,
+                            false,
+                            "",
+                            false,
+                            this);
     connection->setPeerId(mNewPeerId);
     mPeerList.addPeer(peer);
 
@@ -100,7 +100,7 @@ void DkClientManager::connectionReadyForUse(quint16 peerServerPort, const QStrin
 
 void DkClientManager::disconnected()
 {
-    if (DkConnection *connection = qobject_cast<DkConnection *>(sender())) {
+    if (auto *connection = qobject_cast<DkConnection *>(sender())) {
         removeConnection(connection);
     }
 }
@@ -328,7 +328,7 @@ QMimeData *DkLocalClientManager::mimeData() const
     QDataStream dataStream(&connectionData, QIODevice::WriteOnly);
     dataStream << getServerPort();
 
-    QMimeData *mimeData = new QMimeData;
+    auto *mimeData = new QMimeData;
     mimeData->setData("network/sync-dir", connectionData);
 
     return mimeData;
@@ -540,7 +540,7 @@ void DkLocalClientManager::sendQuitMessageToPeers()
 
 void DkLocalClientManager::connectToNomacs()
 {
-    DkConnection *c = static_cast<DkConnection *>(QObject::sender());
+    auto *c = static_cast<DkConnection *>(QObject::sender());
 
     if (c) {
         c->sendGreetingMessage(mCurrentTitle);
@@ -556,7 +556,7 @@ void DkLocalClientManager::connectionReceivedQuit()
 DkLocalConnection *DkLocalClientManager::createConnection()
 {
     // wow - there is no one owning connection (except for QOBJECT)
-    DkLocalConnection *connection = new DkLocalConnection(this);
+    auto *connection = new DkLocalConnection(this);
     connection->setLocalTcpServerPort(mServer->serverPort());
     connection->setTitle(mCurrentTitle);
     connectConnection(connection);

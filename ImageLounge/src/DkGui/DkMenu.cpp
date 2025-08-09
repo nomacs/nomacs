@@ -205,7 +205,7 @@ void DkTcpMenu::updatePeers()
 
     // show dummy action
     if (newPeers.empty() && mNoClientsFound) {
-        QAction *defaultAction = new QAction(tr("no clients found"), this);
+        auto *defaultAction = new QAction(tr("no clients found"), this);
         defaultAction->setEnabled(false);
         addAction(defaultAction);
         return;
@@ -223,7 +223,7 @@ void DkTcpMenu::updatePeers()
         QString title = (mNoClientsFound) ? currentPeer->title
                                           : currentPeer->clientName % QString(": ") % currentPeer->title;
 
-        DkTcpAction *peerEntry = new DkTcpAction(currentPeer, title, this);
+        auto *peerEntry = new DkTcpAction(currentPeer, title, this);
         if (!mNoClientsFound)
             peerEntry->setTcpActions(&mTcpActions);
 
