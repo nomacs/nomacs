@@ -939,12 +939,6 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
     return success;
 }
 
-void DkBasicLoader::setImage(const QImage &img, const QString &editName, const QString &file)
-{
-    mFile = file;
-    setEditImage(img, editName);
-}
-
 void DkBasicLoader::pruneEditHistory()
 {
     // delete all hidden edit states
@@ -1112,10 +1106,6 @@ void DkBasicLoader::undo()
     // Update our current metadata object, which is also used elsewhere (pointer)
     // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
     mMetaData->update(metaData);
-
-    // Notify listeners about changed metadata
-    emit undoSignal();
-    emit resetMetaDataSignal();
 }
 
 void DkBasicLoader::redo()
@@ -1130,10 +1120,6 @@ void DkBasicLoader::redo()
     // Update our current metadata object, which is also used elsewhere (pointer)
     // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
     mMetaData->update(metaData);
-
-    // Notify listeners about changed metadata
-    emit redoSignal();
-    emit resetMetaDataSignal();
 }
 
 QVector<DkEditImage> *DkBasicLoader::history()
@@ -1534,33 +1520,12 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
     return saved;
 }
 
-void DkBasicLoader::saveThumbToMetaData(const QString &filePath)
-{
-    QSharedPointer<QByteArray> ba; // dummy
-    saveThumbToMetaData(filePath, ba);
-}
-
 void DkBasicLoader::saveThumbToMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
 {
     if (!hasImage())
         return;
 
     mMetaData->setThumbnail(DkImage::createThumb(image()));
-    saveMetaData(filePath, ba);
-}
-
-/**
- * @brief this will write the current exif/metadata to the loaded file.
- *
- * It calls the other overload passing an empty buffer,
- * so it'll load the buffer, save the exif data to the buffer
- * and write the buffer back to the file.
- *
- * @param filePath path to current file to be updated
- */
-void DkBasicLoader::saveMetaData(const QString &filePath)
-{
-    QSharedPointer<QByteArray> ba; // dummy
     saveMetaData(filePath, ba);
 }
 
