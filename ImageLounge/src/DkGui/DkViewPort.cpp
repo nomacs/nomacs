@@ -1721,7 +1721,7 @@ bool DkViewPort::unloadImage(bool fileChange)
         mAnimationValue = 1.0f;
     }
 
-    int success = true;
+    bool success = true;
 
     if (!mController->applyPluginChanges(true)) // user wants to apply changes first
         return false;
@@ -1735,13 +1735,17 @@ bool DkViewPort::unloadImage(bool fileChange)
         mController->updateImage({});
     }
 
-    if (success)
-        stopMovie();
+    if (!success) {
+        return false;
+    }
 
-    if (mSvg && success)
+    stopMovie();
+
+    if (mSvg) {
         mSvg = {};
+    }
 
-    return success != 0;
+    return true;
 }
 
 void DkViewPort::deactivate()
