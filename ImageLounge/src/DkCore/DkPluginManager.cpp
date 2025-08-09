@@ -380,7 +380,7 @@ void DkPluginContainer::run()
     } else if (p
                && (p->interfaceType() == DkPluginInterface::interface_basic
                    || p->interfaceType() == DkPluginInterface::interface_batch)) {
-        QAction *a = qobject_cast<QAction *>(QObject::sender());
+        auto *a = qobject_cast<QAction *>(QObject::sender());
 
         if (a)
             emit runPlugin(this, a->data().toString());
@@ -557,16 +557,16 @@ void DkPluginManagerDialog::createLayout()
 {
     tableWidgetInstalled = new DkPluginTableWidget(this);
 
-    QPushButton *buttonClose = new QPushButton(tr("&Close"));
+    auto *buttonClose = new QPushButton(tr("&Close"));
     connect(buttonClose, &QPushButton::clicked, this, &DkPluginManagerDialog::closePressed);
     buttonClose->setDefault(true);
 
-    QWidget *dummy = new QWidget(this);
-    QHBoxLayout *hLayout = new QHBoxLayout(dummy);
+    auto *dummy = new QWidget(this);
+    auto *hLayout = new QHBoxLayout(dummy);
     hLayout->setAlignment(Qt::AlignRight);
     hLayout->addWidget(buttonClose);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(tableWidgetInstalled);
     layout->addWidget(dummy);
 }
@@ -621,8 +621,8 @@ void DkPluginTableWidget::createLayout()
     // if (DkSettingsManager::param().isPortable())
     //	updateButton->hide();
 
-    QWidget *searchWidget = new QWidget(this);
-    QHBoxLayout *sLayout = new QHBoxLayout(searchWidget);
+    auto *searchWidget = new QWidget(this);
+    auto *sLayout = new QHBoxLayout(searchWidget);
     sLayout->setContentsMargins(0, 0, 0, 0);
     sLayout->addWidget(mFilterEdit);
     // sLayout->addStretch();
@@ -651,35 +651,32 @@ void DkPluginTableWidget::createLayout()
     mTableView->setAlternatingRowColors(true);
 
     if (DkSettingsManager::instance().param().isPortable()) {
-        DkPushButtonDelegate *buttonDelegate = new DkPushButtonDelegate(mTableView);
+        auto *buttonDelegate = new DkPushButtonDelegate(mTableView);
         mTableView->setItemDelegateForColumn(ip_column_uninstall, buttonDelegate);
         connect(buttonDelegate, &DkPushButtonDelegate::buttonClicked, this, &DkPluginTableWidget::uninstallPlugin);
     }
 
-    DkDescriptionEdit *descriptionEdit = new DkDescriptionEdit(mModel, mProxyModel, mTableView->selectionModel(), this);
+    auto *descriptionEdit = new DkDescriptionEdit(mModel, mProxyModel, mTableView->selectionModel(), this);
     connect(mTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             descriptionEdit,
             &DkDescriptionEdit::selectionChanged);
     connect(mProxyModel, &QSortFilterProxyModel::dataChanged, descriptionEdit, &DkDescriptionEdit::dataChanged);
 
-    DkDescriptionImage *descriptionImg = new DkDescriptionImage(mModel,
-                                                                mProxyModel,
-                                                                mTableView->selectionModel(),
-                                                                this);
+    auto *descriptionImg = new DkDescriptionImage(mModel, mProxyModel, mTableView->selectionModel(), this);
     connect(mTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             descriptionImg,
             &DkDescriptionImage::selectionChanged);
     connect(mProxyModel, &QSortFilterProxyModel::dataChanged, descriptionImg, &DkDescriptionImage::dataChanged);
 
-    QWidget *descWidget = new QWidget(this);
-    QHBoxLayout *dLayout = new QHBoxLayout(descWidget);
+    auto *descWidget = new QWidget(this);
+    auto *dLayout = new QHBoxLayout(descWidget);
     dLayout->setContentsMargins(0, 0, 0, 0);
     dLayout->addWidget(descriptionEdit);
     dLayout->addWidget(descriptionImg);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(searchWidget);
     layout->addWidget(mTableView);
     layout->addWidget(descWidget);
@@ -887,7 +884,7 @@ bool DkPluginCheckBoxDelegate::editorEvent(QEvent *event,
                                            const QModelIndex &index)
 {
     if ((event->type() == QEvent::MouseButtonRelease) || (event->type() == QEvent::MouseButtonDblClick)) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        const auto *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() != Qt::LeftButton || !CheckBoxRect(option).contains(mouseEvent->pos())) {
             return false;
         }
@@ -895,8 +892,9 @@ bool DkPluginCheckBoxDelegate::editorEvent(QEvent *event,
             return true;
         }
     } else if (event->type() == QEvent::KeyPress) {
-        if (static_cast<QKeyEvent *>(event)->key() != Qt::Key_Space
-            && static_cast<QKeyEvent *>(event)->key() != Qt::Key_Select) {
+        const auto *keyEvent = static_cast<QKeyEvent *>(event);
+        int key = keyEvent->key();
+        if (key != Qt::Key_Space && key != Qt::Key_Select) {
             return false;
         }
     } else
@@ -954,7 +952,7 @@ bool DkPushButtonDelegate::editorEvent(QEvent *event,
                                        const QModelIndex &index)
 {
     if ((event->type() == QEvent::MouseButtonRelease) || (event->type() == QEvent::MouseButtonPress)) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        auto *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() != Qt::LeftButton || !PushButtonRect(option).contains(mouseEvent->pos())) {
             mPushButonState = QStyle::State_Raised;
             return false;
@@ -1391,7 +1389,7 @@ void DkPluginActionManager::assignCustomPluginShortcuts()
         mPluginDummyActions = QVector<QAction *>();
 
         for (int i = 0; i < psKeys.size(); i++) {
-            QAction *action = new QAction(psKeys.at(i), this);
+            auto *action = new QAction(psKeys.at(i), this);
             QString val = settings.value(psKeys.at(i), "no-shortcut").toString();
             if (val != "no-shortcut")
                 action->setShortcut(val);
@@ -1495,7 +1493,7 @@ void DkPluginActionManager::addPluginsToMenu()
             mPluginSubMenus.append(plugin->pluginMenu());
             mMenu->addMenu(plugin->pluginMenu());
         } else if (pi) {
-            QAction *a = new QAction(plugin->pluginName(), this);
+            auto *a = new QAction(plugin->pluginName(), this);
             a->setData(plugin->id());
             mPluginActions.append(a);
             mMenu->addAction(a);
@@ -1520,7 +1518,7 @@ void DkPluginActionManager::runPluginFromShortcut()
 {
     qDebug() << "running plugin shortcut...";
 
-    QAction *action = qobject_cast<QAction *>(sender());
+    const auto *action = qobject_cast<QAction *>(sender());
     QString actionName = action->text();
 
     updateMenu();

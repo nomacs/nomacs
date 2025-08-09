@@ -868,7 +868,7 @@ QString DkThemeManager::preprocess(const QString &cssString) const
         const QString &name = colorDef[0];
         const QString &colorSpec = colorDef[1];
 
-        QColor color = QColor(colorSpec);
+        const QColor color(colorSpec);
         if (!color.isValid()) {
             qWarning() << "[theme] invalid color value" << name << colorSpec;
             return;

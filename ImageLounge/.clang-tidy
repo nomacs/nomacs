@@ -62,6 +62,7 @@ misc-definitions-in-headers,\
 modernize-deprecated-headers,\
 modernize-make-shared,\
 modernize-make-unique,\
+modernize-use-auto,\
 modernize-use-bool-literals,\
 modernize-use-emplace,\
 modernize-use-equals-default,\

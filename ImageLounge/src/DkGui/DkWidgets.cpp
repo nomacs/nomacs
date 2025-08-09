@@ -349,8 +349,8 @@ void DkBrowseExplorer::setRootPath(const QString &root)
 
 void DkBrowseExplorer::createLayout()
 {
-    QWidget *rootPathWidget = new QWidget(this);
-    QHBoxLayout *rpLayout = new QHBoxLayout(rootPathWidget);
+    auto *rootPathWidget = new QWidget(this);
+    auto *rpLayout = new QHBoxLayout(rootPathWidget);
     mRootPathLabel = new DkElidedLabel(rootPathWidget, "");
 
     auto browseButton = new QPushButton(tr("Browse"));
@@ -396,7 +396,7 @@ DkExplorer::DkExplorer(const QString &title, QWidget *parent /* = 0 */, Qt::Wind
     readSettings();
 
     // open selected images
-    QAction *selAction = new QAction(tr("Open Image"), this);
+    auto *selAction = new QAction(tr("Open Image"), this);
     selAction->setShortcut(Qt::Key_Return);
     selAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(selAction, &QAction::triggered, this, &DkExplorer::openSelected);
@@ -438,7 +438,7 @@ void DkExplorer::createLayout()
     mFileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
     mFileTree->header()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
-    QWidget *widget = new QWidget(this);
+    auto *widget = new QWidget(this);
     mLayout = new QVBoxLayout(widget);
     mLayout->setContentsMargins(0, 0, 0, 0);
     mLayout->setSpacing(0);
@@ -490,16 +490,16 @@ void DkExplorer::fileClicked(const QModelIndex &index) const
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
 {
-    QMenu *cm = new QMenu(this);
+    auto *cm = new QMenu(this);
 
     // enable editing
-    QAction *editAction = new QAction(tr("Editable"), this);
+    auto *editAction = new QAction(tr("Editable"), this);
     editAction->setCheckable(true);
     editAction->setChecked(!mFileModel->isReadOnly());
     connect(editAction, &QAction::triggered, this, &DkExplorer::setEditable);
 
     // open selected images
-    QAction *selAction = new QAction(tr("Open Selected Image"), this);
+    auto *selAction = new QAction(tr("Open Selected Image"), this);
     selAction->setCheckable(true);
     selAction->setChecked(mLoadSelected);
     connect(selAction, &QAction::triggered, this, &DkExplorer::enableLoadSelected);
@@ -509,7 +509,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
     cm->addSeparator();
 
     // adjust sizes
-    QAction *sizeAction = new QAction(tr("Adjust Columns"), this);
+    auto *sizeAction = new QAction(tr("Adjust Columns"), this);
     connect(sizeAction, &QAction::triggered, this, &DkExplorer::adjustColumnWidth);
 
     cm->addAction(sizeAction);
@@ -518,7 +518,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
     mColumnActions.clear(); // quick&dirty
 
     for (int idx = 0; idx < mFileModel->columnCount(); idx++) {
-        QAction *action = new QAction(mFileModel->headerData(idx, Qt::Horizontal).toString(), this);
+        auto *action = new QAction(mFileModel->headerData(idx, Qt::Horizontal).toString(), this);
         action->setCheckable(true);
         action->setChecked(!mFileTree->isColumnHidden(idx));
         action->setObjectName(QString::number(idx));
@@ -802,7 +802,7 @@ QTransform DkOverview::getScaledImageMatrix()
 
     // the image resizes as we zoom
     QRectF imgRect = QRectF(QPoint(lm, tm), mImgSize);
-    float ratioImg = (float)(imgRect.width() / imgRect.height());
+    auto ratioImg = (float)(imgRect.width() / imgRect.height());
     float ratioWin = (float)(iSize.width()) / (float)(iSize.height());
 
     QTransform imgMatrix;
@@ -855,15 +855,15 @@ void DkZoomWidget::createLayout()
     mSbZoom->setMaximum(6000);
     connect(mSbZoom, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkZoomWidget::onSbZoomValueChanged);
 
-    QLabel *sliderWidget = new QLabel(this);
+    auto *sliderWidget = new QLabel(this);
     sliderWidget->setObjectName("DkOverviewSliderWidget");
-    QHBoxLayout *sliderLayout = new QHBoxLayout(sliderWidget);
+    auto *sliderLayout = new QHBoxLayout(sliderWidget);
     sliderLayout->setContentsMargins(10, 0, 0, 0);
     sliderLayout->setSpacing(10);
     sliderLayout->addWidget(mSlZoom);
     sliderLayout->addWidget(mSbZoom);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     // mLayout->setContentsMargins(10,10,10,10);
     layout->setSpacing(0);
     layout->addWidget(mOverview);
@@ -1282,7 +1282,7 @@ void DkPlayer::createLayout()
 
     // now add to mLayout
     container = new QWidget(this);
-    QHBoxLayout *layout = new QHBoxLayout(container);
+    auto *layout = new QHBoxLayout(container);
     // layout->setContentsMargins(0,0,0,0);
     layout->addStretch();
     layout->addWidget(previousButton);
@@ -1290,7 +1290,7 @@ void DkPlayer::createLayout()
     layout->addWidget(nextButton);
     layout->addStretch();
 
-    QVBoxLayout *l = new QVBoxLayout(this);
+    auto *l = new QVBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(container);
     l->addStretch();
@@ -1419,7 +1419,7 @@ void DkHudNavigation::createLayout()
     mNextButton->setIconSize(s);
     connect(mNextButton, &QPushButton::pressed, this, &DkHudNavigation::nextSignal);
 
-    QHBoxLayout *l = new QHBoxLayout(this);
+    auto *l = new QHBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(mPreviousButton);
     l->addStretch();
@@ -1567,8 +1567,8 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos)
     if (mWorldTform)
         imgViewRect = mWorldTform->mapRect(imgViewRect);
 
-    float x = (float)pos.x();
-    float y = (float)pos.y();
+    auto x = (float)pos.x();
+    auto y = (float)pos.y();
     float magicMargin = 5; // 5 px for now
 
     if (qAbs(x - imgViewRect.left()) < magicMargin)
@@ -1593,8 +1593,8 @@ QPointF DkEditableRect::clipToImageForce(const QPointF &pos)
     if (mWorldTform)
         imgViewRect = mWorldTform->mapRect(imgViewRect);
 
-    float x = (float)pos.x();
-    float y = (float)pos.y();
+    auto x = (float)pos.x();
+    auto y = (float)pos.y();
 
     if (x < imgViewRect.left())
         x = (float)imgViewRect.left();
@@ -1717,8 +1717,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event)
                 QPointF lp = p[idx % 4];
                 QPointF rp = p[(idx + 1) % 4];
 
-                QVector2D lv = QVector2D(lp - s);
-                QVector2D rv = QVector2D(rp - s);
+                auto lv = QVector2D(lp - s);
+                auto rv = QVector2D(rp - s);
 
                 cp = (lv + 0.5 * (rv - lv)).toPointF();
             }
@@ -2127,7 +2127,7 @@ DkHistogram::DkHistogram(QWidget *parent)
     loadSettings();
 
     // create context menu
-    QAction *showStats = new QAction(tr("Show Statistics"), this);
+    auto *showStats = new QAction(tr("Show Statistics"), this);
     showStats->setCheckable(true);
     showStats->setChecked(mDisplayMode == DisplayMode::histogram_mode_extended);
     connect(showStats, &QAction::triggered, this, &DkHistogram::onToggleStatsTriggered);
@@ -2234,7 +2234,7 @@ void DkHistogram::onToggleStatsTriggered(bool show)
 void DkHistogram::loadSettings()
 {
     int styleSetting = DkSettingsManager::param().display().histogramStyle;
-    DisplayMode maybeMode = static_cast<DisplayMode>(styleSetting);
+    auto maybeMode = static_cast<DisplayMode>(styleSetting);
     if (maybeMode == DisplayMode::histogram_mode_simple || maybeMode == DisplayMode::histogram_mode_extended) {
         mDisplayMode = maybeMode;
     } else {
@@ -2321,9 +2321,9 @@ void DkHistogram::drawHistogram(QImage imgQt)
             const QRgb *pixel = (QRgb *)(imgQt.constScanLine(rIdx));
 
             for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
-                size_t pixR = static_cast<size_t>(qRed(*pixel));
-                size_t pixG = static_cast<size_t>(qGreen(*pixel));
-                size_t pixB = static_cast<size_t>(qBlue(*pixel));
+                auto pixR = static_cast<size_t>(qRed(*pixel));
+                auto pixG = static_cast<size_t>(qGreen(*pixel));
+                auto pixB = static_cast<size_t>(qBlue(*pixel));
 
                 mHist[0][pixR]++;
                 mHist[1][pixG]++;
@@ -2493,8 +2493,8 @@ DkDirectoryEdit::DkDirectoryEdit(QWidget *parent /* = 0 */)
     setObjectName("DkWarningEdit");
     connect(this, &DkDirectoryEdit::textChanged, this, &DkDirectoryEdit::lineEditChanged);
 
-    QCompleter *completer = new QCompleter(this);
-    QFileSystemModel *model = new QFileSystemModel(completer);
+    auto *completer = new QCompleter(this);
+    auto *model = new QFileSystemModel(completer);
     model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     completer->setModel(model);
     setCompleter(completer);
@@ -2507,8 +2507,8 @@ DkDirectoryEdit::DkDirectoryEdit(const QString &content, QWidget *parent /* = 0 
     connect(this, &DkDirectoryEdit::textChanged, this, &DkDirectoryEdit::lineEditChanged);
     setText(content);
 
-    QCompleter *completer = new QCompleter(this);
-    QFileSystemModel *model = new QFileSystemModel(completer);
+    auto *completer = new QCompleter(this);
+    auto *model = new QFileSystemModel(completer);
     model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     completer->setModel(model);
     setCompleter(completer);
@@ -2545,10 +2545,10 @@ void DkDirectoryChooser::createLayout(const QString &dirPath)
     mDirEdit = new DkDirectoryEdit(dirPath, this);
     mDirEdit->setObjectName("dirEdit");
 
-    QPushButton *dirButton = new QPushButton(tr("..."), this);
+    auto *dirButton = new QPushButton(tr("..."), this);
     connect(dirButton, &QPushButton::clicked, this, &DkDirectoryChooser::onDirButtonClicked);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->setAlignment(Qt::AlignLeft);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(mDirEdit);
@@ -2995,10 +2995,10 @@ void DkDisplayWidget::createLayout()
 {
     mScreens = QGuiApplication::screens();
 
-    QButtonGroup *bg = new QButtonGroup(this);
+    auto *bg = new QButtonGroup(this);
 
     for (int idx = 0; idx < mScreens.size(); idx++) {
-        QPushButton *sb = new QPushButton(QString::number(idx + 1), this);
+        auto *sb = new QPushButton(QString::number(idx + 1), this);
         sb->setObjectName("displayButton");
         sb->setCheckable(true);
         sb->setFlat(true);

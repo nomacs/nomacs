@@ -63,9 +63,9 @@ void DkTifDialog::init()
     setLayout(new QVBoxLayout(this));
 
     // QWidget* buttonWidget = new QWidget(this);
-    QGroupBox *buttonWidget = new QGroupBox(tr("TIF compression"), this);
-    QVBoxLayout *vBox = new QVBoxLayout(buttonWidget);
-    QButtonGroup *bGroup = new QButtonGroup(buttonWidget);
+    auto *buttonWidget = new QGroupBox(tr("TIF compression"), this);
+    auto *vBox = new QVBoxLayout(buttonWidget);
+    auto *bGroup = new QButtonGroup(buttonWidget);
     noCompressionButton = new QRadioButton(tr("&no compression"), this);
     compressionButton = new QRadioButton(tr("&LZW compression (lossless)"), this);
     compressionButton->setChecked(true);
@@ -76,9 +76,7 @@ void DkTifDialog::init()
     vBox->addWidget(compressionButton);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, this, &DkTifDialog::accept);
@@ -222,9 +220,9 @@ void DkCompressDialog::init()
 
 void DkCompressDialog::createLayout()
 {
-    QLabel *origLabelText = new QLabel(tr("Original"), this);
+    auto *origLabelText = new QLabel(tr("Original"), this);
     origLabelText->setAlignment(Qt::AlignHCenter);
-    QLabel *newLabel = new QLabel(tr("New"), this);
+    auto *newLabel = new QLabel(tr("New"), this);
     newLabel->setAlignment(Qt::AlignHCenter);
 
     // shows the original image
@@ -277,8 +275,8 @@ void DkCompressDialog::createLayout()
     mColChooser->enableAlpha(false);
     connect(mColChooser, &DkColorChooser::colorChanged, this, &DkCompressDialog::newBgCol);
 
-    QWidget *previewWidget = new QWidget(this);
-    QGridLayout *previewLayout = new QGridLayout(previewWidget);
+    auto *previewWidget = new QWidget(this);
+    auto *previewLayout = new QGridLayout(previewWidget);
     previewLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
     previewLayout->setColumnStretch(0, 1);
     previewLayout->setColumnStretch(1, 1);
@@ -294,9 +292,7 @@ void DkCompressDialog::createLayout()
     previewLayout->addWidget(mPreviewSizeLabel, 5, 1);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     buttons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
     buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
@@ -304,7 +300,7 @@ void DkCompressDialog::createLayout()
     connect(buttons, &QDialogButtonBox::accepted, this, &DkCompressDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, this, &DkCompressDialog::reject);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(previewWidget);
     layout->addWidget(buttons);
 
