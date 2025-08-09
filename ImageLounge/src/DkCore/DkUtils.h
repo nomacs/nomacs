@@ -222,7 +222,7 @@ public:
         int cnt = 0;
 
         for (int rIdx = 0; rIdx < src.rows; rIdx++) {
-            const float *srcPtr = src.ptr<float>(rIdx);
+            const auto *srcPtr = src.ptr<float>(rIdx);
 
             for (int cIdx = 0; cIdx < src.cols; cIdx++, cnt++) {
                 msg += DkUtils::stringify(srcPtr[cIdx], 3);

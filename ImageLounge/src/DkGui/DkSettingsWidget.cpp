@@ -150,16 +150,16 @@ void DkSettingsWidget::createLayout()
     mTreeView->header()->resizeSection(0, 200);
     // mTreeView->setSortingEnabled(true);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(mSettingsFilter);
     layout->addWidget(mTreeView);
 
     // contextMenu
-    QMenu *contextMenu = new QMenu(mTreeView);
+    auto *contextMenu = new QMenu(mTreeView);
     mTreeView->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    QAction *removeAction = new QAction(tr("Delete"), contextMenu);
+    auto *removeAction = new QAction(tr("Delete"), contextMenu);
     removeAction->setShortcut(QKeySequence::Delete);
     mTreeView->addAction(removeAction);
     connect(removeAction, &QAction::triggered, this, &DkSettingsWidget::onRemoveRowsTriggered);
@@ -300,7 +300,7 @@ bool DkSettingsProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 
-    TreeItem *t = static_cast<TreeItem *>(index.internalPointer());
+    const auto *t = static_cast<TreeItem *>(index.internalPointer());
     if (t) {
         return t->contains(filterRegularExpression(), filterKeyColumn());
     }
@@ -349,8 +349,8 @@ QModelIndex DkSettingsModel::parent(const QModelIndex &index) const
     if (!index.isValid())
         return QModelIndex();
 
-    TreeItem *childItem = static_cast<TreeItem *>(index.internalPointer());
-    TreeItem *parentItem = childItem->parent();
+    const auto *childItem = static_cast<TreeItem *>(index.internalPointer());
+    const TreeItem *parentItem = childItem->parent();
 
     if (parentItem == mRootItem)
         return QModelIndex();
@@ -390,7 +390,7 @@ QVariant DkSettingsModel::data(const QModelIndex &index, int role) const
     }
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+        auto *item = static_cast<TreeItem *>(index.internalPointer());
         return item->data(index.column());
     }
 
@@ -411,17 +411,17 @@ bool DkSettingsModel::setData(const QModelIndex &index, const QVariant &value, i
         return false;
 
     if (index.column() == 1) {
-        QString val = value.value<QString>();
+        auto val = value.value<QString>();
         // TODO: check value & write it directly?
 
-        TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+        auto *item = static_cast<TreeItem *>(index.internalPointer());
         item->setData(val, index.column());
     } else {
-        TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+        auto *item = static_cast<TreeItem *>(index.internalPointer());
         item->setData(value, index.column());
     }
 
-    TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+    auto *item = static_cast<TreeItem *>(index.internalPointer());
 
     if (item) {
         item->setData(value, index.column());
@@ -465,13 +465,13 @@ void DkSettingsModel::addSettingsGroup(const DkSettingsGroup &group, const QStri
     if (!parentItem)
         parentItem = mRootItem;
 
-    TreeItem *settingsItem = new TreeItem(data, parentItem);
+    auto *settingsItem = new TreeItem(data, parentItem);
 
     for (const DkSettingsEntry &entry : group.entries()) {
         QVector<QVariant> settingsData;
         settingsData << entry.key() << entry.value();
 
-        TreeItem *dataItem = new TreeItem(settingsData, settingsItem);
+        auto *dataItem = new TreeItem(settingsData, settingsItem);
         settingsItem->appendChild(dataItem);
     }
 
@@ -496,7 +496,7 @@ bool DkSettingsModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     bool success = false;
 
-    TreeItem *item = static_cast<TreeItem *>(parent.internalPointer());
+    auto *item = static_cast<TreeItem *>(parent.internalPointer());
     if (!item)
         item = mRootItem;
 

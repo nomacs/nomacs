@@ -306,7 +306,7 @@ QImage transposeImage(const QImage &imgIn)
     const int inBPL = imgIn.bytesPerLine();
     for (int i = 0; i < h; i++) {
         const T *lineIn = reinterpret_cast<const T *>(ptrIn);
-        uchar *ptrOut = const_cast<uchar *>(imgOut.constBits() + i * sizeof(T));
+        auto *ptrOut = const_cast<uchar *>(imgOut.constBits() + i * sizeof(T));
         for (int j = 0; j < w; j++) {
             T *out = reinterpret_cast<T *>(ptrOut);
             *out = lineIn[j];
@@ -874,7 +874,7 @@ QImage DkImage::hueSaturation(const QImage &src, int hue, int sat, int brightnes
 
     // apply hue/saturation changes
     for (int rIdx = 0; rIdx < hsvImg.rows; rIdx++) {
-        unsigned char *iPtr = hsvImg.ptr<unsigned char>(rIdx);
+        auto *iPtr = hsvImg.ptr<unsigned char>(rIdx);
 
         for (int cIdx = 0; cIdx < hsvImg.cols * 3; cIdx += 3) {
             // adopt hue
@@ -1076,7 +1076,7 @@ cv::Mat DkImage::exposureMat(const cv::Mat &src, double exposure)
     double CC = y2 - A * std::pow(maxVal, 1.0 / 3.0) - B * maxVal;
 
     for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
-        unsigned short *ptrLut = lut.ptr<unsigned short>(rIdx);
+        auto *ptrLut = lut.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
             double val = cIdx;
@@ -1108,7 +1108,7 @@ cv::Mat DkImage::gammaMat(const cv::Mat &src, double gamma)
     cv::Mat lut(1, maxVal + 1, CV_16UC1);
 
     for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
-        unsigned short *ptrLut = lut.ptr<unsigned short>(rIdx);
+        auto *ptrLut = lut.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
             double val = std::pow((double)cIdx / maxVal, 1.0 / gamma) * maxVal;
@@ -1127,10 +1127,10 @@ cv::Mat DkImage::applyLUT(const cv::Mat &src, const cv::Mat &lut)
     }
 
     cv::Mat dst = src.clone();
-    const unsigned short *lutPtr = lut.ptr<unsigned short>();
+    const auto *lutPtr = lut.ptr<unsigned short>();
 
     for (int rIdx = 0; rIdx < src.rows; rIdx++) {
-        unsigned short *dPtr = dst.ptr<unsigned short>(rIdx);
+        auto *dPtr = dst.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < src.cols * src.channels(); cIdx++) {
             assert(dPtr[cIdx] >= 0 && dPtr[cIdx] < lut.cols);
@@ -1358,8 +1358,8 @@ void DkImage::logPolar(const cv::Mat &src,
         bufx.ptr<float>()[x] = (float)(x - center.x);
 
     for (y = 0; y < dsize.height; y++) {
-        float *mx = mapx.ptr<float>(y);
-        float *my = mapy.ptr<float>(y);
+        auto *mx = mapx.ptr<float>(y);
+        auto *my = mapy.ptr<float>(y);
 
         for (x = 0; x < dsize.width; x++)
             bufy.ptr<float>()[x] = (float)(y - center.y);

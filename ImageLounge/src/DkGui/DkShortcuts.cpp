@@ -306,7 +306,7 @@ bool DkActionEventFilter::eventFilter(QObject *target, QEvent *event)
     if (Q_LIKELY(event->type() != QEvent::ShortcutOverride && event->type() != QEvent::KeyPress))
         return false;
 
-    QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+    const auto *keyEvent = static_cast<QKeyEvent *>(event);
 
     int key = keyEvent->modifiers() | keyEvent->key();
     for (QAction *a : std::as_const(mActions)) {

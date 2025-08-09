@@ -169,7 +169,7 @@ uint8_t *drifLoadImg(const char *szFileName, uint32_t *w, uint32_t *h, uint32_t 
         return nullptr;
     }
 
-    drif_footer_t *footer = (drif_footer_t *)buffer;
+    const auto *footer = (drif_footer_t *)buffer;
 
     // check magic & format
     if (DRIF_MAGIC != footer->magic || !isDrifFmtValid(footer->f)) {
@@ -231,7 +231,7 @@ int drifSaveImg(const char *szFileName, const uint32_t w, const uint32_t h, cons
 
     // prepare footer
     char buffer[DRIF_FOOTER_SZ] = {0};
-    drif_footer_t *footer = (drif_footer_t *)buffer;
+    auto *footer = (drif_footer_t *)buffer;
     footer->magic = DRIF_MAGIC;
     footer->version = DRIF_VER;
     footer->w = w;

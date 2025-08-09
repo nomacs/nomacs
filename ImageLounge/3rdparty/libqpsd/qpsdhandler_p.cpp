@@ -323,7 +323,7 @@ QImage QPsdHandler::processGrayscale8(QByteArray &imageData, quint32 width, quin
     qDebug() << "8-bit Grayscale";
 #endif
     QImage result(width, height, QImage::Format_RGB32);
-    quint8 *data = (quint8 *)imageData.constData();
+    const auto *data = (const quint8 *)imageData.constData();
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -346,8 +346,8 @@ QImage QPsdHandler::processGrayscale8WithAlpha(QByteArray &imageData,
     qDebug() << "8-bit Grayscale with Alpha";
 #endif
     QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *data = (quint8 *)imageData.constData();
-    quint8 *alpha = data + totalBytesPerChannel;
+    const auto *data = (const quint8 *)imageData.constData();
+    const quint8 *alpha = data + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -370,7 +370,7 @@ QImage QPsdHandler::processGrayscale16(QByteArray &imageData, quint32 width, qui
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
     quint16 data16;
     QImage result(width, height, QImage::Format_RGB32);
-    quint8 *data8 = (quint8 *)imageData.constData();
+    const auto *data8 = (const quint8 *)imageData.constData();
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -396,8 +396,8 @@ QImage QPsdHandler::processGrayscale16WithAlpha(QByteArray &imageData,
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
     quint16 data16, alpha16;
     QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *data8 = (quint8 *)imageData.constData();
-    quint8 *alpha8 = data8 + totalBytesPerChannel;
+    const auto *data8 = (const quint8 *)imageData.constData();
+    const quint8 *alpha8 = data8 + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -421,16 +421,16 @@ QImage QPsdHandler::processIndexed(QByteArray &colorData, QByteArray &imageData,
 #endif
     QImage result(width, height, QImage::Format_Indexed8);
     int indexCount = colorData.size() / 3;
-    quint8 *red = (quint8 *)colorData.constData();
-    quint8 *green = red + indexCount;
-    quint8 *blue = green + indexCount;
+    const auto *red = (const quint8 *)colorData.constData();
+    const quint8 *green = red + indexCount;
+    const quint8 *blue = green + indexCount;
     for (int i = 0; i < indexCount; ++i) {
         result.setColor(i, qRgb(*red, *green, *blue));
         ++red;
         ++green;
         ++blue;
     }
-    quint8 *data = (quint8 *)imageData.constData();
+    const auto *data = (const quint8 *)imageData.constData();
     for (quint32 i = 0; i < height; ++i) {
         for (quint32 j = 0; j < width; ++j) {
             result.setPixel(j, i, *data);
@@ -446,9 +446,9 @@ QImage QPsdHandler::processRGB8(QByteArray &imageData, quint32 width, quint32 he
     qDebug() << "8-bit RGB";
 #endif
     QImage result(width, height, QImage::Format_RGB32);
-    quint8 *red = (quint8 *)imageData.constData();
-    quint8 *green = red + totalBytesPerChannel;
-    quint8 *blue = green + totalBytesPerChannel;
+    const auto *red = (const quint8 *)imageData.constData();
+    const quint8 *green = red + totalBytesPerChannel;
+    const quint8 *blue = green + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -472,9 +472,9 @@ QImage QPsdHandler::processRGB16(QByteArray &imageData, quint32 width, quint32 h
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
     QImage result(width, height, QImage::Format_RGB32);
     quint16 red16, blue16, green16;
-    quint8 *red8 = (quint8 *)imageData.constData();
-    quint8 *green8 = red8 + totalBytesPerChannel;
-    quint8 *blue8 = green8 + totalBytesPerChannel;
+    const auto *red8 = (const quint8 *)imageData.constData();
+    const quint8 *green8 = red8 + totalBytesPerChannel;
+    const quint8 *blue8 = green8 + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -502,10 +502,10 @@ QImage QPsdHandler::processRGB8WithAlpha(QByteArray &imageData,
     qDebug() << "8-bit RGB with Alpha";
 #endif
     QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *red = (quint8 *)imageData.constData();
-    quint8 *green = red + totalBytesPerChannel;
-    quint8 *blue = green + totalBytesPerChannel;
-    quint8 *alpha = blue + totalBytesPerChannel;
+    const auto *red = (const quint8 *)imageData.constData();
+    const quint8 *green = red + totalBytesPerChannel;
+    const quint8 *blue = green + totalBytesPerChannel;
+    const quint8 *alpha = blue + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -548,10 +548,10 @@ QImage QPsdHandler::processRGB16WithAlpha(QByteArray &imageData,
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
     QImage result(width, height, QImage::Format_ARGB32);
     quint16 red16, blue16, green16, alpha16;
-    quint8 *red8 = (quint8 *)imageData.constData();
-    quint8 *green8 = red8 + totalBytesPerChannel;
-    quint8 *blue8 = green8 + totalBytesPerChannel;
-    quint8 *alpha8 = blue8 + totalBytesPerChannel;
+    const auto *red8 = (const quint8 *)imageData.constData();
+    const quint8 *green8 = red8 + totalBytesPerChannel;
+    const quint8 *blue8 = green8 + totalBytesPerChannel;
+    const quint8 *alpha8 = blue8 + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -578,9 +578,9 @@ QImage QPsdHandler::processCMY8(QByteArray &imageData, quint32 width, quint32 he
     qDebug() << "8-bit CMY";
 #endif
     QImage result(width, height, QImage::Format_RGB32);
-    quint8 *cyan = (quint8 *)imageData.constData();
-    quint8 *magenta = cyan + totalBytesPerChannel;
-    quint8 *yellow = magenta + totalBytesPerChannel;
+    const auto *cyan = (const quint8 *)imageData.constData();
+    const quint8 *magenta = cyan + totalBytesPerChannel;
+    const quint8 *yellow = magenta + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -603,10 +603,10 @@ QImage QPsdHandler::processCMYK8(QByteArray &imageData, quint32 width, quint32 h
     qDebug() << "8-bit CMYK";
 #endif
     QImage result(width, height, QImage::Format_RGB32);
-    quint8 *cyan = (quint8 *)imageData.constData();
-    quint8 *magenta = cyan + totalBytesPerChannel;
-    quint8 *yellow = magenta + totalBytesPerChannel;
-    quint8 *key = yellow + totalBytesPerChannel;
+    const auto *cyan = (const quint8 *)imageData.constData();
+    const quint8 *magenta = cyan + totalBytesPerChannel;
+    const quint8 *yellow = magenta + totalBytesPerChannel;
+    const quint8 *key = yellow + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -632,11 +632,11 @@ QImage QPsdHandler::processCMYK8WithAlpha(QByteArray &imageData,
     qDebug() << "8-bit CMYK with Alpha";
 #endif
     QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *cyan = (quint8 *)imageData.constData();
-    quint8 *magenta = cyan + totalBytesPerChannel;
-    quint8 *yellow = magenta + totalBytesPerChannel;
-    quint8 *key = yellow + totalBytesPerChannel;
-    quint8 *alpha = key + totalBytesPerChannel;
+    const auto *cyan = (const quint8 *)imageData.constData();
+    const quint8 *magenta = cyan + totalBytesPerChannel;
+    const quint8 *yellow = magenta + totalBytesPerChannel;
+    const quint8 *key = yellow + totalBytesPerChannel;
+    const quint8 *alpha = key + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -662,10 +662,10 @@ QImage QPsdHandler::processCMYK16(QByteArray &imageData, quint32 width, quint32 
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
     QImage result(width, height, QImage::Format_RGB32);
     quint16 cyan16, magenta16, yellow16, key16;
-    quint8 *cyan8 = (quint8 *)imageData.constData();
-    quint8 *magenta8 = cyan8 + totalBytesPerChannel;
-    quint8 *yellow8 = magenta8 + totalBytesPerChannel;
-    quint8 *key8 = yellow8 + totalBytesPerChannel;
+    const auto *cyan8 = (const quint8 *)imageData.constData();
+    const quint8 *magenta8 = cyan8 + totalBytesPerChannel;
+    const quint8 *yellow8 = magenta8 + totalBytesPerChannel;
+    const quint8 *key8 = yellow8 + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -701,11 +701,11 @@ QImage QPsdHandler::processCMYK16WithAlpha(QByteArray &imageData,
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
     QImage result(width, height, QImage::Format_ARGB32);
     quint16 cyan16, magenta16, yellow16, key16, alpha16;
-    quint8 *cyan8 = (quint8 *)imageData.constData();
-    quint8 *magenta8 = cyan8 + totalBytesPerChannel;
-    quint8 *yellow8 = magenta8 + totalBytesPerChannel;
-    quint8 *key8 = yellow8 + totalBytesPerChannel;
-    quint8 *alpha8 = key8 + totalBytesPerChannel;
+    const auto *cyan8 = (const quint8 *)imageData.constData();
+    const quint8 *magenta8 = cyan8 + totalBytesPerChannel;
+    const quint8 *yellow8 = magenta8 + totalBytesPerChannel;
+    const quint8 *key8 = yellow8 + totalBytesPerChannel;
+    const quint8 *alpha8 = key8 + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -738,7 +738,7 @@ QImage QPsdHandler::processDuotone(QByteArray &imageData, quint32 width, quint32
     qDebug() << "Duotone";
 #endif
     QImage result(width, height, QImage::Format_RGB32);
-    quint8 *data = (quint8 *)imageData.constData();
+    const auto *data = (const quint8 *)imageData.constData();
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -758,9 +758,9 @@ QImage QPsdHandler::processLAB8(QByteArray &imageData, quint32 width, quint32 he
     qDebug() << "8-bit LAB";
 #endif
     QImage result(width, height, QImage::Format_RGB32);
-    quint8 *lightness = (quint8 *)imageData.constData();
-    quint8 *a = lightness + totalBytesPerChannel;
-    quint8 *b = a + totalBytesPerChannel;
+    const auto *lightness = (const quint8 *)imageData.constData();
+    const quint8 *a = lightness + totalBytesPerChannel;
+    const quint8 *b = a + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -785,10 +785,10 @@ QImage QPsdHandler::processLAB8WithAlpha(QByteArray &imageData,
     qDebug() << "8-bit LAB with Alpha";
 #endif
     QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *lightness = (quint8 *)imageData.constData();
-    quint8 *a = lightness + totalBytesPerChannel;
-    quint8 *b = a + totalBytesPerChannel;
-    quint8 *alpha = b + totalBytesPerChannel;
+    const auto *lightness = (const quint8 *)imageData.constData();
+    const quint8 *a = lightness + totalBytesPerChannel;
+    const quint8 *b = a + totalBytesPerChannel;
+    const quint8 *alpha = b + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -813,9 +813,9 @@ QImage QPsdHandler::processLAB16(QByteArray &imageData, quint32 width, quint32 h
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
     quint16 lightness16, a16, b16;
     QImage result(width, height, QImage::Format_RGB32);
-    quint8 *lightness8 = (quint8 *)imageData.constData();
-    quint8 *a8 = lightness8 + totalBytesPerChannel;
-    quint8 *b8 = a8 + totalBytesPerChannel;
+    const auto *lightness8 = (quint8 *)imageData.constData();
+    const quint8 *a8 = lightness8 + totalBytesPerChannel;
+    const quint8 *b8 = a8 + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);
@@ -845,10 +845,10 @@ QImage QPsdHandler::processLAB16WithAlpha(QByteArray &imageData,
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
     quint16 lightness16, a16, b16, alpha16;
     QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *lightness8 = (quint8 *)imageData.constData();
-    quint8 *a8 = lightness8 + totalBytesPerChannel;
-    quint8 *b8 = a8 + totalBytesPerChannel;
-    quint8 *alpha8 = b8 + totalBytesPerChannel;
+    const auto *lightness8 = (const quint8 *)imageData.constData();
+    const quint8 *a8 = lightness8 + totalBytesPerChannel;
+    const quint8 *b8 = a8 + totalBytesPerChannel;
+    const quint8 *alpha8 = b8 + totalBytesPerChannel;
     QRgb *p, *end;
     for (quint32 y = 0; y < height; ++y) {
         p = (QRgb *)result.scanLine(y);

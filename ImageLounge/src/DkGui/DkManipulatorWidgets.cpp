@@ -76,20 +76,20 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
 void DkManipulatorWidget::createLayout()
 {
     // actions
-    QWidget *actionWidget = new QWidget(this);
-    QVBoxLayout *aLayout = new QVBoxLayout(actionWidget);
+    auto *actionWidget = new QWidget(this);
+    auto *aLayout = new QVBoxLayout(actionWidget);
     aLayout->setAlignment(Qt::AlignTop);
     aLayout->setContentsMargins(0, 0, 0, 0);
     aLayout->setSpacing(0);
 
-    QButtonGroup *group = new QButtonGroup(this);
+    auto *group = new QButtonGroup(this);
 
     DkActionManager &am = DkActionManager::instance();
     for (int idx = DkManipulatorManager::m_end; idx < DkManipulatorManager::m_ext_end; idx++) {
         const auto extIdx = static_cast<DkManipulatorManager::ManipulatorExtId>(idx);
         auto mpl = am.manipulatorManager().manipulatorExt(extIdx);
 
-        DkTabEntryWidget *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
+        auto *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
         connect(entry, &DkTabEntryWidget::clicked, this, [this, mpl]() {
             selectManipulatorInner(mpl);
         });
@@ -108,7 +108,7 @@ void DkManipulatorWidget::createLayout()
                   "1px;}")
         + QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}");
 
-    QScrollArea *actionScroller = new QScrollArea(this);
+    auto *actionScroller = new QScrollArea(this);
     actionScroller->setStyleSheet(scrollbarStyle + actionScroller->styleSheet());
     actionScroller->setWidgetResizable(true);
     actionScroller->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
@@ -124,8 +124,8 @@ void DkManipulatorWidget::createLayout()
     mPreview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mPreview->setContentsMargins(8, 8, 8, 8);
 
-    QWidget *mplWidget = new QWidget(this);
-    QVBoxLayout *mplLayout = new QVBoxLayout(mplWidget);
+    auto *mplWidget = new QWidget(this);
+    auto *mplLayout = new QVBoxLayout(mplWidget);
     mplLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     mplLayout->addWidget(mTitleLabel);
     for (auto w : mWidgets)
@@ -133,7 +133,7 @@ void DkManipulatorWidget::createLayout()
     mplLayout->addWidget(mPreview);
     mplWidget->setMinimumHeight(350);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(actionScroller);
@@ -159,7 +159,7 @@ void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC)
 
 void DkManipulatorWidget::selectManipulator()
 {
-    QAction *action = dynamic_cast<QAction *>(QObject::sender());
+    const auto *action = dynamic_cast<QAction *>(QObject::sender());
 
     DkActionManager &am = DkActionManager::instance();
     QSharedPointer<DkBaseManipulator> mpl = am.manipulatorManager().manipulator(action);
@@ -239,23 +239,23 @@ DkTinyPlanetWidget::DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> mani
 void DkTinyPlanetWidget::createLayout()
 {
     // post processing sliders
-    DkSlider *scaleSlider = new DkSlider(tr("Planet Size"), this);
+    auto *scaleSlider = new DkSlider(tr("Planet Size"), this);
     scaleSlider->setMinimum(1);
     scaleSlider->setMaximum(1000);
     scaleSlider->setValue(manipulator()->size());
     connect(scaleSlider, &DkSlider::valueChanged, this, &DkTinyPlanetWidget::onScaleSliderValueChanged);
 
-    DkSlider *angleSlider = new DkSlider(tr("Angle"), this);
+    auto *angleSlider = new DkSlider(tr("Angle"), this);
     angleSlider->setValue(manipulator()->angle());
     angleSlider->setMinimum(-180);
     angleSlider->setMaximum(179);
     connect(angleSlider, &DkSlider::valueChanged, this, &DkTinyPlanetWidget::onAngleSliderValueChanged);
 
-    QCheckBox *invertBox = new QCheckBox(tr("Invert Planet"), this);
+    auto *invertBox = new QCheckBox(tr("Invert Planet"), this);
     invertBox->setChecked(manipulator()->inverted());
     connect(invertBox, &QCheckBox::toggled, this, &DkTinyPlanetWidget::onInvertBoxToggled);
 
-    QVBoxLayout *sliderLayout = new QVBoxLayout(this);
+    auto *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(scaleSlider);
     sliderLayout->addWidget(angleSlider);
     sliderLayout->addWidget(invertBox);
@@ -293,12 +293,12 @@ DkBlurWidget::DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWi
 void DkBlurWidget::createLayout()
 {
     // post processing sliders
-    DkSlider *sigmaSlider = new DkSlider(tr("Sigma"), this);
+    auto *sigmaSlider = new DkSlider(tr("Sigma"), this);
     sigmaSlider->setValue(manipulator()->sigma());
     sigmaSlider->setMaximum(50);
     connect(sigmaSlider, &DkSlider::valueChanged, this, &DkBlurWidget::onSigmaSliderValueChanged);
 
-    QVBoxLayout *sliderLayout = new QVBoxLayout(this);
+    auto *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(sigmaSlider);
 }
 
@@ -324,15 +324,15 @@ DkUnsharpMaskWidget::DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> ma
 void DkUnsharpMaskWidget::createLayout()
 {
     // post processing sliders
-    DkSlider *sigmaSlider = new DkSlider(tr("Sigma"), this);
+    auto *sigmaSlider = new DkSlider(tr("Sigma"), this);
     sigmaSlider->setValue(manipulator()->sigma());
     connect(sigmaSlider, &DkSlider::valueChanged, this, &DkUnsharpMaskWidget::onSigmaSliderValueChanged);
 
-    DkSlider *amountSlider = new DkSlider(tr("Amount"), this);
+    auto *amountSlider = new DkSlider(tr("Amount"), this);
     amountSlider->setValue(manipulator()->amount());
     connect(amountSlider, &DkSlider::valueChanged, this, &DkUnsharpMaskWidget::onAmountSliderValueChanged);
 
-    QVBoxLayout *sliderLayout = new QVBoxLayout(this);
+    auto *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(sigmaSlider);
     sliderLayout->addWidget(amountSlider);
 }
@@ -368,13 +368,13 @@ QSharedPointer<DkRotateManipulator> DkRotateWidget::manipulator() const
 
 void DkRotateWidget::createLayout()
 {
-    DkSlider *angleSlider = new DkSlider(tr("Angle"), this);
+    auto *angleSlider = new DkSlider(tr("Angle"), this);
     angleSlider->setValue(manipulator()->angle());
     angleSlider->setMinimum(-180);
     angleSlider->setMaximum(180);
     connect(angleSlider, &DkSlider::valueChanged, this, &DkRotateWidget::onAngleSliderValueChanged);
 
-    QVBoxLayout *sliderLayout = new QVBoxLayout(this);
+    auto *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(angleSlider);
 }
 
@@ -412,7 +412,7 @@ void DkResizeWidget::onObjectNameChanged(const QString &name)
 
 void DkResizeWidget::createLayout()
 {
-    DkDoubleSlider *scaleSlider = new DkDoubleSlider(tr("Scale"), this);
+    auto *scaleSlider = new DkDoubleSlider(tr("Scale"), this);
     scaleSlider->setMinimum(0.1);
     scaleSlider->setCenterValue(1.0);
     scaleSlider->setMaximum(10);
@@ -432,10 +432,10 @@ void DkResizeWidget::createLayout()
             this,
             &DkResizeWidget::onIplBoxCurrentIndexChanged);
 
-    QCheckBox *cbGamma = new QCheckBox(tr("Gamma Correction"), this);
+    auto *cbGamma = new QCheckBox(tr("Gamma Correction"), this);
     connect(cbGamma, &QCheckBox::toggled, this, &DkResizeWidget::onGammaCorrectionToggled);
 
-    QVBoxLayout *sliderLayout = new QVBoxLayout(this);
+    auto *sliderLayout = new QVBoxLayout(this);
     sliderLayout->setSpacing(10);
     sliderLayout->addWidget(scaleSlider);
     sliderLayout->addWidget(mIplBox);
@@ -478,18 +478,18 @@ void DkThresholdWidget::onColBoxToggled(bool checked)
 
 void DkThresholdWidget::createLayout()
 {
-    DkSlider *thrSlider = new DkSlider(tr("Threshold"), this);
+    auto *thrSlider = new DkSlider(tr("Threshold"), this);
     thrSlider->setValue(manipulator()->threshold());
     thrSlider->setMinimum(0);
     thrSlider->setMaximum(255);
     thrSlider->setValue(manipulator()->threshold());
     connect(thrSlider, &DkSlider::valueChanged, this, &DkThresholdWidget::onThrSliderValueChanged);
 
-    QCheckBox *colBox = new QCheckBox(tr("Color"), this);
+    auto *colBox = new QCheckBox(tr("Color"), this);
     colBox->setChecked(manipulator()->color());
     connect(colBox, &QCheckBox::toggled, this, &DkThresholdWidget::onColBoxToggled);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(thrSlider);
     layout->addWidget(colBox);
 }
@@ -515,10 +515,10 @@ QSharedPointer<DkColorManipulator> DkColorWidget::manipulator() const
 
 void DkColorWidget::createLayout()
 {
-    DkColorPicker *cp = new DkColorPicker(this);
+    auto *cp = new DkColorPicker(this);
     connect(cp, &DkColorPicker::colorSelected, this, &DkColorWidget::onColPickerColorSelected);
 
-    QVBoxLayout *l = new QVBoxLayout(this);
+    auto *l = new QVBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(cp);
 }
@@ -544,28 +544,28 @@ QSharedPointer<DkHueManipulator> DkHueWidget::manipulator() const
 
 void DkHueWidget::createLayout()
 {
-    DkSlider *hueSlider = new DkSlider(tr("Hue"), this);
+    auto *hueSlider = new DkSlider(tr("Hue"), this);
     hueSlider->getSlider()->setObjectName("DkHueSlider");
     hueSlider->setValue(manipulator()->hue());
     hueSlider->setMinimum(-180);
     hueSlider->setMaximum(180);
     connect(hueSlider, &DkSlider::valueChanged, this, &DkHueWidget::onHueSliderValueChanged);
 
-    DkSlider *satSlider = new DkSlider(tr("Saturation"), this);
+    auto *satSlider = new DkSlider(tr("Saturation"), this);
     satSlider->getSlider()->setObjectName("DkSaturationSlider");
     satSlider->setValue(manipulator()->saturation());
     satSlider->setMinimum(-100);
     satSlider->setMaximum(100);
     connect(satSlider, &DkSlider::valueChanged, this, &DkHueWidget::onSatSliderValueChanged);
 
-    DkSlider *brightnessSlider = new DkSlider(tr("Brightness"), this);
+    auto *brightnessSlider = new DkSlider(tr("Brightness"), this);
     brightnessSlider->getSlider()->setObjectName("DkBrightnessSlider");
     brightnessSlider->setValue(manipulator()->hue());
     brightnessSlider->setMinimum(-100);
     brightnessSlider->setMaximum(100);
     connect(brightnessSlider, &DkSlider::valueChanged, this, &DkHueWidget::onBrightnessSliderValueChanged);
 
-    QVBoxLayout *sliderLayout = new QVBoxLayout(this);
+    auto *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(hueSlider);
     sliderLayout->addWidget(satSlider);
     sliderLayout->addWidget(brightnessSlider);
@@ -602,21 +602,21 @@ QSharedPointer<DkExposureManipulator> DkExposureWidget::manipulator() const
 
 void DkExposureWidget::createLayout()
 {
-    DkDoubleSlider *exposureSlider = new DkDoubleSlider(tr("Exposure"), this);
+    auto *exposureSlider = new DkDoubleSlider(tr("Exposure"), this);
     exposureSlider->setMinimum(-3);
     exposureSlider->setMaximum(3);
     exposureSlider->setTickInterval(0.0005);
     exposureSlider->setValue(manipulator()->exposure());
     connect(exposureSlider, &DkDoubleSlider::valueChanged, this, &DkExposureWidget::onExposureSliderValueChanged);
 
-    DkDoubleSlider *offsetSlider = new DkDoubleSlider(tr("Offset"), this);
+    auto *offsetSlider = new DkDoubleSlider(tr("Offset"), this);
     offsetSlider->setMinimum(-0.5);
     offsetSlider->setMaximum(0.5);
     offsetSlider->setTickInterval(0.001);
     offsetSlider->setValue(manipulator()->offset());
     connect(offsetSlider, &DkDoubleSlider::valueChanged, this, &DkExposureWidget::onOffsetSliderValueChanged);
 
-    DkDoubleSlider *gammaSlider = new DkDoubleSlider(tr("Gamma"), this);
+    auto *gammaSlider = new DkDoubleSlider(tr("Gamma"), this);
     gammaSlider->setMinimum(0);
     gammaSlider->setCenterValue(1);
     gammaSlider->setMaximum(10);
@@ -625,7 +625,7 @@ void DkExposureWidget::createLayout()
     gammaSlider->setValue(manipulator()->gamma());
     connect(gammaSlider, &DkDoubleSlider::valueChanged, this, &DkExposureWidget::onGammaSliderValueChanged);
 
-    QVBoxLayout *sliderLayout = new QVBoxLayout(this);
+    auto *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(exposureSlider);
     sliderLayout->addWidget(offsetSlider);
     sliderLayout->addWidget(gammaSlider);

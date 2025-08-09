@@ -76,7 +76,7 @@ void SbChannelWidget::loadImage(QString file)
 
 void SbChannelWidget::buildUI()
 {
-    QVBoxLayout *outerLayout = new QVBoxLayout(this);
+    auto *outerLayout = new QVBoxLayout(this);
     outerLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
     thumbnail = new QPushButton();
@@ -85,8 +85,8 @@ void SbChannelWidget::buildUI()
     connect(thumbnail, SIGNAL(released()), this, SLOT(onClickThumbnail()));
     filenameLabel = new QLabel();
 
-    QHBoxLayout *controlsLayout = new QHBoxLayout();
-    QPushButton *invertButton = new QPushButton("invert");
+    auto *controlsLayout = new QHBoxLayout();
+    auto *invertButton = new QPushButton("invert");
     connect(invertButton, SIGNAL(released()), this, SLOT(onPushButtonInvert()));
     intSlider = new SbIntensitySlider(Qt::Orientation::Horizontal);
     intSlider->setMinimum(INT_SLIDER_MIN);
