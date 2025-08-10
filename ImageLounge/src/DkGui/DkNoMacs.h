@@ -218,7 +218,6 @@ protected:
     DkUpdateDialog *mUpdateDialog = nullptr;
     QProgressDialog *mProgressDialog = nullptr;
     QProgressDialog *mProgressDialogTranslations = nullptr;
-    DkForceThumbDialog *mForceDialog = nullptr;
     DkTrainDialog *mTrainDialog = nullptr;
 #ifdef WITH_QUAZIP
     DkArchiveExtractionDialog *mArchiveExtractionDialog = nullptr;

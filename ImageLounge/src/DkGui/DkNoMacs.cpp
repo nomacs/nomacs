@@ -121,7 +121,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     mUpdateDialog = nullptr;
     mProgressDialog = nullptr;
     mProgressDialogTranslations = nullptr;
-    mForceDialog = nullptr;
     mTrainDialog = nullptr;
     mExplorer = nullptr;
     mMetaDataDock = nullptr;
@@ -1481,19 +1480,18 @@ void DkNoMacs::exportTiff()
 
 void DkNoMacs::computeThumbsBatch()
 {
-    if (!mForceDialog)
-        mForceDialog = new DkForceThumbDialog(this);
-    mForceDialog->setWindowTitle(tr("Save Thumbnails"));
-    mForceDialog->setDir(getTabWidget()->getCurrentDir());
-
-    if (!mForceDialog->exec())
+    auto *dialog = new DkForceThumbDialog(getTabWidget()->getCurrentDir(), this);
+    if (!dialog->exec()) {
+        dialog->deleteLater();
         return;
+    }
 
     if (!mThumbSaver)
         mThumbSaver = new DkThumbsSaver(this);
 
     if (getTabWidget()->getCurrentImageLoader())
-        mThumbSaver->processDir(getTabWidget()->getCurrentImageLoader()->getImages(), mForceDialog->forceSave());
+        mThumbSaver->processDir(getTabWidget()->getCurrentImageLoader()->getImages(), dialog->forceSave());
+    dialog->deleteLater();
 }
 
 void DkNoMacs::aboutDialog()
