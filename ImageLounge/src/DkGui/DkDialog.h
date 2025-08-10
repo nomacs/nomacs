@@ -802,15 +802,10 @@ class DkForceThumbDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkForceThumbDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
-
+    DkForceThumbDialog(const QDir &dir, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     bool forceSave() const;
-    void setDir(const QDir &fileInfo);
 
-protected:
-    void createLayout();
-
-    QLabel *infoLabel = nullptr;
+private:
     QRadioButton *mOverwriteBtn = nullptr;
 };
 

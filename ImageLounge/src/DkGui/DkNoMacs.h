@@ -252,7 +252,6 @@ protected:
     DkUpdateDialog *mUpdateDialog = 0;
     QProgressDialog *mProgressDialog = 0;
     QProgressDialog *mProgressDialogTranslations = 0;
-    DkForceThumbDialog *mForceDialog = 0;
     DkTrainDialog *mTrainDialog = 0;
 #ifdef WITH_QUAZIP
     DkArchiveExtractionDialog *mArchiveExtractionDialog = 0;
