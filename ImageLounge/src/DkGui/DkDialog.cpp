@@ -3679,10 +3679,10 @@ void DkForceThumbDialog::createLayout()
     auto *layout = new QVBoxLayout(this);
 
     infoLabel = new QLabel();
-    infoLabel->setAlignment(Qt::AlignHCenter);
 
-    cbForceSave = new QCheckBox(tr("Overwrite Existing Thumbnails"));
-    cbForceSave->setToolTip("If checked, existing thumbnails will be replaced");
+    auto *skipExistingBtn = new QRadioButton(tr("Apply to the files without thumbnails"));
+    mOverwriteBtn = new QRadioButton(tr("Apply to all files and overwrite existing thumbnails"));
+    mOverwriteBtn->setToolTip("If checked, existing thumbnails will be replaced");
 
     // mButtons
     auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -3692,18 +3692,22 @@ void DkForceThumbDialog::createLayout()
     connect(buttons, &QDialogButtonBox::rejected, this, &DkForceThumbDialog::reject);
 
     layout->addWidget(infoLabel);
-    layout->addWidget(cbForceSave);
+    layout->addWidget(skipExistingBtn);
+    layout->addWidget(mOverwriteBtn);
     layout->addWidget(buttons);
+    skipExistingBtn->setChecked(true);
 }
 
 bool DkForceThumbDialog::forceSave() const
 {
-    return cbForceSave->isChecked();
+    return mOverwriteBtn->isChecked();
 }
 
 void DkForceThumbDialog::setDir(const QDir &fileInfo)
 {
-    infoLabel->setText(tr("Compute thumbnails for all images in:\n %1\n").arg(fileInfo.absolutePath()));
+    infoLabel->setText(
+        tr("Compute thumbnails for images in:\n%1\nand save to metadata.\nWarning: This will modify the files.")
+            .arg(fileInfo.absolutePath()));
 }
 
 // Welcome dialog --------------------------------------------------------------------
