@@ -348,11 +348,11 @@ void DkGeneralPreference::createLayout()
     connect(themeBox, &QComboBox::currentTextChanged, this, [themeBox, colors](const QString &text) {
         (void)text;
         const QString themeFile = themeBox->currentData().toString();
-        auto &tm = DkThemeManager::instance();
+        auto &themeManager = DkThemeManager::instance();
 
-        if (tm.getCurrentThemeName() != themeFile) {
-            tm.setCurrentTheme(themeFile);
-            tm.applyTheme();
+        if (themeManager.getCurrentThemeName() != themeFile) {
+            themeManager.setCurrentTheme(themeFile);
+            themeManager.applyTheme();
         }
     });
 

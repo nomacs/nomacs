@@ -195,38 +195,35 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
     for (int idx = 0; idx < images.size(); idx++) {
         const auto img = images[idx];
         mWatchers[idx] = std::make_unique<QFutureWatcher<void>>();
-        mWatchers[idx]->setFuture(QtConcurrent::run(
-            [](const QString &filePath, const bool forceSave) {
-                LoadThumbnailOption opt = LoadThumbnailOption::none;
-                if (forceSave) {
-                    opt = LoadThumbnailOption::force_full;
+        mWatchers[idx]->setFuture(QtConcurrent::run([filePath = img->filePath(), forceSave]() {
+            LoadThumbnailOption opt = LoadThumbnailOption::none;
+            if (forceSave) {
+                opt = LoadThumbnailOption::force_full;
+            }
+
+            std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
+            if (!res || (!forceSave && res->fromExif)) {
+                return;
+            }
+
+            // save the thumbnail
+            try {
+                int orientation = res->metaData->getOrientationDegrees();
+                QImage rotatedThumb = res->thumb;
+                if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set
+                    && orientation != 0) {
+                    // TODO: Use DkUtils rotation
+                    QTransform rotationMatrix;
+                    rotationMatrix.rotate(-orientation);
+                    rotatedThumb = rotatedThumb.transformed(rotationMatrix);
                 }
 
-                std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
-                if (!res || (!forceSave && res->fromExif)) {
-                    return;
-                }
-
-                // save the thumbnail
-                try {
-                    int orientation = res->metaData->getOrientationDegrees();
-                    QImage rotatedThumb = res->thumb;
-                    if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set
-                        && orientation != 0) {
-                        // TODO: Use DkUtils rotation
-                        QTransform rotationMatrix;
-                        rotationMatrix.rotate(-orientation);
-                        rotatedThumb = rotatedThumb.transformed(rotationMatrix);
-                    }
-
-                    res->metaData->updateImageMetaData(rotatedThumb);
-                    res->metaData->saveMetaData(res->filePath);
-                } catch (...) {
-                    qWarning() << "Sorry, I could not save the metadata";
-                }
-            },
-            img->filePath(),
-            forceSave));
+                res->metaData->updateImageMetaData(rotatedThumb);
+                res->metaData->saveMetaData(res->filePath);
+            } catch (...) {
+                qWarning() << "Sorry, I could not save the metadata";
+            }
+        }));
         connect(mWatchers[idx].get(), &QFutureWatcherBase::finished, this, &DkThumbsSaver::thumbLoaded);
     }
 }
@@ -916,7 +913,7 @@ DkButton::DkButton(const QString &text, QWidget *parent)
 DkButton::DkButton(const QIcon &icon, const QString &text, QWidget *parent)
     : QPushButton(icon, text, parent)
 {
-    checkedIcon = icon;
+    mCheckedIcon = icon;
     setText(text);
 
     init();
@@ -925,9 +922,10 @@ DkButton::DkButton(const QIcon &icon, const QString &text, QWidget *parent)
 DkButton::DkButton(const QIcon &checkedIcon, const QIcon &uncheckedIcon, const QString &text, QWidget *parent)
     : QPushButton(checkedIcon, text, parent)
 {
-    this->checkedIcon = checkedIcon;
-    this->uncheckedIcon = uncheckedIcon;
-    this->setCheckable(true);
+    mCheckedIcon = checkedIcon;
+    mUncheckedIcon = uncheckedIcon;
+
+    setCheckable(true);
     setText(text);
 
     init();
@@ -935,18 +933,18 @@ DkButton::DkButton(const QIcon &checkedIcon, const QIcon &uncheckedIcon, const Q
 
 void DkButton::init()
 {
-    setIcon(checkedIcon);
+    setIcon(mCheckedIcon);
 
-    if (!checkedIcon.availableSizes().empty())
-        this->setMaximumSize(checkedIcon.availableSizes()[0]); // crashes if the image is empty!!
+    if (!mCheckedIcon.availableSizes().empty())
+        this->setMaximumSize(mCheckedIcon.availableSizes()[0]); // crashes if the image is empty!!
 
-    mouseOver = false;
+    mMouseOver = false;
     keepAspectRatio = true;
 }
 
 void DkButton::setFixedSize(QSize size)
 {
-    mySize = size;
+    mMySize = size;
     this->setMaximumSize(size);
 }
 
@@ -959,28 +957,28 @@ void DkButton::paintEvent(QPaintEvent *)
 
     if (!isEnabled())
         opacity = 0.5f;
-    else if (!mouseOver)
+    else if (!mMouseOver)
         opacity = 0.7f;
 
     painter.setOpacity(opacity);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
-    if (!mySize.isEmpty()) {
-        offset = QPoint(qRound((float)(size().width() - mySize.width()) * 0.5f),
-                        qRound((float)(size().height() - mySize.height()) * 0.5f));
-        s = mySize;
+    if (!mMySize.isEmpty()) {
+        offset = QPoint(qRound((float)(size().width() - mMySize.width()) * 0.5f),
+                        qRound((float)(size().height() - mMySize.height()) * 0.5f));
+        s = mMySize;
     } else
         s = this->size();
 
     // scale to parent label
-    QRect r = (keepAspectRatio) ? QRect(offset, checkedIcon.actualSize(s))
+    QRect r = (keepAspectRatio) ? QRect(offset, mCheckedIcon.actualSize(s))
                                 : QRect(offset, s); // actual size preserves the aspect ratio
     QPixmap pm2draw;
 
     if (isChecked() || !isCheckable())
-        pm2draw = checkedIcon.pixmap(s);
+        pm2draw = mCheckedIcon.pixmap(s);
     else
-        pm2draw = uncheckedIcon.pixmap(s);
+        pm2draw = mUncheckedIcon.pixmap(s);
 
     if (this->isDown()) {
         QPixmap effect = createSelectedEffect(&pm2draw);
@@ -1001,22 +999,22 @@ QPixmap DkButton::createSelectedEffect(QPixmap *pm)
 
 void DkButton::focusInEvent(QFocusEvent *)
 {
-    mouseOver = true;
+    mMouseOver = true;
 }
 
 void DkButton::focusOutEvent(QFocusEvent *)
 {
-    mouseOver = false;
+    mMouseOver = false;
 }
 
 void DkButton::enterEvent(DkEnterEvent *)
 {
-    mouseOver = true;
+    mMouseOver = true;
 }
 
 void DkButton::leaveEvent(QEvent *)
 {
-    mouseOver = false;
+    mMouseOver = false;
 }
 
 // star label --------------------------------------------------------------------
@@ -1443,14 +1441,13 @@ void DkHudNavigation::showPrevious()
 // DkTransformRectangle --------------------------------------------------------------------
 DkTransformRect::DkTransformRect(int idx, DkRotatingRect *rect, QWidget *parent, Qt::WindowFlags f)
     : DkWidget(parent, f)
+    , mRect(rect)
+    , mParentIdx(idx)
+    , mSize(12, 12)
 {
-    this->parentIdx = idx;
-    this->size = QSize(12, 12);
-    this->rect = rect;
-
     init();
 
-    this->resize(size);
+    resize(mSize);
     setCursor(Qt::CrossCursor);
 }
 
@@ -1489,10 +1486,10 @@ void DkTransformRect::draw(QPainter *painter)
 void DkTransformRect::mousePressEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        posGrab = event->globalPosition();
-        initialPos = geometry().topLeft();
+        mPosGrab = event->globalPosition();
+        mInitialPos = geometry().topLeft();
 
-        emit updateDiagonal(parentIdx);
+        emit updateDiagonal(mParentIdx);
     }
     qDebug() << "mouse pressed control point";
     QWidget::mousePressEvent(event);
@@ -1501,8 +1498,8 @@ void DkTransformRect::mousePressEvent(QMouseEvent *event)
 void DkTransformRect::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        QPointF pt = initialPos + event->globalPosition() - posGrab;
-        emit ctrlMovedSignal(parentIdx, pt, event->modifiers(), true);
+        QPointF pt = mInitialPos + event->globalPosition() - mPosGrab;
+        emit ctrlMovedSignal(mParentIdx, pt, event->modifiers(), true);
     }
 
     QWidget::mouseMoveEvent(event);
@@ -1515,8 +1512,8 @@ void DkTransformRect::mouseReleaseEvent(QMouseEvent *event)
 
 void DkTransformRect::enterEvent(DkEnterEvent *)
 {
-    if (rect)
-        setCursor(rect->cpCursor(parentIdx));
+    if (mRect)
+        setCursor(mRect->cpCursor(mParentIdx));
 }
 
 // DkEditableRectangle --------------------------------------------------------------------
@@ -2466,22 +2463,22 @@ QString DkFileInfoWrapper::getFilePath() const
 // DkFileLabel --------------------------------------------------------------------
 DkFolderLabel::DkFolderLabel(const DkFileInfoWrapper &fileInfo, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
+    , mFileInfo(fileInfo)
 {
     // we don't use the file labels anymore
     // + isDir() might hang - if we try to get an unavailable network resource on windows
     // QFileInfo fInfo(fileInfo.getFilePath());
     // if (fInfo.isDir())
-    setText(fileInfo.getFilePath());
+    setText(mFileInfo.getFilePath());
     // else
     //	setText(fInfo.fileName());
 
-    this->fileInfo = fileInfo;
     setObjectName("DkFileLabel");
 }
 
 void DkFolderLabel::mousePressEvent(QMouseEvent *ev)
 {
-    emit loadFileSignal(fileInfo.getFilePath());
+    emit loadFileSignal(mFileInfo.getFilePath());
 
     QLabel::mousePressEvent(ev);
 }

@@ -981,16 +981,16 @@ bool DkPushButtonDelegate::editorEvent(QEvent *event,
 //**********************************************************************************
 // DkDescriptionEdit : text edit connected to tableView selection and models
 //**********************************************************************************
-DkDescriptionEdit::DkDescriptionEdit(QAbstractTableModel *data,
-                                     QSortFilterProxyModel *proxy,
-                                     QItemSelectionModel *selection,
+DkDescriptionEdit::DkDescriptionEdit(QAbstractTableModel *dataModel,
+                                     QSortFilterProxyModel *proxyModel,
+                                     QItemSelectionModel *selectionModel,
                                      QWidget *parent)
     : QTextEdit(parent)
 {
     mParentTable = static_cast<DkPluginTableWidget *>(parent);
-    mDataModel = data;
-    mProxyModel = proxy;
-    mSelectionModel = selection;
+    mDataModel = dataModel;
+    mProxyModel = proxyModel;
+    mSelectionModel = selectionModel;
     setReadOnly(true);
 }
 
@@ -1028,16 +1028,16 @@ void DkDescriptionEdit::selectionChanged(const QItemSelection &, const QItemSele
 // DkDescriptionImage : image label connected to tableView selection and models
 //**********************************************************************************
 
-DkDescriptionImage::DkDescriptionImage(QAbstractTableModel *data,
-                                       QSortFilterProxyModel *proxy,
-                                       QItemSelectionModel *selection,
+DkDescriptionImage::DkDescriptionImage(QAbstractTableModel *dataModel,
+                                       QSortFilterProxyModel *proxyModel,
+                                       QItemSelectionModel *selectionModel,
                                        QWidget *parent)
     : QLabel(parent)
 {
     mParentTable = static_cast<DkPluginTableWidget *>(parent);
-    mDataModel = data;
-    mProxyModel = proxy;
-    mSelectionModel = selection;
+    mDataModel = dataModel;
+    mProxyModel = proxyModel;
+    mSelectionModel = selectionModel;
     mDefaultImage = QPixmap(":/nomacs/img/plugin-banner.svg");
     setPixmap(mDefaultImage);
 }

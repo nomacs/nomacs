@@ -74,22 +74,22 @@ public:
     void setSynchronized(bool flag);
     bool isSynchronized() const
     {
-        return sychronized;
+        return mSychronized;
     };
     bool isLocal() const
     {
-        return hostAddress == QHostAddress::LocalHost;
+        return mHostAddress == QHostAddress::LocalHost;
     };
 
-    quint16 peerId;
-    quint16 localServerPort;
-    quint16 peerServerPort;
-    QHostAddress hostAddress;
-    QString clientName;
-    QString title;
-    DkConnection *connection;
-    QTimer *timer;
-    bool showInMenu;
+    quint16 mPeerId;
+    quint16 mLocalServerPort;
+    quint16 mPeerServerPort;
+    QHostAddress mHostAddress;
+    QString mClientName;
+    QString mTitle;
+    DkConnection *mConnection;
+    QTimer *mTimer;
+    bool mShowInMenu;
 
 signals:
     void sendGoodByeMessage();
@@ -98,7 +98,7 @@ private slots:
 
 private:
     bool mHasChangedRecently = false;
-    bool sychronized;
+    bool mSychronized;
 };
 
 class DkPeerList

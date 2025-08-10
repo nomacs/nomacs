@@ -375,9 +375,9 @@ class DkDescriptionEdit : public QTextEdit
     Q_OBJECT
 
 public:
-    DkDescriptionEdit(QAbstractTableModel *data,
-                      QSortFilterProxyModel *proxy,
-                      QItemSelectionModel *selection,
+    DkDescriptionEdit(QAbstractTableModel *dataModel,
+                      QSortFilterProxyModel *proxyModel,
+                      QItemSelectionModel *selectionModel,
                       QWidget *parent = nullptr);
 
 public slots:
@@ -399,8 +399,8 @@ class DkDescriptionImage : public QLabel
 
 public:
     DkDescriptionImage(QAbstractTableModel *data,
-                       QSortFilterProxyModel *proxy,
-                       QItemSelectionModel *selection,
+                       QSortFilterProxyModel *proxyModel,
+                       QItemSelectionModel *selectionModel,
                        QWidget *parent = nullptr);
 
 public slots:

@@ -137,8 +137,8 @@ public slots:
     void synchronize(bool checked);
 
 protected:
-    DkPeer *peer;
-    QList<QAction *> *tcpActions;
+    DkPeer *mPeer;
+    QList<QAction *> *mTcpActions;
 };
 
 class DkTcpMenu : public QMenu

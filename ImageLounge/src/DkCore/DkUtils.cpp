@@ -1485,7 +1485,7 @@ bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event)
             for (int i = 0; i < tabbar->count(); i++) {
                 QRect tabrect = tabbar->tabRect(i);
                 if (tabrect.contains(mouseEvent->pos()))
-                    callback(i);
+                    mCallback(i);
             }
             return true;
         }

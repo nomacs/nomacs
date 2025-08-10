@@ -2003,7 +2003,7 @@ void DkNoMacs::restartWithTranslationUpdate()
         connect(mTranslationUpdater, &DkTranslationUpdater::showUpdaterMessage, this, &DkNoMacs::showUpdaterMessage);
     }
 
-    mTranslationUpdater->silent = true;
+    mTranslationUpdater->mSilent = true;
 
     connect(mTranslationUpdater, &DkTranslationUpdater::downloadFinished, getTabWidget(), &DkCentralWidget::restart);
     updateTranslations();

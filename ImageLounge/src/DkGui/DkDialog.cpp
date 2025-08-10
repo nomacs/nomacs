@@ -453,30 +453,30 @@ DkAppManagerDialog::DkAppManagerDialog(DkAppManager *manager /* = 0 */,
                                        QWidget *parent /* = 0 */,
                                        Qt::WindowFlags flags /* = 0 */)
     : QDialog(parent, flags)
+    , mAppManager(manager)
 {
-    this->manager = manager;
     setWindowTitle(tr("Manage Applications"));
     createLayout();
 }
 
 void DkAppManagerDialog::createLayout()
 {
-    QVector<QAction *> appActions = manager->getActions();
+    QVector<QAction *> appActions = mAppManager->getActions();
 
-    model = new QStandardItemModel(this);
+    mTableModel = new QStandardItemModel(this);
     for (int rIdx = 0; rIdx < appActions.size(); rIdx++)
-        model->appendRow(getItems(appActions.at(rIdx)));
+        mTableModel->appendRow(getItems(appActions.at(rIdx)));
 
-    appTableView = new QTableView(this);
-    appTableView->setModel(model);
-    appTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    appTableView->verticalHeader()->hide();
-    appTableView->horizontalHeader()->hide();
+    mTableView = new QTableView(this);
+    mTableView->setModel(mTableModel);
+    mTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mTableView->verticalHeader()->hide();
+    mTableView->horizontalHeader()->hide();
     // appTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    appTableView->setShowGrid(false);
-    appTableView->resizeColumnsToContents();
-    appTableView->resizeRowsToContents();
-    appTableView->setWordWrap(false);
+    mTableView->setShowGrid(false);
+    mTableView->resizeColumnsToContents();
+    mTableView->resizeRowsToContents();
+    mTableView->setWordWrap(false);
 
     auto *runButton = new QPushButton(tr("&Run"), this);
     connect(runButton, &QPushButton::clicked, this, &DkAppManagerDialog::onRunButtonClicked);
@@ -499,7 +499,7 @@ void DkAppManagerDialog::createLayout()
     buttons->addButton(deleteButton, QDialogButtonBox::ActionRole);
 
     auto *layout = new QVBoxLayout(this);
-    layout->addWidget(appTableView);
+    layout->addWidget(mTableView);
     layout->addWidget(buttons);
 }
 
@@ -539,18 +539,18 @@ void DkAppManagerDialog::onAddButtonClicked()
     if (filePath.isEmpty())
         return;
 
-    QAction *newApp = manager->createAction(filePath);
+    QAction *newApp = mAppManager->createAction(filePath);
 
     if (newApp)
-        model->appendRow(getItems(newApp));
+        mTableModel->appendRow(getItems(newApp));
 }
 
 void DkAppManagerDialog::onDeleteButtonClicked()
 {
-    QModelIndexList selRows = appTableView->selectionModel()->selectedRows();
+    QModelIndexList selRows = mTableView->selectionModel()->selectedRows();
 
     while (!selRows.isEmpty()) {
-        model->removeRows(selRows.last().row(), 1);
+        mTableModel->removeRows(selRows.last().row(), 1);
         selRows.removeLast();
     }
 }
@@ -559,16 +559,16 @@ void DkAppManagerDialog::onRunButtonClicked()
 {
     accept();
 
-    QItemSelectionModel *sel = appTableView->selectionModel();
+    QItemSelectionModel *sel = mTableView->selectionModel();
 
-    if (!sel->hasSelection() && !manager->getActions().isEmpty())
-        emit openWithSignal(manager->getActions().first());
+    if (!sel->hasSelection() && !mAppManager->getActions().isEmpty())
+        emit openWithSignal(mAppManager->getActions().first());
 
-    else if (!manager->getActions().isEmpty()) {
+    else if (!mAppManager->getActions().isEmpty()) {
         QModelIndexList rows = sel->selectedRows();
 
         for (int idx = 0; idx < rows.size(); idx++) {
-            emit openWithSignal(manager->getActions().at(rows.at(idx).row()));
+            emit openWithSignal(mAppManager->getActions().at(rows.at(idx).row()));
         }
     }
 }
@@ -577,13 +577,13 @@ void DkAppManagerDialog::accept()
 {
     QVector<QAction *> apps;
 
-    for (int idx = 0; idx < model->rowCount(); idx++) {
-        QString filePath = model->item(idx, 1)->text();
-        QString name = model->item(idx, 0)->text();
-        QAction *action = manager->findAction(filePath);
+    for (int idx = 0; idx < mTableModel->rowCount(); idx++) {
+        QString filePath = mTableModel->item(idx, 1)->text();
+        QString name = mTableModel->item(idx, 0)->text();
+        QAction *action = mAppManager->findAction(filePath);
 
         if (!action)
-            action = manager->createAction(filePath);
+            action = mAppManager->createAction(filePath);
         // obviously I cannot create this action - should we tell user?
         if (!action)
             continue;
@@ -596,7 +596,7 @@ void DkAppManagerDialog::accept()
         apps.append(action);
     }
 
-    manager->setActions(apps);
+    mAppManager->setActions(apps);
 
     QDialog::accept();
 }

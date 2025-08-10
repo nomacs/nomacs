@@ -320,9 +320,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-    DkThumbScene *scene;
-    QPointF mousePos;
-    int lastShiftIdx;
+    DkThumbScene *mThumbScene = nullptr;
+    QPointF mMouseDownPos;
+    int mLastShiftIdx = -1; // item index clicked while shift key down
 
 private:
     void onScroll();

@@ -215,12 +215,12 @@ signals:
     void openWithSignal(QAction *act);
 
 protected:
-    DkAppManager *manager;
-    QStandardItemModel *model;
-
-    void createLayout();
     QList<QStandardItem *> getItems(QAction *action);
-    QTableView *appTableView;
+    void createLayout();
+
+    DkAppManager *mAppManager{};
+    QTableView *mTableView{};
+    QStandardItemModel *mTableModel{};
 };
 
 class DkSearchDialog : public QDialog

@@ -188,7 +188,7 @@ public:
         settings_crop,
         settings_lines,
 
-        guide_end,
+        settings_end,
     };
 
     DkImgTransformationsToolBar(const QString &title, int defaultMode, QWidget *parent = nullptr);

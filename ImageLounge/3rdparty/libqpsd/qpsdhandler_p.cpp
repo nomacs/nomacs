@@ -283,9 +283,9 @@ QByteArray QPsdHandler::readImageData(QDataStream &input, QPsdHandler::Compressi
                 }
             } else if (byte < 128) {
                 count = byte + 1;
-                quint64 size = imageData.size();
-                imageData.resize(size + count);
-                input.readRawData(imageData.data() + size, count);
+                qsizetype sz = imageData.size();
+                imageData.resize(sz + count);
+                input.readRawData(imageData.data() + sz, count);
             }
         }
     } break;
