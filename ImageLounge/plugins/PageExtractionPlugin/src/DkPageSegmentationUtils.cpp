@@ -12,7 +12,7 @@
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- nomacs is distributed in the hope that it will be useful,
+ nomacs is distributed mIn the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
@@ -35,36 +35,36 @@ namespace nmp
 // DkIntersectPoly --------------------------------------------------------------------
 DkIntersectPoly::DkIntersectPoly() = default;
 
-DkIntersectPoly::DkIntersectPoly(std::vector<nmc::DkVector> vecA, std::vector<nmc::DkVector> vecB)
+DkIntersectPoly::DkIntersectPoly(const std::vector<nmc::DkVector> &vecA, const std::vector<nmc::DkVector> &vecB)
+    : mVecA(vecA)
+    , mVecB(vecB)
+    , mInterArea(0)
 {
-    this->vecA = vecA;
-    this->vecB = vecB;
-    interArea = 0;
 }
 
 double DkIntersectPoly::compute()
 {
     // defines
-    gamut = 500000000;
+    mGamut = 500000000;
     mMinRange = nmc::DkVector(FLT_MAX, FLT_MAX);
     mMaxRange = nmc::DkVector(-FLT_MAX, -FLT_MAX);
-    computeBoundingBox(vecA, &mMinRange, &mMaxRange);
-    computeBoundingBox(vecB, &mMinRange, &mMaxRange);
+    computeBoundingBox(mVecA, &mMinRange, &mMaxRange);
+    computeBoundingBox(mVecB, &mMinRange, &mMaxRange);
 
-    scale = mMaxRange - mMinRange;
+    mScale = mMaxRange - mMinRange;
 
-    if (scale.minCoord() == 0)
+    if (mScale.minCoord() == 0)
         return 0; // rechteck mit hoehe oder breite = 0
 
-    scale.x = gamut / scale.x;
-    scale.y = gamut / scale.y;
+    mScale.x = mGamut / mScale.x;
+    mScale.y = mGamut / mScale.y;
 
-    float ascale = scale.x * scale.y;
+    float ascale = mScale.x * mScale.y;
 
     // check input
-    if (vecA.size() < 3 || vecB.size() < 3) {
-        qDebug() << "The polygons must consist of at least 3 points but they are: (vecA: " << vecA.size()
-                 << ", vecB: " << vecB.size();
+    if (mVecA.size() < 3 || mVecB.size() < 3) {
+        qDebug() << "The polygons must consist of at least 3 points but they are: (vecA: " << mVecA.size()
+                 << ", vecB: " << mVecB.size();
         return 0;
     }
 
@@ -72,18 +72,18 @@ double DkIntersectPoly::compute()
     std::vector<DkVertex> ipA;
     std::vector<DkVertex> ipB;
 
-    getVertices(vecA, &ipA, 0);
-    getVertices(vecB, &ipB, 2);
+    getVertices(mVecA, &ipA, 0);
+    getVertices(mVecB, &ipB, 2);
 
     for (unsigned int idxA = 0; idxA < ipA.size() - 1; idxA++) {
         for (unsigned int idxB = 0; idxB < ipB.size() - 1; idxB++) {
-            if (ovl(ipA[idxA].rx, ipB[idxB].rx) && ovl(ipA[idxA].ry, ipB[idxB].ry)) {
-                int64 a1 = -area(ipA[idxA].ip, ipB[idxB].ip, ipB[idxB + 1].ip);
-                int64 a2 = area(ipA[idxA + 1].ip, ipB[idxB].ip, ipB[idxB + 1].ip);
+            if (ovl(ipA[idxA].mRx, ipB[idxB].mRx) && ovl(ipA[idxA].mRy, ipB[idxB].mRy)) {
+                int64 a1 = -area(ipA[idxA].mIp, ipB[idxB].mIp, ipB[idxB + 1].mIp);
+                int64 a2 = area(ipA[idxA + 1].mIp, ipB[idxB].mIp, ipB[idxB + 1].mIp);
 
                 if ((a1 < 0) == (a2 < 0)) {
-                    int64 a3 = area(ipB[idxB].ip, ipA[idxA].ip, ipA[idxA + 1].ip);
-                    int64 a4 = -area(ipB[idxB + 1].ip, ipA[idxA].ip, ipA[idxA + 1].ip);
+                    int64 a3 = area(ipB[idxB].mIp, ipA[idxA].mIp, ipA[idxA + 1].mIp);
+                    int64 a4 = -area(ipB[idxB + 1].mIp, ipA[idxA].mIp, ipA[idxA + 1].mIp);
 
                     if ((a3 < 0) == (a4 < 0)) {
                         if (a1 < 0) {
@@ -95,8 +95,8 @@ double DkIntersectPoly::compute()
                                   (double)a2,
                                   (double)a3,
                                   (double)a4);
-                            ipA[idxA].in++;
-                            ipB[idxB].in--;
+                            ipA[idxA].mIn++;
+                            ipB[idxB].mIn--;
                         } else {
                             cross(ipB[idxB],
                                   ipB[idxB + 1],
@@ -106,8 +106,8 @@ double DkIntersectPoly::compute()
                                   (double)a4,
                                   (double)a1,
                                   (double)a2);
-                            ipA[idxA].in--;
-                            ipB[idxB].in++;
+                            ipA[idxA].mIn--;
+                            ipB[idxB].mIn++;
                         }
                     }
                 }
@@ -118,7 +118,7 @@ double DkIntersectPoly::compute()
     inness(ipA, ipB);
     inness(ipB, ipA);
 
-    double areaD = (double)interArea / (ascale + FLT_MIN);
+    double areaD = (double)mInterArea / (ascale + FLT_MIN);
 
     return areaD;
 }
@@ -127,19 +127,19 @@ void DkIntersectPoly::inness(std::vector<DkVertex> ipA, std::vector<DkVertex> ip
 {
     int s = 0;
 
-    DkIPoint p = ipA[0].ip;
+    DkIPoint p = ipA[0].mIp;
 
     for (int idx = (int)ipB.size() - 2; idx >= 0; idx--) {
-        if (ipB[idx].rx.x < p.x && p.x < ipB[idx].rx.y) {
-            bool sgn = 0 < area(p, ipB[idx].ip, ipB[idx + 1].ip);
-            s += (sgn != (ipB[idx].ip.x < ipB[idx + 1].ip.x)) ? 0 : (sgn ? -1 : 1);
+        if (ipB[idx].mRx.mX < p.mX && p.mX < ipB[idx].mRx.mY) {
+            bool sgn = 0 < area(p, ipB[idx].mIp, ipB[idx + 1].mIp);
+            s += (sgn != (ipB[idx].mIp.mX < ipB[idx + 1].mIp.mX)) ? 0 : (sgn ? -1 : 1);
         }
     }
 
     for (unsigned int idx = 0; idx < ipA.size() - 1; idx++) {
         if (s != 0)
-            cntrib(ipA[idx].ip.x, ipA[idx].ip.y, ipA[idx + 1].ip.x, ipA[idx + 1].ip.y, s);
-        s += ipA[idx].in;
+            cntrib(ipA[idx].mIp.mX, ipA[idx].mIp.mY, ipA[idx + 1].mIp.mX, ipA[idx + 1].mIp.mY, s);
+        s += ipA[idx].mIn;
     }
 };
 
@@ -148,31 +148,31 @@ void DkIntersectPoly::cross(DkVertex a, DkVertex b, DkVertex c, DkVertex d, doub
     double r1 = a1 / ((double)a1 + a2 + DBL_EPSILON);
     double r2 = a3 / ((double)a3 + a4 + DBL_EPSILON);
 
-    cntrib((int)a.ip.x + cvRound((double)(r1 * (double)(b.ip.x - a.ip.x))),
-           (int)a.ip.y + cvRound((double)(r1 * (double)(b.ip.y - a.ip.y))),
-           b.ip.x,
-           b.ip.y,
+    cntrib((int)a.mIp.mX + cvRound((double)(r1 * (double)(b.mIp.mX - a.mIp.mX))),
+           (int)a.mIp.mY + cvRound((double)(r1 * (double)(b.mIp.mY - a.mIp.mY))),
+           b.mIp.mX,
+           b.mIp.mY,
            1);
-    cntrib(d.ip.x,
-           d.ip.y,
-           (int)c.ip.x + cvRound((double)(r2 * (double)(d.ip.x - c.ip.x))),
-           (int)c.ip.y + cvRound((double)(r2 * (double)(d.ip.y - c.ip.y))),
+    cntrib(d.mIp.mX,
+           d.mIp.mY,
+           (int)c.mIp.mX + cvRound((double)(r2 * (double)(d.mIp.mX - c.mIp.mX))),
+           (int)c.mIp.mY + cvRound((double)(r2 * (double)(d.mIp.mY - c.mIp.mY))),
            1);
 };
 
 void DkIntersectPoly::cntrib(int fx, int fy, int tx, int ty, int w)
 {
-    interArea += (int64)w * (tx - fx) * (ty + fy) / 2;
+    mInterArea += (int64)w * (tx - fx) * (ty + fy) / 2;
 };
 
 int64 DkIntersectPoly::area(DkIPoint a, DkIPoint p, DkIPoint q)
 {
-    return (int64)p.x * q.y - (int64)p.y * q.x + (int64)a.x * (p.y - q.y) + (int64)a.y * (q.x - p.x);
+    return (int64)p.mX * q.mY - (int64)p.mY * q.mX + (int64)a.mX * (p.mY - q.mY) + (int64)a.mY * (q.mX - p.mX);
 };
 
 bool DkIntersectPoly::ovl(DkIPoint p, DkIPoint q)
 {
-    return (p.x < q.y && q.x < p.y);
+    return (p.mX < q.mY && q.mX < p.mY);
 };
 
 void DkIntersectPoly::getVertices(const std::vector<nmc::DkVector> &vec, std::vector<DkVertex> *ip, int noise)
@@ -182,8 +182,8 @@ void DkIntersectPoly::getVertices(const std::vector<nmc::DkVector> &vec, std::ve
     // transform the coordinates and modify the least significant bits (that's fun)
     for (int idx = 0; idx < (int)vec.size(); idx++) {
         DkIPoint cp;
-        cp.x = ((int)((vec[idx].x - mMinRange.x) * scale.x - gamut / 2) & ~7) | noise | (idx & 1);
-        cp.y = ((int)((vec[idx].y - mMinRange.y) * scale.y - gamut / 2) & ~7) | noise | (idx & 1);
+        cp.mX = ((int)((vec[idx].x - mMinRange.x) * mScale.x - mGamut / 2) & ~7) | noise | (idx & 1);
+        cp.mY = ((int)((vec[idx].y - mMinRange.y) * mScale.y - mGamut / 2) & ~7) | noise | (idx & 1);
 
         vecTmp.push_back(cp);
     }
@@ -194,10 +194,10 @@ void DkIntersectPoly::getVertices(const std::vector<nmc::DkVector> &vec, std::ve
         int nIdx = idx % (int)(vecTmp.size() - 1)
             + 1; // the last element should refer to the second (first & last are the very same)
 
-        DkIPoint cEdgeX = (vecTmp[idx].x < vecTmp[nIdx].x) ? DkIPoint(vecTmp[idx].x, vecTmp[nIdx].x)
-                                                           : DkIPoint(vecTmp[nIdx].x, vecTmp[idx].x);
-        DkIPoint cEdgeY = (vecTmp[idx].y < vecTmp[nIdx].y) ? DkIPoint(vecTmp[idx].y, vecTmp[nIdx].y)
-                                                           : DkIPoint(vecTmp[nIdx].y, vecTmp[idx].y);
+        DkIPoint cEdgeX = (vecTmp[idx].mX < vecTmp[nIdx].mX) ? DkIPoint(vecTmp[idx].mX, vecTmp[nIdx].mX)
+                                                             : DkIPoint(vecTmp[nIdx].mX, vecTmp[idx].mX);
+        DkIPoint cEdgeY = (vecTmp[idx].mY < vecTmp[nIdx].mY) ? DkIPoint(vecTmp[idx].mY, vecTmp[nIdx].mY)
+                                                             : DkIPoint(vecTmp[nIdx].mY, vecTmp[idx].mY);
 
         ip->emplace_back(vecTmp[idx], cEdgeX, cEdgeY);
     }
@@ -216,16 +216,16 @@ void DkIntersectPoly::computeBoundingBox(std::vector<nmc::DkVector> vec,
 // DkPolyRect --------------------------------------------------------------------
 DkPolyRect::DkPolyRect(const std::vector<cv::Point> &pts)
 {
-    toDkVectors(pts, this->mPts);
+    toDkVectors(pts, mPts);
     computeMaxCosine();
-    area = DBL_MAX;
+    mArea = DBL_MAX;
 }
 
 DkPolyRect::DkPolyRect(const std::vector<nmc::DkVector> &pts)
 {
     this->mPts = pts;
     computeMaxCosine();
-    area = DBL_MAX;
+    mArea = DBL_MAX;
 }
 
 bool DkPolyRect::empty() const
@@ -241,7 +241,7 @@ void DkPolyRect::toDkVectors(const std::vector<cv::Point> &pts, std::vector<nmc:
 
 void DkPolyRect::computeMaxCosine()
 {
-    maxCosine = 0;
+    mMaxCosine = 0;
 
     for (int idx = 2; idx < (int)mPts.size() + 2; idx++) {
         nmc::DkVector &c = mPts[(idx - 1) % mPts.size()]; // current corner;
@@ -250,7 +250,7 @@ void DkPolyRect::computeMaxCosine()
 
         double cosine = abs((c1 - c).cosv(c2 - c));
 
-        maxCosine = std::max(maxCosine, cosine);
+        mMaxCosine = std::max(mMaxCosine, cosine);
     }
 }
 
@@ -264,7 +264,7 @@ void DkPolyRect::scale(float s)
     for (size_t idx = 0; idx < mPts.size(); idx++)
         mPts[idx] = mPts[idx] * s;
 
-    area = DBL_MAX; // update
+    mArea = DBL_MAX; // update
 }
 
 void DkPolyRect::scaleCenter(float s)
@@ -275,7 +275,7 @@ void DkPolyRect::scaleCenter(float s)
         mPts[idx] = nmc::DkVector(mPts[idx] - c) * s + c;
     }
 
-    area = DBL_MAX; // update
+    mArea = DBL_MAX; // update
 }
 
 nmc::DkVector DkPolyRect::center() const
@@ -327,18 +327,18 @@ float DkPolyRect::maxSide() const
 
 double DkPolyRect::getArea()
 {
-    if (area == DBL_MAX)
-        area = abs(intersectArea(*this));
+    if (mArea == DBL_MAX)
+        mArea = abs(intersectArea(*this));
 
-    return area;
+    return mArea;
 }
 
 double DkPolyRect::getAreaConst() const
 {
-    if (area == DBL_MAX)
+    if (mArea == DBL_MAX)
         return abs(intersectArea(*this));
 
-    return area;
+    return mArea;
 }
 
 bool DkPolyRect::compArea(const DkPolyRect &pl, const DkPolyRect &pr)
@@ -447,16 +447,16 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
     cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
 
     cv::Mat lineImg;
-    int accMin = (int)(houghPeakThresholdRel * std::min(bw.size().width, bw.size().height));
-    std::vector<HoughLine> lines = houghTransform(bw, 1, (float)(CV_PI / 180.0), accMin, maxLinesHough);
+    int accMin = (int)(kHoughPeakThresholdRel * std::min(bw.size().width, bw.size().height));
+    std::vector<HoughLine> lines = houghTransform(bw, 1, (float)(CV_PI / 180.0), accMin, kMaxLinesHough);
     if (lines.empty()) {
         qDebug() << "no hough lines detected";
         return;
     }
 
     // find line segments in image
-    int maxGapLength = (int)(maxGapLengthRel * smallerSide);
-    std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength);
+    int maxGapLength = (int)(kMaxGapLengthRel * smallerSide);
+    std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, kMinLineSegmentLength, maxGapLength);
     if (lineSegments.empty()) {
         qDebug() << "findLineSegments has not found any line segments, even though hough lines were detected.";
         return;
@@ -468,18 +468,18 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
     for (size_t i = 0; i < lines.size() - 1; i++) {
         for (size_t j = i + 1; j < lines.size(); j++) {
             // test for parallelity
-            if (angleDiff(lines[i].angle, lines[j].angle) < t_theta
-                && std::abs(lines[i].acc - lines[j].acc) < t_l * 0.5 * (lines[i].acc + lines[j].acc)) {
+            if (angleDiff(lines[i].mAngle, lines[j].mAngle) < kAngleTolerance
+                && std::abs(lines[i].mAcc - lines[j].mAcc) < kAccumTolerance * (lines[i].mAcc + lines[j].mAcc)) {
                 // 'parallel' line segments must not intersect
                 ExtendedPeak ep(lines[i], lineSegments[i], lines[j], lineSegments[j]);
-                if (ep.intersectionPoint.first) {
+                if (ep.mIntersectionPoint.first) {
                     std::vector<cv::Point2f> epHull;
-                    cv::convexHull(std::vector<cv::Point2f>{lineSegments[i].p1,
-                                                            lineSegments[i].p2,
-                                                            lineSegments[j].p1,
-                                                            lineSegments[j].p2},
+                    cv::convexHull(std::vector<cv::Point2f>{lineSegments[i].mP1,
+                                                            lineSegments[i].mP2,
+                                                            lineSegments[j].mP1,
+                                                            lineSegments[j].mP2},
                                    epHull);
-                    if (cv::pointPolygonTest(epHull, ep.intersectionPoint.second, false) >= 0) {
+                    if (cv::pointPolygonTest(epHull, ep.mIntersectionPoint.second, false) >= 0) {
                         continue;
                     }
                 }
@@ -493,7 +493,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
     for (size_t i = 0; i < EPs.size(); i++) {
         for (size_t j = i + 1; j < EPs.size(); j++) {
             // test for orthogonality
-            if (abs(angleDiff(EPs[i].theta_k, EPs[j].theta_k) - (CV_PI * 0.5)) < orthoTol) {
+            if (abs(angleDiff(EPs[i].mTheta_k, EPs[j].mTheta_k) - (CV_PI * 0.5)) < kOrthoTol) {
                 IPs.emplace_back(EPs[i], EPs[j]);
             }
         }
@@ -505,15 +505,15 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
         std::vector<cv::Point2f> corners;
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                auto r = findLineIntersection(ip.ep1.spatialLines[i], ip.ep2.spatialLines[j]);
+                auto r = findLineIntersection(ip.mEp1.mSpatialLines[i], ip.mEp2.mSpatialLines[j]);
                 // since the lines of different EPs can not be parallel, they have to intersect at some point
                 if (r.first != true) {
                     qDebug() << "no intersection was found for two lines that should not be parallel";
                     return;
                 }
                 cv::Point2f p = r.second;
-                if (pointToLineDistance(ip.ep1.spatialLines[i], p) < cornerGapTol
-                    && pointToLineDistance(ip.ep2.spatialLines[j], p) < cornerGapTol) {
+                if (pointToLineDistance(ip.mEp1.mSpatialLines[i], p) < kCornerGapTol
+                    && pointToLineDistance(ip.mEp2.mSpatialLines[j], p) < kCornerGapTol) {
                     corners.push_back(p);
                 }
             }
@@ -532,7 +532,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
         // check if sides are large enough
         bool largeEnough = true;
         for (int i = 0; i < 4; i++) {
-            if (cv::norm(c.corners[i] - c.corners[(i + 1) % 4]) < minRelSideLength * smallerSide) {
+            if (cv::norm(c.mCorners[i] - c.mCorners[(i + 1) % 4]) < kMinRelSideLength * smallerSide) {
                 largeEnough = false;
             }
         }
@@ -549,19 +549,19 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
 
     // sort rectangles by overall accumulator value in descending order
     std::sort(rectangles.begin(), rectangles.end(), [](const Rectangle &a, const Rectangle &b) {
-        return (a.ip.ep1.line1.acc + a.ip.ep1.line2.acc + a.ip.ep2.line1.acc + a.ip.ep2.line2.acc) > // descending
-            (b.ip.ep1.line1.acc + b.ip.ep1.line2.acc + b.ip.ep2.line1.acc + b.ip.ep2.line2.acc);
+        return (a.mIp.mEp1.mLine1.mAcc + a.mIp.mEp1.mLine2.mAcc + a.mIp.mEp2.mLine1.mAcc + a.mIp.mEp2.mLine2.mAcc)
+            > (b.mIp.mEp1.mLine1.mAcc + b.mIp.mEp1.mLine2.mAcc + b.mIp.mEp2.mLine1.mAcc + b.mIp.mEp2.mLine2.mAcc);
     });
 
-    if (rectangles.size() > numFinalRects) {
-        rectangles.erase(rectangles.begin() + numFinalRects, rectangles.end());
+    if (rectangles.size() > kNumFinalRects) {
+        rectangles.erase(rectangles.begin() + kNumFinalRects, rectangles.end());
     }
 
     // construct DkPolyRects for the rectangles to be returned
     for (Rectangle rect : rectangles) {
         std::vector<cv::Point> cornerPoints;
         for (int i = 0; i < 4; i++) {
-            cornerPoints.emplace_back((int)round(rect.corners[i].x), (int)round(rect.corners[i].y));
+            cornerPoints.emplace_back((int)round(rect.mCorners[i].x), (int)round(rect.mCorners[i].y));
         }
         DkPolyRect r(cornerPoints);
         r.scale(1.0f / scale);
@@ -571,7 +571,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
 
 float PageExtractor::pointToLineDistance(LineSegment ls, cv::Point2f p)
 {
-    return (float)(cv::Mat(p - ls.p1).dot(cv::Mat(p - ls.p2)) / std::pow(cv::norm(ls.p2 - ls.p1), 2));
+    return (float)(cv::Mat(p - ls.mP1).dot(cv::Mat(p - ls.mP2)) / std::pow(cv::norm(ls.mP2 - ls.mP1), 2));
 }
 
 /**
@@ -630,9 +630,9 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
             int valNr = accum.at<std::uint16_t>(r, n + 1);
             if (val > threshold && val > valRl && val > valRr && val > valNl && val > valNr) {
                 HoughLine l;
-                l.acc = val;
-                l.rho = ((r - 1) - numRho / 2) * rho;
-                l.angle = (n - 1) * theta;
+                l.mAcc = val;
+                l.mRho = ((r - 1) - numRho / 2) * rho;
+                l.mAngle = (n - 1) * theta;
                 lines.push_back(l);
             }
         }
@@ -640,7 +640,7 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
 
     // sort by accumulator value
     std::sort(lines.begin(), lines.end(), [](HoughLine l1, HoughLine l2) {
-        return l1.acc > l2.acc;
+        return l1.mAcc > l2.mAcc;
     });
     lines.resize(linesMax);
 
@@ -683,7 +683,7 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
         bool notYetInImageRange = true;
 
         // in vertical mode, the x values are calculated for every y
-        if (abs(line.angle - CV_PI / 2) > CV_PI / 4) {
+        if (abs(line.mAngle - CV_PI / 2) > CV_PI / 4) {
             mode = LineFindingMode::Vertical;
             dimRange = bwImg.size().height;
         } else { // in horizontal mode, the y values are calculated for every x
@@ -697,14 +697,14 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
         for (int i = 0; i < dimRange; i++) {
             if (mode == LineFindingMode::Horizontal) {
                 x = (float)i;
-                y = (line.rho - x * cos(line.angle)) / (sin(line.angle));
+                y = (line.mRho - x * cos(line.mAngle)) / (sin(line.mAngle));
                 if (notYetInImageRange && y <= bwImg.rows - 1 && y >= 0) {
                     notYetInImageRange = false;
                 }
             } else {
                 y = (float)i;
                 ;
-                x = (line.rho - y * sin(line.angle)) / (cos(line.angle));
+                x = (line.mRho - y * sin(line.mAngle)) / (cos(line.mAngle));
                 if (notYetInImageRange && x <= bwImg.cols - 1 && x >= 0) {
                     notYetInImageRange = false;
                 }
@@ -718,15 +718,15 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
                 if (active) {
                     LineSegment l;
                     if (!inGap) {
-                        l.p1 = startPos;
-                        l.p2 = cv::Point2f(x, y);
+                        l.mP1 = startPos;
+                        l.mP2 = cv::Point2f(x, y);
                     } else {
-                        l.p1 = startPos;
-                        l.p2 = stopPos;
+                        l.mP1 = startPos;
+                        l.mP2 = stopPos;
                     }
 
-                    l.length = (float)cv::norm(l.p1 - l.p2);
-                    if (l.length > minLength) {
+                    l.mLength = (float)cv::norm(l.mP1 - l.mP2);
+                    if (l.mLength > minLength) {
                         lineSegmentsCurrent.push_back(l);
                     }
                 }
@@ -768,7 +768,7 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
             auto longestLineSegmentIt = std::max_element(lineSegmentsCurrent.begin(),
                                                          lineSegmentsCurrent.end(),
                                                          [](LineSegment l1, LineSegment l2) {
-                                                             return l1.length < l2.length;
+                                                             return l1.mLength < l2.mLength;
                                                          });
             lineSegments.push_back(*longestLineSegmentIt);
         }
@@ -781,23 +781,23 @@ PageExtractor::ExtendedPeak::ExtendedPeak(const HoughLine &line1,
                                           const LineSegment &ls1,
                                           const HoughLine &line2,
                                           const LineSegment &ls2)
-    : line1(line1)
-    , line2(line2)
-    , spatialLines(std::vector<LineSegment>{ls1, ls2})
-    , intersectionPoint(findLineIntersection(ls1, ls2))
+    : mLine1(line1)
+    , mLine2(line2)
+    , mSpatialLines(std::vector<LineSegment>{ls1, ls2})
+    , mIntersectionPoint(findLineIntersection(ls1, ls2))
 {
     // store mean angle
-    if (abs(line1.angle - line2.angle)
+    if (abs(line1.mAngle - line2.mAngle)
         > CV_PI * 0.5) { // if angle difference is large enough, the angles become closer to each other
         // note: lines are always in [0, pi]
-        theta_k = 0.5 * ((std::min(line1.angle, line2.angle) + CV_PI) + std::max(line1.angle, line2.angle));
-        if (theta_k > CV_PI) {
-            theta_k -= CV_PI;
+        mTheta_k = 0.5 * ((std::min(line1.mAngle, line2.mAngle) + CV_PI) + std::max(line1.mAngle, line2.mAngle));
+        if (mTheta_k > CV_PI) {
+            mTheta_k -= CV_PI;
         }
     } else {
-        theta_k = 0.5 * (line1.angle + line2.angle);
+        mTheta_k = 0.5 * (line1.mAngle + line2.mAngle);
     }
-    A_k = 0.5 * (line1.acc + line2.acc);
+    mA_k = 0.5 * (line1.mAcc + line2.mAcc);
 }
 
 /**
@@ -807,13 +807,13 @@ PageExtractor::ExtendedPeak::ExtendedPeak(const HoughLine &line1,
 std::pair<bool, cv::Point2f> PageExtractor::findLineIntersection(const LineSegment &ls1, const LineSegment &ls2)
 {
     cv::Mat A = cv::Mat::zeros(2, 2, CV_32F);
-    A.at<float>(0, 0) = ls1.p1.y - ls1.p2.y;
-    A.at<float>(0, 1) = ls1.p2.x - ls1.p1.x;
-    A.at<float>(1, 0) = ls2.p1.y - ls2.p2.y;
-    A.at<float>(1, 1) = ls2.p2.x - ls2.p1.x;
+    A.at<float>(0, 0) = ls1.mP1.y - ls1.mP2.y;
+    A.at<float>(0, 1) = ls1.mP2.x - ls1.mP1.x;
+    A.at<float>(1, 0) = ls2.mP1.y - ls2.mP2.y;
+    A.at<float>(1, 1) = ls2.mP2.x - ls2.mP1.x;
     cv::Mat b = cv::Mat::zeros(2, 1, CV_32F);
-    b.at<float>(0) = ls1.p1.x * (ls1.p1.y - ls1.p2.y) + ls1.p1.y * (ls1.p2.x - ls1.p1.x);
-    b.at<float>(1) = ls2.p1.x * (ls2.p1.y - ls2.p2.y) + ls2.p1.y * (ls2.p2.x - ls2.p1.x);
+    b.at<float>(0) = ls1.mP1.x * (ls1.mP1.y - ls1.mP2.y) + ls1.mP1.y * (ls1.mP2.x - ls1.mP1.x);
+    b.at<float>(1) = ls2.mP1.x * (ls2.mP1.y - ls2.mP2.y) + ls2.mP1.y * (ls2.mP2.x - ls2.mP1.x);
     cv::Mat x;
     bool r = cv::solve(A, b, x);
     return std::pair<bool, cv::Point2f>(r, cv::Point2f(x));

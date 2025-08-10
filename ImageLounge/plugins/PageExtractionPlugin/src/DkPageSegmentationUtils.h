@@ -43,22 +43,17 @@ public:
      * Default constructor.
      * All values are initialized with zero.
      **/
-    DkBox()
-        : uc()
-        , lc(){};
+    DkBox() = default;
 
     /**
      * Constructor.
-     * @param uc the upper left corner of the box.
+     * @param mTopLeft the upper left corner of the box.
      * @param size the size of the box.
      **/
-    DkBox(nmc::DkVector uc, nmc::DkVector size)
+    DkBox(nmc::DkVector topLeft, nmc::DkVector size)
     {
-        this->uc = uc;
-        this->lc = uc + size;
-
-        // if (size.width < 0 || size.height < 0)
-        // std::cout << "the size is < 0: " << size << std::endl;
+        mTopLeft = topLeft;
+        mBottomRight = topLeft + size;
     };
     /**
      * Constructor.
@@ -71,11 +66,8 @@ public:
     {
         nmc::DkVector size = nmc::DkVector(width, height);
 
-        uc = nmc::DkVector(x, y);
-        lc = uc + size;
-
-        // if (size.width < 0 || size.height < 0)
-        // std::cout << "the size is < 0: " << size << std::endl;
+        mTopLeft = nmc::DkVector(x, y);
+        mBottomRight = mTopLeft + size;
     };
     /**
      * Constructor.
@@ -85,13 +77,10 @@ public:
     {
         nmc::DkVector size((float)r.width, (float)r.height);
 
-        uc.x = (float)r.x;
-        uc.y = (float)r.y;
+        mTopLeft.x = (float)r.x;
+        mTopLeft.y = (float)r.y;
 
-        lc = uc + size;
-
-        // if (size.width < 0 || size.height < 0)
-        //	std::cout << "the size is < 0: " << size << std::endl;
+        mBottomRight = mTopLeft + size;
     };
 
     /**
@@ -100,11 +89,8 @@ public:
      **/
     DkBox(const DkBox &b)
     {
-        this->uc = b.uc;
-        this->lc = b.uc + b.size();
-
-        // if (size().width < 0 || size().height < 0)
-        //	std::cout << "the size is < 0: " << size() << std::endl;
+        mTopLeft = b.mTopLeft;
+        mBottomRight = b.mTopLeft + b.size();
     }
     /**
      * Default destructor.
@@ -125,13 +111,13 @@ public:
         auto *newFStream = (float *)newStream;
 
         int pos = 0;
-        newFStream[pos] = uc.x;
+        newFStream[pos] = mTopLeft.x;
         pos++;
-        newFStream[pos] = uc.y;
+        newFStream[pos] = mTopLeft.y;
         pos++;
-        newFStream[pos] = lc.x;
+        newFStream[pos] = mBottomRight.x;
         pos++;
-        newFStream[pos] = lc.y;
+        newFStream[pos] = mBottomRight.y;
         pos++;
 
         *buffer = newStream;
@@ -142,13 +128,13 @@ public:
     {
         const auto *fBuffer = (const float *)buffer;
         int pos = 0;
-        uc.x = fBuffer[pos];
+        mTopLeft.x = fBuffer[pos];
         pos++;
-        uc.y = fBuffer[pos];
+        mTopLeft.y = fBuffer[pos];
         pos++;
-        lc.x = fBuffer[pos];
+        mBottomRight.x = fBuffer[pos];
         pos++;
-        lc.y = fBuffer[pos];
+        mBottomRight.y = fBuffer[pos];
         pos++;
 
         return buffer + sizeof(float) * pos; // update buffer position
@@ -163,13 +149,13 @@ public:
 
     void moveBy(const nmc::DkVector &dxy)
     {
-        uc += dxy;
-        lc += dxy;
+        mTopLeft += dxy;
+        mBottomRight += dxy;
     };
 
     bool isEmpty() const
     {
-        return uc.isEmpty() && lc.isEmpty();
+        return mTopLeft.isEmpty() && mBottomRight.isEmpty();
     };
 
     /**
@@ -178,7 +164,7 @@ public:
      **/
     cv::Rect getCvRect() const
     {
-        return cv::Rect(cvRound(uc.x), cvRound(uc.y), cvRound(size().width), cvRound(size().height));
+        return cv::Rect(cvRound(mTopLeft.x), cvRound(mTopLeft.y), cvRound(size().width), cvRound(size().height));
     }
 
     static DkBox contour2BBox(const std::vector<std::vector<cv::Point>> &pts)
@@ -217,7 +203,7 @@ public:
      **/
     void expand(float offset)
     {
-        uc -= (offset * 0.5f);
+        mTopLeft -= (offset * 0.5f);
     }
 
     /**
@@ -226,11 +212,11 @@ public:
      **/
     void clip(nmc::DkVector s)
     {
-        uc.round();
-        lc.round();
+        mTopLeft.round();
+        mBottomRight.round();
 
-        uc.clipTo(s);
-        lc.clipTo(s);
+        mTopLeft.clipTo(s);
+        mBottomRight.clipTo(s);
 
         // if (lc.x > s.x || lc.y > s.y)
         //	mout << "I did not clip..." << dkendl;
@@ -238,20 +224,20 @@ public:
 
     bool within(const nmc::DkVector &p) const
     {
-        return (p.x >= uc.x && p.x < lc.x && p.y >= uc.y && p.y < lc.y);
+        return (p.x >= mTopLeft.x && p.x < mBottomRight.x && p.y >= mTopLeft.y && p.y < mBottomRight.y);
     };
 
     nmc::DkVector center() const
     {
-        return uc + size() * 0.5f;
+        return mTopLeft + size() * 0.5f;
     };
 
     void scaleAboutCenter(float s)
     {
         nmc::DkVector c = center();
 
-        uc = nmc::DkVector(uc - c) * s + c;
-        lc = nmc::DkVector(lc - c) * s + c;
+        mTopLeft = nmc::DkVector(mTopLeft - c) * s + c;
+        mBottomRight = nmc::DkVector(mBottomRight - c) * s + c;
     };
 
     /**
@@ -260,7 +246,7 @@ public:
      **/
     int getX() const
     {
-        return cvRound(uc.x);
+        return cvRound(mTopLeft.x);
     };
     /**
      * Returns the y value of the upper left corner.
@@ -268,7 +254,7 @@ public:
      **/
     int getY() const
     {
-        return cvRound(uc.y);
+        return cvRound(mTopLeft.y);
     };
     /**
      * Returns the width of the box.
@@ -276,7 +262,7 @@ public:
      **/
     int getWidth() const
     {
-        return cvRound(lc.x - uc.x);
+        return cvRound(mBottomRight.x - mTopLeft.x);
     };
     /**
      * Returns the width of the box.
@@ -284,7 +270,7 @@ public:
      **/
     float getWidthF() const
     {
-        return lc.x - uc.x;
+        return mBottomRight.x - mTopLeft.x;
     };
     /**
      * Returns the height of the box.
@@ -292,7 +278,7 @@ public:
      **/
     int getHeight() const
     {
-        return cvRound(lc.y - uc.y);
+        return cvRound(mBottomRight.y - mTopLeft.y);
     };
     /**
      * Returns the height of the box as float
@@ -300,7 +286,7 @@ public:
      **/
     float getHeightF() const
     {
-        return lc.y - uc.y;
+        return mBottomRight.y - mTopLeft.y;
     };
     /**
      * Returns the size of the box.
@@ -313,12 +299,12 @@ public:
 
     nmc::DkVector size() const
     {
-        return lc - uc;
+        return mBottomRight - mTopLeft;
     };
 
     void setSize(nmc::DkVector size)
     {
-        lc = uc + size;
+        mBottomRight = mTopLeft + size;
     };
 
     float area() const
@@ -329,11 +315,11 @@ public:
 
     float intersectArea(const DkBox &box) const
     {
-        nmc::DkVector tmp1 = lc.maxVec(box.lc);
-        nmc::DkVector tmp2 = uc.maxVec(box.uc);
+        nmc::DkVector tmp1 = mBottomRight.maxVec(box.mBottomRight);
+        nmc::DkVector tmp2 = mTopLeft.maxVec(box.mTopLeft);
 
         // no intersection?
-        if (lc.x < uc.x || lc.y < lc.y)
+        if (mBottomRight.x < mTopLeft.x || mBottomRight.y < mBottomRight.y)
             return 0;
 
         tmp1 = tmp2 - tmp1;
@@ -349,8 +335,8 @@ public:
         return QString();
     };
 
-    nmc::DkVector uc; /**< upper left corner of the box **/
-    nmc::DkVector lc; /**< lower right corner of the box **/
+    nmc::DkVector mTopLeft{}; /**< upper left corner of the box **/
+    nmc::DkVector mBottomRight{}; /**< lower right corner of the box **/
 };
 
 /**
@@ -361,18 +347,16 @@ public:
 class DkIPoint
 {
 public:
-    int x;
-    int y;
+    int mX = 0;
+    int mY = 0;
 
-    DkIPoint()
-        : x(0)
-        , y(0){};
+    DkIPoint() = default;
 
     DkIPoint(int x, int y)
+        : mX(x)
+        , mY(y)
     {
-        this->x = x;
-        this->y = y;
-    };
+    }
 };
 
 /**
@@ -383,19 +367,19 @@ public:
 class DkVertex
 {
 public:
-    DkIPoint ip;
-    DkIPoint rx;
-    DkIPoint ry;
-    int in;
+    DkIPoint mIp;
+    DkIPoint mRx;
+    DkIPoint mRy;
+    int mIn = 0;
 
     DkVertex() = default;
 
     DkVertex(DkIPoint ip, DkIPoint rx, DkIPoint ry)
     {
-        this->ip = ip;
-        this->rx = rx;
-        this->ry = ry;
-        in = 0;
+        mIp = ip;
+        mRx = rx;
+        mRy = ry;
+        mIn = 0;
     };
 };
 
@@ -406,18 +390,18 @@ class DkIntersectPoly
 
 public:
     DkIntersectPoly();
-    DkIntersectPoly(std::vector<nmc::DkVector> vecA, std::vector<nmc::DkVector> vecB);
+    DkIntersectPoly(const std::vector<nmc::DkVector> &vecA, const std::vector<nmc::DkVector> &vecB);
 
     double compute();
 
 private:
-    std::vector<nmc::DkVector> vecA;
-    std::vector<nmc::DkVector> vecB;
-    int64 interArea;
+    const std::vector<nmc::DkVector> mVecA;
+    const std::vector<nmc::DkVector> mVecB;
+    int64 mInterArea;
     nmc::DkVector mMaxRange;
     nmc::DkVector mMinRange;
-    nmc::DkVector scale;
-    float gamut;
+    nmc::DkVector mScale;
+    float mGamut;
 
     void inness(std::vector<DkVertex> ipA, std::vector<DkVertex> ipB);
     void cross(DkVertex a, DkVertex b, DkVertex c, DkVertex d, double a1, double a2, double a3, double a4);
@@ -439,7 +423,7 @@ public:
     bool empty() const;
     double getMaxCosine() const
     {
-        return maxCosine;
+        return mMaxCosine;
     };
     void draw(cv::Mat &img, const cv::Scalar &col = cv::Scalar(0, 100, 255)) const;
     std::vector<cv::Point> toCvPoints() const;
@@ -459,8 +443,8 @@ public:
 
 protected:
     std::vector<nmc::DkVector> mPts;
-    double maxCosine;
-    double area;
+    double mMaxCosine;
+    double mArea;
 
     void toDkVectors(const std::vector<cv::Point> &pts, std::vector<nmc::DkVector> &dkPts) const;
     void computeMaxCosine();
@@ -474,62 +458,66 @@ public:
     void findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &rects);
 
 protected:
-    const int maxLinesHough = 30;
-    const float
-        houghPeakThresholdRel = 0.3f; // minimum accumulator value of hough lines, relative to smaller image dimension
-    const double t_theta = CV_PI / 9; // angle tolerance for parallel lines
-    const float t_l = 0.5f;
-    const float maxGapLengthRel = 0.3f; // maximum gap size in findLineSegments, relative to smaller image dimension
-    const int minLineSegmentLength = 10;
-    const float minRelSideLength = 0.3f; // minimum length of final rectangle sides relative to smaller image dimension
-    const double orthoTol = CV_PI / 9; // orthogonality tolerance
-    const float cornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
-    const unsigned int numFinalRects = 3; // number of rectangles to return
+    static constexpr int kMaxLinesHough = 30;
+    static constexpr float kHoughPeakThresholdRel = 0.3f; // minimum accumulator value of hough lines,
+                                                          // relative to smaller image dimension
+
+    static constexpr double kAngleTolerance = CV_PI / 9; // angle tolerance for parallel lines
+    static constexpr float kAccumTolerance = 0.25f; // accumulator tolerance for parallel lines, relative to ???
+    static constexpr float kMaxGapLengthRel = 0.3f; // maximum gap size in findLineSegments,
+                                                    // relative to smaller image dimension
+
+    static constexpr int kMinLineSegmentLength = 10;
+    static constexpr float kMinRelSideLength = 0.3f; // minimum length of final rectangle sides,
+                                                     //    relative to smaller image dimension
+    static constexpr double kOrthoTol = CV_PI / 9; // orthogonality tolerance
+    static constexpr float kCornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
+    static constexpr unsigned int kNumFinalRects = 3; // number of rectangles to return
 
     struct HoughLine {
-        int acc;
-        float rho;
-        float angle;
+        int mAcc;
+        float mRho;
+        float mAngle;
     };
 
     struct LineSegment {
-        cv::Point2f p1;
-        cv::Point2f p2;
-        float length;
+        cv::Point2f mP1;
+        cv::Point2f mP2;
+        float mLength;
     };
 
     struct ExtendedPeak {
         ExtendedPeak(const HoughLine &line1, const LineSegment &ls1, const HoughLine &line2, const LineSegment &ls2);
         //~ExtendedPeak() {}
 
-        HoughLine line1;
-        HoughLine line2;
-        std::vector<LineSegment> spatialLines;
-        std::pair<bool, cv::Point2f> intersectionPoint;
-        double theta_k;
-        double A_k;
+        HoughLine mLine1;
+        HoughLine mLine2;
+        std::vector<LineSegment> mSpatialLines;
+        std::pair<bool, cv::Point2f> mIntersectionPoint;
+        double mTheta_k;
+        double mA_k;
     };
 
     struct IntermediatePeak {
         IntermediatePeak(const ExtendedPeak &ep1, const ExtendedPeak &ep2)
-            : ep1(ep1)
-            , ep2(ep2)
+            : mEp1(ep1)
+            , mEp2(ep2)
         {
         }
 
-        ExtendedPeak ep1;
-        ExtendedPeak ep2;
+        ExtendedPeak mEp1;
+        ExtendedPeak mEp2;
     };
 
     struct Rectangle {
         Rectangle(const IntermediatePeak &ip, const std::vector<cv::Point2f> &corners)
-            : ip(ip)
-            , corners(corners)
+            : mIp(ip)
+            , mCorners(corners)
         {
         }
 
-        IntermediatePeak ip;
-        std::vector<cv::Point2f> corners;
+        IntermediatePeak mIp;
+        std::vector<cv::Point2f> mCorners;
     };
 
     enum class LineFindingMode {
