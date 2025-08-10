@@ -55,8 +55,8 @@ static Point3f rgbToUniform(const QColor &c)
 
     // convert 8-bit srgb to linear RGB
     auto srgbToLinear = [](int v) {
-        double c = v / 255.0;
-        return c <= 0.04045 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4);
+        double d = v / 255.0;
+        return d <= 0.04045 ? d / 12.92 : pow((d + 0.055) / 1.055, 2.4);
     };
 
     double r = srgbToLinear(c.red());

@@ -220,8 +220,8 @@ void DkTcpMenu::updatePeers()
     for (int idx = 0; idx < newPeers.size(); idx++) {
         DkPeer *currentPeer = newPeers[idx];
 
-        QString title = (mNoClientsFound) ? currentPeer->title
-                                          : currentPeer->clientName % QString(": ") % currentPeer->title;
+        QString title = (mNoClientsFound) ? currentPeer->mTitle
+                                          : currentPeer->mClientName % QString(": ") % currentPeer->mTitle;
 
         auto *peerEntry = new DkTcpAction(currentPeer, title, this);
         if (!mNoClientsFound)
@@ -246,21 +246,21 @@ DkTcpAction::DkTcpAction()
 DkTcpAction::DkTcpAction(DkPeer *peer, QObject *parent)
     : QAction(parent)
 {
-    this->peer = peer;
+    mPeer = peer;
     init();
 }
 
 DkTcpAction::DkTcpAction(DkPeer *peer, const QString &text, QObject *parent)
     : QAction(text, parent)
 {
-    this->peer = peer;
+    mPeer = peer;
     init();
 }
 
 DkTcpAction::DkTcpAction(DkPeer *peer, const QIcon &icon, const QString &text, QObject *parent)
     : QAction(icon, text, parent)
 {
-    this->peer = peer;
+    mPeer = peer;
     init();
 }
 
@@ -268,24 +268,24 @@ DkTcpAction::~DkTcpAction() = default;
 
 void DkTcpAction::init()
 {
-    tcpActions = nullptr;
+    mTcpActions = nullptr;
     setObjectName("tcpAction");
     setCheckable(true);
-    setChecked(peer->isSynchronized());
+    setChecked(mPeer->isSynchronized());
     connect(this, &DkTcpAction::triggered, this, &DkTcpAction::synchronize);
 }
 
 void DkTcpAction::setTcpActions(QList<QAction *> *actions)
 {
-    tcpActions = actions;
+    mTcpActions = actions;
 }
 
 void DkTcpAction::synchronize(bool checked)
 {
     if (checked)
-        emit synchronizeWithSignal(peer->peerId);
+        emit synchronizeWithSignal(mPeer->mPeerId);
     else
-        emit disableSynchronizeWithSignal(peer->peerId);
+        emit disableSynchronizeWithSignal(mPeer->mPeerId);
 
     emit enableActions(checked);
 }

@@ -188,22 +188,22 @@ bool DkConnection::readProtocolHeader()
         mCurrentDataType = Greeting;
     } else if (mBuffer == synchronizeBA) {
         // qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
-        mCurrentDataType = startSynchronize;
+        mCurrentDataType = StartSynchronize;
     } else if (mBuffer == disableSynchronizeBA) {
         // qDebug() << "StopSynchronize received from:" << this->peerAddress() << ":" << this->peerPort();
-        mCurrentDataType = stopSynchronize;
+        mCurrentDataType = StopSynchronize;
     } else if (mBuffer == newtitleBA) {
         // qDebug() << "New Title received from:" << this->peerAddress() << ":" << this->peerPort();
-        mCurrentDataType = newTitle;
+        mCurrentDataType = NewTitle;
     } else if (mBuffer == newtransformBA) {
         // qDebug() << "New Transform received from:" << this->peerAddress() << ":" << this->peerPort();
-        mCurrentDataType = newTransform;
+        mCurrentDataType = NewTransform;
     } else if (mBuffer == newpositionBA) {
         // qDebug() << "New Position received from:" << this->peerAddress() << ":" << this->peerPort();
-        mCurrentDataType = newPosition;
+        mCurrentDataType = NewPosition;
     } else if (mBuffer == newFileBA) {
         // qDebug() << "New File received from:" << this->peerAddress() << ":" << this->peerPort();
-        mCurrentDataType = newFile;
+        mCurrentDataType = NewFile;
     } else if (mBuffer == goodbyeBA) {
         // qDebug() << "Goodbye received from:" << this->peerAddress() << ":" << this->peerPort();
         mCurrentDataType = GoodBye;
@@ -318,7 +318,7 @@ void DkConnection::checkState()
         return;
     }
 
-    if (mState == ReadyForUse && mCurrentDataType == startSynchronize) {
+    if (mState == ReadyForUse && mCurrentDataType == StartSynchronize) {
         if (!hasEnoughData())
             return;
 
@@ -358,7 +358,7 @@ void DkConnection::checkState()
         return;
     }
 
-    if (mState == Synchronized && mCurrentDataType == stopSynchronize) {
+    if (mState == Synchronized && mCurrentDataType == StopSynchronize) {
         mState = ReadyForUse;
         this->mIsSynchronizeMessageSent = false;
         emit connectionStopSynchronize(this);
@@ -423,10 +423,10 @@ bool DkConnection::readDataTypeIntoBuffer()
 void DkConnection::processData()
 {
     switch (mCurrentDataType) {
-    case newTitle:
+    case NewTitle:
         emit connectionTitleHasChanged(this, QString::fromUtf8(mBuffer));
         break;
-    case newPosition: {
+    case NewPosition: {
         if (mState == Synchronized) {
             QRect rect;
             bool opacity;
@@ -439,7 +439,7 @@ void DkConnection::processData()
         }
         break;
     }
-    case newTransform: {
+    case NewTransform: {
         if (mState == Synchronized) {
             QTransform transform;
             QTransform imgTransform;
@@ -452,7 +452,7 @@ void DkConnection::processData()
         }
         break;
     }
-    case newFile: {
+    case NewFile: {
         if (mState == Synchronized) {
             qint16 op;
             QString filename;

@@ -124,7 +124,7 @@ class DllCoreExport DkTranslationUpdater : public QObject
 
 public:
     explicit DkTranslationUpdater(bool silent = false, QObject *parent = nullptr);
-    bool silent;
+    bool mSilent;
 
 public slots:
     virtual void checkForUpdates();

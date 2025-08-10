@@ -83,10 +83,10 @@ public:
     bool keepAspectRatio;
 
 protected:
-    QIcon checkedIcon;
-    QIcon uncheckedIcon;
-    bool mouseOver;
-    QSize mySize;
+    QIcon mCheckedIcon;
+    QIcon mUncheckedIcon;
+    bool mMouseOver;
+    QSize mMySize;
 
     // functions
     void init();
@@ -470,7 +470,7 @@ public:
 
     QPointF getCenter()
     {
-        return QPointF(size.width() * 0.5f, size.height() * 0.5f);
+        return QPointF(mSize.width() * 0.5f, mSize.height() * 0.5f);
     };
 
 signals:
@@ -484,11 +484,11 @@ protected:
     void enterEvent(DkEnterEvent *event) override;
     void init();
 
-    DkRotatingRect *rect;
-    QPointF initialPos;
-    QPointF posGrab;
-    int parentIdx;
-    QSize size;
+    DkRotatingRect *mRect;
+    QPointF mInitialPos;
+    QPointF mPosGrab;
+    int mParentIdx;
+    QSize mSize;
 };
 
 class DkEditableRect : public DkFadeWidget
@@ -699,7 +699,7 @@ signals:
 protected:
     void mousePressEvent(QMouseEvent *ev) override;
 
-    DkFileInfoWrapper fileInfo;
+    DkFileInfoWrapper mFileInfo;
 };
 
 class DkDirectoryEdit : public QLineEdit

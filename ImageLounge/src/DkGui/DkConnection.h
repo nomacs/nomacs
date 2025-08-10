@@ -114,12 +114,12 @@ protected:
     };
     enum DataType {
         Greeting,
-        startSynchronize,
-        stopSynchronize,
-        newTitle,
-        newPosition,
-        newTransform,
-        newFile,
+        StartSynchronize,
+        StopSynchronize,
+        NewTitle,
+        NewPosition,
+        NewTransform,
+        NewFile,
         GoodBye,
         Undefined
     };

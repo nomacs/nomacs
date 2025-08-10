@@ -1729,14 +1729,12 @@ bool DkThumbScene::allThumbsSelected() const
 // DkThumbView --------------------------------------------------------------------
 DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
     : QGraphicsView(scene, parent)
+    , mThumbScene(scene)
 {
     setObjectName("DkThumbsView");
-    this->scene = scene;
 
     setResizeAnchor(QGraphicsView::AnchorUnderMouse);
     setAcceptDrops(true);
-
-    lastShiftIdx = -1;
 
     connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
     connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
@@ -1762,7 +1760,7 @@ void DkThumbsView::onScroll()
 void DkThumbsView::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() == Qt::ControlModifier) {
-        scene->resizeThumbs(event->angleDelta().y() / 100.0f);
+        mThumbScene->resizeThumbs(event->angleDelta().y() / 100.0f);
     } else if (event->modifiers() == Qt::NoModifier) {
         if (verticalScrollBar()->isVisible()) {
             verticalScrollBar()->setValue(verticalScrollBar()->value() - event->angleDelta().y());
@@ -1775,12 +1773,13 @@ void DkThumbsView::wheelEvent(QWheelEvent *event)
 void DkThumbsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        mousePos = event->pos();
+        mMouseDownPos = event->pos();
     }
 
     qDebug() << "mouse pressed";
 
-    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos()), QTransform()));
+    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(
+        mThumbScene->itemAt(mapToScene(event->pos()), QTransform()));
 
     // this is a bit of a hack
     // what we want to achieve: if the user is selecting with e.g. shift or ctrl
@@ -1790,17 +1789,17 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
         QGraphicsView::mousePressEvent(event);
 
     if (!itemClicked) {
-        scene->showFile("");
+        mThumbScene->showFile("");
     }
 }
 
 void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        int dist = qRound(QPointF(event->pos() - mousePos).manhattanLength());
+        int dist = qRound(QPointF(event->pos() - mMouseDownPos).manhattanLength());
 
         if (dist > QApplication::startDragDistance()) {
-            QStringList fileList = scene->getSelectedFiles();
+            QStringList fileList = mThumbScene->getSelectedFiles();
 
             if (!fileList.empty()) {
                 QList<QUrl> urls;
@@ -1811,7 +1810,7 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
                 mimeData->setUrls(urls);
 
                 // create thumb image
-                QVector<DkThumbLabel *> tl = scene->getSelectedThumbs();
+                QVector<DkThumbLabel *> tl = mThumbScene->getSelectedThumbs();
                 QVector<QImage> imgs;
 
                 for (int idx = 0; idx < tl.size() && idx < 3; idx++) {
@@ -1837,14 +1836,15 @@ void DkThumbsView::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
 
-    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos()), QTransform()));
+    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(
+        mThumbScene->itemAt(mapToScene(event->pos()), QTransform()));
 
-    if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != nullptr) {
-        scene->selectThumbs(true, lastShiftIdx, scene->findThumb(itemClicked));
+    if (mLastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != nullptr) {
+        mThumbScene->selectThumbs(true, mLastShiftIdx, mThumbScene->findThumb(itemClicked));
     } else if (itemClicked != nullptr) {
-        lastShiftIdx = scene->findThumb(itemClicked);
+        mLastShiftIdx = mThumbScene->findThumb(itemClicked);
     } else
-        lastShiftIdx = -1;
+        mLastShiftIdx = -1;
 }
 
 void DkThumbsView::dragEnterEvent(QDragEnterEvent *event)
@@ -1906,7 +1906,7 @@ void DkThumbsView::dropEvent(QDropEvent *event)
         if (file.isDir()) {
             emit updateDirSignal(file.absoluteFilePath());
         } else {
-            scene->copyImages(event->mimeData(), event->proposedAction());
+            mThumbScene->copyImages(event->mimeData(), event->proposedAction());
         }
     }
 
@@ -2253,15 +2253,14 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
                                          QWidget *parent /* = 0 */,
                                          Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
+    , mThumbSize{thumbSize}
     , mLoader{thumbLoader}
     , mFilePath{filePath}
 
 {
-    mThumbSize = thumbSize;
-
     connect(mLoader, &DkThumbLoader::thumbnailLoaded, this, &DkThumbPreviewLabel::thumbLoaded);
-    connect(mLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &filePath) {
-        if (filePath != mFilePath) {
+    connect(mLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &path) {
+        if (path != mFilePath) {
             return;
         }
         setProperty("empty", true); // apply empty style

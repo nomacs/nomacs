@@ -302,10 +302,10 @@ public:
      * @param x the vector's x-coordinate.
      * @param y the vector's y-coordinate.
      **/
-    DkVector(float x, float y)
+    DkVector(float x_, float y_)
     {
-        this->x = x;
-        this->y = y;
+        x = x_;
+        y = y_;
     };
 
 #ifdef WITH_OPENCV

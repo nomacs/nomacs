@@ -135,6 +135,9 @@ if(ENABLE_QUAZIP)
         add_definitions(-DQUAZIP_STATIC)
         add_definitions(-DWITH_QUAZIP)
 
+        # quazip has a lot of shadowed names, ignore warnings
+        set_source_files_properties(${QUAZIP_SOURCES} PROPERTIES COMPILE_FLAGS "-Wno-shadow")
+
         find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
         set(QUAZIP_LIBRARIES Qt6::Core5Compat ${ZLIB_LIBRARIES})
     endif(USE_SYSTEM_QUAZIP)
