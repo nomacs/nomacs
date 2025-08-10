@@ -70,22 +70,23 @@ private:
     double computeSkewAngle(QVector<QVector3D> weights, double imgDiagonal);
     int randInt(int low, int high);
 
-    int nIter;
-    QSize sepDims;
-    int delta;
-    double sigma;
-    double sepThr;
-    int epsilon;
-    int kMax;
-    int minLineLength;
-    int minLineProjLength;
+    static constexpr int kIter = 200;
+    static constexpr double kSigma = 0.3;
+    static constexpr double kSepThr = 0.1;
+    static constexpr int kEpsilon = 2;
+    static constexpr int kMaxK = 7;
 
-    QVector<QVector4D> selectedLines;
-    QVector<int> selectedLineTypes;
-    cv::Mat matImg;
-    int rotationFactor;
-    QProgressDialog *progress;
-    QWidget *mainWin;
+    QSize mSepDims{0, 0};
+    int mDelta = 0;
+    int mMinLineLength = 10;
+    int mMinLineProjLength = mMinLineLength / 2;
+    int mRotationFactor = 1;
+
+    QVector<QVector4D> mSelectedLines;
+    QVector<int> mSelectedLineTypes;
+    cv::Mat mMatImg;
+    QProgressDialog *mProgress;
+    QWidget *mMainWin;
 };
 
 };
