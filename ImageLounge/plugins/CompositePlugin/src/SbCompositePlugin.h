@@ -117,15 +117,15 @@ public:
     void setVisible(bool visible) override;
 
 protected:
-    SbCompositeDockWidget *dockWidget = nullptr;
-    QScrollArea *scrollArea = nullptr;
-    QWidget *mainWidget = nullptr;
-    QBoxLayout *outerLayout = nullptr;
-    QVector<SbChannelWidget *> channelWidgets;
-    SbViewPort *viewport = nullptr;
-    cv::Mat channels[3];
-    cv::Mat alpha;
-    bool apply = false;
+    SbCompositeDockWidget *mDockWidget = nullptr;
+    QScrollArea *mScrollArea = nullptr;
+    QWidget *mMainWidget = nullptr;
+    QBoxLayout *mOuterLayout = nullptr;
+    QVector<SbChannelWidget *> mChannelWidgets;
+    SbViewPort *mViewport = nullptr;
+    cv::Mat mChannels[3];
+    cv::Mat mAlpha;
+    bool mApply = false;
 
     void buildUI(); // initialize UI and connect
     QImage buildComposite() const; // merge channels (and alpha if present) to a rgb(a) QImage

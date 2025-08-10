@@ -102,7 +102,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     # Enable all warnings in debug builds, hopefully this can be the default at some point
     # There is a lot of good stuff here to prevent undefined behavior bugs
     if(NOT MSVC)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wformat -Wformat-nonliteral")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wformat -Wformat-nonliteral -Wshadow")
     endif()
 endif()
 

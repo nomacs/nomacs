@@ -104,12 +104,6 @@ protected:
 
 class DkMenuBar;
 
-enum PluginMenuActions {
-    menu_plugin_manager,
-
-    menu_plugins_end, // nothing beyond this point
-};
-
 class DllCoreExport DkNoMacs : public QMainWindow
 {
     Q_OBJECT

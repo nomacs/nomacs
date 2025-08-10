@@ -550,10 +550,10 @@ class DllCoreExport TabMiddleMouseCloser : public QObject
 
 public:
     explicit TabMiddleMouseCloser(std::function<void(int)> callback)
-        : callback(callback){};
+        : mCallback(callback){};
 
 protected:
-    std::function<void(int)> callback;
+    std::function<void(int)> mCallback;
     bool eventFilter(QObject *obj, QEvent *event) override;
 };
 

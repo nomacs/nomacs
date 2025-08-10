@@ -357,8 +357,8 @@ void DkUpdater::replyError(QNetworkReply::NetworkError)
 // DkTranslationUpdater --------------------------------------------------------------------
 DkTranslationUpdater::DkTranslationUpdater(bool silent, QObject *parent)
     : QObject(parent)
+    , mSilent(silent)
 {
-    this->silent = silent;
     connect(&mAccessManager, &QNetworkAccessManager::finished, this, &DkTranslationUpdater::replyFinished);
 
     updateAborted = false;
@@ -418,7 +418,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply *reply)
 
     if (reply->error()) {
         qDebug() << "network reply error : url: " << reply->url();
-        if (!qtTranslation && !silent)
+        if (!qtTranslation && !mSilent)
             emit showUpdaterMessage(tr("Unable to download translation"), tr("update"));
         return;
     }
@@ -437,7 +437,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply *reply)
         if (!storageLocation.exists()) {
             if (!storageLocation.mkpath(storageLocation.absolutePath())) {
                 qDebug() << "unable to create storage location ... aborting";
-                if (!qtTranslation && !silent)
+                if (!qtTranslation && !mSilent)
                     emit showUpdaterMessage(tr("Unable to update translation"), tr("update"));
                 return;
             }
@@ -459,12 +459,12 @@ void DkTranslationUpdater::replyFinished(QNetworkReply *reply)
 
         file.close();
 
-        if (!qtTranslation && !silent)
+        if (!qtTranslation && !mSilent)
             emit showUpdaterMessage(tr("Translation updated"), tr("update"));
         qDebug() << "translation updated";
     } else {
         qDebug() << "no newer translations available";
-        if (!silent)
+        if (!mSilent)
             emit showUpdaterMessage(tr("No newer translations found"), tr("update"));
     }
     if (reply->isFinished() && mReplyQt->isFinished()) {

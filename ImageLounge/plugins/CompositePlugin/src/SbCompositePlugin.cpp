@@ -65,12 +65,12 @@ QSharedPointer<nmc::DkImageContainer> SbCompositePlugin::runPlugin(const QString
     if (!imgC)
         qDebug() << "imgC was null";
 
-    if (viewport && imgC) {
-        if (apply) {
+    if (mViewport && imgC) {
+        if (mApply) {
             imgC->setImage(buildComposite(), tr("composite")); // put input image names here?
         }
-        viewport->setVisible(false);
-        dockWidget->setVisible(false);
+        mViewport->setVisible(false);
+        mDockWidget->setVisible(false);
     }
 
     return imgC;
@@ -80,11 +80,11 @@ bool SbCompositePlugin::createViewPort(QWidget *parent)
 {
     qDebug() << "called createViewPort";
 
-    if (!viewport) {
-        viewport = new SbViewPort(parent);
-        connect(viewport, SIGNAL(gotImage()), this, SLOT(onViewportGotImage()));
+    if (!mViewport) {
+        mViewport = new SbViewPort(parent);
+        connect(mViewport, SIGNAL(gotImage()), this, SLOT(onViewportGotImage()));
     }
-    if (!dockWidget) {
+    if (!mDockWidget) {
         buildUI();
     }
     setVisible(true);
@@ -94,24 +94,24 @@ bool SbCompositePlugin::createViewPort(QWidget *parent)
 DkPluginViewPort *SbCompositePlugin::getViewPort()
 {
     qDebug() << "called getViewPort";
-    return viewport;
+    return mViewport;
 }
 
 void SbCompositePlugin::setVisible(bool visible)
 {
     qDebug() << "called setVisible";
-    if (viewport)
-        viewport->setVisible(visible);
-    if (dockWidget)
-        dockWidget->setVisible(visible);
+    if (mViewport)
+        mViewport->setVisible(visible);
+    if (mDockWidget)
+        mDockWidget->setVisible(visible);
 
     if (!visible) {
         // cleanup
-        for (SbChannelWidget *cw : channelWidgets) {
+        for (SbChannelWidget *cw : mChannelWidgets) {
             cw->setImg();
         }
         for (int i = 0; i < 3; i++) {
-            channels[i] = cv::Mat();
+            mChannels[i] = cv::Mat();
         }
     }
 }
@@ -120,20 +120,20 @@ void SbCompositePlugin::setVisible(bool visible)
 
 void SbCompositePlugin::buildUI()
 {
-    mainWidget = new QWidget();
+    mMainWidget = new QWidget();
 
-    outerLayout = new QBoxLayout(QBoxLayout::Direction::TopToBottom); // default
-    outerLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    mOuterLayout = new QBoxLayout(QBoxLayout::Direction::TopToBottom); // default
+    mOuterLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
     for (int i = 0; i < 3; i++) {
-        auto *cw = new SbChannelWidget(static_cast<SbChannelWidget::Channel>(i), mainWidget);
-        channelWidgets.append(cw);
+        auto *cw = new SbChannelWidget(static_cast<SbChannelWidget::Channel>(i), mMainWidget);
+        mChannelWidgets.append(cw);
     }
 
-    for (SbChannelWidget *s : channelWidgets) {
+    for (SbChannelWidget *s : mChannelWidgets) {
         connect(s, SIGNAL(imageChanged(int)), this, SLOT(onImageChanged(int)));
         connect(s, SIGNAL(newAlpha(QImage)), this, SLOT(onNewAlpha(QImage)));
-        outerLayout->addWidget(s);
+        mOuterLayout->addWidget(s);
     }
 
     auto *buttonLayout = new QHBoxLayout();
@@ -148,46 +148,46 @@ void SbCompositePlugin::buildUI()
     buttonLayout->addWidget(applyButton);
     buttonLayout->addWidget(cancelButton);
     buttonLayout->setAlignment(Qt::AlignBottom);
-    outerLayout->addItem(buttonLayout);
-    outerLayout->addStretch();
+    mOuterLayout->addItem(buttonLayout);
+    mOuterLayout->addStretch();
 
-    mainWidget->setLayout(outerLayout);
+    mMainWidget->setLayout(mOuterLayout);
 
     // dock widget & scroll area setup
-    dockWidget = new SbCompositeDockWidget(tr("Composite Plugin"));
+    mDockWidget = new SbCompositeDockWidget(tr("Composite Plugin"));
     QSettings settings;
     Qt::DockWidgetArea dockLocation = static_cast<Qt::DockWidgetArea>(
         settings.value("sbCompWidgetLocation", Qt::LeftDockWidgetArea).toInt());
 
-    scrollArea = new QScrollArea(dockWidget);
-    scrollArea->setMinimumSize(SbChannelWidget::THUMB_MAX_SIZE + 50,
-                               SbChannelWidget::THUMB_MAX_SIZE + 100); // very dirty
-    scrollArea->setWidget(mainWidget);
-    scrollArea->setWidgetResizable(true);
+    mScrollArea = new QScrollArea(mDockWidget);
+    mScrollArea->setMinimumSize(SbChannelWidget::kThumbMaxSize + 50,
+                                SbChannelWidget::kThumbMaxSize + 100); // very dirty
+    mScrollArea->setWidget(mMainWidget);
+    mScrollArea->setWidgetResizable(true);
 
-    dockWidget->setWidget(scrollArea);
+    mDockWidget->setWidget(mScrollArea);
 
-    connect(dockWidget, SIGNAL(closed()), this, SLOT(onDockWidgetClose()));
-    connect(dockWidget,
+    connect(mDockWidget, SIGNAL(closed()), this, SLOT(onDockWidgetClose()));
+    connect(mDockWidget,
             SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
             this,
             SLOT(onDockLocationChanged(Qt::DockWidgetArea)));
 
     QMainWindow *mainWindow = getMainWindow();
     if (mainWindow)
-        mainWindow->addDockWidget(dockLocation, dockWidget);
+        mainWindow->addDockWidget(dockLocation, mDockWidget);
 }
 
 QImage SbCompositePlugin::buildComposite() const
 {
     cv::Mat composite;
-    if (alpha.empty()) {
-        cv::merge(channels, 3, composite);
+    if (mAlpha.empty()) {
+        cv::merge(mChannels, 3, composite);
     } else {
-        cv::Mat bgra[4] = {channels[2],
-                           channels[1],
-                           channels[0],
-                           alpha}; // when merging 4 channels, blue and red are reversed again.. why..
+        cv::Mat bgra[4] = {mChannels[2],
+                           mChannels[1],
+                           mChannels[0],
+                           mAlpha}; // when merging 4 channels, blue and red are reversed again.. why..
         cv::merge(bgra, 4, composite);
     }
     return DkImage::mat2QImage(composite);
@@ -196,88 +196,88 @@ QImage SbCompositePlugin::buildComposite() const
 void SbCompositePlugin::onImageChanged(int c)
 {
     qDebug() << "image changed in channel " << c;
-    channels[c] = channelWidgets[c]->getImg();
+    mChannels[c] = mChannelWidgets[c]->getImg();
 
     // set all channels with non-matching sizes to zeros of matching size
     for (int i = 0; i < 3; i++) {
         if (i != c) {
-            if (!(channels[i].rows == channels[c].rows && channels[i].cols == channels[c].cols)) {
-                channels[i] = cv::Mat::zeros(channels[c].rows, channels[c].cols, channels[c].type());
-                channelWidgets[i]->setImg();
+            if (!(mChannels[i].rows == mChannels[c].rows && mChannels[i].cols == mChannels[c].cols)) {
+                mChannels[i] = cv::Mat::zeros(mChannels[c].rows, mChannels[c].cols, mChannels[c].type());
+                mChannelWidgets[i]->setImg();
             }
         }
     }
-    viewport->loadImage(buildComposite());
+    mViewport->loadImage(buildComposite());
 }
 
 void SbCompositePlugin::onNewAlpha(QImage _alpha)
 {
     if (_alpha == QImage()) {
         qDebug() << "got empty alpha";
-        alpha = cv::Mat();
+        mAlpha = cv::Mat();
     } else {
         qDebug() << "got full alpha";
-        alpha = DkImage::qImage2Mat(_alpha);
+        mAlpha = DkImage::qImage2Mat(_alpha);
         // currently it seems like qImage2Mat converts a single-channel QImage to a multi-channel Mat. so..
-        if (alpha.channels() == 4)
-            cv::cvtColor(alpha, alpha, CV_RGBA2GRAY);
-        else if (alpha.channels() == 3)
-            cv::cvtColor(alpha, alpha, CV_RGB2GRAY);
+        if (mAlpha.channels() == 4)
+            cv::cvtColor(mAlpha, mAlpha, CV_RGBA2GRAY);
+        else if (mAlpha.channels() == 3)
+            cv::cvtColor(mAlpha, mAlpha, CV_RGB2GRAY);
     }
 }
 
 void SbCompositePlugin::onViewportGotImage()
 {
     // put that image into the three channels
-    QSharedPointer<DkImageContainerT> imgC = viewport->getImgC();
+    QSharedPointer<DkImageContainerT> imgC = mViewport->getImgC();
     QImage newImage = imgC->image();
     cv::Mat rgb = DkImage::qImage2Mat(newImage);
     if (rgb.channels() >= 3) {
         std::vector<cv::Mat> c;
         split(rgb, c);
         for (int i = 0; i < 3; i++) {
-            channels[i] = c[2 - i]; // channels are BGR.. why?
-            channelWidgets[i]->setImg(c[2 - i], imgC->fileName());
+            mChannels[i] = c[2 - i]; // channels are BGR.. why?
+            mChannelWidgets[i]->setImg(c[2 - i], imgC->fileName());
         }
         if (rgb.channels() >= 4) {
-            alpha = c[3];
+            mAlpha = c[3];
         }
     }
     // else? i don't think this can happen..
-    emit viewport->loadImage(buildComposite());
+    emit mViewport->loadImage(buildComposite());
 }
 
 void SbCompositePlugin::onDockWidgetClose()
 {
-    emit viewport->closePlugin(true);
+    emit mViewport->closePlugin(true);
 }
 
 void SbCompositePlugin::onDockLocationChanged(Qt::DockWidgetArea a)
 {
     // vertical layout
     if (a == Qt::DockWidgetArea::LeftDockWidgetArea || a == Qt::DockWidgetArea::RightDockWidgetArea) {
-        scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
-        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
-        outerLayout->setDirection(QBoxLayout::Direction::TopToBottom);
+        mScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+        mScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+        mOuterLayout->setDirection(QBoxLayout::Direction::TopToBottom);
     }
     // horizontal layout
     else {
-        scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
-        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
-        outerLayout->setDirection(QBoxLayout::Direction::LeftToRight);
+        mScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+        mScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+        mOuterLayout->setDirection(QBoxLayout::Direction::LeftToRight);
     }
 }
 
 void SbCompositePlugin::onPushButtonApply()
 {
-    apply = true;
-    emit viewport->closePlugin(false);
+    mApply = true;
+    emit mViewport->closePlugin(false);
 }
 
 void SbCompositePlugin::onPushButtonCancel()
 {
-    apply = false;
-    emit viewport->closePlugin(false);
+    mApply = false;
+    emit mViewport->closePlugin(false);
 }
 
 };

@@ -74,26 +74,26 @@ public:
         B
     };
 
-    static const int THUMB_MAX_SIZE = 150;
+    static constexpr int kThumbMaxSize = 150;
 
-    explicit SbChannelWidget(Channel c, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit SbChannelWidget(Channel channel, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     ~SbChannelWidget() override;
     cv::Mat getImg(); // return the channel content
     void setImg(
-        cv::Mat _img = cv::Mat(),
-        QString _name = ""); // "override" from outside. call with empty mat --> reset. also resets intensity slider.
+        cv::Mat img = cv::Mat(),
+        QString name = ""); // "override" from outside. call with empty mat --> reset. also resets intensity slider.
 
-    const Channel c; // so that this channel knows which one it is
+    const Channel mChannel; // so that this channel knows which one it is
 
 protected:
-    static const int INT_SLIDER_MIN = 0;
-    static const int INT_SLIDER_MAX = 200;
-    static const int INT_SLIDER_INIT = 100;
+    static constexpr int kSliderMin = 0;
+    static constexpr int kSliderMax = 200;
+    static constexpr int kSliderInit = 100;
 
-    cv::Mat img; // the channel content
-    QPushButton *thumbnail;
-    QLabel *filenameLabel;
-    SbIntensitySlider *intSlider;
+    cv::Mat mImg; // the channel content
+    QPushButton *mThumbnail;
+    QLabel *mFilenameLabel;
+    SbIntensitySlider *mIntSlider;
 
     void loadImage(
         QString file = ""); // load file with DkBasicLoader, convert to grayscale, set as img, emit imageChanged()
