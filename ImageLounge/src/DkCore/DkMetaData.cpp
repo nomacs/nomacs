@@ -83,14 +83,13 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
  *
  * @param other
  */
-void DkMetaDataT::update(const QSharedPointer<DkMetaDataT> &other)
+void DkMetaDataT::update(QSharedPointer<DkMetaDataT> other)
 {
-    QSharedPointer<DkMetaDataT> src(other);
-    if (src->isNull() || !src->mExifImg) {
+    if (other->isNull() || !other->mExifImg) {
         return;
     }
-    // Copy metadata from src to this
-    mExifImg->setMetadata(*src->mExifImg);
+    // Copy metadata from other to this
+    mExifImg->setMetadata(*other->mExifImg);
 }
 
 void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray> ba)

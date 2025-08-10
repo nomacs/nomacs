@@ -69,7 +69,7 @@ public:
     DkMetaDataT();
     bool isNull();
     QSharedPointer<DkMetaDataT> copy() const;
-    void update(const QSharedPointer<DkMetaDataT> &other);
+    void update(QSharedPointer<DkMetaDataT> other);
 
     enum ExifOrientationState {
         or_invalid = -2,
