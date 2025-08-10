@@ -1052,16 +1052,9 @@ QSharedPointer<DkMetaDataT> DkBasicLoader::getMetaData() const
     return metaData;
 };
 
-QSharedPointer<DkMetaDataT> DkBasicLoader::lastMetaDataEdit(bool return_nullptr, bool return_orig) const
+QSharedPointer<DkMetaDataT> DkBasicLoader::lastMetaDataEdit() const
 {
-    QSharedPointer<DkMetaDataT> lastEdit; // null edit
-    if (return_orig) {
-        // Return original metadata only if requested (otherwise only return modified metadata)
-        lastEdit = mImages.first().metaData();
-    } else if (!return_nullptr) {
-        // Empty null object will be returned if no history item (with edited metadata) could be found
-        lastEdit = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
-    }
+    QSharedPointer<DkMetaDataT> lastEdit = mImages.first().metaData();
 
     // Get latest modified metadata item from history (or null)
     for (int idx = mImageIndex; idx > 0; idx--) {
@@ -1136,7 +1129,7 @@ void DkBasicLoader::setHistoryIndex(int idx)
     mImageIndex = idx;
 
     // Get last history item with modified metadata (up until new history index)
-    const QSharedPointer<DkMetaDataT> metaData = lastMetaDataEdit(false, true);
+    const QSharedPointer<DkMetaDataT> metaData = lastMetaDataEdit();
     // Update our current metadata object, which is also used elsewhere (pointer)
     // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
     mMetaData->update(metaData);
