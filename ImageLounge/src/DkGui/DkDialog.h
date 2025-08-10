@@ -34,6 +34,7 @@
 #include <QItemDelegate>
 #include <QLineEdit>
 #include <QPrintPreviewWidget>
+#include <QRadioButton>
 
 #include "DkBasicLoader.h"
 
@@ -803,8 +804,8 @@ public:
 protected:
     void createLayout();
 
-    QLabel *infoLabel;
-    QCheckBox *cbForceSave;
+    QLabel *infoLabel = nullptr;
+    QRadioButton *mOverwriteBtn = nullptr;
 };
 
 class DkWelcomeDialog : public QDialog
