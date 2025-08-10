@@ -280,7 +280,7 @@ public:
         return pixmap();
     }
 
-    QSharedPointer<DkMetaDataT> lastMetaDataEdit(bool return_nullptr = true, bool return_orig = false) const;
+    QSharedPointer<DkMetaDataT> lastMetaDataEdit() const;
 
     bool isImageEdited();
     bool isMetaDataEdited();
