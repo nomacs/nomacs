@@ -38,6 +38,7 @@
 #include <QMainWindow>
 #include <QPrintPreviewWidget>
 #pragma warning(pop) // no warnings from includes - end
+#include <QRadioButton>
 
 #include "DkBasicLoader.h"
 
@@ -801,16 +802,11 @@ class DkForceThumbDialog : public QDialog
     Q_OBJECT
 
 public:
-    DkForceThumbDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
-
+    DkForceThumbDialog(const QDir &dir, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     bool forceSave() const;
-    void setDir(const QDir &fileInfo);
 
-protected:
-    void createLayout();
-
-    QLabel *infoLabel;
-    QCheckBox *cbForceSave;
+private:
+    QRadioButton *mOverwriteBtn = nullptr;
 };
 
 class DkWelcomeDialog : public QDialog
