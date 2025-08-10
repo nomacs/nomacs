@@ -62,16 +62,16 @@ public:
 
 protected:
     cv::Mat mImg;
-    cv::Mat dbgImg;
+    cv::Mat mDbgImg;
 
-    int thresh = 80;
-    int numThresh = 10;
-    double mMinArea = 12000;
-    double mMaxArea = 0;
-    float maxSide = 0;
-    float maxSideFactor = 0.97f;
-    float scale = 1.0f;
-    bool alternativeMethod;
+    static constexpr int mThresh = 80;
+    static constexpr int mNumThresh = 10;
+    static constexpr double mMinArea = 12000;
+    static constexpr double mMaxArea = 0;
+    static constexpr float maxSide = 0;
+    static constexpr float maxSideFactor = 0.97f;
+    float mScale = 1.0f;
+    bool mAlternativeMethod;
 
     std::vector<DkPolyRect> mRects;
 
