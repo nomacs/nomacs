@@ -48,7 +48,8 @@ public:
     virtual std::vector<DkPolyRect> getRects() const
     {
         return mRects;
-    };
+    }
+
     virtual cv::Mat getDebugImg() const;
     virtual QImage getCropped(const QImage &img) const;
     virtual void draw(cv::Mat &img, const cv::Scalar &col = cv::Scalar(255, 222, 0)) const;
@@ -58,21 +59,20 @@ public:
                       const cv::Scalar &col = cv::Scalar(255, 222, 0)) const;
     DkPolyRect getMaxRect() const;
 
-    bool looseDetection;
-
 protected:
     cv::Mat mImg;
-    cv::Mat dbgImg;
+    cv::Mat mDbgImg;
 
-    int thresh = 80;
-    int numThresh = 10;
-    double mMinArea = 12000;
-    double mMaxArea = 0;
-    float maxSide = 0;
-    float maxSideFactor = 0.97f;
-    float scale = 1.0f;
-    bool alternativeMethod;
+    static constexpr int kThresh = 80;
+    static constexpr int kNumThresh = 10;
+    static constexpr double kMinArea = 12000;
+    static constexpr double kMaxArea = 0;
+    static constexpr float kMaxSide = 0;
+    static constexpr float kMaxSideFactor = 0.97f;
 
+    bool mLooseDetection = false;
+    float mScale = 1.0f;
+    bool mAlternativeMethod = false;
     std::vector<DkPolyRect> mRects;
 
     virtual cv::Mat findRectangles(const cv::Mat &img, std::vector<DkPolyRect> &squares) const;

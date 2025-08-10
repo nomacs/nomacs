@@ -39,14 +39,14 @@ namespace nmp
 // DkSegmentBurger --------------------------------------------------------------------
 // This code is based on OpenCV's rectangle sample (squares.cpp)
 DkPageSegmentation::DkPageSegmentation(const cv::Mat &colImg /* = cv::Mat */, bool alternativeMethod /* = false */)
-    : alternativeMethod(alternativeMethod)
+    : mAlternativeMethod(alternativeMethod)
 {
-    this->mImg = colImg;
+    mImg = colImg;
 }
 
 cv::Mat DkPageSegmentation::getDebugImg() const
 {
-    return dbgImg; // is NULL if releaseDebug is DK_RELEASE_IMGS
+    return mDbgImg; // is NULL if releaseDebug is DK_RELEASE_IMGS
 }
 
 DkPolyRect DkPageSegmentation::getMaxRect() const
@@ -80,30 +80,30 @@ QImage DkPageSegmentation::getCropped(const QImage &img) const
 void DkPageSegmentation::compute()
 {
     cv::Mat lImg;
-    if (alternativeMethod) {
-        if (scale == 1.0f && mImg.rows > 700.0f)
-            scale = 700.0f / mImg.rows;
+    if (mAlternativeMethod) {
+        if (mScale == 1.0f && mImg.rows > 700.0f)
+            mScale = 700.0f / mImg.rows;
 
         lImg = findRectanglesAlternative(mImg, mRects);
     } else {
         cv::Mat imgLab;
 
-        if (scale == 1.0f && 960.0f / mImg.cols < 0.8f)
-            scale = 960.0f / mImg.cols;
+        if (mScale == 1.0f && 960.0f / mImg.cols < 0.8f)
+            mScale = 960.0f / mImg.cols;
 
         cv::cvtColor(mImg, imgLab, CV_RGB2Lab); // boost colors
         lImg = findRectangles(mImg, mRects);
     }
 
-    qDebug() << "[DkPageSegmentation] " << mRects.size() << " rectangles circles found resize factor: " << scale;
+    qDebug() << "[DkPageSegmentation] " << mRects.size() << " rectangles circles found resize factor: " << mScale;
 }
 
 cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPolyRect> &rects) const
 {
     cv::Mat tImg, gray;
 
-    if (scale != 1.0f)
-        cv::resize(img, tImg, cv::Size(), scale, scale, CV_INTER_AREA); // inter nn -> assuming resize to be 1/(2^n)
+    if (mScale != 1.0f)
+        cv::resize(img, tImg, cv::Size(), mScale, mScale, CV_INTER_AREA); // inter nn -> assuming resize to be 1/(2^n)
     else
         tImg = img;
 
@@ -121,33 +121,33 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
         if (c == 0) // back-up the luminance channel - we use it as precomputed image for the circle detection
             lImg = gray0.clone();
 
-        int nT = numThresh; //(c == 0) ? numThresh*2 : numThresh;	// more luminance thresholds
+        int nT = kNumThresh; //(c == 0) ? numThresh*2 : numThresh;	// more luminance thresholds
 
         // try several threshold levels
         for (int l = 0; l < nT; l++) {
             // hack: use Canny instead of zero threshold level.
             // Canny helps to catch squares with gradient shading
             if (l == 0) {
-                Canny(gray0, gray, thresh, thresh * 3, 5);
+                Canny(gray0, gray, kThresh, kThresh * 3, 5);
                 // dilate canny output to remove potential
                 // holes between edge segments
                 dilate(gray, gray, cv::Mat(), cv::Point(-1, -1));
 
                 // DkIP::imwrite("edgeImg.png", gray);
             } else {
-                gray = gray0 >= (l + 1) * 255 / numThresh;
+                gray = gray0 >= (l + 1) * 255 / kNumThresh;
             }
 
             // find contours and store them all as a list
             findContours(gray, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 
-            if (looseDetection) {
+            if (mLooseDetection) {
                 std::vector<std::vector<cv::Point>> hull;
                 for (int i = 0; i < (int)contours.size(); i++) {
                     double cArea = contourArea(cv::Mat(contours[i]));
 
-                    if (fabs(cArea) > mMinArea * scale * scale
-                        && (!mMaxArea || fabs(cArea) < mMaxArea * (scale * scale))) {
+                    if (fabs(cArea) > kMinArea * mScale * mScale
+                        && (!kMaxArea || fabs(cArea) < kMaxArea * (mScale * mScale))) {
                         std::vector<cv::Point> cHull;
                         cv::convexHull(cv::Mat(contours[i]), cHull, false);
                         hull.push_back(cHull);
@@ -183,15 +183,15 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
                 // Note: absolute value of an area is used because
                 // area may be positive or negative - in accordance with the
                 // contour orientation
-                if (approx.size() == 4 && fabs(cArea) > mMinArea * scale * scale
-                    && (!mMaxArea || fabs(cArea) < mMaxArea * scale * scale) && isContourConvex(cv::Mat(approx))) {
+                if (approx.size() == 4 && fabs(cArea) > kMinArea * mScale * mScale
+                    && (!kMaxArea || fabs(cArea) < kMaxArea * mScale * mScale) && isContourConvex(cv::Mat(approx))) {
                     DkPolyRect cr(approx);
                     // moutc << mMinArea*scale*scale << " < " << fabs(cArea) << " < " << mMaxArea*scale*scale << dkendl;
 
                     // if cosines of all angles are small
                     // (all angles are ~90 degree)
                     if (/*cr.maxSide() < std::max(tImg.rows, tImg.cols)*maxSideFactor && */
-                        (!maxSide || cr.maxSide() < maxSide * scale) && cr.getMaxCosine() < 0.3) {
+                        (!kMaxSide || cr.maxSide() < kMaxSide * mScale) && cr.getMaxCosine() < 0.3) {
                         rects.push_back(cr);
                     }
                 }
@@ -204,14 +204,14 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
     }
 
     for (size_t idx = 0; idx < rects.size(); idx++)
-        rects[idx].scale(1.0f / scale);
+        rects[idx].scale(1.0f / mScale);
 
     // filter rectangles which are found because of the image border
     std::vector<DkPolyRect> noLargeRects;
     for (const DkPolyRect &p : rects) {
         DkBox b = p.getBBox();
 
-        if (b.size().height < img.rows * maxSideFactor && b.size().width < img.cols * maxSideFactor) {
+        if (b.size().height < img.rows * kMaxSideFactor && b.size().width < img.cols * kMaxSideFactor) {
             noLargeRects.push_back(p);
         }
     }
@@ -224,7 +224,7 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
 cv::Mat DkPageSegmentation::findRectanglesAlternative(const cv::Mat &img, std::vector<DkPolyRect> &rects) const
 {
     PageExtractor extractor;
-    extractor.findPage(img, scale, rects);
+    extractor.findPage(img, mScale, rects);
 
     return img;
 }
