@@ -256,8 +256,6 @@ public:
         return pixmap();
     }
 
-    QSharedPointer<DkMetaDataT> lastMetaDataEdit() const;
-
     bool isImageEdited();
     bool isMetaDataEdited();
 
@@ -395,6 +393,9 @@ protected:
     QVector<DkEditImage> mImages;
     int mMinHistorySize = 2;
     int mImageIndex = 0;
+
+private:
+    QSharedPointer<DkMetaDataT> lastMetaDataEdit() const;
 };
 
 namespace tga
