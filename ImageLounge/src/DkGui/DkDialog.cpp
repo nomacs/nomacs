@@ -3668,17 +3668,15 @@ void DkMosaicDialog::enableMosaicSave(bool enable)
 }
 #endif
 // DkForceThumbDialog --------------------------------------------------------------------
-DkForceThumbDialog::DkForceThumbDialog(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+DkForceThumbDialog::DkForceThumbDialog(const QDir &dir, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
     : QDialog(parent, f)
-{
-    createLayout();
-}
-
-void DkForceThumbDialog::createLayout()
 {
     auto *layout = new QVBoxLayout(this);
 
-    infoLabel = new QLabel();
+    auto *infoLabel = new QLabel();
+    infoLabel->setText(
+        tr("Compute thumbnails for images in:\n%1\nand save to metadata.\nWarning: This will modify the files.")
+            .arg(dir.absolutePath()));
 
     auto *skipExistingBtn = new QRadioButton(tr("Apply to the files without thumbnails"));
     mOverwriteBtn = new QRadioButton(tr("Apply to all files and overwrite existing thumbnails"));
@@ -3696,18 +3694,12 @@ void DkForceThumbDialog::createLayout()
     layout->addWidget(mOverwriteBtn);
     layout->addWidget(buttons);
     skipExistingBtn->setChecked(true);
+    setWindowTitle(tr("Save Thumbnails"));
 }
 
 bool DkForceThumbDialog::forceSave() const
 {
     return mOverwriteBtn->isChecked();
-}
-
-void DkForceThumbDialog::setDir(const QDir &fileInfo)
-{
-    infoLabel->setText(
-        tr("Compute thumbnails for images in:\n%1\nand save to metadata.\nWarning: This will modify the files.")
-            .arg(fileInfo.absolutePath()));
 }
 
 // Welcome dialog --------------------------------------------------------------------
