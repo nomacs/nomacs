@@ -79,17 +79,18 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
 }
 
 /**
- * @brief Updates exif data to match that of other.
+ * @brief Updates exiv2 meta data to match that of other.
  *
  * @param other
  */
 void DkMetaDataT::update(const QSharedPointer<DkMetaDataT> &other)
 {
     QSharedPointer<DkMetaDataT> src(other);
-    // Copy exif data (to this instance), reading from src
-    if (src->isNull())
+    if (src->isNull() || !src->mExifImg) {
         return;
-    mExifImg->setExifData(src->mExifImg->exifData()); // explicit copy of list<Exifdatum>
+    }
+    // Copy metadata from src to this
+    mExifImg->setMetadata(*src->mExifImg);
 }
 
 void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray> ba)
