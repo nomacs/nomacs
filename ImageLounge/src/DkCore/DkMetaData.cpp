@@ -26,19 +26,17 @@
  *******************************************************************************************************/
 
 #include "DkMetaData.h"
+
 #include "DkImageStorage.h"
-#include "DkMath.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
 
 #include <QApplication>
 #include <QBuffer>
-#include <QDebug>
 #include <QImage>
 #include <QObject>
 #include <QRegularExpression>
-#include <QTranslator>
 #include <QVector2D>
 
 #include <iostream>

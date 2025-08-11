@@ -45,18 +45,14 @@
 #endif
 
 #include <QAction>
-#include <QApplication>
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QClipboard>
-#include <QColorDialog>
 #include <QComboBox>
 #include <QCompleter>
-#include <QDesktopServices>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QFormLayout>
 #include <QFuture>
 #include <QHeaderView>
 #include <QInputDialog>
@@ -76,12 +72,10 @@
 #include <QProgressBar>
 #include <QProgressDialog>
 #include <QPushButton>
-#include <QRadioButton>
 #include <QRandomGenerator>
 #include <QScreen>
 #include <QSlider>
 #include <QSpinBox>
-#include <QSplashScreen>
 #include <QStandardItemModel>
 #include <QStandardPaths>
 #include <QStringListModel>
@@ -93,10 +87,13 @@
 #include <QTreeView>
 #include <QWidget>
 #include <QtConcurrentRun>
-#include <QtGlobal>
 #include <qmath.h>
 
-// quazip
+#ifdef WITH_OPENCV
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
+#endif
+
 #ifdef WITH_QUAZIP
 #include <quazip/JlCompress.h>
 #endif

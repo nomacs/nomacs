@@ -26,11 +26,20 @@
  *******************************************************************************************************/
 
 #include "DkPaintPlugin.h"
+
+#include "DkBaseViewPort.h"
 #include "DkToolbars.h"
+#include "DkUtils.h"
 
 #include <QActionGroup>
-#include <QDebug>
+#include <QColorDialog>
+#include <QGraphicsBlurEffect>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QLineEdit>
 #include <QMouseEvent>
+#include <QPushButton>
+#include <QSpinBox>
 
 namespace nmp
 {

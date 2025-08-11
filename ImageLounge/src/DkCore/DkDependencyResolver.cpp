@@ -28,11 +28,9 @@
 #include "DkDependencyResolver.h"
 
 #include <QByteArrayMatcher>
-#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
 #include <QRegularExpression>
-#include <limits>
 
 namespace nmc
 {

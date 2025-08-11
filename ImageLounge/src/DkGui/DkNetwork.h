@@ -30,10 +30,8 @@
 #define local_tcp_port_start 45454
 #define local_tcp_port_end 45484
 
-#include <QMutex>
-#include <QSharedPointer>
+#include <QImage>
 #include <QTcpServer>
-#include <QThread>
 
 #include "DkConnection.h"
 
@@ -41,11 +39,7 @@ class QMimeData;
 
 namespace nmc
 {
-
-// nomacs defines
 class DkLocalTcpServer;
-class DkLANTcpServer;
-class DkLANUdpSocket;
 
 class DkPeer : public QObject
 {

@@ -31,7 +31,6 @@
 #include "DkMessageBox.h"
 #include "DkMetaData.h"
 #include "DkMetaDataWidgets.h"
-#include "DkPluginInterface.h"
 #include "DkPluginManager.h"
 #include "DkSettings.h"
 #include "DkThumbsWidgets.h"
@@ -43,8 +42,6 @@
 #include <QMouseEvent>
 #include <QSharedPointer>
 #include <QStackedLayout>
-#include <QTransform>
-#include <QtGlobal>
 
 namespace nmc
 {

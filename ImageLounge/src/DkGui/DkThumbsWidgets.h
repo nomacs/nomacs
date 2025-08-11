@@ -28,42 +28,29 @@
 #pragma once
 
 #include "DkQt5Compat.h"
-#include <optional>
-#include <vector>
 
-#include <QDrag>
-#include <QFileInfo>
 #include <QGraphicsObject>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPen>
-#include <QProcess>
+#include <QPixmapCache>
 #include <QSharedPointer>
+
+#include <optional>
+#include <vector>
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 #include "DkThumbs.h"
-#include <QPixmapCache>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QMenu;
+class QMimeData;
 class QToolBar;
 class QLineEdit;
+class QPushButton;
 
 namespace nmc
 {
-
-// nomacs defines
 class DkImageLoader;
 
 class DkFilePreview : public DkFadeWidget

@@ -27,6 +27,13 @@
 
 #include "DkFakeMiniaturesDialog.h"
 
+#include <QLayout>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPushButton>
+#include <QSlider>
+#include <QSpinBox>
+
 #define INIT_X 0
 #define INIT_Y 0.7117
 #define INIT_WIDTH 1
@@ -219,7 +226,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
     cv::Mat blurImg = DkFakeMiniaturesDialog::qImage2Mat(inImg);
     cv::Mat distImg(blurImg.size(), CV_8UC1);
     distImg = 255;
-    cv::Mat roi(distImg, Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
+    cv::Mat roi(distImg, cv::Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
     roi.setTo(0);
     // blur plane by plane
     std::vector<cv::Mat> planes;
@@ -230,7 +237,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
     // cv::threshold(planes.at(0), distImg, 40, 255, THRESH_BINARY);
 
     cv::distanceTransform(distImg, distImg, DIST_C, 3);
-    cv::normalize(distImg, distImg, 1.0f, 0.0f, NORM_MINMAX);
+    cv::normalize(distImg, distImg, 1.0f, 0.0f, cv::NORM_MINMAX);
 
     for (size_t idx = 0; idx < planes.size(); idx++)
         planes.at(idx) = blurPanTilt(planes.at(idx), distImg, kernelSize); // 140 is the maximal blurring kernel size
@@ -240,9 +247,9 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
     // return (DkFakeMiniaturesDialog::mat2QImage(blurImg));
 
     if (satFactor > 1) {
-        Mat imgHsv;
+        cv::Mat imgHsv;
         cvtColor(blurImg, imgHsv, cv::COLOR_RGB2HSV);
-        std::vector<Mat> imgHsvCh;
+        std::vector<cv::Mat> imgHsvCh;
         split(imgHsv, imgHsvCh);
 
         for (int row = 0; row < imgHsv.rows; row++) {
@@ -259,14 +266,14 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
         }
 
         merge(imgHsvCh, imgHsv);
-        Mat tempImg(blurImg);
+        cv::Mat tempImg(blurImg);
         cvtColor(imgHsv, blurImg, cv::COLOR_HSV2RGB);
 
         if (tempImg.type()
             == CV_8UC4) { // the retImg is always CV_8UC3, so for pics in CV_8UC4 we need to add one channel
-            std::vector<Mat> inImgCh;
+            std::vector<cv::Mat> inImgCh;
             split(tempImg, inImgCh);
-            std::vector<Mat> retImgCh;
+            std::vector<cv::Mat> retImgCh;
             split(blurImg, retImgCh);
             retImgCh.push_back(inImgCh[3]);
             merge(retImgCh, blurImg);
@@ -282,12 +289,12 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
 #ifdef WITH_OPENCV
 /**
  * blur filter
- * @param src input Mat
+ * @param src input cv::Mat
  * @param depthImg distance transform based on a roi
  * @param maxKernel maximum blur kernel size
- * @return Mat blurres mat
+ * @return cv::Mat blurres mat
  **/
-Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel)
+cv::Mat DkFakeMiniaturesDialog::blurPanTilt(cv::Mat src, cv::Mat depthImg, int maxKernel)
 {
     cv::Mat integralImg;
 

@@ -26,20 +26,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************************************/
 
 #include "DkThemeManager.h"
+
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
 
 #include <QApplication>
-#include <QDebug>
+// #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
 #include <QStyle>
 #include <QStyleFactory>
 #include <QStyleHints>
-#include <cmath>
 
-#include <utility>
+#include <cmath>
 
 namespace nmc
 {

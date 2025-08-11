@@ -30,24 +30,12 @@
 #include <QDockWidget>
 #include <QLabel>
 #include <QScrollArea>
-#include <QTimer>
 #include <QWidget>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "nmc_config.h"
 
-// Qt defines
 class QBitArray;
 class QGraphicsOpacityEffect;
-class QPushButton;
-class QComboBox;
 
 namespace nmc
 {
@@ -303,7 +291,7 @@ public:
 
 protected:
     QWidget *mParent;
-    QTimer mTimer;
+    QTimer *mTimer;
     QString mText;
     QColor mTextCol;
     int mDefaultTime;

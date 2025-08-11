@@ -30,14 +30,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkSettings.h"
 
 #include <QApplication>
-#include <QDebug>
 #include <QKeyEvent>
 #include <QRandomGenerator>
-#include <QScreen>
-#include <QSettings>
-#include <QTime>
 #include <QTimer>
-#include <QVector2D>
 
 namespace nmc
 {

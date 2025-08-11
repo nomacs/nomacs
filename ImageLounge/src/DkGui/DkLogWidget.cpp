@@ -30,10 +30,9 @@ related links:
 
 #include "DkUtils.h"
 
-#include <QAction>
+#include <QGridLayout>
 #include <QPushButton>
 #include <QTextEdit>
-#include <QVBoxLayout>
 
 namespace nmc
 {

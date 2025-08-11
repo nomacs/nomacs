@@ -23,22 +23,19 @@
  *******************************************************************************************************/
 
 #include "DkPageExtractionPlugin.h"
+
 #include "DkPageSegmentation.h"
 
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
-
-#include "DkSettings.h"
 #include "DkTimer.h"
-#include "DkUtils.h" // for qInfo compatibility
 
 #include <QAction>
-#include <QDateTime>
-#include <QDebug>
 #include <QDir>
+#include <QFileInfo>
+#include <QPainter>
 #include <QSettings>
 #include <QUuid>
-
 #include <QXmlStreamReader>
 
 namespace nmp

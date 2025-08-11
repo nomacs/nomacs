@@ -27,7 +27,6 @@
 
 #include "DkMath.h"
 
-#include <QCursor>
 #include <QTransform>
 
 namespace nmc

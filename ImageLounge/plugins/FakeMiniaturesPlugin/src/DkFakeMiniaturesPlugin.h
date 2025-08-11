@@ -28,14 +28,9 @@
 #pragma once
 
 #include <QImage>
-#include <QMessageBox>
 #include <QObject>
 #include <QString>
-#include <QStringList>
-#include <QWidget>
-#include <QtPlugin>
 
-#include "DkFakeMiniaturesDialog.h"
 #include "DkPluginInterface.h"
 
 namespace nmp

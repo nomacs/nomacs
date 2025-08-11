@@ -24,17 +24,12 @@
 
 #pragma once
 
+#include <QDockWidget>
+#include <QString>
+#include <QVector>
+
 #include "DkPluginInterface.h"
 #include "SbChannelWidget.h"
-#include <QDockWidget>
-#include <QIcon>
-#include <QLabel>
-#include <QPushButton>
-#include <QString>
-#include <QStyle>
-#include <QVBoxLayout>
-#include <QVector>
-#include <opencv2/opencv.hpp>
 
 namespace nmc
 {
