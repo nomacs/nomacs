@@ -192,7 +192,8 @@ QImage DkImage::resizeImage(const QImage &img,
 
     if (correctGamma)
         DkImage::gammaToLinear(qImg);
-    qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
+
+    qImg = qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
 
     if (correctGamma)
         DkImage::linearToGamma(qImg);
