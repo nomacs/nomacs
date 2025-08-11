@@ -97,13 +97,11 @@ if(NOT ENABLE_QT_DEBUG)
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
-# steps towards a warning-less build, with all warnings enabled!!
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    # Enable all warnings in debug builds, hopefully this can be the default at some point
-    # There is a lot of good stuff here to prevent undefined behavior bugs
-    if(NOT MSVC)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wformat -Wformat-nonliteral -Wshadow")
-    endif()
+# Enable as many warnings as practical to prevent bugs. If this is not practical for
+# a particular build target, use set_source_files_properties() etc to disable them,
+# rather than add #pragma to the nomacs sources.
+if(NOT MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wformat -Wformat-nonliteral -Wshadow")
 endif()
 
 if(MSVC)
