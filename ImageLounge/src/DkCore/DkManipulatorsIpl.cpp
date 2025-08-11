@@ -31,9 +31,6 @@
 #include "DkImageStorage.h"
 #include "DkMath.h"
 
-#include <QDebug>
-#include <QSharedPointer>
-
 namespace nmc
 {
 

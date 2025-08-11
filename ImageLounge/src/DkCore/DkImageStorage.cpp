@@ -26,30 +26,31 @@
  *******************************************************************************************************/
 
 #include "DkImageStorage.h"
+
 #include "DkActionManager.h"
 #include "DkMath.h"
 #include "DkSettings.h"
 #include "DkThumbs.h"
 #include "DkTimer.h"
-#include <cmath>
 
-#ifdef WITH_OPENCV
-#include <opencv2/core.hpp>
-#endif
-
-#include <QBitmap>
 #include <QColorSpace>
-#include <QDebug>
 #include <QPainter>
 #include <QPixmap>
 #include <QSvgRenderer>
-#include <QTimer>
 #include <QtConcurrentRun>
 #include <qmath.h>
+
+#ifdef WITH_OPENCV
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
+#endif
+
+#include <cmath>
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
 #endif
+
 namespace nmc
 {
 // DkImage --------------------------------------------------------------------

@@ -27,11 +27,10 @@ related links:
 *******************************************************************************************************/
 
 #include "DkBasicWidgets.h"
+
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 #include "DkUtils.h"
-
-#include <cassert>
 
 #include <QColorDialog>
 #include <QLabel>
@@ -45,6 +44,8 @@ related links:
 #include <QVBoxLayout>
 #include <QWidgetAction>
 #include <QtGlobal>
+
+#include <cassert>
 
 namespace nmc
 {

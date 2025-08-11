@@ -27,22 +27,10 @@
 
 #pragma once
 
+#include <QSharedPointer>
+
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
-#include "DkThumbs.h"
-
-#include <QSharedPointer>
-#include <QWidget>
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
 
 class QStackedLayout;
 class QGridLayout;
@@ -50,9 +38,7 @@ class QLabel;
 
 namespace nmc
 {
-// some dummies
 class DkFilePreview;
-class DkThumbScrollWidget;
 class DkMetaDataHUD;
 class DkCommentWidget;
 class DkViewPort;
@@ -65,10 +51,9 @@ class DkFileInfoLabel;
 class DkHistogram;
 class DkLabelBg;
 class DkPluginViewPort;
-class DkMetaDataT;
-class DkDelayedInfo;
 class DkOverview;
 class DkViewPortInterface;
+class DkThumbLoader;
 
 class DllCoreExport DkControlWidget : public DkWidget
 {

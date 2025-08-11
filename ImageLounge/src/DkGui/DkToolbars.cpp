@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkToolbars.h"
+
 #include "DkActionManager.h"
 #include "DkBasicWidgets.h"
 #include "DkImageStorage.h"
@@ -34,40 +35,25 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 
+#include <QAbstractItemView>
 #include <QAction>
 #include <QCheckBox>
 #include <QColor>
 #include <QColorDialog>
 #include <QComboBox>
-#include <QCompleter>
-#include <QDebug>
 #include <QDoubleSpinBox>
 #include <QGradientStops>
-#include <QHBoxLayout>
+#include <QGraphicsOpacityEffect>
 #include <QIcon>
-#include <QImage>
 #include <QLabel>
-#include <QLayout>
-#include <QLineEdit>
 #include <QLinearGradient>
+#include <QMainWindow>
 #include <QMenu>
 #include <QMouseEvent>
-#include <QObject>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPushButton>
 #include <QToolBar>
-#include <QTranslator>
-#include <QWidget>
-#include <QtGlobal>
-// #include <QStringListModel>
-#include <QAbstractItemView>
-#include <QMainWindow>
-#include <QStandardItemModel>
-
-#include <QGraphicsOpacityEffect>
-#include <QGridLayout>
-#include <qmath.h>
 
 namespace nmc
 {

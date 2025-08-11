@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkPluginManager.h"
+
 #include "DkActionManager.h"
 #include "DkDependencyResolver.h"
 #include "DkSettings.h"
@@ -35,7 +36,6 @@
 #include "DkVersion.h"
 
 #include <QAction>
-#include <QDebug>
 #include <QDir>
 #include <QHeaderView>
 #include <QJsonValue>
@@ -44,25 +44,15 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QMouseEvent>
-#include <QNetworkAccessManager>
-#include <QNetworkProxyFactory>
-#include <QNetworkReply>
-#include <QNetworkRequest>
+#include <QPainter>
 #include <QPluginLoader>
-#include <QProgressDialog>
 #include <QPushButton>
 #include <QRegularExpression>
-#include <QScrollBar>
-#include <QSettings>
-#include <QSlider>
 #include <QSortFilterProxyModel>
-#include <QSpinBox>
-#include <QTabWidget>
 #include <QTableView>
 #include <QTextEdit>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <QXmlStreamReader>
 #include <QtGlobal>
 
 namespace nmc

@@ -27,30 +27,19 @@
 
 #pragma once
 
-#include <QAction>
-#include <QColorDialog>
-#include <QGraphicsBlurEffect>
-#include <QGraphicsPathItem>
-#include <QGraphicsSceneMouseEvent>
 #include <QImage>
-#include <QLineEdit>
-#include <QMainWindow>
-#include <QMessageBox>
-#include <QMouseEvent>
 #include <QObject>
-#include <QPushButton>
-#include <QSpinBox>
+#include <QPainterPath>
+#include <QPen>
 #include <QString>
-#include <QStringList>
 #include <QToolBar>
-#include <QtPlugin>
 
-#include "DkBaseViewPort.h"
-#include "DkImageStorage.h"
-#include "DkNoMacs.h"
 #include "DkPluginInterface.h"
-#include "DkSettings.h"
-#include "DkUtils.h"
+
+class QSpinBox;
+class QLineEdit;
+class QColorDialog;
+class QPushButton;
 
 namespace nmp
 {

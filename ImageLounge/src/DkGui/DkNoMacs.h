@@ -34,27 +34,11 @@
 
 #include "DkImageContainer.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QFileDialog;
 class QProgressDialog;
-class QDesktopWidget;
-class QLabel;
-class QShortcut;
 
 namespace nmc
 {
-
-class DkCompressDialog;
 class DkOpacityDialog;
 class DkUpdateDialog;
 class DkForceThumbDialog;
@@ -71,16 +55,12 @@ class DkExportTiffDialog;
 class DkUpdater;
 class DkInstallUpdater;
 class DkTranslationUpdater;
-class DkPluginManagerDialog;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
-class DkBatchContainer;
 class DkCentralWidget;
 class DkDockWidget;
 class DkQuickAccess;
-class DkImageLoader;
 class DkQuickAccessEdit;
-class DkDialogManager;
 
 /*! A custom event filter for OSX.
 Its main purpose is to provide Mac OS X "open file from finder"

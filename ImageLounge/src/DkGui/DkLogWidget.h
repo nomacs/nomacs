@@ -29,18 +29,6 @@
 
 #include "DkBaseWidgets.h"
 
-#include <QWidget>
-
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
-#elif defined(DK_DLL_IMPORT)
-#define DllExport Q_DECL_IMPORT
-#else
-#define DllExport
-#endif
-#endif
-
 class QTextEdit;
 
 namespace nmc

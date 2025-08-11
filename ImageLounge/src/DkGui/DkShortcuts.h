@@ -29,15 +29,7 @@
 #include <QObject>
 #include <QVector>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "nmc_config.h"
 
 class QAction;
 

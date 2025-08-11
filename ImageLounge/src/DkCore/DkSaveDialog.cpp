@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkSaveDialog.h"
+
 #include "DkBaseViewPort.h"
 #include "DkBasicLoader.h"
 #include "DkBasicWidgets.h"
@@ -36,13 +37,11 @@
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDebug>
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QSettings>
 #include <QVBoxLayout>
 
 namespace nmc

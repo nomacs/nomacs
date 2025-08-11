@@ -27,7 +27,6 @@
 
 #pragma once
 
-#include <QFileInfo>
 #include <QLineEdit>
 #include <QObject>
 #include <QStringList>
@@ -36,7 +35,6 @@
 class QAction;
 class QStandardItemModel;
 class QIcon;
-class QModelIndex;
 
 namespace nmc
 {

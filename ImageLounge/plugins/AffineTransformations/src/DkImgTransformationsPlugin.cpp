@@ -33,8 +33,13 @@
 #include "DkToolbars.h"
 #include "DkUtils.h"
 
+#include <QAction>
 #include <QActionGroup>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QMouseEvent>
+#include <QPushButton>
 
 #define PI 3.14159265
 

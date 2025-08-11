@@ -23,15 +23,14 @@
  *******************************************************************************************************/
 
 #include "DkPageSegmentation.h"
-#include "DkMath.h" // nomacs
+
 #include "DkPageSegmentationUtils.h"
 
-#include <QDebug>
 #include <QPainter>
 #include <QPainterPath>
 
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
 
 namespace nmp
 {

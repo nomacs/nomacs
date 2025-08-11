@@ -28,52 +28,30 @@
 #include "DkImageLoader.h"
 
 #include "DkActionManager.h"
-#include "DkBasicLoader.h"
 #include "DkDialog.h"
-#include "DkImageContainer.h"
 #include "DkImageStorage.h"
 #include "DkMessageBox.h"
 #include "DkMetaData.h"
 #include "DkSaveDialog.h"
 #include "DkSettings.h"
 #include "DkStatusBar.h"
-#include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
-#include <utility>
 
 #include <QApplication>
-#include <QBuffer>
-#include <QByteArray>
-#include <QCoreApplication>
-#include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
 #include <QDirIterator>
 #include <QFile>
 #include <QFileDialog>
-#include <QFileIconProvider>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
-#include <QImageReader>
-#include <QImageWriter>
 #include <QMessageBox>
-#include <QMovie>
-#include <QMutex>
 #include <QPainter>
-#include <QPluginLoader>
-#include <QProgressDialog>
-#include <QReadLocker>
-#include <QReadWriteLock>
 #include <QRegularExpression>
-#include <QSettings>
-#include <QStandardPaths>
 #include <QStringBuilder>
 #include <QStringList>
-#include <QThread>
 #include <QTimer>
-#include <QWidget>
-#include <QWriteLocker>
 #include <QtConcurrentRun>
 #include <qmath.h>
 
@@ -82,6 +60,8 @@
 #elif defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
 #endif
+
+#include <utility>
 
 namespace nmc
 {

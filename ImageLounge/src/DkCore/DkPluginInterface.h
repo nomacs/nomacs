@@ -27,29 +27,16 @@
 
 #pragma once
 
-#include "DkBaseWidgets.h"
-#include "DkBatchInfo.h"
-#include "DkImageContainer.h"
-#include "DkSettings.h"
-
 #include <QApplication>
-#include <QFileInfo>
-#include <QGraphicsView>
 #include <QImage>
 #include <QMainWindow>
 #include <QSettings>
 #include <QString>
-#include <QStringList>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkBaseWidgets.h"
+#include "DkBatchInfo.h"
+#include "DkImageContainer.h"
+#include "DkSettings.h"
 
 namespace nmc
 {
@@ -201,7 +188,6 @@ public:
         : DkWidget(parent, flags)
     {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        // setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
     };
 
     void setWorldMatrix(QTransform *worldMatrix)

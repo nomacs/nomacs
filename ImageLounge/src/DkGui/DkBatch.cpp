@@ -43,14 +43,12 @@
 #include "DkWidgets.h"
 
 #include <QAction>
-#include <QApplication>
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QDropEvent>
 #include <QFileDialog>
-#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QInputDialog>
@@ -60,14 +58,11 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include <QMimeData>
-#include <QProgressBar>
 #include <QRadioButton>
-#include <QSplitter>
 #include <QStackedLayout>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QStandardPaths>
-#include <QTextBlock>
 #include <QTextEdit>
 #include <QTreeView>
 

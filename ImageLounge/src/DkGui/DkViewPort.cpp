@@ -28,7 +28,6 @@
 #include "DkViewPort.h"
 
 #include "DkActionManager.h"
-#include "DkBasicLoader.h"
 #include "DkControlWidget.h"
 #include "DkDialog.h"
 #include "DkImageLoader.h"
@@ -50,16 +49,18 @@
 #include <QDrag>
 #include <QDragLeaveEvent>
 #include <QInputDialog>
-#include <QMenu>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QMovie>
+#include <QPainterPath>
 #include <QSvgRenderer>
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
-#include <QtGlobal>
 
-#include <qmath.h>
+#ifdef WITH_OPENCV
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
+#endif
 
 #ifdef Q_OS_WIN
 #include <windows.h>

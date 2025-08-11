@@ -25,6 +25,12 @@
 #include "SbCompositePlugin.h"
 
 #include <QAction>
+#include <QFileDialog>
+#include <QPushButton>
+#include <QSettings>
+
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
 
 /*******************************************************************************************************
  * SbCompositePlugin	- enter the plugin class name (e.g. DkPageExtractionPlugin)

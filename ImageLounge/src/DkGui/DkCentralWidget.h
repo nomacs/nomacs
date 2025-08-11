@@ -27,31 +27,21 @@
 
 #pragma once
 
-#include <QWidget>
-
 #include "DkBaseWidgets.h"
+
 #include "DkImageContainer.h"
 #include "DkThumbs.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "nmc_config.h"
 
-// Qt defines
 class QTabBar;
 class QMimeData;
 class QSettings;
 class QStackedLayout;
+class QWidget;
 
 namespace nmc
 {
-// nomacs defines
 class DkImageLoader;
 class DkViewPort;
 class DkPreferenceWidget;

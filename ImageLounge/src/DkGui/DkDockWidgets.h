@@ -31,24 +31,12 @@
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QListWidget;
 class QListWidgetItem;
 
 namespace nmc
 {
 
-// nomacs defines
 class DllCoreExport DkHistoryDock : public DkDockWidget
 {
     Q_OBJECT

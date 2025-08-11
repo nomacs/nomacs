@@ -33,25 +33,12 @@
 #include <QSharedPointer>
 #include <QUrl>
 
-#ifndef Q_OS_WIN
-#include "qpsdhandler.h"
-#endif
-
 #ifdef WITH_OPENCV
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "nmc_config.h"
 
-// Qt defines
 class QNetworkReply;
 class LibRaw;
 

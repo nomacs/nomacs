@@ -38,21 +38,14 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <QDebug>
-#include <QDesktopServices>
-#include <QDir>
-#include <QFileInfo>
 #include <QImageReader>
 #include <QMessageBox>
 #include <QObject>
-#include <QProcess>
 #include <QTextStream>
 #include <QThread>
 #include <QTranslator>
 
 #include "DkCentralWidget.h"
-#include "DkDependencyResolver.h"
-#include "DkMetaData.h"
 #include "DkNoMacs.h"
 #include "DkPluginManager.h"
 #include "DkPong.h"
@@ -64,9 +57,6 @@
 #include "DkUtils.h"
 #include "DkVersion.h"
 #include "DkViewPort.h"
-
-#include <cassert>
-#include <iostream>
 
 #ifdef _MSC_BUILD
 #include <shlobj.h>

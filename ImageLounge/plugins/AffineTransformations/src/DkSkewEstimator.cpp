@@ -28,8 +28,12 @@
 #include "DkSkewEstimator.h"
 #include "DkImageStorage.h"
 
-#include <QDebug>
+#include <QProgressDialog>
 #include <QRandomGenerator>
+
+#ifdef WITH_OPENCV
+#include "opencv2/imgproc/imgproc_c.h"
+#endif
 
 namespace nmp
 {

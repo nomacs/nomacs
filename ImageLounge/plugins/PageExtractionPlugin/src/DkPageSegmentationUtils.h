@@ -24,11 +24,9 @@
 
 #pragma once
 
-#include "DkMath.h"
-
 #include <QString>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
+
+#include "DkMath.h"
 
 namespace nmp
 {

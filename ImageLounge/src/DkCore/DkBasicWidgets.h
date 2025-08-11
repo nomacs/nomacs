@@ -28,21 +28,12 @@
 
 #pragma once
 
-#include "DkBaseWidgets.h"
-
 #include <QWidget>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkBaseWidgets.h"
 
-// Qt defines
+#include "nmc_config.h"
+
 class QSlider;
 class QLabel;
 class QSpinBox;
@@ -54,8 +45,6 @@ class QLineEdit;
 
 namespace nmc
 {
-
-// nomacs defines
 
 class DllCoreExport DkSlider : public DkWidget
 {

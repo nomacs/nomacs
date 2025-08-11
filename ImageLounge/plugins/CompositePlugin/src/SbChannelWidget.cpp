@@ -1,6 +1,20 @@
+
 #include "SbChannelWidget.h"
 
-#include <cstring>
+#include "DkBasicLoader.h"
+
+#include <QDir>
+#include <QDropEvent>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QFontInfo>
+#include <QLabel>
+#include <QMimeData>
+#include <QPushButton>
+#include <QSettings>
+
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
 
 namespace nmc
 {

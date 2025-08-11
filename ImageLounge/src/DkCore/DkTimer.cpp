@@ -27,13 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DkTimer.h"
 
-#include "DkMath.h"
-#include "DkTimer.h"
-#include "DkUtils.h"
-
 #include <QDebug>
 #include <QString>
-#include <qmath.h>
 
 namespace nmc
 {

@@ -31,10 +31,6 @@
 #include <QSharedPointer>
 #include <QStringList>
 
-// code for metadata crop:
-#include "DkFileInfo.h"
-#include "DkMath.h"
-
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
 #else
@@ -50,26 +46,18 @@
 #ifdef EXV_ENABLE_BMFF
 #include <exiv2/bmffimage.hpp>
 #endif
+
 #include <iomanip>
+#endif // WIN32
 
-#endif
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkFileInfo.h"
+#include "DkMath.h"
 
 // OS 2 does not define byte so we safely assume, that other programmers agree to call an 8 bit a byte
 #ifndef byte
 typedef unsigned char byte;
 #endif
 
-// Qt defines
 class QVector2D;
 class QImage;
 
