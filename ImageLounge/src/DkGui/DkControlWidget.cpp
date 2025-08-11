@@ -544,12 +544,6 @@ void DkControlWidget::switchWidget(QWidget *widget)
 
     // if (mLayout->currentWidget())
     //	qDebug() << "changed to widget: " << mLayout->currentWidget();
-
-    // ok, this is really nasty... however, the pImagfileInfo layout is destroyed otherwise
-    if (mLayout->currentIndex() == hud_widget && mFileInfoLabel->isVisible()) {
-        mFileInfoLabel->setVisible(false);
-        showFileInfo(true);
-    }
 }
 
 void DkControlWidget::pluginClosed(bool askForSaving)
