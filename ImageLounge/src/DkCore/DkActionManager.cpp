@@ -26,14 +26,14 @@
  *******************************************************************************************************/
 
 #include "DkActionManager.h"
+
+#include "DkDialog.h"
 #include "DkImageStorage.h"
+#include "DkMenu.h"
 #include "DkSettings.h"
 #include "DkStatusBar.h"
 #include "DkToolbars.h"
 #include "DkUtils.h"
-
-#include "DkDialog.h"
-#include "DkMenu.h"
 
 #ifdef WITH_PLUGINS
 #include "DkPluginManager.h"

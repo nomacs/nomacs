@@ -26,15 +26,11 @@
  *******************************************************************************************************/
 
 #include "DkMenu.h"
+
 #include "DkNetwork.h"
-#include "DkSettings.h"
 
 #include <QAction>
-#include <QDebug>
-#include <QFileInfo>
 #include <QList>
-#include <QObject>
-#include <QPointer>
 #include <QStringBuilder>
 #include <QTimer>
 

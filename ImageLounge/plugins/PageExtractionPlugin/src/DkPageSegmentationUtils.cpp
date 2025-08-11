@@ -22,12 +22,12 @@
 
  *******************************************************************************************************/
 
-#include <algorithm>
-
 #include "DkPageSegmentationUtils.h"
 
-#include <QDebug>
-#include <opencv2/imgproc/imgproc.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
+
+#include <algorithm>
 
 namespace nmp
 {

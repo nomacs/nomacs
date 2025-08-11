@@ -26,36 +26,15 @@
  *******************************************************************************************************/
 
 #include "DkNetwork.h"
-#include "DkActionManager.h"
-#include "DkControlWidget.h" // needed for a mConnection
-#include "DkSettings.h"
-#include "DkTimer.h"
-#include "DkUtils.h"
 
-#include <QAbstractButton>
+#include "DkActionManager.h"
+#include "DkTimer.h"
+
 #include <QApplication>
-#include <QDebug>
-#include <QDesktopServices>
-#include <QDir>
-#include <QHostInfo>
 #include <QList>
-#include <QMessageBox>
 #include <QMimeData>
-#include <QMutex>
-#include <QMutexLocker>
-#include <QNetworkAccessManager>
-#include <QNetworkCookieJar>
-#include <QNetworkInterface>
-#include <QNetworkProxyFactory>
-#include <QProcess>
 #include <QScreen>
-#include <QStringBuilder>
-#include <QTcpSocket>
-#include <QThread>
 #include <QTimer>
-#include <QUrl>
-#include <QXmlStreamReader>
-#include <qmath.h>
 
 namespace nmc
 {

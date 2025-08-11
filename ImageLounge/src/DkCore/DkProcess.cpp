@@ -26,23 +26,19 @@
  *******************************************************************************************************/
 
 #include "DkProcess.h"
+
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
-#include "DkManipulators.h"
 #include "DkMath.h"
+#include "DkMetaData.h"
 #include "DkPluginManager.h"
-#include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#include "DkMetaData.h"
-
+#include <QDir>
 #include <QFuture>
 #include <QFutureWatcher>
-#include <QWidget>
 #include <QtConcurrentMap>
-
-#include <cassert>
 
 namespace nmc
 {

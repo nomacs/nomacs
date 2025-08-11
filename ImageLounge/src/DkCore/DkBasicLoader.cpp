@@ -29,26 +29,19 @@
 
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
-#include "DkMath.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-#include "DkUtils.h" // just needed for qInfo() #ifdef
-
-#include <memory>
-#include <utility>
 
 #include <QBuffer>
 #include <QColorSpace>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
-#include <QIcon>
 #include <QImageWriter>
 #include <QNetworkProxyFactory>
 #include <QNetworkReply>
 #include <QObject>
-#include <QPixmap>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
 
@@ -57,6 +50,7 @@
 #ifdef WITH_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
 
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
@@ -79,14 +73,17 @@
 #undef int64
 
 #endif // WITH_LIBTIFF
-
-#endif // #ifdef WITH_OPENCV
+#endif // WITH_OPENCV
 
 #ifdef Q_OS_WIN
 #include <olectl.h>
 #pragma comment(lib, "oleaut32.lib")
+#else
+#include "qpsdhandler.h"
+#endif // Q_OS_WIN
 
-#endif // #ifdef Q_OS_WIN
+#include <memory>
+#include <utility>
 
 namespace nmc
 {

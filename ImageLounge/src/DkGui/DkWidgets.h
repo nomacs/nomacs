@@ -29,14 +29,11 @@
 
 #include "DkQt5Compat.h"
 
-#include <QDockWidget>
-#include <QFileIconProvider>
 #include <QFileSystemModel>
 #include <QFutureWatcher>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPen>
-#include <QPointer>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QSlider>
@@ -46,24 +43,15 @@
 #include "DkImageContainer.h"
 #include "DkMath.h"
 
-// Qt defines
-class QColorDialog;
-class QSpinBox;
 class QDoubleSpinBox;
-class QToolBar;
+class QFileIconProvider;
 class QBoxLayout;
 class QProgressDialog;
-class QMovie;
 class QTreeView;
-class QSlider;
-class QGridLayout;
 class QVBoxLayout;
-class QSvgRenderer;
-class QSettings;
 
 namespace nmc
 {
-// nomacs defines
 class DkCropToolBar;
 
 class DkButton : public QPushButton

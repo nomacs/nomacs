@@ -28,18 +28,16 @@
 #pragma once
 
 #include <QDialog>
-#include <QDir>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
 #include <QFutureWatcher>
 #include <QItemDelegate>
 #include <QLineEdit>
-#include <QMainWindow>
 #include <QPrintPreviewWidget>
 
 #include "DkBasicLoader.h"
 
-// Qt defines
+class QDir;
 class QStandardItemModel;
 class QStandardItem;
 class QTableView;
@@ -48,20 +46,14 @@ class QListView;
 class QTextEdit;
 class QListWidget;
 class QDialogButtonBox;
-class QTreeView;
-class QActionGroup;
-class QPrintDialog;
 class QAbstractButton;
 class QLabel;
 class QComboBox;
 class QCheckBox;
 class QProgressBar;
-class QSettings;
 
 namespace nmc
 {
-
-// nomacs defines
 class DkBaseViewPort;
 class TreeItem;
 class DkSlider;

@@ -27,13 +27,8 @@
 
 #pragma once
 
-#include <cmath>
-#include <functional>
-
 #include <QDebug>
 #include <QFileInfo>
-#include <QRegularExpression>
-#include <QSharedMemory>
 #include <QVector>
 
 #ifdef WITH_OPENCV
@@ -43,15 +38,17 @@
 #define CV_PI 3.141592653589793238462643383279
 #endif
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include <cmath>
+#include <functional>
+
+#include "nmc_config.h"
+
+// fixes Qt's damn no latin1 on tr() policy
+#define dk_degree_str QChar(0x00B0)
+
+class QComboBox;
+class QColor;
+class QUrl;
 
 #if !defined(QT_NO_DEBUG_OUTPUT)
 DllCoreExport QDebug qDebugClean();
@@ -63,18 +60,8 @@ DllCoreExport QDebug qWarningClean();
 #define qWarningClean() qDebug()
 #endif
 
-// fixes Qt's damn no latin1 on tr() policy
-#define dk_degree_str QChar(0x00B0)
-
-// Qt defines
-class QComboBox;
-class QColor;
-class QUrl;
-
 namespace nmc
 {
-
-// nomacs defines
 class DkFileInfo;
 class TreeItem;
 
@@ -494,6 +481,7 @@ private:
 };
 
 // from: http://stackoverflow.com/questions/5006547/qt-best-practice-for-a-single-instance-app-protection
+#if DEADCODE
 class DllCoreExport DkRunGuard
 {
 public:
@@ -510,6 +498,7 @@ private:
 
     Q_DISABLE_COPY(DkRunGuard)
 };
+#endif // DEADCODE
 
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
 class DllCoreExport TreeItem

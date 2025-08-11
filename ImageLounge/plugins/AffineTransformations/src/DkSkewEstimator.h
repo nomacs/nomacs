@@ -27,20 +27,17 @@
 
 #pragma once
 
-#include <QDebug>
 #include <QImage>
-#include <QProgressDialog>
 #include <QVector3D>
 #include <QVector4D>
-#include <QWidget>
-#include <QtCore/qmath.h>
-#include <QtGlobal>
-#include <cmath>
 
 #ifdef WITH_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #endif
+
+class QProgressDialog;
+class QWidget;
 
 namespace nmp
 {

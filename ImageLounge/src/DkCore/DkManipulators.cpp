@@ -27,10 +27,9 @@
  *******************************************************************************************************/
 
 #include "DkManipulators.h"
-#include "DkManipulatorsIpl.h"
 
-#include "DkImageContainer.h"
 #include "DkImageStorage.h"
+#include "DkManipulatorsIpl.h"
 #include "DkSettings.h"
 
 #include <QSharedPointer>

@@ -26,8 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkMetaDataWidgets.h"
-#include "DkBasicLoader.h"
-#include "DkImageContainer.h"
+
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
@@ -38,18 +37,16 @@
 
 #include <QAction>
 #include <QCheckBox>
+#include <QContextMenuEvent>
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QDockWidget>
 #include <QInputDialog>
 #include <QLabel>
 #include <QMenu>
 #include <QPainter>
 #include <QPushButton>
 #include <QRegularExpression>
-#include <QResizeEvent>
 #include <QScrollArea>
-#include <QSettings>
 #include <QTextEdit>
 #include <QTreeView>
 #include <QVBoxLayout>

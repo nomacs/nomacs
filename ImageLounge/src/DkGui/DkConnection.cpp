@@ -26,13 +26,8 @@
  *******************************************************************************************************/
 
 #include "DkConnection.h"
-#include "DkSettings.h"
 
-#include <QBuffer>
 #include <QByteArray>
-#include <QDebug>
-#include <QHostInfo>
-#include <QThread>
 #include <QTimer>
 
 namespace nmc

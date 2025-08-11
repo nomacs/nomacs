@@ -26,19 +26,12 @@
  *******************************************************************************************************/
 
 #include "DkUtils.h"
+
 #include "DkMath.h"
 #include "DkNoMacs.h"
 #include "DkSettings.h"
 #include "DkVersion.h"
 #include "DkViewPort.h"
-
-#if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
-#include <sys/sysinfo.h>
-#endif
-
-#ifndef WITH_OPENCV
-#include <cassert>
-#endif
 
 #include <QApplication>
 #include <QColor>
@@ -48,24 +41,17 @@
 #include <QDate>
 #include <QDir>
 #include <QFileInfo>
-#include <QFuture>
 #include <QMainWindow>
 #include <QMimeDatabase>
 #include <QMouseEvent>
-#include <QPainter>
-#include <QPixmap>
 #include <QRegularExpression>
 #include <QSemaphore>
 #include <QStandardPaths>
-#include <QString>
 #include <QStringBuilder>
-#include <QStringList>
 #include <QTranslator>
 #include <QUrl>
 #include <QtConcurrentRun>
 #include <qmath.h>
-
-#include <QSystemSemaphore>
 
 #include <exiv2/version.hpp>
 
@@ -96,6 +82,14 @@
 #ifdef Q_OS_WIN
 #include "shlwapi.h"
 #pragma comment(lib, "shlwapi.lib")
+#endif
+
+#if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
+#include <sys/sysinfo.h>
+#endif
+
+#ifndef WITH_OPENCV
+#include <cassert>
 #endif
 
 #if !defined(QT_NO_DEBUG_OUTPUT)
@@ -1495,6 +1489,7 @@ bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event)
 }
 
 // DkRunGuard --------------------------------------------------------------------
+#if DEADCODE
 DkRunGuard::DkRunGuard()
     : mSharedMem(mSharedMemKey)
 {
@@ -1542,4 +1537,5 @@ bool DkRunGuard::tryRunning()
 
     return !attached;
 }
+#endif // DEADCODE
 }

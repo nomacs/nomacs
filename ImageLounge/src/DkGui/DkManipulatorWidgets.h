@@ -32,22 +32,10 @@
 #include "DkImageContainer.h"
 #include "DkManipulatorsIpl.h"
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
-#else
-#define DllExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
+class QComboBox;
 
 namespace nmc
 {
-
-// nomacs defines
 
 class DkBaseManipulatorWidget : public DkWidget
 {

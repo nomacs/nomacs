@@ -27,7 +27,6 @@
 
 #include "DkNoMacs.h"
 
-// my stuff
 #include "DkActionManager.h"
 #include "DkBatch.h"
 #include "DkCentralWidget.h"
@@ -55,39 +54,26 @@
 #include "DkWidgets.h"
 
 #ifdef WITH_PLUGINS
-#include "DkPluginInterface.h"
 #include "DkPluginManager.h"
-#endif //  WITH_PLUGINS
+#endif
 
 #include <QAction>
-#include <QBoxLayout>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QResizeEvent>
-#include <QStatusBar>
-// #include <QPanGesture>
 #include <QApplication>
-#include <QClipboard>
 #include <QDesktopServices>
 #include <QDrag>
-#include <QErrorMessage>
 #include <QEvent>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QMimeData>
-#include <QNetworkProxyFactory>
 #include <QProcess>
 #include <QProgressDialog>
+#include <QResizeEvent>
 #include <QScreen>
-#include <QSettings>
-#include <QShortcut>
-#include <QSplashScreen>
 #include <QStringBuilder>
-#include <QSysInfo>
 #include <QTimer>
 #include <QUrlQuery>
-#include <QVector2D>
-#include <QtGlobal>
 #include <qmath.h>
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)

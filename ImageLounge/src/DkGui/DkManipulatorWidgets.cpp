@@ -27,12 +27,11 @@
  *******************************************************************************************************/
 
 #include "DkManipulatorWidgets.h"
+
 #include "DkActionManager.h"
 #include "DkBasicWidgets.h"
 #include "DkImageStorage.h"
-#include "DkManipulatorsIpl.h"
 #include "DkSettings.h"
-#include "DkTimer.h"
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
@@ -41,7 +40,6 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <QtGlobal>
 
 namespace nmc
 {

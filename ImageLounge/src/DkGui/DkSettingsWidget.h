@@ -28,25 +28,13 @@
 
 #pragma once
 
-#include "DkBaseWidgets.h"
-#include "DkUtils.h"
-
 #include <QAbstractItemModel>
 #include <QSettings>
 #include <QSortFilterProxyModel>
-#include <QWidget>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkBaseWidgets.h"
+#include "DkUtils.h"
 
-// Qt defines
 class QTreeView;
 class QLineEdit;
 

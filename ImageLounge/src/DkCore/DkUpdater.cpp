@@ -33,18 +33,12 @@
 #include "DkUtils.h"
 
 #include <QApplication>
-#include <QCoreApplication>
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QNetworkCookieJar>
 #include <QNetworkProxyQuery>
-#include <QProcess>
-#include <QPushButton>
-#include <QStandardPaths>
-#include <QStringView>
 #include <QVector>
 #include <QXmlStreamReader>
 

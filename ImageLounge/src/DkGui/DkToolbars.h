@@ -29,15 +29,10 @@
 
 #include "DkBaseWidgets.h"
 
-#include <QCompleter>
-#include <QObject>
 #include <QToolBar>
-#include <QWidget>
 
-// Qt defines
 class QCheckBox;
 class QComboBox;
-class QLineEdit;
 class QGraphicsOpacityEffect;
 class QDoubleSpinBox;
 class QPushButton;
@@ -46,10 +41,8 @@ class QStandardItemModel;
 
 namespace nmc
 {
-
 class DkTransferToolBar;
 class DkVector;
-class DkQuickAccess;
 class DkQuickAccessEdit;
 class DkRectWidget;
 

@@ -27,18 +27,22 @@
 
 #pragma once
 
+#include <QCursor>
 #include <QDebug>
 #include <QPointF>
 #include <QPolygonF>
-#include <cfloat>
-#include <cmath>
-#include <iostream>
 
 #ifdef WITH_OPENCV
 #include "opencv2/core/core.hpp"
 #else
+#include <sstream>
 #define CV_PI 3.141592653589793238462643383279
 #endif
+
+#include <cfloat>
+#include <cmath>
+
+#include "nmc_config.h"
 
 #define DK_DEG2RAD 0.017453292519943
 #define DK_RAD2DEG 57.295779513082323
@@ -46,18 +50,6 @@
 // no min max macros for windows...
 #undef min
 #undef max
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 
 namespace nmc
 {

@@ -24,13 +24,10 @@
 
 #pragma once
 
-#include "DkPageSegmentationUtils.h"
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
-
 #include <QColor>
 #include <QImage>
+
+#include "DkPageSegmentationUtils.h"
 
 namespace nmp
 {

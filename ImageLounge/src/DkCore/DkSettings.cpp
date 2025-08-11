@@ -26,29 +26,21 @@
  *******************************************************************************************************/
 
 #include "DkSettings.h"
+
 #include "DkUtils.h"
 #include "DkVersion.h"
 
-#include <cassert>
-#include <iostream>
-
-#include <QAbstractTableModel>
 #include <QApplication>
-#include <QDebug>
-#include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
 #include <QImageReader>
 #include <QMimeDatabase>
 #include <QRandomGenerator>
 #include <QScreen>
-#include <QStandardItem>
-#include <QStandardItemModel>
 #include <QStandardPaths>
-#include <QStyledItemDelegate>
-#include <QTableView>
 #include <QThreadPool>
 #include <QTranslator>
+#include <QWidget>
 
 #ifdef Q_OS_WIN
 #ifndef NTDDI_VERSION
@@ -56,6 +48,9 @@
 #endif
 #include "shobjidl.h"
 #endif
+
+#include <cassert>
+#include <iostream>
 
 namespace nmc
 {

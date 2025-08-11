@@ -38,7 +38,6 @@
 
 #include "DkPluginInterface.h"
 
-// Qt defines
 class QNetworkReply;
 class QNetworkAccessManager;
 class QPluginLoader;

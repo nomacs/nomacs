@@ -54,6 +54,7 @@
 #include <QIcon>
 #include <QInputDialog>
 #include <QMimeData>
+#include <QProcess>
 #include <QSettings>
 #include <QStackedLayout>
 #include <QStandardPaths>

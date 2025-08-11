@@ -27,21 +27,17 @@
 
 #pragma once
 
-#include <QBoxLayout>
 #include <QDialog>
 #include <QLabel>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QPushButton>
-#include <QSlider>
-#include <QSpinBox>
 #include <QWidget>
 
 #ifdef WITH_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-using namespace cv;
 #endif
+
+class QSpinBox;
+class QSlider;
 
 namespace nmp
 {
@@ -105,31 +101,31 @@ protected:
     void createImgPreview();
 
 #ifdef WITH_OPENCV
-    Mat blurPanTilt(Mat src, Mat depthImg, int maxKernel);
+    cv::Mat blurPanTilt(cv::Mat src, cv::Mat depthImg, int maxKernel);
 
     /**
-     * Converts a QImage to a Mat
+     * Converts a QImage to a cv::Mat
      * @param mImg formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
-     * @return cv::Mat the corresponding Mat
+     * @return cv::cv::Mat the corresponding cv::Mat
      **/
-    static Mat qImage2Mat(const QImage img)
+    static cv::Mat qImage2Mat(const QImage img)
     {
-        Mat mat2;
+        cv::Mat mat2;
         QImage cImg; // must be initialized here!	(otherwise the data is lost before clone())
 
         if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
-            mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar *)img.bits(), img.bytesPerLine());
+            mat2 = cv::Mat(img.height(), img.width(), CV_8UC4, (uchar *)img.bits(), img.bytesPerLine());
             // qDebug() << "ARGB32 or RGB32";
         } else if (img.format() == QImage::Format_RGB888) {
-            mat2 = Mat(img.height(), img.width(), CV_8UC3, (uchar *)img.bits(), img.bytesPerLine());
+            mat2 = cv::Mat(img.height(), img.width(), CV_8UC3, (uchar *)img.bits(), img.bytesPerLine());
             // qDebug() << "RGB888";
         } else if (img.format() == QImage::Format_Indexed8) {
-            mat2 = Mat(img.height(), img.width(), CV_8UC1, (uchar *)img.bits(), img.bytesPerLine());
+            mat2 = cv::Mat(img.height(), img.width(), CV_8UC1, (uchar *)img.bits(), img.bytesPerLine());
             // qDebug() << "indexed...";
         } else {
             // qDebug() << "image flag: " << mImg.format();
             cImg = img.convertToFormat(QImage::Format_ARGB32);
-            mat2 = Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar *)cImg.bits(), cImg.bytesPerLine());
+            mat2 = cv::Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar *)cImg.bits(), cImg.bytesPerLine());
             // qDebug() << "I need to convert the QImage to ARGB32";
         }
 
@@ -139,15 +135,15 @@ protected:
     }
 
     /**
-     * Converts a cv::Mat to a QImage.
+     * Converts a cv::cv::Mat to a QImage.
      * @param mImg supported formats CV8UC1 | CV_8UC3 | CV_8UC4
      * @return QImage the corresponding QImage
      **/
-    static QImage mat2QImage(Mat img)
+    static QImage mat2QImage(cv::Mat img)
     {
         QImage qImg;
 
-        // since Mat header is copied, a new buffer should be allocated (check this!)
+        // since cv::Mat header is copied, a new buffer should be allocated (check this!)
         if (img.depth() == CV_32F)
             img.convertTo(img, CV_8U, 255);
 
@@ -157,7 +153,7 @@ protected:
                           (int)img.rows,
                           (int)img.step,
                           QImage::Format_Indexed8); // opencv uses size_t if for scaling in x64 applications
-            // Mat tmp;
+            // cv::Mat tmp;
             // cvtColor(mImg, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
             // mImg = tmp;
         }

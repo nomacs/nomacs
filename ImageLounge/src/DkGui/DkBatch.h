@@ -26,24 +26,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************************************/
 #pragma once
 
-#include <QItemSelection>
 #include <QPushButton>
 #include <QTextEdit>
-#include <QUrl>
-#include <QWidget>
 
 #include "DkBaseWidgets.h"
 #include "DkBatchInfo.h"
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
-#include "DkThumbs.h"
 
 // Qt defines
 class QListView;
 class QVBoxLayout;
 class QLabel;
-class QFileInfo;
 class QComboBox;
 class QLineEdit;
 class QSpinBox;
@@ -52,16 +47,16 @@ class QGridLayout;
 class QCheckBox;
 class QButtonGroup;
 class QRadioButton;
-class QDialogButtonBox;
-class QProgressBar;
 class QTabWidget;
 class QListWidget;
 class QStackedLayout;
 class QStandardItem;
 class QStandardItemModel;
+class QItemSelection;
 
 namespace nmc
 {
+class DkThumbLoader;
 
 // TODO: these enums are global - they should be put into the respective classes
 enum fileNameTypes {
@@ -90,7 +85,6 @@ class DkBatchTransform;
 class DkBatchContent;
 class DkButton;
 class DkThumbScrollWidget;
-class DkImageLoader;
 class DkExplorer;
 class DkDirectoryEdit;
 class DkListWidget;

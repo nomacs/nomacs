@@ -30,38 +30,21 @@
 #include "DkBaseViewPort.h"
 #include "DkImageContainer.h"
 #include "DkMath.h"
-#include "DkThumbs.h"
 #include "DkTimer.h"
-
-#include <QTimer> // needed to construct mTimers
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
 
 class QVBoxLayout;
 class QMimeData;
-class QPushButton;
+class QTimer;
 
 namespace nmc
 {
-// some dummies
 class DkImageLoader;
-class DkLoader;
 class DkControlWidget;
-class DkPeer;
-class DkRotatingRect;
-class DkPluginInterface;
 class DkPluginContainer;
 class DkBaseManipulator;
 class DkResizeDialog;
 class DkHudNavigation;
+class DkThumbLoader;
 
 class DllCoreExport DkViewPort : public DkBaseViewPort
 {

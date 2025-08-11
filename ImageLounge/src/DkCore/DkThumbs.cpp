@@ -26,20 +26,15 @@
  *******************************************************************************************************/
 
 #include "DkThumbs.h"
+
 #include "DkBasicLoader.h"
 #include "DkFileInfo.h"
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-#include "qpainter.h"
 
-#include <QDir>
-#include <QFileInfo>
-#include <QImageReader>
 #include <QStringBuilder>
-#include <QStringList>
-#include <QTimer>
 #include <QtConcurrentRun>
 
 namespace nmc

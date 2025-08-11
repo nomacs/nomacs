@@ -24,19 +24,17 @@
  *******************************************************************************************************/
 
 #include "DkShortcuts.h"
+
 #include "DkTimer.h"
 
 #include <QAction>
 #include <QApplication>
-#include <QDebug>
 #include <QDockWidget>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMainWindow>
 #include <QSet>
 #include <QTreeView>
-
-#include <utility>
 
 namespace nmc
 {

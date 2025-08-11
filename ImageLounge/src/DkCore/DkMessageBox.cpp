@@ -26,18 +26,17 @@
  *******************************************************************************************************/
 
 #include "DkMessageBox.h"
+
 #include "DkSettings.h"
 
 #include <QApplication>
 #include <QCheckBox>
-#include <QDebug>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGuiApplication>
 #include <QLabel>
 #include <QPushButton>
 #include <QScreen>
-#include <QSettings>
 #include <QStyle>
 
 namespace nmc

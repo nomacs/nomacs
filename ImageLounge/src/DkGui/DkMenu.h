@@ -27,20 +27,15 @@
 
 #pragma once
 
+#include <QMenuBar>
+
 #include "DkQt5Compat.h"
 
-#include <QMenuBar>
-#include <QPointer>
-
-// Qt includes
 class QTimer;
 
 namespace nmc
 {
-
-// nomacs defines
 class DkPeer;
-class DkManagerThread;
 
 /**
  * This class perfectly acts like a QMenuBar.

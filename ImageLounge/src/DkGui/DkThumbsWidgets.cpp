@@ -26,7 +26,10 @@
  *******************************************************************************************************/
 
 #include "DkThumbsWidgets.h"
+
 #include "DkActionManager.h"
+#include "DkBasicLoader.h"
+#include "DkDialog.h"
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkImageStorage.h"
@@ -39,15 +42,13 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#include "DkBasicLoader.h"
-#include "DkDialog.h"
-#include <optional>
 #include <qpixmap.h>
 #include <qpixmapcache.h>
 
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
+#include <QDrag>
 #include <QGraphicsSceneMouseEvent>
 #include <QHBoxLayout>
 #include <QInputDialog>
@@ -58,16 +59,12 @@
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScrollBar>
+#include <QStringBuilder>
 #include <QStyleOptionGraphicsItem>
-#include <QThreadPool>
 #include <QTimer>
 #include <QToolBar>
 #include <QToolButton>
 #include <QUrl>
-#include <QtGlobal>
-#include <qmath.h>
-
-#include <QStringBuilder>
 
 namespace nmc
 {

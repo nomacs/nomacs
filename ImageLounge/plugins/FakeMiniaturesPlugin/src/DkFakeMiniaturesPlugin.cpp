@@ -27,6 +27,8 @@
 
 #include "DkFakeMiniaturesPlugin.h"
 
+#include "DkFakeMiniaturesDialog.h"
+
 namespace nmp
 {
 

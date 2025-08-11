@@ -31,21 +31,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkBasicWidgets.h"
 #include "DkDialog.h"
 #include "DkImageStorage.h"
-#include "DkNoMacs.h"
 #include "DkSettings.h"
 #include "DkSettingsWidget.h"
 #include "DkThemeManager.h"
-#include "DkUtils.h"
 #include "DkWidgets.h"
 
 #include <QAction>
-#include <QApplication>
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDebug>
 #include <QFileDialog>
-#include <QFileInfo>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QPainter>
@@ -54,12 +49,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QSpinBox>
 #include <QStackedLayout>
 #include <QStandardItemModel>
-#include <QStandardPaths>
-#include <QStyleFactory>
 #include <QStyleOption>
 #include <QTableView>
 #include <QVBoxLayout>
-#include <QtGlobal>
 
 namespace nmc
 {

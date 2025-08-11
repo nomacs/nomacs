@@ -27,30 +27,19 @@
 
 #pragma once
 
-#include <QAction>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QGraphicsPathItem>
-#include <QGraphicsSceneMouseEvent>
 #include <QImage>
-#include <QListWidget>
-#include <QMainWindow>
-#include <QMessageBox>
-#include <QMouseEvent>
 #include <QObject>
-#include <QPushButton>
-#include <QSettings>
-#include <QSlider>
-#include <QSpinBox>
 #include <QString>
-#include <QStringList>
 #include <QToolBar>
-#include <QVector4D>
-#include <QtCore/qmath.h>
-#include <QtPlugin>
 
 #include "DkPluginInterface.h"
 #include "DkSkewEstimator.h"
+
+class QAction;
+class QCheckBox;
+class QDoubleSpinBox;
+class QPushButton;
+class QComboBox;
 
 namespace nmp
 {

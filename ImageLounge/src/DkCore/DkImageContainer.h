@@ -27,29 +27,15 @@
 
 #pragma once
 
-#include "DkFileInfo.h"
-
-#include <QFileInfo>
 #include <QFutureWatcher>
-#include <QSharedPointer>
 #include <QTimer>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkFileInfo.h"
 
 namespace nmc
 {
-// nomacs defines
 class DkBasicLoader;
 class DkMetaDataT;
-class DkZipContainer;
 class FileDownloader;
 class DkRotatingRect;
 

@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkBaseViewPort.h"
+
 #include "DkActionManager.h"
 #include "DkSettings.h"
 #include "DkShortcuts.h"
@@ -39,11 +40,9 @@
 #include <QScrollBar>
 #include <QShortcut>
 #include <QSvgRenderer>
+#include <QSwipeGesture>
 #include <QTimer>
 #include <QtGlobal>
-
-// gestures
-#include <QSwipeGesture>
 
 #include <cfloat>
 

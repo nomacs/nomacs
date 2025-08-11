@@ -27,27 +27,13 @@
 
 #pragma once
 
-#include <QDir>
-#include <QFileInfo>
 #include <QFutureWatcher>
 #include <QSharedPointer>
 #include <QStringList>
-#include <QUrl>
 
 #include "DkBatchInfo.h"
 #include "DkManipulators.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QImage;
 class QSettings;
 
@@ -57,7 +43,6 @@ namespace nmc
 // nomacs defines
 class DkImageContainer;
 class DkPluginContainer;
-class DkBaseManipulator;
 class DkMetaDataT;
 
 class DllCoreExport DkAbstractBatch

@@ -27,15 +27,12 @@
 
 #pragma once
 
-#include <QAbstractTableModel>
-#include <QDockWidget>
 #include <QSortFilterProxyModel>
 #include <QTextEdit>
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 
-// Qt defines
 class QTreeView;
 class QLabel;
 class QPushButton;
@@ -46,8 +43,6 @@ class QLineEdit;
 
 namespace nmc
 {
-
-// nomacs defines
 class TreeItem;
 
 class DkMetaDataModel : public QAbstractItemModel

@@ -26,20 +26,14 @@
  *******************************************************************************************************/
 
 #include "DkBaseWidgets.h"
+
 #include "DkActionManager.h"
 #include "DkSettings.h"
-#include "DkUtils.h"
 
 #include <QAction>
-#include <QComboBox>
-#include <QDebug>
 #include <QEvent>
 #include <QGraphicsEffect>
-#include <QHBoxLayout>
-#include <QInputDialog>
-#include <QMessageBox>
 #include <QPainter>
-#include <QPushButton>
 #include <QScrollBar>
 #include <QStyleOption>
 #include <QTimer>
@@ -262,8 +256,9 @@ void DkLabel::init()
     mTextCol = DkSettingsManager::param().display().hudFgdColor;
     mBlocked = false;
 
-    mTimer.setSingleShot(true);
-    connect(&mTimer, &QTimer::timeout, this, &DkLabel::hide);
+    mTimer = new QTimer(this);
+    mTimer->setSingleShot(true);
+    connect(mTimer, &QTimer::timeout, this, &DkLabel::hide);
 
     // default look and feel
     QFont font;
@@ -289,7 +284,7 @@ void DkLabel::setText(const QString &msg, int time)
     show();
 
     if (time != -1)
-        mTimer.start(time);
+        mTimer->start(time);
 }
 
 void DkLabel::showTimed(int time)
@@ -304,13 +299,13 @@ void DkLabel::showTimed(int time)
     show();
 
     if (time != -1)
-        mTimer.start(time);
+        mTimer->start(time);
 }
 
 void DkLabel::setVisible(bool visible)
 {
     if (!visible)
-        mTimer.stop();
+        mTimer->stop();
     QLabel::setVisible(visible);
 }
 

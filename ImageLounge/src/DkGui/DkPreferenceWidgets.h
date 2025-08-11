@@ -27,33 +27,20 @@
 
 #pragma once
 
-// Qt defines
-#include "DkBaseWidgets.h"
-
 #include <QIcon>
 #include <QList>
-#include <QPushButton>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkBaseWidgets.h"
 
 class QStackedLayout;
 class QVBoxLayout;
-class QGridLayout;
 class QStandardItem;
 class QStandardItemModel;
 class QLineEdit;
+class QPushButton;
 
 namespace nmc
 {
-
 class DkWorkingDirWidget;
 class DkSettingsWidget;
 class DkTabEntryWidget;

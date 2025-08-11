@@ -1,29 +1,16 @@
 #pragma once
 
-#include <QDir>
-#include <QDragEnterEvent>
-#include <QDragMoveEvent>
-#include <QDropEvent>
-#include <QElapsedTimer>
-#include <QFile>
-#include <QFileDialog>
-#include <QFileInfo>
 #include <QImage>
-#include <QLabel>
-#include <QMimeData>
-#include <QPixmap>
-#include <QPushButton>
-#include <QSettings>
 #include <QSlider>
 #include <QStyleOptionSlider>
 #include <QToolTip>
 #include <QVBoxLayout>
 #include <QWidget>
 
-#include <opencv2/opencv.hpp>
-
-#include "DkBasicLoader.h"
 #include "DkImageStorage.h"
+
+class QLabel;
+class QPushButton;
 
 namespace nmc
 {

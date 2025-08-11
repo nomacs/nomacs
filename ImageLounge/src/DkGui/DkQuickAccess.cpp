@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkQuickAccess.h"
+
 #include "DkActionManager.h"
 #include "DkFileInfo.h"
 #include "DkImageStorage.h"
@@ -33,7 +34,6 @@
 
 #include <QAction>
 #include <QCompleter>
-#include <QDebug>
 #include <QKeyEvent>
 #include <QStandardItemModel>
 
