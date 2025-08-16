@@ -289,20 +289,6 @@ void DkViewPort::loadImage(const QImage &newImg)
     }
 }
 
-void DkViewPort::loadImage(QSharedPointer<DkImageContainerT> img)
-{
-    if (mLoader) {
-        if (!unloadImage(true))
-            return;
-
-        if (img->hasImage()) {
-            mLoader->setCurrentImage(img);
-            setImage(img->image());
-        }
-        mLoader->load(img);
-    }
-}
-
 void DkViewPort::setImage(QImage newImg)
 {
     mDisabledBackground = false;

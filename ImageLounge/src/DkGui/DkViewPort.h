@@ -160,7 +160,6 @@ public slots:
     void onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loaded = true);
     virtual void setImageUpdated();
     virtual void loadImage(const QImage &newImg);
-    virtual void loadImage(QSharedPointer<DkImageContainerT> img);
     virtual void setEditedImage(const QImage &newImg, const QString &editName);
     virtual void setEditedImage(QSharedPointer<DkImageContainerT> img);
     void setImage(QImage newImg) override;
