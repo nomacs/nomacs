@@ -306,7 +306,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
     // mouse over effect
     QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
 
-    for (int idx = 0; (unsigned int)idx < mFiles.size(); idx++) {
+    for (int idx = 0; static_cast<unsigned int>(idx) < mFiles.size(); idx++) {
         const QString &filePath = mFiles[idx].path();
 
         const auto thumb = mThumbs.constFind(filePath);
@@ -597,7 +597,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
             if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
                 selected = idx;
 
-                if (selected >= 0 && (unsigned int)selected < mFiles.size()) {
+                if (selected >= 0 && static_cast<unsigned int>(selected) < mFiles.size()) {
                     // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()),
                     // DkSettingsManager::param().display().highlightColor, 0.3f);
 
@@ -833,7 +833,7 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
     int tIdx = -1;
 
-    for (int idx = 0; (unsigned int)idx < mFiles.size(); idx++) {
+    for (int idx = 0; static_cast<unsigned int>(idx) < mFiles.size(); idx++) {
         if (mFiles[idx] == cImage->originalFileInfo()) {
             tIdx = idx;
             break;
