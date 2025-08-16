@@ -27,31 +27,16 @@
 
 #pragma once
 
-#include "DkBaseWidgets.h"
-#include "DkBatchInfo.h"
-#include "DkImageContainer.h"
-#include "DkSettings.h"
-
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
-#include <QFileInfo>
-#include <QGraphicsView>
 #include <QImage>
 #include <QMainWindow>
 #include <QSettings>
 #include <QString>
-#include <QStringList>
-#pragma warning(pop) // no warnings from includes - end
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkBaseWidgets.h"
+#include "DkBatchInfo.h"
+#include "DkImageContainer.h"
+#include "DkSettings.h"
 
 namespace nmc
 {
@@ -69,9 +54,7 @@ public:
         inteface_end,
     };
 
-    virtual ~DkPluginInterface()
-    {
-    }
+    virtual ~DkPluginInterface() = default;
 
     virtual QImage image() const = 0;
 
@@ -106,7 +89,7 @@ public:
     QMainWindow *getMainWindow() const
     {
         QWidgetList widgets = QApplication::topLevelWidgets();
-        QMainWindow *win = 0;
+        QMainWindow *win = nullptr;
 
         for (int idx = 0; idx < widgets.size(); idx++) {
             if (widgets.at(idx)->inherits("QMainWindow")) {
@@ -122,14 +105,14 @@ public:
 class DkBatchPluginInterface : public DkPluginInterface
 {
 public:
-    virtual int interfaceType() const
+    int interfaceType() const override
     {
         return interface_batch;
     };
 
-    virtual QSharedPointer<DkImageContainer> runPlugin(
+    QSharedPointer<DkImageContainer> runPlugin(
         const QString &runID = QString(),
-        QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const
+        QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override
     {
         QSharedPointer<DkBatchInfo> dummy;
         DkSaveInfo saveInfo;
@@ -178,7 +161,7 @@ public:
 class DkViewPortInterface : public DkPluginInterface
 {
 public:
-    virtual int interfaceType() const
+    int interfaceType() const override
     {
         return interface_viewport;
     };
@@ -201,11 +184,10 @@ class DllCoreExport DkPluginViewPort : public DkWidget
     Q_OBJECT
 
 public:
-    DkPluginViewPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags())
+    explicit DkPluginViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
         : DkWidget(parent, flags)
     {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        // setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
     };
 
     void setWorldMatrix(QTransform *worldMatrix)
@@ -218,7 +200,10 @@ public:
         mImgMatrix = imgMatrix;
     };
 
-    virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) {}; // dummy
+    virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC)
+    {
+        Q_UNUSED(imgC);
+    }
 
 signals:
     void closePlugin(bool askForSaving = false) const;
@@ -227,7 +212,7 @@ signals:
     void showInfo(const QString &msg) const;
 
 protected:
-    virtual void closeEvent(QCloseEvent *event)
+    void closeEvent(QCloseEvent *event) override
     {
         emit closePlugin();
         QWidget::closeEvent(event);
@@ -252,8 +237,8 @@ protected:
         return mWorldMatrix->inverted().map(pos);
     };
 
-    QTransform *mWorldMatrix = 0;
-    QTransform *mImgMatrix = 0;
+    QTransform *mWorldMatrix = nullptr;
+    QTransform *mImgMatrix = nullptr;
 };
 
 }

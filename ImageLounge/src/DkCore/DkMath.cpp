@@ -27,10 +27,7 @@
 
 #include "DkMath.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QCursor>
 #include <QTransform>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -45,9 +42,7 @@ DkRotatingRect::DkRotatingRect(QRectF rect)
         mRect = rect;
 }
 
-DkRotatingRect::~DkRotatingRect()
-{
-}
+DkRotatingRect::~DkRotatingRect() = default;
 
 bool DkRotatingRect::isEmpty() const
 {
@@ -237,7 +232,6 @@ QSize DkRotatingRect::size() const
     DkVector xV = DkVector(mRect[3] - mRect[0]).round();
     DkVector yV = DkVector(mRect[1] - mRect[0]).round();
 
-    QPointF ul = QPointF(qRound(mRect[0].x()), qRound(mRect[0].y()));
     QPointF s = QPointF(xV.norm(), yV.norm());
 
     double angle = xV.angle();
@@ -274,7 +268,7 @@ double DkRotatingRect::getAngle() const
 
 float DkRotatingRect::getAngleDeg() const
 {
-    float sAngle = (float)(getAngle() * DK_RAD2DEG);
+    auto sAngle = (float)(getAngle() * DK_RAD2DEG);
 
     while (sAngle > 90)
         sAngle -= 180;
@@ -303,7 +297,7 @@ void DkRotatingRect::getTransform(QTransform &tForm, QPointF &size) const
 
     // switch width/height for /\ and \/ quadrants
     if (std::abs(angle) > CV_PI * 0.25 && std::abs(angle) < CV_PI * 0.75) {
-        float x = (float)size.x();
+        auto x = (float)size.x();
         size.setX(size.y());
         size.setY(x);
     }
@@ -390,8 +384,8 @@ void DkRotatingRect::transform(const QTransform &translation, const QTransform &
     p = translation.inverted().map(p);
 
     // Check the order or vertexes
-    float signedArea = (float)((p[1].x() - p[0].x()) * (p[2].y() - p[0].y())
-                               - (p[1].y() - p[0].y()) * (p[2].x() - p[0].x()));
+    auto signedArea = (float)((p[1].x() - p[0].x()) * (p[2].y() - p[0].y())
+                              - (p[1].y() - p[0].y()) * (p[2].x() - p[0].x()));
     // If it's wrong, just change it
     if (signedArea > 0) {
         QPointF tmp = p[1];

@@ -29,40 +29,16 @@
 
 #pragma once
 
-// Qt
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QMainWindow>
 #include <QProcess>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkImageContainer.h"
 
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#pragma warning(disable : 4251) // TODO: remove
-#endif
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QFileDialog;
 class QProgressDialog;
-class QDesktopWidget;
-class QLabel;
-class QShortcut;
 
 namespace nmc
 {
-
-class DkCompressDialog;
 class DkOpacityDialog;
 class DkUpdateDialog;
 class DkForceThumbDialog;
@@ -79,16 +55,12 @@ class DkExportTiffDialog;
 class DkUpdater;
 class DkInstallUpdater;
 class DkTranslationUpdater;
-class DkPluginManagerDialog;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
-class DkBatchContainer;
 class DkCentralWidget;
 class DkDockWidget;
 class DkQuickAccess;
-class DkImageLoader;
 class DkQuickAccessEdit;
-class DkDialogManager;
 
 /*! A custom event filter for OSX.
 Its main purpose is to provide Mac OS X "open file from finder"
@@ -100,7 +72,7 @@ class DkNomacsOSXEventFilter : public QObject
     Q_OBJECT
 
 public:
-    DkNomacsOSXEventFilter(QObject *parent = 0);
+    explicit DkNomacsOSXEventFilter(QObject *parent = nullptr);
 
 signals:
     void loadFile(const QString &fi) const;
@@ -112,18 +84,12 @@ protected:
 
 class DkMenuBar;
 
-enum PluginMenuActions {
-    menu_plugin_manager,
-
-    menu_plugins_end, // nothing beyond this point
-};
-
 class DllCoreExport DkNoMacs : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    virtual ~DkNoMacs();
+    ~DkNoMacs() override;
 
     virtual DkCentralWidget *getTabWidget() const;
 
@@ -235,48 +201,48 @@ protected:
     bool mWasMaximized = false;
 
     // menu
-    DkMenuBar *mMenu = 0;
-    QMenu *mPluginsMenu = 0;
-    QMenu *mSyncMenu = 0;
+    DkMenuBar *mMenu = nullptr;
+    QMenu *mPluginsMenu = nullptr;
+    QMenu *mSyncMenu = nullptr;
 
     QPoint mMousePos;
 
     // quick access
-    DkQuickAccessEdit *mQuickAccessEdit = 0;
-    DkQuickAccess *mQuickAccess = 0;
+    DkQuickAccessEdit *mQuickAccessEdit = nullptr;
+    DkQuickAccess *mQuickAccess = nullptr;
 
     // file dialog
-    QFileDialog *mOpenDialog = 0;
-    QFileDialog *mSaveDialog = 0;
-    DkOpacityDialog *mOpacityDialog = 0;
-    DkUpdateDialog *mUpdateDialog = 0;
-    QProgressDialog *mProgressDialog = 0;
-    QProgressDialog *mProgressDialogTranslations = 0;
-    DkForceThumbDialog *mForceDialog = 0;
-    DkTrainDialog *mTrainDialog = 0;
+    QFileDialog *mOpenDialog = nullptr;
+    QFileDialog *mSaveDialog = nullptr;
+    DkOpacityDialog *mOpacityDialog = nullptr;
+    DkUpdateDialog *mUpdateDialog = nullptr;
+    QProgressDialog *mProgressDialog = nullptr;
+    QProgressDialog *mProgressDialogTranslations = nullptr;
+    DkForceThumbDialog *mForceDialog = nullptr;
+    DkTrainDialog *mTrainDialog = nullptr;
 #ifdef WITH_QUAZIP
-    DkArchiveExtractionDialog *mArchiveExtractionDialog = 0;
+    DkArchiveExtractionDialog *mArchiveExtractionDialog = nullptr;
 #endif
-    DkExplorer *mExplorer = 0;
-    DkMetaDataDock *mMetaDataDock = 0;
-    DkEditDock *mEditDock = 0;
-    DkHistoryDock *mHistoryDock = 0;
-    DkLogDock *mLogDock = 0;
-    DkDockWidget *mThumbsDock = 0;
-    DkExportTiffDialog *mExportTiffDialog = 0;
-    DkThumbsSaver *mThumbSaver = 0;
+    DkExplorer *mExplorer = nullptr;
+    DkMetaDataDock *mMetaDataDock = nullptr;
+    DkEditDock *mEditDock = nullptr;
+    DkHistoryDock *mHistoryDock = nullptr;
+    DkLogDock *mLogDock = nullptr;
+    DkDockWidget *mThumbsDock = nullptr;
+    DkExportTiffDialog *mExportTiffDialog = nullptr;
+    DkThumbsSaver *mThumbSaver = nullptr;
 
-    DkPrintPreviewDialog *mPrintPreviewDialog = 0;
+    DkPrintPreviewDialog *mPrintPreviewDialog = nullptr;
 
-    DkInstallUpdater *mInstallUpdater = 0;
-    DkUpdater *mUpdater = 0;
-    DkTranslationUpdater *mTranslationUpdater = 0;
+    DkInstallUpdater *mInstallUpdater = nullptr;
+    DkUpdater *mUpdater = nullptr;
+    DkTranslationUpdater *mTranslationUpdater = nullptr;
 
     QRect mOldGeometry;
     QProcess mProcess;
 
     // functions
-    DkNoMacs(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkNoMacs(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     virtual void init();
 
@@ -296,8 +262,8 @@ class DllCoreExport DkNoMacsSync : public DkNoMacs
     Q_OBJECT
 
 public:
-    DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkNoMacsSync();
+    explicit DkNoMacsSync(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkNoMacsSync() override;
 
 signals:
     void startRCServerSignal(bool start);
@@ -309,7 +275,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
     // gui
-    virtual void createActions() override;
+    void createActions() override;
 };
 
 class DllCoreExport DkNoMacsIpl : public DkNoMacsSync
@@ -317,7 +283,7 @@ class DllCoreExport DkNoMacsIpl : public DkNoMacsSync
     Q_OBJECT
 
 public:
-    DkNoMacsIpl(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkNoMacsIpl(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     void paintEvent(QPaintEvent *event) override;
 };
 
@@ -326,15 +292,15 @@ class DllCoreExport DkNoMacsFrameless : public DkNoMacs
     Q_OBJECT
 
 public:
-    DkNoMacsFrameless(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkNoMacsFrameless();
+    explicit DkNoMacsFrameless(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkNoMacsFrameless() override;
 
 public slots:
     void chooseMonitor(bool force);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
-    virtual void createContextMenu() override;
+    void createContextMenu() override;
     void paintEvent(QPaintEvent *event) override;
 };
 
@@ -343,8 +309,8 @@ class DllCoreExport DkNoMacsContrast : public DkNoMacsSync
     Q_OBJECT
 
 public:
-    DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkNoMacsContrast(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
-    virtual ~DkNoMacsContrast();
+    ~DkNoMacsContrast() override;
 };
 }

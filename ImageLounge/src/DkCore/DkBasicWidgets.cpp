@@ -27,13 +27,11 @@ related links:
 *******************************************************************************************************/
 
 #include "DkBasicWidgets.h"
+
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 #include "DkUtils.h"
 
-#include <cassert>
-
-#pragma warning(push, 0) // no warnings from includes
 #include <QColorDialog>
 #include <QLabel>
 #include <QLineEdit>
@@ -46,7 +44,8 @@ related links:
 #include <QVBoxLayout>
 #include <QWidgetAction>
 #include <QtGlobal>
-#pragma warning(pop)
+
+#include <cassert>
 
 namespace nmc
 {
@@ -69,16 +68,16 @@ DkSlider::DkSlider(QString title, QWidget *parent)
 
 void DkSlider::createLayout()
 {
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
 
-    QWidget *dummy = new QWidget(this);
-    QHBoxLayout *titleLayout = new QHBoxLayout(dummy);
+    auto *dummy = new QWidget(this);
+    auto *titleLayout = new QHBoxLayout(dummy);
     titleLayout->setContentsMargins(0, 0, 0, 5);
 
-    QWidget *dummyBounds = new QWidget(this);
-    QHBoxLayout *boundsLayout = new QHBoxLayout(dummyBounds);
+    auto *dummyBounds = new QWidget(this);
+    auto *boundsLayout = new QHBoxLayout(dummyBounds);
     boundsLayout->setContentsMargins(0, 0, 0, 0);
 
     titleLabel = new QLabel(this);
@@ -177,12 +176,12 @@ DkDoubleSlider::DkDoubleSlider(const QString &title, QWidget *parent)
 
 void DkDoubleSlider::createLayout()
 {
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
 
-    QWidget *dummy = new QWidget(this);
-    QHBoxLayout *titleLayout = new QHBoxLayout(dummy);
+    auto *dummy = new QWidget(this);
+    auto *titleLayout = new QHBoxLayout(dummy);
     titleLayout->setContentsMargins(0, 0, 0, 5);
 
     mTitleLabel = new QLabel(this);
@@ -346,9 +345,9 @@ void DkDoubleSlider::setIntValue(int value)
 
 // DkColorChooser ------------------------------------
 DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget *parent, Qt::WindowFlags flags)
-    : mDefaultColor(defaultColor)
+    : DkWidget(parent, flags)
+    , mDefaultColor(defaultColor)
     , mText(text)
-    , DkWidget(parent, flags)
 {
     createLayout();
     enableAlpha(true);
@@ -360,10 +359,10 @@ void DkColorChooser::createLayout()
     mColorDialog = new QColorDialog(this);
     connect(mColorDialog, &QColorDialog::accepted, this, &DkColorChooser::onColorDialogAccepted);
 
-    QVBoxLayout *vLayout = new QVBoxLayout(this);
+    auto *vLayout = new QVBoxLayout(this);
     vLayout->setContentsMargins(11, 0, 11, 0);
 
-    QLabel *colorLabel = new QLabel(mText, this);
+    auto *colorLabel = new QLabel(mText, this);
     mColorButton = new QPushButton("", this);
     mColorButton->setFlat(true);
     mColorButton->setAutoDefault(false);
@@ -373,8 +372,8 @@ void DkColorChooser::createLayout()
     mResetButton->setAutoDefault(false);
     connect(mResetButton, &QPushButton::clicked, this, &DkColorChooser::onResetButtonClicked);
 
-    QWidget *colWidget = new QWidget(this);
-    QHBoxLayout *hLayout = new QHBoxLayout(colWidget);
+    auto *colWidget = new QWidget(this);
+    auto *hLayout = new QHBoxLayout(colWidget);
     hLayout->setContentsMargins(11, 0, 11, 0);
     hLayout->setAlignment(Qt::AlignLeft);
 
@@ -456,7 +455,7 @@ void DkColorEdit::createLayout()
     connect(mColHash, &QLineEdit::textEdited, this, &DkColorEdit::hashChanged);
     connect(mColHash, &QLineEdit::editingFinished, this, &DkColorEdit::hashEditFinished);
 
-    QGridLayout *gl = new QGridLayout(this);
+    auto *gl = new QGridLayout(this);
     gl->addWidget(mColBoxes[r], 1, 1);
     gl->addWidget(mColBoxes[g], 2, 1);
     gl->addWidget(mColBoxes[b], 3, 1);
@@ -667,7 +666,7 @@ void DkColorPicker::createLayout()
     mColorPane->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 
     // hue slider
-    QSlider *hueSlider = new QSlider(this);
+    auto *hueSlider = new QSlider(this);
     hueSlider->setObjectName("cpHueSlider");
     hueSlider->setMaximum(360);
     hueSlider->setValue(360);
@@ -677,14 +676,12 @@ void DkColorPicker::createLayout()
     mColorPreview = new QLabel("", this);
     mColorPreview->setFixedHeight(bs);
 
-    QPushButton *mMenu = new QPushButton(DkImage::loadIcon(":/nomacs/img/bars.svg", QSize(bs, bs), Qt::white),
-                                         "",
-                                         this);
+    auto *mMenu = new QPushButton(DkImage::loadIcon(":/nomacs/img/bars.svg", QSize(bs, bs), Qt::white), "", this);
     mMenu->setObjectName("flatWhite");
     mMenu->setFlat(true);
     mMenu->setFixedSize(bs, bs);
 
-    QGridLayout *hb = new QGridLayout(this);
+    auto *hb = new QGridLayout(this);
     hb->setContentsMargins(0, 0, 0, 0);
     hb->addWidget(mColorPane, 0, 0);
     hb->addWidget(hueSlider, 0, 1);
@@ -709,7 +706,7 @@ void DkColorPicker::showMenu(const QPoint &pos)
         connect(mColorEdit, &DkColorEdit::newColor, this, &DkColorPicker::setColor);
         connect(mColorEdit, &DkColorEdit::newColor, mColorPane, &DkColorPane::setColor);
 
-        QWidgetAction *a = new QWidgetAction(this);
+        auto *a = new QWidgetAction(this);
         a->setDefaultWidget(mColorEdit);
         mContextMenu->addAction(a);
     }
@@ -814,7 +811,7 @@ void DkRectWidget::createLayout()
         connect(sp, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkRectWidget::updateRect);
     }
 
-    QHBoxLayout *cropLayout = new QHBoxLayout(this);
+    auto *cropLayout = new QHBoxLayout(this);
     cropLayout->setContentsMargins(0, 0, 0, 0);
     cropLayout->addWidget(mCropXLabel);
     cropLayout->addWidget(mSpCropRect[crop_x]);

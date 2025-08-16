@@ -26,13 +26,13 @@
  *******************************************************************************************************/
 
 #include "DkBaseViewPort.h"
+
 #include "DkActionManager.h"
 #include "DkSettings.h"
 #include "DkShortcuts.h"
 #include "DkStatusBar.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMainWindow>
@@ -40,16 +40,11 @@
 #include <QScrollBar>
 #include <QShortcut>
 #include <QSvgRenderer>
+#include <QSwipeGesture>
 #include <QTimer>
 #include <QtGlobal>
 
-// gestures
-#include <QSwipeGesture>
-
-#pragma warning(pop) // no warnings from includes - end
-
-#include <cassert>
-#include <float.h>
+#include <cfloat>
 
 namespace nmc
 {
@@ -113,9 +108,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent)
     connect(mHideCursorTimer, &QTimer::timeout, this, &DkBaseViewPort::hideCursor);
 }
 
-DkBaseViewPort::~DkBaseViewPort()
-{
-}
+DkBaseViewPort::~DkBaseViewPort() = default;
 
 void DkBaseViewPort::zoomConstraints(double minZoom, double maxZoom)
 {
@@ -391,8 +384,8 @@ bool DkBaseViewPort::event(QEvent *event)
 
 bool DkBaseViewPort::gestureEvent(QGestureEvent *event)
 {
-    if (QGesture *swipeG = event->gesture(Qt::SwipeGesture)) {
-        QSwipeGesture *swipe = static_cast<QSwipeGesture *>(swipeG);
+    if (const QGesture *swipeG = event->gesture(Qt::SwipeGesture)) {
+        const auto *swipe = static_cast<const QSwipeGesture *>(swipeG);
 
         // thanks qt documentation : )
         if (swipe->state() == Qt::GestureFinished) {
@@ -402,7 +395,7 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent *event)
                 qDebug() << "here comes the next image function...";
         }
         qDebug() << "swiping...";
-    } else if (QPinchGesture *pinch = static_cast<QPinchGesture *>(event->gesture(Qt::PinchGesture))) {
+    } else if (const auto *pinch = static_cast<QPinchGesture *>(event->gesture(Qt::PinchGesture))) {
         double scale = pinch->lastScaleFactor();
 
         if (fabs(scale - 1.0) > FLT_EPSILON) {
@@ -520,14 +513,14 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event)
 // protected functions --------------------------------------------------------------------
 void DkBaseViewPort::draw(QPainter &painter, double opacity)
 {
-    drawBackground(painter);
+    eraseBackground(painter);
 
     QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
     QImage img = mImgStorage.image(displayRect.size());
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
-        drawPattern(painter);
+        drawTransparencyPattern(painter);
 
     double oldOp = painter.opacity();
     painter.setOpacity(opacity);
@@ -553,7 +546,7 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
     painter.setOpacity(oldOp);
 }
 
-void DkBaseViewPort::drawPattern(QPainter &painter) const
+void DkBaseViewPort::drawTransparencyPattern(QPainter &painter) const
 {
     QBrush pt = mPattern;
 
@@ -567,7 +560,7 @@ void DkBaseViewPort::drawPattern(QPainter &painter) const
     painter.drawRect(mImgViewRect);
 }
 
-void DkBaseViewPort::drawBackground(QPainter &painter)
+void DkBaseViewPort::eraseBackground(QPainter &painter)
 {
     QBrush bgBrush = backgroundBrush();
 

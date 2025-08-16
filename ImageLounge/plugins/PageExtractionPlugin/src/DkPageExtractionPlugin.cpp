@@ -23,25 +23,20 @@
  *******************************************************************************************************/
 
 #include "DkPageExtractionPlugin.h"
+
 #include "DkPageSegmentation.h"
 
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
-
-#include "DkSettings.h"
 #include "DkTimer.h"
-#include "DkUtils.h" // for qInfo compatibility
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
-#include <QDateTime>
-#include <QDebug>
 #include <QDir>
+#include <QFileInfo>
+#include <QPainter>
 #include <QSettings>
 #include <QUuid>
-
 #include <QXmlStreamReader>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmp
 {
@@ -83,19 +78,12 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject *parent)
 
     // QFileInfo resPath(QDir("dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd
     // HH-mm-ss") + ".txt"); mResultPath = resPath.absoluteFilePath();
-
-    // save default settings
-    nmc::DefaultSettings settings;
-    loadSettings(settings);
-    saveSettings(settings);
 }
 
 /**
  *	Destructor
  **/
-DkPageExtractionPlugin::~DkPageExtractionPlugin()
-{
-}
+DkPageExtractionPlugin::~DkPageExtractionPlugin() = default;
 
 QImage DkPageExtractionPlugin::image() const
 {
@@ -111,7 +99,7 @@ QList<QAction *> DkPageExtractionPlugin::createActions(QWidget *parent)
 {
     if (mActions.empty()) {
         for (int idx = 0; idx < id_end; idx++) {
-            QAction *ca = new QAction(mMenuNames[idx], parent);
+            auto *ca = new QAction(mMenuNames[idx], parent);
             ca->setObjectName(mMenuNames[idx]);
             ca->setStatusTip(mMenuStatusTips[idx]);
             ca->setData(mRunIDs[idx]); // runID needed for calling function runPlugin()
@@ -138,6 +126,9 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
     const nmc::DkSaveInfo &saveInfo,
     QSharedPointer<nmc::DkBatchInfo> &batchInfo) const
 {
+    Q_UNUSED(saveInfo);
+    Q_UNUSED(batchInfo);
+
     if (!mRunIDs.contains(runID) || !imgC)
         return imgC;
 
@@ -209,10 +200,21 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 void DkPageExtractionPlugin::loadSettings(QSettings &settings)
 {
     settings.beginGroup(name());
-    int mIdx = settings.value("Method", mMethod).toInt();
-    if (mIdx >= 0 && mIdx < m_end)
-        mMethod = (MethodIndex)mIdx;
+
+    // we need valid default settings for Batch, but saveSettings() will never be called
+    int mIdx = settings.value("Method", -1).toInt();
+
+    bool reset = false;
+    if (mIdx < 0 || mIdx >= m_end) {
+        mIdx = 0;
+        reset = true;
+    }
+    mMethod = (MethodIndex)mIdx;
+
     settings.endGroup();
+
+    if (reset)
+        saveSettings(settings);
 }
 
 void DkPageExtractionPlugin::saveSettings(QSettings &settings) const

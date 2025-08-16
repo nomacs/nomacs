@@ -27,23 +27,10 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QStatusBar>
-#pragma warning(pop)
 
-#pragma warning(disable : 4251) // TODO: remove
+#include "nmc_config.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QLabel;
 
 namespace nmc
@@ -54,8 +41,8 @@ class DllCoreExport DkStatusBar : public QStatusBar
     Q_OBJECT
 
 public:
-    DkStatusBar(QWidget *parent = 0);
-    ~DkStatusBar(){};
+    explicit DkStatusBar(QWidget *parent = nullptr);
+    ~DkStatusBar() override = default;
 
     enum StatusLabel {
         status_pixel_info, // the first is special (left)
@@ -95,7 +82,7 @@ public:
 private:
     DkStatusBarManager();
 
-    DkStatusBar *mStatusBar = 0;
+    DkStatusBar *mStatusBar = nullptr;
 };
 
 }

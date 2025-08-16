@@ -27,31 +27,16 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QBuffer>
 #include <QGraphicsView>
-#pragma warning(pop) // no warnings from includes - end
-
-#pragma warning(disable : 4251) // TODO: remove
 
 #include "DkImageStorage.h"
-#include "DkSettings.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "nmc_config.h"
 
-// Qt defines
 class QGestureEvent;
 class QShortcut;
 class QSvgRenderer;
-class QSettings;
 
 namespace nmc
 {
@@ -72,8 +57,8 @@ public:
         swipes_end
     };
 
-    DkBaseViewPort(QWidget *parent = 0);
-    virtual ~DkBaseViewPort();
+    explicit DkBaseViewPort(QWidget *parent = nullptr);
+    ~DkBaseViewPort() override;
 
     void zoomConstraints(double minZoom = 0.01, double maxZoom = 100.0);
     virtual void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false);
@@ -140,7 +125,7 @@ public slots:
     virtual void zoomOut();
     virtual void resetView();
     virtual void fullView();
-    virtual void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     virtual void stopBlockZooming();
     virtual void setBackgroundBrush(const QBrush &brush);
     void scrollVertically(int val);
@@ -151,16 +136,16 @@ public slots:
     void hideCursor();
 
 protected:
-    virtual bool event(QEvent *event) override;
-    virtual void keyPressEvent(QKeyEvent *event) override;
-    virtual void keyReleaseEvent(QKeyEvent *event) override;
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void wheelEvent(QWheelEvent *event) override;
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
-    virtual void contextMenuEvent(QContextMenuEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
+    bool event(QEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
     virtual bool gestureEvent(QGestureEvent *event);
 
@@ -196,10 +181,15 @@ protected:
     bool mBlockZooming = false;
     QTimer *mZoomTimer;
 
-    // functions
+    // draw the entire viewport
     virtual void draw(QPainter &painter, double opacity = 1.0);
-    virtual void drawPattern(QPainter &painter) const;
-    virtual void drawBackground(QPainter &painter);
+
+    // draw transparency pattern behind where the image will draw
+    virtual void drawTransparencyPattern(QPainter &painter) const;
+
+    // fill entire viewport with bg color, image draws on top
+    virtual void eraseBackground(QPainter &painter);
+
     virtual void updateImageMatrix();
     virtual QTransform getScaledImageMatrix() const;
     virtual QTransform getScaledImageMatrix(const QSize &size) const;

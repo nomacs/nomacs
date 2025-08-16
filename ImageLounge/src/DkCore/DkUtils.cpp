@@ -26,21 +26,13 @@
  *******************************************************************************************************/
 
 #include "DkUtils.h"
+
 #include "DkMath.h"
 #include "DkNoMacs.h"
 #include "DkSettings.h"
 #include "DkVersion.h"
 #include "DkViewPort.h"
 
-#if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
-#include <sys/sysinfo.h>
-#endif
-
-#ifndef WITH_OPENCV
-#include <cassert>
-#endif
-
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QColor>
 #include <QComboBox>
@@ -49,25 +41,17 @@
 #include <QDate>
 #include <QDir>
 #include <QFileInfo>
-#include <QFuture>
 #include <QMainWindow>
 #include <QMimeDatabase>
 #include <QMouseEvent>
-#include <QPainter>
-#include <QPixmap>
 #include <QRegularExpression>
 #include <QSemaphore>
 #include <QStandardPaths>
-#include <QString>
 #include <QStringBuilder>
-#include <QStringList>
 #include <QTranslator>
 #include <QUrl>
 #include <QtConcurrentRun>
 #include <qmath.h>
-
-#include <QSystemSemaphore>
-#pragma warning(pop) // no warnings from includes - end
 
 #include <exiv2/version.hpp>
 
@@ -98,6 +82,14 @@
 #ifdef Q_OS_WIN
 #include "shlwapi.h"
 #pragma comment(lib, "shlwapi.lib")
+#endif
+
+#if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
+#include <sys/sysinfo.h>
+#endif
+
+#ifndef WITH_OPENCV
+#include <cassert>
 #endif
 
 #if !defined(QT_NO_DEBUG_OUTPUT)
@@ -415,8 +407,9 @@ void DkUtils::addLanguages(QComboBox *langCombo, QStringList &languages)
 /// <param name="type">The message type (QtDebugMsg are not written to the log).</param>
 /// <param name="context">Additional information about a log message</param>
 /// <param name="msg">The message.</param>
-void qtMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+static void qtMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    // NOTE: this function must be thread-safe
     if (!DkSettingsManager::param().app().useLogFile)
         return;
 
@@ -425,11 +418,15 @@ void qtMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 void DkUtils::logToFile(QtMsgType type, const QString &msg)
 {
+    // NOTE: this function must be thread-safe
+    Q_UNUSED(type)
+
     static QString filePath;
 
     if (filePath.isEmpty())
         filePath = DkUtils::getLogFilePath();
 
+    // FIXME: keep log file open, in a thread-safe way
     QFile outFile(filePath);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
         printf("cannot open %s for logging\n", filePath.toStdString().c_str());
@@ -526,7 +523,7 @@ QWidget *DkUtils::getMainWindow()
 {
     QWidgetList widgets = QApplication::topLevelWidgets();
 
-    QMainWindow *win = 0;
+    QMainWindow *win = nullptr;
 
     for (int idx = 0; idx < widgets.size(); idx++) {
         if (widgets.at(idx)->inherits("QMainWindow")) {
@@ -633,7 +630,7 @@ void DkUtils::mSleep(int ms)
     Sleep(uint(ms));
 #else
     struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, NULL);
+    nanosleep(&ts, nullptr);
 #endif
 }
 
@@ -653,7 +650,7 @@ bool DkUtils::tryExists(const DkFileInfo &file, int waitMs)
     class ExistsRunnable : public QRunnable
     {
     public:
-        ExistsRunnable(const DkFileInfo &file)
+        explicit ExistsRunnable(const DkFileInfo &file)
             : mFile(file)
         {
         }
@@ -1387,7 +1384,7 @@ bool TreeItem::contains(const QRegularExpression &regExp, int column, bool recur
 TreeItem *TreeItem::child(int row) const
 {
     if (row < 0 || row >= childItems.size())
-        return 0;
+        return nullptr;
 
     return childItems[row];
 }
@@ -1435,7 +1432,7 @@ void TreeItem::setData(const QVariant &value, int column)
 TreeItem *TreeItem::find(const QVariant &value, int column)
 {
     if (column < 0)
-        return 0;
+        return nullptr;
 
     if (column < itemData.size() && itemData[column] == value)
         return this;
@@ -1444,7 +1441,7 @@ TreeItem *TreeItem::find(const QVariant &value, int column)
         if (TreeItem *child = childItems[idx]->find(value, column))
             return child;
 
-    return 0;
+    return nullptr;
 }
 
 QStringList TreeItem::parentList() const
@@ -1476,13 +1473,13 @@ void TreeItem::setParent(TreeItem *parent)
 bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        const auto *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::MiddleButton) {
             auto tabbar = static_cast<QTabBar *>(obj);
             for (int i = 0; i < tabbar->count(); i++) {
                 QRect tabrect = tabbar->tabRect(i);
                 if (tabrect.contains(mouseEvent->pos()))
-                    callback(i);
+                    mCallback(i);
             }
             return true;
         }
@@ -1492,6 +1489,7 @@ bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event)
 }
 
 // DkRunGuard --------------------------------------------------------------------
+#if DEADCODE
 DkRunGuard::DkRunGuard()
     : mSharedMem(mSharedMemKey)
 {
@@ -1539,4 +1537,5 @@ bool DkRunGuard::tryRunning()
 
     return !attached;
 }
+#endif // DEADCODE
 }

@@ -29,45 +29,29 @@
 
 #include "DkQt5Compat.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QDockWidget>
-#include <QFileIconProvider>
 #include <QFileSystemModel>
 #include <QFutureWatcher>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPen>
-#include <QPointer>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QSlider>
 #include <QSortFilterProxyModel>
-#pragma warning(pop) // no warnings from includes - end
-
-#pragma warning(disable : 4251) // TODO: remove
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 #include "DkMath.h"
 
-// Qt defines
-class QColorDialog;
-class QSpinBox;
 class QDoubleSpinBox;
-class QToolBar;
+class QFileIconProvider;
 class QBoxLayout;
 class QProgressDialog;
-class QMovie;
 class QTreeView;
-class QSlider;
-class QGridLayout;
 class QVBoxLayout;
-class QSvgRenderer;
-class QSettings;
 
 namespace nmc
 {
-// nomacs defines
 class DkCropToolBar;
 
 class DkButton : public QPushButton
@@ -75,11 +59,11 @@ class DkButton : public QPushButton
     Q_OBJECT
 
 public:
-    DkButton(QWidget *parent = 0);
-    DkButton(const QString &text, QWidget *parent = 0);
-    DkButton(const QIcon &icon, const QString &text, QWidget *parent = 0);
-    DkButton(const QIcon &checkedIcon, const QIcon &uncheckedIcon, const QString &text, QWidget *parent = 0);
-    ~DkButton(){};
+    explicit DkButton(QWidget *parent = nullptr);
+    explicit DkButton(const QString &text, QWidget *parent = nullptr);
+    DkButton(const QIcon &icon, const QString &text, QWidget *parent = nullptr);
+    DkButton(const QIcon &checkedIcon, const QIcon &uncheckedIcon, const QString &text, QWidget *parent = nullptr);
+    ~DkButton() override = default;
 
     void adjustSize();
     void setFixedSize(QSize size);
@@ -87,10 +71,10 @@ public:
     bool keepAspectRatio;
 
 protected:
-    QIcon checkedIcon;
-    QIcon uncheckedIcon;
-    bool mouseOver;
-    QSize mySize;
+    QIcon mCheckedIcon;
+    QIcon mUncheckedIcon;
+    bool mMouseOver;
+    QSize mMySize;
 
     // functions
     void init();
@@ -108,7 +92,7 @@ class DkRatingLabel : public DkWidget
     Q_OBJECT
 
 public:
-    DkRatingLabel(int rating = 0, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkRatingLabel(int rating = 0, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     void setRating(int rating)
     {
@@ -144,8 +128,8 @@ class DkFileInfoLabel : public DkFadeLabel
     Q_OBJECT
 
 public:
-    DkFileInfoLabel(QWidget *parent = 0);
-    ~DkFileInfoLabel(){};
+    explicit DkFileInfoLabel(QWidget *parent = nullptr);
+    ~DkFileInfoLabel() override = default;
 
     void createLayout();
     void updateInfo(const QString &filePath, const QString &attr, const QString &date, const int rating);
@@ -156,7 +140,7 @@ public:
     DkRatingLabel *getRatingLabel();
 
 public slots:
-    virtual void setVisible(bool visible, bool saveSettings = true) override;
+    void setVisible(bool visible, bool saveSettings = true) override;
 
 protected:
     QString mFilePath;
@@ -178,8 +162,8 @@ public:
         play_action = 0, // if more actions are to be assigned
     };
 
-    DkPlayer(QWidget *parent = 0);
-    ~DkPlayer(){};
+    explicit DkPlayer(QWidget *parent = nullptr);
+    ~DkPlayer() override = default;
 
     void setTimeToDisplay(int ms = 1000);
 
@@ -218,8 +202,8 @@ class DkHudNavigation : public DkFadeWidget
     Q_OBJECT
 
 public:
-    DkHudNavigation(QWidget *parent = 0);
-    ~DkHudNavigation(){};
+    explicit DkHudNavigation(QWidget *parent = nullptr);
+    ~DkHudNavigation() override = default;
 
 signals:
     void nextSignal();
@@ -241,8 +225,8 @@ class DkFolderScrollBar : public DkFadeMixin<QSlider>
     Q_OBJECT
 
 public:
-    DkFolderScrollBar(QWidget *parent = 0);
-    ~DkFolderScrollBar();
+    explicit DkFolderScrollBar(QWidget *parent = nullptr);
+    ~DkFolderScrollBar() override;
 
     virtual void setValue(int i);
 
@@ -273,7 +257,7 @@ class DkThumbsSaver : public DkWidget
     Q_OBJECT
 
 public:
-    DkThumbsSaver(QWidget *parent = 0);
+    explicit DkThumbsSaver(QWidget *parent = nullptr);
 
     void processDir(QVector<QSharedPointer<DkImageContainerT>> images, bool forceSave);
 
@@ -286,9 +270,9 @@ public slots:
 
 protected:
     QFileInfo mCurrentDir;
-    QProgressDialog *mPd = 0;
+    QProgressDialog *mPd = nullptr;
     bool mStop = false;
-    int mNumSaved = false;
+    int mNumSaved = 0;
     std::vector<std::unique_ptr<QFutureWatcher<void>>> mWatchers{};
 };
 
@@ -297,7 +281,7 @@ class DkFileSystemModel : public QFileSystemModel
     Q_OBJECT
 
 public:
-    DkFileSystemModel(QObject *parent = 0);
+    explicit DkFileSystemModel(QObject *parent = nullptr);
 
 protected:
     QFileIconProvider *mIconProvider = nullptr;
@@ -308,10 +292,10 @@ class DkSortFileProxyModel : public QSortFilterProxyModel
     Q_OBJECT
 
 public:
-    DkSortFileProxyModel(QObject *parent = 0);
+    explicit DkSortFileProxyModel(QObject *parent = nullptr);
 
 protected:
-    virtual bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
 };
 
 class DllCoreExport DkExplorer : public DkDockWidget
@@ -319,8 +303,8 @@ class DllCoreExport DkExplorer : public DkDockWidget
     Q_OBJECT
 
 public:
-    DkExplorer(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkExplorer();
+    explicit DkExplorer(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkExplorer() override;
 
     DkFileSystemModel *getModel()
     {
@@ -345,9 +329,9 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
 
-    virtual void createLayout();
-    virtual void writeSettings();
-    virtual void readSettings();
+    void createLayout();
+    void writeSettings();
+    void readSettings();
 
     QVBoxLayout *mLayout = nullptr;
     QTreeView *mFileTree = nullptr;
@@ -364,8 +348,10 @@ class DllCoreExport DkBrowseExplorer : public DkExplorer
     Q_OBJECT
 
 public:
-    DkBrowseExplorer(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkBrowseExplorer();
+    explicit DkBrowseExplorer(const QString &title,
+                              QWidget *parent = nullptr,
+                              Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkBrowseExplorer() override;
 
 public slots:
     void browseClicked();
@@ -373,9 +359,9 @@ public slots:
     void setRootPath(const QString &root);
 
 protected:
-    void createLayout() override;
-    void readSettings() override;
-    void writeSettings() override;
+    void createLayout();
+    void readSettings();
+    void writeSettings();
 
     QString mRootPath;
     DkElidedLabel *mRootPathLabel;
@@ -386,8 +372,8 @@ class DkOverview : public QLabel
     Q_OBJECT
 
 public:
-    DkOverview(QWidget *parent = 0);
-    ~DkOverview(){};
+    explicit DkOverview(QWidget *parent = nullptr);
+    ~DkOverview() override = default;
 
     void setImage(const QImage &img)
     {
@@ -437,7 +423,7 @@ class DkZoomWidget : public DkFadeLabel
     Q_OBJECT
 
 public:
-    DkZoomWidget(QWidget *parent = 0);
+    explicit DkZoomWidget(QWidget *parent = nullptr);
 
     DkOverview *getOverview() const;
 
@@ -452,9 +438,9 @@ public slots:
 protected:
     void createLayout();
 
-    DkOverview *mOverview = 0;
-    QSlider *mSlZoom = 0;
-    QDoubleSpinBox *mSbZoom = 0;
+    DkOverview *mOverview = nullptr;
+    QSlider *mSlZoom = nullptr;
+    QDoubleSpinBox *mSbZoom = nullptr;
 };
 
 class DkTransformRect : public DkWidget
@@ -462,14 +448,17 @@ class DkTransformRect : public DkWidget
     Q_OBJECT
 
 public:
-    DkTransformRect(int idx = -1, DkRotatingRect *rect = 0, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
-    virtual ~DkTransformRect(){};
+    explicit DkTransformRect(int idx = -1,
+                             DkRotatingRect *rect = nullptr,
+                             QWidget *parent = nullptr,
+                             Qt::WindowFlags f = Qt::WindowFlags());
+    ~DkTransformRect() override = default;
 
     void draw(QPainter *painter);
 
     QPointF getCenter()
     {
-        return QPointF(size.width() * 0.5f, size.height() * 0.5f);
+        return QPointF(mSize.width() * 0.5f, mSize.height() * 0.5f);
     };
 
 signals:
@@ -483,11 +472,11 @@ protected:
     void enterEvent(DkEnterEvent *event) override;
     void init();
 
-    DkRotatingRect *rect;
-    QPointF initialPos;
-    QPointF posGrab;
-    int parentIdx;
-    QSize size;
+    DkRotatingRect *mRect;
+    QPointF mInitialPos;
+    QPointF mPosGrab;
+    int mParentIdx;
+    QSize mSize;
 };
 
 class DkEditableRect : public DkFadeWidget
@@ -511,8 +500,10 @@ public:
         scaling
     };
 
-    DkEditableRect(const QRectF &rect = QRect(), QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
-    virtual ~DkEditableRect(){};
+    explicit DkEditableRect(const QRectF &rect = QRect(),
+                            QWidget *parent = nullptr,
+                            Qt::WindowFlags f = Qt::WindowFlags());
+    ~DkEditableRect() override = default;
 
     void reset();
 
@@ -531,7 +522,7 @@ public:
         mImgRect = imgRect;
     };
 
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
 
 signals:
     void cropImageSignal(const DkRotatingRect &cropArea,
@@ -569,8 +560,8 @@ protected:
     QPointF map(const QPointF &pos);
 
     int mState = do_nothing;
-    QTransform *mImgTform = 0;
-    QTransform *mWorldTform = 0;
+    QTransform *mImgTform = nullptr;
+    QTransform *mWorldTform = nullptr;
     QTransform mTtform;
     QTransform mRtform;
     QPointF mPosGrab;
@@ -583,7 +574,7 @@ protected:
     QBrush mBrush;
     QVector<DkTransformRect *> mCtrlPoints;
     QCursor mRotatingCursor;
-    QRectF *mImgRect = 0;
+    QRectF *mImgRect = nullptr;
     bool mPanning = false;
     int mPaintMode = rule_of_thirds;
     bool mShowInfo = false;
@@ -594,13 +585,13 @@ class DkCropWidget : public DkEditableRect
     Q_OBJECT
 
 public:
-    DkCropWidget(QRectF rect = QRect(), QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkCropWidget(QRectF rect = QRect(), QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     DkCropToolBar *getToolbar() const;
 
 public slots:
     void crop(bool cropToMetadata = false);
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
 
 signals:
     void hideSignal();
@@ -624,8 +615,8 @@ public:
         histogram_mode_end = 2,
     };
 
-    DkHistogram(QWidget *parent);
-    ~DkHistogram();
+    explicit DkHistogram(QWidget *parent);
+    ~DkHistogram() override;
 
     void drawHistogram(QImage img);
     void clearHistogram();
@@ -637,11 +628,11 @@ public slots:
     void onToggleStatsTriggered(bool show);
 
 protected:
-    virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseMoveEvent(QMouseEvent *event) override;
-    virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void paintEvent(QPaintEvent *event) override;
-    virtual void contextMenuEvent(QContextMenuEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
     void loadSettings();
 
@@ -659,14 +650,14 @@ private:
     float mScaleFactor = 1;
     DisplayMode mDisplayMode = DisplayMode::histogram_mode_simple; /// determins shown histogram type
 
-    QMenu *mContextMenu = 0;
+    QMenu *mContextMenu = nullptr;
 };
 
 class DkFileInfoWrapper
 {
 public:
     DkFileInfoWrapper();
-    DkFileInfoWrapper(const QFileInfo &fileInfo);
+    explicit DkFileInfoWrapper(const QFileInfo &fileInfo);
 
     QString getFilePath() const;
     bool exists() const;
@@ -686,7 +677,9 @@ class DkFolderLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkFolderLabel(const DkFileInfoWrapper &fileInfo, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkFolderLabel(const DkFileInfoWrapper &fileInfo,
+                           QWidget *parent = nullptr,
+                           Qt::WindowFlags f = Qt::WindowFlags());
 
 signals:
     void loadFileSignal(const QString &) const;
@@ -694,7 +687,7 @@ signals:
 protected:
     void mousePressEvent(QMouseEvent *ev) override;
 
-    DkFileInfoWrapper fileInfo;
+    DkFileInfoWrapper mFileInfo;
 };
 
 class DkDirectoryEdit : public QLineEdit
@@ -702,8 +695,8 @@ class DkDirectoryEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    DkDirectoryEdit(QWidget *parent = 0);
-    DkDirectoryEdit(const QString &content, QWidget *parent = 0);
+    explicit DkDirectoryEdit(QWidget *parent = nullptr);
+    explicit DkDirectoryEdit(const QString &content, QWidget *parent = nullptr);
 
     bool existsDirectory()
     {
@@ -727,7 +720,7 @@ class DkDirectoryChooser : public DkWidget
 {
     Q_OBJECT
 public:
-    DkDirectoryChooser(const QString &dirPath = "", QWidget *parent = 0);
+    explicit DkDirectoryChooser(const QString &dirPath = "", QWidget *parent = nullptr);
 
 public slots:
     void onDirButtonClicked();
@@ -738,7 +731,7 @@ signals:
 protected:
     void createLayout(const QString &dirPath);
 
-    DkDirectoryEdit *mDirEdit = 0;
+    DkDirectoryEdit *mDirEdit = nullptr;
 };
 
 class DkDelayedInfo : public QObject
@@ -746,7 +739,7 @@ class DkDelayedInfo : public QObject
     Q_OBJECT
 
 public:
-    DkDelayedInfo(int time = 0, QObject *parent = 0)
+    explicit DkDelayedInfo(int time = 0, QObject *parent = nullptr)
         : QObject(parent)
     {
         timer = new QTimer();
@@ -758,7 +751,7 @@ public:
         connect(timer, &QTimer::timeout, this, &DkDelayedInfo::sendInfo);
     }
 
-    virtual ~DkDelayedInfo()
+    ~DkDelayedInfo() override
     {
         if (timer && timer->isActive())
             timer->stop();
@@ -766,7 +759,7 @@ public:
         if (timer)
             delete timer;
 
-        timer = 0;
+        timer = nullptr;
     }
 
     void stop()
@@ -803,19 +796,17 @@ class DkDelayedMessage : public DkDelayedInfo
     Q_OBJECT
 
 public:
-    DkDelayedMessage(const QString &msg = QString(), int time = 0, QObject *parent = 0)
+    explicit DkDelayedMessage(const QString &msg = QString(), int time = 0, QObject *parent = nullptr)
         : DkDelayedInfo(time, parent)
     {
         mMsg = msg;
     }
-    DkDelayedMessage(QObject *parent = 0)
+    explicit DkDelayedMessage(QObject *parent = nullptr)
         : DkDelayedInfo(0, parent)
     {
     }
 
-    ~DkDelayedMessage()
-    {
-    }
+    ~DkDelayedMessage() override = default;
 
     void stop()
     {
@@ -843,7 +834,7 @@ class DkListWidget : public QListWidget
     Q_OBJECT
 
 public:
-    DkListWidget(QWidget *parent);
+    explicit DkListWidget(QWidget *parent);
 
     void startDrag(Qt::DropActions supportedActions) override;
     bool isEmpty() const;
@@ -865,7 +856,7 @@ class DkProgressBar : public QProgressBar
     Q_OBJECT
 
 public:
-    DkProgressBar(QWidget *parent = 0);
+    explicit DkProgressBar(QWidget *parent = nullptr);
 
 public slots:
     void setVisible(bool visible) override;
@@ -881,13 +872,14 @@ protected:
     QVector<double> mPoints;
 };
 
+#ifdef ENABLE_DEAD_CODE
 class DllCoreExport DkGenericProfileWidget : public DkNamedWidget
 {
     Q_OBJECT
 
 public:
     DkGenericProfileWidget(const QString &name, QWidget *parent, const QString &settingsPath = "");
-    virtual ~DkGenericProfileWidget();
+    ~DkGenericProfileWidget() override;
 
 public slots:
     void saveSettings() const;
@@ -913,6 +905,7 @@ protected:
     QString mSettingsGroup = "ILLEGAL_GENERIC_GROUP";
     QString mSettingsPath;
 };
+#endif // ENABLE_DEAD_CODE
 
 class DllCoreExport DkTabEntryWidget : public QPushButton
 {
@@ -930,7 +923,7 @@ class DllCoreExport DkDisplayWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkDisplayWidget(QWidget *parent);
+    explicit DkDisplayWidget(QWidget *parent);
 
     QRect screenRect() const;
 

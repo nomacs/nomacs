@@ -27,31 +27,12 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QHostAddress>
-#include <QImage>
 #include <QRect>
 #include <QTcpSocket>
 #include <QTransform>
-#pragma warning(pop) // no warnings from includes - end
 
-#pragma warning(disable : 4251)
+#include "nmc_config.h"
 
-#ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QTimer;
 
 namespace nmc
@@ -65,10 +46,8 @@ class DllCoreExport DkConnection : public QTcpSocket
     Q_OBJECT
 
 public:
-    DkConnection(QObject *parent = 0);
-    ~DkConnection(){
-        // qDebug() << "connection destructed...";
-    };
+    explicit DkConnection(QObject *parent = nullptr);
+    ~DkConnection() override = default;
 
     void release()
     {
@@ -124,12 +103,12 @@ protected:
     };
     enum DataType {
         Greeting,
-        startSynchronize,
-        stopSynchronize,
-        newTitle,
-        newPosition,
-        newTransform,
-        newFile,
+        StartSynchronize,
+        StopSynchronize,
+        NewTitle,
+        NewPosition,
+        NewTransform,
+        NewFile,
         GoodBye,
         Undefined
     };
@@ -175,7 +154,7 @@ class DllCoreExport DkLocalConnection : public DkConnection
     Q_OBJECT
 
 public:
-    DkLocalConnection(QObject *parent = 0);
+    explicit DkLocalConnection(QObject *parent = nullptr);
 
     quint16 getLocalTcpServerPort()
     {
@@ -185,14 +164,14 @@ public:
     {
         mLocalTcpServerPort = localTcpServerPort;
     };
-    void sendGreetingMessage(const QString &currentTitle);
+    void sendGreetingMessage(const QString &currentTitle) override;
 
 signals:
     void connectionQuitReceived();
 
 protected slots:
-    void processReadyRead();
-    void processData();
+    void processReadyRead() override;
+    void processData() override;
 public slots:
     void sendQuitMessage();
 
@@ -203,8 +182,8 @@ protected:
     };
 
 private:
-    bool readProtocolHeader();
-    void readGreetingMessage();
+    bool readProtocolHeader() override;
+    void readGreetingMessage() override;
 
     quint16 mLocalTcpServerPort;
     LocalDataType mCurrentLocalDataType = Undefined;

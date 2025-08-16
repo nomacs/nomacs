@@ -27,37 +27,20 @@
 
 #pragma once
 
-// Qt defines
-#include "DkBaseWidgets.h"
-
-#pragma warning(push, 0) // no warnings from includes
 #include <QIcon>
 #include <QList>
-#include <QPushButton>
-#pragma warning(pop)
 
-#pragma warning(disable : 4251) // TODO: remove
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkBaseWidgets.h"
 
 class QStackedLayout;
 class QVBoxLayout;
-class QGridLayout;
 class QStandardItem;
 class QStandardItemModel;
 class QLineEdit;
+class QPushButton;
 
 namespace nmc
 {
-
 class DkWorkingDirWidget;
 class DkSettingsWidget;
 class DkTabEntryWidget;
@@ -84,7 +67,7 @@ signals:
 protected:
     void createLayout();
 
-    DkResizableScrollArea *mCentralScroller = 0;
+    DkResizableScrollArea *mCentralScroller = nullptr;
     QPushButton *mInfoButton;
 
     QIcon mIcon;
@@ -95,7 +78,7 @@ class DllCoreExport DkPreferenceWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkPreferenceWidget(QWidget *parent);
+    explicit DkPreferenceWidget(QWidget *parent);
 
     void addTabWidget(DkPreferenceTabWidget *tabWidget);
 
@@ -115,8 +98,8 @@ protected:
     QVector<DkTabEntryWidget *> mTabEntries;
     QVector<DkPreferenceTabWidget *> mWidgets;
 
-    QStackedLayout *mCentralLayout = 0;
-    QVBoxLayout *mTabLayout = 0;
+    QStackedLayout *mCentralLayout = nullptr;
+    QVBoxLayout *mTabLayout = nullptr;
 };
 
 class DkGroupWidget : public DkWidget
@@ -134,7 +117,7 @@ protected:
     void createLayout();
 
     QString mTitle;
-    QVBoxLayout *mContentLayout = 0;
+    QVBoxLayout *mContentLayout = nullptr;
 };
 
 class DkGeneralPreference : public DkWidget
@@ -142,7 +125,7 @@ class DkGeneralPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkGeneralPreference(QWidget *parent = 0);
+    explicit DkGeneralPreference(QWidget *parent = nullptr);
 
 public slots:
     void onShowRecentFilesToggled(bool checked) const;
@@ -179,7 +162,7 @@ class DkDisplayPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkDisplayPreference(QWidget *parent = 0);
+    explicit DkDisplayPreference(QWidget *parent = nullptr);
 
 public slots:
     void onInterpolationBoxValueChanged(int value) const;
@@ -207,8 +190,8 @@ protected:
     void createLayout();
     void paintEvent(QPaintEvent *ev) override;
 
-    QWidget *mZoomLevels = 0;
-    QLineEdit *mZoomLevelsEdit = 0;
+    QWidget *mZoomLevels = nullptr;
+    QLineEdit *mZoomLevelsEdit = nullptr;
 };
 
 class DkFilePreference : public DkWidget
@@ -216,7 +199,7 @@ class DkFilePreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkFilePreference(QWidget *parent = 0);
+    explicit DkFilePreference(QWidget *parent = nullptr);
 
 public slots:
     void onDirChooserDirectoryChanged(const QString &dirPath) const;
@@ -239,8 +222,8 @@ class DkFileAssociationsPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkFileAssociationsPreference(QWidget *parent = 0);
-    virtual ~DkFileAssociationsPreference();
+    explicit DkFileAssociationsPreference(QWidget *parent = nullptr);
+    ~DkFileAssociationsPreference() override;
 public slots:
     void onFileModelItemChanged(QStandardItem *);
     void onOpenDefaultClicked() const;
@@ -258,7 +241,7 @@ protected:
     void writeSettings() const;
 
     bool mSaveSettings = false;
-    QStandardItemModel *mModel = 0;
+    QStandardItemModel *mModel = nullptr;
 };
 
 class DkAdvancedPreference : public DkWidget
@@ -266,7 +249,7 @@ class DkAdvancedPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkAdvancedPreference(QWidget *parent = 0);
+    explicit DkAdvancedPreference(QWidget *parent = nullptr);
 
 public slots:
     void onLoadRawButtonClicked(int buttonId) const;
@@ -292,7 +275,7 @@ class DkEditorPreference : public DkWidget
     Q_OBJECT
 
 public:
-    DkEditorPreference(QWidget *parent = 0);
+    explicit DkEditorPreference(QWidget *parent = nullptr);
 
 signals:
     void infoSignal(const QString &msg) const;

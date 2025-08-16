@@ -26,18 +26,16 @@
  *******************************************************************************************************/
 
 #include "DkQuickAccess.h"
+
 #include "DkActionManager.h"
 #include "DkFileInfo.h"
 #include "DkImageStorage.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QCompleter>
-#include <QDebug>
 #include <QKeyEvent>
 #include <QStandardItemModel>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -66,7 +64,7 @@ void DkQuickAccess::addActions(const QVector<QAction *> &actions)
         QIcon icon = a->icon().isNull() ? DkImage::loadIcon(":/nomacs/img/dummy.svg") : a->icon();
 
         QString text = a->text().remove("&");
-        QStandardItem *item = new QStandardItem(text);
+        auto *item = new QStandardItem(text);
         item->setSizeHint(QSize(18, 18));
         item->setIcon(icon);
         item->setToolTip(a->toolTip());
@@ -100,7 +98,7 @@ void DkQuickAccess::addItems(const QStringList &itemTexts, const QIcon &icon)
         if (mFilePaths.contains(text))
             continue;
 
-        QStandardItem *item = new QStandardItem(text);
+        auto *item = new QStandardItem(text);
         item->setIcon(icon);
         item->setSizeHint(QSize(18, 18));
         mModel->setItem(nRows + rIdx, 0, item);

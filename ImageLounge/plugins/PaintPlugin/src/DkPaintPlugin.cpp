@@ -26,11 +26,20 @@
  *******************************************************************************************************/
 
 #include "DkPaintPlugin.h"
+
+#include "DkBaseViewPort.h"
 #include "DkToolbars.h"
+#include "DkUtils.h"
 
 #include <QActionGroup>
-#include <QDebug>
+#include <QColorDialog>
+#include <QGraphicsBlurEffect>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QLineEdit>
 #include <QMouseEvent>
+#include <QPushButton>
+#include <QSpinBox>
 
 namespace nmp
 {
@@ -42,15 +51,13 @@ namespace nmp
  **/
 DkPaintPlugin::DkPaintPlugin()
 {
-    viewport = 0;
+    viewport = nullptr;
 }
 
 /**
  *	Destructor
  **/
-DkPaintPlugin::~DkPaintPlugin()
-{
-}
+DkPaintPlugin::~DkPaintPlugin() = default;
 
 /**
  * Returns descriptive image
@@ -129,9 +136,9 @@ void getBlur(QPainterPath rect, QPainter *painter, QImage &img, int radius)
     QRectF selection = rect.boundingRect();
     QRect selectionScaled = QRect(selection.topLeft().toPoint(), selection.bottomRight().toPoint());
 
-    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
+    auto *blur = new QGraphicsBlurEffect;
     blur->setBlurRadius(radius);
-    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(QPixmap::fromImage(img).copy(selectionScaled));
+    auto *item = new QGraphicsPixmapItem(QPixmap::fromImage(img).copy(selectionScaled));
     item->setGraphicsEffect(blur);
 
     QGraphicsScene scene;
@@ -153,7 +160,7 @@ QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &ru
 
     // for a viewport plugin runID and image are null
     if (viewport) {
-        DkPaintViewPort *paintViewport = dynamic_cast<DkPaintViewPort *>(viewport);
+        auto *paintViewport = dynamic_cast<DkPaintViewPort *>(viewport);
 
         if (!paintViewport->isCanceled())
             image->setImage(paintViewport->getPaintedImage(), tr("Drawings Added"));
@@ -213,7 +220,7 @@ DkPaintViewPort::~DkPaintViewPort()
     // however, then we have lot's of toolbars in memory if the user opens the plugin again and again
     if (paintToolbar) {
         delete paintToolbar;
-        paintToolbar = 0;
+        paintToolbar = nullptr;
     }
 }
 
@@ -295,7 +302,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event)
     }
 
     if (event->buttons() == Qt::LeftButton && parent()) {
-        nmc::DkBaseViewPort *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+        auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
         if (viewport) {
             if (QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
                 isOutside = false;
@@ -339,7 +346,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
     }
 
     if (parent()) {
-        nmc::DkBaseViewPort *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+        auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
 
         if (viewport) {
             viewport->unsetCursor();
@@ -444,7 +451,7 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event)
             // painter.drawPoint(paths.at(idx).boundingRect().bottomRight());
         } else if (pathsMode.at(idx) == mode_blur) {
             if (parent()) {
-                nmc::DkBaseViewPort *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+                auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
                 QImage img = viewport->getImage();
                 // QPixmap pixmap = QPixmap::fromImage(mImg).copy();
                 getBlur(paths.at(idx), &painter, img, pathsPen.at(idx).width());
@@ -461,7 +468,7 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event)
 QImage DkPaintViewPort::getPaintedImage()
 {
     if (parent()) {
-        nmc::DkBaseViewPort *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+        auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
         if (viewport) {
             if (!paths.isEmpty()) { // if nothing is drawn there is no need to change the image
 
@@ -645,11 +652,11 @@ void DkPaintToolBar::createLayout()
     enterSc.append(QKeySequence(Qt::Key_Enter));
     enterSc.append(QKeySequence(Qt::Key_Return));
 
-    QAction *applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
+    auto *applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
     applyAction->setShortcuts(enterSc);
     applyAction->setObjectName("applyAction");
 
-    QAction *cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
+    auto *cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
     cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
     cancelAction->setObjectName("cancelAction");
 
@@ -735,7 +742,7 @@ void DkPaintToolBar::createLayout()
     alphaBox->setMinimum(0);
     alphaBox->setMaximum(100);
 
-    QActionGroup *modesGroup = new QActionGroup(this);
+    auto *modesGroup = new QActionGroup(this);
     modesGroup->addAction(pencilAction);
     modesGroup->addAction(lineAction);
     modesGroup->addAction(arrowAction);

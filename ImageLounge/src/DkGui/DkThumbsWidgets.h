@@ -28,44 +28,29 @@
 #pragma once
 
 #include "DkQt5Compat.h"
-#include <optional>
-#include <vector>
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QDrag>
-#include <QFileInfo>
 #include <QGraphicsObject>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPen>
-#include <QProcess>
+#include <QPixmapCache>
 #include <QSharedPointer>
-#pragma warning(pop) // no warnings from includes - end
+
+#include <optional>
+#include <vector>
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 #include "DkThumbs.h"
-#include <QPixmapCache>
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QMenu;
+class QMimeData;
 class QToolBar;
 class QLineEdit;
+class QPushButton;
 
 namespace nmc
 {
-
-// nomacs defines
 class DkImageLoader;
 
 class DkFilePreview : public DkFadeWidget
@@ -84,9 +69,9 @@ public:
         cm_end,
     };
 
-    DkFilePreview(DkThumbLoader *loader, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkFilePreview(DkThumbLoader *loader, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
-    ~DkFilePreview()
+    ~DkFilePreview() override
     {
         saveSettings();
     };
@@ -207,7 +192,7 @@ public:
                  const DkFileInfo &fileInfo,
                  bool fillSquare,
                  QGraphicsItem *parent = nullptr);
-    ~DkThumbLabel();
+    ~DkThumbLabel() override;
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -222,7 +207,7 @@ signals:
 
 private:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
     void updateTooltip(const QImage &thumb, bool fromExif);
@@ -252,7 +237,7 @@ class DllCoreExport DkThumbScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent = 0);
+    explicit DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
 
     void updateLayout();
     QStringList getSelectedFiles() const;
@@ -308,7 +293,7 @@ class DkThumbsView : public QGraphicsView
     Q_OBJECT
 
 public:
-    DkThumbsView(DkThumbScene *scene, QWidget *parent = 0);
+    explicit DkThumbsView(DkThumbScene *scene, QWidget *parent = nullptr);
 
 signals:
     void updateDirSignal(const QString &dir) const;
@@ -322,9 +307,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-    DkThumbScene *scene;
-    QPointF mousePos;
-    int lastShiftIdx;
+    DkThumbScene *mThumbScene = nullptr;
+    QPointF mMouseDownPos;
+    int mLastShiftIdx = -1; // item index clicked while shift key down
 
 private:
     void onScroll();
@@ -335,8 +320,10 @@ class DllCoreExport DkThumbScrollWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkThumbScrollWidget(DkThumbLoader *thumbLoader, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkThumbScrollWidget();
+    explicit DkThumbScrollWidget(DkThumbLoader *thumbLoader,
+                                 QWidget *parent = nullptr,
+                                 Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkThumbScrollWidget() override;
 
     DkThumbScene *getThumbWidget()
     {
@@ -350,7 +337,7 @@ public:
     }
 
 public slots:
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
     void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs);
     void setDir(const QString &dirPath);
     void enableSelectionActions();
@@ -371,19 +358,19 @@ protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
     void connectToActions(bool activate = true);
 
-    DkThumbScene *mThumbsScene = 0;
-    DkThumbsView *mView = 0;
+    DkThumbScene *mThumbsScene = nullptr;
+    DkThumbsView *mView = nullptr;
 
-    QMenu *mContextMenu = 0;
-    QToolBar *mToolbar = 0;
-    QLineEdit *mFilterEdit = 0;
-    QAction *mAction = 0;
+    QMenu *mContextMenu = nullptr;
+    QToolBar *mToolbar = nullptr;
+    QLineEdit *mFilterEdit = nullptr;
+    QAction *mAction = nullptr;
 };
 
 class DkRecentDir
 {
 public:
-    DkRecentDir(const DkFileInfo &dir, const DkFileInfoList &files = {}, bool pinned = false);
+    explicit DkRecentDir(const DkFileInfo &dir, const DkFileInfoList &files = {}, bool pinned = false);
 
     // copy file paths from another dir
     void update(const DkRecentDir &dir);
@@ -458,7 +445,7 @@ public:
     DkThumbPreviewLabel(const QString &filePath,
                         DkThumbLoader *thumbLoader,
                         int thumbSize = 100,
-                        QWidget *parent = 0,
+                        QWidget *parent = nullptr,
                         Qt::WindowFlags f = Qt::WindowFlags());
 
 signals:
@@ -471,7 +458,7 @@ protected:
     void mousePressEvent(QMouseEvent *ev) override;
 
     int mThumbSize = 100;
-    DkThumbLoader *mLoader;
+    DkThumbLoader *mLoader{};
     QString mFilePath;
 };
 
@@ -480,7 +467,7 @@ class DllCoreExport DkRecentDirWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkRecentDirWidget(const DkRecentDir &rde, DkThumbLoader *thumbLoader, QWidget *parent = 0);
+    DkRecentDirWidget(const DkRecentDir &rde, DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
@@ -517,7 +504,7 @@ class DllCoreExport DkRecentFilesWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkRecentFilesWidget(DkThumbLoader *thumbLoader, QWidget *parent = 0);
+    explicit DkRecentFilesWidget(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
 
     void registerAction(QAction *action)
     {

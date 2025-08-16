@@ -28,7 +28,6 @@
 #include "DkViewPort.h"
 
 #include "DkActionManager.h"
-#include "DkBasicLoader.h"
 #include "DkControlWidget.h"
 #include "DkDialog.h"
 #include "DkImageLoader.h"
@@ -44,26 +43,24 @@
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
 #include <QDrag>
 #include <QDragLeaveEvent>
 #include <QInputDialog>
-#include <QMenu>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QMovie>
+#include <QPainterPath>
 #include <QSvgRenderer>
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
-#include <QtGlobal>
 
-#include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
-
-#include <assert.h>
+#ifdef WITH_OPENCV
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
+#endif
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -173,7 +170,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     connect(mNavigationWidget, &DkHudNavigation::nextSignal, this, &DkViewPort::loadNextFileFast);
 
     // trivial connects
-    connect(this, &DkViewPort::movieLoadedSignal, [this](bool movie) {
+    connect(this, &DkViewPort::movieLoadedSignal, [](bool movie) {
         DkActionManager::instance().enableMovieActions(movie);
     });
 
@@ -594,9 +591,9 @@ void DkViewPort::updateImageMatrix()
     // update world matrix?
     // mWorldMatrix.m11() != 1
     if (qAbs(mWorldMatrix.m11() - 1.0) > 1e-4) {
-        float scaleFactor = (float)(oldImgMatrix.m11() / mImgMatrix.m11());
-        double dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
-        double dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
+        qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
+        qreal dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
+        qreal dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
 
         mWorldMatrix.scale(scaleFactor, scaleFactor);
         mWorldMatrix.translate(dx, dy);
@@ -628,7 +625,7 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
         imgPos = QPointF(width() * 0.5f, height() * 0.5f) - imgPos;
 
         // back to screen coordinates
-        float s = (float)mWorldMatrix.m11();
+        qreal s = mWorldMatrix.m11();
         mWorldMatrix.translate(imgPos.x() / s, imgPos.y() / s);
     }
 
@@ -759,11 +756,11 @@ void DkViewPort::deleteImage()
     question = tr("Do you want to permanently delete %1?").arg(fileInfo.fileName());
 #endif
 
-    DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
-                                            tr("Delete File"),
-                                            question,
-                                            (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                            this);
+    auto *msgBox = new DkMessageBox(QMessageBox::Question,
+                                    tr("Delete File"),
+                                    question,
+                                    (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                    this);
 
     msgBox->setDefaultButton(QMessageBox::Yes);
     msgBox->setObjectName("deleteFileDialog");
@@ -787,7 +784,7 @@ void DkViewPort::saveFileAs(bool silent)
         QImage img = getImage();
 
         if (mLoader->hasSvg() && !mLoader->isEdited()) {
-            DkSvgSizeDialog *sd = new DkSvgSizeDialog(img.size(), DkUtils::getMainWindow());
+            auto *sd = new DkSvgSizeDialog(img.size(), DkUtils::getMainWindow());
             sd->resize(270, 120);
 
             int answer = sd->exec();
@@ -845,8 +842,7 @@ void DkViewPort::setAsWallpaper()
 
 void DkViewPort::applyManipulator()
 {
-    QAction *action = dynamic_cast<QAction *>(QObject::sender());
-
+    const auto *action = dynamic_cast<QAction *>(QObject::sender());
     if (!action) {
         qWarning() << "applyManipulator is not called from its action!";
         return;
@@ -971,7 +967,7 @@ void DkViewPort::paintEvent(QPaintEvent *event)
         draw(painter, opacity);
 
         if (!mAnimationBuffer.isNull() && mAnimationValue > 0) {
-            float oldOp = (float)painter.opacity();
+            auto oldOp = (float)painter.opacity();
 
             // fade transition
             if (DkSettingsManager::param().display().transition == DkSettings::trans_fade) {
@@ -991,7 +987,7 @@ void DkViewPort::paintEvent(QPaintEvent *event)
         painter.setWorldMatrixEnabled(false);
     } else {
         if (!mDisabledBackground)
-            drawBackground(painter);
+            eraseBackground(painter);
     }
 
     // draw the cropping rect
@@ -1026,9 +1022,9 @@ void DkViewPort::leaveEvent(QEvent *event)
 }
 
 // drawing functions --------------------------------------------------------------------
-void DkViewPort::drawBackground(QPainter &painter)
+void DkViewPort::eraseBackground(QPainter &painter)
 {
-    DkBaseViewPort::drawBackground(painter);
+    DkBaseViewPort::eraseBackground(painter);
 
     // fit to mViewport
     QSize s = mImgBg.size();
@@ -1334,7 +1330,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
         if (pm.width() > 130)
             pm = pm.scaledToWidth(100, Qt::SmoothTransformation);
 
-        QDrag *drag = new QDrag(this);
+        auto *drag = new QDrag(this);
         drag->setMimeData(mimeData);
         drag->setPixmap(pm);
         drag->exec(Qt::CopyAction);
@@ -1415,7 +1411,7 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end)
 
 void DkViewPort::swipeAction(int swipeGesture)
 {
-    assert(mController);
+    Q_ASSERT(mController);
 
     switch (swipeGesture) {
     case next_image:
@@ -1443,7 +1439,7 @@ void DkViewPort::swipeAction(int swipeGesture)
 
 void DkViewPort::setFullScreen(bool fullScreen)
 {
-    assert(mController);
+    Q_ASSERT(mController);
     mController->setFullScreen(fullScreen);
     toggleLena(fullScreen);
 
@@ -1513,7 +1509,7 @@ void DkViewPort::copyPixelColorValue()
     if (getImage().isNull())
         return;
 
-    QMimeData *mimeData = new QMimeData;
+    auto *mimeData = new QMimeData;
 
     if (!getImage().isNull())
         mimeData->setText(getCurrentPixelHexValue());
@@ -1533,7 +1529,7 @@ void DkViewPort::copyImage()
 QMimeData *DkViewPort::createMime() const
 {
     if (getImage().isNull() || !mLoader)
-        return 0;
+        return nullptr;
 
     // NOTE: if we do the file:/// thingy, we will get into problems with mounted drives (e.g. //hermes...)
     QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
@@ -1541,7 +1537,7 @@ QMimeData *DkViewPort::createMime() const
     QList<QUrl> urls;
     urls.append(fileUrl);
 
-    QMimeData *mimeData = new QMimeData;
+    auto *mimeData = new QMimeData;
 
     if (QFileInfo(mLoader->filePath()).exists() && !mLoader->isEdited()) {
         mimeData->setUrls(urls);
@@ -1557,7 +1553,7 @@ void DkViewPort::copyImageBuffer()
     if (getImage().isNull())
         return;
 
-    QMimeData *mimeData = new QMimeData;
+    auto *mimeData = new QMimeData;
 
     if (!getImage().isNull())
         mimeData->setImageData(getImage());
@@ -1624,7 +1620,7 @@ void DkViewPort::rotate180()
 void DkViewPort::loadLena()
 {
     bool ok;
-    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, 0, &ok);
+    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, nullptr, &ok);
 
     // pass phrase
     if (ok && !text.isEmpty() && text == "lenna") {
@@ -1954,7 +1950,7 @@ void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader)
 
 void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals)
 {
-    assert(mController);
+    Q_ASSERT(mController);
 
     if (!loader)
         return;
@@ -2080,9 +2076,7 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
     mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
 }
 
-DkViewPortFrameless::~DkViewPortFrameless()
-{
-}
+DkViewPortFrameless::~DkViewPortFrameless() = default;
 
 void DkViewPortFrameless::zoom(double factor, const QPointF &center, bool force)
 {
@@ -2169,13 +2163,13 @@ void DkViewPortFrameless::draw(QPainter &painter, double)
 
         // opacity == 1.0f -> do not show pattern if we crossfade two images
         if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel())
-            drawPattern(painter);
+            drawTransparencyPattern(painter);
 
         painter.drawImage(mImgViewRect, img, QRect(QPoint(), img.size()));
     }
 }
 
-void DkViewPortFrameless::drawBackground(QPainter &painter)
+void DkViewPortFrameless::eraseBackground(QPainter &painter)
 {
     painter.setWorldTransform(mImgMatrix);
     painter.setBrush(QColor(127, 144, 144, 200));
@@ -2205,8 +2199,8 @@ void DkViewPortFrameless::drawBackground(QPainter &painter)
 
     // first time?
     if (mStartActionsRects.isEmpty()) {
-        float margin = 40;
-        float iconSizeMargin = (float)((initialRect.width() - 3 * margin) / mStartActions.size());
+        constexpr float margin = 40;
+        float iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
         QSize iconSize = QSize(qRound(iconSizeMargin - margin), qRound(iconSizeMargin - margin));
         QPointF offset = QPointF(bgRect.left() + 50, initialRect.center().y() + iconSizeMargin * 0.25f);
 
@@ -2326,11 +2320,11 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
 }
 
-void DkViewPortFrameless::moveView(QPointF delta)
+void DkViewPortFrameless::moveView(const QPointF &delta)
 {
     // if no zoom is present -> the translation is like a move window
-    if (mWorldMatrix.m11() == 1.0f) {
-        float s = (float)mImgMatrix.m11();
+    if (mWorldMatrix.m11() == 1.0) {
+        qreal s = mImgMatrix.m11();
         mImgMatrix.translate(delta.x() / s, delta.y() / s);
         mImgViewRect = mImgMatrix.mapRect(mImgRect);
     } else
@@ -2376,9 +2370,9 @@ void DkViewPortFrameless::updateImageMatrix()
 
     // update world matrix
     if (mWorldMatrix.m11() != 1) {
-        float scaleFactor = (float)(oldImgMatrix.m11() / mImgMatrix.m11());
-        double dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
-        double dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
+        qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
+        qreal dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
+        qreal dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
 
         mWorldMatrix.scale(scaleFactor, scaleFactor);
         mWorldMatrix.translate(dx, dy);
@@ -2403,9 +2397,7 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
 
-DkViewPortContrast::~DkViewPortContrast()
-{
-}
+DkViewPortContrast::~DkViewPortContrast() = default;
 
 void DkViewPortContrast::changeChannel(int channel)
 {
@@ -2502,7 +2494,7 @@ void DkViewPortContrast::draw(QPainter &painter, double opacity)
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
-        drawPattern(painter);
+        drawTransparencyPattern(painter);
 
     if (mDrawFalseColorImg)
         painter.drawImage(mImgViewRect, mFalseColorImg, mImgRect);

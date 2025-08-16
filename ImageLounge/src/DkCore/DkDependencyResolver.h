@@ -27,24 +27,10 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QString>
 #include <QStringList>
-#pragma warning(pop) // no warnings from includes - end
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-#pragma warning(disable : 4251) // TODO: remove
-
-// Qt defines
+#include "nmc_config.h"
 
 namespace nmc
 {
@@ -52,7 +38,7 @@ namespace nmc
 class DllCoreExport DkDllDependency
 {
 public:
-    DkDllDependency(const QString &filePath);
+    explicit DkDllDependency(const QString &filePath);
 
     bool findDependencies();
 

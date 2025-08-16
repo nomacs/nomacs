@@ -26,23 +26,16 @@
  *******************************************************************************************************/
 
 #include "DkThumbs.h"
+
 #include "DkBasicLoader.h"
 #include "DkFileInfo.h"
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-#include "qpainter.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QDir>
-#include <QFileInfo>
-#include <QImageReader>
 #include <QStringBuilder>
-#include <QStringList>
-#include <QTimer>
 #include <QtConcurrentRun>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -309,7 +302,7 @@ void DkThumbLoader::onThumbnailLoadFinished()
 
     handleFinishedWatcher(w);
 
-    if (!res->valid) {
+    if (!res->valid) { // NOLINT(clang-analyzer-core.uninitialized.Branch) -- false positive
         emit thumbnailLoadFailed(res->filePath);
         mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size());
         return;

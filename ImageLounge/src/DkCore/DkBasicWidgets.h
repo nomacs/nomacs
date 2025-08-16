@@ -28,25 +28,12 @@
 
 #pragma once
 
+#include <QWidget>
+
 #include "DkBaseWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
-#include <QWidget>
-#pragma warning(pop)
+#include "nmc_config.h"
 
-#pragma warning(disable : 4251) // TODO: remove
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QSlider;
 class QLabel;
 class QSpinBox;
@@ -59,14 +46,12 @@ class QLineEdit;
 namespace nmc
 {
 
-// nomacs defines
-
 class DllCoreExport DkSlider : public DkWidget
 {
     Q_OBJECT
 
 public:
-    DkSlider(QString title = "", QWidget *parent = 0);
+    explicit DkSlider(QString title = "", QWidget *parent = nullptr);
 
     QSlider *getSlider() const;
     void setMinimum(int minValue);
@@ -97,7 +82,7 @@ class DllCoreExport DkDoubleSlider : public DkWidget
     Q_OBJECT
 
 public:
-    DkDoubleSlider(const QString &title = "", QWidget *parent = 0);
+    explicit DkDoubleSlider(const QString &title = "", QWidget *parent = nullptr);
 
     QSlider *getSlider() const;
     void setMinimum(double minValue);
@@ -133,11 +118,11 @@ class DllCoreExport DkColorChooser : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorChooser(QColor defaultColor = QColor(),
-                   QString text = "Color",
-                   QWidget *parent = 0,
-                   Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkColorChooser(){};
+    explicit DkColorChooser(QColor defaultColor = QColor(),
+                            QString text = "Color",
+                            QWidget *parent = nullptr,
+                            Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkColorChooser() override = default;
 
     void setColor(const QColor &color); // will not emit
     void setDefaultColor(const QColor &color); // will not emit
@@ -154,9 +139,9 @@ signals:
     void colorChanged(const QColor &color); // user changed the color for any reason
 
 protected:
-    QColorDialog *mColorDialog = 0;
-    QPushButton *mColorButton = 0;
-    QPushButton *mResetButton = 0;
+    QColorDialog *mColorDialog = nullptr;
+    QPushButton *mColorButton = nullptr;
+    QPushButton *mResetButton = nullptr;
 
     QColor mColor, mDefaultColor;
     const QString mText;
@@ -169,7 +154,7 @@ class DllCoreExport DkColorEdit : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorEdit(const QColor &col = QColor(), QWidget *parent = 0);
+    explicit DkColorEdit(const QColor &col = QColor(), QWidget *parent = nullptr);
 
     void setColor(const QColor &col);
     QColor color() const;
@@ -203,7 +188,7 @@ class DllCoreExport DkColorPane : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorPane(QWidget *parent = 0);
+    explicit DkColorPane(QWidget *parent = nullptr);
 
     QColor color() const;
     double hue() const;
@@ -238,7 +223,7 @@ class DllCoreExport DkColorPicker : public DkWidget
     Q_OBJECT
 
 public:
-    DkColorPicker(QWidget *parent = 0);
+    explicit DkColorPicker(QWidget *parent = nullptr);
 
     QColor color() const;
 
@@ -253,10 +238,10 @@ protected:
     void contextMenuEvent(QContextMenuEvent *cme) override;
     void createLayout();
 
-    DkColorPane *mColorPane = 0;
-    QLabel *mColorPreview = 0;
-    QMenu *mContextMenu = 0;
-    DkColorEdit *mColorEdit = 0;
+    DkColorPane *mColorPane = nullptr;
+    QLabel *mColorPreview = nullptr;
+    QMenu *mContextMenu = nullptr;
+    DkColorEdit *mColorEdit = nullptr;
 };
 
 class DllCoreExport DkRectWidget : public DkWidget
@@ -264,7 +249,7 @@ class DllCoreExport DkRectWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkRectWidget(const QRect &r = QRect(), QWidget *parent = 0);
+    explicit DkRectWidget(const QRect &r = QRect(), QWidget *parent = nullptr);
 
     QRect rect() const;
 

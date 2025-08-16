@@ -26,8 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkMetaDataWidgets.h"
-#include "DkBasicLoader.h"
-#include "DkImageContainer.h"
+
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
@@ -36,26 +35,22 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QCheckBox>
+#include <QContextMenuEvent>
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QDockWidget>
 #include <QInputDialog>
 #include <QLabel>
 #include <QMenu>
 #include <QPainter>
 #include <QPushButton>
 #include <QRegularExpression>
-#include <QResizeEvent>
 #include <QScrollArea>
-#include <QSettings>
 #include <QTextEdit>
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -185,7 +180,7 @@ void DkMetaDataModel::createItem(const QString &key, const QString &keyName, con
     else
         metaDataEntry << cleanValue;
 
-    TreeItem *dataItem = new TreeItem(metaDataEntry, item);
+    auto *dataItem = new TreeItem(metaDataEntry, item);
     item->appendChild(dataItem);
 }
 
@@ -194,14 +189,14 @@ QModelIndex DkMetaDataModel::index(int row, int column, const QModelIndex &paren
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
-    TreeItem *parentItem;
+    const TreeItem *parentItem;
 
     if (!parent.isValid())
         parentItem = rootItem;
     else
         parentItem = static_cast<TreeItem *>(parent.internalPointer());
 
-    TreeItem *childItem = parentItem->child(row);
+    const TreeItem *childItem = parentItem->child(row);
 
     // qDebug() << " creating index for: " << childItem->data(0) << " row: " << row;
     if (childItem)
@@ -215,8 +210,8 @@ QModelIndex DkMetaDataModel::parent(const QModelIndex &index) const
     if (!index.isValid())
         return QModelIndex();
 
-    TreeItem *childItem = static_cast<TreeItem *>(index.internalPointer());
-    TreeItem *parentItem = childItem->parent();
+    const auto *childItem = static_cast<TreeItem *>(index.internalPointer());
+    const TreeItem *parentItem = childItem->parent();
 
     if (!parentItem || parentItem == rootItem)
         return QModelIndex();
@@ -263,7 +258,7 @@ QVariant DkMetaDataModel::data(const QModelIndex &index, int role) const
     //	return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+        auto *item = static_cast<TreeItem *>(index.internalPointer());
         // qDebug() << "returning: " << item->data(0) << "row: " << index.row();
 
         return item->data(index.column());
@@ -327,7 +322,7 @@ bool DkMetaDataProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 
-    TreeItem *t = static_cast<TreeItem *>(index.internalPointer());
+    auto *t = static_cast<TreeItem *>(index.internalPointer());
     if (t) {
         return t->contains(filterRegularExpression(), -1) /* | t->contains(filterRegExp(), 1)*/;
     }
@@ -410,15 +405,15 @@ void DkMetaDataDock::createLayout()
     mThumbNailLabel->hide();
 
     // thumb layout
-    QWidget *thumbWidget = new QWidget(this);
-    QHBoxLayout *thumbLayout = new QHBoxLayout(thumbWidget);
+    auto *thumbWidget = new QWidget(this);
+    auto *thumbLayout = new QHBoxLayout(thumbWidget);
     thumbLayout->setContentsMargins(0, 0, 0, 0);
     thumbLayout->addStretch();
     thumbLayout->addWidget(mThumbNailLabel);
     thumbLayout->addStretch();
 
-    QWidget *widget = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(widget);
+    auto *widget = new QWidget(this);
+    auto *layout = new QVBoxLayout(widget);
     layout->setContentsMargins(2, 2, 2, 2);
     layout->addWidget(mFilterEdit);
     layout->addWidget(mTreeView);
@@ -561,7 +556,7 @@ void DkMetaDataSelection::createLayout()
 {
     createEntries(mMetaData, mKeys, mValues);
 
-    QWidget *lWidget = new QWidget(this);
+    auto *lWidget = new QWidget(this);
     mLayout = new QGridLayout(lWidget);
 
     for (int idx = 0; idx < mKeys.size(); idx++) {
@@ -570,7 +565,7 @@ void DkMetaDataSelection::createLayout()
 
     mLayout->setColumnStretch(2, 10);
 
-    QScrollArea *scrollArea = new QScrollArea(this);
+    auto *scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setMinimumSize(QSize(200, 200));
     scrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -581,7 +576,7 @@ void DkMetaDataSelection::createLayout()
     mCbCheckAll->setTristate(true);
     connect(mCbCheckAll, &QCheckBox::clicked, this, &DkMetaDataSelection::checkAll);
 
-    QVBoxLayout *l = new QVBoxLayout(this);
+    auto *l = new QVBoxLayout(this);
     l->addWidget(scrollArea);
     l->addWidget(mCbCheckAll);
 }
@@ -591,7 +586,7 @@ void DkMetaDataSelection::appendGUIEntry(const QString &key, const QString &valu
     QString cleanKey = key;
     cleanKey = cleanKey.replace(".", " > ");
 
-    QCheckBox *cb = new QCheckBox(cleanKey, this);
+    auto *cb = new QCheckBox(cleanKey, this);
     connect(cb, &QCheckBox::clicked, this, &DkMetaDataSelection::selectionChanged);
     mSelection.append(cb);
 
@@ -601,7 +596,7 @@ void DkMetaDataSelection::appendGUIEntry(const QString &key, const QString &valu
     if (!pd.isNull())
         cleanValue = pd.toString(Qt::TextDate);
 
-    QLabel *label = new QLabel(cleanValue, this);
+    auto *label = new QLabel(cleanValue, this);
     label->setObjectName("DkMetadataValueLabel");
 
     if (idx == -1)
@@ -706,14 +701,14 @@ DkMetaDataHUD::~DkMetaDataHUD()
 
 void DkMetaDataHUD::createLayout()
 {
-    QLabel *titleLabel = new QLabel(tr("Image Information"), this);
+    auto *titleLabel = new QLabel(tr("Image Information"), this);
     titleLabel->setObjectName("DkMetaDataHUDTitle");
 
-    QLabel *titleSeparator = new QLabel("", this);
+    auto *titleSeparator = new QLabel("", this);
     titleSeparator->setObjectName("DkSeparator");
 
     mTitleWidget = new QWidget(this);
-    QVBoxLayout *titleLayout = new QVBoxLayout(mTitleWidget);
+    auto *titleLayout = new QVBoxLayout(mTitleWidget);
     titleLayout->addWidget(titleLabel);
     titleLayout->addWidget(titleSeparator);
 
@@ -751,7 +746,7 @@ void DkMetaDataHUD::createLayout()
 
     mScrollArea->setWidget(mContentWidget);
 
-    QVBoxLayout *l = new QVBoxLayout(this);
+    auto *l = new QVBoxLayout(this);
     l->setSpacing(0);
     l->setContentsMargins(3, 3, 3, 3);
     l->addWidget(mScrollArea);
@@ -1023,7 +1018,7 @@ QLabel *DkMetaDataHUD::createKeyLabel(const QString &key)
 {
     QString labelString = key.split(".").last();
     labelString = DkMetaDataHelper::getInstance().translateKey(labelString);
-    QLabel *keyLabel = new QLabel(labelString, this);
+    auto *keyLabel = new QLabel(labelString, this);
     keyLabel->setObjectName("DkMetaDataKeyLabel");
     keyLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     keyLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -1039,7 +1034,7 @@ QLabel *DkMetaDataHUD::createValueLabel(const QString &val)
     if (!pd.isNull())
         cleanValue = pd.toString(Qt::TextDate);
 
-    QLabel *valLabel = new QLabel(cleanValue.trimmed(), this);
+    auto *valLabel = new QLabel(cleanValue.trimmed(), this);
     valLabel->setObjectName("DkMetaDataLabel");
     valLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     valLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -1073,8 +1068,7 @@ void DkMetaDataHUD::setVisible(bool visible, bool saveSetting /* = true */)
 
 void DkMetaDataHUD::newPosition()
 {
-    QAction *sender = static_cast<QAction *>(QObject::sender());
-
+    const auto *sender = static_cast<QAction *>(QObject::sender());
     if (!sender)
         return;
 
@@ -1104,22 +1098,20 @@ void DkMetaDataHUD::newPosition()
 
 void DkMetaDataHUD::changeKeys()
 {
-    QDialog *dialog = new QDialog(this);
+    auto *dialog = new QDialog(this);
     dialog->setWindowTitle(tr("Change Metadata Entries"));
 
-    DkMetaDataSelection *selWidget = new DkMetaDataSelection(mMetaData, this);
+    auto *selWidget = new DkMetaDataSelection(mMetaData, this);
     selWidget->setSelectedKeys(mKeyValues);
 
     // mButtons
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                                     Qt::Horizontal,
-                                                     this);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
     buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     connect(buttons, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
 
-    QVBoxLayout *layout = new QVBoxLayout(dialog);
+    auto *layout = new QVBoxLayout(dialog);
     layout->addWidget(selWidget);
     layout->addWidget(buttons);
 
@@ -1194,7 +1186,7 @@ void DkCommentWidget::createLayout()
 {
     setObjectName("DkCommentWidget");
 
-    QLabel *titleLabel = new QLabel(tr("NOTES"), this);
+    auto *titleLabel = new QLabel(tr("NOTES"), this);
     titleLabel->setObjectName("commentTitleLabel");
 
     // TODO: move to stylesheet.css
@@ -1242,8 +1234,8 @@ void DkCommentWidget::createLayout()
     actionFilter->addAction(saveAction);
     mCommentLabel->installEventFilter(actionFilter);
 
-    QWidget *titleWidget = new QWidget(this);
-    QHBoxLayout *titleLayout = new QHBoxLayout(titleWidget);
+    auto *titleWidget = new QWidget(this);
+    auto *titleLayout = new QHBoxLayout(titleWidget);
     titleLayout->setAlignment(Qt::AlignLeft);
     titleLayout->setContentsMargins(0, 0, 0, 0);
     titleLayout->setSpacing(0);
@@ -1252,7 +1244,7 @@ void DkCommentWidget::createLayout()
     titleLayout->addWidget(cancelButton, 0, Qt::AlignVCenter);
     titleLayout->addWidget(saveButton, 0, Qt::AlignVCenter);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(titleWidget);
     layout->addWidget(mCommentLabel);
 

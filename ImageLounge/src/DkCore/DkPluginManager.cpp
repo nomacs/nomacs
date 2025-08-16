@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkPluginManager.h"
+
 #include "DkActionManager.h"
 #include "DkDependencyResolver.h"
 #include "DkSettings.h"
@@ -34,9 +35,7 @@
 #include "DkUtils.h"
 #include "DkVersion.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
-#include <QDebug>
 #include <QDir>
 #include <QHeaderView>
 #include <QJsonValue>
@@ -45,31 +44,16 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QMouseEvent>
-#include <QNetworkAccessManager>
-#include <QNetworkProxyFactory>
-#include <QNetworkReply>
-#include <QNetworkRequest>
+#include <QPainter>
 #include <QPluginLoader>
-#include <QProgressDialog>
 #include <QPushButton>
 #include <QRegularExpression>
-#include <QScrollBar>
-#include <QSettings>
-#include <QSlider>
 #include <QSortFilterProxyModel>
-#include <QSpinBox>
-#include <QTabWidget>
 #include <QTableView>
 #include <QTextEdit>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <QXmlStreamReader>
 #include <QtGlobal>
-#pragma warning(pop) // no warnings from includes - end
-
-#ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
 
 namespace nmc
 {
@@ -179,9 +163,7 @@ DkPluginContainer::DkPluginContainer(const QString &pluginPath)
     loadJson();
 }
 
-DkPluginContainer::~DkPluginContainer()
-{
-}
+DkPluginContainer::~DkPluginContainer() = default;
 
 bool operator<(const QSharedPointer<DkPluginContainer> &l, const QSharedPointer<DkPluginContainer> &r)
 {
@@ -388,7 +370,7 @@ void DkPluginContainer::run()
     } else if (p
                && (p->interfaceType() == DkPluginInterface::interface_basic
                    || p->interfaceType() == DkPluginInterface::interface_batch)) {
-        QAction *a = qobject_cast<QAction *>(QObject::sender());
+        auto *a = qobject_cast<QAction *>(QObject::sender());
 
         if (a)
             emit runPlugin(this, a->data().toString());
@@ -490,7 +472,7 @@ DkPluginInterface *DkPluginContainer::plugin() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     DkPluginInterface *pi = qobject_cast<DkPluginInterface *>(mLoader->instance());
 
@@ -506,7 +488,7 @@ DkBatchPluginInterface *DkPluginContainer::batchPlugin() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     return qobject_cast<DkBatchPluginInterface *>(mLoader->instance());
 }
@@ -515,7 +497,7 @@ DkViewPortInterface *DkPluginContainer::pluginViewPort() const
 {
     // is everything fine here??
     if (!mLoader)
-        return 0;
+        return nullptr;
 
     return qobject_cast<DkViewPortInterface *>(mLoader->instance());
 }
@@ -543,9 +525,7 @@ DkPluginManagerDialog::DkPluginManagerDialog(QWidget *parent)
     init();
 }
 
-DkPluginManagerDialog::~DkPluginManagerDialog()
-{
-}
+DkPluginManagerDialog::~DkPluginManagerDialog() = default;
 
 /**
  * initialize plugin manager dialog - set sizes
@@ -567,16 +547,16 @@ void DkPluginManagerDialog::createLayout()
 {
     tableWidgetInstalled = new DkPluginTableWidget(this);
 
-    QPushButton *buttonClose = new QPushButton(tr("&Close"));
+    auto *buttonClose = new QPushButton(tr("&Close"));
     connect(buttonClose, &QPushButton::clicked, this, &DkPluginManagerDialog::closePressed);
     buttonClose->setDefault(true);
 
-    QWidget *dummy = new QWidget(this);
-    QHBoxLayout *hLayout = new QHBoxLayout(dummy);
+    auto *dummy = new QWidget(this);
+    auto *hLayout = new QHBoxLayout(dummy);
     hLayout->setAlignment(Qt::AlignRight);
     hLayout->addWidget(buttonClose);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(tableWidgetInstalled);
     layout->addWidget(dummy);
 }
@@ -616,9 +596,7 @@ DkPluginTableWidget::DkPluginTableWidget(QWidget *parent)
     createLayout();
 }
 
-DkPluginTableWidget::~DkPluginTableWidget()
-{
-}
+DkPluginTableWidget::~DkPluginTableWidget() = default;
 
 // create the main layout of the plugin manager
 void DkPluginTableWidget::createLayout()
@@ -633,8 +611,8 @@ void DkPluginTableWidget::createLayout()
     // if (DkSettingsManager::param().isPortable())
     //	updateButton->hide();
 
-    QWidget *searchWidget = new QWidget(this);
-    QHBoxLayout *sLayout = new QHBoxLayout(searchWidget);
+    auto *searchWidget = new QWidget(this);
+    auto *sLayout = new QHBoxLayout(searchWidget);
     sLayout->setContentsMargins(0, 0, 0, 0);
     sLayout->addWidget(mFilterEdit);
     // sLayout->addStretch();
@@ -663,35 +641,32 @@ void DkPluginTableWidget::createLayout()
     mTableView->setAlternatingRowColors(true);
 
     if (DkSettingsManager::instance().param().isPortable()) {
-        DkPushButtonDelegate *buttonDelegate = new DkPushButtonDelegate(mTableView);
+        auto *buttonDelegate = new DkPushButtonDelegate(mTableView);
         mTableView->setItemDelegateForColumn(ip_column_uninstall, buttonDelegate);
         connect(buttonDelegate, &DkPushButtonDelegate::buttonClicked, this, &DkPluginTableWidget::uninstallPlugin);
     }
 
-    DkDescriptionEdit *descriptionEdit = new DkDescriptionEdit(mModel, mProxyModel, mTableView->selectionModel(), this);
+    auto *descriptionEdit = new DkDescriptionEdit(mModel, mProxyModel, mTableView->selectionModel(), this);
     connect(mTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             descriptionEdit,
             &DkDescriptionEdit::selectionChanged);
     connect(mProxyModel, &QSortFilterProxyModel::dataChanged, descriptionEdit, &DkDescriptionEdit::dataChanged);
 
-    DkDescriptionImage *descriptionImg = new DkDescriptionImage(mModel,
-                                                                mProxyModel,
-                                                                mTableView->selectionModel(),
-                                                                this);
+    auto *descriptionImg = new DkDescriptionImage(mModel, mProxyModel, mTableView->selectionModel(), this);
     connect(mTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             descriptionImg,
             &DkDescriptionImage::selectionChanged);
     connect(mProxyModel, &QSortFilterProxyModel::dataChanged, descriptionImg, &DkDescriptionImage::dataChanged);
 
-    QWidget *descWidget = new QWidget(this);
-    QHBoxLayout *dLayout = new QHBoxLayout(descWidget);
+    auto *descWidget = new QWidget(this);
+    auto *dLayout = new QHBoxLayout(descWidget);
     dLayout->setContentsMargins(0, 0, 0, 0);
     dLayout->addWidget(descriptionEdit);
     dLayout->addWidget(descriptionImg);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(searchWidget);
     layout->addWidget(mTableView);
     layout->addWidget(descWidget);
@@ -899,7 +874,7 @@ bool DkPluginCheckBoxDelegate::editorEvent(QEvent *event,
                                            const QModelIndex &index)
 {
     if ((event->type() == QEvent::MouseButtonRelease) || (event->type() == QEvent::MouseButtonDblClick)) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        const auto *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() != Qt::LeftButton || !CheckBoxRect(option).contains(mouseEvent->pos())) {
             return false;
         }
@@ -907,8 +882,9 @@ bool DkPluginCheckBoxDelegate::editorEvent(QEvent *event,
             return true;
         }
     } else if (event->type() == QEvent::KeyPress) {
-        if (static_cast<QKeyEvent *>(event)->key() != Qt::Key_Space
-            && static_cast<QKeyEvent *>(event)->key() != Qt::Key_Select) {
+        const auto *keyEvent = static_cast<QKeyEvent *>(event);
+        int key = keyEvent->key();
+        if (key != Qt::Key_Space && key != Qt::Key_Select) {
             return false;
         }
     } else
@@ -966,7 +942,7 @@ bool DkPushButtonDelegate::editorEvent(QEvent *event,
                                        const QModelIndex &index)
 {
     if ((event->type() == QEvent::MouseButtonRelease) || (event->type() == QEvent::MouseButtonPress)) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        auto *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() != Qt::LeftButton || !PushButtonRect(option).contains(mouseEvent->pos())) {
             mPushButonState = QStyle::State_Raised;
             return false;
@@ -995,16 +971,16 @@ bool DkPushButtonDelegate::editorEvent(QEvent *event,
 //**********************************************************************************
 // DkDescriptionEdit : text edit connected to tableView selection and models
 //**********************************************************************************
-DkDescriptionEdit::DkDescriptionEdit(QAbstractTableModel *data,
-                                     QSortFilterProxyModel *proxy,
-                                     QItemSelectionModel *selection,
+DkDescriptionEdit::DkDescriptionEdit(QAbstractTableModel *dataModel,
+                                     QSortFilterProxyModel *proxyModel,
+                                     QItemSelectionModel *selectionModel,
                                      QWidget *parent)
     : QTextEdit(parent)
 {
     mParentTable = static_cast<DkPluginTableWidget *>(parent);
-    mDataModel = data;
-    mProxyModel = proxy;
-    mSelectionModel = selection;
+    mDataModel = dataModel;
+    mProxyModel = proxyModel;
+    mSelectionModel = selectionModel;
     setReadOnly(true);
 }
 
@@ -1042,16 +1018,16 @@ void DkDescriptionEdit::selectionChanged(const QItemSelection &, const QItemSele
 // DkDescriptionImage : image label connected to tableView selection and models
 //**********************************************************************************
 
-DkDescriptionImage::DkDescriptionImage(QAbstractTableModel *data,
-                                       QSortFilterProxyModel *proxy,
-                                       QItemSelectionModel *selection,
+DkDescriptionImage::DkDescriptionImage(QAbstractTableModel *dataModel,
+                                       QSortFilterProxyModel *proxyModel,
+                                       QItemSelectionModel *selectionModel,
                                        QWidget *parent)
     : QLabel(parent)
 {
     mParentTable = static_cast<DkPluginTableWidget *>(parent);
-    mDataModel = data;
-    mProxyModel = proxy;
-    mSelectionModel = selection;
+    mDataModel = dataModel;
+    mProxyModel = proxyModel;
+    mSelectionModel = selectionModel;
     mDefaultImage = QPixmap(":/nomacs/img/plugin-banner.svg");
     setPixmap(mDefaultImage);
 }
@@ -1095,14 +1071,9 @@ DkPluginManager &DkPluginManager::instance()
     return inst;
 }
 
-DkPluginManager::DkPluginManager()
-{
-    // loadPlugins();
-}
+DkPluginManager::DkPluginManager() = default;
 
-DkPluginManager::~DkPluginManager()
-{
-}
+DkPluginManager::~DkPluginManager() = default;
 
 // returns map with id and interface
 QVector<QSharedPointer<DkPluginContainer>> DkPluginManager::getPlugins() const
@@ -1408,7 +1379,7 @@ void DkPluginActionManager::assignCustomPluginShortcuts()
         mPluginDummyActions = QVector<QAction *>();
 
         for (int i = 0; i < psKeys.size(); i++) {
-            QAction *action = new QAction(psKeys.at(i), this);
+            auto *action = new QAction(psKeys.at(i), this);
             QString val = settings.value(psKeys.at(i), "no-shortcut").toString();
             if (val != "no-shortcut")
                 action->setShortcut(val);
@@ -1512,7 +1483,7 @@ void DkPluginActionManager::addPluginsToMenu()
             mPluginSubMenus.append(plugin->pluginMenu());
             mMenu->addMenu(plugin->pluginMenu());
         } else if (pi) {
-            QAction *a = new QAction(plugin->pluginName(), this);
+            auto *a = new QAction(plugin->pluginName(), this);
             a->setData(plugin->id());
             mPluginActions.append(a);
             mMenu->addAction(a);
@@ -1537,7 +1508,7 @@ void DkPluginActionManager::runPluginFromShortcut()
 {
     qDebug() << "running plugin shortcut...";
 
-    QAction *action = qobject_cast<QAction *>(sender());
+    const auto *action = qobject_cast<QAction *>(sender());
     QString actionName = action->text();
 
     updateMenu();

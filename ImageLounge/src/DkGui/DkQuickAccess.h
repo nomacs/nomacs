@@ -27,18 +27,14 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QFileInfo>
 #include <QLineEdit>
 #include <QObject>
 #include <QStringList>
 #include <QVector>
-#pragma warning(pop) // no warnings from includes - end
 
 class QAction;
 class QStandardItemModel;
 class QIcon;
-class QModelIndex;
 
 namespace nmc
 {
@@ -48,7 +44,7 @@ class DkQuickAccess : public QObject
     Q_OBJECT
 
 public:
-    DkQuickAccess(QObject *parent = 0);
+    explicit DkQuickAccess(QObject *parent = nullptr);
 
     void addActions(const QVector<QAction *> &actions);
     void addDirs(const QStringList &dirPaths);
@@ -67,7 +63,7 @@ signals:
     void loadFileSignal(const QString &filePath) const;
 
 protected:
-    QStandardItemModel *mModel = 0;
+    QStandardItemModel *mModel = nullptr;
 
     QVector<QAction *> mActions;
     QStringList mFilePaths;
@@ -78,7 +74,7 @@ class DkQuickAccessEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    DkQuickAccessEdit(QWidget *parent = 0);
+    explicit DkQuickAccessEdit(QWidget *parent = nullptr);
 
     void setModel(QStandardItemModel *model);
 

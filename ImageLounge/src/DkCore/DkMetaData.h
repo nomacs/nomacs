@@ -27,18 +27,9 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QMap>
 #include <QSharedPointer>
 #include <QStringList>
-
-// code for metadata crop:
-#include "DkFileInfo.h"
-#include "DkMath.h"
-
-#if defined(__clang__)
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -55,29 +46,18 @@
 #ifdef EXV_ENABLE_BMFF
 #include <exiv2/bmffimage.hpp>
 #endif
+
 #include <iomanip>
+#endif // WIN32
 
-#endif
-#pragma warning(pop)
-
-#pragma warning(disable : 4251) // TODO: remove
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkFileInfo.h"
+#include "DkMath.h"
 
 // OS 2 does not define byte so we safely assume, that other programmers agree to call an 8 bit a byte
 #ifndef byte
 typedef unsigned char byte;
 #endif
 
-// Qt defines
 class QVector2D;
 class QImage;
 

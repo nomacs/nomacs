@@ -26,26 +26,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************************************/
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QItemSelection>
 #include <QPushButton>
 #include <QTextEdit>
-#include <QUrl>
-#include <QWidget>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkBaseWidgets.h"
 #include "DkBatchInfo.h"
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
-#include "DkThumbs.h"
 
 // Qt defines
 class QListView;
 class QVBoxLayout;
 class QLabel;
-class QFileInfo;
 class QComboBox;
 class QLineEdit;
 class QSpinBox;
@@ -54,16 +47,16 @@ class QGridLayout;
 class QCheckBox;
 class QButtonGroup;
 class QRadioButton;
-class QDialogButtonBox;
-class QProgressBar;
 class QTabWidget;
 class QListWidget;
 class QStackedLayout;
 class QStandardItem;
 class QStandardItemModel;
+class QItemSelection;
 
 namespace nmc
 {
+class DkThumbLoader;
 
 // TODO: these enums are global - they should be put into the respective classes
 enum fileNameTypes {
@@ -92,7 +85,6 @@ class DkBatchTransform;
 class DkBatchContent;
 class DkButton;
 class DkThumbScrollWidget;
-class DkImageLoader;
 class DkExplorer;
 class DkDirectoryEdit;
 class DkListWidget;
@@ -107,7 +99,7 @@ class DkBatchContent : public DkWidget
     Q_OBJECT
 
 public:
-    DkBatchContent(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkBatchContent(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     virtual bool hasUserInput() const = 0;
     virtual bool requiresUserInput() const = 0;
     virtual void applyDefault() = 0;
@@ -121,7 +113,7 @@ class DkBatchTabButton : public QPushButton
     Q_OBJECT
 
 public:
-    DkBatchTabButton(const QString &title, const QString &info = QString(), QWidget *parent = 0);
+    explicit DkBatchTabButton(const QString &title, const QString &info = QString(), QWidget *parent = nullptr);
 
     QString info() const;
 
@@ -142,7 +134,7 @@ class DkBatchContainer : public QObject
     Q_OBJECT
 
 public:
-    DkBatchContainer(const QString &titleString, const QString &headerString, QWidget *parent = 0);
+    DkBatchContainer(const QString &titleString, const QString &headerString, QWidget *parent = nullptr);
 
     void setContentWidget(QWidget *batchContent);
     QWidget *contentWidget() const;
@@ -156,10 +148,10 @@ signals:
     void showSignal() const;
 
 protected:
-    virtual void createLayout();
+    void createLayout();
 
-    DkBatchTabButton *mHeaderButton = 0;
-    DkBatchContent *mBatchContent = 0;
+    DkBatchTabButton *mHeaderButton = nullptr;
+    DkBatchContent *mBatchContent = nullptr;
 };
 
 class DkInputTextEdit : public QTextEdit
@@ -167,7 +159,7 @@ class DkInputTextEdit : public QTextEdit
     Q_OBJECT
 
 public:
-    DkInputTextEdit(QWidget *parent = 0);
+    explicit DkInputTextEdit(QWidget *parent = nullptr);
 
     QStringList getFileList() const;
     void appendDir(const QString &newDir, bool recursive = false);
@@ -203,22 +195,22 @@ public:
         tab_end
     };
 
-    DkBatchInput(DkThumbLoader *thumbLoader, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkBatchInput(DkThumbLoader *thumbLoader, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     QString getDir() const;
     QStringList getSelectedFiles() const;
     QStringList getSelectedFilesBatch();
     DkInputTextEdit *getInputEdit() const;
 
-    virtual bool hasUserInput() const override
+    bool hasUserInput() const override
     {
         return mHUserInput;
     };
-    virtual bool requiresUserInput() const override
+    bool requiresUserInput() const override
     {
         return mRUserInput;
     };
-    virtual void applyDefault() override;
+    void applyDefault() override;
 
     void changeTab(int tabIdx) const;
     void startProcessing();
@@ -239,16 +231,16 @@ signals:
     void changed() const;
 
 protected:
-    virtual void createLayout(DkThumbLoader *);
+    void createLayout(DkThumbLoader *);
 
     QString mCDirPath;
-    QListView *mFileWidget = 0;
-    DkThumbScrollWidget *mThumbScrollWidget = 0;
-    DkInputTextEdit *mInputTextEdit = 0;
-    QTextEdit *mResultTextEdit = 0;
-    DkExplorer *mExplorer = 0;
-    DkDirectoryEdit *mDirectoryEdit = 0;
-    QTabWidget *mInputTabs = 0;
+    QListView *mFileWidget = nullptr;
+    DkThumbScrollWidget *mThumbScrollWidget = nullptr;
+    DkInputTextEdit *mInputTextEdit = nullptr;
+    QTextEdit *mResultTextEdit = nullptr;
+    DkExplorer *mExplorer = nullptr;
+    DkDirectoryEdit *mDirectoryEdit = nullptr;
+    QTabWidget *mInputTabs = nullptr;
     QSharedPointer<DkImageLoader> mLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
 
 private:
@@ -261,7 +253,7 @@ class DkFilenameWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkFilenameWidget(QWidget *parent = 0);
+    explicit DkFilenameWidget(QWidget *parent = nullptr);
     void enableMinusButton(bool enable);
     void enablePlusButton(bool enable);
     bool hasUserInput() const
@@ -289,18 +281,18 @@ private:
     void showOnlyNumber();
     void showOnlyFilename();
 
-    QComboBox *mCbType = 0;
+    QComboBox *mCbType = nullptr;
 
-    QLineEdit *mLeText = 0;
-    QComboBox *mCbCase = 0;
+    QLineEdit *mLeText = nullptr;
+    QComboBox *mCbCase = nullptr;
 
-    QSpinBox *mSbNumber = 0;
-    QComboBox *mCbDigits = 0;
+    QSpinBox *mSbNumber = nullptr;
+    QComboBox *mCbDigits = nullptr;
 
-    QPushButton *mPbPlus = 0;
-    QPushButton *mPbMinus = 0;
+    QPushButton *mPbPlus = nullptr;
+    QPushButton *mPbMinus = nullptr;
 
-    QGridLayout *mLayout = 0;
+    QGridLayout *mLayout = nullptr;
 
     bool hasChanged = false;
 };
@@ -310,10 +302,10 @@ class DkBatchOutput : public DkBatchContent
     Q_OBJECT
 
 public:
-    DkBatchOutput(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkBatchOutput(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
-    virtual bool hasUserInput() const override;
-    virtual bool requiresUserInput() const override
+    bool hasUserInput() const override;
+    bool requiresUserInput() const override
     {
         return mRUserInput;
     };
@@ -346,8 +338,8 @@ protected slots:
     void setDir(const QString &dirPath, bool updateLineEdit = true);
 
 protected:
-    virtual void createLayout();
-    virtual void updateCBCompression();
+    void createLayout();
+    void updateCBCompression();
     DkFilenameWidget *createFilenameWidget(const QString &tag = QString());
     void addFilenameWidget(const QString &tag = QString());
 
@@ -357,20 +349,20 @@ private:
     QString mOutputDirectory;
     QString mInputDirectory;
     QVector<DkFilenameWidget *> mFilenameWidgets;
-    DkDirectoryEdit *mOutputlineEdit = 0;
-    QVBoxLayout *mFilenameVBLayout = 0;
-    QCheckBox *mCbOverwriteExisting = 0;
-    QCheckBox *mCbDoNotSave = 0;
-    QCheckBox *mCbUseInput = 0;
-    QCheckBox *mCbDeleteOriginal = 0;
-    QPushButton *mOutputBrowseButton = 0;
+    DkDirectoryEdit *mOutputlineEdit = nullptr;
+    QVBoxLayout *mFilenameVBLayout = nullptr;
+    QCheckBox *mCbOverwriteExisting = nullptr;
+    QCheckBox *mCbDoNotSave = nullptr;
+    QCheckBox *mCbUseInput = nullptr;
+    QCheckBox *mCbDeleteOriginal = nullptr;
+    QPushButton *mOutputBrowseButton = nullptr;
 
-    QComboBox *mCbExtension = 0;
-    QComboBox *mCbNewExtension = 0;
-    QComboBox *mCbCompression = 0;
-    QLabel *mOldFileNameLabel = 0;
-    QLabel *mNewFileNameLabel = 0;
-    QString mExampleName = 0;
+    QComboBox *mCbExtension = nullptr;
+    QComboBox *mCbNewExtension = nullptr;
+    QComboBox *mCbCompression = nullptr;
+    QLabel *mOldFileNameLabel = nullptr;
+    QLabel *mNewFileNameLabel = nullptr;
+    QString mExampleName = nullptr;
 };
 
 class DkProfileSummaryWidget : public DkFadeWidget
@@ -378,7 +370,7 @@ class DkProfileSummaryWidget : public DkFadeWidget
     Q_OBJECT
 
 public:
-    DkProfileSummaryWidget(QWidget *parent = 0);
+    explicit DkProfileSummaryWidget(QWidget *parent = nullptr);
 
     void setProfile(const QString &name, const DkBatchConfig &config);
 
@@ -395,10 +387,10 @@ signals:
 protected:
     void createLayout();
 
-    QLabel *mTitle = 0;
-    QLabel *mNumFiles = 0;
-    QLabel *mOutputDir = 0;
-    QLabel *mFunctions = 0;
+    QLabel *mTitle = nullptr;
+    QLabel *mNumFiles = nullptr;
+    QLabel *mOutputDir = nullptr;
+    QLabel *mFunctions = nullptr;
 };
 
 class DkProfileWidget : public DkBatchContent
@@ -406,7 +398,7 @@ class DkProfileWidget : public DkBatchContent
     Q_OBJECT
 
 public:
-    DkProfileWidget(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkProfileWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     // void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
     bool hasUserInput() const override;
@@ -436,8 +428,8 @@ protected:
     QString currentProfile() const;
     void loadDefaultProfile();
 
-    QListWidget *mProfileList = 0;
-    DkProfileSummaryWidget *mSummary = 0;
+    QListWidget *mProfileList = nullptr;
+    DkProfileSummaryWidget *mSummary = nullptr;
 };
 
 #ifdef WITH_PLUGINS
@@ -446,7 +438,7 @@ class DkBatchPluginWidget : public DkBatchContent
     Q_OBJECT
 
 public:
-    DkBatchPluginWidget(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkBatchPluginWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     void transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const;
     bool loadProperties(QSharedPointer<DkPluginBatch> batchPlugin);
@@ -472,11 +464,11 @@ protected:
     QStringList selectedPlugins(bool selected = true) const;
     QSharedPointer<QSettings> settings() const;
 
-    QStandardItemModel *mModel = 0;
-    DkSettingsWidget *mSettingsEditor = 0;
-    QLabel *mSettingsTitle = 0;
+    QStandardItemModel *mModel = nullptr;
+    DkSettingsWidget *mSettingsEditor = nullptr;
+    QLabel *mSettingsTitle = nullptr;
     QSharedPointer<QSettings> mSettings;
-    DkBatchPluginInterface *mCurrentPlugin = 0;
+    DkBatchPluginInterface *mCurrentPlugin = nullptr;
 };
 #endif
 
@@ -485,7 +477,7 @@ class DkBatchManipulatorWidget : public DkBatchContent
     Q_OBJECT
 
 public:
-    DkBatchManipulatorWidget(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkBatchManipulatorWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     void transferProperties(QSharedPointer<DkManipulatorBatch> batchPlugin) const;
     bool loadProperties(QSharedPointer<DkManipulatorBatch> batchPlugin);
@@ -508,12 +500,12 @@ protected:
     void addSettingsWidgets(DkManipulatorManager &manager);
     void setManager(const DkManipulatorManager &manager);
 
-    QStandardItemModel *mModel = 0;
+    QStandardItemModel *mModel = nullptr;
     DkManipulatorManager mManager;
     QVector<QWidget *> mMplWidgets;
-    QVBoxLayout *mSettingsLayout = 0;
-    QLabel *mSettingsTitle = 0;
-    QLabel *mPreviewLabel = 0;
+    QVBoxLayout *mSettingsLayout = nullptr;
+    QLabel *mSettingsTitle = nullptr;
+    QLabel *mPreviewLabel = nullptr;
     QString mPreviewPath;
     QImage mPreview;
     int mMaxPreview = 300;
@@ -524,13 +516,13 @@ class DkBatchTransformWidget : public DkBatchContent
     Q_OBJECT
 
 public:
-    DkBatchTransformWidget(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkBatchTransformWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     void transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const;
     bool loadProperties(QSharedPointer<DkBatchTransform> batchTransform);
-    bool hasUserInput() const override;
-    bool requiresUserInput() const override;
-    void applyDefault() override;
+    bool hasUserInput() const final; // called from constructor
+    bool requiresUserInput() const final; // may as well be final too
+    void applyDefault() final; // called from constructor
 
 public slots:
     void updateHeader() const;
@@ -541,17 +533,17 @@ protected:
     int getAngle() const;
     QRect cropRect() const;
 
-    QButtonGroup *mRotateGroup = 0;
-    QRadioButton *mRbRotate0 = 0;
-    QRadioButton *mRbRotateLeft = 0;
-    QRadioButton *mRbRotateRight = 0;
-    QRadioButton *mRbRotate180 = 0;
+    QButtonGroup *mRotateGroup = nullptr;
+    QRadioButton *mRbRotate0 = nullptr;
+    QRadioButton *mRbRotateLeft = nullptr;
+    QRadioButton *mRbRotateRight = nullptr;
+    QRadioButton *mRbRotate180 = nullptr;
 
-    QCheckBox *mCbCropMetadata = 0;
+    QCheckBox *mCbCropMetadata = nullptr;
 
-    QCheckBox *mCbCropRectangle = 0;
-    DkRectWidget *mCropRectWidget = 0;
-    QCheckBox *mCbCropRectCenter = 0;
+    QCheckBox *mCbCropRectangle = nullptr;
+    DkRectWidget *mCropRectWidget = nullptr;
+    QCheckBox *mCbCropRectCenter = nullptr;
 
     QComboBox *mResizeComboMode;
     QComboBox *mResizeComboProperties;
@@ -566,7 +558,7 @@ class DkBatchButtonsWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkBatchButtonsWidget(QWidget *parent = 0);
+    explicit DkBatchButtonsWidget(QWidget *parent = nullptr);
 
     void setPaused(bool paused = true);
     QPushButton *logButton();
@@ -579,8 +571,8 @@ signals:
 protected:
     void createLayout();
 
-    QPushButton *mPlayButton = 0;
-    QPushButton *mLogButton = 0;
+    QPushButton *mPlayButton = nullptr;
+    QPushButton *mLogButton = nullptr;
 };
 
 class DkBatchInfoWidget : public DkFadeWidget
@@ -588,7 +580,7 @@ class DkBatchInfoWidget : public DkFadeWidget
     Q_OBJECT
 
 public:
-    DkBatchInfoWidget(QWidget *parent);
+    explicit DkBatchInfoWidget(QWidget *parent);
 
     enum InfoMode {
         info_message,
@@ -605,8 +597,8 @@ public slots:
 protected:
     void createLayout();
 
-    QLabel *mInfo = 0;
-    QLabel *mIcon = 0;
+    QLabel *mInfo = nullptr;
+    QLabel *mIcon = nullptr;
 };
 
 class DkBatchWidget : public DkWidget
@@ -614,8 +606,10 @@ class DkBatchWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkBatchWidget(DkThumbLoader *thumbLoader, const QString &currentDirectory = QString(), QWidget *parent = 0);
-    ~DkBatchWidget();
+    explicit DkBatchWidget(DkThumbLoader *thumbLoader,
+                           const QString &currentDirectory = QString(),
+                           QWidget *parent = nullptr);
+    ~DkBatchWidget() override;
 
     enum batchWidgets {
         batch_input,
@@ -638,7 +632,7 @@ public slots:
     void updateProgress(int progress);
     void updateLog();
     void setSelectedFiles(const QStringList &selFiles);
-    void changeWidget(DkBatchContainer *widget = 0);
+    void changeWidget(DkBatchContainer *widget = nullptr);
     void nextTab();
     void previousTab();
     void saveProfile(const QString &profilePath) const;
@@ -667,24 +661,24 @@ protected:
 
     QVector<DkBatchContainer *> mWidgets;
 
-    QStackedLayout *mCentralLayout = 0;
+    QStackedLayout *mCentralLayout = nullptr;
     int mCurrentIndex = 0;
 
     QString mCurrentDirectory;
 
-    DkBatchProcessing *mBatchProcessing = 0;
+    DkBatchProcessing *mBatchProcessing = nullptr;
 
     // info/controls
-    DkBatchInfoWidget *mInfoWidget = 0;
-    DkProgressBar *mProgressBar = 0;
-    DkBatchButtonsWidget *mButtonWidget = 0;
+    DkBatchInfoWidget *mInfoWidget = nullptr;
+    DkProgressBar *mProgressBar = nullptr;
+    DkBatchButtonsWidget *mButtonWidget = nullptr;
 
     QTimer mLogUpdateTimer;
     bool mLogNeedsUpdate = false;
 
     // title
-    QLabel *mContentTitle = 0;
-    QLabel *mContentInfo = 0;
+    QLabel *mContentTitle = nullptr;
+    QLabel *mContentInfo = nullptr;
 };
 
 }

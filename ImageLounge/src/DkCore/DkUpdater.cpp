@@ -32,28 +32,19 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QApplication>
-#include <QCoreApplication>
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QNetworkCookieJar>
 #include <QNetworkProxyQuery>
-#include <QProcess>
-#include <QPushButton>
-#include <QStandardPaths>
-#include <QStringView>
 #include <QVector>
 #include <QXmlStreamReader>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
-
-#pragma warning(pop)
 
 namespace nmc
 {
@@ -86,9 +77,7 @@ QString DkPackage::name() const
 }
 
 // DkXmlUpdateChecker --------------------------------------------------------------------
-DkXmlUpdateChecker::DkXmlUpdateChecker()
-{
-}
+DkXmlUpdateChecker::DkXmlUpdateChecker() = default;
 
 QVector<DkPackage> DkXmlUpdateChecker::updatesAvailable(QXmlStreamReader &localXml, QXmlStreamReader &remoteXml) const
 {
@@ -362,8 +351,8 @@ void DkUpdater::replyError(QNetworkReply::NetworkError)
 // DkTranslationUpdater --------------------------------------------------------------------
 DkTranslationUpdater::DkTranslationUpdater(bool silent, QObject *parent)
     : QObject(parent)
+    , mSilent(silent)
 {
-    this->silent = silent;
     connect(&mAccessManager, &QNetworkAccessManager::finished, this, &DkTranslationUpdater::replyFinished);
 
     updateAborted = false;
@@ -423,7 +412,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply *reply)
 
     if (reply->error()) {
         qDebug() << "network reply error : url: " << reply->url();
-        if (!qtTranslation && !silent)
+        if (!qtTranslation && !mSilent)
             emit showUpdaterMessage(tr("Unable to download translation"), tr("update"));
         return;
     }
@@ -442,7 +431,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply *reply)
         if (!storageLocation.exists()) {
             if (!storageLocation.mkpath(storageLocation.absolutePath())) {
                 qDebug() << "unable to create storage location ... aborting";
-                if (!qtTranslation && !silent)
+                if (!qtTranslation && !mSilent)
                     emit showUpdaterMessage(tr("Unable to update translation"), tr("update"));
                 return;
             }
@@ -464,12 +453,12 @@ void DkTranslationUpdater::replyFinished(QNetworkReply *reply)
 
         file.close();
 
-        if (!qtTranslation && !silent)
+        if (!qtTranslation && !mSilent)
             emit showUpdaterMessage(tr("Translation updated"), tr("update"));
         qDebug() << "translation updated";
     } else {
         qDebug() << "no newer translations available";
-        if (!silent)
+        if (!mSilent)
             emit showUpdaterMessage(tr("No newer translations found"), tr("update"));
     }
     if (reply->isFinished() && mReplyQt->isFinished()) {

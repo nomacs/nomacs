@@ -24,25 +24,19 @@
 
 #pragma once
 
-#include "DkPageSegmentationUtils.h"
-
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
-
 #include <QColor>
 #include <QImage>
-#pragma warning(pop) // no warnings from includes - end
+
+#include "DkPageSegmentationUtils.h"
 
 namespace nmp
 {
 
-class DkRotatingRect;
-
 class DkPageSegmentation
 {
 public:
-    DkPageSegmentation(const cv::Mat &colImg = cv::Mat(), bool alternativeMethod = false);
+    explicit DkPageSegmentation(const cv::Mat &colImg = cv::Mat(), bool alternativeMethod = false);
+    virtual ~DkPageSegmentation() = default;
 
     virtual void compute();
     virtual void filterDuplicates(float overlap = 0.6f, float areaRatio = 0.5f);
@@ -65,16 +59,16 @@ public:
 
 protected:
     cv::Mat mImg;
-    cv::Mat dbgImg;
+    cv::Mat mDbgImg;
 
-    int thresh = 80;
-    int numThresh = 10;
-    double mMinArea = 12000;
-    double mMaxArea = 0;
-    float maxSide = 0;
-    float maxSideFactor = 0.97f;
-    float scale = 1.0f;
-    bool alternativeMethod;
+    static constexpr int mThresh = 80;
+    static constexpr int mNumThresh = 10;
+    static constexpr double mMinArea = 12000;
+    static constexpr double mMaxArea = 0;
+    static constexpr float maxSide = 0;
+    static constexpr float maxSideFactor = 0.97f;
+    float mScale = 1.0f;
+    bool mAlternativeMethod;
 
     std::vector<DkPolyRect> mRects;
 

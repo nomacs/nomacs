@@ -27,14 +27,10 @@
 
 #include "DkDependencyResolver.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QByteArrayMatcher>
-#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
 #include <QRegularExpression>
-#include <limits>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {

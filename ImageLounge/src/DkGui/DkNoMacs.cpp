@@ -27,7 +27,6 @@
 
 #include "DkNoMacs.h"
 
-// my stuff
 #include "DkActionManager.h"
 #include "DkBatch.h"
 #include "DkCentralWidget.h"
@@ -55,50 +54,31 @@
 #include "DkWidgets.h"
 
 #ifdef WITH_PLUGINS
-#include "DkPluginInterface.h"
 #include "DkPluginManager.h"
-#endif //  WITH_PLUGINS
+#endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
-#include <QBoxLayout>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QResizeEvent>
-#include <QStatusBar>
-// #include <QPanGesture>
 #include <QApplication>
-#include <QClipboard>
 #include <QDesktopServices>
 #include <QDrag>
-#include <QErrorMessage>
 #include <QEvent>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QMimeData>
-#include <QNetworkProxyFactory>
 #include <QProcess>
 #include <QProgressDialog>
+#include <QResizeEvent>
 #include <QScreen>
-#include <QSettings>
-#include <QShortcut>
-#include <QSplashScreen>
 #include <QStringBuilder>
-#include <QSysInfo>
 #include <QTimer>
 #include <QUrlQuery>
-#include <QVector2D>
-#include <QtGlobal>
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
 #endif
-
-#include <assert.h>
-
-#include <iostream>
 
 namespace nmc
 {
@@ -131,25 +111,25 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     am.createMenus(mMenu);
     am.enableImageActions(false);
 
-    mOpenDialog = 0;
-    mSaveDialog = 0;
-    mThumbSaver = 0;
-    mOpacityDialog = 0;
-    mUpdater = 0;
-    mTranslationUpdater = 0;
-    mExportTiffDialog = 0;
-    mUpdateDialog = 0;
-    mProgressDialog = 0;
-    mProgressDialogTranslations = 0;
-    mForceDialog = 0;
-    mTrainDialog = 0;
-    mExplorer = 0;
-    mMetaDataDock = 0;
-    mPrintPreviewDialog = 0;
-    mThumbsDock = 0;
-    mQuickAccess = 0;
+    mOpenDialog = nullptr;
+    mSaveDialog = nullptr;
+    mThumbSaver = nullptr;
+    mOpacityDialog = nullptr;
+    mUpdater = nullptr;
+    mTranslationUpdater = nullptr;
+    mExportTiffDialog = nullptr;
+    mUpdateDialog = nullptr;
+    mProgressDialog = nullptr;
+    mProgressDialogTranslations = nullptr;
+    mForceDialog = nullptr;
+    mTrainDialog = nullptr;
+    mExplorer = nullptr;
+    mMetaDataDock = nullptr;
+    mPrintPreviewDialog = nullptr;
+    mThumbsDock = nullptr;
+    mQuickAccess = nullptr;
 #ifdef WITH_QUAZIP
-    mArchiveExtractionDialog = 0;
+    mArchiveExtractionDialog = nullptr;
 #endif
 
     mOldGeometry = geometry();
@@ -166,9 +146,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
     // qDebug() << "Sorry Fermat, but the Simpsons are right.";
 }
 
-DkNoMacs::~DkNoMacs()
-{
-}
+DkNoMacs::~DkNoMacs() = default;
 
 void DkNoMacs::init()
 {
@@ -384,21 +362,22 @@ void DkNoMacs::clearFolderHistory()
 
 DkCentralWidget *DkNoMacs::getTabWidget() const
 {
-    DkCentralWidget *cw = dynamic_cast<DkCentralWidget *>(centralWidget());
-    return cw;
+    return dynamic_cast<DkCentralWidget *>(centralWidget());
 }
 
 // Qt how-to
 void DkNoMacs::closeEvent(QCloseEvent *event)
 {
-    DkCentralWidget *cw = static_cast<DkCentralWidget *>(centralWidget());
+    DkCentralWidget *cw = getTabWidget();
+    if (!cw)
+        return;
 
-    if (cw && cw->getTabs().size() > 1) {
-        DkMessageBox *msg = new DkMessageBox(QMessageBox::Question,
-                                             tr("Quit nomacs"),
-                                             tr("Do you want nomacs to save your tabs?"),
-                                             (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                             this);
+    if (cw->getTabs().size() > 1) {
+        auto *msg = new DkMessageBox(QMessageBox::Question,
+                                     tr("Quit nomacs"),
+                                     tr("Do you want nomacs to save your tabs?"),
+                                     (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                     this);
         msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
         msg->setButtonText(QMessageBox::No, tr("&Quit"));
         msg->setObjectName("saveTabsDialog");
@@ -902,9 +881,7 @@ void DkNoMacs::animateOpacityUp()
 // >DIR: diem - why can't we put it in mViewport?
 void DkNoMacs::animateChangeOpacity()
 {
-    float newO = (float)windowOpacity();
-
-    if (newO >= 1.0f)
+    if (windowOpacity() >= 1.0)
         animateOpacityDown();
     else
         animateOpacityUp();
@@ -937,6 +914,7 @@ void DkNoMacs::lockWindow(bool lock)
         SetWindowPos((HWND)this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
     }
 #else
+    Q_UNUSED(lock)
     // TODO: find corresponding command for linux etc
 
     // setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
@@ -1152,9 +1130,9 @@ void DkNoMacs::showThumbsDock(bool show)
             settings.setValue("thumbsDockLocation", QMainWindow::dockWidgetArea(mThumbsDock));
 
             mThumbsDock->hide();
-            mThumbsDock->setWidget(0);
+            mThumbsDock->setWidget(nullptr);
             mThumbsDock->deleteLater();
-            mThumbsDock = 0;
+            mThumbsDock = nullptr;
         }
         return;
     }
@@ -1167,7 +1145,7 @@ void DkNoMacs::showThumbsDock(bool show)
         addDockWidget(mThumbsDock->getDockLocationSettings(Qt::TopDockWidgetArea), mThumbsDock);
         thumbsDockAreaChanged();
 
-        QLabel *thumbsTitle = new QLabel(mThumbsDock);
+        auto *thumbsTitle = new QLabel(mThumbsDock);
         thumbsTitle->setObjectName("thumbsTitle");
         thumbsTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         thumbsTitle->setPixmap(QPixmap(":/nomacs/img/widget-separator.png").scaled(QSize(16, 4)));
@@ -1384,7 +1362,7 @@ void DkNoMacs::find(bool filterAction)
             ? DkSearchDialog::filter_button
             : DkSearchDialog::find_button;
         qDebug() << "default button: " << db;
-        DkSearchDialog *searchDialog = new DkSearchDialog(this);
+        auto *searchDialog = new DkSearchDialog(this);
         searchDialog->setDefaultButton(db);
 
         searchDialog->setFiles(getTabWidget()->getCurrentImageLoader()->getFileNames());
@@ -1574,7 +1552,7 @@ void DkNoMacs::newInstance(const QString &filePath)
     QString exe = QApplication::applicationFilePath();
     QStringList args;
 
-    QAction *a = static_cast<QAction *>(sender());
+    auto *a = static_cast<QAction *>(sender());
 
     if (a && a == DkActionManager::instance().action(DkActionManager::menu_file_private_instance))
         args.append("-p");
@@ -1590,21 +1568,8 @@ void DkNoMacs::newInstance(const QString &filePath)
     QProcess::startDetached(exe, args);
 }
 
-void tagWall(const std::list<std::string> &code)
-{
-    for (auto line : code)
-        std::cout << line << std::endl;
-}
-
 void DkNoMacs::loadRecursion()
 {
-    std::list<std::string> code;
-    code.push_back("void tagWall(const std::list<std::string>& code) {");
-    code.push_back("	for (auto line : code)");
-    code.push_back("		std::cout << line << std::endl;");
-    code.push_back("}");
-    tagWall(code);
-
     QImage img = grab().toImage();
 
     if (getTabWidget()->getViewPort())
@@ -1660,7 +1625,7 @@ void DkNoMacs::onWindowLoaded()
 
     if (firstTime) {
         // here are some first time requests
-        DkWelcomeDialog *wecomeDialog = new DkWelcomeDialog(this);
+        auto *wecomeDialog = new DkWelcomeDialog(this);
         wecomeDialog->exec();
 
         settings.setValue("AppSettings/firstTime.nomacs.3", false);
@@ -1697,7 +1662,7 @@ void DkNoMacs::keyReleaseEvent(QKeyEvent *event)
 bool DkNoMacs::eventFilter(QObject *, QEvent *event)
 {
     if (event->type() == QEvent::ShortcutOverride) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        auto *keyEvent = static_cast<QKeyEvent *>(event);
 
         // consume esc key if fullscreen is on
         if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
@@ -1761,8 +1726,8 @@ void DkNoMacs::openFileWith(QAction *action)
         if (!io)
             return;
 
-        QByteArray data = io->readAll();
-        if (data.size() != tmpFile.write(data))
+        QByteArray bytes = io->readAll();
+        if (bytes.size() != tmpFile.write(bytes))
             return;
 
         fileInfo = DkFileInfo(tmpFilePath);
@@ -1893,6 +1858,8 @@ void DkNoMacs::checkForUpdate(bool silent)
         mUpdater->checkForUpdates();
         qDebug() << "checking for updates takes: " << dt;
     }
+#else
+    Q_UNUSED(silent)
 #endif // !#ifndef Q_OS_LINUX
 }
 
@@ -1909,7 +1876,7 @@ void DkNoMacs::showUpdaterMessage(QString msg, QString title)
 
 void DkNoMacs::showUpdateDialog(QString msg, QString title)
 {
-    if (mProgressDialog != 0 && !mProgressDialog->isHidden()) { // check if the progress bar is already open
+    if (mProgressDialog != nullptr && !mProgressDialog->isHidden()) { // check if the progress bar is already open
         showUpdaterMessage(tr("Already downloading update"), "update");
         return;
     }
@@ -2022,7 +1989,7 @@ void DkNoMacs::restartWithTranslationUpdate()
         connect(mTranslationUpdater, &DkTranslationUpdater::showUpdaterMessage, this, &DkNoMacs::showUpdaterMessage);
     }
 
-    mTranslationUpdater->silent = true;
+    mTranslationUpdater->mSilent = true;
 
     connect(mTranslationUpdater, &DkTranslationUpdater::downloadFinished, getTabWidget(), &DkCentralWidget::restart);
     updateTranslations();
@@ -2046,7 +2013,7 @@ void DkNoMacs::openPluginManager()
         return;
     }
 
-    DkPluginManagerDialog *pluginDialog = new DkPluginManagerDialog(this);
+    auto *pluginDialog = new DkPluginManagerDialog(this);
     pluginDialog->exec();
     pluginDialog->deleteLater();
 
@@ -2062,9 +2029,7 @@ DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WindowFlags flags)
 {
 }
 
-DkNoMacsSync::~DkNoMacsSync()
-{
-}
+DkNoMacsSync::~DkNoMacsSync() = default;
 
 void DkNoMacsSync::createActions()
 {
@@ -2077,7 +2042,7 @@ void DkNoMacsSync::createActions()
     connect(am.action(DkActionManager::menu_sync_arrange), &QAction::triggered, this, &DkNoMacs::tcpSendArrange);
 
     auto cm = DkSyncManager::inst().client();
-    assert(cm);
+    Q_ASSERT(cm);
 
     // just for local client
     const auto localCM = dynamic_cast<DkLocalClientManager *>(cm);
@@ -2104,10 +2069,10 @@ void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event)
         qDebug() << "generating a drag event...";
 
         auto cm = dynamic_cast<DkLocalClientManager *>(DkSyncManager::inst().client());
-        assert(cm);
+        Q_ASSERT(cm);
         auto md = cm->mimeData();
 
-        QDrag *drag = new QDrag(this);
+        auto *drag = new QDrag(this);
         drag->setMimeData(md);
         drag->exec(Qt::CopyAction | Qt::MoveAction);
     } else
@@ -2148,7 +2113,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     DkSettingsManager::param().app().appMode = DkSettings::mode_default;
 
     // init members
-    DkCentralWidget *cw = new DkCentralWidget(this);
+    auto *cw = new DkCentralWidget(this);
     setCentralWidget(cw);
 
     init();
@@ -2181,7 +2146,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     setAttribute(Qt::WA_TranslucentBackground, true);
 
     // init members
-    DkCentralWidget *cw = new DkCentralWidget(this);
+    auto *cw = new DkCentralWidget(this);
     setCentralWidget(cw);
 
     init();
@@ -2214,9 +2179,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     DkActionManager::instance().action(DkActionManager::menu_view_fit_frame)->setEnabled(false);
 }
 
-DkNoMacsFrameless::~DkNoMacsFrameless()
-{
-}
+DkNoMacsFrameless::~DkNoMacsFrameless() = default;
 
 void DkNoMacsFrameless::createContextMenu()
 {
@@ -2255,7 +2218,7 @@ void DkNoMacsFrameless::chooseMonitor(bool force)
     QRect screenRect = oldScreen->availableGeometry();
 
     if (qApp->screens().count() > 1) {
-        DkChooseMonitorDialog *cmd = new DkChooseMonitorDialog(this);
+        auto *cmd = new DkChooseMonitorDialog(this);
         cmd->setWindowTitle(tr("Choose a Monitor"));
 
         if (force || cmd->showDialog()) {
@@ -2288,13 +2251,14 @@ void DkNoMacsFrameless::chooseMonitor(bool force)
 bool DkNoMacsFrameless::eventFilter(QObject *, QEvent *event)
 {
     if (event->type() == QEvent::ShortcutOverride) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        const auto *keyEvent = static_cast<QKeyEvent *>(event);
 
         // consume esc key if fullscreen is on
-        if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
-            exitFullScreen();
-            return true;
-        } else if (keyEvent->key() == Qt::Key_Escape) {
+        if (keyEvent->key() == Qt::Key_Escape) {
+            if (isFullScreen()) {
+                exitFullScreen();
+                return true;
+            }
             close();
             return true;
         }
@@ -2315,7 +2279,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
     DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;
 
     // init members
-    DkCentralWidget *cw = new DkCentralWidget(this);
+    auto *cw = new DkCentralWidget(this);
     setCentralWidget(cw);
 
     init();
@@ -2332,8 +2296,5 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
     am.action(DkActionManager::menu_panel_transfertoolbar)->blockSignals(false);
 }
 
-DkNoMacsContrast::~DkNoMacsContrast()
-{
-}
-
+DkNoMacsContrast::~DkNoMacsContrast() = default;
 }

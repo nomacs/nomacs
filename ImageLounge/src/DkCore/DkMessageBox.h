@@ -27,22 +27,10 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QDialog>
 #include <QMessageBox>
-#pragma warning(pop) // no warnings from includes - end
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "nmc_config.h"
 
-// Qt defines
 class QDialogButtonBox;
 class QCheckBox;
 
@@ -58,12 +46,12 @@ public:
                  const QString &title,
                  const QString &text,
                  QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
-                 QWidget *parent = 0,
+                 QWidget *parent = nullptr,
                  Qt::WindowFlags f = Qt::Dialog);
 
-    ~DkMessageBox();
+    ~DkMessageBox() override;
 
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
     void setDefaultButton(QMessageBox::StandardButton button);
     void setButtonText(QMessageBox::StandardButton button, const QString &text);
 

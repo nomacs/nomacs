@@ -29,40 +29,28 @@
 
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
-#include "DkMath.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-#include "DkUtils.h" // just needed for qInfo() #ifdef
-#include <utility>
 
-#pragma warning(push, 0)
 #include <QBuffer>
 #include <QColorSpace>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
-#include <QIcon>
 #include <QImageWriter>
 #include <QNetworkProxyFactory>
 #include <QNetworkReply>
 #include <QObject>
-#include <QPixmap>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
 
-#include <assert.h>
 #include <qmath.h>
 
-// opencv
 #ifdef WITH_OPENCV
-
-#ifdef Q_CC_MSVC
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
 
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
@@ -85,16 +73,17 @@
 #undef int64
 
 #endif // WITH_LIBTIFF
-
-#endif // #ifdef WITH_OPENCV
+#endif // WITH_OPENCV
 
 #ifdef Q_OS_WIN
 #include <olectl.h>
 #pragma comment(lib, "oleaut32.lib")
+#else
+#include "qpsdhandler.h"
+#endif // Q_OS_WIN
 
-#endif // #ifdef Q_OS_WIN
-
-#pragma warning(pop)
+#include <memory>
+#include <utility>
 
 namespace nmc
 {
@@ -106,8 +95,8 @@ DkEditImage::DkEditImage()
 {
 }
 DkEditImage::DkEditImage(const QImage &img, const QSharedPointer<DkMetaDataT> &metaData, const QString &editName)
-    : mImg(img)
-    , mMetaData(metaData)
+    : mMetaData(metaData)
+    , mImg(img)
     , mEditName(editName)
     , mNewImg(true)
     , mNewMetaData(false)
@@ -116,8 +105,8 @@ DkEditImage::DkEditImage(const QImage &img, const QSharedPointer<DkMetaDataT> &m
 }
 
 DkEditImage::DkEditImage(const QSharedPointer<DkMetaDataT> &metaData, const QImage &img, const QString &editName)
-    : mImg(img)
-    , mMetaData(metaData)
+    : mMetaData(metaData)
+    , mImg(img)
     , mEditName(editName)
     , mNewImg(false)
     , mNewMetaData(true)
@@ -537,9 +526,9 @@ DkBasicLoader::LoaderResult DkBasicLoader::loadQt(const QString &filePath,
 
     std::unique_ptr<QIODevice> device;
     if (ba && !ba->isEmpty())
-        device.reset(new QBuffer(ba.get()));
+        device = std::make_unique<QBuffer>(ba.get());
     else
-        device.reset(new QFile(filePath));
+        device = std::make_unique<QFile>(filePath);
 
     if (!device->open(QIODevice::ReadOnly)) {
         qWarning() << "[loadQt] failed to  open file:" << device->errorString();
@@ -605,8 +594,8 @@ bool DkBasicLoader::loadROH(const QString &filePath, QImage &img, QSharedPointer
     unsigned char sByte; // second byte
 
     try {
-        const unsigned char *pData = (const unsigned char *)ba->constData();
-        unsigned char *buffer = new unsigned char[rohW * rohH];
+        const auto *pData = (const unsigned char *)ba->constData();
+        auto *buffer = new unsigned char[rohW * rohH];
 
         if (!buffer)
             return imgLoaded;
@@ -724,11 +713,11 @@ bool DkBasicLoader::loadTIFF(const QString &filePath, QImage &img, QSharedPointe
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
-    TIFF *tiff = 0;
+    TIFF *tiff = nullptr;
 
 // TODO: currently TIFFStreamOpen can only be linked on Windows?!
 #if defined(Q_OS_WIN)
@@ -1154,7 +1143,7 @@ QVector<DkEditImage> *DkBasicLoader::history()
 
 DkEditImage DkBasicLoader::lastEdit() const
 {
-    assert(mImageIndex >= 0 && mImageIndex < mImages.size());
+    Q_ASSERT(mImageIndex >= 0 && mImageIndex < mImages.size());
     return mImages[mImageIndex];
 }
 
@@ -1228,11 +1217,11 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
-    TIFF *tiff = 0;
+    TIFF *tiff = nullptr;
 
 #if defined(Q_OS_WIN)
     std::istringstream is(ba ? ba->toStdString() : "");
@@ -1309,8 +1298,8 @@ bool DkBasicLoader::loadPageAt(int pageIdx)
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
     TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-    oldWarningHandler = TIFFSetWarningHandler(NULL);
-    oldErrorHandler = TIFFSetErrorHandler(NULL);
+    oldWarningHandler = TIFFSetWarningHandler(nullptr);
+    oldErrorHandler = TIFFSetErrorHandler(nullptr);
 
     DkTimer dt;
     TIFF *tiff = TIFFOpen(mFile.toLatin1(), "r");
@@ -1395,11 +1384,11 @@ void DkBasicLoader::resetPageIdx()
     mPageIdx = 1;
 }
 
-void DkBasicLoader::convert32BitOrder(void *buffer, int width) const
+void DkBasicLoader::convert32BitOrder(void *buffer, uint32_t width) const
 {
 #ifdef WITH_LIBTIFF
     // code from Qt QTiffHandler
-    uint32_t *target = reinterpret_cast<uint32_t *>(buffer);
+    auto *target = reinterpret_cast<uint32_t *>(buffer);
     for (uint32_t x = 0; x < width; ++x) {
         uint32_t p = target[x];
         // convert between ARGB and ABGR
@@ -1494,7 +1483,7 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
         QBuffer fileBuffer(ba.data());
         // size_t s = fileBuffer.size();
         fileBuffer.open(QIODevice::WriteOnly);
-        QImageWriter *imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
+        auto *imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
 
         if (compression >= 0) { // -1 -> use Qt's default
             imgWriter->setCompression(compression);
@@ -1797,7 +1786,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString &filePath,
 
     // read header & get a pointer to the first image
     int fileCount, vecSize;
-    const unsigned char *imgPtr = (const unsigned char *)ba->constData();
+    const auto *imgPtr = (const unsigned char *)ba->constData();
     if (!readHeader(&imgPtr, fileCount, vecSize))
         return false;
 
@@ -1900,7 +1889,7 @@ cv::Mat DkBasicLoader::getPatch(const unsigned char **dataPtr, QSize patchSize) 
 
     // ok, take just the second byte
     for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
-        unsigned char *ptr8U = img8U.ptr<unsigned char>(rIdx);
+        auto *ptr8U = img8U.ptr<unsigned char>(rIdx);
 
         for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
             ptr8U[cIdx] = **dataPtr;
@@ -1928,7 +1917,7 @@ int DkBasicLoader::mergeVecFiles(const QStringList &vecFilePaths, QString &saveF
         }
 
         int fileCount, vecSize;
-        const unsigned char *dataPtr = (const unsigned char *)ba->constData();
+        const auto *dataPtr = (const unsigned char *)ba->constData();
         if (!readHeader(&dataPtr, fileCount, vecSize)) {
             qDebug() << "could not read header, skipping: " << fInfo.fileName();
             continue;
@@ -1955,7 +1944,7 @@ int DkBasicLoader::mergeVecFiles(const QStringList &vecFilePaths, QString &saveF
     if (!vecCount)
         return vecCount;
 
-    unsigned int *header = new unsigned int[3];
+    auto *header = new unsigned int[3];
     header[0] = totalFileCount;
     header[1] = lastVecSize;
     header[2] = 0;
@@ -1998,9 +1987,7 @@ FileDownloader::FileDownloader(const QUrl &imageUrl, const QString &filePath, QO
     downloadFile(imageUrl);
 }
 
-FileDownloader::~FileDownloader()
-{
-}
+FileDownloader::~FileDownloader() = default;
 
 void FileDownloader::downloadFile(const QUrl &url)
 {
@@ -2139,15 +2126,22 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
 
         // unpack the data
         int error = iProcessor.unpack();
-        if (std::strcmp(iProcessor.version(), "0.13.5")
-            != 0) // fixes a bug specific to libraw 13 - version call is UNTESTED
-            iProcessor.raw2image();
-
-        if (error != LIBRAW_SUCCESS)
+        if (error != LIBRAW_SUCCESS) {
+            qWarning() << "[RAW] error in unpack:" << error;
             return false;
+        }
+
+        if (std::strcmp(iProcessor.version(), "0.13.5") != 0) {
+            // fixes a bug specific to libraw 13 - version call is UNTESTED
+            error = iProcessor.raw2image();
+            if (error != LIBRAW_SUCCESS)
+                qWarning() << "[RAW] error in raw2image:" << error;
+        }
 
         // develop using libraw
         error = iProcessor.dcraw_process();
+        if (error != LIBRAW_SUCCESS)
+            qWarning() << "[RAW] error in dcraw_process:" << error;
 
         auto rimg = iProcessor.dcraw_make_mem_image();
 
@@ -2331,15 +2325,15 @@ void DkRawLoader::detectSpecialCamera(const LibRaw &iProcessor)
 cv::Mat DkRawLoader::demosaic(LibRaw &iProcessor) const
 {
     cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC1);
-    double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
+    const auto dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
 
     // normalize all image values
     for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
-        unsigned short *ptrRaw = rawMat.ptr<unsigned short>(rIdx);
+        auto *ptrRaw = rawMat.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
             int colIdx = iProcessor.COLOR(rIdx, cIdx);
-            double val = (double)(iProcessor.imgdata.image[(rawMat.cols * rIdx) + cIdx][colIdx]);
+            auto val = (double)(iProcessor.imgdata.image[(rawMat.cols * rIdx) + cIdx][colIdx]);
 
             // normalize the value w.r.t the black point defined
             val = (val - iProcessor.imgdata.color.black) / dynamicRange;
@@ -2349,7 +2343,7 @@ cv::Mat DkRawLoader::demosaic(LibRaw &iProcessor) const
 
     // no demosaicing
     if (mIsChromatic) {
-        unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
+        auto type = (unsigned long)iProcessor.imgdata.idata.filters;
         type = type & 255;
 
         cv::Mat rgbImg;
@@ -2379,16 +2373,16 @@ cv::Mat DkRawLoader::demosaic(LibRaw &iProcessor) const
 cv::Mat DkRawLoader::prepareImg(const LibRaw &iProcessor) const
 {
     cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC3, cv::Scalar(0));
-    double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
+    const auto dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
 
     // normalization function
-    auto normalize = [&](double val) {
+    const auto normalize = [&](double val) {
         val = (val - iProcessor.imgdata.color.black) / dynamicRange;
         return clip<unsigned short>(val * USHRT_MAX);
     };
 
     for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
-        unsigned short *ptrI = rawMat.ptr<unsigned short>(rIdx);
+        auto *ptrI = rawMat.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
             *ptrI = normalize(iProcessor.imgdata.image[rawMat.cols * rIdx + cIdx][0]);
@@ -2408,7 +2402,7 @@ cv::Mat DkRawLoader::whiteMultipliers(const LibRaw &iProcessor) const
     // get camera white balance multipliers
     cv::Mat wm(1, 4, CV_32FC1);
 
-    float *wmp = wm.ptr<float>();
+    auto *wmp = wm.ptr<float>();
 
     for (int idx = 0; idx < wm.cols; idx++)
         wmp[idx] = iProcessor.imgdata.color.cam_mul[idx];
@@ -2445,10 +2439,10 @@ cv::Mat DkRawLoader::gammaTable(const LibRaw &iProcessor) const
     double cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
 
     // read gamma value and create gamma table
-    double gamma = (double)iProcessor.imgdata.params.gamm[0];
+    const auto gamma = (double)iProcessor.imgdata.params.gamm[0];
 
     cv::Mat gmt(1, USHRT_MAX, CV_16UC1);
-    unsigned short *gmtp = gmt.ptr<unsigned short>();
+    auto *gmtp = gmt.ptr<unsigned short>();
 
     for (int idx = 0; idx < gmt.cols; idx++) {
         gmtp[idx] = clip<unsigned short>(
@@ -2467,13 +2461,13 @@ void DkRawLoader::whiteBalance(const LibRaw &iProcessor, cv::Mat &img) const
     assert(wb.cols == 4);
 
     for (int rIdx = 0; rIdx < img.rows; rIdx++) {
-        unsigned short *ptr = img.ptr<unsigned short>(rIdx);
+        auto *ptr = img.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < img.cols; cIdx++) {
             // apply white balance correction
-            unsigned short r = clip<unsigned short>(*ptr * wbp[0]);
-            unsigned short g = clip<unsigned short>(*(ptr + 1) * wbp[1]);
-            unsigned short b = clip<unsigned short>(*(ptr + 2) * wbp[2]);
+            auto r = clip<unsigned short>(*ptr * wbp[0]);
+            auto g = clip<unsigned short>(*(ptr + 1) * wbp[1]);
+            auto b = clip<unsigned short>(*(ptr + 2) * wbp[2]);
 
             // apply color correction
             int cr = qRound(iProcessor.imgdata.color.rgb_cam[0][0] * r + iProcessor.imgdata.color.rgb_cam[0][1] * g
@@ -2502,7 +2496,7 @@ void DkRawLoader::gammaCorrection(const LibRaw &iProcessor, cv::Mat &img) const
     assert(gt.cols == USHRT_MAX);
 
     for (int rIdx = 0; rIdx < img.rows; rIdx++) {
-        unsigned short *ptr = img.ptr<unsigned short>(rIdx);
+        auto *ptr = img.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < img.cols * img.channels(); cIdx++) {
             // values close to 0 are treated linear
@@ -2597,9 +2591,9 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
 {
     // this code is from: http://www.paulbourke.net/dataformats/tga/
     // thanks!
-    Header header;
+    Header header = {};
 
-    const char *dataC = ba->data();
+    auto *dataC = (const uint8_t *)ba->data();
 
     /* Display the header fields */
     header.idlength = *dataC;
@@ -2609,16 +2603,16 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     header.datatypecode = *dataC;
     dataC++;
 
-    const short *dataS = (const short *)dataC;
+    auto *dataS = (const uint16_t *)dataC;
 
     header.colourmaporigin = *dataS;
     dataS++;
     header.colourmaplength = *dataS;
     dataS++;
-    dataC = (const char *)dataS;
+    dataC = (const uint8_t *)dataS;
     header.colourmapdepth = *dataC;
     dataC++;
-    dataS = (const short *)dataC;
+    dataS = (const uint16_t *)dataC;
     header.x_origin = *dataS;
     dataS++;
     header.y_origin = *dataS;
@@ -2627,7 +2621,7 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     dataS++;
     header.height = *dataS;
     dataS++;
-    dataC = (const char *)dataS;
+    dataC = (const uint8_t *)dataS;
     header.bitsperpixel = *dataC;
     dataC++;
     header.imagedescriptor = *dataC;
@@ -2665,7 +2659,7 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
         return false;
     }
 
-    Pixel *pixels = new Pixel[header.width * header.height * sizeof(Pixel)];
+    auto *pixels = new Pixel[header.width * header.height * sizeof(Pixel)];
 
     if (!pixels) {
         qWarning() << "[TGA] could not allocate" << header.width * header.height * sizeof(Pixel) / 1024 << "KB";
@@ -2678,13 +2672,14 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     dataC += skipover;
 
     /* Read the image */
-    int bytes2read = header.bitsperpixel / 8; // save?
-    unsigned char p[5];
+    const int bytes2read = header.bitsperpixel / 8;
+    unsigned char p[5] = {}; // one pixel: up to 4 bytes (32-bits pixel), +1 for RLE compression
+
+    if (bytes2read > 4) // we already checked bitsperpixel, but make this more obvious
+        return false;
 
     for (int n = 0; n < header.width * header.height;) {
         if (header.datatypecode == 2) { /* Uncompressed */
-
-            // TODO: out-of-bounds not checked here...
             for (int bi = 0; bi < bytes2read; bi++, dataC++)
                 p[bi] = *dataC;
 

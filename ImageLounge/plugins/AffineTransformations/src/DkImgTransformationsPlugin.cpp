@@ -33,8 +33,13 @@
 #include "DkToolbars.h"
 #include "DkUtils.h"
 
+#include <QAction>
 #include <QActionGroup>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QMouseEvent>
+#include <QPushButton>
 
 #define PI 3.14159265
 
@@ -46,16 +51,12 @@ namespace nmp
 /**
  *	Constructor
  **/
-DkImgTransformationsPlugin::DkImgTransformationsPlugin()
-{
-}
+DkImgTransformationsPlugin::DkImgTransformationsPlugin() = default;
 
 /**
  *	Destructor
  **/
-DkImgTransformationsPlugin::~DkImgTransformationsPlugin()
-{
-}
+DkImgTransformationsPlugin::~DkImgTransformationsPlugin() = default;
 
 /**
  * Returns descriptive image
@@ -82,7 +83,7 @@ QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(
 
     // for a mViewport plugin runID and image are null
     if (mViewport && imgC) {
-        DkImgTransformationsViewPort *transformVp = qobject_cast<DkImgTransformationsViewPort *>(mViewport);
+        auto *transformVp = qobject_cast<DkImgTransformationsViewPort *>(mViewport);
 
         QImage retImg = QImage();
         if (!transformVp->isCanceled())
@@ -133,7 +134,7 @@ DkImgTransformationsViewPort::~DkImgTransformationsViewPort()
     // however, then we have lot's of toolbars in memory if the user opens the plugin again and again
     if (imgTransformationsToolbar) {
         delete imgTransformationsToolbar;
-        imgTransformationsToolbar = 0;
+        imgTransformationsToolbar = nullptr;
     }
 }
 
@@ -368,7 +369,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
     QRect imgRect = QRect();
 
     if (parent()) {
-        nmc::DkBaseViewPort *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+        auto *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
         if (mViewport) {
             imgRect = mViewport->getImage().rect();
             inImage = QImage(mViewport->getImage());
@@ -558,7 +559,7 @@ void DkImgTransformationsViewPort::drawGuide(QPainter *painter, const QPolygonF 
 QImage DkImgTransformationsViewPort::getTransformedImage()
 {
     if (parent()) {
-        nmc::DkBaseViewPort *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+        auto *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
         if (mViewport) {
             QImage inImage = mViewport->getImage();
             QTransform affineTransform = QTransform();
@@ -713,7 +714,7 @@ void DkImgTransformationsViewPort::setAngleLinesEnabled(bool enabled)
 void DkImgTransformationsViewPort::calculateAutoRotation()
 {
     if (parent()) {
-        nmc::DkBaseViewPort *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+        auto *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
         if (mViewport) {
             QImage img = mViewport->getImage();
 
@@ -769,7 +770,7 @@ void DkImgTransformationsViewPort::setGuideStyle(int guideMode)
 void DkImgTransformationsViewPort::setVisible(bool visible)
 {
     if (parent()) {
-        nmc::DkBaseViewPort *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+        auto *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
         if (mViewport) {
             intrRect->setInitialValues(mViewport->getImage().rect());
             rotationCenter = QPoint(mViewport->getImage().width() / 2, mViewport->getImage().height() / 2);
@@ -796,9 +797,7 @@ DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString &title,
     QMetaObject::connectSlotsByName(this);
 }
 
-DkImgTransformationsToolBar::~DkImgTransformationsToolBar()
-{
-}
+DkImgTransformationsToolBar::~DkImgTransformationsToolBar() = default;
 
 void DkImgTransformationsToolBar::createIcons()
 {
@@ -820,11 +819,11 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     enterSc.append(QKeySequence(Qt::Key_Enter));
     enterSc.append(QKeySequence(Qt::Key_Return));
 
-    QAction *applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
+    auto *applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
     applyAction->setShortcuts(enterSc);
     applyAction->setObjectName("applyAction");
 
-    QAction *cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
+    auto *cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
     cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
     cancelAction->setObjectName("cancelAction");
 
@@ -934,7 +933,7 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     guideBox->setToolTip(tr("Show Guides in the Preview"));
     guideBox->setStatusTip(guideBox->toolTip());
 
-    QActionGroup *modesGroup = new QActionGroup(this);
+    auto *modesGroup = new QActionGroup(this);
     modesGroup->addAction(scaleAction);
     modesGroup->addAction(rotateAction);
     modesGroup->addAction(shearAction);
@@ -1238,9 +1237,7 @@ void DkInteractionRects::updateRects(QRect imgRect)
     intrRect.push_back(rect);
 }
 
-DkInteractionRects::~DkInteractionRects()
-{
-}
+DkInteractionRects::~DkInteractionRects() = default;
 
 void DkInteractionRects::draw(QPainter *painter)
 {

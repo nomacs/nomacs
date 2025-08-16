@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkImageContainer.h"
+
 #include "DkBasicLoader.h"
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
@@ -33,15 +34,11 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDir>
 #include <QImage>
 #include <QObject>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
-#pragma warning(pop) // no warnings from includes - end
-
-#pragma warning(disable : 4251) // TODO: remove
 
 namespace nmc
 {
@@ -58,9 +55,7 @@ DkImageContainer::DkImageContainer(const DkFileInfo &fileInfo)
     init();
 }
 
-DkImageContainer::~DkImageContainer()
-{
-}
+DkImageContainer::~DkImageContainer() = default;
 
 void DkImageContainer::init()
 {

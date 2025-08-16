@@ -27,29 +27,17 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QDebug>
 #include <QImage>
-#include <QProgressDialog>
 #include <QVector3D>
 #include <QVector4D>
-#include <QWidget>
-#include <QtCore/qmath.h>
-#include <QtGlobal>
-#include <cmath>
-#pragma warning(pop) // no warnings from includes - end
 
-// opencv
 #ifdef WITH_OPENCV
-
-#ifdef WIN32
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-
 #endif
+
+class QProgressDialog;
+class QWidget;
 
 namespace nmp
 {
@@ -64,7 +52,7 @@ public:
         dir_end,
     };
 
-    DkSkewEstimator(QWidget *mainWin = 0);
+    explicit DkSkewEstimator(QWidget *mainWin = nullptr);
     ~DkSkewEstimator();
 
     double getSkewAngle();
@@ -79,22 +67,23 @@ private:
     double computeSkewAngle(QVector<QVector3D> weights, double imgDiagonal);
     int randInt(int low, int high);
 
-    int nIter;
-    QSize sepDims;
-    int delta;
-    double sigma;
-    double sepThr;
-    int epsilon;
-    int kMax;
-    int minLineLength;
-    int minLineProjLength;
+    static constexpr int nIter = 200;
+    static constexpr double mSigma = 0.3;
+    static constexpr double mSepThr = 0.1;
+    static constexpr int mEpsilon = 2;
+    static constexpr int mKMax = 7;
 
-    QVector<QVector4D> selectedLines;
-    QVector<int> selectedLineTypes;
-    cv::Mat matImg;
-    int rotationFactor;
-    QProgressDialog *progress;
-    QWidget *mainWin;
+    QSize mSepDims{0, 0};
+    int mDelta = 0;
+    int mMinLineLength = 10;
+    int mMinLineProjLength = mMinLineLength / 2;
+    int mRotationFactor = 1;
+
+    QVector<QVector4D> mSelectedLines;
+    QVector<int> mSelectedLineTypes;
+    cv::Mat mMatImg;
+    QProgressDialog *mProgress;
+    QWidget *mMainWin;
 };
 
 };

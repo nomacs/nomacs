@@ -37,56 +37,33 @@
 #include "DkTimer.h"
 #include "DkToolbars.h"
 #include "DkUtils.h"
-#include <QtGlobal>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
-#include <QApplication>
 #include <QBoxLayout>
 #include <QButtonGroup>
 #include <QColor>
-#include <QColorDialog>
 #include <QComboBox>
 #include <QCompleter>
-#include <QDialog>
-#include <QDockWidget>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
+#include <QFileIconProvider>
 #include <QFileSystemModel>
-#include <QFuture>
 #include <QFutureWatcher>
-#include <QGraphicsBlurEffect>
-#include <QGraphicsItem>
-#include <QGraphicsItemAnimation>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsView>
+#include <QGuiApplication>
 #include <QHeaderView>
-#include <QInputDialog>
 #include <QLabel>
 #include <QLineEdit>
-#include <QMainWindow>
-#include <QMap>
 #include <QMenu>
 #include <QMessageBox>
-#include <QMimeData>
 #include <QMouseEvent>
-#include <QMovie>
 #include <QObject>
 #include <QPainter>
-#include <QPointer>
+#include <QPainterPath>
 #include <QProgressDialog>
 #include <QPushButton>
-#include <QRadioButton>
 #include <QRegularExpression>
 #include <QScreen>
-#include <QScrollArea>
-#include <QScrollBar>
 #include <QSortFilterProxyModel>
-#include <QStringBuilder>
-#include <QSvgRenderer>
-#include <QThread>
-#include <QTimeLine>
 #include <QTimer>
 #include <QToolButton>
 #include <QToolTip>
@@ -94,9 +71,6 @@
 #include <QVBoxLayout>
 #include <QVector2D>
 #include <QtConcurrentRun>
-#include <qmath.h>
-#include <qtconcurrentmap.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -112,9 +86,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget *parent)
     mMouseDown = false;
 }
 
-DkFolderScrollBar::~DkFolderScrollBar()
-{
-}
+DkFolderScrollBar::~DkFolderScrollBar() = default;
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> images)
 {
@@ -199,38 +171,35 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
     for (int idx = 0; idx < images.size(); idx++) {
         const auto img = images[idx];
         mWatchers[idx] = std::make_unique<QFutureWatcher<void>>();
-        mWatchers[idx]->setFuture(QtConcurrent::run(
-            [](const QString &filePath, const bool forceSave) {
-                LoadThumbnailOption opt = LoadThumbnailOption::none;
-                if (forceSave) {
-                    opt = LoadThumbnailOption::force_full;
+        mWatchers[idx]->setFuture(QtConcurrent::run([filePath = img->filePath(), forceSave]() {
+            LoadThumbnailOption opt = LoadThumbnailOption::none;
+            if (forceSave) {
+                opt = LoadThumbnailOption::force_full;
+            }
+
+            std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
+            if (!res || (!forceSave && res->fromExif)) {
+                return;
+            }
+
+            // save the thumbnail
+            try {
+                int orientation = res->metaData->getOrientationDegrees();
+                QImage rotatedThumb = res->thumb;
+                if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set
+                    && orientation != 0) {
+                    // TODO: Use DkUtils rotation
+                    QTransform rotationMatrix;
+                    rotationMatrix.rotate(-orientation);
+                    rotatedThumb = rotatedThumb.transformed(rotationMatrix);
                 }
 
-                std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
-                if (!res || (!forceSave && res->fromExif)) {
-                    return;
-                }
-
-                // save the thumbnail
-                try {
-                    int orientation = res->metaData->getOrientationDegrees();
-                    QImage rotatedThumb = res->thumb;
-                    if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set
-                        && orientation != 0) {
-                        // TODO: Use DkUtils rotation
-                        QTransform rotationMatrix;
-                        rotationMatrix.rotate(-orientation);
-                        rotatedThumb = rotatedThumb.transformed(rotationMatrix);
-                    }
-
-                    res->metaData->updateImageMetaData(rotatedThumb);
-                    res->metaData->saveMetaData(res->filePath);
-                } catch (...) {
-                    qWarning() << "Sorry, I could not save the metadata";
-                }
-            },
-            img->filePath(),
-            forceSave));
+                res->metaData->updateImageMetaData(rotatedThumb);
+                res->metaData->saveMetaData(res->filePath);
+            } catch (...) {
+                qWarning() << "Sorry, I could not save the metadata";
+            }
+        }));
         connect(mWatchers[idx].get(), &QFutureWatcherBase::finished, this, &DkThumbsSaver::thumbLoaded);
     }
 }
@@ -240,11 +209,11 @@ void DkThumbsSaver::thumbLoaded()
     mNumSaved++;
     emit numFilesSignal(mNumSaved);
 
-    if (mNumSaved == mWatchers.size() || mStop) {
+    if ((unsigned int)mNumSaved == mWatchers.size() || mStop) {
         if (mPd) {
             mPd->close();
             mPd->deleteLater();
-            mPd = 0;
+            mPd = nullptr;
         }
         mStop = true;
 
@@ -353,8 +322,8 @@ void DkBrowseExplorer::setRootPath(const QString &root)
 
 void DkBrowseExplorer::createLayout()
 {
-    QWidget *rootPathWidget = new QWidget(this);
-    QHBoxLayout *rpLayout = new QHBoxLayout(rootPathWidget);
+    auto *rootPathWidget = new QWidget(this);
+    auto *rpLayout = new QHBoxLayout(rootPathWidget);
     mRootPathLabel = new DkElidedLabel(rootPathWidget, "");
 
     auto browseButton = new QPushButton(tr("Browse"));
@@ -400,7 +369,7 @@ DkExplorer::DkExplorer(const QString &title, QWidget *parent /* = 0 */, Qt::Wind
     readSettings();
 
     // open selected images
-    QAction *selAction = new QAction(tr("Open Image"), this);
+    auto *selAction = new QAction(tr("Open Image"), this);
     selAction->setShortcut(Qt::Key_Return);
     selAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(selAction, &QAction::triggered, this, &DkExplorer::openSelected);
@@ -442,7 +411,7 @@ void DkExplorer::createLayout()
     mFileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
     mFileTree->header()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
-    QWidget *widget = new QWidget(this);
+    auto *widget = new QWidget(this);
     mLayout = new QVBoxLayout(widget);
     mLayout->setContentsMargins(0, 0, 0, 0);
     mLayout->setSpacing(0);
@@ -494,16 +463,16 @@ void DkExplorer::fileClicked(const QModelIndex &index) const
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
 {
-    QMenu *cm = new QMenu(this);
+    auto *cm = new QMenu(this);
 
     // enable editing
-    QAction *editAction = new QAction(tr("Editable"), this);
+    auto *editAction = new QAction(tr("Editable"), this);
     editAction->setCheckable(true);
     editAction->setChecked(!mFileModel->isReadOnly());
     connect(editAction, &QAction::triggered, this, &DkExplorer::setEditable);
 
     // open selected images
-    QAction *selAction = new QAction(tr("Open Selected Image"), this);
+    auto *selAction = new QAction(tr("Open Selected Image"), this);
     selAction->setCheckable(true);
     selAction->setChecked(mLoadSelected);
     connect(selAction, &QAction::triggered, this, &DkExplorer::enableLoadSelected);
@@ -513,7 +482,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
     cm->addSeparator();
 
     // adjust sizes
-    QAction *sizeAction = new QAction(tr("Adjust Columns"), this);
+    auto *sizeAction = new QAction(tr("Adjust Columns"), this);
     connect(sizeAction, &QAction::triggered, this, &DkExplorer::adjustColumnWidth);
 
     cm->addAction(sizeAction);
@@ -522,7 +491,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event)
     mColumnActions.clear(); // quick&dirty
 
     for (int idx = 0; idx < mFileModel->columnCount(); idx++) {
-        QAction *action = new QAction(mFileModel->headerData(idx, Qt::Horizontal).toString(), this);
+        auto *action = new QAction(mFileModel->headerData(idx, Qt::Horizontal).toString(), this);
         action->setCheckable(true);
         action->setChecked(!mFileTree->isColumnHidden(idx));
         action->setObjectName(QString::number(idx));
@@ -806,7 +775,7 @@ QTransform DkOverview::getScaledImageMatrix()
 
     // the image resizes as we zoom
     QRectF imgRect = QRectF(QPoint(lm, tm), mImgSize);
-    float ratioImg = (float)(imgRect.width() / imgRect.height());
+    auto ratioImg = (float)(imgRect.width() / imgRect.height());
     float ratioWin = (float)(iSize.width()) / (float)(iSize.height());
 
     QTransform imgMatrix;
@@ -859,15 +828,15 @@ void DkZoomWidget::createLayout()
     mSbZoom->setMaximum(6000);
     connect(mSbZoom, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkZoomWidget::onSbZoomValueChanged);
 
-    QLabel *sliderWidget = new QLabel(this);
+    auto *sliderWidget = new QLabel(this);
     sliderWidget->setObjectName("DkOverviewSliderWidget");
-    QHBoxLayout *sliderLayout = new QHBoxLayout(sliderWidget);
+    auto *sliderLayout = new QHBoxLayout(sliderWidget);
     sliderLayout->setContentsMargins(10, 0, 0, 0);
     sliderLayout->setSpacing(10);
     sliderLayout->addWidget(mSlZoom);
     sliderLayout->addWidget(mSbZoom);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     // mLayout->setContentsMargins(10,10,10,10);
     layout->setSpacing(0);
     layout->addWidget(mOverview);
@@ -920,7 +889,7 @@ DkButton::DkButton(const QString &text, QWidget *parent)
 DkButton::DkButton(const QIcon &icon, const QString &text, QWidget *parent)
     : QPushButton(icon, text, parent)
 {
-    checkedIcon = icon;
+    mCheckedIcon = icon;
     setText(text);
 
     init();
@@ -929,9 +898,10 @@ DkButton::DkButton(const QIcon &icon, const QString &text, QWidget *parent)
 DkButton::DkButton(const QIcon &checkedIcon, const QIcon &uncheckedIcon, const QString &text, QWidget *parent)
     : QPushButton(checkedIcon, text, parent)
 {
-    this->checkedIcon = checkedIcon;
-    this->uncheckedIcon = uncheckedIcon;
-    this->setCheckable(true);
+    mCheckedIcon = checkedIcon;
+    mUncheckedIcon = uncheckedIcon;
+
+    setCheckable(true);
     setText(text);
 
     init();
@@ -939,18 +909,18 @@ DkButton::DkButton(const QIcon &checkedIcon, const QIcon &uncheckedIcon, const Q
 
 void DkButton::init()
 {
-    setIcon(checkedIcon);
+    setIcon(mCheckedIcon);
 
-    if (!checkedIcon.availableSizes().empty())
-        this->setMaximumSize(checkedIcon.availableSizes()[0]); // crashes if the image is empty!!
+    if (!mCheckedIcon.availableSizes().empty())
+        this->setMaximumSize(mCheckedIcon.availableSizes()[0]); // crashes if the image is empty!!
 
-    mouseOver = false;
+    mMouseOver = false;
     keepAspectRatio = true;
 }
 
 void DkButton::setFixedSize(QSize size)
 {
-    mySize = size;
+    mMySize = size;
     this->setMaximumSize(size);
 }
 
@@ -963,28 +933,28 @@ void DkButton::paintEvent(QPaintEvent *)
 
     if (!isEnabled())
         opacity = 0.5f;
-    else if (!mouseOver)
+    else if (!mMouseOver)
         opacity = 0.7f;
 
     painter.setOpacity(opacity);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
-    if (!mySize.isEmpty()) {
-        offset = QPoint(qRound((float)(size().width() - mySize.width()) * 0.5f),
-                        qRound((float)(size().height() - mySize.height()) * 0.5f));
-        s = mySize;
+    if (!mMySize.isEmpty()) {
+        offset = QPoint(qRound((float)(size().width() - mMySize.width()) * 0.5f),
+                        qRound((float)(size().height() - mMySize.height()) * 0.5f));
+        s = mMySize;
     } else
         s = this->size();
 
     // scale to parent label
-    QRect r = (keepAspectRatio) ? QRect(offset, checkedIcon.actualSize(s))
+    QRect r = (keepAspectRatio) ? QRect(offset, mCheckedIcon.actualSize(s))
                                 : QRect(offset, s); // actual size preserves the aspect ratio
     QPixmap pm2draw;
 
     if (isChecked() || !isCheckable())
-        pm2draw = checkedIcon.pixmap(s);
+        pm2draw = mCheckedIcon.pixmap(s);
     else
-        pm2draw = uncheckedIcon.pixmap(s);
+        pm2draw = mUncheckedIcon.pixmap(s);
 
     if (this->isDown()) {
         QPixmap effect = createSelectedEffect(&pm2draw);
@@ -1005,22 +975,22 @@ QPixmap DkButton::createSelectedEffect(QPixmap *pm)
 
 void DkButton::focusInEvent(QFocusEvent *)
 {
-    mouseOver = true;
+    mMouseOver = true;
 }
 
 void DkButton::focusOutEvent(QFocusEvent *)
 {
-    mouseOver = false;
+    mMouseOver = false;
 }
 
 void DkButton::enterEvent(DkEnterEvent *)
 {
-    mouseOver = true;
+    mMouseOver = true;
 }
 
 void DkButton::leaveEvent(QEvent *)
 {
-    mouseOver = false;
+    mMouseOver = false;
 }
 
 // star label --------------------------------------------------------------------
@@ -1135,7 +1105,7 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
     // FIXME: this block is disabled because if you answer NO it would just keep recursing
     //        through setVisible(). Also the setting is not saved to file and no UI for it exists.
     //        To fix this it should have a context menu like other panels
-    if (0) {
+    if (false) {
         // nothing to display??
         if (!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_name)
             && !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)
@@ -1286,7 +1256,7 @@ void DkPlayer::createLayout()
 
     // now add to mLayout
     container = new QWidget(this);
-    QHBoxLayout *layout = new QHBoxLayout(container);
+    auto *layout = new QHBoxLayout(container);
     // layout->setContentsMargins(0,0,0,0);
     layout->addStretch();
     layout->addWidget(previousButton);
@@ -1294,7 +1264,7 @@ void DkPlayer::createLayout()
     layout->addWidget(nextButton);
     layout->addStretch();
 
-    QVBoxLayout *l = new QVBoxLayout(this);
+    auto *l = new QVBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(container);
     l->addStretch();
@@ -1423,7 +1393,7 @@ void DkHudNavigation::createLayout()
     mNextButton->setIconSize(s);
     connect(mNextButton, &QPushButton::pressed, this, &DkHudNavigation::nextSignal);
 
-    QHBoxLayout *l = new QHBoxLayout(this);
+    auto *l = new QHBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(mPreviousButton);
     l->addStretch();
@@ -1447,14 +1417,13 @@ void DkHudNavigation::showPrevious()
 // DkTransformRectangle --------------------------------------------------------------------
 DkTransformRect::DkTransformRect(int idx, DkRotatingRect *rect, QWidget *parent, Qt::WindowFlags f)
     : DkWidget(parent, f)
+    , mRect(rect)
+    , mParentIdx(idx)
+    , mSize(12, 12)
 {
-    this->parentIdx = idx;
-    this->size = QSize(12, 12);
-    this->rect = rect;
-
     init();
 
-    this->resize(size);
+    resize(mSize);
     setCursor(Qt::CrossCursor);
 }
 
@@ -1493,10 +1462,10 @@ void DkTransformRect::draw(QPainter *painter)
 void DkTransformRect::mousePressEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        posGrab = event->globalPosition();
-        initialPos = geometry().topLeft();
+        mPosGrab = event->globalPosition();
+        mInitialPos = geometry().topLeft();
 
-        emit updateDiagonal(parentIdx);
+        emit updateDiagonal(mParentIdx);
     }
     qDebug() << "mouse pressed control point";
     QWidget::mousePressEvent(event);
@@ -1505,8 +1474,8 @@ void DkTransformRect::mousePressEvent(QMouseEvent *event)
 void DkTransformRect::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        QPointF pt = initialPos + event->globalPosition() - posGrab;
-        emit ctrlMovedSignal(parentIdx, pt, event->modifiers(), true);
+        QPointF pt = mInitialPos + event->globalPosition() - mPosGrab;
+        emit ctrlMovedSignal(mParentIdx, pt, event->modifiers(), true);
     }
 
     QWidget::mouseMoveEvent(event);
@@ -1519,8 +1488,8 @@ void DkTransformRect::mouseReleaseEvent(QMouseEvent *event)
 
 void DkTransformRect::enterEvent(DkEnterEvent *)
 {
-    if (rect)
-        setCursor(rect->cpCursor(parentIdx));
+    if (mRect)
+        setCursor(mRect->cpCursor(mParentIdx));
 }
 
 // DkEditableRectangle --------------------------------------------------------------------
@@ -1571,8 +1540,8 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos)
     if (mWorldTform)
         imgViewRect = mWorldTform->mapRect(imgViewRect);
 
-    float x = (float)pos.x();
-    float y = (float)pos.y();
+    auto x = (float)pos.x();
+    auto y = (float)pos.y();
     float magicMargin = 5; // 5 px for now
 
     if (qAbs(x - imgViewRect.left()) < magicMargin)
@@ -1597,8 +1566,8 @@ QPointF DkEditableRect::clipToImageForce(const QPointF &pos)
     if (mWorldTform)
         imgViewRect = mWorldTform->mapRect(imgViewRect);
 
-    float x = (float)pos.x();
-    float y = (float)pos.y();
+    auto x = (float)pos.x();
+    auto y = (float)pos.y();
 
     if (x < imgViewRect.left())
         x = (float)imgViewRect.left();
@@ -1721,8 +1690,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event)
                 QPointF lp = p[idx % 4];
                 QPointF rp = p[(idx + 1) % 4];
 
-                QVector2D lv = QVector2D(lp - s);
-                QVector2D rv = QVector2D(rp - s);
+                auto lv = QVector2D(lp - s);
+                auto rv = QVector2D(rp - s);
 
                 cp = (lv + 0.5 * (rv - lv)).toPointF();
             }
@@ -2054,7 +2023,7 @@ void DkEditableRect::setVisible(bool visible)
 DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget *parent /* = 0*/, Qt::WindowFlags f /* = 0*/)
     : DkEditableRect(rect, parent, f)
 {
-    cropToolbar = 0;
+    cropToolbar = nullptr;
 }
 
 void DkCropWidget::createToolbar()
@@ -2131,7 +2100,7 @@ DkHistogram::DkHistogram(QWidget *parent)
     loadSettings();
 
     // create context menu
-    QAction *showStats = new QAction(tr("Show Statistics"), this);
+    auto *showStats = new QAction(tr("Show Statistics"), this);
     showStats->setCheckable(true);
     showStats->setChecked(mDisplayMode == DisplayMode::histogram_mode_extended);
     connect(showStats, &QAction::triggered, this, &DkHistogram::onToggleStatsTriggered);
@@ -2140,9 +2109,7 @@ DkHistogram::DkHistogram(QWidget *parent)
     mContextMenu->addAction(showStats);
 }
 
-DkHistogram::~DkHistogram()
-{
-}
+DkHistogram::~DkHistogram() = default;
 
 /**
  * Paints the image histogram
@@ -2240,7 +2207,7 @@ void DkHistogram::onToggleStatsTriggered(bool show)
 void DkHistogram::loadSettings()
 {
     int styleSetting = DkSettingsManager::param().display().histogramStyle;
-    DisplayMode maybeMode = static_cast<DisplayMode>(styleSetting);
+    auto maybeMode = static_cast<DisplayMode>(styleSetting);
     if (maybeMode == DisplayMode::histogram_mode_simple || maybeMode == DisplayMode::histogram_mode_extended) {
         mDisplayMode = maybeMode;
     } else {
@@ -2327,9 +2294,9 @@ void DkHistogram::drawHistogram(QImage imgQt)
             const QRgb *pixel = (QRgb *)(imgQt.constScanLine(rIdx));
 
             for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
-                size_t pixR = static_cast<size_t>(qRed(*pixel));
-                size_t pixG = static_cast<size_t>(qGreen(*pixel));
-                size_t pixB = static_cast<size_t>(qBlue(*pixel));
+                auto pixR = static_cast<size_t>(qRed(*pixel));
+                auto pixG = static_cast<size_t>(qGreen(*pixel));
+                auto pixB = static_cast<size_t>(qBlue(*pixel));
 
                 mHist[0][pixR]++;
                 mHist[1][pixG]++;
@@ -2472,22 +2439,22 @@ QString DkFileInfoWrapper::getFilePath() const
 // DkFileLabel --------------------------------------------------------------------
 DkFolderLabel::DkFolderLabel(const DkFileInfoWrapper &fileInfo, QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
+    , mFileInfo(fileInfo)
 {
     // we don't use the file labels anymore
     // + isDir() might hang - if we try to get an unavailable network resource on windows
     // QFileInfo fInfo(fileInfo.getFilePath());
     // if (fInfo.isDir())
-    setText(fileInfo.getFilePath());
+    setText(mFileInfo.getFilePath());
     // else
     //	setText(fInfo.fileName());
 
-    this->fileInfo = fileInfo;
     setObjectName("DkFileLabel");
 }
 
 void DkFolderLabel::mousePressEvent(QMouseEvent *ev)
 {
-    emit loadFileSignal(fileInfo.getFilePath());
+    emit loadFileSignal(mFileInfo.getFilePath());
 
     QLabel::mousePressEvent(ev);
 }
@@ -2499,8 +2466,8 @@ DkDirectoryEdit::DkDirectoryEdit(QWidget *parent /* = 0 */)
     setObjectName("DkWarningEdit");
     connect(this, &DkDirectoryEdit::textChanged, this, &DkDirectoryEdit::lineEditChanged);
 
-    QCompleter *completer = new QCompleter(this);
-    QFileSystemModel *model = new QFileSystemModel(completer);
+    auto *completer = new QCompleter(this);
+    auto *model = new QFileSystemModel(completer);
     model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     completer->setModel(model);
     setCompleter(completer);
@@ -2513,8 +2480,8 @@ DkDirectoryEdit::DkDirectoryEdit(const QString &content, QWidget *parent /* = 0 
     connect(this, &DkDirectoryEdit::textChanged, this, &DkDirectoryEdit::lineEditChanged);
     setText(content);
 
-    QCompleter *completer = new QCompleter(this);
-    QFileSystemModel *model = new QFileSystemModel(completer);
+    auto *completer = new QCompleter(this);
+    auto *model = new QFileSystemModel(completer);
     model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     completer->setModel(model);
     setCompleter(completer);
@@ -2551,10 +2518,10 @@ void DkDirectoryChooser::createLayout(const QString &dirPath)
     mDirEdit = new DkDirectoryEdit(dirPath, this);
     mDirEdit->setObjectName("dirEdit");
 
-    QPushButton *dirButton = new QPushButton(tr("..."), this);
+    auto *dirButton = new QPushButton(tr("..."), this);
     connect(dirButton, &QPushButton::clicked, this, &DkDirectoryChooser::onDirButtonClicked);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->setAlignment(Qt::AlignLeft);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(mDirEdit);
@@ -2740,6 +2707,8 @@ void DkProgressBar::animatePoint(double &xVal)
     xVal += speed;
 }
 
+#ifdef ENABLE_DEAD_CODE
+
 // DkGenericProfileWidget --------------------------------------------------------------------
 DkGenericProfileWidget::DkGenericProfileWidget(const QString &name, QWidget *parent, const QString &settingsPath)
     : DkNamedWidget(name, parent)
@@ -2921,6 +2890,7 @@ void DkGenericProfileWidget::paintEvent(QPaintEvent *ev)
     } else
         DkNamedWidget::paintEvent(ev);
 }
+#endif // ENABLE_DEAD_CODE
 
 // DkTabEntryWidget --------------------------------------------------------------------
 DkTabEntryWidget::DkTabEntryWidget(const QIcon &icon, const QString &text, QWidget *parent)
@@ -2998,10 +2968,10 @@ void DkDisplayWidget::createLayout()
 {
     mScreens = QGuiApplication::screens();
 
-    QButtonGroup *bg = new QButtonGroup(this);
+    auto *bg = new QButtonGroup(this);
 
     for (int idx = 0; idx < mScreens.size(); idx++) {
-        QPushButton *sb = new QPushButton(QString::number(idx + 1), this);
+        auto *sb = new QPushButton(QString::number(idx + 1), this);
         sb->setObjectName("displayButton");
         sb->setCheckable(true);
         sb->setFlat(true);
@@ -3009,7 +2979,7 @@ void DkDisplayWidget::createLayout()
         bg->addButton(sb);
         mScreenButtons << sb;
     }
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) false positive on button group
 
 void DkDisplayWidget::updateLayout()
 {

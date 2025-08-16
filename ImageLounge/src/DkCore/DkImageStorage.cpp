@@ -26,32 +26,31 @@
  *******************************************************************************************************/
 
 #include "DkImageStorage.h"
+
 #include "DkActionManager.h"
 #include "DkMath.h"
 #include "DkSettings.h"
 #include "DkThumbs.h"
 #include "DkTimer.h"
-#include <cmath>
 
-#ifdef WITH_OPENCV
-#include <opencv2/core.hpp>
-#endif
-
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QBitmap>
 #include <QColorSpace>
-#include <QDebug>
 #include <QPainter>
 #include <QPixmap>
 #include <QSvgRenderer>
-#include <QTimer>
 #include <QtConcurrentRun>
 #include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
+
+#ifdef WITH_OPENCV
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
+#endif
+
+#include <cmath>
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
 #endif
+
 namespace nmc
 {
 // DkImage --------------------------------------------------------------------
@@ -183,7 +182,7 @@ QImage DkImage::resizeImage(const QImage &img,
 
         return qImg;
 
-    } catch (std::exception se) {
+    } catch (...) {
         return QImage();
     }
 
@@ -193,7 +192,8 @@ QImage DkImage::resizeImage(const QImage &img,
 
     if (correctGamma)
         DkImage::gammaToLinear(qImg);
-    qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
+
+    qImg = qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
 
     if (correctGamma)
         DkImage::linearToGamma(qImg);
@@ -308,7 +308,7 @@ QImage transposeImage(const QImage &imgIn)
     const int inBPL = imgIn.bytesPerLine();
     for (int i = 0; i < h; i++) {
         const T *lineIn = reinterpret_cast<const T *>(ptrIn);
-        uchar *ptrOut = const_cast<uchar *>(imgOut.constBits() + i * sizeof(T));
+        auto *ptrOut = const_cast<uchar *>(imgOut.constBits() + i * sizeof(T));
         for (int j = 0; j < w; j++) {
             T *out = reinterpret_cast<T *>(ptrOut);
             *out = lineIn[j];
@@ -552,7 +552,10 @@ void DkImage::linearToGamma(QImage &img)
 
 void DkImage::mapGammaTable(QImage &img, const QVector<uchar> &gammaTable)
 {
-    DkTimer dt;
+    if (gammaTable.size() != 1 << 8) {
+        qCritical() << "invalid 8-bit gamma table";
+        return;
+    }
 
     // number of bytes per line used
     int bpl = (img.width() * img.depth() + 7) / 8;
@@ -564,21 +567,10 @@ void DkImage::mapGammaTable(QImage &img, const QVector<uchar> &gammaTable)
 
     for (int rIdx = 0; rIdx < img.height(); rIdx++) {
         for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
-            if (*mPtr < 0 || *mPtr > gammaTable.size()) {
-                qDebug() << "WRONG VALUE: " << *mPtr;
-                continue;
-            }
-            if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
-                qDebug() << "WRONG VALUE: " << *mPtr;
-                continue;
-            }
-
             *mPtr = gammaTable[*mPtr];
         }
         mPtr += pad;
     }
-
-    qDebug() << "gamma computation takes: " << dt;
 }
 
 bool DkImage::normImage(QImage &img)
@@ -696,7 +688,6 @@ bool DkImage::autoAdjustImage(QImage &img)
         mPtr += pad;
     }
 
-    QColor ignoreChannel;
     bool ignoreR = maxR - minR == 0 || maxR - minR == 255;
     bool ignoreG = maxR - minR == 0 || maxG - minG == 255;
     bool ignoreB = maxR - minR == 0 || maxB - minB == 255;
@@ -885,7 +876,7 @@ QImage DkImage::hueSaturation(const QImage &src, int hue, int sat, int brightnes
 
     // apply hue/saturation changes
     for (int rIdx = 0; rIdx < hsvImg.rows; rIdx++) {
-        unsigned char *iPtr = hsvImg.ptr<unsigned char>(rIdx);
+        auto *iPtr = hsvImg.ptr<unsigned char>(rIdx);
 
         for (int cIdx = 0; cIdx < hsvImg.cols * 3; cIdx += 3) {
             // adopt hue
@@ -1087,7 +1078,7 @@ cv::Mat DkImage::exposureMat(const cv::Mat &src, double exposure)
     double CC = y2 - A * std::pow(maxVal, 1.0 / 3.0) - B * maxVal;
 
     for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
-        unsigned short *ptrLut = lut.ptr<unsigned short>(rIdx);
+        auto *ptrLut = lut.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
             double val = cIdx;
@@ -1119,7 +1110,7 @@ cv::Mat DkImage::gammaMat(const cv::Mat &src, double gamma)
     cv::Mat lut(1, maxVal + 1, CV_16UC1);
 
     for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
-        unsigned short *ptrLut = lut.ptr<unsigned short>(rIdx);
+        auto *ptrLut = lut.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
             double val = std::pow((double)cIdx / maxVal, 1.0 / gamma) * maxVal;
@@ -1138,10 +1129,10 @@ cv::Mat DkImage::applyLUT(const cv::Mat &src, const cv::Mat &lut)
     }
 
     cv::Mat dst = src.clone();
-    const unsigned short *lutPtr = lut.ptr<unsigned short>();
+    const auto *lutPtr = lut.ptr<unsigned short>();
 
     for (int rIdx = 0; rIdx < src.rows; rIdx++) {
-        unsigned short *dPtr = dst.ptr<unsigned short>(rIdx);
+        auto *dPtr = dst.ptr<unsigned short>(rIdx);
 
         for (int cIdx = 0; cIdx < src.cols * src.channels(); cIdx++) {
             assert(dPtr[cIdx] >= 0 && dPtr[cIdx] < lut.cols);
@@ -1303,40 +1294,32 @@ QImage DkImage::mat2QImage(cv::Mat img)
 
 void DkImage::linearToGamma(cv::Mat &img)
 {
-    QVector<unsigned short> gt = getLinear2GammaTable<unsigned short>();
-    mapGammaTable(img, gt);
+    auto gammaTable = getLinear2GammaTable<uint16_t>();
+    mapGammaTable(img, gammaTable);
 }
 
 void DkImage::gammaToLinear(cv::Mat &img)
 {
-    QVector<unsigned short> gt = getGamma2LinearTable<unsigned short>();
-    mapGammaTable(img, gt);
+    auto gammaTable = getGamma2LinearTable<uint16_t>();
+    mapGammaTable(img, gammaTable);
 }
 
-void DkImage::mapGammaTable(cv::Mat &img, const QVector<unsigned short> &gammaTable)
+void DkImage::mapGammaTable(cv::Mat &img, const QVector<uint16_t> &gammaTable)
 {
-    DkTimer dt;
+    if (gammaTable.size() != 1 << 16) {
+        qCritical() << "invalid 16-bit gamma table";
+        return;
+    }
 
     for (int rIdx = 0; rIdx < img.rows; rIdx++) {
-        unsigned short *mPtr = img.ptr<unsigned short>(rIdx);
+        auto *mPtr = img.ptr<uint16_t>(rIdx);
 
         for (int cIdx = 0; cIdx < img.cols; cIdx++) {
             for (int channelIdx = 0; channelIdx < img.channels(); channelIdx++, mPtr++) {
-                if (*mPtr < 0 || *mPtr > gammaTable.size()) {
-                    qDebug() << "WRONG VALUE: " << *mPtr;
-                    continue;
-                }
-                if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
-                    qDebug() << "WRONG VALUE: " << *mPtr;
-                    continue;
-                }
-
                 *mPtr = gammaTable[*mPtr];
             }
         }
     }
-
-    qDebug() << "gamma computation takes: " << dt;
 }
 
 void DkImage::logPolar(const cv::Mat &src,
@@ -1377,8 +1360,8 @@ void DkImage::logPolar(const cv::Mat &src,
         bufx.ptr<float>()[x] = (float)(x - center.x);
 
     for (y = 0; y < dsize.height; y++) {
-        float *mx = mapx.ptr<float>(y);
-        float *my = mapy.ptr<float>(y);
+        auto *mx = mapx.ptr<float>(y);
+        auto *my = mapy.ptr<float>(y);
 
         for (x = 0; x < dsize.width; x++)
             bufy.ptr<float>()[x] = (float)(y - center.y);

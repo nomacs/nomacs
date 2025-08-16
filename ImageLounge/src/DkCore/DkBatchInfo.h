@@ -28,33 +28,21 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QObject>
-#pragma warning(pop)
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "nmc_config.h"
 
-// Qt defines
 class QFileInfo;
 class QSettings;
 
 namespace nmc
 {
 
-// nomacs defines
-
 class DllCoreExport DkBatchInfo
 {
 public:
-    DkBatchInfo(const QString &id = QString(), const QString &filePath = QString());
+    explicit DkBatchInfo(const QString &id = QString(), const QString &filePath = QString());
+    virtual ~DkBatchInfo() = default;
 
     virtual bool isEmpty() const;
 
@@ -80,7 +68,7 @@ private:
 class DllCoreExport DkSaveInfo
 {
 public:
-    DkSaveInfo(const QString &filePathIn = QString(), const QString &filePathOut = QString());
+    explicit DkSaveInfo(const QString &filePathIn = QString(), const QString &filePathOut = QString());
 
     enum OverwriteMode {
         mode_skip_existing = 0x00,

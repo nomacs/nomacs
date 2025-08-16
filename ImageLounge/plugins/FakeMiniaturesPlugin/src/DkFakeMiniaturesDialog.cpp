@@ -27,6 +27,13 @@
 
 #include "DkFakeMiniaturesDialog.h"
 
+#include <QLayout>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPushButton>
+#include <QSlider>
+#include <QSpinBox>
+
 #define INIT_X 0
 #define INIT_Y 0.7117
 #define INIT_WIDTH 1
@@ -38,9 +45,9 @@ namespace nmp
 #ifdef WITH_OPENCV
 // I know - but I just want to get rid of these little issues...
 #if (CV_MAJOR_VERSION > 3)
-int DIST_C = cv::DIST_C;
+constexpr int DIST_C = cv::DIST_C;
 #else
-int DIST_C = CV_DIST_C;
+constexpr int DIST_C = CV_DIST_C;
 #endif
 #endif
 
@@ -53,9 +60,7 @@ DkFakeMiniaturesDialog::DkFakeMiniaturesDialog(QWidget *parent, Qt::WindowFlags 
     init();
 }
 
-DkFakeMiniaturesDialog::~DkFakeMiniaturesDialog()
-{
-}
+DkFakeMiniaturesDialog::~DkFakeMiniaturesDialog() = default;
 
 /**
  * initializes variables
@@ -81,18 +86,18 @@ void DkFakeMiniaturesDialog::init()
 void DkFakeMiniaturesDialog::createLayout()
 {
     // central widget - preview image
-    QWidget *centralWidget = new QWidget(this);
+    auto *centralWidget = new QWidget(this);
     // previewLabel = new QLabel(centralWidget);
     previewLabel = new DkPreviewLabel(this, centralWidget);
     previewLabel->setGeometry(QRect(QPoint(previewMargin, previewMargin), QSize(previewWidth, previewHeight)));
 
     // east widget - sliders
-    QWidget *eastWidget = new QWidget(this);
+    auto *eastWidget = new QWidget(this);
     eastWidget->setMinimumWidth(toolsWidth);
     eastWidget->setMaximumWidth(toolsWidth);
     eastWidget->setFixedHeight(previewHeight);
     eastWidget->setContentsMargins(0, 10, 10, 0);
-    QVBoxLayout *toolsLayout = new QVBoxLayout(eastWidget);
+    auto *toolsLayout = new QVBoxLayout(eastWidget);
     toolsLayout->setContentsMargins(0, 0, 0, 0);
 
     kernelSizeWidget = new DkKernelSize(eastWidget, this);
@@ -101,16 +106,16 @@ void DkFakeMiniaturesDialog::createLayout()
     toolsLayout->addWidget(kernelSizeWidget);
     toolsLayout->addWidget(saturationWidget);
 
-    QSpacerItem *spacer = new QSpacerItem(20, 280, QSizePolicy::Minimum, QSizePolicy::Minimum);
+    auto *spacer = new QSpacerItem(20, 280, QSizePolicy::Minimum, QSizePolicy::Minimum);
     toolsLayout->addItem(spacer);
 
     // bottom widget - buttons
     // QWidget* bottomWidget = new QWidget(eastWidget);
-    QHBoxLayout *bottomWidgetHBoxLayout = new QHBoxLayout();
+    auto *bottomWidgetHBoxLayout = new QHBoxLayout();
 
-    QPushButton *buttonOk = new QPushButton(tr("&Ok"));
+    auto *buttonOk = new QPushButton(tr("&Ok"));
     connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
-    QPushButton *buttonCancel = new QPushButton(tr("&Cancel"));
+    auto *buttonCancel = new QPushButton(tr("&Cancel"));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 
     bottomWidgetHBoxLayout->addWidget(buttonOk);
@@ -120,15 +125,15 @@ void DkFakeMiniaturesDialog::createLayout()
 
     eastWidget->setLayout(toolsLayout);
 
-    QWidget *dummy = new QWidget(this);
-    QHBoxLayout *cLayout = new QHBoxLayout(dummy);
+    auto *dummy = new QWidget(this);
+    auto *cLayout = new QHBoxLayout(dummy);
     cLayout->setContentsMargins(0, 0, 0, 0);
     // cLayout->setSpacing(0);
 
     cLayout->addWidget(centralWidget);
     cLayout->addWidget(eastWidget);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(dummy);
     // layout->addWidget(buttons);
@@ -158,7 +163,7 @@ void DkFakeMiniaturesDialog::createImgPreview()
     } else
         lt = QPoint(qRound((previewWidth - mImg->width()) / 2.0f), qRound((previewHeight - mImg->height()) / 2.0f));
 
-    QSize imgSizeScaled = QSize(mImg->size());
+    auto imgSizeScaled = QSize(mImg->size());
     if (rMin < 1)
         imgSizeScaled *= rMin;
 
@@ -221,7 +226,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
     cv::Mat blurImg = DkFakeMiniaturesDialog::qImage2Mat(inImg);
     cv::Mat distImg(blurImg.size(), CV_8UC1);
     distImg = 255;
-    cv::Mat roi(distImg, Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
+    cv::Mat roi(distImg, cv::Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
     roi.setTo(0);
     // blur plane by plane
     std::vector<cv::Mat> planes;
@@ -232,7 +237,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
     // cv::threshold(planes.at(0), distImg, 40, 255, THRESH_BINARY);
 
     cv::distanceTransform(distImg, distImg, DIST_C, 3);
-    cv::normalize(distImg, distImg, 1.0f, 0.0f, NORM_MINMAX);
+    cv::normalize(distImg, distImg, 1.0f, 0.0f, cv::NORM_MINMAX);
 
     for (size_t idx = 0; idx < planes.size(); idx++)
         planes.at(idx) = blurPanTilt(planes.at(idx), distImg, kernelSize); // 140 is the maximal blurring kernel size
@@ -242,13 +247,13 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
     // return (DkFakeMiniaturesDialog::mat2QImage(blurImg));
 
     if (satFactor > 1) {
-        Mat imgHsv;
+        cv::Mat imgHsv;
         cvtColor(blurImg, imgHsv, cv::COLOR_RGB2HSV);
-        std::vector<Mat> imgHsvCh;
+        std::vector<cv::Mat> imgHsvCh;
         split(imgHsv, imgHsvCh);
 
         for (int row = 0; row < imgHsv.rows; row++) {
-            unsigned char *ptr = imgHsvCh[1].ptr<unsigned char>(row);
+            auto *ptr = imgHsvCh[1].ptr<unsigned char>(row);
 
             for (int col = 0; col < imgHsv.cols; col++) {
                 float tmp = (float)ptr[col] * satFactor;
@@ -261,14 +266,14 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
         }
 
         merge(imgHsvCh, imgHsv);
-        Mat tempImg(blurImg);
+        cv::Mat tempImg(blurImg);
         cvtColor(imgHsv, blurImg, cv::COLOR_HSV2RGB);
 
         if (tempImg.type()
             == CV_8UC4) { // the retImg is always CV_8UC3, so for pics in CV_8UC4 we need to add one channel
-            std::vector<Mat> inImgCh;
+            std::vector<cv::Mat> inImgCh;
             split(tempImg, inImgCh);
-            std::vector<Mat> retImgCh;
+            std::vector<cv::Mat> retImgCh;
             split(blurImg, retImgCh);
             retImgCh.push_back(inImgCh[3]);
             merge(retImgCh, blurImg);
@@ -284,12 +289,12 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
 #ifdef WITH_OPENCV
 /**
  * blur filter
- * @param src input Mat
+ * @param src input cv::Mat
  * @param depthImg distance transform based on a roi
  * @param maxKernel maximum blur kernel size
- * @return Mat blurres mat
+ * @return cv::Mat blurres mat
  **/
-Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel)
+cv::Mat DkFakeMiniaturesDialog::blurPanTilt(cv::Mat src, cv::Mat depthImg, int maxKernel)
 {
     cv::Mat integralImg;
 
@@ -303,7 +308,7 @@ Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel)
     const unsigned int *itgrl32Ptr = integralImg.ptr<unsigned int>();
 
     for (int rIdx = 0; rIdx < src.rows; rIdx++) {
-        unsigned char *blurPtr = blurImg.ptr<unsigned char>(rIdx); // assuming unsigned char
+        auto *blurPtr = blurImg.ptr<unsigned char>(rIdx); // assuming unsigned char
         const float *depthPtr = depthImg.ptr<float>(rIdx);
         const unsigned char *srcPtr = src.ptr<unsigned char>(rIdx);
 
@@ -445,9 +450,7 @@ DkPreviewLabel::DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *pa
     selectionStarted = false;
 };
 
-DkPreviewLabel::~DkPreviewLabel(){
-
-};
+DkPreviewLabel::~DkPreviewLabel() = default;
 
 void DkPreviewLabel::mousePressEvent(QMouseEvent *e)
 {
@@ -545,9 +548,7 @@ DkFakeMiniaturesToolWidget::DkFakeMiniaturesToolWidget(QWidget *parent, DkFakeMi
     connect(this, SIGNAL(redrawImgPreview()), parentDialog, SLOT(redrawImgPreview()));
 };
 
-DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget(){
-
-};
+DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget() = default;
 
 /**
  * slider spin box slot: update value and redraw image
@@ -652,9 +653,7 @@ DkKernelSize::DkKernelSize(QWidget *parent, DkFakeMiniaturesDialog *parentDialog
     maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
 };
 
-DkKernelSize::~DkKernelSize(){
-
-};
+DkKernelSize::~DkKernelSize() = default;
 
 /**************************************************************
  * DkSaturation: widget for changing saturation
@@ -705,8 +704,5 @@ DkSaturation::DkSaturation(QWidget *parent, DkFakeMiniaturesDialog *parentDialog
     maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
 };
 
-DkSaturation::~DkSaturation(){
-
-};
-
+DkSaturation::~DkSaturation() = default;
 };

@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkToolbars.h"
+
 #include "DkActionManager.h"
 #include "DkBasicWidgets.h"
 #include "DkImageStorage.h"
@@ -34,44 +35,25 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 
-#include <assert.h>
-
-#pragma warning(push, 0) // no warnings from includes - begin
+#include <QAbstractItemView>
 #include <QAction>
 #include <QCheckBox>
 #include <QColor>
 #include <QColorDialog>
 #include <QComboBox>
-#include <QCompleter>
-#include <QDebug>
 #include <QDoubleSpinBox>
 #include <QGradientStops>
-#include <QHBoxLayout>
+#include <QGraphicsOpacityEffect>
 #include <QIcon>
-#include <QImage>
 #include <QLabel>
-#include <QLayout>
-#include <QLineEdit>
 #include <QLinearGradient>
+#include <QMainWindow>
 #include <QMenu>
 #include <QMouseEvent>
-#include <QObject>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPushButton>
 #include <QToolBar>
-#include <QTranslator>
-#include <QWidget>
-#include <QtGlobal>
-// #include <QStringListModel>
-#include <QAbstractItemView>
-#include <QMainWindow>
-#include <QStandardItemModel>
-
-#include <QGraphicsOpacityEffect>
-#include <QGridLayout>
-#include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -103,7 +85,7 @@ void DkMainToolBar::closeQuickAccess()
 void DkMainToolBar::allActionsAdded()
 {
     // right align search filters
-    QWidget *spacer = new QWidget(this);
+    auto *spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     addWidget(spacer);
     // addWidget(quickFilterEdit);
@@ -173,9 +155,7 @@ void DkColorSlider::setActive(bool isActive)
     mIsActive = isActive;
 }
 
-DkColorSlider::~DkColorSlider()
-{
-}
+DkColorSlider::~DkColorSlider() = default;
 
 QColor DkColorSlider::getColor()
 {
@@ -237,9 +217,7 @@ DkGradient::DkGradient(QWidget *parent)
     init();
 }
 
-DkGradient::~DkGradient()
-{
-}
+DkGradient::~DkGradient() = default;
 
 void DkGradient::init()
 {
@@ -311,7 +289,7 @@ void DkGradient::resizeEvent(QResizeEvent *event)
 
 void DkGradient::addSlider(qreal pos, QColor color)
 {
-    DkColorSlider *actSlider = new DkColorSlider(this, pos, color, mSliderWidth);
+    auto *actSlider = new DkColorSlider(this, pos, color, mSliderWidth);
     mSliders.append(actSlider);
     connect(actSlider, &DkColorSlider::sliderMoved, this, &DkGradient::moveSlider);
     connect(actSlider, &DkColorSlider::colorChanged, this, &DkGradient::changeColor);
@@ -323,7 +301,7 @@ void DkGradient::insertSlider(qreal pos, QColor col)
     // Inserts a new slider at position pos and calculates the color, interpolated from the closest neighbors.
 
     // Find the neighbors of the new slider, since we need it for the color interpolation:
-    QColor leftColor, rightColor, actColor;
+    QColor actColor;
     qreal dist;
     qreal initValue = DBL_MAX; // std::numeric_limits<qreal>::max();	// >DIR: fix for linux [9.2.2012 markus]
     qreal leftDist = initValue;
@@ -515,7 +493,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
 
     mHistoryCombo = new QComboBox(this);
 
-    QAction *delGradientAction = new QAction(tr("Delete"), mHistoryCombo);
+    auto *delGradientAction = new QAction(tr("Delete"), mHistoryCombo);
     connect(delGradientAction, &QAction::triggered, this, &DkTransferToolBar::deleteGradient);
 
     mHistoryCombo->addAction(delGradientAction);
@@ -560,9 +538,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
         mGradient->setGradient(mOldGradients.first());
 }
 
-DkTransferToolBar::~DkTransferToolBar()
-{
-}
+DkTransferToolBar::~DkTransferToolBar() = default;
 
 void DkTransferToolBar::createIcons()
 {
@@ -656,8 +632,8 @@ void DkTransferToolBar::loadSettings()
 
 void DkTransferToolBar::deleteGradientMenu(QPoint pos)
 {
-    QMenu *cm = new QMenu(this);
-    QAction *delAction = new QAction("Delete", this);
+    auto *cm = new QMenu(this);
+    auto *delAction = new QAction("Delete", this);
     connect(delAction, &QAction::triggered, this, &DkTransferToolBar::deleteGradient);
     cm->popup(mHistoryCombo->mapToGlobal(pos));
     cm->exec();
@@ -910,11 +886,11 @@ void DkCropToolBar::createLayout()
     enterSc.append(QKeySequence(Qt::Key_Enter));
     enterSc.append(QKeySequence(Qt::Key_Return));
 
-    QAction *cropAction = new QAction(mIcons[crop_icon], tr("Crop (ENTER)"), this);
+    auto *cropAction = new QAction(mIcons[crop_icon], tr("Crop (ENTER)"), this);
     cropAction->setShortcuts(enterSc);
     connect(cropAction, &QAction::triggered, this, &DkCropToolBar::onCropActionTriggered);
 
-    QAction *cancelAction = new QAction(mIcons[cancel_icon], tr("Cancel (ESC)"), this);
+    auto *cancelAction = new QAction(mIcons[cancel_icon], tr("Cancel (ESC)"), this);
     cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
     connect(cancelAction, &QAction::triggered, this, &DkCropToolBar::onCancelActionTriggered);
 
@@ -941,7 +917,7 @@ void DkCropToolBar::createLayout()
             this,
             &DkCropToolBar::onHorValBoxValueChanged);
 
-    QAction *swapAction = new QAction(DkImage::loadIcon(":/nomacs/img/swap.svg"), tr("Swap"), this);
+    auto *swapAction = new QAction(DkImage::loadIcon(":/nomacs/img/swap.svg"), tr("Swap"), this);
     swapAction->setToolTip(tr("Swap Dimensions"));
     swapAction->setStatusTip(swapAction->toolTip());
     connect(swapAction, &QAction::triggered, this, &DkCropToolBar::onSwapActionTriggered);
@@ -1173,9 +1149,7 @@ void DkCropToolBar::onPanActionToggled(bool checked)
 }
 
 // -------------------------------------------------------------------- DkToolBarManager
-DkToolBarManager::DkToolBarManager()
-{
-}
+DkToolBarManager::DkToolBarManager() = default;
 
 DkToolBarManager &DkToolBarManager::inst()
 {
@@ -1189,7 +1163,7 @@ void DkToolBarManager::createDefaultToolBar()
         return;
 
     auto nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    Q_ASSERT(nomacs);
 
     mToolBar = new DkMainToolBar(QObject::tr("Edit ToolBar"), nomacs);
     mToolBar->setObjectName("EditToolBar");
@@ -1271,8 +1245,8 @@ void DkToolBarManager::showToolBar(QToolBar *toolbar, bool show)
         return;
 
     showToolBarsTemporarily(!show);
-    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    auto *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    Q_ASSERT(nomacs);
 
     if (show) {
         if (!mToolBar)
@@ -1291,8 +1265,8 @@ void DkToolBarManager::showToolBarsTemporarily(bool show)
         for (QToolBar *t : mHiddenToolBars)
             t->show();
     } else {
-        QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-        assert(nomacs);
+        auto *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+        Q_ASSERT(nomacs);
 
         mHiddenToolBars.clear();
         QList<QToolBar *> tbs = nomacs->findChildren<QToolBar *>();
@@ -1328,8 +1302,8 @@ void DkToolBarManager::showDefaultToolBar(bool show, bool permanent)
 
 void DkToolBarManager::showMovieToolBar(bool show)
 {
-    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    auto *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    Q_ASSERT(nomacs);
 
     // set movie toolbar into current toolbar
     if (mMovieToolbarArea == Qt::NoToolBarArea && show)
@@ -1352,8 +1326,8 @@ void DkToolBarManager::showMovieToolBar(bool show)
 
 void DkToolBarManager::createTransferToolBar()
 {
-    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
-    assert(nomacs);
+    auto *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    Q_ASSERT(nomacs);
 
     mTransferToolBar = new DkTransferToolBar(nomacs);
 

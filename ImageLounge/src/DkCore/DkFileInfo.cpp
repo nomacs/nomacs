@@ -23,16 +23,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  *******************************************************************************************************/
 #include "DkFileInfo.h"
+
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
 
+#include <QDir>
+#include <QRegularExpression>
+#include <QStringBuilder>
+
 #ifdef WITH_QUAZIP
 #include <quazip/JlCompress.h>
 #endif
-
-#include <QDir>
-#include <QStringBuilder>
 
 // macro to avoid #ifdef spaghetti
 #ifdef WITH_QUAZIP

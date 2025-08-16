@@ -15,8 +15,6 @@ set(MACOSX_BUNDLE_RPATH "@executable_path/../Frameworks")
 # /usr/local is occupied by homebrew usually, not a good default
 set(CMAKE_INSTALL_PREFIX "/Applications")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
-
 # create the targets
 set(BINARY_NAME ${PROJECT_NAME})
 set(DLL_CORE_NAME ${PROJECT_NAME}Core-${NOMACS_FULL_VERSION})

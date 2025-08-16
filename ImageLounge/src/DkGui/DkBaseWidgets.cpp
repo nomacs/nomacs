@@ -26,25 +26,17 @@
  *******************************************************************************************************/
 
 #include "DkBaseWidgets.h"
+
 #include "DkActionManager.h"
 #include "DkSettings.h"
-#include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
-#include <QComboBox>
-#include <QDebug>
 #include <QEvent>
 #include <QGraphicsEffect>
-#include <QHBoxLayout>
-#include <QInputDialog>
-#include <QMessageBox>
 #include <QPainter>
-#include <QPushButton>
 #include <QScrollBar>
 #include <QStyleOption>
 #include <QTimer>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -254,9 +246,7 @@ DkLabel::DkLabel(const QString &text, QWidget *parent)
     hide();
 }
 
-DkLabel::~DkLabel()
-{
-}
+DkLabel::~DkLabel() = default;
 
 void DkLabel::init()
 {
@@ -266,8 +256,9 @@ void DkLabel::init()
     mTextCol = DkSettingsManager::param().display().hudFgdColor;
     mBlocked = false;
 
-    mTimer.setSingleShot(true);
-    connect(&mTimer, &QTimer::timeout, this, &DkLabel::hide);
+    mTimer = new QTimer(this);
+    mTimer->setSingleShot(true);
+    connect(mTimer, &QTimer::timeout, this, &DkLabel::hide);
 
     // default look and feel
     QFont font;
@@ -293,7 +284,7 @@ void DkLabel::setText(const QString &msg, int time)
     show();
 
     if (time != -1)
-        mTimer.start(time);
+        mTimer->start(time);
 }
 
 void DkLabel::showTimed(int time)
@@ -308,13 +299,13 @@ void DkLabel::showTimed(int time)
     show();
 
     if (time != -1)
-        mTimer.start(time);
+        mTimer->start(time);
 }
 
 void DkLabel::setVisible(bool visible)
 {
     if (!visible)
-        mTimer.stop();
+        mTimer->stop();
     QLabel::setVisible(visible);
 }
 
@@ -414,7 +405,7 @@ void DkElidedLabel::updateElision()
     QLabel::setText(clippedText);
 }
 
-QSize DkElidedLabel::minimumSizeHint()
+QSize DkElidedLabel::minimumSizeHint() const
 {
     return QSize(0, QLabel::minimumSizeHint().height());
 }
@@ -442,13 +433,11 @@ DkFadeLabel::DkFadeLabel(const QString &text, QWidget *parent)
 DkDockWidget::DkDockWidget(const QString &title, QWidget *parent /* = 0 */, Qt::WindowFlags flags /* = 0 */)
     : QDockWidget(title, parent, flags)
 {
-    displaySettingsBits = 0;
+    displaySettingsBits = nullptr;
     setObjectName("DkDockWidget");
 }
 
-DkDockWidget::~DkDockWidget()
-{
-}
+DkDockWidget::~DkDockWidget() = default;
 
 void DkDockWidget::registerAction(QAction *action)
 {

@@ -27,46 +27,21 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QColor>
 #include <QFutureWatcher>
 #include <QImage>
 #include <QObject>
-#include <QVector>
 
-// opencv
 #ifdef WITH_OPENCV
 #include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
-#endif
-#pragma warning(pop) // no warnings from includes - end
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4251) // TODO: remove
-#pragma warning(disable : 4714) // Qt's force inline
 #endif
 
-#if defined(__GNUC__) && defined(Q_OS_MAC) || defined(__clang__)
-#pragma GCC diagnostic ignored "-Winvalid-source-encoding"
-#endif
+#include "nmc_config.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QPixmap;
 class QString;
 class QSize;
 class QColor;
-class QTimer;
 
 namespace nmc
 {
@@ -92,7 +67,7 @@ public:
 #ifdef WITH_OPENCV
     static cv::Mat qImage2Mat(const QImage &img);
     static QImage mat2QImage(cv::Mat img);
-    static void mapGammaTable(cv::Mat &img, const QVector<unsigned short> &gammaTable);
+    static void mapGammaTable(cv::Mat &img, const QVector<uint16_t> &gammaTable);
     static void gammaToLinear(cv::Mat &img);
     static void linearToGamma(cv::Mat &img);
     static void logPolar(const cv::Mat &src,
@@ -164,7 +139,7 @@ class DllCoreExport DkImageStorage : public QObject
     Q_OBJECT
 
 public:
-    DkImageStorage(const QImage &img = QImage());
+    explicit DkImageStorage(const QImage &img = QImage());
 
     enum ComputeState {
         l_not_computed,

@@ -27,28 +27,14 @@
 
 #pragma once
 
-#include <queue>
-#pragma warning(push, 0) // no warnings from includes - begin
+#include <QCache>
 #include <QFutureWatcher>
 #include <QImage>
-#include <QSharedPointer>
-#pragma warning(pop) // no warnings from includes - end
-#include "DkMetaData.h"
-#include <QCache>
-#include <QThread>
+
 #include <optional>
+#include <queue>
 
-#pragma warning(disable : 4251) // TODO: remove
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkMetaData.h"
 
 class QThreadPool;
 
@@ -67,7 +53,7 @@ public:
 
 private:
     DkThumbsThreadPool();
-    DkThumbsThreadPool(const DkThumbsThreadPool &);
+    DkThumbsThreadPool(const DkThumbsThreadPool &) = delete; // NOLINT
 
     QThreadPool *mPool;
 };

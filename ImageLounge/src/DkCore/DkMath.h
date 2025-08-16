@@ -27,32 +27,22 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
+#include <QCursor>
 #include <QDebug>
 #include <QPointF>
 #include <QPolygonF>
-#include <cmath>
-#include <float.h>
-#include <iostream>
-#pragma warning(pop) // no warnings from includes - end
-
-#ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
 
 #ifdef WITH_OPENCV
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #else
-
-// #define int64 long long;
+#include <sstream>
 #define CV_PI 3.141592653589793238462643383279
-
 #endif
+
+#include <cfloat>
+#include <cmath>
+
+#include "nmc_config.h"
 
 #define DK_DEG2RAD 0.017453292519943
 #define DK_RAD2DEG 57.295779513082323
@@ -60,18 +50,6 @@
 // no min max macros for windows...
 #undef min
 #undef max
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 
 namespace nmc
 {
@@ -316,10 +294,10 @@ public:
      * @param x the vector's x-coordinate.
      * @param y the vector's y-coordinate.
      **/
-    DkVector(float x, float y)
+    DkVector(float x_, float y_)
     {
-        this->x = x;
-        this->y = y;
+        x = x_;
+        y = y_;
     };
 
 #ifdef WITH_OPENCV

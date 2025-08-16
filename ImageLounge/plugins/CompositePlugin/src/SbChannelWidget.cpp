@@ -1,35 +1,45 @@
+
 #include "SbChannelWidget.h"
 
-#include "DkTimer.h"
+#include "DkBasicLoader.h"
 
-#include <cstring>
+#include <QDir>
+#include <QDropEvent>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QFontInfo>
+#include <QLabel>
+#include <QMimeData>
+#include <QPushButton>
+#include <QSettings>
+
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
 
 namespace nmc
 {
-SbChannelWidget::SbChannelWidget(Channel c, QWidget *parent, Qt::WindowFlags f)
+SbChannelWidget::SbChannelWidget(Channel channel, QWidget *parent, Qt::WindowFlags f)
     : QWidget(parent, f)
-    , c(c)
+    , mChannel(channel)
 {
     setAcceptDrops(true);
     buildUI();
     setImg();
 }
 
-SbChannelWidget::~SbChannelWidget()
-{
-}
+SbChannelWidget::~SbChannelWidget() = default;
 
 cv::Mat SbChannelWidget::getImg()
 {
-    return img * (intSlider->value() / 100.0);
+    return mImg * (mIntSlider->value() / 100.0);
 }
 
 void SbChannelWidget::setImg(cv::Mat _img, QString _name)
 {
-    img = _img;
+    mImg = _img;
     updateThumbnail();
-    filenameLabel->setText(_name);
-    intSlider->setValue(INT_SLIDER_INIT);
+    mFilenameLabel->setText(_name);
+    mIntSlider->setValue(INT_SLIDER_INIT);
 }
 
 void SbChannelWidget::loadImage(QString file)
@@ -63,14 +73,14 @@ void SbChannelWidget::loadImage(QString file)
         // this is optional; markus says it makes the grayscale image nicer
         qImg = DkImage::grayscaleImage(qImg);
 
-        img = DkImage::qImage2Mat(qImg);
-        cv::cvtColor(img, img, CV_RGB2GRAY);
+        mImg = DkImage::qImage2Mat(qImg);
+        cv::cvtColor(mImg, mImg, CV_RGB2GRAY);
 
         updateThumbnail();
         QFileInfo fi(file);
-        filenameLabel->setText(fi.fileName());
+        mFilenameLabel->setText(fi.fileName());
 
-        emit imageChanged(c);
+        emit imageChanged(mChannel);
     } else {
         qDebug() << "could not load:" << file;
     }
@@ -78,32 +88,32 @@ void SbChannelWidget::loadImage(QString file)
 
 void SbChannelWidget::buildUI()
 {
-    QVBoxLayout *outerLayout = new QVBoxLayout(this);
+    auto *outerLayout = new QVBoxLayout(this);
     outerLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
-    thumbnail = new QPushButton();
-    thumbnail->setFlat(true);
-    thumbnail->setIconSize(QSize(THUMB_MAX_SIZE, THUMB_MAX_SIZE));
-    connect(thumbnail, SIGNAL(released()), this, SLOT(onClickThumbnail()));
-    filenameLabel = new QLabel();
+    mThumbnail = new QPushButton();
+    mThumbnail->setFlat(true);
+    mThumbnail->setIconSize(QSize(THUMB_MAX_SIZE, THUMB_MAX_SIZE));
+    connect(mThumbnail, SIGNAL(released()), this, SLOT(onClickThumbnail()));
+    mFilenameLabel = new QLabel();
 
-    QHBoxLayout *controlsLayout = new QHBoxLayout();
-    QPushButton *invertButton = new QPushButton("invert");
+    auto *controlsLayout = new QHBoxLayout();
+    auto *invertButton = new QPushButton("invert");
     connect(invertButton, SIGNAL(released()), this, SLOT(onPushButtonInvert()));
-    intSlider = new SbIntensitySlider(Qt::Orientation::Horizontal);
-    intSlider->setMinimum(INT_SLIDER_MIN);
-    intSlider->setMaximum(INT_SLIDER_MAX);
-    intSlider->setSingleStep(1);
-    intSlider->setValue(INT_SLIDER_INIT);
-    intSlider->setTickInterval(50);
-    intSlider->setTickPosition(QSlider::TickPosition::TicksBelow);
-    intSlider->setToolTip("adjust intensity");
-    connect(intSlider, SIGNAL(sliderReleased()), this, SLOT(onIntensityChange()));
+    mIntSlider = new SbIntensitySlider(Qt::Orientation::Horizontal);
+    mIntSlider->setMinimum(INT_SLIDER_MIN);
+    mIntSlider->setMaximum(INT_SLIDER_MAX);
+    mIntSlider->setSingleStep(1);
+    mIntSlider->setValue(INT_SLIDER_INIT);
+    mIntSlider->setTickInterval(50);
+    mIntSlider->setTickPosition(QSlider::TickPosition::TicksBelow);
+    mIntSlider->setToolTip("adjust intensity");
+    connect(mIntSlider, SIGNAL(sliderReleased()), this, SLOT(onIntensityChange()));
     controlsLayout->addWidget(invertButton);
-    controlsLayout->addWidget(intSlider);
+    controlsLayout->addWidget(mIntSlider);
 
-    outerLayout->addWidget(thumbnail);
-    outerLayout->addWidget(filenameLabel);
+    outerLayout->addWidget(mThumbnail);
+    outerLayout->addWidget(mFilenameLabel);
     outerLayout->addLayout(controlsLayout);
 
     this->setMaximumWidth(THUMB_MAX_SIZE + 50);
@@ -111,27 +121,27 @@ void SbChannelWidget::buildUI()
 void SbChannelWidget::updateThumbnail()
 {
     cv::Mat imgScaled;
-    if (img.empty()) {
+    if (mImg.empty()) {
         // set image to solid color
         imgScaled = cv::Mat::ones(cv::Size(THUMB_MAX_SIZE, THUMB_MAX_SIZE), CV_8UC1) * 255;
     } else {
-        int s = std::max(img.rows, img.cols);
+        int s = std::max(mImg.rows, mImg.cols);
         double f = (double)THUMB_MAX_SIZE / (double)s;
-        cv::resize(img, imgScaled, cv::Size(), f, f);
+        cv::resize(mImg, imgScaled, cv::Size(), f, f);
     }
 
     cv::Mat black = cv::Mat::zeros(cv::Size(imgScaled.cols, imgScaled.rows), imgScaled.type());
     cv::Mat channels[3] = {black, black, black};
-    channels[c] = imgScaled; // *(intSlider->value() / 100.0);
-    if (!img.empty())
-        channels[c] *= (intSlider->value() / 100.0);
+    channels[mChannel] = imgScaled; // *(intSlider->value() / 100.0);
+    if (!mImg.empty())
+        channels[mChannel] *= (mIntSlider->value() / 100.0);
 
     cv::Mat imgTinted;
     cv::merge(channels, 3, imgTinted);
 
     QImage qimg = DkImage::mat2QImage(imgTinted);
     QPixmap pxm = QPixmap::fromImage(qimg);
-    thumbnail->setIcon(pxm);
+    mThumbnail->setIcon(pxm);
 }
 void SbChannelWidget::dropEvent(QDropEvent *event)
 {
@@ -169,18 +179,18 @@ void SbChannelWidget::onClickThumbnail()
 void SbChannelWidget::onIntensityChange()
 {
     qDebug() << "intensity changed";
-    if (!img.empty()) {
+    if (!mImg.empty()) {
         updateThumbnail();
-        emit(imageChanged(c));
+        emit(imageChanged(mChannel));
     }
 }
 
 void SbChannelWidget::onPushButtonInvert()
 {
-    if (!img.empty()) {
-        img = 255 - img;
+    if (!mImg.empty()) {
+        mImg = 255 - mImg;
         updateThumbnail();
-        emit imageChanged(c);
+        emit imageChanged(mChannel);
     }
 }
 };

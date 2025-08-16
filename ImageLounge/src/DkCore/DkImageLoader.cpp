@@ -28,63 +28,32 @@
 #include "DkImageLoader.h"
 
 #include "DkActionManager.h"
-#include "DkBasicLoader.h"
 #include "DkDialog.h"
-#include "DkImageContainer.h"
 #include "DkImageStorage.h"
 #include "DkMessageBox.h"
 #include "DkMetaData.h"
 #include "DkSaveDialog.h"
 #include "DkSettings.h"
 #include "DkStatusBar.h"
-#include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
-#include <utility>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
-#include <QBuffer>
-#include <QByteArray>
-#include <QCoreApplication>
-#include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
 #include <QDirIterator>
 #include <QFile>
 #include <QFileDialog>
-#include <QFileIconProvider>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
-#include <QImageReader>
-#include <QImageWriter>
 #include <QMessageBox>
-#include <QMovie>
-#include <QMutex>
 #include <QPainter>
-#include <QPluginLoader>
-#include <QProgressDialog>
-#include <QReadLocker>
-#include <QReadWriteLock>
 #include <QRegularExpression>
-#include <QSettings>
-#include <QStandardPaths>
 #include <QStringBuilder>
 #include <QStringList>
-#include <QThread>
 #include <QTimer>
-#include <QWidget>
-#include <QWriteLocker>
 #include <QtConcurrentRun>
 #include <qmath.h>
-
-// opencv
-#ifdef WITH_OPENCV
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-#endif
 
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
@@ -92,7 +61,7 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
-#pragma warning(pop) // no warnings from includes - end
+#include <utility>
 
 namespace nmc
 {
@@ -647,12 +616,12 @@ bool DkImageLoader::unloadFile()
     // if we are either in rc or remote display mode & the directory does not exist - we received an image, so don't ask
     // the user
     if (mCurrentImage->isEdited()) {
-        DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
-                                                tr("Save Image"),
-                                                tr("Do you want to save changes to:\n%1")
-                                                    .arg(QFileInfo(mCurrentImage->filePath()).fileName()),
-                                                (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                                DkUtils::getMainWindow());
+        auto *msgBox = new DkMessageBox(QMessageBox::Question,
+                                        tr("Save Image"),
+                                        tr("Do you want to save changes to:\n%1")
+                                            .arg(QFileInfo(mCurrentImage->filePath()).fileName()),
+                                        (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                        DkUtils::getMainWindow());
 
         msgBox->setDefaultButton(QMessageBox::No);
         msgBox->setObjectName("saveEditDialog");
@@ -914,7 +883,7 @@ void DkImageLoader::saveFileWeb(const QImage &saveImg)
     if (fileName.isEmpty())
         return;
 
-    DkCompressDialog *jpgDialog = new DkCompressDialog(dialogParent);
+    auto *jpgDialog = new DkCompressDialog(dialogParent);
     jpgDialog->setDialogMode(DkCompressDialog::web_dialog);
     jpgDialog->imageHasAlpha(imgHasAlpha);
     jpgDialog->setImage(saveImg);
@@ -936,13 +905,10 @@ void DkImageLoader::copyUserFile()
 {
     // the subsequent modals destroy the active window
     QWidget *dialogParent = DkUtils::getMainWindow();
-    QString saveName;
 
     auto imgC = getCurrentImage();
 
     if (hasFile() && imgC) {
-        int filterIdx = -1;
-
         QString extension = imgC->fileInfo().suffix();
 
         // retrieve the extension name (that's more user friendly)
@@ -952,7 +918,6 @@ void DkImageLoader::copyUserFile()
         for (int idx = 1; idx < sF.size(); idx++) {
             if (exp.match(sF.at(idx)).hasMatch()) {
                 extension = sF.at(idx);
-                filterIdx = idx;
                 break;
             }
         }
@@ -1020,11 +985,11 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
     // don't ask the user if save was hit & the file format is supported for saving
     if (silent && !selectedFilter.isEmpty() && isEdited()) {
         fileName = filePath();
-        DkMessageBox *msg = new DkMessageBox(QMessageBox::Question,
-                                             tr("Overwrite File"),
-                                             tr("Do you want to overwrite:\n%1?").arg(fileName),
-                                             (QMessageBox::Yes | QMessageBox::No),
-                                             dialogParent);
+        auto *msg = new DkMessageBox(QMessageBox::Question,
+                                     tr("Overwrite File"),
+                                     tr("Do you want to overwrite:\n%1?").arg(fileName),
+                                     (QMessageBox::Yes | QMessageBox::No),
+                                     dialogParent);
         msg->setObjectName("overwriteDialog");
 
         answer = msg->exec();
@@ -1084,10 +1049,10 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
     // saveToBuffer() is responsible for adding the exif data to the image buffer soup
     // which is then written to the specified file.
 
-    DkCompressDialog *jpgDialog = 0;
+    DkCompressDialog *jpgDialog = nullptr;
     QImage lSaveImg = saveImg;
 
-    DkTifDialog *tifDialog = 0;
+    DkTifDialog *tifDialog = nullptr;
 
     if (selectedFilter.contains("jxl")) {
         // jxl has to be before old jpeg to avoid triggering jpg_dialog for .JXL format
@@ -1389,7 +1354,6 @@ void DkImageLoader::rotateImage(double angle)
     QImage thumb = DkImage::createThumb(mCurrentImage->pixmap());
 
     QSharedPointer<DkMetaDataT> metaData = mCurrentImage->getMetaData(); // via ImageContainer, BasicLoader
-    bool metaDataSet = false;
 
     if (metaData->hasMetaData() && DkSettingsManager::param().metaData().saveExifOrientation) {
         try {
@@ -1397,29 +1361,25 @@ void DkImageLoader::rotateImage(double angle)
             if (!metaData->isJpg())
                 metaData->setThumbnail(thumb); // FIXME: creates wrong thumb for non-JPG formats supporting EXIF! (PNG)
             metaData->setOrientation(qRound(angle));
-            metaDataSet = true;
+
+            // Add history item with edited metadata (exif rotation)
+            mCurrentImage->setMetaData(metaData, img, tr("Rotated")); // new edit with modified metadata
 
         } catch (...) {
+            // Update the image itself, along with the history and everything
+            // In other words, the rotated image is saved to the history and the edit flag is set
+            // the exif rotation flag will be reset when adding the new image to the history (BasicLoader)
+            mCurrentImage->setImage(img, tr("Rotated")); // new edit with rotated pixmap (clears orientation)
+            setImageUpdated();
+            // TODO There's a glitch when rotating/changing the image after switching back from settings
+            // which causes the containers to be reloaded. If we call the local setImage() overload,
+            // the metadata object will be reset causing the image to be saved without modified metadata on Save.
+            // With the call above, no metadata is lost, but when navigating away, confirming save on unload
+            // and navigating back, the previous image may still appear (loaded while/before async save).
+            // TODO a) prevent metadata reset without also resetting the gui; b) send signal after save
+            // to reload the saved image (in the other container); c) don't load x while saving x ...
+            // [2022-09, pse]
         }
-    }
-
-    if (metaDataSet) {
-        // Add history item with edited metadata (exif rotation)
-        mCurrentImage->setMetaData(metaData, img, tr("Rotated")); // new edit with modified metadata
-    } else {
-        // Update the image itself, along with the history and everything
-        // In other words, the rotated image is saved to the history and the edit flag is set
-        // the exif rotation flag will be reset when adding the new image to the history (BasicLoader)
-        mCurrentImage->setImage(img, tr("Rotated")); // new edit with rotated pixmap (clears orientation)
-        setImageUpdated();
-        // TODO There's a glitch when rotating/changing the image after switching back from settings
-        // which causes the containers to be reloaded. If we call the local setImage() overload,
-        // the metadata object will be reset causing the image to be saved without modified metadata on Save.
-        // With the call above, no metadata is lost, but when navigating away, confirming save on unload
-        // and navigating back, the previous image may still appear (loaded while/before async save).
-        // TODO a) prevent metadata reset without also resetting the gui; b) send signal after save
-        // to reload the saved image (in the other container); c) don't load x while saving x ...
-        // [2022-09, pse]
     }
 }
 

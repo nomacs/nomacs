@@ -27,26 +27,13 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QGraphicsView>
 #include <QLabel>
 #include <QMainWindow>
 #include <QRect>
 #include <QSharedPointer>
-#pragma warning(pop) // no warnings from includes - end
 
 #include "DkMath.h"
-#pragma warning(disable : 4251)
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
 
 namespace nmc
 {
@@ -97,8 +84,9 @@ protected:
 class DllCoreExport DkPongPlayer
 {
 public:
-    DkPongPlayer(const QString &playerName = QObject::tr("Anonymous"),
-                 QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    explicit DkPongPlayer(
+        const QString &playerName = QObject::tr("Anonymous"),
+        QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
     void reset(const QPoint &pos);
     QRect rect() const;
@@ -132,7 +120,7 @@ protected:
 class DllCoreExport DkBall
 {
 public:
-    DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    explicit DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
     void reset();
     void updateSize();
@@ -160,12 +148,13 @@ class DllCoreExport DkScoreLabel : public QLabel
     Q_OBJECT
 
 public:
-    DkScoreLabel(Qt::Alignment align = Qt::AlignLeft,
-                 QWidget *parent = 0,
-                 QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    explicit DkScoreLabel(
+        Qt::Alignment align = Qt::AlignLeft,
+        QWidget *parent = nullptr,
+        QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 protected:
-    void paintEvent(QPaintEvent *ev);
+    void paintEvent(QPaintEvent *ev) override;
     QFont mFont;
     Qt::Alignment mAlign;
 
@@ -177,8 +166,8 @@ class DllCoreExport DkPongPort : public QGraphicsView
     Q_OBJECT
 
 public:
-    DkPongPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkPongPort();
+    explicit DkPongPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkPongPort() override;
 
     QSharedPointer<DkPongSettings> settings() const;
 
@@ -187,10 +176,10 @@ public slots:
     void countDown();
 
 protected:
-    virtual void paintEvent(QPaintEvent *event) override;
-    virtual void resizeEvent(QResizeEvent *event) override;
-    virtual void keyPressEvent(QKeyEvent *event) override;
-    virtual void keyReleaseEvent(QKeyEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
     void initGame();
     void togglePause();
@@ -224,8 +213,8 @@ class DllCoreExport DkPong : public QMainWindow
     Q_OBJECT
 
 public:
-    DkPong(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-    virtual ~DkPong(){};
+    explicit DkPong(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkPong() override = default;
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

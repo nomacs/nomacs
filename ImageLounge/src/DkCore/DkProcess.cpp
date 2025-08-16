@@ -26,25 +26,19 @@
  *******************************************************************************************************/
 
 #include "DkProcess.h"
+
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
-#include "DkManipulators.h"
 #include "DkMath.h"
+#include "DkMetaData.h"
 #include "DkPluginManager.h"
-#include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#include "DkMetaData.h"
-
-#pragma warning(push, 0) // no warnings from includes - begin
+#include <QDir>
 #include <QFuture>
 #include <QFutureWatcher>
-#include <QWidget>
 #include <QtConcurrentMap>
-#pragma warning(pop) // no warnings from includes - end
-
-#include <cassert>
 
 namespace nmc
 {
@@ -461,9 +455,7 @@ bool DkBatchTransform::prepareProperties(const QSize &imgSize,
 }
 
 // DkManipulatorBatch --------------------------------------------------------------------
-DkManipulatorBatch::DkManipulatorBatch()
-{
-}
+DkManipulatorBatch::DkManipulatorBatch() = default;
 
 void DkManipulatorBatch::saveSettings(QSettings &settings) const
 {
@@ -529,9 +521,7 @@ DkManipulatorManager DkManipulatorBatch::manager() const
 
 #ifdef WITH_PLUGINS
 // DkPluginBatch --------------------------------------------------------------------
-DkPluginBatch::DkPluginBatch()
-{
-}
+DkPluginBatch::DkPluginBatch() = default;
 
 void DkPluginBatch::setProperties(const QStringList &pluginList)
 {
@@ -543,7 +533,7 @@ void DkPluginBatch::saveSettings(QSettings &settings) const
     settings.beginGroup(settingsName());
     settings.setValue("pluginList", mPluginList.join(";"));
 
-    for (const QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+    for (const QSharedPointer<DkPluginContainer> &plugin : mPlugins) {
         if (!plugin)
             continue;
 
@@ -1372,7 +1362,6 @@ void DkBatchProcessing::cancel()
 }
 
 // DkBatchProfile --------------------------------------------------------------------
-QString DkBatchProfile::ext = "pnm"; // profile file extension
 
 DkBatchProfile::DkBatchProfile(const QString &profileDir)
 {
@@ -1410,7 +1399,7 @@ QString DkBatchProfile::defaultProfilePath()
 
 QString DkBatchProfile::profileNameToPath(const QString &profileName)
 {
-    return defaultProfilePath() + QDir::separator() + profileName + "." + ext;
+    return defaultProfilePath() + QDir::separator() + profileName + "." + fileSuffix();
 }
 
 QStringList DkBatchProfile::profileNames()
@@ -1428,7 +1417,7 @@ QStringList DkBatchProfile::profileNames()
 QStringList DkBatchProfile::index(const QString &profileDir) const
 {
     QStringList exts;
-    exts << "*." + ext;
+    exts << "*." + fileSuffix();
 
     QDir pd(profileDir);
     QStringList profiles = pd.entryList(exts, QDir::Files, QDir::Name);
@@ -1446,9 +1435,9 @@ QString DkBatchProfile::makeUserFriendly(const QString &profilePath)
     return pName;
 }
 
-QString DkBatchProfile::extension()
+QString DkBatchProfile::fileSuffix()
 {
-    return ext;
+    return "pnm";
 }
 
 }

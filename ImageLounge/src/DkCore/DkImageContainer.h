@@ -27,33 +27,15 @@
 
 #pragma once
 
-#include "DkFileInfo.h"
-
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QFileInfo>
 #include <QFutureWatcher>
-#include <QSharedPointer>
 #include <QTimer>
-#pragma warning(pop) // no warnings from includes - end
 
-#pragma warning(disable : 4251) // TODO: remove
-
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkFileInfo.h"
 
 namespace nmc
 {
-// nomacs defines
 class DkBasicLoader;
 class DkMetaDataT;
-class DkZipContainer;
 class FileDownloader;
 class DkRotatingRect;
 
@@ -68,7 +50,7 @@ public:
         loaded,
     };
 
-    DkImageContainer(const DkFileInfo &fileInfo);
+    explicit DkImageContainer(const DkFileInfo &fileInfo);
     virtual ~DkImageContainer();
 
     QImage image();
@@ -166,8 +148,8 @@ class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
     Q_DISABLE_COPY_MOVE(DkImageContainerT);
 
 public:
-    DkImageContainerT(const DkFileInfo &fileInfo = {});
-    virtual ~DkImageContainerT();
+    explicit DkImageContainerT(const DkFileInfo &fileInfo = {});
+    ~DkImageContainerT() override;
 
     void fetchFile();
     void cancel();
@@ -182,12 +164,12 @@ public:
     void saveMetaDataThreaded();
     bool isFileDownloaded() const;
 
-    virtual QSharedPointer<DkBasicLoader> getLoader() override;
+    QSharedPointer<DkBasicLoader> getLoader() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
-    virtual void undo() override;
-    virtual void redo() override;
-    virtual void setHistoryIndex(int idx) override;
+    void undo() override;
+    void redo() override;
+    void setHistoryIndex(int idx) override;
     void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage &img, const QString &editName);
     void setMetaData(const QString &editName);
     void setEdited(bool edited = true);

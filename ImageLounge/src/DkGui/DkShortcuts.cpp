@@ -24,20 +24,17 @@
  *******************************************************************************************************/
 
 #include "DkShortcuts.h"
+
 #include "DkTimer.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
-#include <QDebug>
 #include <QDockWidget>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMainWindow>
 #include <QSet>
 #include <QTreeView>
-#pragma warning(pop) // no warnings from includes - end
-#include <utility>
 
 namespace nmc
 {
@@ -307,7 +304,7 @@ bool DkActionEventFilter::eventFilter(QObject *target, QEvent *event)
     if (Q_LIKELY(event->type() != QEvent::ShortcutOverride && event->type() != QEvent::KeyPress))
         return false;
 
-    QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+    const auto *keyEvent = static_cast<QKeyEvent *>(event);
 
     int key = keyEvent->modifiers() | keyEvent->key();
     for (QAction *a : std::as_const(mActions)) {

@@ -27,22 +27,15 @@
 
 #pragma once
 
+#include <QMenuBar>
+
 #include "DkQt5Compat.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QMenuBar>
-#include <QPointer>
-#pragma warning(pop) // no warnings from includes - end
-
-// Qt includes
 class QTimer;
 
 namespace nmc
 {
-
-// nomacs defines
 class DkPeer;
-class DkManagerThread;
 
 /**
  * This class perfectly acts like a QMenuBar.
@@ -64,7 +57,7 @@ public:
      * @param parent the parent widget.
      * @param timeToShow the time to show in ms. If set to -1 it acts like a QMenu.
      **/
-    DkMenuBar(QWidget *parent = 0, int timeToShow = 5000);
+    explicit DkMenuBar(QWidget *parent = nullptr, int timeToShow = 5000);
 
     /**
      * Override method.
@@ -113,7 +106,7 @@ private:
     QList<QMenu *> mMenus;
     bool mActive = false;
     int mTimeToShow = 5000;
-    QPointer<QTimer> mTimerMenu;
+    QTimer *mTimerMenu = nullptr;
 };
 
 class DkTcpAction : public QAction
@@ -122,10 +115,10 @@ class DkTcpAction : public QAction
 
 public:
     DkTcpAction();
-    DkTcpAction(DkPeer *peer, QObject *parent = 0);
-    DkTcpAction(DkPeer *peer, const QString &text, QObject *parent = 0);
+    explicit DkTcpAction(DkPeer *peer, QObject *parent = nullptr);
+    DkTcpAction(DkPeer *peer, const QString &text, QObject *parent = nullptr);
     DkTcpAction(DkPeer *peer, const QIcon &icon, const QString &text, QObject *parent);
-    ~DkTcpAction();
+    ~DkTcpAction() override;
 
     void init();
     void setTcpActions(QList<QAction *> *actions);
@@ -139,8 +132,8 @@ public slots:
     void synchronize(bool checked);
 
 protected:
-    DkPeer *peer;
-    QList<QAction *> *tcpActions;
+    DkPeer *mPeer;
+    QList<QAction *> *mTcpActions;
 };
 
 class DkTcpMenu : public QMenu
@@ -148,8 +141,8 @@ class DkTcpMenu : public QMenu
     Q_OBJECT
 
 public:
-    DkTcpMenu(const QString &title = QString(), QWidget *parent = 0);
-    ~DkTcpMenu();
+    explicit DkTcpMenu(const QString &title = QString(), QWidget *parent = nullptr);
+    ~DkTcpMenu() override;
 
     void addTcpAction(QAction *tcpAction);
     void showNoClientsFound(bool show);

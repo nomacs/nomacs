@@ -28,30 +28,16 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
-#include <QSettings>
-#pragma warning(pop)
 
-#pragma warning(disable : 4251) // TODO: remove
+#include "nmc_config.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
+class QSettings;
 
 namespace nmc
 {
 
 // nomacs defines
-class DkImageContainer;
 
 /// <summary>
 /// Base class of simple image manipulators.
@@ -63,7 +49,8 @@ class DkImageContainer;
 class DllCoreExport DkBaseManipulator
 {
 public:
-    DkBaseManipulator(QAction *action = 0);
+    explicit DkBaseManipulator(QAction *action = nullptr);
+    virtual ~DkBaseManipulator() = default;
 
     QString name() const;
     QAction *action() const;
@@ -78,7 +65,7 @@ public:
     virtual void loadSettings(QSettings &settings);
 
 private:
-    QAction *mAction = 0;
+    QAction *mAction = nullptr;
     bool mIsSelected = false;
 };
 
@@ -92,7 +79,7 @@ private:
 class DllCoreExport DkBaseManipulatorExt : public DkBaseManipulator
 {
 public:
-    DkBaseManipulatorExt(QAction *action);
+    explicit DkBaseManipulatorExt(QAction *action);
 
     void setWidget(QWidget *widget);
     QWidget *widget() const;
@@ -102,7 +89,7 @@ public:
 
 private:
     bool mDirty = false;
-    QWidget *mWidget = 0;
+    QWidget *mWidget = nullptr;
 };
 
 class DllCoreExport DkManipulatorManager

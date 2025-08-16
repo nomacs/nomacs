@@ -29,17 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
-#include <QDebug>
 #include <QKeyEvent>
 #include <QRandomGenerator>
-#include <QScreen>
-#include <QSettings>
-#include <QTime>
 #include <QTimer>
-#include <QVector2D>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -377,9 +370,7 @@ void DkPongPort::pauseGame(bool pause)
     mSmallInfo->setVisible(pause);
 }
 
-DkPongPort::~DkPongPort()
-{
-}
+DkPongPort::~DkPongPort() = default;
 
 QSharedPointer<DkPongSettings> DkPongPort::settings() const
 {

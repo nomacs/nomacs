@@ -24,22 +24,12 @@
  *******************************************************************************************************/
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QHash>
 #include <QKeySequence>
 #include <QObject>
 #include <QVector>
-#pragma warning(pop) // no warnings from includes - end
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "nmc_config.h"
 
 class QAction;
 
@@ -81,7 +71,7 @@ protected:
     {
     }
 
-    bool eventFilter(QObject *target, QEvent *e);
+    bool eventFilter(QObject *target, QEvent *e) override;
 
     QHash<QString, QVector<QKeySequence>> mReservedKeys;
 };
@@ -98,7 +88,7 @@ protected:
 class DllCoreExport DkActionEventFilter : public QObject
 {
 public:
-    DkActionEventFilter(QObject *parent)
+    explicit DkActionEventFilter(QObject *parent)
         : QObject(parent)
     {
     }

@@ -26,21 +26,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************************************/
 
 #include "DkThemeManager.h"
+
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
-#include <QDebug>
+// #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
 #include <QStyle>
 #include <QStyleFactory>
 #include <QStyleHints>
+
 #include <cmath>
-#pragma warning(pop) // no warnings from includes - end
-#include <utility>
 
 namespace nmc
 {
@@ -56,8 +55,8 @@ static Point3f rgbToUniform(const QColor &c)
 
     // convert 8-bit srgb to linear RGB
     auto srgbToLinear = [](int v) {
-        double c = v / 255.0;
-        return c <= 0.04045 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4);
+        double d = v / 255.0;
+        return d <= 0.04045 ? d / 12.92 : pow((d + 0.055) / 1.055, 2.4);
     };
 
     double r = srgbToLinear(c.red());
@@ -155,13 +154,13 @@ static Point3f pointOnVector(const Point3f &a, const Point3f &b, float c)
 // color palette calculations
 class DkPalette
 {
-    DkPalette() = delete;
-
 private:
     const QPalette mIn; // basis palette (usually system theme palette)
     QPalette mOut; // output palette
 public:
-    DkPalette(const QPalette &p)
+    DkPalette() = delete;
+
+    explicit DkPalette(const QPalette &p)
         : mIn(p)
     {
         mOut = mIn;
@@ -452,7 +451,6 @@ public:
 
     void printRole(QPalette::ColorRole role, const char *name) const
     {
-        QColor color = mOut.color(role);
         QString line;
         line += "   ";
         line += " " + ttySwatch(mIn.color(QPalette::Active, role));
@@ -870,7 +868,7 @@ QString DkThemeManager::preprocess(const QString &cssString) const
         const QString &name = colorDef[0];
         const QString &colorSpec = colorDef[1];
 
-        QColor color = QColor(colorSpec);
+        const QColor color(colorSpec);
         if (!color.isValid()) {
             qWarning() << "[theme] invalid color value" << name << colorSpec;
             return;

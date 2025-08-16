@@ -26,23 +26,13 @@
  *******************************************************************************************************/
 
 #include "DkMenu.h"
-#include "DkNetwork.h"
-#include "DkSettings.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
+#include "DkNetwork.h"
+
 #include <QAction>
-#include <QDebug>
-#include <QFileInfo>
 #include <QList>
-#include <QObject>
-#include <QPointer>
 #include <QStringBuilder>
 #include <QTimer>
-#pragma warning(pop) // no warnings from includes - end
-
-#ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
 
 namespace nmc
 {
@@ -157,9 +147,7 @@ DkTcpMenu::DkTcpMenu(const QString &title, QWidget *parent)
     connect(this, &DkTcpMenu::synchronizeWithSignal, DkSyncManager::inst().client(), &DkClientManager::synchronizeWith);
 }
 
-DkTcpMenu::~DkTcpMenu()
-{
-}
+DkTcpMenu::~DkTcpMenu() = default;
 
 void DkTcpMenu::addTcpAction(QAction *tcpAction)
 {
@@ -213,7 +201,7 @@ void DkTcpMenu::updatePeers()
 
     // show dummy action
     if (newPeers.empty() && mNoClientsFound) {
-        QAction *defaultAction = new QAction(tr("no clients found"), this);
+        auto *defaultAction = new QAction(tr("no clients found"), this);
         defaultAction->setEnabled(false);
         addAction(defaultAction);
         return;
@@ -228,10 +216,10 @@ void DkTcpMenu::updatePeers()
     for (int idx = 0; idx < newPeers.size(); idx++) {
         DkPeer *currentPeer = newPeers[idx];
 
-        QString title = (mNoClientsFound) ? currentPeer->title
-                                          : currentPeer->clientName % QString(": ") % currentPeer->title;
+        QString title = (mNoClientsFound) ? currentPeer->mTitle
+                                          : currentPeer->mClientName % QString(": ") % currentPeer->mTitle;
 
-        DkTcpAction *peerEntry = new DkTcpAction(currentPeer, title, this);
+        auto *peerEntry = new DkTcpAction(currentPeer, title, this);
         if (!mNoClientsFound)
             peerEntry->setTcpActions(&mTcpActions);
 
@@ -247,55 +235,53 @@ void DkTcpMenu::updatePeers()
 
 // DkTcpAction --------------------------------------------------------------------
 DkTcpAction::DkTcpAction()
-    : QAction(0)
+    : QAction(nullptr)
 {
 }
 
 DkTcpAction::DkTcpAction(DkPeer *peer, QObject *parent)
     : QAction(parent)
 {
-    this->peer = peer;
+    mPeer = peer;
     init();
 }
 
 DkTcpAction::DkTcpAction(DkPeer *peer, const QString &text, QObject *parent)
     : QAction(text, parent)
 {
-    this->peer = peer;
+    mPeer = peer;
     init();
 }
 
 DkTcpAction::DkTcpAction(DkPeer *peer, const QIcon &icon, const QString &text, QObject *parent)
     : QAction(icon, text, parent)
 {
-    this->peer = peer;
+    mPeer = peer;
     init();
 }
 
-DkTcpAction::~DkTcpAction()
-{
-}
+DkTcpAction::~DkTcpAction() = default;
 
 void DkTcpAction::init()
 {
-    tcpActions = 0;
+    mTcpActions = nullptr;
     setObjectName("tcpAction");
     setCheckable(true);
-    setChecked(peer->isSynchronized());
+    setChecked(mPeer->isSynchronized());
     connect(this, &DkTcpAction::triggered, this, &DkTcpAction::synchronize);
 }
 
 void DkTcpAction::setTcpActions(QList<QAction *> *actions)
 {
-    tcpActions = actions;
+    mTcpActions = actions;
 }
 
 void DkTcpAction::synchronize(bool checked)
 {
     if (checked)
-        emit synchronizeWithSignal(peer->peerId);
+        emit synchronizeWithSignal(mPeer->mPeerId);
     else
-        emit disableSynchronizeWithSignal(peer->peerId);
+        emit disableSynchronizeWithSignal(mPeer->mPeerId);
 
     emit enableActions(checked);
 }

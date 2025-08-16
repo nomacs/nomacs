@@ -27,35 +27,21 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
-#include <QWidget>
-#pragma warning(pop) // no warnings from includes - end
-
 #include "DkBaseWidgets.h"
+
 #include "DkImageContainer.h"
 #include "DkThumbs.h"
 
-#pragma warning(disable : 4251) // TODO: remove
+#include "nmc_config.h"
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// Qt defines
 class QTabBar;
 class QMimeData;
 class QSettings;
 class QStackedLayout;
+class QWidget;
 
 namespace nmc
 {
-// nomacs defines
 class DkImageLoader;
 class DkViewPort;
 class DkPreferenceWidget;
@@ -79,11 +65,11 @@ public:
         tab_end
     };
 
-    DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(),
-              int idx = -1,
-              QObject *parent = 0);
-    DkTabInfo(TabMode mode, int idx = -1, QObject *parent = 0);
-    ~DkTabInfo();
+    explicit DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(),
+                       int idx = -1,
+                       QObject *parent = nullptr);
+    explicit DkTabInfo(TabMode mode, int idx = -1, QObject *parent = nullptr);
+    ~DkTabInfo() override;
 
     bool operator==(const DkTabInfo &o) const;
 
@@ -125,8 +111,8 @@ class DllCoreExport DkCentralWidget : public DkWidget
     Q_OBJECT
 
 public:
-    DkCentralWidget(QWidget *parent = 0);
-    ~DkCentralWidget();
+    explicit DkCentralWidget(QWidget *parent = nullptr);
+    ~DkCentralWidget() override;
 
     bool hasViewPort() const;
     DkViewPort *getViewPort() const;
@@ -188,12 +174,12 @@ public slots:
     void renameFile();
 
 protected:
-    QTabBar *mTabbar = 0;
-    DkProgressBar *mProgressBar = 0;
+    QTabBar *mTabbar = nullptr;
+    DkProgressBar *mProgressBar = nullptr;
     QVector<QSharedPointer<DkTabInfo>> mTabInfos;
 
     QVector<QWidget *> mWidgets;
-    QStackedLayout *mViewLayout = 0;
+    QStackedLayout *mViewLayout = nullptr;
 
     void dropEvent(QDropEvent *event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -202,7 +188,7 @@ protected:
     void createLayout();
     void updateTabIdx();
     void switchWidget(int widget);
-    void switchWidget(QWidget *widget = 0);
+    void switchWidget(QWidget *widget = nullptr);
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
     void updateLoader(QSharedPointer<DkImageLoader> loader) const;

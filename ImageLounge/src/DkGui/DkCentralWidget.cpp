@@ -47,7 +47,6 @@
 #include "DkPluginManager.h"
 #endif
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QClipboard>
 #include <QDragEnterEvent>
@@ -55,6 +54,7 @@
 #include <QIcon>
 #include <QInputDialog>
 #include <QMimeData>
+#include <QProcess>
 #include <QSettings>
 #include <QStackedLayout>
 #include <QStandardPaths>
@@ -66,8 +66,6 @@
 #endif
 #include <QStorageInfo>
 #endif
-
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -96,10 +94,7 @@ DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject *parent)
     mTabIdx = idx;
 }
 
-DkTabInfo::~DkTabInfo()
-{
-    // qDebug() << "tab at: " << mTabIdx << " released...";
-}
+DkTabInfo::~DkTabInfo() = default;
 
 bool DkTabInfo::operator==(const DkTabInfo &o) const
 {
@@ -309,13 +304,11 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
 #endif
 
     // runs in the background & will be deleted with this widget...
-    DkDialogManager *dm = new DkDialogManager(this);
+    auto *dm = new DkDialogManager(this);
     dm->setCentralWidget(this);
 }
 
-DkCentralWidget::~DkCentralWidget()
-{
-}
+DkCentralWidget::~DkCentralWidget() = default;
 
 void DkCentralWidget::createLayout()
 {
@@ -342,10 +335,10 @@ void DkCentralWidget::createLayout()
     mWidgets[thumbs_widget] = 0;
     mWidgets[preference_widget] = 0;
 
-    QWidget *viewWidget = new QWidget(this);
+    auto *viewWidget = new QWidget(this);
     mViewLayout = new QStackedLayout(viewWidget);
 
-    QVBoxLayout *vbLayout = new QVBoxLayout(this);
+    auto *vbLayout = new QVBoxLayout(this);
     vbLayout->setContentsMargins(0, 0, 0, 0);
     vbLayout->setSpacing(0);
     vbLayout->addWidget(mTabbar);
@@ -526,51 +519,49 @@ void DkCentralWidget::paintEvent(QPaintEvent *)
 DkPreferenceWidget *DkCentralWidget::createPreferences()
 {
     // add preference widget ------------------------------
-    DkPreferenceWidget *pw = new DkPreferenceWidget(this);
+    auto *pw = new DkPreferenceWidget(this);
     connect(pw, &DkPreferenceWidget::restartSignal, this, &DkCentralWidget::restart, Qt::UniqueConnection);
 
     QSize s(22, 22);
 
     // general preferences
-    DkPreferenceTabWidget *tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg", s),
-                                                           tr("General"),
-                                                           this);
-    DkGeneralPreference *gp = new DkGeneralPreference(this);
+    auto *tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg", s), tr("General"), this);
+    auto *gp = new DkGeneralPreference(this);
     connect(gp, &DkGeneralPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(gp);
     pw->addTabWidget(tab);
 
     // display preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display.svg", s), tr("Display"), this);
-    DkDisplayPreference *dp = new DkDisplayPreference(this);
+    auto *dp = new DkDisplayPreference(this);
     connect(dp, &DkDisplayPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(dp);
     pw->addTabWidget(tab);
 
     // file preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/dir.svg", s), tr("File"), this);
-    DkFilePreference *fp = new DkFilePreference(this);
+    auto *fp = new DkFilePreference(this);
     connect(fp, &DkFilePreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(fp);
     pw->addTabWidget(tab);
 
     // file association preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", s), tr("File Associations"), this);
-    DkFileAssociationsPreference *fap = new DkFileAssociationsPreference(this);
+    auto *fap = new DkFileAssociationsPreference(this);
     connect(fap, &DkFileAssociationsPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(fap);
     pw->addTabWidget(tab);
 
     // advanced preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/advanced-settings.svg", s), tr("Advanced"), this);
-    DkAdvancedPreference *ap = new DkAdvancedPreference(this);
+    auto *ap = new DkAdvancedPreference(this);
     connect(ap, &DkAdvancedPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(ap);
     pw->addTabWidget(tab);
 
     // file association preferences
     tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/sliders.svg", s), tr("Editor"), this);
-    DkEditorPreference *ep = new DkEditorPreference(this);
+    auto *ep = new DkEditorPreference(this);
     connect(ep, &DkEditorPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(ep);
     pw->addTabWidget(tab);
@@ -582,7 +573,7 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
 
 DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 {
-    DkRecentFilesWidget *rw = new DkRecentFilesWidget(&mThumbLoader, this);
+    auto *rw = new DkRecentFilesWidget(&mThumbLoader, this);
     rw->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
 
     connect(rw, &DkRecentFilesWidget::loadFileSignal, this, &DkCentralWidget::load);
@@ -593,7 +584,7 @@ DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 
 DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
 {
-    DkThumbScrollWidget *thumbScrollWidget = new DkThumbScrollWidget(&mThumbLoader, this);
+    auto *thumbScrollWidget = new DkThumbScrollWidget(&mThumbLoader, this);
     // thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettingsManager::param().slideShow().backgroundColor);
     thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 
@@ -611,7 +602,7 @@ void DkCentralWidget::createViewPort()
         return;
     }
 
-    DkViewPort *vp = 0;
+    DkViewPort *vp = nullptr;
 
     if (parent() && parent()->objectName() == "DkNoMacsFrameless")
         vp = new DkViewPortFrameless(&mThumbLoader, this);
@@ -713,7 +704,7 @@ void DkCentralWidget::removeTab(int tabIdx)
 
     // if user requests close on batch while processing - cancel batch
     if (mTabInfos[tabIdx]->getMode() == DkTabInfo::tab_batch) {
-        DkBatchWidget *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
+        auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
 
         if (bw)
             bw->close();
@@ -792,7 +783,7 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
     int idx = mTabbar->currentIndex();
 
     if (idx == -1) {
-        addTab(img, 0);
+        addTab(img, false);
     } else if (idx > mTabInfos.size())
         addTab(img, idx);
     else {
@@ -948,7 +939,7 @@ void DkCentralWidget::openBatch(const QStringList &selectedFiles)
     QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_batch, mTabInfos.size()));
     addTab(info);
 
-    DkBatchWidget *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
+    auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
     if (!bw) {
         qWarning() << "batch widget is NULL where it should not be!";
         return;

@@ -42,16 +42,13 @@
 #include "DkUtils.h"
 #include "DkWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
-#include <QApplication>
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QDropEvent>
 #include <QFileDialog>
-#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QInputDialog>
@@ -61,17 +58,13 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include <QMimeData>
-#include <QProgressBar>
 #include <QRadioButton>
-#include <QSplitter>
 #include <QStackedLayout>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QStandardPaths>
-#include <QTextBlock>
 #include <QTextEdit>
 #include <QTreeView>
-#pragma warning(pop) // no warnings from includes - end
 
 namespace nmc
 {
@@ -341,8 +334,8 @@ void DkBatchInput::createLayout(DkThumbLoader *thumbLoader)
 {
     mDirectoryEdit = new DkDirectoryEdit(this);
 
-    QWidget *upperWidget = new QWidget(this);
-    QGridLayout *upperWidgetLayout = new QGridLayout(upperWidget);
+    auto *upperWidget = new QWidget(this);
+    auto *upperWidgetLayout = new QGridLayout(upperWidget);
     upperWidgetLayout->setContentsMargins(0, 0, 0, 0);
     upperWidgetLayout->addWidget(mDirectoryEdit, 0, 1);
 
@@ -367,7 +360,7 @@ void DkBatchInput::createLayout(DkThumbLoader *thumbLoader)
     mInputTabs->addTab(mThumbScrollWidget, DkImage::loadIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
     mInputTabs->addTab(mInputTextEdit, DkImage::loadIcon(":/nomacs/img/bars.svg"), tr("File List"));
 
-    QGridLayout *widgetLayout = new QGridLayout(this);
+    auto *widgetLayout = new QGridLayout(this);
     widgetLayout->setContentsMargins(0, 0, 0, 0);
     widgetLayout->addWidget(mExplorer, 0, 0, 2, 1);
     widgetLayout->addWidget(upperWidget, 0, 1);
@@ -764,7 +757,7 @@ DkBatchOutput::DkBatchOutput(QWidget *parent, Qt::WindowFlags f)
 void DkBatchOutput::createLayout()
 {
     // Output Directory Groupbox
-    QLabel *outDirLabel = new QLabel(tr("Output Directory"), this);
+    auto *outDirLabel = new QLabel(tr("Output Directory"), this);
     outDirLabel->setObjectName("subTitle");
 
     mOutputBrowseButton = new QPushButton(tr("Browse"));
@@ -798,30 +791,30 @@ void DkBatchOutput::createLayout()
     mCbDeleteOriginal->setToolTip(
         tr("If checked, the original file will be deleted if the conversion was successful.\n So be careful!"));
 
-    QWidget *cbWidget = new QWidget(this);
-    QVBoxLayout *cbLayout = new QVBoxLayout(cbWidget);
+    auto *cbWidget = new QWidget(this);
+    auto *cbLayout = new QVBoxLayout(cbWidget);
     cbLayout->setContentsMargins(0, 0, 0, 0);
     cbLayout->addWidget(mCbUseInput);
     cbLayout->addWidget(mCbOverwriteExisting);
     cbLayout->addWidget(mCbDoNotSave);
     cbLayout->addWidget(mCbDeleteOriginal);
 
-    QWidget *outDirWidget = new QWidget(this);
-    QGridLayout *outDirLayout = new QGridLayout(outDirWidget);
+    auto *outDirWidget = new QWidget(this);
+    auto *outDirLayout = new QGridLayout(outDirWidget);
     // outDirLayout->setContentsMargins(0, 0, 0, 0);
     outDirLayout->addWidget(mOutputBrowseButton, 0, 0);
     outDirLayout->addWidget(mOutputlineEdit, 0, 1);
     outDirLayout->addWidget(cbWidget, 1, 0);
 
     // Filename Groupbox
-    QLabel *fileNameLabel = new QLabel(tr("Filename"), this);
+    auto *fileNameLabel = new QLabel(tr("Filename"), this);
     fileNameLabel->setObjectName("subTitle");
 
-    QWidget *fileNameWidget = new QWidget(this);
+    auto *fileNameWidget = new QWidget(this);
     mFilenameVBLayout = new QVBoxLayout(fileNameWidget);
     mFilenameVBLayout->setSpacing(0);
 
-    DkFilenameWidget *fwidget = new DkFilenameWidget(this);
+    auto *fwidget = new DkFilenameWidget(this);
     fwidget->enableMinusButton(false);
     mFilenameWidgets.push_back(fwidget);
     mFilenameVBLayout->addWidget(fwidget);
@@ -831,8 +824,8 @@ void DkBatchOutput::createLayout()
     connect(fwidget, &DkFilenameWidget::minusPressed, this, &DkBatchOutput::minusPressed);
     connect(fwidget, &DkFilenameWidget::changed, this, &DkBatchOutput::parameterChanged);
 
-    QWidget *extensionWidget = new QWidget(this);
-    QHBoxLayout *extensionLayout = new QHBoxLayout(extensionWidget);
+    auto *extensionWidget = new QWidget(this);
+    auto *extensionLayout = new QHBoxLayout(extensionWidget);
     extensionLayout->setAlignment(Qt::AlignLeft);
     // extensionLayout->setSpacing(0);
     extensionLayout->setContentsMargins(0, 0, 0, 0);
@@ -863,22 +856,22 @@ void DkBatchOutput::createLayout()
     // extensionLayout->addStretch();
     mFilenameVBLayout->addWidget(extensionWidget);
 
-    QLabel *previewLabel = new QLabel(tr("Preview"), this);
+    auto *previewLabel = new QLabel(tr("Preview"), this);
     previewLabel->setObjectName("subTitle");
 
-    QLabel *oldLabel = new QLabel(tr("Old Filename: "));
+    auto *oldLabel = new QLabel(tr("Old Filename: "));
     oldLabel->setObjectName("FileNamePreviewLabel");
     mOldFileNameLabel = new QLabel("");
     mOldFileNameLabel->setObjectName("FileNamePreviewLabel");
 
-    QLabel *newLabel = new QLabel(tr("New Filename: "));
+    auto *newLabel = new QLabel(tr("New Filename: "));
     newLabel->setObjectName("FileNamePreviewLabel");
     mNewFileNameLabel = new QLabel("");
     mNewFileNameLabel->setObjectName("FileNamePreviewLabel");
 
     // Preview Widget
-    QWidget *previewWidget = new QWidget(this);
-    QGridLayout *previewGBLayout = new QGridLayout(previewWidget);
+    auto *previewWidget = new QWidget(this);
+    auto *previewGBLayout = new QGridLayout(previewWidget);
     // previewWidget->hide();	// show if more than 1 file is selected
     previewGBLayout->addWidget(oldLabel, 0, 0);
     previewGBLayout->addWidget(mOldFileNameLabel, 0, 1);
@@ -887,7 +880,7 @@ void DkBatchOutput::createLayout()
     previewGBLayout->setColumnStretch(3, 10);
     previewGBLayout->setAlignment(Qt::AlignTop);
 
-    QGridLayout *contentLayout = new QGridLayout(this);
+    auto *contentLayout = new QGridLayout(this);
     contentLayout->setContentsMargins(0, 0, 0, 0);
     contentLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     contentLayout->addWidget(outDirLabel, 2, 0);
@@ -1003,7 +996,7 @@ void DkBatchOutput::addFilenameWidget(const QString &tag)
 
 DkFilenameWidget *DkBatchOutput::createFilenameWidget(const QString &tag)
 {
-    DkFilenameWidget *fw = new DkFilenameWidget(this);
+    auto *fw = new DkFilenameWidget(this);
     fw->setTag(tag);
 
     connect(fw, &DkFilenameWidget::plusPressed, this, [this](DkFilenameWidget *widget) {
@@ -1266,20 +1259,20 @@ void DkProfileSummaryWidget::createLayout()
     mTitle = new QLabel("", this);
     mTitle->setObjectName("subTitle");
 
-    QLabel *numFilesTitle = new QLabel(tr("Input"), this);
+    auto *numFilesTitle = new QLabel(tr("Input"), this);
     numFilesTitle->setObjectName("summaryMeta");
     mNumFiles = new QLabel(this);
 
-    QLabel *outputDirTitle = new QLabel(tr("Output"), this);
+    auto *outputDirTitle = new QLabel(tr("Output"), this);
     outputDirTitle->setObjectName("summaryMeta");
     mOutputDir = new QLabel(this);
 
-    QLabel *functionsTitle = new QLabel(tr("Functions"), this);
+    auto *functionsTitle = new QLabel(tr("Functions"), this);
     functionsTitle->setObjectName("summaryMeta");
     mFunctions = new QLabel(this);
 
-    QWidget *sw = new QWidget(this);
-    QGridLayout *summaryLayout = new QGridLayout(sw);
+    auto *sw = new QWidget(this);
+    auto *summaryLayout = new QGridLayout(sw);
     summaryLayout->setContentsMargins(0, 0, 0, 0);
     summaryLayout->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     summaryLayout->addWidget(mTitle, 1, 1, 1, 3);
@@ -1290,27 +1283,27 @@ void DkProfileSummaryWidget::createLayout()
     summaryLayout->addWidget(functionsTitle, 4, 1);
     summaryLayout->addWidget(mFunctions, 4, 2);
 
-    QPushButton *updateButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/save.svg"), "", this);
+    auto *updateButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/save.svg"), "", this);
     updateButton->setToolTip(tr("Update"));
     connect(updateButton, &QPushButton::clicked, this, &DkProfileSummaryWidget::onUpdateButtonClicked);
 
-    QPushButton *deleteButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/trash.svg"), "", this);
+    auto *deleteButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/trash.svg"), "", this);
     deleteButton->setToolTip(tr("Delete"));
     connect(deleteButton, &QPushButton::clicked, this, &DkProfileSummaryWidget::onDeleteButtonClicked);
 
-    QPushButton *exportButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/export.svg"), "", this);
+    auto *exportButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/export.svg"), "", this);
     exportButton->setToolTip(tr("Export"));
     connect(exportButton, &QPushButton::clicked, this, &DkProfileSummaryWidget::onExportButtonClicked);
 
-    QWidget *bw = new QWidget(this);
-    QHBoxLayout *bLayout = new QHBoxLayout(bw);
+    auto *bw = new QWidget(this);
+    auto *bLayout = new QHBoxLayout(bw);
     bLayout->setContentsMargins(0, 0, 0, 0);
     bLayout->setAlignment(Qt::AlignRight);
     bLayout->addWidget(updateButton);
     bLayout->addWidget(exportButton);
     bLayout->addWidget(deleteButton);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->addWidget(sw);
     layout->addWidget(bw);
 }
@@ -1334,27 +1327,27 @@ void DkProfileWidget::createLayout()
     mSummary = new DkProfileSummaryWidget(this);
 
     // buttons
-    QPushButton *saveButton = new QPushButton(tr("Create New Profile"), this);
+    auto *saveButton = new QPushButton(tr("Create New Profile"), this);
     connect(saveButton, &QPushButton::clicked, this, &DkProfileWidget::onSaveButtonClicked);
 
-    QPushButton *resetButton = new QPushButton(tr("Apply Default"), this);
+    auto *resetButton = new QPushButton(tr("Apply Default"), this);
     connect(resetButton, &QPushButton::clicked, this, &DkProfileWidget::onResetButtonClicked);
 
-    QWidget *buttonWidget = new QWidget(this);
-    QHBoxLayout *bLayout = new QHBoxLayout(buttonWidget);
+    auto *buttonWidget = new QWidget(this);
+    auto *bLayout = new QHBoxLayout(buttonWidget);
     bLayout->setContentsMargins(0, 0, 0, 0);
     bLayout->setAlignment(Qt::AlignLeft);
     bLayout->addWidget(saveButton);
     bLayout->addWidget(resetButton);
 
-    QWidget *descWidget = new QWidget(this);
-    QVBoxLayout *descLayout = new QVBoxLayout(descWidget);
+    auto *descWidget = new QWidget(this);
+    auto *descLayout = new QVBoxLayout(descWidget);
     descLayout->setContentsMargins(0, 0, 0, 0);
     descLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     descLayout->addWidget(mSummary);
     descLayout->addWidget(buttonWidget);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(mProfileList);
     layout->addWidget(descWidget);
@@ -1483,12 +1476,12 @@ void DkProfileWidget::deleteCurrentProfile()
 void DkProfileWidget::exportCurrentProfile()
 {
     QString expPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QDir::separator()
-        + currentProfile() + "." + DkBatchProfile::extension();
+        + currentProfile() + "." + DkBatchProfile::fileSuffix();
 
     QString sPath = QFileDialog::getSaveFileName(this,
                                                  tr("Export Batch Profile"),
                                                  expPath,
-                                                 tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::extension()),
+                                                 tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::fileSuffix()),
                                                  nullptr,
                                                  DkDialog::fileDialogOptions());
 
@@ -1558,12 +1551,12 @@ void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batch
 
 void DkBatchPluginWidget::createLayout()
 {
-    QLabel *listLabel = new QLabel(tr("Select Plugins"));
+    auto *listLabel = new QLabel(tr("Select Plugins"));
     listLabel->setObjectName("subTitle");
 
     mModel = new QStandardItemModel(this);
 
-    QTreeView *pluginList = new QTreeView(this);
+    auto *pluginList = new QTreeView(this);
     pluginList->setModel(mModel);
     pluginList->header()->hide();
 
@@ -1576,7 +1569,7 @@ void DkBatchPluginWidget::createLayout()
 
     addPlugins(mModel);
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(listLabel, 0, 0);
     layout->addWidget(mSettingsTitle, 0, 1);
@@ -1690,7 +1683,7 @@ void DkBatchPluginWidget::addPlugins(QStandardItemModel *model) const
     QVector<QSharedPointer<DkPluginContainer>> plugins = DkPluginManager::instance().getBatchPlugins();
 
     for (auto p : plugins) {
-        QStandardItem *mPluginItem = new QStandardItem(p->pluginName());
+        auto *mPluginItem = new QStandardItem(p->pluginName());
         mPluginItem->setEditable(false);
         mPluginItem->setCheckable(false);
         // mPluginItem->setAutoTristate(true);
@@ -1700,7 +1693,7 @@ void DkBatchPluginWidget::addPlugins(QStandardItemModel *model) const
         QList<QAction *> actions = p->plugin()->pluginActions();
 
         for (const QAction *a : actions) {
-            QStandardItem *item = new QStandardItem(a->icon(), a->text());
+            auto *item = new QStandardItem(a->icon(), a->text());
             item->setEditable(false);
             item->setCheckable(true);
             item->setData(p->pluginName(), Qt::UserRole);
@@ -1711,7 +1704,7 @@ void DkBatchPluginWidget::addPlugins(QStandardItemModel *model) const
 
 void DkBatchPluginWidget::selectPlugin(const QString &pluginName)
 {
-    mCurrentPlugin = 0; // unset
+    mCurrentPlugin = nullptr; // unset
     QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPluginByName(pluginName);
 
     if (!plugin || !plugin->batchPlugin()) {
@@ -1815,14 +1808,14 @@ DkBatchManipulatorWidget::DkBatchManipulatorWidget(QWidget *parent /* = 0 */, Qt
 
 void DkBatchManipulatorWidget::createLayout()
 {
-    QLabel *listLabel = new QLabel(tr("Select Image Adjustments"));
+    auto *listLabel = new QLabel(tr("Select Image Adjustments"));
     listLabel->setObjectName("subTitle");
 
     mModel = new QStandardItemModel(this);
 
     int idx = 0;
     for (auto mpl : mManager.manipulators()) {
-        QStandardItem *item = new QStandardItem(mpl->action()->icon(), mpl->name());
+        auto *item = new QStandardItem(mpl->action()->icon(), mpl->name());
         item->setEditable(false);
         item->setCheckable(true);
 
@@ -1830,14 +1823,14 @@ void DkBatchManipulatorWidget::createLayout()
         idx++;
     }
 
-    QListView *manipulatorList = new QListView(this);
+    auto *manipulatorList = new QListView(this);
     manipulatorList->setModel(mModel);
 
     // settings
     mSettingsTitle = new QLabel(this);
     mSettingsTitle->setObjectName("subTitle");
 
-    QWidget *settingsWidget = new QWidget(this);
+    auto *settingsWidget = new QWidget(this);
     mSettingsLayout = new QVBoxLayout(settingsWidget);
     mSettingsLayout->setContentsMargins(0, 0, 0, 0);
     mSettingsLayout->setAlignment(Qt::AlignTop);
@@ -1846,14 +1839,14 @@ void DkBatchManipulatorWidget::createLayout()
     mPreviewLabel->setAlignment(Qt::AlignHCenter);
     mPreviewLabel->hide();
 
-    QWidget *rightWidget = new QWidget(this);
-    QVBoxLayout *rLayout = new QVBoxLayout(rightWidget);
+    auto *rightWidget = new QWidget(this);
+    auto *rLayout = new QVBoxLayout(rightWidget);
     rLayout->setContentsMargins(0, 0, 0, 0);
     rLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     rLayout->addWidget(settingsWidget);
     rLayout->addWidget(mPreviewLabel);
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
     // layout->setAlignment(Qt::AlignHCenter);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(listLabel, 0, 0);
@@ -2015,7 +2008,7 @@ void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulato
 
 void DkBatchManipulatorWidget::selectManipulator()
 {
-    QAction *action = dynamic_cast<QAction *>(QObject::sender());
+    const auto *action = dynamic_cast<QAction *>(QObject::sender());
     QSharedPointer<DkBaseManipulator> mpl = mManager.manipulator(action);
 
     if (mpl && action->isChecked())
@@ -2058,7 +2051,7 @@ DkBatchTransformWidget::DkBatchTransformWidget(QWidget *parent /* = 0 */, Qt::Wi
 void DkBatchTransformWidget::createLayout()
 {
     // resize
-    QLabel *resizeLabel = new QLabel(tr("Resize"), this);
+    auto *resizeLabel = new QLabel(tr("Resize"), this);
     resizeLabel->setObjectName("subTitle");
 
     mResizeComboMode = new QComboBox(this);
@@ -2088,8 +2081,8 @@ void DkBatchTransformWidget::createLayout()
     propertyItems << tr("Transform All") << tr("Shrink Only") << tr("Enlarge Only");
     mResizeComboProperties->addItems(propertyItems);
 
-    QWidget *resizeWidget = new QWidget(this);
-    QHBoxLayout *resizeLayout = new QHBoxLayout(resizeWidget);
+    auto *resizeWidget = new QWidget(this);
+    auto *resizeLayout = new QHBoxLayout(resizeWidget);
     resizeLayout->setContentsMargins(0, 0, 0, 0);
     resizeLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     resizeLayout->addWidget(mResizeComboMode);
@@ -2101,7 +2094,7 @@ void DkBatchTransformWidget::createLayout()
     resizeLayout->addStretch();
 
     // rotation
-    QLabel *rotateLabel = new QLabel(tr("Orientation"), this);
+    auto *rotateLabel = new QLabel(tr("Orientation"), this);
     rotateLabel->setObjectName("subTitle");
 
     mRbRotate0 = new QRadioButton(tr("Do &Not Rotate"));
@@ -2117,7 +2110,7 @@ void DkBatchTransformWidget::createLayout()
     mRotateGroup->addButton(mRbRotateRight);
     mRotateGroup->addButton(mRbRotate180);
 
-    QLabel *transformLabel = new QLabel(tr("Transformations"), this);
+    auto *transformLabel = new QLabel(tr("Transformations"), this);
     transformLabel->setObjectName("subTitle");
 
     mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
@@ -2127,7 +2120,7 @@ void DkBatchTransformWidget::createLayout()
     mCropRectWidget = new DkRectWidget(QRect(), this);
     mCbCropRectCenter = new QCheckBox(tr("&Crop to center"));
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     layout->addWidget(resizeLabel, 0, 0);
@@ -2419,7 +2412,7 @@ void DkBatchButtonsWidget::createLayout()
     connect(mPlayButton, &QPushButton::clicked, this, &DkBatchButtonsWidget::playSignal);
     connect(mLogButton, &QPushButton::clicked, this, &DkBatchButtonsWidget::showLogSignal);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->addWidget(mPlayButton);
     layout->addWidget(mLogButton);
 }
@@ -2453,7 +2446,7 @@ void DkBatchInfoWidget::createLayout()
 
     mIcon = new QLabel(this);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->setAlignment(Qt::AlignLeft);
     layout->addWidget(mIcon);
     layout->addWidget(mInfo);
@@ -2506,12 +2499,12 @@ DkBatchWidget::DkBatchWidget(DkThumbLoader *thumbLoader, const QString &currentD
     outputWidget()->setInputDir(currentDirectory);
 
     // change tabs with page up page down
-    QAction *nextAction = new QAction(tr("next"), this);
+    auto *nextAction = new QAction(tr("next"), this);
     nextAction->setShortcut(Qt::Key_PageDown);
     connect(nextAction, &QAction::triggered, this, &DkBatchWidget::nextTab);
     addAction(nextAction);
 
-    QAction *previousAction = new QAction(tr("previous"), this);
+    auto *previousAction = new QAction(tr("previous"), this);
     previousAction->setShortcut(Qt::Key_PageUp);
     connect(previousAction, &QAction::triggered, this, &DkBatchWidget::previousTab);
     addAction(previousAction);
@@ -2562,7 +2555,7 @@ void DkBatchWidget::createLayout(DkThumbLoader *thumbLoader)
     mProgressBar->setVisible(false);
     mProgressBar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed); // progressbar is greedy otherwise
 
-    QWidget *centralWidget = new QWidget(this);
+    auto *centralWidget = new QWidget(this);
     mCentralLayout = new QStackedLayout(centralWidget);
     mCentralLayout->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     for (DkBatchContainer *w : mWidgets) {
@@ -2579,8 +2572,8 @@ void DkBatchWidget::createLayout(DkThumbLoader *thumbLoader)
     mContentInfo = new QLabel("", this);
     mContentInfo->setObjectName("batchContentInfo");
 
-    QWidget *contentWidget = new QWidget(this);
-    QVBoxLayout *dialogLayout = new QVBoxLayout(contentWidget);
+    auto *contentWidget = new QWidget(this);
+    auto *dialogLayout = new QVBoxLayout(contentWidget);
     dialogLayout->addWidget(mContentTitle);
     dialogLayout->addWidget(mContentInfo);
     dialogLayout->addWidget(centralWidget); // almost everything
@@ -2588,16 +2581,16 @@ void DkBatchWidget::createLayout(DkThumbLoader *thumbLoader)
     // dialogLayout->addWidget(mButtons);
 
     // the tabs left
-    QWidget *tabWidget = new QWidget(this);
+    auto *tabWidget = new QWidget(this);
     tabWidget->setObjectName("DkBatchTabs");
 
-    QVBoxLayout *tabLayout = new QVBoxLayout(tabWidget);
+    auto *tabLayout = new QVBoxLayout(tabWidget);
     tabLayout->setAlignment(Qt::AlignTop);
     tabLayout->setContentsMargins(0, 0, 0, 0);
     tabLayout->setSpacing(0);
 
     // tab buttons must be checked exclusively
-    QButtonGroup *tabGroup = new QButtonGroup(this);
+    auto *tabGroup = new QButtonGroup(this);
 
     for (DkBatchContainer *w : mWidgets) {
         if (!w)
@@ -2615,19 +2608,19 @@ void DkBatchWidget::createLayout(DkThumbLoader *thumbLoader)
     tabLayout->addWidget(mProgressBar);
     tabLayout->addWidget(mButtonWidget);
 
-    DkResizableScrollArea *tabScroller = new DkResizableScrollArea(this);
+    auto *tabScroller = new DkResizableScrollArea(this);
     tabScroller->setWidgetResizable(true);
     tabScroller->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
     tabScroller->setWidget(tabWidget);
     tabScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    DkResizableScrollArea *contentScroller = new DkResizableScrollArea(this);
+    auto *contentScroller = new DkResizableScrollArea(this);
     contentScroller->setWidgetResizable(true);
     contentScroller->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
     contentScroller->setWidget(contentWidget);
     // contentScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(tabScroller);
     layout->addWidget(contentScroller);
@@ -2643,37 +2636,32 @@ void DkBatchWidget::createLayout(DkThumbLoader *thumbLoader)
 
 DkBatchInput *DkBatchWidget::inputWidget() const
 {
-    DkBatchInput *w = dynamic_cast<DkBatchInput *>(mWidgets[batch_input]->contentWidget());
-    if (!w)
-        qCritical() << "cannot cast to DkBatchInput";
+    auto *w = dynamic_cast<DkBatchInput *>(mWidgets[batch_input]->contentWidget());
+    Q_ASSERT(w);
 
     return w;
 }
 
 DkBatchOutput *DkBatchWidget::outputWidget() const
 {
-    DkBatchOutput *w = dynamic_cast<DkBatchOutput *>(mWidgets[batch_output]->contentWidget());
-    if (!w)
-        qCritical() << "cannot cast to DkBatchOutput";
+    auto *w = dynamic_cast<DkBatchOutput *>(mWidgets[batch_output]->contentWidget());
+    Q_ASSERT(w);
 
     return w;
 }
 
 DkBatchManipulatorWidget *DkBatchWidget::manipulatorWidget() const
 {
-    DkBatchManipulatorWidget *w = dynamic_cast<DkBatchManipulatorWidget *>(
-        mWidgets[batch_manipulator]->contentWidget());
-    if (!w)
-        qCritical() << "cannot cast to DkBatchManipulatorWidget";
+    auto *w = dynamic_cast<DkBatchManipulatorWidget *>(mWidgets[batch_manipulator]->contentWidget());
+    Q_ASSERT(w);
 
     return w;
 }
 
 DkProfileWidget *DkBatchWidget::profileWidget() const
 {
-    DkProfileWidget *w = dynamic_cast<DkProfileWidget *>(mWidgets[batch_profile]->contentWidget());
-    if (!w)
-        qCritical() << "cannot cast to DkBatchProfileWidget";
+    auto *w = dynamic_cast<DkProfileWidget *>(mWidgets[batch_profile]->contentWidget());
+    Q_ASSERT(w);
 
     return w;
 }
@@ -2681,9 +2669,8 @@ DkProfileWidget *DkBatchWidget::profileWidget() const
 #ifdef WITH_PLUGINS
 DkBatchPluginWidget *DkBatchWidget::pluginWidget() const
 {
-    DkBatchPluginWidget *w = dynamic_cast<DkBatchPluginWidget *>(mWidgets[batch_plugin]->contentWidget());
-    if (!w)
-        qCritical() << "cannot cast to DkBatchPluginWidget";
+    auto *w = dynamic_cast<DkBatchPluginWidget *>(mWidgets[batch_plugin]->contentWidget());
+    Q_ASSERT(w);
 
     return w;
 }
@@ -2691,10 +2678,8 @@ DkBatchPluginWidget *DkBatchWidget::pluginWidget() const
 
 DkBatchTransformWidget *DkBatchWidget::transformWidget() const
 {
-    DkBatchTransformWidget *w = dynamic_cast<DkBatchTransformWidget *>(mWidgets[batch_transform]->contentWidget());
-
-    if (!w)
-        qCritical() << "cannot cast to DkBatchTransformWidget";
+    auto *w = dynamic_cast<DkBatchTransformWidget *>(mWidgets[batch_transform]->contentWidget());
+    Q_ASSERT(w);
 
     return w;
 }
@@ -2774,11 +2759,11 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
     config.setSaveInfo(si);
 
     if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
-        DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
-                                                tr("Create Output Directory"),
-                                                tr("Should I create:\n%1").arg(config.getOutputDirPath()),
-                                                (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                                DkUtils::getMainWindow());
+        auto *msgBox = new DkMessageBox(QMessageBox::Question,
+                                        tr("Create Output Directory"),
+                                        tr("Should I create:\n%1").arg(config.getOutputDirPath()),
+                                        (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                        DkUtils::getMainWindow());
 
         msgBox->setDefaultButton(QMessageBox::Yes);
         msgBox->setObjectName("batchOutputDirDialog");
@@ -2900,22 +2885,26 @@ void DkBatchWidget::stopProcessing()
 {
     inputWidget()->stopProcessing();
 
-    if (mBatchProcessing)
-        mBatchProcessing->postLoad();
-
     mProgressBar->hide();
     mProgressBar->reset();
     mButtonWidget->logButton()->setEnabled(true);
     mButtonWidget->setPaused(true);
 
-    int numFailures = mBatchProcessing->getNumFailures();
-    int numProcessed = mBatchProcessing->getNumProcessed();
-    int numItems = mBatchProcessing->getNumItems();
+    if (mBatchProcessing) {
+        mBatchProcessing->postLoad();
 
-    DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning
-                                                       : DkBatchInfoWidget::InfoMode::info_message;
-    mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures),
-                         im);
+        int numFailures = mBatchProcessing->getNumFailures();
+        int numProcessed = mBatchProcessing->getNumProcessed();
+        int numItems = mBatchProcessing->getNumItems();
+
+        DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning
+                                                           : DkBatchInfoWidget::InfoMode::info_message;
+        mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.") // indent
+                                 .arg(numProcessed)
+                                 .arg(numItems)
+                                 .arg(numFailures),
+                             im);
+    }
 
     mLogNeedsUpdate = false;
     mLogUpdateTimer.stop();
@@ -2938,7 +2927,7 @@ void DkBatchWidget::showLog()
 {
     QStringList log = mBatchProcessing->getLog();
 
-    DkTextDialog *textDialog = new DkTextDialog(this);
+    auto *textDialog = new DkTextDialog(this);
     textDialog->setWindowTitle(tr("Batch Log"));
     textDialog->getTextEdit()->setReadOnly(true);
     textDialog->setText(log);

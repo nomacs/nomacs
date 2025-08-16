@@ -30,17 +30,19 @@ related links:
 
 #include "DkUtils.h"
 
-#pragma warning(push, 0) // no warnings from includes
-#include <QAction>
+#include <QGridLayout>
 #include <QPushButton>
 #include <QTextEdit>
-#include <QVBoxLayout>
-#pragma warning(pop)
 
 namespace nmc
 {
 
-QSharedPointer<DkMessageQueuer> msgQueuer = QSharedPointer<DkMessageQueuer>();
+static DkMessageQueuer *getMsgQueuer()
+{
+    // avoid static destruction, this is globally referenced via qDebug() etc
+    static auto *querer = new DkMessageQueuer;
+    return querer;
+}
 
 // -------------------------------------------------------------------- DkLogWidget
 DkLogWidget::DkLogWidget(QWidget *parent)
@@ -49,10 +51,7 @@ DkLogWidget::DkLogWidget(QWidget *parent)
     setObjectName("logWidget");
     createLayout();
 
-    if (!msgQueuer)
-        msgQueuer = QSharedPointer<DkMessageQueuer>(new DkMessageQueuer());
-
-    connect(msgQueuer.data(), &DkMessageQueuer::message, this, &DkLogWidget::log, Qt::QueuedConnection);
+    connect(getMsgQueuer(), &DkMessageQueuer::message, this, &DkLogWidget::log, Qt::QueuedConnection);
 
     qInstallMessageHandler(widgetMessageHandler);
 }
@@ -77,13 +76,13 @@ void DkLogWidget::createLayout()
     mTextEdit->setStyleSheet("QTextEdit { font-family: monospace; background-color: #000; }");
 
     // invisible clear button ?!
-    QPushButton *clearButton = new QPushButton(this);
+    auto *clearButton = new QPushButton(this);
     clearButton->setFlat(true);
     clearButton->setFixedSize(QSize(32, 32));
     clearButton->setFocusPolicy(Qt::NoFocus);
     connect(clearButton, &QPushButton::clicked, this, &DkLogWidget::onClearButtonPressed);
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(mTextEdit, 1, 1);
     layout->addWidget(clearButton, 1, 1, Qt::AlignRight | Qt::AlignTop);
@@ -99,10 +98,7 @@ void DkLogWidget::createLayout()
 /// <param name="msg">The message.</param>
 void widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &msg)
 {
-    if (msgQueuer) {
-        msgQueuer->log(type, msg);
-    }
-
+    getMsgQueuer()->log(type, msg);
     DkUtils::logToFile(type, msg);
 }
 
@@ -116,17 +112,16 @@ DkLogDock::DkLogDock(const QString &title, QWidget *parent, Qt::WindowFlags flag
 
 void DkLogDock::createLayout()
 {
-    DkLogWidget *logWidget = new DkLogWidget(this);
+    auto *logWidget = new DkLogWidget(this);
     logWidget->setFocusPolicy(Qt::ClickFocus);
     setWidget(logWidget);
 }
 
-DkMessageQueuer::DkMessageQueuer()
-{
-}
+DkMessageQueuer::DkMessageQueuer() = default;
 
 void DkMessageQueuer::log(QtMsgType type, const QString &msg)
 {
+    // this function must be thread-safe, it is called from qInfo() etc
     QString txt;
 
     switch (type) {
@@ -151,5 +146,4 @@ void DkMessageQueuer::log(QtMsgType type, const QString &msg)
 
     emit message(txt);
 }
-
 }

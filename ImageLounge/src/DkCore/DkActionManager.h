@@ -27,27 +27,11 @@
 
 #pragma once
 
-#include "DkBaseWidgets.h"
-#include "DkManipulators.h"
-
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QObject>
-#pragma warning(pop) // no warnings from includes - end
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include "DkManipulators.h"
 
-#pragma warning(disable : 4251) // TODO: remove
-
-// Qt defines
 class QMenu;
 class QMainWindow;
 class QWinTaskbarProgress;
@@ -55,8 +39,6 @@ class QProgressDialog;
 
 namespace nmc
 {
-
-// nomacs defines
 class DkTcpMenu;
 class DkPluginActionManager;
 
@@ -65,8 +47,8 @@ class DllCoreExport DkAppManager : public QObject
     Q_OBJECT
 
 public:
-    DkAppManager(QWidget *parent = 0);
-    ~DkAppManager();
+    explicit DkAppManager(QWidget *parent = nullptr);
+    ~DkAppManager() override;
 
     void setActions(QVector<QAction *> actions);
     QVector<QAction *> getActions() const;
@@ -587,20 +569,20 @@ protected:
     DkManipulatorManager mManipulators;
 
     // dynamic menus
-    QMenu *mFileMenu = 0;
-    QMenu *mOpenWithMenu = 0;
-    QMenu *mSortMenu = 0;
-    QMenu *mViewMenu = 0;
-    QMenu *mEditMenu = 0;
-    QMenu *mManipulatorMenu = 0;
-    QMenu *mToolsMenu = 0;
-    QMenu *mPanelMenu = 0;
-    QMenu *mHelpMenu = 0;
-    QMenu *mContextMenu = 0;
+    QMenu *mFileMenu = nullptr;
+    QMenu *mOpenWithMenu = nullptr;
+    QMenu *mSortMenu = nullptr;
+    QMenu *mViewMenu = nullptr;
+    QMenu *mEditMenu = nullptr;
+    QMenu *mManipulatorMenu = nullptr;
+    QMenu *mToolsMenu = nullptr;
+    QMenu *mPanelMenu = nullptr;
+    QMenu *mHelpMenu = nullptr;
+    QMenu *mContextMenu = nullptr;
 
     // sync
-    QMenu *mSyncMenu = 0;
-    DkTcpMenu *mLocalMenu = 0;
+    QMenu *mSyncMenu = nullptr;
+    DkTcpMenu *mLocalMenu = nullptr;
 
     // icons
     QVector<QIcon> mFileIcons;
@@ -608,8 +590,8 @@ protected:
     QVector<QIcon> mViewIcons;
     QVector<QIcon> mToolsIcons;
 
-    DkAppManager *mAppManager = 0;
-    DkPluginActionManager *mPluginManager = 0;
+    DkAppManager *mAppManager = nullptr;
+    DkPluginActionManager *mPluginManager = nullptr;
 
     QSharedPointer<DkActionManager> inst;
 };

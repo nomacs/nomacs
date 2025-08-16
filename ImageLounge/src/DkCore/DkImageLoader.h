@@ -27,22 +27,9 @@
 
 #pragma once
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QImage>
 #include <QTimer>
-#pragma warning(pop) // no warnings from includes - end
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
-
-// my classes
 #include "DkImageContainer.h"
 
 #ifdef Q_OS_LINUX
@@ -69,7 +56,7 @@ class DllCoreExport DkImageLoader : public QObject
 
 public:
     DkImageLoader();
-    virtual ~DkImageLoader();
+    ~DkImageLoader() override;
 
     DkFileInfoList updateSubFolders(const QString &rootDirPath);
 
@@ -180,7 +167,7 @@ protected:
     bool mTimerBlockedUpdate = false;
     QString mCurrentDir;
     QString mCopyDir;
-    QFileSystemWatcher *mDirWatcher = 0;
+    QFileSystemWatcher *mDirWatcher = nullptr;
     QStringList mSubFolders;
     QVector<QSharedPointer<DkImageContainerT>> mImages;
     QSharedPointer<DkImageContainerT> mCurrentImage;

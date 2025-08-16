@@ -88,12 +88,20 @@ endif()
 if(NOT ${QT_VERSION_MAJOR} VERSION_EQUAL "6")
     message(FATAL_ERROR "only Qt6 is supported")
 endif()
+
 # find Qt
 NMC_FINDQT()
 
 if(NOT ENABLE_QT_DEBUG)
     message(STATUS "disabling qt debug messages")
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
+endif()
+
+# Enable as many warnings as practical to prevent bugs. If this is not practical for
+# a particular build target, use set_source_files_properties() etc to disable them,
+# rather than add #pragma to the nomacs sources.
+if(NOT MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wformat -Wformat-nonliteral -Wshadow")
 endif()
 
 if(MSVC)

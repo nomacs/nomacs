@@ -1,32 +1,16 @@
 #pragma once
 
-#pragma warning(push, 0)
-
-#include <QDir>
-#include <QDragEnterEvent>
-#include <QDragMoveEvent>
-#include <QDropEvent>
-#include <QElapsedTimer>
-#include <QFile>
-#include <QFileDialog>
-#include <QFileInfo>
 #include <QImage>
-#include <QLabel>
-#include <QMimeData>
-#include <QPixmap>
-#include <QPushButton>
-#include <QSettings>
 #include <QSlider>
 #include <QStyleOptionSlider>
 #include <QToolTip>
 #include <QVBoxLayout>
 #include <QWidget>
 
-#include <opencv2/opencv.hpp>
-#pragma warning(pop, 0)
-
-#include "DkBasicLoader.h"
 #include "DkImageStorage.h"
+
+class QLabel;
+class QPushButton;
 
 namespace nmc
 {
@@ -37,17 +21,17 @@ class SbIntensitySlider : public QSlider
 {
     Q_OBJECT
 public:
-    SbIntensitySlider(QWidget *parent = 0)
+    explicit SbIntensitySlider(QWidget *parent = nullptr)
         : QSlider(parent)
     {
     }
-    SbIntensitySlider(Qt::Orientation orientation, QWidget *parent = 0)
+    explicit SbIntensitySlider(Qt::Orientation orientation, QWidget *parent = nullptr)
         : QSlider(orientation, parent)
     {
     }
 
 protected:
-    virtual void sliderChange(SliderChange change)
+    void sliderChange(SliderChange change) override
     {
         QSlider::sliderChange(change);
 
@@ -77,26 +61,26 @@ public:
         B
     };
 
-    static const int THUMB_MAX_SIZE = 150;
+    static constexpr int THUMB_MAX_SIZE = 150;
 
-    SbChannelWidget(Channel c, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~SbChannelWidget();
+    explicit SbChannelWidget(Channel channel, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+    ~SbChannelWidget() override;
     cv::Mat getImg(); // return the channel content
     void setImg(
         cv::Mat _img = cv::Mat(),
         QString _name = ""); // "override" from outside. call with empty mat --> reset. also resets intensity slider.
 
-    const Channel c; // so that this channel knows which one it is
+    const Channel mChannel; // so that this channel knows which one it is
 
 protected:
-    static const int INT_SLIDER_MIN = 0;
-    static const int INT_SLIDER_MAX = 200;
-    static const int INT_SLIDER_INIT = 100;
+    static constexpr int INT_SLIDER_MIN = 0;
+    static constexpr int INT_SLIDER_MAX = 200;
+    static constexpr int INT_SLIDER_INIT = 100;
 
-    cv::Mat img; // the channel content
-    QPushButton *thumbnail;
-    QLabel *filenameLabel;
-    SbIntensitySlider *intSlider;
+    cv::Mat mImg; // the channel content
+    QPushButton *mThumbnail;
+    QLabel *mFilenameLabel;
+    SbIntensitySlider *mIntSlider;
 
     void loadImage(
         QString file = ""); // load file with DkBasicLoader, convert to grayscale, set as img, emit imageChanged()

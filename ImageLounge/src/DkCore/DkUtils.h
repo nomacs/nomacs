@@ -27,54 +27,28 @@
 
 #pragma once
 
-#include <functional>
-#include <math.h>
-
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDebug>
 #include <QFileInfo>
-#include <QRegularExpression>
 #include <QVector>
 
-#include <QSharedMemory>
-#pragma warning(pop) // no warnings from includes - end
-
-#pragma warning(disable : 4251) // dll interface missing
-#pragma warning(disable : 4714) // Qt's force inline
-
-#include <assert.h> // convenience for minimal builds
-
-#ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
-#endif
-
-#ifndef Q_OS_WIN
-#include <time.h>
-#endif
-
 #ifdef WITH_OPENCV
-
-#ifdef Q_OS_WIN
-#pragma warning(disable : 4996)
-#endif
-
 #include "opencv2/core/core.hpp"
 #else
-
-// #define int64 long long;
 #include <sstream>
 #define CV_PI 3.141592653589793238462643383279
 #endif
 
-#ifndef DllCoreExport
-#ifdef DK_CORE_DLL_EXPORT
-#define DllCoreExport Q_DECL_EXPORT
-#elif DK_DLL_IMPORT
-#define DllCoreExport Q_DECL_IMPORT
-#else
-#define DllCoreExport Q_DECL_IMPORT
-#endif
-#endif
+#include <cmath>
+#include <functional>
+
+#include "nmc_config.h"
+
+// fixes Qt's damn no latin1 on tr() policy
+#define dk_degree_str QChar(0x00B0)
+
+class QComboBox;
+class QColor;
+class QUrl;
 
 #if !defined(QT_NO_DEBUG_OUTPUT)
 DllCoreExport QDebug qDebugClean();
@@ -86,20 +60,8 @@ DllCoreExport QDebug qWarningClean();
 #define qWarningClean() qDebug()
 #endif
 
-#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
-
-// fixes Qt's damn no latin1 on tr() policy
-#define dk_degree_str QChar(0x00B0)
-
-// Qt defines
-class QComboBox;
-class QColor;
-class QUrl;
-
 namespace nmc
 {
-
-// nomacs defines
 class DkFileInfo;
 class TreeItem;
 
@@ -247,7 +209,7 @@ public:
         int cnt = 0;
 
         for (int rIdx = 0; rIdx < src.rows; rIdx++) {
-            const float *srcPtr = src.ptr<float>(rIdx);
+            const auto *srcPtr = src.ptr<float>(rIdx);
 
             for (int cIdx = 0; cIdx < src.cols; cIdx++, cnt++) {
                 msg += DkUtils::stringify(srcPtr[cIdx], 3);
@@ -489,7 +451,7 @@ public:
 class DllCoreExport DkFileNameConverter
 {
 public:
-    DkFileNameConverter(const QString &pattern);
+    explicit DkFileNameConverter(const QString &pattern);
 
     QString convert(const QString &file, int index) const;
 
@@ -519,6 +481,7 @@ private:
 };
 
 // from: http://stackoverflow.com/questions/5006547/qt-best-practice-for-a-single-instance-app-protection
+#if DEADCODE
 class DllCoreExport DkRunGuard
 {
 public:
@@ -535,12 +498,13 @@ private:
 
     Q_DISABLE_COPY(DkRunGuard)
 };
+#endif // DEADCODE
 
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
 class DllCoreExport TreeItem
 {
 public:
-    TreeItem(const QVector<QVariant> &data, TreeItem *parent = 0);
+    explicit TreeItem(const QVector<QVariant> &data, TreeItem *parent = nullptr);
     ~TreeItem();
 
     void appendChild(TreeItem *child);
@@ -564,7 +528,7 @@ public:
 private:
     QVector<TreeItem *> childItems;
     QVector<QVariant> itemData;
-    TreeItem *parentItem = 0;
+    TreeItem *parentItem = nullptr;
 
     void parentList(QStringList &parentKeys) const;
 };
@@ -574,11 +538,11 @@ class DllCoreExport TabMiddleMouseCloser : public QObject
     Q_OBJECT
 
 public:
-    TabMiddleMouseCloser(std::function<void(int)> callback)
-        : callback(callback){};
+    explicit TabMiddleMouseCloser(std::function<void(int)> callback)
+        : mCallback(callback){};
 
 protected:
-    std::function<void(int)> callback;
+    std::function<void(int)> mCallback;
     bool eventFilter(QObject *obj, QEvent *event) override;
 };
 

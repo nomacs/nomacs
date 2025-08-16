@@ -26,7 +26,10 @@
  *******************************************************************************************************/
 
 #include "DkThumbsWidgets.h"
+
 #include "DkActionManager.h"
+#include "DkBasicLoader.h"
+#include "DkDialog.h"
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkImageStorage.h"
@@ -39,16 +42,13 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#include "DkBasicLoader.h"
-#include "DkDialog.h"
-#include <optional>
 #include <qpixmap.h>
 #include <qpixmapcache.h>
 
-#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
+#include <QDrag>
 #include <QGraphicsSceneMouseEvent>
 #include <QHBoxLayout>
 #include <QInputDialog>
@@ -59,17 +59,12 @@
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScrollBar>
+#include <QStringBuilder>
 #include <QStyleOptionGraphicsItem>
-#include <QThreadPool>
 #include <QTimer>
 #include <QToolBar>
 #include <QToolButton>
 #include <QUrl>
-#include <QtGlobal>
-#include <qmath.h>
-#pragma warning(pop) // no warnings from includes - end
-
-#include <QStringBuilder>
 
 namespace nmc
 {
@@ -311,7 +306,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
     // mouse over effect
     QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
 
-    for (int idx = 0; idx < mFiles.size(); idx++) {
+    for (int idx = 0; (unsigned int)idx < mFiles.size(); idx++) {
         const QString &filePath = mFiles[idx].path();
 
         const auto thumb = mThumbs.constFind(filePath);
@@ -431,7 +426,7 @@ void DkFilePreview::drawNoImgEffect(QPainter *painter, const QRectF &r)
 void DkFilePreview::drawSelectedEffect(QPainter *painter, const QRectF &r)
 {
     QBrush oldBrush = painter->brush();
-    float oldOp = (float)painter->opacity();
+    qreal oldOp = painter->opacity();
 
     // drawing
     painter->setOpacity(0.4);
@@ -447,7 +442,7 @@ void DkFilePreview::drawCurrentImgEffect(QPainter *painter, const QRectF &r)
 {
     QPen oldPen = painter->pen();
     QBrush oldBrush = painter->brush();
-    float oldOp = (float)painter->opacity();
+    auto oldOp = (float)painter->opacity();
 
     // draw
     QRectF cr = r;
@@ -602,7 +597,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
             if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
                 selected = idx;
 
-                if (selected < mFiles.size() && selected >= 0) {
+                if (selected >= 0 && (unsigned int)selected < mFiles.size()) {
                     // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()),
                     // DkSettingsManager::param().display().highlightColor, 0.3f);
 
@@ -731,8 +726,7 @@ void DkFilePreview::contextMenuEvent(QContextMenuEvent *event)
 
 void DkFilePreview::newPosition()
 {
-    QAction *sender = static_cast<QAction *>(QObject::sender());
-
+    const auto *sender = static_cast<QAction *>(QObject::sender());
     if (!sender)
         return;
 
@@ -839,7 +833,7 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
     int tIdx = -1;
 
-    for (int idx = 0; idx < mFiles.size(); idx++) {
+    for (int idx = 0; (unsigned int)idx < mFiles.size(); idx++) {
         if (mFiles[idx] == cImage->originalFileInfo()) {
             tIdx = idx;
             break;
@@ -944,9 +938,7 @@ void DkThumbLabel::onThumbnailLoadFailed(const QString &filePath)
     update();
 }
 
-DkThumbLabel::~DkThumbLabel()
-{
-}
+DkThumbLabel::~DkThumbLabel() = default;
 
 void DkThumbLabel::updateTooltip(const QImage &thumb, bool fromExif)
 {
@@ -1247,9 +1239,9 @@ void DkThumbScene::updateThumbLabels()
     mThumbLabels.clear();
 
     for (const auto &fileInfo : std::as_const(mThumbs)) {
-        DkThumbLabel *thumb = new DkThumbLabel(mThumbLoader,
-                                               fileInfo,
-                                               DkSettingsManager::param().display().displaySquaredThumbs);
+        auto *thumb = new DkThumbLabel(mThumbLoader,
+                                       fileInfo,
+                                       DkSettingsManager::param().display().displaySquaredThumbs);
         connect(thumb, &DkThumbLabel::loadFileSignal, this, &DkThumbScene::loadFileSignal);
         connect(thumb, &DkThumbLabel::showFileSignal, this, &DkThumbScene::showFile);
 
@@ -1491,20 +1483,17 @@ void DkThumbScene::selectThumb(int idx, bool select)
 void DkThumbScene::copySelected() const
 {
     QStringList fileList = getSelectedFiles();
-
     if (fileList.empty())
         return;
 
-    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+    for (QString cStr : fileList)
+        urls.append(QUrl::fromLocalFile(cStr));
 
-    if (!fileList.empty()) {
-        QList<QUrl> urls;
-        for (QString cStr : fileList)
-            urls.append(QUrl::fromLocalFile(cStr));
-        mimeData->setUrls(urls);
-        QClipboard *clipboard = QApplication::clipboard();
-        clipboard->setMimeData(mimeData);
-    }
+    auto *mimeData = new QMimeData();
+    mimeData->setUrls(urls);
+
+    QApplication::clipboard()->setMimeData(mimeData);
 }
 
 void DkThumbScene::pasteImages() const
@@ -1594,11 +1583,11 @@ void DkThumbScene::deleteSelected()
     if (numFiles <= 0)
         return;
 
-    DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
-                                            tr("Delete File"),
-                                            tr("Shall I move %1 file(s) to trash?").arg(numFiles),
-                                            (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                            DkUtils::getMainWindow());
+    auto *msgBox = new DkMessageBox(QMessageBox::Question,
+                                    tr("Delete File"),
+                                    tr("Shall I move %1 file(s) to trash?").arg(numFiles),
+                                    (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                    DkUtils::getMainWindow());
 
     msgBox->setDefaultButton(QMessageBox::Yes);
     msgBox->setObjectName("deleteThumbFileDialog");
@@ -1737,14 +1726,12 @@ bool DkThumbScene::allThumbsSelected() const
 // DkThumbView --------------------------------------------------------------------
 DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
     : QGraphicsView(scene, parent)
+    , mThumbScene(scene)
 {
     setObjectName("DkThumbsView");
-    this->scene = scene;
 
     setResizeAnchor(QGraphicsView::AnchorUnderMouse);
     setAcceptDrops(true);
-
-    lastShiftIdx = -1;
 
     connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
     connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
@@ -1770,7 +1757,7 @@ void DkThumbsView::onScroll()
 void DkThumbsView::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() == Qt::ControlModifier) {
-        scene->resizeThumbs(event->angleDelta().y() / 100.0f);
+        mThumbScene->resizeThumbs(event->angleDelta().y() / 100.0f);
     } else if (event->modifiers() == Qt::NoModifier) {
         if (verticalScrollBar()->isVisible()) {
             verticalScrollBar()->setValue(verticalScrollBar()->value() - event->angleDelta().y());
@@ -1783,12 +1770,13 @@ void DkThumbsView::wheelEvent(QWheelEvent *event)
 void DkThumbsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        mousePos = event->pos();
+        mMouseDownPos = event->pos();
     }
 
     qDebug() << "mouse pressed";
 
-    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos()), QTransform()));
+    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(
+        mThumbScene->itemAt(mapToScene(event->pos()), QTransform()));
 
     // this is a bit of a hack
     // what we want to achieve: if the user is selecting with e.g. shift or ctrl
@@ -1798,29 +1786,28 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
         QGraphicsView::mousePressEvent(event);
 
     if (!itemClicked) {
-        scene->showFile("");
+        mThumbScene->showFile("");
     }
 }
 
 void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        int dist = qRound(QPointF(event->pos() - mousePos).manhattanLength());
+        int dist = qRound(QPointF(event->pos() - mMouseDownPos).manhattanLength());
 
         if (dist > QApplication::startDragDistance()) {
-            QStringList fileList = scene->getSelectedFiles();
-
-            QMimeData *mimeData = new QMimeData;
+            QStringList fileList = mThumbScene->getSelectedFiles();
 
             if (!fileList.empty()) {
                 QList<QUrl> urls;
                 for (QString fStr : fileList)
                     urls.append(QUrl::fromLocalFile(fStr));
 
+                auto *mimeData = new QMimeData;
                 mimeData->setUrls(urls);
 
                 // create thumb image
-                QVector<DkThumbLabel *> tl = scene->getSelectedThumbs();
+                QVector<DkThumbLabel *> tl = mThumbScene->getSelectedThumbs();
                 QVector<QImage> imgs;
 
                 for (int idx = 0; idx < tl.size() && idx < 3; idx++) {
@@ -1830,8 +1817,8 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
                 QPixmap pm = DkImage::merge(imgs).scaledToHeight(
                     73); // 73: see https://www.youtube.com/watch?v=TIYMmbHik08
 
-                QDrag *drag = new QDrag(this);
-                drag->setMimeData(mimeData);
+                auto *drag = new QDrag(this);
+                drag->setMimeData(mimeData); // noleak: takes ownership
                 drag->setPixmap(pm);
 
                 drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction, Qt::CopyAction);
@@ -1846,14 +1833,15 @@ void DkThumbsView::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
 
-    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos()), QTransform()));
+    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(
+        mThumbScene->itemAt(mapToScene(event->pos()), QTransform()));
 
-    if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != 0) {
-        scene->selectThumbs(true, lastShiftIdx, scene->findThumb(itemClicked));
-    } else if (itemClicked != 0) {
-        lastShiftIdx = scene->findThumb(itemClicked);
+    if (mLastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != nullptr) {
+        mThumbScene->selectThumbs(true, mLastShiftIdx, mThumbScene->findThumb(itemClicked));
+    } else if (itemClicked != nullptr) {
+        mLastShiftIdx = mThumbScene->findThumb(itemClicked);
     } else
-        lastShiftIdx = -1;
+        mLastShiftIdx = -1;
 }
 
 void DkThumbsView::dragEnterEvent(QDragEnterEvent *event)
@@ -1915,7 +1903,7 @@ void DkThumbsView::dropEvent(QDropEvent *event)
         if (file.isDir()) {
             emit updateDirSignal(file.absoluteFilePath());
         } else {
-            scene->copyImages(event->mimeData(), event->proposedAction());
+            mThumbScene->copyImages(event->mimeData(), event->proposedAction());
         }
     }
 
@@ -1941,7 +1929,7 @@ DkThumbScrollWidget::DkThumbScrollWidget(DkThumbLoader *thumbLoader,
     createActions();
     createToolbar();
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(mToolbar);
@@ -1984,7 +1972,7 @@ void DkThumbScrollWidget::createToolbar()
     QMenu *m = mContextMenu->addMenu(menuTitle);
     m->addActions(am.sortActions().toList());
 
-    QToolButton *toolButton = new QToolButton(this);
+    auto *toolButton = new QToolButton(this);
     toolButton->setObjectName("DkThumbToolButton");
     toolButton->setMenu(m);
     toolButton->setAccessibleName(menuTitle);
@@ -1999,7 +1987,7 @@ void DkThumbScrollWidget::createToolbar()
     mFilterEdit->setMaximumWidth(250);
 
     // right align search filters
-    QWidget *spacer = new QWidget(this);
+    auto *spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mToolbar->addWidget(spacer);
     mToolbar->addWidget(mFilterEdit);
@@ -2022,7 +2010,7 @@ void DkThumbScrollWidget::createActions()
     addActions(am.previewActions().toList());
 
     // add a shortcut to open the selected image
-    QAction *loadFile = new QAction(tr("Open Image"), this);
+    auto *loadFile = new QAction(tr("Open Image"), this);
     loadFile->setShortcut(Qt::Key_Return);
     connect(loadFile, &QAction::triggered, this, &DkThumbScrollWidget::onLoadFileTriggered);
 
@@ -2049,7 +2037,7 @@ void DkThumbScrollWidget::batchPrint() const
             imgs << bl.image();
     }
 
-    DkPrintPreviewDialog *printPreviewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
+    auto *printPreviewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
 
     for (const QImage &img : imgs)
         printPreviewDialog->addImage(img);
@@ -2262,15 +2250,14 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
                                          QWidget *parent /* = 0 */,
                                          Qt::WindowFlags f /* = 0 */)
     : QLabel(parent, f)
-    , mFilePath{filePath}
+    , mThumbSize{thumbSize}
     , mLoader{thumbLoader}
+    , mFilePath{filePath}
 
 {
-    mThumbSize = thumbSize;
-
     connect(mLoader, &DkThumbLoader::thumbnailLoaded, this, &DkThumbPreviewLabel::thumbLoaded);
-    connect(mLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &filePath) {
-        if (filePath != mFilePath) {
+    connect(mLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &path) {
+        if (path != mFilePath) {
             return;
         }
         setProperty("empty", true); // apply empty style
@@ -2322,7 +2309,7 @@ DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir &rde, DkThumbLoader *thum
 
 void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
 {
-    QLabel *dirNameLabel = new QLabel(mRecentDir.dirName(), this);
+    auto *dirNameLabel = new QLabel(mRecentDir.dirName(), this);
     dirNameLabel->setAlignment(Qt::AlignBottom);
     dirNameLabel->setObjectName("recentFilesTitle");
 
@@ -2370,11 +2357,11 @@ void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
         qInfo() << firstFile.path() << "does not exist - according to a fast check";
     }
 
-    QLabel *pathLabel = new QLabel(mRecentDir.dirPath(), this);
+    auto *pathLabel = new QLabel(mRecentDir.dirPath(), this);
     pathLabel->setAlignment(Qt::AlignLeft);
     pathLabel->setObjectName("recentFilesPath");
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto *layout = new QGridLayout(this);
     layout->setAlignment(Qt::AlignLeft);
     layout->addWidget(dirNameLabel, 1, 0, 1, tls.size() + 1);
     layout->setColumnStretch(tls.size() + 2, 1);
@@ -2464,7 +2451,7 @@ void DkRecentFilesWidget::setVisible(bool visible)
 void DkRecentFilesWidget::createLayout()
 {
     mScrollArea = new QScrollArea(this);
-    QVBoxLayout *sl = new QVBoxLayout(this);
+    auto *sl = new QVBoxLayout(this);
     sl->addWidget(mScrollArea);
     sl->setContentsMargins(0, 0, 0, 0);
 
@@ -2479,25 +2466,20 @@ void DkRecentFilesWidget::updateList()
 
     DkRecentDirManager fm;
 
-    QWidget *dummy = new QWidget(this);
-    QVBoxLayout *l = new QVBoxLayout(dummy);
-
-    QVector<DkRecentDirWidget *> recentFiles;
-    int idx = 0;
+    auto *dummy = new QWidget(this);
+    auto *l = new QVBoxLayout(dummy);
 
     for (auto rd : fm.recentDirs()) {
-        DkRecentDirWidget *rf = new DkRecentDirWidget(rd, mThumbLoader, dummy);
+        auto *rf = new DkRecentDirWidget(rd, mThumbLoader, dummy);
         rf->setMaximumWidth(500);
         connect(rf, &DkRecentDirWidget::loadFileSignal, this, &DkRecentFilesWidget::loadFileSignal);
         connect(rf, &DkRecentDirWidget::loadDirSignal, this, &DkRecentFilesWidget::loadDirSignal);
         connect(rf, &DkRecentDirWidget::removeSignal, this, &DkRecentFilesWidget::entryRemoved);
 
-        recentFiles << rf;
         l->addWidget(rf);
-        idx++;
     }
 
-    qInfo() << "list updated in" << dt;
+    qInfo() << "list updated in" << dt; // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) false positive on layout
 
     mScrollArea->setWidget(dummy);
 }
@@ -2547,7 +2529,7 @@ QStringList DkRecentDir::filePaths(int max) const
         list = mFiles.mid(0, max);
 
     QStringList paths;
-    for (auto &info : qAsConst(list))
+    for (auto &info : std::as_const(list))
         paths.append(info.path());
 
     return paths;
