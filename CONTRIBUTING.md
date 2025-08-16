@@ -8,9 +8,9 @@ The best way to improve nomacs is your contribution. There are several areas in 
   - Provide workarounds
   - Test on different platforms
   - Find duplicates of other issues
-    - => may be tagged with `Duplicate: #<issue>` in and closed.
+     You can comment `Duplicate: #<issue>` in the newer issue. We would then close them.
   - Tag related issues
-    - => may be tagged with `Related: #<issue>`
+      You can comment `Related: #<issue>` to help us group them.
   
 - **Testing**
   - Try to break things
@@ -42,8 +42,9 @@ git checkout -b <my-feature> master
 
 We will usually comment on pull requests within one week. Here are some things that increase the chances of your PR being accepted:
 
-- Do not break another feature related to/dependent on your changes.
-- Do not break another platform, aim to avoid platform-specific features.
+- Please try to test areas that the PR is changing or that depend on your changes.
+- We support Windows, Linux, and macOS. If possible, please try to test on different platforms.
+- We tend to avoid platform-specific features. Please discuss with us beforehand.
 - Follow the style guide.  
 - Pass all the Github action checks.
 - Write good commit messages. Use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) as a guide, following existing commit messages for ideas. 
@@ -61,8 +62,8 @@ nomacs might have a weird coding style at the first glance, however we try to fo
   - Prefix members with an m (i.e. `int mAction = 0`).
   - Prefix classes with `Dk`.
 - **Formatting**
-  - Format C++ sources with `scripts/format-cpp.sh` (or configure editor to use clang-format)
-  - Format cmake sources with `scripts/format-cmake.sh`
+  - We format C++ sources `clang-format`. You can run `scripts/format-cpp.sh` or configure your editor to use `clang-format`.
+  - We format cmake sources with `gersemi`. You can run `scripts/format-cmake.sh`.
   - All repository files must have **LF** line endings
 - **C++ guidelines** 
   - Standard: C++17
@@ -73,7 +74,14 @@ nomacs might have a weird coding style at the first glance, however we try to fo
   - Avoid `auto` unless the type name appears on the same line. This helps with readability.
     - Exception: loop variables: `for(const auto& x : container)`
     - Exception: iterators (but prefer the new loop syntax)
-    - Always use cv/pointer/reference specifiers: `auto *var`, `auto &var` etc
+    - Use `auto` only to replace the type name. This means the `&`, `*`, or qualifiers (e.g. `const` and `volatile`) should always be included. For  example,
+    
+       ```cpp
+       // Do write this
+       auto *foo = new Foo(); 
+       // instead of 
+       auto foo = new Foo(); 
+       ```
   - Use clang-tidy, it formalizes rules we want to maintain and can check while you code if your editor supports it (see `ImageLounge/.clang-tidy`)
 
 Right:
