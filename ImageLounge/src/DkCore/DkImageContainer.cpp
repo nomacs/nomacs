@@ -492,7 +492,6 @@ DkImageContainerT::~DkImageContainerT()
     // unload. All changes should be explicitly committed, including exif notes. See issue #799. [2022, PSE]
 
     // we have to wait here
-    mSaveMetaDataWatcher.blockSignals(true);
     mSaveImageWatcher.blockSignals(true);
 }
 
@@ -747,8 +746,6 @@ void DkImageContainerT::fileDownloaded(const QString &filePath)
         return;
     }
 
-    mDownloaded = true;
-
     if (filePath.isEmpty()) {
         setFile(DkFileInfo(mFileDownloader->getUrl().toString().split("/").last()));
     } else {
@@ -793,11 +790,6 @@ void DkImageContainerT::saveMetaDataThreaded(const QString &filePath)
     QFuture<void> future = QtConcurrent::run([&, filePath] {
         return saveMetaDataIntern(filePath, getLoader(), getFileBuffer());
     });
-}
-
-void DkImageContainerT::saveMetaDataThreaded()
-{
-    saveMetaDataThreaded(filePath());
 }
 
 bool DkImageContainerT::saveImageThreaded(const QString &filePath, int compression /* = -1 */)
@@ -868,7 +860,6 @@ void DkImageContainerT::savingFinished()
         }
 
         mEdited = false;
-        mDownloaded = false;
         if (mSelected) {
             loadImageThreaded(true); // force a reload
             mFileUpdateTimer.start();
@@ -884,11 +875,6 @@ QSharedPointer<DkBasicLoader> DkImageContainerT::getLoader()
     }
 
     return mLoader;
-}
-
-bool DkImageContainerT::isFileDownloaded() const
-{
-    return mDownloaded;
 }
 
 void DkImageContainerT::undo()
