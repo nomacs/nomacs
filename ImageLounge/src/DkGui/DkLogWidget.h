@@ -47,7 +47,7 @@ public:
     void log(QtMsgType type, const QString &msg);
 
 signals:
-    // must use QueuedConnection since log() must be thread-safe
+    // must use QueuedConnection since emitted by log(), which could be called from any thread
     void message(const QString &msg);
 };
 
@@ -74,9 +74,11 @@ public slots:
     void onClearButtonPressed();
 
 protected:
+    static DkMessageQueuer *getMsgQueuer();
+    static void widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &msg);
+
     void createLayout();
 
     QTextEdit *mTextEdit;
 };
-
 }
