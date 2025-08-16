@@ -180,7 +180,7 @@ public:
     };
 
 public slots:
-    void updateMetaData(const QSharedPointer<DkImageContainerT> cImg = QSharedPointer<DkImageContainerT>());
+    void setMetaData(QSharedPointer<DkMetaDataT> metaData);
     void updateMetaData(const QSharedPointer<DkMetaDataT> cImg);
     void changeKeys();
     void changeNumColumns();
@@ -229,11 +229,7 @@ class DkCommentTextEdit : public QTextEdit
 public:
     DkCommentTextEdit(QWidget *parent = 0);
 
-signals:
-    void focusLost() const;
-
 protected:
-    void focusOutEvent(QFocusEvent *focusEvent) override;
     void paintEvent(QPaintEvent *e) override;
 };
 
@@ -245,31 +241,25 @@ public:
     DkCommentWidget(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     ~DkCommentWidget(){};
 
-    void setMetaData(QSharedPointer<DkMetaDataT> metaData);
-    QString text() const;
+    void setText(const QString &comment);
 
 public slots:
     void onCommentLabelTextChanged();
-    void onCommentLabelFocusLost();
-    void onSaveButtonClicked();
-    void onCancelButtonClicked();
-
-    void initComment(const QString &description);
-    void resetComment();
-    void saveComment();
+    void save();
+    void discardChanges();
 
 signals:
-    void showInfoSignal(const QString &msg) const;
-    void commentEditedSignal() const;
-    void commentSavedSignal() const;
-    void commentSavedSignal(const QString &) const;
+    void commentSavedSignal(const QString &comment) const;
 
-protected:
+private:
     void createLayout();
+    void resetComment();
 
-    DkCommentTextEdit *mCommentLabel = nullptr;
-    QSharedPointer<DkMetaDataT> mMetaData;
-    bool mTextEdited = false;
     QString mOldText;
+    DkCommentTextEdit *mCommentLabel = nullptr;
+    QAction *mDiscardAction = nullptr;
+    QAction *mSaveAction = nullptr;
+    QPushButton *mDiscardButton = nullptr;
+    QPushButton *mSaveButton = nullptr;
 };
 }

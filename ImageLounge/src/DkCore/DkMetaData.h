@@ -89,7 +89,7 @@ public:
     DkMetaDataT();
     bool isNull();
     QSharedPointer<DkMetaDataT> copy() const;
-    void update(const QSharedPointer<DkMetaDataT> &other);
+    void update(QSharedPointer<DkMetaDataT> other);
 
     enum ExifOrientationState {
         or_invalid = -2,
@@ -141,7 +141,7 @@ public:
     void clearOrientation();
     void clearExifState();
     void setOrientation(int o);
-    void setRating(int r);
+    bool setRating(int r);
     bool setDescription(const QString &description);
     bool setExifValue(QString key, QString taginfo);
     bool updateImageMetaData(const QImage &img, bool reset_orientation = true);

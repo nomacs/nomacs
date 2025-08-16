@@ -115,28 +115,16 @@ public:
         mRating = rating;
         updateRating();
     };
-
-    void changeRating(int newRating)
-    {
-        mRating = newRating;
-        updateRating();
-        emit newRatingSignal(mRating);
-    };
-
-    int getRating()
-    {
-        return mRating;
-    };
-
 signals:
-    void newRatingSignal(int rating);
+    void ratingEdited(int rating);
 
-protected:
+private:
     QVector<DkButton *> mStars;
     int mRating = 0;
 
     void updateRating();
     void init();
+    void editRating(int rating);
 };
 
 class DkFileInfoLabel : public DkFadeLabel
@@ -147,26 +135,25 @@ public:
     DkFileInfoLabel(QWidget *parent = 0);
     ~DkFileInfoLabel(){};
 
-    void createLayout();
-    void updateInfo(const QString &filePath, const QString &attr, const QString &date, const int rating);
-    void updateTitle(const QString &filePath, const QString &attr);
-    void updateDate(const QString &date = QString());
-    void updateRating(const int rating);
-    void setEdited(bool edited);
-    DkRatingLabel *getRatingLabel();
+    void updateInfo(const QString &filePath, const QString &date, int rating, bool edited);
 
 public slots:
     virtual void setVisible(bool visible, bool saveSettings = true) override;
 
-protected:
-    QString mFilePath;
+signals:
+    void ratingEdited(int rating);
 
-    QBoxLayout *mLayout;
+private:
+    QString mFilePath;
     QLabel *mTitleLabel;
     QLabel *mDateLabel;
     DkRatingLabel *mRatingLabel;
 
+    void createLayout();
     void updateWidth();
+    void updateTitle(const QString &filePath, bool edited);
+    void updateDate(const QString &date = QString());
+    void updateRating(const int rating);
 };
 
 class DkPlayer : public DkFadeWidget

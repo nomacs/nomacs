@@ -950,12 +950,6 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
     return success;
 }
 
-void DkBasicLoader::setImage(const QImage &img, const QString &editName, const QString &file)
-{
-    mFile = file;
-    setEditImage(img, editName);
-}
-
 void DkBasicLoader::pruneEditHistory()
 {
     // delete all hidden edit states
@@ -1069,16 +1063,9 @@ QSharedPointer<DkMetaDataT> DkBasicLoader::getMetaData() const
     return metaData;
 };
 
-QSharedPointer<DkMetaDataT> DkBasicLoader::lastMetaDataEdit(bool return_nullptr, bool return_orig) const
+QSharedPointer<DkMetaDataT> DkBasicLoader::lastMetaDataEdit() const
 {
-    QSharedPointer<DkMetaDataT> lastEdit; // null edit
-    if (return_orig) {
-        // Return original metadata only if requested (otherwise only return modified metadata)
-        lastEdit = mImages.first().metaData();
-    } else if (!return_nullptr) {
-        // Empty null object will be returned if no history item (with edited metadata) could be found
-        lastEdit = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
-    }
+    QSharedPointer<DkMetaDataT> lastEdit = mImages.first().metaData();
 
     // Get latest modified metadata item from history (or null)
     for (int idx = mImageIndex; idx > 0; idx--) {
@@ -1113,38 +1100,12 @@ bool DkBasicLoader::isMetaDataEdited()
 
 void DkBasicLoader::undo()
 {
-    // Change history index (for image()...)
-    if (mImageIndex > 0)
-        mImageIndex--;
-
-    // Get last history item with modified metadata (up until new history index)
-    QSharedPointer<DkMetaDataT> metaData(mMetaData);
-    metaData = lastMetaDataEdit(false, true);
-    // Update our current metadata object, which is also used elsewhere (pointer)
-    // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
-    mMetaData->update(metaData);
-
-    // Notify listeners about changed metadata
-    emit undoSignal();
-    emit resetMetaDataSignal();
+    setHistoryIndex(mImageIndex - 1);
 }
 
 void DkBasicLoader::redo()
 {
-    // Change history index (for image()...)
-    if (mImageIndex < mImages.size() - 1)
-        mImageIndex++;
-
-    // Get last history item with modified metadata (up until new history index)
-    QSharedPointer<DkMetaDataT> metaData(mMetaData);
-    metaData = lastMetaDataEdit(false, true);
-    // Update our current metadata object, which is also used elsewhere (pointer)
-    // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
-    mMetaData->update(metaData);
-
-    // Notify listeners about changed metadata
-    emit redoSignal();
-    emit resetMetaDataSignal();
+    setHistoryIndex(mImageIndex + 1);
 }
 
 QVector<DkEditImage> *DkBasicLoader::history()
@@ -1170,8 +1131,19 @@ void DkBasicLoader::setMinHistorySize(int size)
 
 void DkBasicLoader::setHistoryIndex(int idx)
 {
+    if (idx >= mImages.size() || idx < 0) {
+        qDebug() << "attempting to set history index to" << idx << "while the size is" << mImages.size();
+        return;
+    }
+
+    // Change history index (for image()...)
     mImageIndex = idx;
-    // TODO update mMetaData, see undo()
+
+    // Get last history item with modified metadata (up until new history index)
+    const QSharedPointer<DkMetaDataT> metaData = lastMetaDataEdit();
+    // Update our current metadata object, which is also used elsewhere (pointer)
+    // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
+    mMetaData->update(metaData);
 }
 
 QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath)
@@ -1545,33 +1517,12 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
     return saved;
 }
 
-void DkBasicLoader::saveThumbToMetaData(const QString &filePath)
-{
-    QSharedPointer<QByteArray> ba; // dummy
-    saveThumbToMetaData(filePath, ba);
-}
-
 void DkBasicLoader::saveThumbToMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
 {
     if (!hasImage())
         return;
 
     mMetaData->setThumbnail(DkImage::createThumb(image()));
-    saveMetaData(filePath, ba);
-}
-
-/**
- * @brief this will write the current exif/metadata to the loaded file.
- *
- * It calls the other overload passing an empty buffer,
- * so it'll load the buffer, save the exif data to the buffer
- * and write the buffer back to the file.
- *
- * @param filePath path to current file to be updated
- */
-void DkBasicLoader::saveMetaData(const QString &filePath)
-{
-    QSharedPointer<QByteArray> ba; // dummy
     saveMetaData(filePath, ba);
 }
 
