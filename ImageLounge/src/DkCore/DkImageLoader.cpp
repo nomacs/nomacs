@@ -1752,23 +1752,21 @@ void DkImageLoader::setDir(const DkFileInfo &info)
  * @param img the loader's new image.
  * @param editName the name in the edit history
  **/
-QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage &img, const QString &editName)
+void DkImageLoader::setImage(const QImage &img, const QString &editName)
 {
     QSharedPointer<DkImageContainerT> newImg(new DkImageContainerT());
     newImg->setImage(img, editName);
-    return setImage(newImg);
+    setImage(newImg);
 }
 
 /**
  * Sets the current image to a new image container.
  * @param img the loader's new image.
  **/
-QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QSharedPointer<DkImageContainerT> img)
+void DkImageLoader::setImage(QSharedPointer<DkImageContainerT> img)
 {
     setCurrentImage(img);
     emit imageUpdatedSignal(mCurrentImage);
-
-    return img;
 }
 
 void DkImageLoader::setImageUpdated()

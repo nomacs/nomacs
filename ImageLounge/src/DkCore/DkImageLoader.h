@@ -67,8 +67,8 @@ public:
     QStringList getFileNames() const;
 
     QVector<QSharedPointer<DkImageContainerT>> getImages();
-    QSharedPointer<DkImageContainerT> setImage(const QImage &img, const QString &editName);
-    QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
+    void setImage(const QImage &img, const QString &editName);
+    void setImage(QSharedPointer<DkImageContainerT> img);
     void setImageUpdated();
     void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
     void sort();
