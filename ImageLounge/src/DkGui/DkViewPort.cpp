@@ -278,7 +278,7 @@ void DkViewPort::loadImage(const QImage &newImg)
 {
     // delete current information
     if (mLoader) {
-        if (!unloadImage(true))
+        if (!unloadImage())
             return; // user canceled
 
         mLoader->setImage(newImg, tr("Original Image"));
@@ -904,10 +904,17 @@ void DkViewPort::manipulatorApplied()
     // set the edited image
     QImage img = mManipulatorWatcher.result();
 
-    if (!img.isNull())
-        setEditedImage(img, mActiveManipulator->name());
-    else
+    if (!img.isNull()) {
+        const QSharedPointer<DkImageContainerT> currImg = mLoader->getCurrentImage();
+        if (currImg) {
+            auto imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT());
+            imgC->fromImageContainer(currImg);
+            imgC->setImage(img, mActiveManipulator->name());
+            setEditedImage(imgC);
+        }
+    } else {
         mController->setInfo(mActiveManipulator->errorMessage());
+    }
 
     if (mplExt && mplExt->isDirty()) {
         mplExt->setDirty(false);
@@ -1651,32 +1658,6 @@ void DkViewPort::settingsChanged()
     mController->settingsChanged();
 }
 
-void DkViewPort::setEditedImage(const QImage &newImg, const QString &editName)
-{
-    if (!mController->applyPluginChanges(true)) // user wants to first apply the plugin
-        return;
-
-    if (newImg.isNull()) {
-        emit infoSignal(tr("Attempted to set NULL image")); // not sure if users understand that
-        return;
-    }
-
-    if (mManipulatorWatcher.isRunning())
-        mManipulatorWatcher.cancel();
-
-    QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
-
-    if (!imgC)
-        imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT());
-
-    if (!imgC)
-        imgC = QSharedPointer<DkImageContainerT>();
-    imgC->setImage(newImg, editName);
-    unloadImage(false);
-    mLoader->setImage(imgC);
-    qDebug() << "mLoader gets this size: " << newImg.size();
-}
-
 void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img)
 {
     if (!img) {
@@ -1684,14 +1665,18 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img)
         return;
     }
 
-    // TODO: why do we need unload here?
-    // At least it does not seem necessary for cropping.
-    unloadImage(false);
+    if (!mController->applyPluginChanges(true)) {
+        return;
+    }
+
+    if (mManipulatorWatcher.isRunning()) {
+        mManipulatorWatcher.cancel();
+    }
+
     mLoader->setImage(img);
 }
 
-// TODO: the fileChange is very confusing.
-bool DkViewPort::unloadImage(bool fileChange)
+bool DkViewPort::unloadImage()
 {
     if (DkSettingsManager::param().display().animationDuration > 0
         && (mController->getPlayer()->isPlaying() || DkUtils::getMainWindow()->isFullScreen()
@@ -1703,23 +1688,16 @@ bool DkViewPort::unloadImage(bool fileChange)
         mAnimationValue = 1.0f;
     }
 
-    bool success = true;
-
     if (!mController->applyPluginChanges(true)) // user wants to apply changes first
         return false;
 
-    if (fileChange) {
-        success = mLoader->unloadFile(); // returns false if the user cancels
-
-        // notify controller
-        // Doing this is equivalent to ask the controler to change file to null,
-        // which we do not want if fileChannge is false.
-        mController->updateImage({});
-    }
-
+    bool success = mLoader->unloadFile(); // returns false if the user cancels
     if (!success) {
         return false;
     }
+
+    // notify controller
+    mController->updateImage({});
 
     stopMovie();
 

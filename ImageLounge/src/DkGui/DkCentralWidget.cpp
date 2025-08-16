@@ -1075,7 +1075,7 @@ QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const
 bool DkCentralWidget::requestClose() const
 {
     if (hasViewPort())
-        return getViewPort()->unloadImage(true);
+        return getViewPort()->unloadImage();
 
     return true;
 }
