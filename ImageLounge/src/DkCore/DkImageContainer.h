@@ -161,8 +161,6 @@ public:
     bool saveImageThreaded(const QString &filePath, const QImage saveImg, int compression = -1);
     bool saveImageThreaded(const QString &filePath, int compression = -1);
     void saveMetaDataThreaded(const QString &filePath);
-    void saveMetaDataThreaded();
-    bool isFileDownloaded() const;
 
     QSharedPointer<DkBasicLoader> getLoader() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
@@ -180,7 +178,6 @@ signals:
     void fileSavedSignal(const QString &fileInfo, bool saved = true, bool loadToTab = true) const;
     void showInfoSignal(const QString &msg, int time = 3000, int position = 0) const;
     void errorDialogSignal(const QString &msg) const;
-    void thumbLoadedSignal(bool loaded = true) const;
     void imageUpdatedSignal() const;
     void zipFileDownloadedSignal(const DkFileInfo &file) const;
 
@@ -200,7 +197,6 @@ protected:
     QFutureWatcher<QSharedPointer<QByteArray>> mBufferWatcher;
     QFutureWatcher<QSharedPointer<DkBasicLoader>> mImageWatcher;
     QFutureWatcher<QString> mSaveImageWatcher;
-    QFutureWatcher<bool> mSaveMetaDataWatcher;
 
     QSharedPointer<FileDownloader> mFileDownloader;
 
@@ -216,7 +212,6 @@ protected:
 
     bool mFetchingImage = false;
     bool mFetchingBuffer = false;
-    bool mDownloaded = false;
 
     QTimer mFileUpdateTimer;
 
