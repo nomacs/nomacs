@@ -36,15 +36,15 @@ related links:
 
 namespace nmc
 {
+// -------------------------------------------------------------------- DkLogWidget
 
-static DkMessageQueuer *getMsgQueuer()
+DkMessageQueuer *DkLogWidget::getMsgQueuer()
 {
     // avoid static destruction, this is globally referenced via qDebug() etc
     static auto *querer = new DkMessageQueuer;
     return querer;
 }
 
-// -------------------------------------------------------------------- DkLogWidget
 DkLogWidget::DkLogWidget(QWidget *parent)
     : DkWidget(parent)
 {
@@ -96,7 +96,7 @@ void DkLogWidget::createLayout()
 /// <param name="type">The message type (QtDebugMsg are not written to the log).</param>
 /// <param name=""></param>
 /// <param name="msg">The message.</param>
-void widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &msg)
+void DkLogWidget::widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &msg)
 {
     getMsgQueuer()->log(type, msg);
     DkUtils::logToFile(type, msg);
