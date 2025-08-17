@@ -604,7 +604,7 @@ DkOverview::DkOverview(QWidget *parent)
 {
     setObjectName("DkOverview");
     setMinimumSize(0, 0);
-    setMaximumSize(200, 200);
+    setMaximumSize(200, 200); // originally wanted 15% of mViewportRect
     setCursor(Qt::ArrowCursor);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
@@ -619,57 +619,44 @@ void DkOverview::paintEvent(QPaintEvent *event)
     if (!mImgMatrix || !mWorldMatrix)
         return;
 
-    QPainter painter(this);
-
-    int lm = 0;
-    int tm = 0;
-    int rm = 0;
-    int bm = 0;
+    QMargins margins{};
     if (layout() != nullptr)
-        layout()->getContentsMargins(&lm, &tm, &rm, &bm);
+        margins = layout()->contentsMargins();
 
-    QSize viewSize = QSize(width() - lm - rm, height() - tm - bm); // overview shall take 15% of the mViewport....
+    QSize viewSize = size().shrunkBy(margins);
 
     if (viewSize.width() > 2 && viewSize.height() > 2) {
-        QTransform overviewImgMatrix = getScaledImageMatrix();
-        QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), mImgSize));
+        const QTransform overviewImgMatrix = getScaledImageMatrix();
+        const QRectF overviewImgRect = overviewImgMatrix.mapRect(QRectF(QPointF(), mImgSize));
 
-        // now render the current view
+        // map viewport to thumbnail for visible region highlight
         QRectF viewRect = mViewPortRect;
         viewRect = mWorldMatrix->inverted().mapRect(viewRect);
         viewRect = mImgMatrix->inverted().mapRect(viewRect);
         viewRect = overviewImgMatrix.mapRect(viewRect);
-        viewRect.moveTopLeft(viewRect.topLeft() + QPointF(lm, tm));
+        viewRect.moveTopLeft(viewRect.topLeft() + QPointF(margins.left(), margins.top()));
 
-        if (viewRect.topLeft().x() < overviewImgRect.topLeft().x())
-            viewRect.setTopLeft(QPointF(overviewImgRect.topLeft().x(), viewRect.topLeft().y()));
-        if (viewRect.topLeft().y() < overviewImgRect.topLeft().y())
-            viewRect.setTopLeft(QPointF(viewRect.topLeft().x(), overviewImgRect.topLeft().y()));
-        if (viewRect.bottomRight().x() > overviewImgRect.bottomRight().x())
-            viewRect.setBottomRight(QPointF(overviewImgRect.bottomRight().x() - 1, viewRect.bottomRight().y()));
-        if (viewRect.bottomRight().y() > overviewImgRect.bottomRight().y())
-            viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewImgRect.bottomRight().y() - 1));
-
-        // draw the image's location
+        // draw thumbnail
+        QPainter painter(this);
         painter.setRenderHints(QPainter::SmoothPixmapTransform);
-        painter.setBrush(DkSettingsManager::param().display().hudBgColor);
-        painter.setPen(QColor(200, 200, 200));
-        // painter.drawRect(overviewRect);
         painter.setOpacity(0.8f);
-        painter.drawImage(overviewImgRect, mImgT, QRect(0, 0, mImgT.width(), mImgT.height()));
+        painter.drawImage(overviewImgRect, mImgT);
 
-        QColor col = DkSettingsManager::param().display().highlightColor;
-        col.setAlpha(255);
-        painter.setPen(col);
-        col.setAlpha(50);
-        painter.setBrush(col);
+        // highlight the visible viewport region
+        // only draw if we cannot see the entire image
+        QSizeF sizeDiff(overviewImgRect.size() - viewRect.size());
+        if (sizeDiff.width() > 0 || sizeDiff.height() > 0) {
+            // clip to thumbnail rect
+            viewRect = viewRect.intersected(overviewImgRect);
 
-        if (viewRect.width() + 1 < overviewImgRect.width()
-            || viewRect.height() + 1
-                < overviewImgRect.height()) // draw viewrect if we do not see all parts of the image
+            QColor col = DkSettingsManager::param().display().highlightColor;
+            col.setAlpha(255);
+            painter.setPen(col);
+            col.setAlpha(50);
+            painter.setBrush(col);
             painter.drawRect(viewRect);
+        }
     }
-    painter.end();
 
     QWidget::paintEvent(event);
 }
