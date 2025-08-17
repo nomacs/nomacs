@@ -642,7 +642,13 @@ bool DkImageLoader::unloadFile()
                 saveUserFileAs(mCurrentImage->image(), false); // we loose all metadata here - right?
             }
 
-        } else if (answer != QMessageBox::No) { // only 'No' will discard the changes
+            // Clear the image container to force reload so we get correct state.
+            mCurrentImage->clear();
+        } else if (answer == QMessageBox::No) {
+            // Clear the image container to discard all edited changes.
+            mCurrentImage->clear();
+        } else {
+            // Cancel is pressed
             return false;
         }
     }
