@@ -318,7 +318,7 @@ void DkViewPort::setImage(QImage newImg)
     if (mLoader->hasSvg() && !mLoader->isEdited())
         loadSvg();
 
-    mImgRect = QRectF(QPoint(), getImageSize());
+    mImgRect = QRectF(QPointF(), getImageSize());
 
     DkActionManager::instance().enableImageActions(!newImg.isNull());
 
@@ -562,7 +562,7 @@ void DkViewPort::updateImageMatrix()
 
     mImgMatrix.reset();
 
-    QSize imgSize = getImageSize();
+    QSizeF imgSize = getImageSize();
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect()))
@@ -2328,7 +2328,7 @@ void DkViewPortFrameless::updateImageMatrix()
 
     mImgMatrix.reset();
 
-    QSize imgSize = getImageSize();
+    QSizeF imgSize = getImageSize();
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect())) {
