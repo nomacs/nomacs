@@ -94,6 +94,7 @@ public:
         return geometry();
     };
 
+    // visible region of the image, unscaled
     QImage getCurrentImageRegion();
 
     virtual DkImageStorage *getImageStorage()

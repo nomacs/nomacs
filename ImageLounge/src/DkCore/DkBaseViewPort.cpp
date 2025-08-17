@@ -321,18 +321,14 @@ QRectF DkBaseViewPort::getImageViewRect() const
 
 QImage DkBaseViewPort::getCurrentImageRegion()
 {
-    QRectF viewRect = QRectF(QPoint(), size());
+    QRectF viewRect = QRectF(QPointF(), size());
+
     viewRect = mWorldMatrix.inverted().mapRect(viewRect);
-    viewRect = mImgMatrix.inverted().mapRect(viewRect);
+    viewRect = (mImgMatrix.inverted() * devicePixelRatioF()).mapRect(viewRect);
 
-    QImage imgR(viewRect.size().toSize(), QImage::Format_ARGB32);
-    imgR.fill(0);
-
-    QPainter painter(&imgR);
-    painter.drawImage(imgR.rect(), mImgStorage.image(), viewRect.toRect());
-    painter.end();
-
-    return imgR;
+    // Rect is now in image coordinates so just copy it.
+    // If there is any oob condition it gets default fill
+    return mImgStorage.image().copy(viewRect.toRect());
 }
 
 // events --------------------------------------------------------------------
