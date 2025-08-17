@@ -1691,7 +1691,7 @@ bool DkViewPort::unloadImage()
     if (!mController->applyPluginChanges(true)) // user wants to apply changes first
         return false;
 
-    bool success = mLoader->unloadFile(); // returns false if the user cancels
+    bool success = mLoader->promptSaveBeforeUnload(); // returns false if the user cancels
     if (!success) {
         return false;
     }
