@@ -373,24 +373,23 @@ public:
     {
         mWorldMatrix = worldMatrix;
         mImgMatrix = imgMatrix;
-    };
+    }
 
     void setViewPortRect(const QRectF &viewPortRect)
     {
         mViewPortRect = viewPortRect;
-    };
+    }
 
 signals:
     void moveViewSignal(const QPointF &dxy) const;
     void sendTransformSignal() const;
 
 protected:
-    QImage mImg;
-    QImage mImgT;
-    QSize mImgSize;
-    QTransform *mScaledImgMatrix;
-    QTransform *mWorldMatrix;
-    QTransform *mImgMatrix;
+    QImage mImg; // discarded after thumbnailing
+    QImage mImgT; // thumbnail
+    QSize mImgSize; // original image size
+    QTransform *mWorldMatrix{};
+    QTransform *mImgMatrix{};
     QRectF mViewPortRect;
     QPointF mPosGrab;
     QPointF mEnterPos;
@@ -400,7 +399,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-    QRectF getImageRect() const;
+
     // get matrix that resizes the image to the current mViewport
     QTransform getScaledImageMatrix();
 };
