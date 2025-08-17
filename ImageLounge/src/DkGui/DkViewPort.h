@@ -85,6 +85,8 @@ public:
     DkControlWidget *getController();
 
     QString getCurrentPixelHexValue();
+
+    // map window location (cursor position) to image pixel location, return {-1,-1} if out of bounds
     QPoint mapToImage(const QPoint &windowPos) const;
 
     void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
