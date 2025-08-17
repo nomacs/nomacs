@@ -1545,8 +1545,9 @@ QImage DkImageStorage::imageConst() const
 
 QImage DkImageStorage::image(const QSize &size)
 {
-    if (size.isEmpty() || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing || // user disabled?
-        mImg.size().width() < size.width() // scale factor > 1?
+    if (size.isEmpty() || mImg.isNull() //
+        || !DkSettingsManager::param().display().antiAliasing // if AA is disabled QPainter handles all scaling
+        || mImg.size().width() <= size.width() // scale factor >= 1 always handled by QPainter
     ) {
         return mImg;
     }
@@ -1555,10 +1556,10 @@ QImage DkImageStorage::image(const QSize &size)
         return mScaledImg;
     }
 
-    // trigger a new computation
+    // start downsampling/antialiasing in a thread
     compute(size);
 
-    // currently no alternative is available
+    // downSampling is async, return original image as a placeholder
     return mImg;
 }
 
