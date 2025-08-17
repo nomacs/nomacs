@@ -726,18 +726,6 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event)
         emit sendTransformSignal();
 }
 
-QRectF DkOverview::getImageRect() const
-{
-    QRectF imgRect = QRectF(QPoint(), size()); // get the overview rect
-
-    if ((float)mImgT.width() / mImgT.height() < (float)imgRect.width() / imgRect.height())
-        imgRect.setWidth(width() * (float)height() / (float)mImgT.height());
-    else
-        imgRect.setHeight(height() * (float)width() / (float)mImgT.width());
-
-    return imgRect;
-}
-
 QImage DkOverview::resizedImg(const QImage &src)
 {
     if (src.isNull())
