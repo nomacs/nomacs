@@ -263,7 +263,7 @@ void DkBaseViewPort::setImage(QImage newImg)
 {
     mImgStorage.setImage(newImg);
     QRectF oldImgRect = mImgRect;
-    mImgRect = QRectF(QPoint(), getImageSize());
+    mImgRect = QRectF(QPointF(), getImageSize());
 
     if (!DkSettingsManager::param().display().keepZoom || mImgRect != oldImgRect)
         mWorldMatrix.reset();
@@ -298,7 +298,7 @@ QImage DkBaseViewPort::getImage() const
     return mImgStorage.imageConst();
 }
 
-QSize DkBaseViewPort::getImageSize() const
+QSizeF DkBaseViewPort::getImageSize() const
 {
     if (mSvg) {
         // qDebug() << "win: " << size() << "svg:" << mSvg->defaultSize() << "scaled:" <<
@@ -306,7 +306,12 @@ QSize DkBaseViewPort::getImageSize() const
         return mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
     }
 
-    return mImgStorage.size();
+    // HiDPI: Pretend the image is smaller and avoid rewriting scaling/translating logic
+    // At 100%, this gives mImgViewRect.size()*dpr == img.rect().size(), so QPainter skips device scaling
+    // - this must be reversed only when reaching into the image pixels (extract subimage, eyedropper tool, etc)
+    // - we must take care to avoid rounding as this creates a fraction
+
+    return QSizeF(mImgStorage.size()) / devicePixelRatioF();
 }
 
 QRectF DkBaseViewPort::getImageViewRect() const
@@ -510,8 +515,13 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
 {
     eraseBackground(painter);
 
-    QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
-    QImage img = mImgStorage.image(displayRect.size());
+    const QRectF displayRectF = mWorldMatrix.mapRect(mImgViewRect); // use float size for QPainter
+    const QRect displayRect = displayRectF.toRect(); // must use rounded size for 100%/AA
+
+    // HiDPI: mImgViewRect is in logical pixels, we need physical for 100% scale and AA to work correctly
+    const QSize physicalSize = (displayRectF.size() * devicePixelRatioF()).toSize(); // rounded
+
+    const QImage img = mImgStorage.image(physicalSize);
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
@@ -525,17 +535,21 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
     } else if (mMovie && mMovie->isValid()) {
         painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
     } else {
-        // if we have the exact level cached: render it directly
-        if (displayRect.width() == img.width() && displayRect.height() == img.height()) {
-            painter.setWorldMatrixEnabled(false);
+        painter.setWorldMatrixEnabled(false);
+        if (std::abs(physicalSize.width() - img.width()) < 1.0) { // close enough (< 1 pixel)
+            // we are 100% or prescaled/antialiased, draw 1:1 pixels, avoiding any Qt transformation
             painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
-            painter.drawImage(displayRect, img, img.rect());
-            painter.setWorldMatrixEnabled(true);
+            painter.drawImage(displayRect, img);
         } else {
-            if (mImgMatrix.m11() * mWorldMatrix.m11() - std::numeric_limits<double>::epsilon() < 1.0)
+            // we are not prescaled
+            // use smooth scale if we are downsampling
+            qreal scaleFactor = mImgMatrix.m11() * mWorldMatrix.m11();
+            if (scaleFactor - std::numeric_limits<double>::epsilon() < 1.0)
                 painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-            painter.drawImage(mImgViewRect, img, img.rect());
+
+            painter.drawImage(displayRectF, img);
         }
+        painter.setWorldMatrixEnabled(true);
     }
 
     painter.setOpacity(oldOp);
@@ -586,7 +600,7 @@ void DkBaseViewPort::updateImageMatrix()
 
     mImgMatrix.reset();
 
-    QSize imgSize = getImageSize();
+    QSizeF imgSize = getImageSize();
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect))
