@@ -1446,14 +1446,16 @@ void DkViewPort::setFullScreen(bool fullScreen)
 QPoint DkViewPort::mapToImage(const QPoint &windowPos) const
 {
     QPointF imgPos = mWorldMatrix.inverted().map(QPointF(windowPos));
-    imgPos = mImgMatrix.inverted().map(imgPos);
+    imgPos = (mImgMatrix.inverted() * devicePixelRatioF()).map(imgPos);
 
-    QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
+    QPoint p(qFloor(imgPos.x()), qFloor(imgPos.y()));
+    QSize sz = mImgStorage.size();
 
-    if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
+    if (p.x() < 0 || p.y() < 0 || p.x() >= sz.width() || p.y() >= sz.height()) {
         return QPoint(-1, -1);
+    }
 
-    return xy;
+    return p;
 }
 
 void DkViewPort::getPixelInfo(const QPoint &pos)
