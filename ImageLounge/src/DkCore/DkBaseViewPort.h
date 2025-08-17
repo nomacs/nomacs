@@ -106,9 +106,12 @@ public:
 #endif
 
     virtual QImage getImage() const;
-    virtual QSize getImageSize() const;
-    virtual QRectF getImageViewRect() const;
-    virtual bool imageInside() const;
+
+    // image size in logical pixels (actual size divided by device pixel ratio)
+    QSizeF getImageSize() const;
+
+    QRectF getImageViewRect() const;
+    bool imageInside() const;
 
 signals:
     void keyReleaseSignal(QKeyEvent *event) const; // make key presses available
