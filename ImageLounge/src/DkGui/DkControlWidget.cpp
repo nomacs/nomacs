@@ -702,7 +702,7 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
     }
 }
 
-void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
+void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC, bool updateMetadataIfNull)
 {
     if (mImgC) {
         disconnect(mImgC.get(),
@@ -717,7 +717,10 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC)
         mPluginViewport->updateImageContainer(imgC);
 
     if (!imgC) {
-        mMetaDataInfo->setMetaData(nullptr);
+        if (updateMetadataIfNull) {
+            // TODO: is it more correct that we also update other related panels
+            mMetaDataInfo->setMetaData(nullptr);
+        }
         return;
     }
 

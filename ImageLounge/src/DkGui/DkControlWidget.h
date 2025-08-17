@@ -139,7 +139,7 @@ public slots:
     bool closePlugin(bool askForSaving, bool force = false);
     bool applyPluginChanges(bool askForSaving);
 
-    void updateImage(QSharedPointer<DkImageContainerT> imgC);
+    void updateImage(QSharedPointer<DkImageContainerT> imgC, bool updateMetadataIfNull = true);
 
     void setInfo(const QString &msg, int time = 3000, int location = bottom_left_label);
     void updateRating(int rating);

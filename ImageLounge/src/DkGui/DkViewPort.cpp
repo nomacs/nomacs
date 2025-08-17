@@ -259,6 +259,7 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     // things todo if a file was not loaded...
     if (!loaded) {
         mController->getPlayer()->startTimer();
+        mController->updateImage(nullptr);
         return;
     }
 
@@ -1697,7 +1698,7 @@ bool DkViewPort::unloadImage()
     }
 
     // notify controller
-    mController->updateImage({});
+    mController->updateImage({}, false);
 
     stopMovie();
 
