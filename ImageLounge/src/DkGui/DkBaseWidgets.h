@@ -54,7 +54,7 @@ protected:
 // non-specialized functions for DkFadeMixin
 class DllCoreExport DkFadeHelper
 {
-    Q_DISABLE_COPY_MOVE(DkFadeHelper);
+    Q_DISABLE_COPY_MOVE(DkFadeHelper)
 
 public:
     // globally disable animations, independent of user setting

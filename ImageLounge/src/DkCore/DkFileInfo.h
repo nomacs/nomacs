@@ -159,7 +159,7 @@ private:
     {
     public:
         explicit ZipData(const QString &encodedFilePath);
-        ZipData(const QString &zipFile, const QuaZipFileInfo64 &info);
+        ZipData(const QString &zipFilePath, const QuaZipFileInfo64 &info);
 
         static QString encodePath(const QString &zipFilePath, const QString &memberPath);
 
