@@ -609,92 +609,114 @@ DkOverview::DkOverview(QWidget *parent)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
+void DkOverview::setImage(const QImage &img)
+{
+    // reset thumbnail; we don't updateThumb() yet as we won't always have our size() yet
+    mOriginalImage = img;
+    mOriginalImageSize = {};
+    mThumb = {};
+}
+
+bool DkOverview::updateThumb()
+{
+    if (mOriginalImage.isNull())
+        return false;
+
+    mOriginalImageSize = mOriginalImage.size(); // retain image size as we release original below
+    mImageToLocal = imageToLocal();
+
+    // fast downscaling before smooth scaling (similar to AA technique)
+    // TODO: use cv area scaler or thumbnail engine
+    // FIXME: this should based on current size of widget? If widget resizes we can recompute
+    mThumb = mOriginalImage.scaled(maximumWidth() * 2,
+                                   maximumHeight() * 2,
+                                   Qt::KeepAspectRatio,
+                                   Qt::FastTransformation);
+    mThumb = mThumb.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    mOriginalImage = {}; // might save memory (probably not as viewport holds a reference)
+
+    return true;
+}
+
 void DkOverview::paintEvent(QPaintEvent *event)
 {
-    if (mImgT.isNull()) {
-        mImgT = resizedImg(mImg);
-        mImg = QImage(); // free-up space
-    }
+    Q_UNUSED(event)
 
-    if (!mImgMatrix || !mWorldMatrix)
+    if (mThumb.isNull() && !updateThumb())
         return;
 
-    QMargins margins{};
-    if (layout() != nullptr)
-        margins = layout()->contentsMargins();
+    // map original image (disregarding viewport transform)
+    const QRectF thumbRect = mImageToLocal.mapRect(QRectF(QPointF(), mOriginalImageSize));
 
-    QSize viewSize = size().shrunkBy(margins);
+    // map visible region of the viewport
+    QRectF viewRect = viewPortToLocal().mapRect(mViewPortRect);
 
-    if (viewSize.width() > 2 && viewSize.height() > 2) {
-        const QTransform overviewImgMatrix = getScaledImageMatrix();
-        const QRectF overviewImgRect = overviewImgMatrix.mapRect(QRectF(QPointF(), mImgSize));
+    // draw thumbnail
+    QPainter painter(this);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    painter.setOpacity(0.8f);
+    painter.drawImage(thumbRect, mThumb);
 
-        // map viewport to thumbnail for visible region highlight
-        QRectF viewRect = mViewPortRect;
-        viewRect = mWorldMatrix->inverted().mapRect(viewRect);
-        viewRect = mImgMatrix->inverted().mapRect(viewRect);
-        viewRect = overviewImgMatrix.mapRect(viewRect);
-        viewRect.moveTopLeft(viewRect.topLeft() + QPointF(margins.left(), margins.top()));
+    // highlight the visible region, only draw if we cannot see the entire image
+    QSizeF sizeDiff(thumbRect.size() - viewRect.size());
+    if (sizeDiff.width() > 0 || sizeDiff.height() > 0) {
+        // clip to thumbnail
+        viewRect = viewRect.intersected(thumbRect);
 
-        // draw thumbnail
-        QPainter painter(this);
-        painter.setRenderHints(QPainter::SmoothPixmapTransform);
-        painter.setOpacity(0.8f);
-        painter.drawImage(overviewImgRect, mImgT);
+        QColor col = DkSettingsManager::param().display().highlightColor;
+        col.setAlpha(255);
+        painter.setPen(col);
+        col.setAlpha(50);
+        painter.setBrush(col);
+        painter.drawRect(viewRect);
+    }
+}
 
-        // highlight the visible viewport region
-        // only draw if we cannot see the entire image
-        QSizeF sizeDiff(overviewImgRect.size() - viewRect.size());
-        if (sizeDiff.width() > 0 || sizeDiff.height() > 0) {
-            // clip to thumbnail rect
-            viewRect = viewRect.intersected(overviewImgRect);
-
-            QColor col = DkSettingsManager::param().display().highlightColor;
-            col.setAlpha(255);
-            painter.setPen(col);
-            col.setAlpha(50);
-            painter.setBrush(col);
-            painter.drawRect(viewRect);
-        }
+void DkOverview::moveImage(const QPointF &p1, const QPointF &p2)
+{
+    if (!mImageToWorld) {
+        qWarning() << "[overview] bad initialization"; // should be set by owner of overview
+        return;
     }
 
-    QWidget::paintEvent(event);
+    // we are connected to DkViewPort::moveView() which expects world coordinates
+    QTransform localToWorld = *mImageToWorld * mImageToLocal.inverted();
+    QPointF w1 = localToWorld.map(p1);
+    QPointF w2 = localToWorld.map(p2);
+
+    emit moveViewSignal(w1 - w2);
 }
 
 void DkOverview::mousePressEvent(QMouseEvent *event)
 {
-    mEnterPos = event->pos();
-    mPosGrab = event->pos();
+    if (event->buttons() != Qt::LeftButton)
+        return;
+
+    mLastMousePos = event->position();
+    mMouseMoved = false;
 }
 
 void DkOverview::mouseReleaseEvent(QMouseEvent *event)
 {
-    QPointF dxy = mEnterPos - QPointF(event->pos());
+    // we already panned, do not jump to cursor location
+    if (mMouseMoved)
+        return;
 
-    if (dxy.manhattanLength() < 4) {
-        int lm = 0;
-        int tm = 0;
-        int rm = 0;
-        int bm = 0;
-        if (layout() != nullptr)
-            layout()->getContentsMargins(&lm, &tm, &rm, &bm);
+    // jump to cursor; we need two points to send a delta x/y to viewport
+    QPointF currentCenter = viewPortToLocal().mapRect(mViewPortRect).center();
+    QPointF newCenter = event->position();
 
-        // move to the current position
-        QRectF viewRect = mViewPortRect;
-        viewRect = mWorldMatrix->inverted().mapRect(viewRect);
-        viewRect = mImgMatrix->inverted().mapRect(viewRect);
-        viewRect = getScaledImageMatrix().mapRect(viewRect);
-        QPointF currentViewPoint = viewRect.center();
+    moveImage(currentCenter, newCenter);
 
-        float panningSpeed = (float)-(mWorldMatrix->m11() / (getScaledImageMatrix().m11() / mImgMatrix->m11()));
+    if (event->modifiers() == DkSettingsManager::param().global().altMod)
+        emit sendTransformSignal();
+}
 
-        QPointF cPos = event->pos() - QPointF(lm, tm);
-        QPointF lDxy = (cPos - currentViewPoint) / mWorldMatrix->m11() * panningSpeed;
-        emit moveViewSignal(lDxy);
-
-        if (event->modifiers() == DkSettingsManager::param().global().altMod)
-            emit sendTransformSignal();
-    }
+void DkOverview::resizeEvent(QResizeEvent *event)
+{
+    Q_UNUSED(event)
+    mImageToLocal = imageToLocal(); // contentRect() changed, update transform
 }
 
 void DkOverview::mouseMoveEvent(QMouseEvent *event)
@@ -702,72 +724,53 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() != Qt::LeftButton)
         return;
 
-    float panningSpeed = (float)-(mWorldMatrix->m11() / (getScaledImageMatrix().m11() / mImgMatrix->m11()));
+    mMouseMoved = true;
 
-    QPointF cPos = event->pos();
-    QPointF dxy = (cPos - mPosGrab) / mWorldMatrix->m11() * panningSpeed;
-    mPosGrab = cPos;
-    emit moveViewSignal(dxy);
+    QPointF cursorPos = event->position();
+    moveImage(mLastMousePos, cursorPos);
+    mLastMousePos = cursorPos;
 
     if (event->modifiers() == DkSettingsManager::param().global().altMod)
         emit sendTransformSignal();
 }
 
-QImage DkOverview::resizedImg(const QImage &src)
+QTransform DkOverview::viewPortToLocal() const
 {
-    if (src.isNull())
-        return QImage();
+    if (!mWorldToViewPort || !mImageToWorld) {
+        qWarning() << "[overview] bad initialization"; // should be set by owner of overview
+        return {};
+    }
 
-    QTransform overviewImgMatrix = getScaledImageMatrix();
+    QTransform mat = mWorldToViewPort->inverted() * mImageToWorld->inverted() * mImageToLocal;
 
-    // is the overviewImgMatrix empty?
-    if (overviewImgMatrix.isIdentity())
-        return src;
-
-    // fast downscaling
-    QImage sImg = src.scaled(maximumWidth() * 2, maximumHeight() * 2, Qt::KeepAspectRatio, Qt::FastTransformation);
-    sImg = sImg.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    return sImg;
+    return mat;
 }
 
-QTransform DkOverview::getScaledImageMatrix()
+QTransform DkOverview::imageToLocal() const
 {
-    if (mImgT.isNull() && mImg.isNull())
-        return QTransform();
+    QRectF content = contentsRect();
 
-    int lm = 0;
-    int tm = 0;
-    int rm = 0;
-    int bm = 0;
-    if (layout() != nullptr)
-        layout()->getContentsMargins(&lm, &tm, &rm, &bm);
+    // prevent divide-by-zero
+    if (content.isEmpty() || mOriginalImageSize.isEmpty())
+        return {};
 
-    QSize iSize = QSize(width() - lm - rm, height() - tm - bm); // inner size
+    QRectF imgRect = QRectF(QPoint{0, 0}, mOriginalImageSize);
+    qreal imgAspect = imgRect.width() / imgRect.height();
+    qreal contenAspect = content.width() / content.height();
 
-    if (iSize.width() < 2 || iSize.height() < 2)
-        return QTransform();
+    // fit thumbnail to content and center it
+    qreal scaleFactor = (imgAspect > contenAspect) ? content.width() / imgRect.width() //
+                                                   : content.height() / imgRect.height();
+    QPointF center = content.center();
+    QSizeF thumbSize = imgRect.size() * scaleFactor;
 
-    // the image resizes as we zoom
-    QRectF imgRect = QRectF(QPoint(lm, tm), mImgSize);
-    auto ratioImg = (float)(imgRect.width() / imgRect.height());
-    float ratioWin = (float)(iSize.width()) / (float)(iSize.height());
+    QTransform mat;
+    mat.translate(center.x() - thumbSize.width() * 0.5, //
+                  center.y() - thumbSize.height() * 0.5);
 
-    QTransform imgMatrix;
-    float s;
-    if (imgRect.width() == 0 || imgRect.height() == 0)
-        s = 1.0f;
-    else
-        s = (ratioImg > ratioWin) ? (float)(iSize.width() / imgRect.width())
-                                  : (float)(iSize.height() / imgRect.height());
+    mat.scale(scaleFactor, scaleFactor);
 
-    imgMatrix.scale(s, s);
-
-    QRectF imgViewRect = imgMatrix.mapRect(imgRect);
-    imgMatrix.translate((iSize.width() - imgViewRect.width()) * 0.5f / s,
-                        (iSize.height() - imgViewRect.height()) * 0.5f / s);
-
-    return imgMatrix;
+    return mat;
 }
 
 // DkZoomWidget --------------------------------------------------------------------
