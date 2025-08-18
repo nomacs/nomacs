@@ -59,7 +59,9 @@ nomacs might have a weird coding style at the first glance, however we try to fo
 ### Naming
 - Class names start with a capital letter (i.e. `DkBaseManipulator`).
 - Methods start with lowercase (i.e. `name()`).
-- Prefix members with an m (i.e. `int mAction = 0`).
+- Prefix members with `m` (i.e. `int mAction = 0`).
+- Prefix constants with `k`
+- Prefix static variables with `s`
 - Prefix classes with `Dk`.
 ### Formatting
 - We format C++ sources `clang-format`. You can run `scripts/format-cpp.sh` or configure your editor to use `clang-format`.
@@ -99,6 +101,8 @@ public:
     QString name() const;
 
 private:
+    static bool sCounter;
+    static constexpr int kUpperBound = 100;
     QAction *mAction = nullptr;
 };
 
@@ -118,6 +122,8 @@ public:
   QString Name() const;
 
 private:
+  static bool gCounter;
+  const int UPPER_BOUND = 100;
   QAction* action = nullptr;
 };
 ```
