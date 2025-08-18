@@ -1476,12 +1476,12 @@ void DkProfileWidget::deleteCurrentProfile()
 void DkProfileWidget::exportCurrentProfile()
 {
     QString expPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QDir::separator()
-        + currentProfile() + "." + DkBatchProfile::fileSuffix();
+        + currentProfile() + "." + DkBatchProfile::kFileSuffix;
 
     QString sPath = QFileDialog::getSaveFileName(this,
                                                  tr("Export Batch Profile"),
                                                  expPath,
-                                                 tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::fileSuffix()),
+                                                 tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::kFileSuffix),
                                                  nullptr,
                                                  DkDialog::fileDialogOptions());
 

@@ -381,7 +381,8 @@ public:
     static QString defaultProfilePath();
     static QString profileNameToPath(const QString &profileName);
     static QString makeUserFriendly(const QString &profilePath);
-    static QString fileSuffix();
+
+    static constexpr char const *kFileSuffix = "pnm";
 
     QStringList profileNames();
 

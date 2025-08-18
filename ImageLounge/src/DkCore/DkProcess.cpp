@@ -1399,7 +1399,7 @@ QString DkBatchProfile::defaultProfilePath()
 
 QString DkBatchProfile::profileNameToPath(const QString &profileName)
 {
-    return defaultProfilePath() + QDir::separator() + profileName + "." + fileSuffix();
+    return defaultProfilePath() + QDir::separator() + profileName + "." + kFileSuffix;
 }
 
 QStringList DkBatchProfile::profileNames()
@@ -1417,7 +1417,7 @@ QStringList DkBatchProfile::profileNames()
 QStringList DkBatchProfile::index(const QString &profileDir) const
 {
     QStringList exts;
-    exts << "*." + fileSuffix();
+    exts << QStringLiteral("*.") + kFileSuffix;
 
     QDir pd(profileDir);
     QStringList profiles = pd.entryList(exts, QDir::Files, QDir::Name);
@@ -1434,10 +1434,4 @@ QString DkBatchProfile::makeUserFriendly(const QString &profilePath)
     QString pName = QFileInfo(profilePath).baseName();
     return pName;
 }
-
-QString DkBatchProfile::fileSuffix()
-{
-    return "pnm";
-}
-
 }
