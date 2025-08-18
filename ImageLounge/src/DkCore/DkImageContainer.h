@@ -145,7 +145,7 @@ private:
 class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
 {
     Q_OBJECT
-    Q_DISABLE_COPY_MOVE(DkImageContainerT);
+    Q_DISABLE_COPY_MOVE(DkImageContainerT)
 
 public:
     explicit DkImageContainerT(const DkFileInfo &fileInfo = {});

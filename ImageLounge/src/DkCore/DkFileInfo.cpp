@@ -64,10 +64,10 @@ DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
     }
 }
 
-DkFileInfo::ZipData::ZipData(const QString &zipFile, const QuaZipFileInfo64 &info)
+DkFileInfo::ZipData::ZipData(const QString &zipFilePath, const QuaZipFileInfo64 &info)
 {
     mIsMember = true;
-    mZipFilePath = zipFile;
+    mZipFilePath = zipFilePath;
     mZipMemberPath = info.name;
     setMetaData(info);
 }
