@@ -681,7 +681,8 @@ void DkOverview::moveImage(const QPointF &p1, const QPointF &p2)
     }
 
     // we are connected to DkViewPort::moveView() which expects world coordinates
-    QTransform localToWorld = *mImageToWorld * mImageToLocal.inverted();
+    // divide by devicePixelRatioF() since mImageToLocal is in physical pixels and mImageToWorld is in logical pixels
+    QTransform localToWorld = *mImageToWorld * mImageToLocal.inverted() * (1.0 / devicePixelRatioF());
     QPointF w1 = localToWorld.map(p1);
     QPointF w2 = localToWorld.map(p2);
 
@@ -741,7 +742,8 @@ QTransform DkOverview::viewPortToLocal() const
         return {};
     }
 
-    QTransform mat = mWorldToViewPort->inverted() * mImageToWorld->inverted() * mImageToLocal;
+    // multiply by devicePixelRatioF() since mImageToWorld is in logical pixels and mImageToLocal is in physical pixels
+    QTransform mat = mWorldToViewPort->inverted() * mImageToWorld->inverted() * devicePixelRatioF() * mImageToLocal;
 
     return mat;
 }
