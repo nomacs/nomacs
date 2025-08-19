@@ -62,4 +62,5 @@ snap/.snapcraft/
 *.rej
 *.orig
 CMakeLists.txt.user
+CMakeLists.txt.user.*
 
