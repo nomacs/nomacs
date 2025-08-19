@@ -660,7 +660,7 @@ void DkOverview::paintEvent(QPaintEvent *event)
 
     // highlight the visible region, only draw if we cannot see the entire image
     QSizeF sizeDiff(thumbRect.size() - viewRect.size());
-    if (sizeDiff.width() > 0 || sizeDiff.height() > 0) {
+    if (sizeDiff.width() >= 1.0 || sizeDiff.height() >= 1.0) {
         // clip to thumbnail
         viewRect = viewRect.intersected(thumbRect);
 
