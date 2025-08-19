@@ -655,7 +655,6 @@ void DkOverview::paintEvent(QPaintEvent *event)
 
     // draw thumbnail
     QPainter painter(this);
-    painter.setOpacity(0.8f);
     painter.drawImage(thumbRect, mThumb);
 
     // highlight the visible region, only draw if we cannot see the entire image
