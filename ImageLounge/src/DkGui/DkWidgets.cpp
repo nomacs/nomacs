@@ -625,14 +625,15 @@ bool DkOverview::updateThumb()
     mOriginalImageSize = mOriginalImage.size(); // retain image size as we release original below
     mImageToLocal = imageToLocal();
 
+    // for best appearance, thumb is sized to draw 1:1 with screen pixels
+    QSize thumbSize = mImageToLocal.mapRect(mOriginalImage.rect()).size() * devicePixelRatioF();
+
     // fast downscaling before smooth scaling (similar to AA technique)
-    // TODO: use cv area scaler or thumbnail engine
-    // FIXME: this should based on current size of widget? If widget resizes we can recompute
-    mThumb = mOriginalImage.scaled(maximumWidth() * 2,
-                                   maximumHeight() * 2,
+    mThumb = mOriginalImage.scaled(thumbSize.width() * 2,
+                                   thumbSize.height() * 2,
                                    Qt::KeepAspectRatio,
                                    Qt::FastTransformation);
-    mThumb = mThumb.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    mThumb = mThumb.scaled(thumbSize.width(), thumbSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     mOriginalImage = {}; // might save memory (probably not as viewport holds a reference)
 
@@ -654,7 +655,6 @@ void DkOverview::paintEvent(QPaintEvent *event)
 
     // draw thumbnail
     QPainter painter(this);
-    painter.setRenderHints(QPainter::SmoothPixmapTransform);
     painter.setOpacity(0.8f);
     painter.drawImage(thumbRect, mThumb);
 
