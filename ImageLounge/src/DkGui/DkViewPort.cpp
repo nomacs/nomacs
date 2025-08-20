@@ -2565,27 +2565,18 @@ void DkViewPortContrast::mouseMoveEvent(QMouseEvent *event)
 
 void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (mIsColorPickerActive) {
-        QPointF imgPos = mWorldMatrix.inverted().map(event->pos());
-        imgPos = mImgMatrix.inverted().map(imgPos);
-
-        QPoint xy = imgPos.toPoint();
-
-        bool isPointValid = true;
-
-        if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
-            isPointValid = false;
-
-        if (isPointValid) {
-            int colorIdx = mImgs[mActiveChannel].pixelIndex(xy);
-            qreal normedPos = (qreal)colorIdx / 255;
-            emit tFSliderAdded(normedPos);
-        }
-
-        // unsetCursor();
-        // isColorPickerActive = false;
-    } else
+    if (!mIsColorPickerActive) {
         DkViewPort::mouseReleaseEvent(event);
+        return;
+    }
+
+    QPoint p = mapToImage(event->position().toPoint());
+    if (p.x() < 0 || p.y() < 0)
+        return;
+
+    int colorIdx = mImgs[mActiveChannel].pixelIndex(p);
+    auto normedPos = (qreal)colorIdx / 255.0;
+    emit tFSliderAdded(normedPos);
 }
 
 void DkViewPortContrast::keyPressEvent(QKeyEvent *event)
