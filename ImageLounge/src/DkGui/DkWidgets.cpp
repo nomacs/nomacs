@@ -37,6 +37,7 @@
 #include "DkTimer.h"
 #include "DkToolbars.h"
 #include "DkUtils.h"
+#include "DkViewPort.h"
 
 #include <QAction>
 #include <QBoxLayout>
@@ -609,33 +610,29 @@ DkOverview::DkOverview(QWidget *parent)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
-void DkOverview::setImage(const QImage &img)
-{
-    // reset thumbnail; we don't updateThumb() yet as we won't always have our size() yet
-    mOriginalImage = img;
-    mOriginalImageSize = {};
-    mThumb = {};
-}
-
 bool DkOverview::updateThumb()
 {
-    if (mOriginalImage.isNull())
+    // get the image used in DkViewPort::draw() or else we may desync with view (manipulators, etc)
+    auto storage = mViewPort->getImageStorage();
+    if (!storage)
         return false;
 
-    mOriginalImageSize = mOriginalImage.size(); // retain image size as we release original below
+    QImage fullImage = storage->imageConst();
+    if (fullImage.isNull())
+        return false;
+
+    mOriginalImageSize = fullImage.size(); // retain size so we don't have to fetch the image on every paintEvent
     mImageToLocal = imageToLocal();
 
     // for best appearance, thumb is sized to draw 1:1 with screen pixels
-    QSize thumbSize = mImageToLocal.mapRect(mOriginalImage.rect()).size() * devicePixelRatioF();
+    QSize thumbSize = mImageToLocal.mapRect(fullImage.rect()).size() * devicePixelRatioF();
 
     // fast downscaling before smooth scaling (similar to AA technique)
-    mThumb = mOriginalImage.scaled(thumbSize.width() * 2,
-                                   thumbSize.height() * 2,
-                                   Qt::KeepAspectRatio,
-                                   Qt::FastTransformation);
+    mThumb = fullImage.scaled(thumbSize.width() * 2,
+                              thumbSize.height() * 2,
+                              Qt::KeepAspectRatio,
+                              Qt::FastTransformation);
     mThumb = mThumb.scaled(thumbSize.width(), thumbSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    mOriginalImage = {}; // might save memory (probably not as viewport holds a reference)
 
     return true;
 }
@@ -644,6 +641,9 @@ void DkOverview::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
 
+    if (!mViewPort)
+        return;
+
     if (mThumb.isNull() && !updateThumb())
         return;
 
@@ -651,7 +651,7 @@ void DkOverview::paintEvent(QPaintEvent *event)
     const QRectF thumbRect = mImageToLocal.mapRect(QRectF(QPointF(), mOriginalImageSize));
 
     // map visible region of the viewport
-    QRectF viewRect = viewPortToLocal().mapRect(mViewPortRect);
+    QRectF viewRect = viewPortToLocal().mapRect(mViewPort->geometry());
 
     // draw thumbnail
     QPainter painter(this);
@@ -674,18 +674,14 @@ void DkOverview::paintEvent(QPaintEvent *event)
 
 void DkOverview::moveImage(const QPointF &p1, const QPointF &p2)
 {
-    if (!mImageToWorld) {
-        qWarning() << "[overview] bad initialization"; // should be set by owner of overview
-        return;
-    }
-
-    // we are connected to DkViewPort::moveView() which expects world coordinates
-    // divide by devicePixelRatioF() since mImageToLocal is in physical pixels and mImageToWorld is in logical pixels
-    QTransform localToWorld = *mImageToWorld * mImageToLocal.inverted() * (1.0 / devicePixelRatioF());
+    // DkViewPort::moveView() requires world coordinates
+    // divide by devicePixelRatioF() since mImageToLocal is in physical pixels and imageToWorld is in logical pixels
+    QTransform imageToWorld = mViewPort->getImageMatrix();
+    QTransform localToWorld = imageToWorld * mImageToLocal.inverted() * (1.0 / devicePixelRatioF());
     QPointF w1 = localToWorld.map(p1);
     QPointF w2 = localToWorld.map(p2);
 
-    emit moveViewSignal(w1 - w2);
+    mViewPort->moveView(w1 - w2);
 }
 
 void DkOverview::mousePressEvent(QMouseEvent *event)
@@ -699,28 +695,35 @@ void DkOverview::mousePressEvent(QMouseEvent *event)
 
 void DkOverview::mouseReleaseEvent(QMouseEvent *event)
 {
+    if (!mViewPort)
+        return;
+
     // we already panned, do not jump to cursor location
     if (mMouseMoved)
         return;
 
     // jump to cursor; we need two points to send a delta x/y to viewport
-    QPointF currentCenter = viewPortToLocal().mapRect(mViewPortRect).center();
+    QPointF currentCenter = viewPortToLocal().mapRect(mViewPort->geometry()).center();
     QPointF newCenter = event->position();
 
     moveImage(currentCenter, newCenter);
 
     if (event->modifiers() == DkSettingsManager::param().global().altMod)
-        emit sendTransformSignal();
+        mViewPort->tcpSynchronize();
 }
 
 void DkOverview::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
-    mImageToLocal = imageToLocal(); // contentRect() changed, update transform
+    // contentRect() changed, update thumb
+    mThumb = {};
 }
 
 void DkOverview::mouseMoveEvent(QMouseEvent *event)
 {
+    if (!mViewPort)
+        return;
+
     if (event->buttons() != Qt::LeftButton)
         return;
 
@@ -731,18 +734,16 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event)
     mLastMousePos = cursorPos;
 
     if (event->modifiers() == DkSettingsManager::param().global().altMod)
-        emit sendTransformSignal();
+        mViewPort->tcpSynchronize();
 }
 
 QTransform DkOverview::viewPortToLocal() const
 {
-    if (!mWorldToViewPort || !mImageToWorld) {
-        qWarning() << "[overview] bad initialization"; // should be set by owner of overview
-        return {};
-    }
+    // multiply by devicePixelRatioF() since imageToWorld is in logical pixels and mImageToLocal is in physical pixels
+    QTransform worldToViewPort = mViewPort->getWorldMatrix();
+    QTransform imageToWorld = mViewPort->getImageMatrix();
 
-    // multiply by devicePixelRatioF() since mImageToWorld is in logical pixels and mImageToLocal is in physical pixels
-    QTransform mat = mWorldToViewPort->inverted() * mImageToWorld->inverted() * devicePixelRatioF() * mImageToLocal;
+    QTransform mat = worldToViewPort.inverted() * imageToWorld.inverted() * devicePixelRatioF() * mImageToLocal;
 
     return mat;
 }

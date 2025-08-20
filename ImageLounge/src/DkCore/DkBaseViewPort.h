@@ -85,10 +85,18 @@ public:
         mPanControl = panControl;
     };
 
-    virtual QTransform getWorldMatrix()
+    // world to viewport/widget transform
+    QTransform getWorldMatrix() const
     {
         return mWorldMatrix;
-    };
+    }
+
+    // image to world transform
+    QTransform getImageMatrix() const
+    {
+        return mImgMatrix;
+    }
+
     virtual QRect getMainGeometry()
     {
         return geometry();

@@ -58,11 +58,6 @@ public:
 
     void setFullScreen(bool fullScreen);
 
-    QTransform getWorldMatrix() override
-    {
-        return mWorldMatrix;
-    };
-
     QTransform *getWorldMatrixPtr()
     {
         return &mWorldMatrix;
