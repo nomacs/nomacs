@@ -53,6 +53,7 @@ class QVBoxLayout;
 namespace nmc
 {
 class DkCropToolBar;
+class DkViewPort;
 
 class DkButton : public QPushButton
 {
@@ -362,35 +363,25 @@ public:
     explicit DkOverview(QWidget *parent = nullptr);
     ~DkOverview() override = default;
 
-    // receive the full size/original image
-    void setImage(const QImage &img);
-
-    // viewport provides pointers to matrices
-    void setTransforms(QTransform *worldMatrix, QTransform *imgMatrix)
+    // get notified when the image in the viewport changes
+    void imageUpdated()
     {
-        mWorldToViewPort = worldMatrix;
-        mImageToWorld = imgMatrix;
+        mThumb = {};
     }
 
-    // receive DkViewPort geometry (also when it changes)
-    void setViewPortRect(const QRectF &viewPortRect)
+    // bind to viewport; viewport owns overview (via controller), so dangling pointer is not possible
+    void setViewPort(DkViewPort *viewPort)
     {
-        mViewPortRect = viewPortRect;
+        mViewPort = viewPort;
+        mThumb = {};
     }
-
-signals:
-    void moveViewSignal(const QPointF &dxy) const; // send viewport translation
-    void sendTransformSignal() const; // FIXME: shouldn't viewport send this??
 
 protected:
-    QImage mOriginalImage{};
+    DkViewPort *mViewPort{};
+
     QSize mOriginalImageSize{};
     QImage mThumb{};
-    const QTransform *mWorldToViewPort{}; // owned by viewport
-    const QTransform *mImageToWorld{}; // owned by viewport
     QTransform mImageToLocal{};
-
-    QRectF mViewPortRect; // DkViewPort::geometry()
 
     bool mMouseMoved = false; // true if we handled a drag
     QPointF mLastMousePos; // set on mouse move
@@ -401,13 +392,13 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 
-    // recompute thumbnail and transforms after setImage()
+    // recompute thumbnail and transforms after imageUpdated()
     bool updateThumb();
 
     QTransform viewPortToLocal() const;
     QTransform imageToLocal() const;
 
-    // move original image via moveViewSignal()
+    // move original image in the viewport
     void moveImage(const QPointF &p1, const QPointF &p2);
 };
 
