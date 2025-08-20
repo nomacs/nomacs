@@ -1839,6 +1839,10 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() == Qt::LeftButton) {
         QPolygonF p = mRect.getPoly();
 
+        // mRect is in logical coordinates, we want physical pixels for info display
+        const QTransform mat = mRtform * devicePixelRatioF();
+        p = mat.map(p);
+
         float sAngle = DkMath::getReadableAngle(mRect.getAngle() + angle);
         int height = qRound(DkVector(p[1] - p[0]).norm());
         int width = qRound(DkVector(p[3] - p[0]).norm());
@@ -1848,13 +1852,13 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event)
         QPoint tl;
 
         if (sAngle == 0.0f || fabs(sAngle) == 90.0f) {
-            tl = mRtform.map(mRect.getTopLeft()).toPoint();
+            tl = mat.map(mRect.getTopLeft()).toPoint();
             info += "x: ";
         } else {
             // Because we rotate around the center, there's no need to do rotation.
             // However, we need to check whether the center is tranlated.
             // Not sure why, but the tranlation is stored in mRtform in the above.
-            const QTransform transform{1, 0, 0, 1, mRtform.dx(), mRtform.dy()};
+            QTransform transform{mat.m11(), 0, 0, mat.m22(), mat.dx(), mat.dy()};
             tl = transform.map(mRect.getCenter()).toPoint();
             info += "center x: ";
         }
