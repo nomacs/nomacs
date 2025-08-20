@@ -106,7 +106,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
         setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     }
 
-    mController->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
+    mController->getOverview()->setViewPort(this);
     mController->getCropWidget()->setWorldTransform(&mWorldMatrix);
     mController->getCropWidget()->setImageTransform(&mImgMatrix);
     mController->getCropWidget()->setImageRect(&mImgViewRect);
@@ -320,8 +320,6 @@ void DkViewPort::setImage(QImage newImg)
     if (mManipulatorWatcher.isRunning())
         mManipulatorWatcher.cancel();
 
-    mController->getOverview()->setImage(QImage()); // clear overview
-
     bool wasImageLoaded = !mImgStorage.isEmpty();
     bool isImageLoaded = !newImg.isNull();
     mImgStorage.setImage(newImg);
@@ -356,7 +354,7 @@ void DkViewPort::setImage(QImage newImg)
     }
 
     mController->getPlayer()->startTimer();
-    mController->getOverview()->setImage(newImg); // TODO: maybe we could make use of the image pyramid here
+    mController->getOverview()->imageUpdated();
 
     mOldImgRect = mImgRect;
 
@@ -1167,7 +1165,7 @@ void DkViewPort::resizeEvent(QResizeEvent *event)
     centerImage();
     changeCursor();
 
-    mController->getOverview()->setViewPortRect(geometry());
+    // mController->getOverview()->setViewPortRect(geometry());
     mController->resize(width(), height());
 
     return QGraphicsView::resizeEvent(event);
