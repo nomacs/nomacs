@@ -2045,8 +2045,13 @@ void DkCropWidget::crop(bool cropToMetadata)
     if (!cropToolbar)
         return;
 
-    if (!mRect.isEmpty())
-        emit cropImageSignal(mRect, cropToolbar->getColor(), cropToMetadata);
+    if (!mRect.isEmpty()) {
+        QTransform mat = mRtform * devicePixelRatioF();
+        QPolygonF poly = mat.map(mRect.getPoly());
+        DkRotatingRect rect;
+        rect.setPoly(poly);
+        emit cropImageSignal(rect, cropToolbar->getColor(), cropToMetadata);
+    }
 
     setVisible(false);
     setWindowOpacity(0);
