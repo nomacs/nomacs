@@ -771,6 +771,14 @@ void DkTransferToolBar::paintEvent(QPaintEvent *event)
     QToolBar::paintEvent(event);
 }
 
+void DkTransferToolBar::pickColorCancelled()
+{
+    QAction *action = mToolBarActions[toolbar_pipette];
+    action->blockSignals(true);
+    action->setChecked(false);
+    action->blockSignals(false);
+}
+
 void DkTransferToolBar::updateGradientHistory()
 {
     mHistoryCombo->clear();

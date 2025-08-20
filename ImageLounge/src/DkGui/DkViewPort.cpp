@@ -2403,6 +2403,7 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(ttb, &DkTransferToolBar::channelChanged, this, &DkViewPortContrast::changeChannel);
     connect(ttb, &DkTransferToolBar::pickColorRequest, this, &DkViewPortContrast::pickColor);
     connect(ttb, &DkTransferToolBar::tFEnabled, this, &DkViewPortContrast::updateImage);
+    connect(this, &DkViewPortContrast::cancelPickColor, ttb, &DkTransferToolBar::pickColorCancelled);
     connect(this, &DkViewPortContrast::tFSliderAdded, ttb, &DkTransferToolBar::insertSlider);
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
@@ -2559,7 +2560,12 @@ void DkViewPortContrast::setImage(QImage newImg)
 void DkViewPortContrast::pickColor(bool enable)
 {
     mIsColorPickerActive = enable;
-    this->setCursor(Qt::CrossCursor);
+    if (enable) {
+        setCursor(Qt::CrossCursor);
+    } else {
+        unsetCursor();
+        emit cancelPickColor();
+    }
 }
 
 void DkViewPortContrast::updateImage(bool enable)
@@ -2572,6 +2578,7 @@ void DkViewPortContrast::updateImage(bool enable)
         mImgStorage.setImage(falseColorImg);
     } else if (imageContainer()) {
         mImgStorage.setImage(imageContainer()->image());
+        pickColor(false);
     }
 
     mController->getOverview()->imageUpdated();
@@ -2614,14 +2621,19 @@ void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event)
     emit tFSliderAdded(normedPos);
 }
 
+void DkViewPortContrast::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (!mIsColorPickerActive)
+        DkViewPort::mouseDoubleClickEvent(event);
+    else
+        event->accept();
+}
+
 void DkViewPortContrast::keyPressEvent(QKeyEvent *event)
 {
-    if ((event->key() == Qt::Key_Escape) && mIsColorPickerActive) {
-        unsetCursor();
-        mIsColorPickerActive = false;
-        update();
-        return;
-    } else
+    if (mIsColorPickerActive && (event->key() == Qt::Key_Escape))
+        pickColor(false);
+    else
         DkViewPort::keyPressEvent(event);
 }
 
