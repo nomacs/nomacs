@@ -280,29 +280,24 @@ public slots:
     void changeChannel(int channel);
     void changeColorTable(QGradientStops stops);
     void pickColor(bool enable);
-    void enableTF(bool enable);
-    QImage getImage() const override;
-
-    void setImage(QImage newImg) override;
+    void updateImage(bool enable);
 
 protected:
-    void draw(QPainter &painter, double opacity = 1.0) override;
+    QImage getImage() const override;
+    void setImage(QImage newImg) override;
+
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    QImage mFalseColorImg;
     bool mDrawFalseColorImg = false;
     bool mIsColorPickerActive = false;
     int mActiveChannel = 0;
 
     QVector<QImage> mImgs;
     QVector<QRgb> mColorTable;
-
-    // functions
-    void drawImageHistogram();
 };
 
 }
