@@ -189,6 +189,7 @@ signals:
 
 public slots:
     void paintEvent(QPaintEvent *event) override;
+    void pickColorCancelled();
     void insertSlider(qreal pos);
     void setImageMode(int mode);
     void saveGradient();
