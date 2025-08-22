@@ -3,7 +3,7 @@
 # this would be anything not under /usr/local or /opt
 FILE="$1"
 
-RPATHS=$(otool -l "$FILE" | grep -A2 LC_RPATH | grep " path " | cut -w -f3 | grep -vE "^(/usr/local|/opt)") || exit 1
+RPATHS=$(otool -l "$FILE" | grep -A2 LC_RPATH | grep " path " | /usr/bin/cut -w -f3 | grep -vE "^(/usr/local|/opt)") || exit 1
 
 LIB=$(basename "$FILE")
 ARGS=
