@@ -69,8 +69,8 @@ rename_imports()
   local DYLIB="$1"
   local libName="$(basename $DYLIB)"
   local DYLIB_DEPS=$(otool -l "$DYLIB" | grep -A2 LC_LOAD_DYLIB | grep " name " | \
-    grep -vE "/usr/lib|/System" | cut -w -f3)
-  local RPATHS=$(otool -l "$DYLIB" | grep -A2 LC_RPATH | grep " path " | cut -w -f3)
+    grep -vE "/usr/lib|/System" | /usr/bin/cut -w -f3)
+  local RPATHS=$(otool -l "$DYLIB" | grep -A2 LC_RPATH | grep " path " | /usr/bin/cut -w -f3)
 
   # build arguments for install_name_tool
 
@@ -128,10 +128,10 @@ process_exe()
   
   # copy .dylib files from the build directory /usr/local and /opt/homebrew, excluding plugins (handled separately)
   cat "$LIBS_USED" | grep -E "^dyld.*($PWD|/usr/local/|/opt/homebrew).*\.dylib" | \
-    grep -vE "/PlugIns|plugins/" | cut -w -f4 -f7 | while read -r LINE; do
+    grep -vE "/PlugIns|plugins/" | /usr/bin/cut -w -f4 -f7 | while read -r LINE; do
 
-    local import=$(echo $LINE | cut -w -f1)
-    local resolved=$(echo $LINE | cut -w -f2)
+    local import=$(echo $LINE | /usr/bin/cut -w -f1)
+    local resolved=$(echo $LINE | /usr/bin/cut -w -f2)
     local libName=$(basename $import)
     local resName=$(basename $resolved)
 
@@ -146,13 +146,13 @@ process_exe()
     fi
   done
 
-  cat "$LIBS_USED" | grep ^dyld | grep -E "(/usr/local/|/opt/).*\.framework.*" | cut -w -f4 -f7 | while read -r LINE; do
+  cat "$LIBS_USED" | grep ^dyld | grep -E "(/usr/local/|/opt/).*\.framework.*" | /usr/bin/cut -w -f4 -f7 | while read -r LINE; do
       #echo $LINE
       # resolve framework symlinks and get the .framework bundle path
-      local framework=$(echo $LINE | cut -w -f2)
-      local bundle=$(readlink -f $framework | cut -d/ -f1-8)
+      local framework=$(echo $LINE | /usr/bin/cut -w -f2)
+      local bundle=$(readlink -f $framework | /usr/bin/cut -d/ -f1-8)
       local dirName=$(basename $bundle)
-      local libName=$(echo $dirName | cut -d. -f1)
+      local libName=$(echo $dirName | /usr/bin/cut -d. -f1)
 
       if [ $framework -nt $LIBS_DST/$dirName ]; then
         rsync -auv --no-owner --no-group --exclude "Headers" --exclude "*.prl" $bundle $LIBS_DST/
@@ -170,7 +170,7 @@ test_exe()
   DYLD_PRINT_LIBRARIES_POST_LAUNCH=1 DYLD_PRINT_LIBRARIES=1 DYLD_PRINT_RPATHS=1 \
       DYLD_LIBRARY_PATH= $CMD > "$LIBS_PATCHED" 2>&1
 
-  local DYLIBS=$(cat "$LIBS_PATCHED" | grep ^dyld | grep -E "(/usr/local/|/opt)" | cut -w -f3)
+  local DYLIBS=$(cat "$LIBS_PATCHED" | grep ^dyld | grep -E "(/usr/local/|/opt)" | /usr/bin/cut -w -f3)
 
   local err=0
   for DYLIB in $DYLIBS; do
