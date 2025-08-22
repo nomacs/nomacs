@@ -156,10 +156,6 @@ public:
 
     // File list management
     void setFileList(const QStringList& files);
-    void setCurrentFile(const QString& filePath);
-    QStringList getFileList() const;
-    int getCurrentIndex() const;
-    int getFileCount() const;
 
 signals:
     void nextSignal();

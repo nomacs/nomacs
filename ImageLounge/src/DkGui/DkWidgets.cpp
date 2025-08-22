@@ -1398,33 +1398,6 @@ void DkPlayer::setFileList(const QStringList& files)
     mCurrentIndex = 0;
 }
 
-void DkPlayer::setCurrentFile(const QString& filePath)
-{
-    if (mFileList.isEmpty()) {
-        return;
-    }
-
-    int index = mFileList.indexOf(filePath);
-    if (index >= 0) {
-        mCurrentIndex = index;
-    }
-}
-
-QStringList DkPlayer::getFileList() const
-{
-    return mFileList;
-}
-
-int DkPlayer::getCurrentIndex() const
-{
-    return mCurrentIndex;
-}
-
-int DkPlayer::getFileCount() const
-{
-    return mFileList.size();
-}
-
 void DkPlayer::loadCurrentFile()
 {
     if (mCurrentIndex >= 0 && mCurrentIndex < mFileList.size()) {
