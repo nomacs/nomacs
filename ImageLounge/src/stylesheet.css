@@ -155,6 +155,11 @@ QPushButton#DkRestartButton:pressed {
 	background-color: HIGHLIGHT_LIGHT;
 }
 
+QPushButton#DkLockButton {
+    padding: 0px;
+    border: none;
+}
+
 QToolBar {
 	border-top: none;
 	border-bottom: 1px solid #cdcdcd;
