@@ -633,7 +633,7 @@ void DkPaintToolBar::createIcons()
     icons[apply_icon] = nmc::DkImage::loadIcon(":/nomacs/img/save.svg");
     icons[cancel_icon] = nmc::DkImage::loadIcon(":/nomacs/img/close.svg");
     icons[pan_icon] = nmc::DkImage::loadIcon(":/nomacs/img/pan.svg");
-    icons[pan_icon].addPixmap(nmc::DkImage::loadIcon(":/nomacs/img/pan-checked.svg"), QIcon::Normal, QIcon::On);
+    icons[pan_icon].addFile(":/nomacs/img/pan-checked.svg", QSize(), QIcon::Normal, QIcon::On);
     icons[undo_icon] = nmc::DkImage::loadIcon(":/nomacs/img/undo.svg");
 
     icons[pencil_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/pencil.svg");

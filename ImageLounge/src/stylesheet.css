@@ -73,6 +73,7 @@ nmc--DkBatchButtonsWidget QPushButton:checked {
 
 nmc--DkBatchButtonsWidget QPushButton {
 	border: none;
+    icon-size: 32px;
 }
 
 QPushButton#flatWhite {
@@ -119,6 +120,7 @@ QPushButton#DkPlayerButton {
 	margin: 0px;
   border: none;
 	background-color: HUD_BACKGROUND_COLOR;
+    icon-size: 38px;
 }
 
 QPushButton#hudNavigationButton:hover,
@@ -136,11 +138,13 @@ QPushButton#hudNavigationButton {
 
     min-height: 32px;
     max-height: 128px;
+    icon-size: 64px;
 }
 
 QPushButton#DkRestartButton {
 	border: none;
     padding: 8px;
+    icon-size: 32px;
 }
 
 QPushButton#DkRestartButton:hover{
@@ -428,6 +432,7 @@ nmc--DkBatchTabButton {
 	padding: 10px 20px;
 	text-align: left;
 	border: none;
+    icon-size: 22px;
 }
 
 nmc--DkBatchTabButton {
