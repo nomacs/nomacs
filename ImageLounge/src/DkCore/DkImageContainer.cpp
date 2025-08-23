@@ -268,8 +268,13 @@ QImage DkImageContainer::imageScaledToHeight(int height)
             return img;
     }
 
+    // Guard against null image to prevent Qt warnings
+    QImage img = image();
+    if (img.isNull())
+        return img;
+
     // cache it
-    QImage sImg = image().scaledToHeight(height, Qt::SmoothTransformation);
+    QImage sImg = img.scaledToHeight(height, Qt::SmoothTransformation);
     scaledImages << sImg;
 
     // clean up
