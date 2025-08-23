@@ -2383,28 +2383,19 @@ DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget *parent)
 void DkBatchButtonsWidget::createLayout()
 {
     // play - pause button
-    QSize s(32, 32);
-    QIcon icon;
-    QPixmap pm(DkImage::loadIcon(":/nomacs/img/play.svg", QColor(255, 255, 255), s));
-    icon.addPixmap(pm, QIcon::Normal, QIcon::Off);
-    pm = DkImage::loadIcon(":/nomacs/img/stop.svg", QColor(255, 255, 255), s);
-    icon.addPixmap(pm, QIcon::Normal, QIcon::On);
+    QIcon icon = DkImage::loadIcon(":/nomacs/img/play.svg", Qt::white);
+    icon.addFile(":/nomacs/img/stop.svg", QSize(), QIcon::Normal, QIcon::On);
 
     mPlayButton = new QPushButton(icon, "", this);
-    mPlayButton->setIconSize(pm.size());
     mPlayButton->setCheckable(true);
     mPlayButton->setFlat(true);
     mPlayButton->setShortcut(Qt::ALT | Qt::Key_Return);
     mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
 
-    icon = QIcon();
-    pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", QColor(255, 255, 255), s));
-    icon.addPixmap(pm, QIcon::Normal, QIcon::On);
-    pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", QColor(100, 100, 100), s));
-    icon.addPixmap(pm, QIcon::Disabled, QIcon::On);
+    icon = DkImage::loadIcon(":/nomacs/img/bars.svg", Qt::white);
+    icon.addFile(":/nomacs/img/bars.svg", QSize(), QIcon::Disabled, QIcon::On);
 
     mLogButton = new QPushButton(icon, "", this);
-    mLogButton->setIconSize(pm.size());
     mLogButton->setFlat(true);
     mLogButton->setEnabled(false);
 
@@ -2460,20 +2451,18 @@ void DkBatchInfoWidget::setInfo(const QString &message, const InfoMode &mode)
         show();
 
     QPixmap pm;
+    QString iconFile;
     switch (mode) {
     case info_warning:
-        pm = QIcon(":/nomacs/img/warning.svg").pixmap(24);
-        break;
     case info_critical:
-        pm = QIcon(":/nomacs/img/warning.svg").pixmap(24);
+        iconFile = ":/nomacs/img/warning.svg";
         break;
-    default:
-        pm = QIcon(":/nomacs/img/info.svg").pixmap(24);
+    case info_message:
+    case info_end:
+        iconFile = ":/nomacs/img/info.svg";
         break;
     }
-    pm = DkImage::colorizePixmap(pm, QColor(255, 255, 255));
-    mIcon->setPixmap(pm);
-
+    mIcon->setPixmap(DkImage::loadIcon(iconFile).pixmap(24));
     mInfo->setText(message);
 }
 

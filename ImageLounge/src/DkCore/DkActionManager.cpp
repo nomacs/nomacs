@@ -956,11 +956,8 @@ void DkActionManager::createIcons()
     mFileIcons[icon_file_dir_large] = QIcon(":/nomacs/img/dir.svg");
     mFileIcons[icon_file_prev] = DkImage::loadIcon(":/nomacs/img/previous.svg");
     mFileIcons[icon_file_next] = DkImage::loadIcon(":/nomacs/img/next.svg");
-    mFileIcons[icon_file_filter] = DkImage::loadIcon();
-    mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/filter.svg"), QIcon::Normal, QIcon::On);
-    mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/filter-disabled.svg"),
-                                           QIcon::Normal,
-                                           QIcon::Off);
+    mFileIcons[icon_file_filter] = DkImage::loadIcon(":/nomacs/img/filter-disabled.svg");
+    mFileIcons[icon_file_filter].addFile(":/nomacs/img/filter.svg", QSize(), QIcon::Normal, QIcon::On);
     mFileIcons[icon_file_find] = DkImage::loadIcon(":/nomacs/img/find.svg");
 
     mEditIcons.resize(icon_edit_end);
@@ -983,9 +980,8 @@ void DkActionManager::createIcons()
     mViewIcons[icon_view_zoom_in] = DkImage::loadIcon(":/nomacs/img/zoom-in.svg");
     mViewIcons[icon_view_zoom_out] = DkImage::loadIcon(":/nomacs/img/zoom-out.svg");
 
-    mViewIcons[icon_view_movie_play] = DkImage::loadIcon(":/nomacs/img/play.svg");
-    mViewIcons[icon_view_movie_play].addPixmap(DkImage::loadIcon(":/nomacs/img/play.svg"), QIcon::Normal, QIcon::On);
-    mViewIcons[icon_view_movie_play].addPixmap(DkImage::loadIcon(":/nomacs/img/pause.svg"), QIcon::Normal, QIcon::Off);
+    mViewIcons[icon_view_movie_play] = DkImage::loadIcon(":/nomacs/img/pause.svg");
+    mViewIcons[icon_view_movie_play].addFile(":/nomacs/img/play.svg", QSize(), QIcon::Normal, QIcon::On);
     mViewIcons[icon_view_movie_prev] = DkImage::loadIcon(":/nomacs/img/previous.svg");
     mViewIcons[icon_view_movie_next] = DkImage::loadIcon(":/nomacs/img/next.svg");
 }

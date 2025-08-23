@@ -1004,12 +1004,8 @@ void DkRatingLabel::updateRating()
 
 void DkRatingLabel::init()
 {
-    QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg",
-                                       QSize(),
-                                       DkSettingsManager::param().display().hudFgdColor);
-    QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg",
-                                        QSize(),
-                                        DkSettingsManager::param().display().hudFgdColor);
+    QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg", DkSettingsManager::param().display().hudFgdColor);
+    QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg", DkSettingsManager::param().display().hudFgdColor);
 
     DkActionManager &am = DkActionManager::instance();
 
@@ -1193,21 +1189,19 @@ void DkPlayer::createLayout()
     int height = 50;
     QSize ih(height - 12, height - 12);
 
-    previousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous.svg", ih, Qt::white), "", this);
+    QColor iconColor = DkSettingsManager::param().display().hudFgdColor;
+    previousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous.svg", iconColor), "", this);
     // previousButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    previousButton->setIconSize(ih);
     previousButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     previousButton->setToolTip(tr("Show previous image"));
     previousButton->setObjectName("DkPlayerButton");
     previousButton->setFlat(true);
     connect(previousButton, &QPushButton::pressed, this, &DkPlayer::previous);
 
-    QIcon icon;
-    icon.addPixmap(DkImage::loadIcon(":/nomacs/img/pause.svg", ih, Qt::white), QIcon::Normal, QIcon::On);
-    icon.addPixmap(DkImage::loadIcon(":/nomacs/img/play.svg", ih, Qt::white), QIcon::Normal, QIcon::Off);
+    QIcon icon = DkImage::loadIcon(":/nomacs/img/play.svg", iconColor);
+    icon.addFile(":/nomacs/img/pause.svg", QSize(), QIcon::Normal, QIcon::On);
     playButton = new QPushButton(icon, "", this);
     // playButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    playButton->setIconSize(ih);
     playButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     playButton->setToolTip(tr("Play/Pause"));
     playButton->setObjectName("DkPlayerButton");
@@ -1217,9 +1211,8 @@ void DkPlayer::createLayout()
     playButton->addAction(DkActionManager::instance().action(DkActionManager::menu_view_slideshow));
     connect(playButton, &QPushButton::clicked, this, &DkPlayer::play);
 
-    nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", ih, Qt::white), "", this);
+    nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", iconColor), "", this);
     // nextButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    nextButton->setIconSize(ih);
     nextButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     nextButton->setToolTip(tr("Show next image"));
     nextButton->setObjectName("DkPlayerButton");
@@ -1347,22 +1340,17 @@ DkHudNavigation::DkHudNavigation(QWidget *parent)
 void DkHudNavigation::createLayout()
 {
     // previous/next buttons
-    QSize s(64, 64);
-    QColor c(0, 0, 0);
-    c.setAlpha(0);
-
-    mPreviousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous-hud.svg", s, c), "", this);
+    QColor iconColor = DkSettingsManager::param().display().hudFgdColor;
+    mPreviousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous-hud.svg", iconColor), "", this);
     mPreviousButton->setObjectName("hudNavigationButton");
     mPreviousButton->setToolTip(tr("Show previous image"));
     mPreviousButton->setFlat(true);
-    mPreviousButton->setIconSize(s);
     connect(mPreviousButton, &QPushButton::pressed, this, &DkHudNavigation::previousSignal);
 
-    mNextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next-hud.svg", s, c), "", this);
+    mNextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next-hud.svg", iconColor), "", this);
     mNextButton->setObjectName("hudNavigationButton");
     mNextButton->setToolTip(tr("Show next image"));
     mNextButton->setFlat(true);
-    mNextButton->setIconSize(s);
     connect(mNextButton, &QPushButton::pressed, this, &DkHudNavigation::nextSignal);
 
     auto *l = new QHBoxLayout(this);
@@ -1469,7 +1457,7 @@ DkEditableRect::DkEditableRect(const QRectF &rect, QWidget *parent, Qt::WindowFl
     : DkFadeWidget(parent, f)
 {
     mRect = rect;
-    mRotatingCursor = QCursor(DkImage::loadFromSvg(":/nomacs/img/rotating-cursor.svg", QSize(24, 24)));
+    mRotatingCursor = QCursor(DkImage::loadIcon(":/nomacs/img/rotating-cursor.svg").pixmap(24));
 
     setAttribute(Qt::WA_MouseTracking);
 
@@ -2878,11 +2866,7 @@ DkTabEntryWidget::DkTabEntryWidget(const QIcon &icon, const QString &text, QWidg
     : QPushButton(text, parent)
 {
     setObjectName("DkTabEntryWidget");
-
-    QPixmap pm = DkImage::colorizePixmap(icon.pixmap(100), QColor(255, 255, 255));
-    setIcon(pm);
-    setIconSize(pm.size());
-
+    setIcon(DkImage::loadIcon(icon.name(), Qt::white));
     setFlat(true);
     setCheckable(true);
 }
