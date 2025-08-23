@@ -115,12 +115,9 @@ QRadioButton::indicator:pressed {
     background-color: rgba(0,0,0,130);
 }
 
-/* NOTE: Qt 5.15.3 / ubuntu 22.04 segfaults if we use this */
-/* nomacs-if-qt-gt-5,15,3 */
-QDialog QPushButton {
-    icon: none;
+QDialogButtonBox {
+    dialogbuttonbox-buttons-have-icons: 0;
 }
-/* nomacs-endif */
 
 QHeaderView,
 QHeaderView::section {
