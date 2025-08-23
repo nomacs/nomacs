@@ -1208,14 +1208,13 @@ void DkCommentWidget::createLayout()
     mDiscardButton = new QPushButton(this);
     mDiscardButton->setFlat(true);
     mDiscardButton->setIcon(
-        DkImage::loadIcon(":/nomacs/img/trash.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
+        DkImage::loadIcon(":/nomacs/img/trash.svg", DkSettingsManager::param().display().hudFgdColor));
     mDiscardButton->setToolTip(tr("Discard Changes (ESC)"));
     connect(mDiscardButton, &QPushButton::clicked, mDiscardAction, &QAction::trigger);
 
     mSaveButton = new QPushButton(this);
     mSaveButton->setFlat(true);
-    mSaveButton->setIcon(
-        DkImage::loadIcon(":/nomacs/img/save.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
+    mSaveButton->setIcon(DkImage::loadIcon(":/nomacs/img/save.svg", DkSettingsManager::param().display().hudFgdColor));
     mSaveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
     connect(mSaveButton, &QPushButton::clicked, mSaveAction, &QAction::trigger);
 

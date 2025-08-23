@@ -34,8 +34,10 @@
 #include "DkTimer.h"
 
 #include <QColorSpace>
+#include <QIconEngine>
 #include <QPainter>
 #include <QPixmap>
+#include <QPixmapCache>
 #include <QSvgRenderer>
 #include <QtConcurrentRun>
 #include <qmath.h>
@@ -1209,6 +1211,106 @@ QPixmap DkImage::loadFromSvg(const QString &filePath, const QSize &size)
     svg->render(&p);
 
     return pm;
+}
+
+class DkSvgIconEngine : public QIconEngine
+{
+public:
+    DkSvgIconEngine(const QString &filePath, const QColor &color)
+        : mColor(color)
+    {
+        static_assert(QIcon::State::Off + QIcon::State::On == 1);
+        mFiles.resize(2); // On/Off state only; 0 or 1
+        mFiles[QIcon::State::Off] = filePath;
+    }
+
+private:
+    DkSvgIconEngine() = default;
+
+    QString iconName() override
+    {
+        // return the default icon file path via QIcon::name()
+        return mFiles[QIcon::State::Off];
+    }
+
+    void addFile(const QString &fileName, const QSize &size, QIcon::Mode mode, QIcon::State state) override
+    {
+        Q_UNUSED(size) // not supported; we always render the requested size
+        Q_UNUSED(mode) // not supported; modes besides normal are automagically generated
+        mFiles[state & 1] = fileName;
+    }
+
+    void paint(QPainter *painter, const QRect &bounds, QIcon::Mode mode, QIcon::State state) override
+    {
+        QPixmap pix = pixmap(bounds.size(), mode, state);
+        painter->drawPixmap(bounds, pix);
+    }
+
+    QPixmap pixmap(const QSize &size, QIcon::Mode mode, QIcon::State state) override
+    {
+        //  we don't support these modes yet, so don't render or cache them
+        if (mode == QIcon::Mode::Active || mode == QIcon::Mode::Selected)
+            mode = QIcon::Mode::Normal;
+
+        // we could have two svg files via addFile, select the right one
+        // if we don't have the requested file, fallback to normal/off (the default)
+        QString filePath = mFiles[state & 1];
+        if (filePath.isEmpty())
+            filePath = mFiles[QIcon::State::Off];
+        if (filePath.isEmpty())
+            return {};
+
+        QColor color = mColor;
+        if (!mColor.isValid())
+            color = DkSettingsManager::param().display().iconColor;
+        if (mode == QIcon::Mode::Disabled)
+            color = Qt::gray; // TODO: pull from theme
+
+        QString key = QStringLiteral("icon.%1.%2.%3.%4.%5.%6")
+                          .arg(filePath)
+                          .arg(color.name())
+                          .arg(size.width())
+                          .arg(size.height())
+                          .arg(mode)
+                          .arg(state);
+
+        QPixmap pix;
+        if (QPixmapCache::find(key, &pix))
+            return pix;
+
+        pix = QPixmap(size);
+        pix.fill(Qt::transparent);
+
+        {
+            QPainter painter(&pix);
+            QSvgRenderer(filePath).render(&painter, pix.rect());
+
+            painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+            painter.fillRect(pix.rect(), color);
+        }
+
+        QPixmapCache::insert(key, pix);
+
+        // qDebug() << "rendered" << mode << state << size << pix << filePath;
+        return pix;
+    }
+
+    QIconEngine *clone() const override
+    {
+        auto *copy = new DkSvgIconEngine;
+        copy->mFiles = mFiles;
+        copy->mColor = mColor;
+        return copy;
+    }
+
+    QStringList mFiles;
+
+    QColor mColor;
+};
+
+QIcon DkImage::loadIcon(const QString &filePath, const QColor &color)
+{
+    return QIcon(new DkSvgIconEngine(filePath, color));
 }
 
 #ifdef WITH_OPENCV

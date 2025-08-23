@@ -862,30 +862,10 @@ void DkCropToolBar::createIcons()
     mIcons[crop_icon] = DkImage::loadIcon(":/nomacs/img/crop.svg");
     mIcons[cancel_icon] = DkImage::loadIcon(":/nomacs/img/close.svg");
     mIcons[pan_icon] = DkImage::loadIcon(":/nomacs/img/pan.svg");
-    mIcons[pan_icon].addPixmap(DkImage::loadIcon(":/nomacs/img/pan-checked.svg"), QIcon::Normal, QIcon::On);
+    mIcons[pan_icon].addFile(":/nomacs/img/pan-checked.svg", QSize(), QIcon::Normal, QIcon::On);
     mIcons[invert_icon] = DkImage::loadIcon(":/nomacs/img/crop-invert.svg");
-    mIcons[invert_icon].addPixmap(DkImage::loadIcon(":/nomacs/img/crop-invert-checked.svg"), QIcon::Normal, QIcon::On);
+    mIcons[invert_icon].addFile(":/nomacs/img/crop-invert-checked.svg", QSize(), QIcon::Normal, QIcon::On);
     mIcons[info_icon] = DkImage::loadIcon(":/nomacs/img/info.svg");
-
-    if (!DkSettingsManager::param().display().defaultIconColor) {
-        // now colorize all icons
-        for (int idx = 0; idx < mIcons.size(); idx++) {
-            mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param()
-                                                                                 .effectiveIconSize(this),
-                                                                             QIcon::Normal,
-                                                                             QIcon::On),
-                                                          DkSettingsManager::param().display().iconColor),
-                                  QIcon::Normal,
-                                  QIcon::On);
-            mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param()
-                                                                                 .effectiveIconSize(this),
-                                                                             QIcon::Normal,
-                                                                             QIcon::Off),
-                                                          DkSettingsManager::param().display().iconColor),
-                                  QIcon::Normal,
-                                  QIcon::Off);
-        }
-    }
 }
 
 void DkCropToolBar::createLayout()

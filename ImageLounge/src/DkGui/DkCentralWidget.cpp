@@ -522,45 +522,43 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
     auto *pw = new DkPreferenceWidget(this);
     connect(pw, &DkPreferenceWidget::restartSignal, this, &DkCentralWidget::restart, Qt::UniqueConnection);
 
-    QSize s(22, 22);
-
     // general preferences
-    auto *tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg", s), tr("General"), this);
+    auto *tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg"), tr("General"), this);
     auto *gp = new DkGeneralPreference(this);
     connect(gp, &DkGeneralPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(gp);
     pw->addTabWidget(tab);
 
     // display preferences
-    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display.svg", s), tr("Display"), this);
+    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display.svg"), tr("Display"), this);
     auto *dp = new DkDisplayPreference(this);
     connect(dp, &DkDisplayPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(dp);
     pw->addTabWidget(tab);
 
     // file preferences
-    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/dir.svg", s), tr("File"), this);
+    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/dir.svg"), tr("File"), this);
     auto *fp = new DkFilePreference(this);
     connect(fp, &DkFilePreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(fp);
     pw->addTabWidget(tab);
 
     // file association preferences
-    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", s), tr("File Associations"), this);
+    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg"), tr("File Associations"), this);
     auto *fap = new DkFileAssociationsPreference(this);
     connect(fap, &DkFileAssociationsPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(fap);
     pw->addTabWidget(tab);
 
     // advanced preferences
-    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/advanced-settings.svg", s), tr("Advanced"), this);
+    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/advanced-settings.svg"), tr("Advanced"), this);
     auto *ap = new DkAdvancedPreference(this);
     connect(ap, &DkAdvancedPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(ap);
     pw->addTabWidget(tab);
 
     // file association preferences
-    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/sliders.svg", s), tr("Editor"), this);
+    tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/sliders.svg"), tr("Editor"), this);
     auto *ep = new DkEditorPreference(this);
     connect(ep, &DkEditorPreference::infoSignal, tab, &DkPreferenceTabWidget::setInfoMessage);
     tab->setWidget(ep);

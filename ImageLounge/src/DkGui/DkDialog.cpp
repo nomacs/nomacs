@@ -1497,7 +1497,7 @@ DkShortcutDelegate::DkShortcutDelegate(QObject *parent)
     : QItemDelegate(parent)
 {
     mItem = nullptr;
-    mClearPm = DkImage::loadIcon(":/nomacs/img/close.svg");
+    mClearIcon = DkImage::loadIcon(":/nomacs/img/close.svg");
 }
 
 QWidget *DkShortcutDelegate::createEditor(QWidget *parent,
@@ -1572,7 +1572,7 @@ void DkShortcutDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         int pad = r.height() * 0.1;
         int size = r.height() - pad * 2;
         QRect pmr(r.right() - size - pad, r.top() + pad, size, size);
-        painter->drawPixmap(pmr, mClearPm);
+        painter->drawPixmap(pmr, mClearIcon.pixmap(pmr.size()));
     }
 }
 

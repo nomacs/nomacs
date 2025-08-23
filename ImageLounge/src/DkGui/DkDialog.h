@@ -406,7 +406,7 @@ protected:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     void *mItem;
 
-    QPixmap mClearPm;
+    QIcon mClearIcon;
 };
 
 class DkShortcutsModel : public QAbstractItemModel
