@@ -58,7 +58,6 @@ namespace nmc
 class DkBaseViewPort;
 class TreeItem;
 class DkSlider;
-class DkButton;
 class DkAppManager;
 class DkDisplayWidget;
 class DkCentralWidget;
@@ -345,13 +344,13 @@ protected:
     // resize gui:
     QDoubleSpinBox *mWPixelSpin = nullptr;
     QDoubleSpinBox *mHPixelSpin = nullptr;
-    DkButton *mLockButton = nullptr;
+    QPushButton *mLockButton = nullptr;
 
     QDoubleSpinBox *mWidthSpin = nullptr;
     QDoubleSpinBox *mHeightSpin = nullptr;
     QComboBox *mUnitBox = nullptr;
     QComboBox *mSizeBox = nullptr;
-    DkButton *mLockButtonDim = nullptr;
+    QPushButton *mLockButtonDim = nullptr;
 
     QDoubleSpinBox *mResolutionSpin = nullptr;
     QComboBox *mResUnitBox = nullptr;
