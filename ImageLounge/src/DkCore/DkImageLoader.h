@@ -67,8 +67,8 @@ public:
     QStringList getFileNames() const;
 
     QVector<QSharedPointer<DkImageContainerT>> getImages();
-    QSharedPointer<DkImageContainerT> setImage(const QImage &img, const QString &editName);
-    QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
+    void setImage(const QImage &img, const QString &editName);
+    void setImage(QSharedPointer<DkImageContainerT> img);
     void setImageUpdated();
     void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
     void sort();
@@ -134,7 +134,14 @@ public slots:
     void imageLoaded(bool loaded = false);
     void imageSaved(const QString &file, bool saved = true, bool loadToTab = true);
     void imagesSorted();
-    bool unloadFile();
+
+    /**
+     * promptSaveBeforeUnload checks whether the image has been edited,
+     * and asks whether the user want to save or discard the changes.
+     * Returns true if succeeded.
+     * Returns false if the user canceled the operation.
+     * */
+    bool promptSaveBeforeUnload();
     void reloadImage();
     void showOnMap();
 
