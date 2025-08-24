@@ -417,103 +417,78 @@ void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-void DkPaintViewPort::paintEvent(QPaintEvent *event)
+void DkPaintViewPort::drawPaths(QPainter &painter, nmc::DkBaseViewPort *viewport, bool toImage) const
 {
-    QPainter painter(this);
-
-    if (mWorldMatrix)
-        painter.setWorldTransform(
-            (*mImgMatrix)
-            * (*mWorldMatrix)); // >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
-
     for (int idx = 0; idx < paths.size(); idx++) {
         painter.setPen(pathsPen.at(idx));
         if (pathsMode.at(idx) == mode_arrow) {
             painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
             painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
-        }
-        // else if(pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
-        else if (pathsMode.at(idx) == mode_square_fill)
+        } else if (pathsMode.at(idx) == mode_square_fill)
             painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
         else if (pathsMode.at(idx) == mode_text) {
             painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
-            // painter.setPen(QPen(QBrush(QColor(0,0,0,180)),1,Qt::DashLine));
-            // painter.setBrush(QBrush(QColor(255,255,255,120)));
-            // painter.drawRect(paths.at(idx).boundingRect());
-            // painter.setPen(pathsPen.at(idx));
-            QPointF p = paths.at(idx).boundingRect().bottomRight();
-            if ((idx == paths.size() - 1) && (textinputenable)) {
+            if (!toImage && (idx == paths.size() - 1) && (textinputenable)) {
+                QPointF p = paths.at(idx).boundingRect().bottomRight();
                 painter.setPen(QPen(QBrush(QColor(0, 0, 0, 180)), pathsPen.at(idx).width(), Qt::DotLine));
                 if (sbuffer.isEmpty())
                     painter.drawLine(QLineF(begin, begin - QPoint(0, pathsPen.at(idx).width() * 10)));
                 else
                     painter.drawLine(QLineF(p, p - QPoint(0, pathsPen.at(idx).width() * 10)));
             }
-            // painter.drawPoint(paths.at(idx).boundingRect().bottomRight());
         } else if (pathsMode.at(idx) == mode_blur) {
-            if (parent()) {
-                auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
-                QImage img = viewport->getImage();
-                qreal dpr = viewport->devicePixelRatioF();
-                QTransform tx = QTransform::fromScale(dpr, dpr);
-                QRectF rect = tx.map(paths.at(idx)).boundingRect();
-                painter.save();
-                painter.scale(1.0 / dpr, 1.0 / dpr);
-                getBlur(rect, &painter, img, pathsPen.at(idx).width());
-                painter.restore();
-            }
-        } else
+            QImage img = viewport->getImage();
+            qreal dpr = viewport->devicePixelRatioF();
+            QTransform tx = QTransform::fromScale(dpr, dpr);
+            QRectF rect = tx.map(paths.at(idx)).boundingRect();
+            painter.save();
+            painter.scale(1.0 / dpr, 1.0 / dpr);
+            getBlur(rect, &painter, img, pathsPen.at(idx).width());
+            painter.restore();
+        } else {
             painter.drawPath(paths.at(idx));
+        }
     }
+}
 
-    painter.end();
+void DkPaintViewPort::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
 
-    DkPluginViewPort::paintEvent(event);
+    auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+    if (!viewport)
+        return;
+
+    QPainter painter(this);
+
+    // path coordinates are in logical image pixels, so use the Image->Viewport transform
+    if (mWorldMatrix && mImgMatrix)
+        painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));
+
+    drawPaths(painter, viewport, false);
 }
 
 QImage DkPaintViewPort::getPaintedImage()
 {
-    if (parent()) {
-        auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
-        if (viewport) {
-            if (!paths.isEmpty()) { // if nothing is drawn there is no need to change the image
+    auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+    if (!viewport)
+        return {};
+    if (paths.empty())
+        return {};
 
-                QImage img = viewport->getImage();
+    QImage img = viewport->getImage();
 
-                QPainter painter(&img);
+    QPainter painter(&img);
+    painter.setRenderHint(QPainter::Antialiasing);
 
-                // paths are in logical pixels, convert to physical/image pixels
-                qreal dpr = viewport->devicePixelRatioF();
-                painter.scale(dpr, dpr);
+    // paths are in logical pixels, convert to physical/image pixels
+    qreal dpr = viewport->devicePixelRatioF();
+    painter.scale(dpr, dpr);
 
-                painter.setRenderHint(QPainter::Antialiasing);
+    drawPaths(painter, viewport, true);
+    painter.end();
 
-                for (int idx = 0; idx < paths.size(); idx++) {
-                    painter.setPen(pathsPen.at(idx));
-                    if (pathsMode.at(idx) == mode_arrow) {
-                        painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()),
-                                         QBrush(pathsPen.at(idx).color()));
-                        painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
-                    } else if (pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
-                        painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
-                    else if (pathsMode.at(idx) == mode_blur) {
-                        QTransform mat = QTransform::fromScale(dpr, dpr);
-                        QRectF rect = mat.map(paths.at(idx)).boundingRect();
-                        painter.save();
-                        painter.scale(1.0 / dpr, 1.0 / dpr);
-                        getBlur(rect, &painter, img, pathsPen.at(idx).width());
-                        painter.restore();
-                    } else
-                        painter.drawPath(paths.at(idx));
-                }
-                painter.end();
-
-                return img;
-            }
-        }
-    }
-
-    return QImage();
+    return img;
 }
 
 void DkPaintViewPort::setMode(int mode)
