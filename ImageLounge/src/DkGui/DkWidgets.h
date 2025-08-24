@@ -156,6 +156,7 @@ public:
 
     // File list management
     void setFileList(const QStringList& files);
+    void clearFileList();
 
 signals:
     void nextSignal();
