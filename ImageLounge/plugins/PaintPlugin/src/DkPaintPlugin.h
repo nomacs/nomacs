@@ -88,10 +88,9 @@ public:
 
     void setVisible(bool visible) override;
 
-    DkPaintViewPort *getPaintViewPort();
-
 protected:
-    nmc::DkPluginViewPort *mViewPort;
+    DkPaintViewPort *mViewPort;
+    DkPaintToolBar *mToolBar;
 };
 
 class DkPaintViewPort : public nmc::DkPluginViewPort
@@ -116,16 +115,13 @@ public slots:
     void setPanning(bool checked);
     void applyChangesAndClose();
     void discardChangesAndClose();
-    void setVisible(bool visible) override;
     void undoLastPaint();
-
-signals:
-    void editShowSignal(bool show);
-
-protected slots:
     void setMode(int mode);
     void textChange(const QString &text);
     void textEditFinsh();
+
+signals:
+    void editShowSignal(bool show);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -156,7 +152,6 @@ protected:
     bool mMouseDown; // true if mouse button is down
     QPointF mLastMousePos; // last mouse position in viewport coordinates
 
-    DkPaintToolBar *mPaintToolbar;
     QCursor mCurrentCursor; // cursor for the current mode/tool
 };
 
@@ -192,7 +187,6 @@ public:
 public slots:
     void choosePenColor();
     void showLineEdit(bool show);
-    void setVisible(bool visible) override;
 
 signals:
     void applySignal();
