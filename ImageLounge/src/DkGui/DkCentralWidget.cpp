@@ -1048,12 +1048,7 @@ void DkCentralWidget::startSlideshowWithFiles(const QStringList& files) const
         // Set the file list in the player
         getViewPort()->getController()->getPlayer()->setFileList(files);
 
-        // Load the first file if we have files
-        if (!files.isEmpty()) {
-            getViewPort()->loadFile(files[0]);
-        }
-
-        // Start the slideshow
+        // Start the slideshow (first file is already loaded by main.cpp)
         getViewPort()->getController()->startSlideshow(true);
     }
 }

@@ -329,39 +329,43 @@ int main(int argc, char *argv[])
 
     nmc::DkCentralWidget *cw = w->getTabWidget();
 
-    bool loading = false;
-
-    for (auto &filePath : parser.positionalArguments()) {
-        if (filePath.isEmpty())
-            continue;
-
-        if (loading)
-            cw->loadToTab(filePath);
-        else
-            cw->load(filePath);
-
-        loading = true;
-    }
-
-    // load recent files if there is nothing to display
-    if (!loading && nmc::DkSettingsManager::param().app().showRecentFiles)
-        w->showRecentFilesOnStartUp();
-
-    if (w->isFullScreen())
-        w->enterFullScreen();
-
     // Handle slideshow with file list support
     if (parser.isSet(slideshowOpt)) {
         QStringList slideshowFiles = parser.positionalArguments();
 
         if (!slideshowFiles.isEmpty()) {
             // File list mode: use the provided files for slideshow
+            // First ensure we have a proper viewport and tab setup by loading the first file normally
+            cw->load(slideshowFiles[0]);
+            // Then start slideshow with the full file list
             cw->startSlideshowWithFiles(slideshowFiles);
         } else {
             // Directory mode: use current directory for slideshow
             cw->startSlideshow();
         }
+    } else {
+        // Normal mode: load files into tabs
+        bool loading = false;
+
+        for (auto &filePath : parser.positionalArguments()) {
+            if (filePath.isEmpty())
+                continue;
+
+            if (loading)
+                cw->loadToTab(filePath);
+            else
+                cw->load(filePath);
+
+            loading = true;
+        }
+
+        // load recent files if there is nothing to display
+        if (!loading && nmc::DkSettingsManager::param().app().showRecentFiles)
+            w->showRecentFilesOnStartUp();
     }
+
+    if (w->isFullScreen())
+        w->enterFullScreen();
 
     if (cw->hasViewPort())
         cw->getViewPort()->setFocus(Qt::TabFocusReason);
