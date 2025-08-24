@@ -38,6 +38,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
 #include <QObject>
@@ -334,11 +335,33 @@ int main(int argc, char *argv[])
         QStringList slideshowFiles = parser.positionalArguments();
 
         if (!slideshowFiles.isEmpty()) {
-            // File list mode: use the provided files for slideshow
-            // First ensure we have a proper viewport and tab setup by loading the first file normally
-            cw->load(slideshowFiles[0]);
-            // Then start slideshow with the full file list
-            cw->startSlideshowWithFiles(slideshowFiles);
+            // Expand directories into file lists and collect all image files
+            QStringList allImageFiles;
+            for (const QString &path : slideshowFiles) {
+                nmc::DkFileInfo fileInfo(path);
+                if (fileInfo.isDir()) {
+                    // Directory: expand to image files
+                    QDir dir(path);
+                    QStringList filters = nmc::DkSettingsManager::param().app().fileFilters;
+                    QStringList imageFiles = dir.entryList(filters, QDir::Files, QDir::Name);
+                    for (const QString &imageFile : imageFiles) {
+                        allImageFiles.append(dir.filePath(imageFile));
+                    }
+                } else {
+                    // Single file: add directly
+                    allImageFiles.append(path);
+                }
+            }
+
+            if (!allImageFiles.isEmpty()) {
+                // First ensure we have a proper viewport and tab setup by loading the first file normally
+                cw->load(allImageFiles[0]);
+                // Then start slideshow with the expanded file list
+                cw->startSlideshowWithFiles(allImageFiles);
+            } else {
+                // No image files found
+                qWarning() << "No image files found in the provided paths";
+            }
         } else {
             // Directory mode: use current directory for slideshow
             cw->startSlideshow();
