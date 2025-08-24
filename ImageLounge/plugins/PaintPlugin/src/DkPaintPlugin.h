@@ -188,23 +188,7 @@ public:
     void setPenWidth(int width);
 
 public slots:
-    void on_applyAction_triggered();
-    void on_cancelAction_triggered();
-    void on_panAction_toggled(bool checked);
-    void on_pencilAction_toggled(bool checked);
-    void on_lineAction_toggled(bool checked);
-    void on_arrowAction_toggled(bool checked);
-    void on_circleAction_toggled(bool checked);
-    void on_squareAction_toggled(bool checked);
-    void on_squarefillAction_toggled(bool checked);
-    void on_blurAction_toggled(bool checked);
-    void on_textAction_toggled(bool checked);
-    void on_penColButton_clicked();
-    void on_widthBox_valueChanged(int val);
-    void on_alphaBox_valueChanged(int val);
-    void on_textInput_textChanged(const QString &text);
-    void on_textInput_editingFinished();
-    void on_undoAction_triggered();
+    void choosePenColor();
     void showLineEdit(bool show);
     void setVisible(bool visible) override;
 
@@ -248,5 +232,4 @@ protected:
 
     QVector<QIcon> icons; // needed for colorizing
 };
-
 };
