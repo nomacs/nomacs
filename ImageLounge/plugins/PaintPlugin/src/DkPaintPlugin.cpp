@@ -135,20 +135,31 @@ void getBlur(const QRectF &selection, QPainter *painter, QImage &img, int radius
     if (selection.isEmpty())
         return;
 
-    QRect selectionScaled = QRect(selection.topLeft().toPoint(), selection.bottomRight().toPoint());
+    // snap to pixels without jumping around
+    QPoint topLeft(qFloor(selection.left()), qFloor(selection.top()));
+    QPoint botRight(qFloor(selection.right()), qFloor(selection.bottom()));
+    QRect selectionScaled{topLeft, botRight};
 
+    // much faster to render into a subimage
+    // also gives consistent result between preview and final image
+    QImage blurImg = img.copy(selectionScaled);
+    QPainter blurPainter(&blurImg);
+
+    auto *item = new QGraphicsPixmapItem(QPixmap::fromImage(blurImg));
     auto *blur = new QGraphicsBlurEffect;
-    blur->setBlurRadius(radius);
-    auto *item = new QGraphicsPixmapItem(QPixmap::fromImage(img).copy(selectionScaled));
     item->setGraphicsEffect(blur);
 
     QGraphicsScene scene;
     scene.addItem(item);
 
-    scene.render(painter, selection, QRectF());
+    blur->setBlurRadius(radius);
+    scene.render(&blurPainter);
     blur->setBlurRadius(radius + 2);
-    scene.render(painter, selection, QRectF());
-    scene.render(painter, selection, QRectF());
+    scene.render(&blurPainter);
+    scene.render(&blurPainter);
+
+    blurPainter.end();
+    painter->drawImage(selectionScaled, blurImg);
 }
 
 QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID,
