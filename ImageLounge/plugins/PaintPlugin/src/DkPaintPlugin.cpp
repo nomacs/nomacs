@@ -573,6 +573,8 @@ bool DkPaintViewPort::isCanceled()
 
 void DkPaintViewPort::setVisible(bool visible)
 {
+    setPanning(false);
+
     if (mPaintToolbar)
         nmc::DkToolBarManager::inst().showToolBar(mPaintToolbar, visible);
 
@@ -786,15 +788,6 @@ void DkPaintToolBar::showLineEdit(bool show)
 
 void DkPaintToolBar::setVisible(bool visible)
 {
-    // if (!visible)
-    //	emit colorSignal(QColor(0,0,0));
-    if (visible) {
-        // emit colorSignal(penCol);
-        // widthBox->setValue(10);
-        // alphaBox->setValue(100);
-        mPanAction->setChecked(false);
-    }
-
     qDebug() << "[PAINT TOOLBAR] set visible: " << visible;
 
     QToolBar::setVisible(visible);
