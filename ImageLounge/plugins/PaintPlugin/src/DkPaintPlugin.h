@@ -41,6 +41,11 @@ class QLineEdit;
 class QColorDialog;
 class QPushButton;
 
+namespace nmc
+{
+class DkBaseViewPort;
+}
+
 namespace nmp
 {
 
@@ -131,6 +136,7 @@ protected:
 
     void loadSettings();
     void saveSettings() const;
+    void drawPaths(QPainter &painter, nmc::DkBaseViewPort *viewport, bool toImage) const;
 
     QVector<QPainterPath> paths;
     QVector<QPen> pathsPen;
