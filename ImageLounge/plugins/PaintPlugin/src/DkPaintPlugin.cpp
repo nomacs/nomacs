@@ -130,10 +130,11 @@ QLineF getShorterLine(QPainterPath line, const int thickness)
 }
 
 // blur selected rectangle region
-void getBlur(QPainterPath rect, QPainter *painter, QImage &img, int radius)
+void getBlur(const QRectF &selection, QPainter *painter, QImage &img, int radius)
 {
-    // auto pixelRatio = pixmap.devicePixelRatio();
-    QRectF selection = rect.boundingRect();
+    if (selection.isEmpty())
+        return;
+
     QRect selectionScaled = QRect(selection.topLeft().toPoint(), selection.bottomRight().toPoint());
 
     auto *blur = new QGraphicsBlurEffect;
@@ -453,8 +454,13 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event)
             if (parent()) {
                 auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
                 QImage img = viewport->getImage();
-                // QPixmap pixmap = QPixmap::fromImage(mImg).copy();
-                getBlur(paths.at(idx), &painter, img, pathsPen.at(idx).width());
+                qreal dpr = viewport->devicePixelRatioF();
+                QTransform tx = QTransform::fromScale(dpr, dpr);
+                QRectF rect = tx.map(paths.at(idx)).boundingRect();
+                painter.save();
+                painter.scale(1.0 / dpr, 1.0 / dpr);
+                getBlur(rect, &painter, img, pathsPen.at(idx).width());
+                painter.restore();
             }
         } else
             painter.drawPath(paths.at(idx));
@@ -476,9 +482,9 @@ QImage DkPaintViewPort::getPaintedImage()
 
                 QPainter painter(&img);
 
-                // >DIR: do not apply world matrix if painting in the image [14.10.2014 markus]
-                // if (worldMatrix)
-                //	painter.setWorldTransform(*worldMatrix);
+                // paths are in logical pixels, convert to physical/image pixels
+                qreal dpr = viewport->devicePixelRatioF();
+                painter.scale(dpr, dpr);
 
                 painter.setRenderHint(QPainter::Antialiasing);
 
@@ -491,8 +497,12 @@ QImage DkPaintViewPort::getPaintedImage()
                     } else if (pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
                         painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
                     else if (pathsMode.at(idx) == mode_blur) {
-                        // QPixmap pixmap = QPixmap::fromImage(mImg).copy();
-                        getBlur(paths.at(idx), &painter, img, pathsPen.at(idx).width());
+                        QTransform mat = QTransform::fromScale(dpr, dpr);
+                        QRectF rect = mat.map(paths.at(idx)).boundingRect();
+                        painter.save();
+                        painter.scale(1.0 / dpr, 1.0 / dpr);
+                        getBlur(rect, &painter, img, pathsPen.at(idx).width());
+                        painter.restore();
                     } else
                         painter.drawPath(paths.at(idx));
                 }
