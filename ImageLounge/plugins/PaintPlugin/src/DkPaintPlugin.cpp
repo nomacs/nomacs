@@ -259,20 +259,16 @@ void DkPaintViewPort::init()
 
     paintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
 
-    connect(paintToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)), Qt::UniqueConnection);
-    connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)), Qt::UniqueConnection);
-    connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)), Qt::UniqueConnection);
-    connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()), Qt::UniqueConnection);
-    connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
-    connect(paintToolbar, SIGNAL(modeChangeSignal(int)), this, SLOT(setMode(int)), Qt::UniqueConnection);
-    connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
-    connect(paintToolbar,
-            SIGNAL(textChangeSignal(const QString &)),
-            this,
-            SLOT(textChange(const QString &)),
-            Qt::UniqueConnection);
-    connect(paintToolbar, SIGNAL(editFinishSignal()), this, SLOT(textEditFinsh()), Qt::UniqueConnection);
-    connect(this, SIGNAL(editShowSignal(bool)), paintToolbar, SLOT(showLineEdit(bool)), Qt::UniqueConnection);
+    connect(paintToolbar, &DkPaintToolBar::colorSignal, this, &DkPaintViewPort::setPenColor);
+    connect(paintToolbar, &DkPaintToolBar::widthSignal, this, &DkPaintViewPort::setPenWidth);
+    connect(paintToolbar, &DkPaintToolBar::panSignal, this, &DkPaintViewPort::setPanning);
+    connect(paintToolbar, &DkPaintToolBar::cancelSignal, this, &DkPaintViewPort::discardChangesAndClose);
+    connect(paintToolbar, &DkPaintToolBar::undoSignal, this, &DkPaintViewPort::undoLastPaint);
+    connect(paintToolbar, &DkPaintToolBar::modeChangeSignal, this, &DkPaintViewPort::setMode);
+    connect(paintToolbar, &DkPaintToolBar::applySignal, this, &DkPaintViewPort::applyChangesAndClose);
+    connect(paintToolbar, &DkPaintToolBar::textChangeSignal, this, &DkPaintViewPort::textChange);
+    connect(paintToolbar, &DkPaintToolBar::editFinishSignal, this, &DkPaintViewPort::textEditFinsh);
+    connect(this, &DkPaintViewPort::editShowSignal, paintToolbar, &DkPaintToolBar::showLineEdit);
 
     loadSettings();
     paintToolbar->setPenColor(mPen.color());
@@ -639,93 +635,118 @@ void DkPaintToolBar::createLayout()
 
     auto *applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
     applyAction->setShortcuts(enterSc);
-    applyAction->setObjectName("applyAction");
+    connect(applyAction, &QAction::triggered, this, &DkPaintToolBar::applySignal);
 
     auto *cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
     cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
-    cancelAction->setObjectName("cancelAction");
+    connect(cancelAction, &QAction::triggered, this, &DkPaintToolBar::cancelSignal);
 
     panAction = new QAction(icons[pan_icon], tr("Pan"), this);
     panAction->setShortcut(QKeySequence(Qt::Key_P));
-    panAction->setObjectName("panAction");
     panAction->setCheckable(true);
     panAction->setChecked(false);
+    connect(panAction, &QAction::triggered, this, &DkPaintToolBar::panSignal);
 
     // mBrush modes
     pencilAction = new QAction(icons[pencil_icon], tr("Pencil"), this);
-    pencilAction->setObjectName("pencilAction");
     pencilAction->setCheckable(true);
     pencilAction->setChecked(true);
+    connect(pencilAction, &QAction::triggered, this, [this] {
+        emit modeChangeSignal(mode_pencil);
+    });
 
     lineAction = new QAction(icons[line_icon], tr("Line"), this);
-    lineAction->setObjectName("lineAction");
     lineAction->setCheckable(true);
     lineAction->setChecked(false);
+    connect(lineAction, &QAction::triggered, this, [this] {
+        emit modeChangeSignal(mode_line);
+    });
 
     arrowAction = new QAction(icons[arrow_icon], tr("Arrow"), this);
-    arrowAction->setObjectName("arrowAction");
     arrowAction->setCheckable(true);
     arrowAction->setChecked(false);
+    connect(arrowAction, &QAction::triggered, this, [this] {
+        emit modeChangeSignal(mode_arrow);
+    });
 
     circleAction = new QAction(icons[circle_icon], tr("Circle"), this);
-    circleAction->setObjectName("circleAction");
     circleAction->setCheckable(true);
     circleAction->setChecked(false);
+    connect(circleAction, &QAction::triggered, this, [this] {
+        emit modeChangeSignal(mode_circle);
+    });
 
     squareAction = new QAction(icons[square_icon], tr("Square"), this);
-    squareAction->setObjectName("squareAction");
     squareAction->setCheckable(true);
     squareAction->setChecked(false);
+    connect(squareAction, &QAction::triggered, this, [this] {
+        emit modeChangeSignal(mode_square);
+    });
 
     squarefillAction = new QAction(icons[square_fill_icon], tr("Filled Square"), this);
-    squarefillAction->setObjectName("squarefillAction");
     squarefillAction->setCheckable(true);
     squarefillAction->setChecked(false);
+    connect(squarefillAction, &QAction::triggered, this, [this] {
+        emit modeChangeSignal(mode_square_fill);
+    });
 
     blurAction = new QAction(icons[blur_icon], tr("Blur"), this);
-    blurAction->setObjectName("blurAction");
     blurAction->setCheckable(true);
     blurAction->setChecked(false);
+    connect(blurAction, &QAction::triggered, this, [this] {
+        emit modeChangeSignal(mode_blur);
+    });
 
     textAction = new QAction(icons[text_icon], tr("Text"), this);
-    textAction->setObjectName("textAction");
     textAction->setCheckable(true);
     textAction->setChecked(false);
+    connect(textAction, &QAction::triggered, this, [this] {
+        emit modeChangeSignal(mode_text);
+    });
 
     textInput = new QLineEdit(this);
-    textInput->setObjectName("textInput");
     textInput->setFixedWidth(100);
+    connect(textInput, &QLineEdit::textChanged, this, &DkPaintToolBar::textChangeSignal);
+    connect(textInput, &QLineEdit::editingFinished, this, [this] {
+        emit editFinishSignal();
+        textInput->clear();
+    });
 
     // mPen color
     penCol = QColor(0, 0, 0);
     penColButton = new QPushButton(this);
-    penColButton->setObjectName("penColButton");
     penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol)
                                 + "; border: 1px solid #888;}");
     penColButton->setToolTip(tr("Background Color"));
     penColButton->setStatusTip(penColButton->toolTip());
+    connect(penColButton, &QPushButton::clicked, this, &DkPaintToolBar::choosePenColor);
 
     // undo Button
     undoAction = new QAction(icons[undo_icon], tr("Undo (CTRL+Z)"), this);
     undoAction->setShortcut(QKeySequence::Undo);
-    undoAction->setObjectName("undoAction");
+    connect(undoAction, &QAction::triggered, this, &DkPaintToolBar::undoSignal);
 
     colorDialog = new QColorDialog(this);
     colorDialog->setObjectName("colorDialog");
 
     // mPen width
     widthBox = new QSpinBox(this);
-    widthBox->setObjectName("widthBox");
     widthBox->setSuffix("px");
     widthBox->setMinimum(1);
     widthBox->setMaximum(500); // huge sizes since images might have high resolutions
+    connect(widthBox, &QSpinBox::valueChanged, this, &DkPaintToolBar::widthSignal);
 
     // mPen alpha
     alphaBox = new QSpinBox(this);
-    alphaBox->setObjectName("alphaBox");
     alphaBox->setSuffix("%");
     alphaBox->setMinimum(0);
     alphaBox->setMaximum(100);
+    connect(alphaBox, &QSpinBox::valueChanged, this, [this](int val) {
+        penAlpha = val;
+        QColor penColWA = penCol;
+        penColWA.setAlphaF(penAlpha / 100.0);
+        emit colorSignal(penColWA);
+    });
 
     auto *modesGroup = new QActionGroup(this);
     modesGroup->addAction(pencilAction);
@@ -803,100 +824,7 @@ void DkPaintToolBar::setPenWidth(int width)
     widthBox->setValue(width);
 }
 
-void DkPaintToolBar::on_undoAction_triggered()
-{
-    emit undoSignal();
-}
-
-void DkPaintToolBar::on_applyAction_triggered()
-{
-    emit applySignal();
-}
-
-void DkPaintToolBar::on_cancelAction_triggered()
-{
-    emit cancelSignal();
-}
-
-void DkPaintToolBar::on_panAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit panSignal(checked);
-}
-
-void DkPaintToolBar::on_pencilAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit modeChangeSignal(mode_pencil);
-}
-
-void DkPaintToolBar::on_lineAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit modeChangeSignal(mode_line);
-}
-
-void DkPaintToolBar::on_arrowAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit modeChangeSignal(mode_arrow);
-}
-
-void DkPaintToolBar::on_circleAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit modeChangeSignal(mode_circle);
-}
-
-void DkPaintToolBar::on_squareAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit modeChangeSignal(mode_square);
-}
-
-void DkPaintToolBar::on_squarefillAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit modeChangeSignal(mode_square_fill);
-}
-
-void DkPaintToolBar::on_blurAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit modeChangeSignal(mode_blur);
-}
-
-void DkPaintToolBar::on_textAction_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-    emit modeChangeSignal(mode_text);
-}
-
-void DkPaintToolBar::on_widthBox_valueChanged(int val)
-{
-    emit widthSignal(val);
-}
-
-void DkPaintToolBar::on_textInput_textChanged(const QString &text)
-{
-    emit textChangeSignal(text);
-}
-
-void DkPaintToolBar::on_textInput_editingFinished()
-{
-    emit editFinishSignal();
-    textInput->clear();
-}
-
-void DkPaintToolBar::on_alphaBox_valueChanged(int val)
-{
-    penAlpha = val;
-    QColor penColWA = penCol;
-    penColWA.setAlphaF(penAlpha / 100.0);
-    emit colorSignal(penColWA);
-}
-
-void DkPaintToolBar::on_penColButton_clicked()
+void DkPaintToolBar::choosePenColor()
 {
     QColor tmpCol = penCol;
 
