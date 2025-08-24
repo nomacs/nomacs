@@ -154,9 +154,14 @@ public:
 
     void setTimeToDisplay(int ms = 1000);
 
+    // File list management
+    void setFileList(const QStringList& files);
+    void clearFileList();
+
 signals:
     void nextSignal();
     void previousSignal();
+    void loadFileSignal(const QString& filePath);
 
 public slots:
     void play(bool play);
@@ -171,6 +176,7 @@ public slots:
 protected:
     void init();
     void createLayout();
+    void loadCurrentFile();
 
     bool playing = false;
 
@@ -182,6 +188,10 @@ protected:
     QPushButton *nextButton;
     QPushButton *playButton;
     QWidget *container;
+
+    // File list support
+    QStringList mFileList;
+    int mCurrentIndex;
 };
 
 class DkHudNavigation : public DkFadeWidget

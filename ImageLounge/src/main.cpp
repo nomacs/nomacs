@@ -38,6 +38,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
 #include <QObject>
@@ -329,29 +330,65 @@ int main(int argc, char *argv[])
 
     nmc::DkCentralWidget *cw = w->getTabWidget();
 
-    bool loading = false;
+    // Handle slideshow with file list support
+    if (parser.isSet(slideshowOpt)) {
+        QStringList slideshowFiles = parser.positionalArguments();
 
-    for (auto &filePath : parser.positionalArguments()) {
-        if (filePath.isEmpty())
-            continue;
+        if (!slideshowFiles.isEmpty()) {
+            // Expand directories into file lists and collect all image files
+            QStringList allImageFiles;
+            for (const QString &path : slideshowFiles) {
+                nmc::DkFileInfo fileInfo(path);
+                if (fileInfo.isDir()) {
+                    // Directory: expand to image files
+                    QDir dir(path);
+                    QStringList filters = nmc::DkSettingsManager::param().app().fileFilters;
+                    QStringList imageFiles = dir.entryList(filters, QDir::Files, QDir::Name);
+                    for (const QString &imageFile : imageFiles) {
+                        allImageFiles.append(dir.filePath(imageFile));
+                    }
+                } else {
+                    // Single file: add directly
+                    allImageFiles.append(path);
+                }
+            }
 
-        if (loading)
-            cw->loadToTab(filePath);
-        else
-            cw->load(filePath);
+            if (!allImageFiles.isEmpty()) {
+                // First ensure we have a proper viewport and tab setup by loading the first file normally
+                cw->load(allImageFiles[0]);
+                // Then start slideshow with the expanded file list
+                cw->startSlideshowWithFiles(allImageFiles);
+            } else {
+                // No image files found
+                qWarning() << "No image files found in the provided paths";
+            }
+        } else {
+            // Directory mode: use current directory for slideshow
+            cw->startSlideshow();
+        }
+    } else {
+        // Normal mode: load files into tabs
+        bool loading = false;
 
-        loading = true;
+        for (auto &filePath : parser.positionalArguments()) {
+            if (filePath.isEmpty())
+                continue;
+
+            if (loading)
+                cw->loadToTab(filePath);
+            else
+                cw->load(filePath);
+
+            loading = true;
+        }
+
+        // load recent files if there is nothing to display
+        if (!loading && nmc::DkSettingsManager::param().app().showRecentFiles)
+            w->showRecentFilesOnStartUp();
     }
-
-    // load recent files if there is nothing to display
-    if (!loading && nmc::DkSettingsManager::param().app().showRecentFiles)
-        w->showRecentFilesOnStartUp();
 
     if (w->isFullScreen())
         w->enterFullScreen();
-
-    if (parser.isSet(slideshowOpt))
-        cw->startSlideshow();
 
     if (cw->hasViewPort())
         cw->getViewPort()->setFocus(Qt::TabFocusReason);
