@@ -133,6 +133,7 @@ protected:
     void loadSettings();
     void saveSettings() const;
 
+    QPointF mapViewPortToImage(const QPointF &pos) const;
     void drawPaths(QPainter &painter, nmc::DkBaseViewPort *viewport, bool toImage) const;
 
     QVector<QPainterPath> mPaths; // list of paths, one per mouse down-drag-up cycle

@@ -305,7 +305,9 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event)
         return;
     }
 
-    bool isMouseOutside = !QRectF(QPointF(), viewport->getImageSize()).contains(mapToImage(pos));
+    const QPointF currPos = mapViewPortToImage(pos);
+
+    bool isMouseOutside = !QRectF(QPointF(), viewport->getImage().size()).contains(currPos);
     if (isMouseOutside)
         return;
 
@@ -314,7 +316,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event)
         undoLastPaint();
 
     // create a new painterpath
-    mBeginPos = mapToImage(pos);
+    mBeginPos = currPos;
     mPaths.append(QPainterPath{mBeginPos});
     mPathsPen.append(mPen);
     mPathsMode.append(mCurrentMode);
@@ -351,9 +353,8 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
     }
 
     viewport->unsetCursor();
-    bool isMouseOutside = !QRectF(QPointF(), viewport->getImageSize()).contains(mapToImage(pos));
-
-    const QPointF currPos = mapToImage(pos);
+    const QPointF currPos = mapViewPortToImage(pos);
+    bool isMouseOutside = !QRectF(QPointF(), viewport->getImage().size()).contains(currPos);
 
     if (isMouseOutside) {
         // FIXME: creates empty paths outside image
@@ -423,13 +424,8 @@ void DkPaintViewPort::drawPaths(QPainter &painter, nmc::DkBaseViewPort *viewport
             }
         } else if (mPathsMode.at(idx) == mode_blur) {
             QImage img = viewport->getImage();
-            qreal dpr = viewport->devicePixelRatioF();
-            QTransform tx = QTransform::fromScale(dpr, dpr);
-            QRectF rect = tx.map(mPaths.at(idx)).boundingRect();
-            painter.save();
-            painter.scale(1.0 / dpr, 1.0 / dpr);
+            QRectF rect = mPaths.at(idx).boundingRect();
             getBlur(rect, &painter, img, mPathsPen.at(idx).width());
-            painter.restore();
         } else {
             painter.drawPath(mPaths.at(idx));
         }
@@ -446,9 +442,11 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
 
-    // path coordinates are in logical image pixels, so use the Image->Viewport transform
-    if (mWorldMatrix && mImgMatrix)
-        painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));
+    // paths are in image coordinates, setup transform like DkViewPort::drawImage()
+    painter.setWorldTransform(viewport->getImageMatrix() * viewport->getWorldMatrix());
+
+    // this part gives us correct pixel sizes for lines, fonts, images etc
+    painter.scale(1.0 / devicePixelRatioF(), 1.0 / devicePixelRatioF());
 
     drawPaths(painter, viewport, false);
 }
@@ -465,10 +463,6 @@ QImage DkPaintViewPort::getPaintedImage()
 
     QPainter painter(&img);
     painter.setRenderHint(QPainter::Antialiasing);
-
-    // paths are in logical pixels, convert to physical/image pixels
-    qreal dpr = viewport->devicePixelRatioF();
-    painter.scale(dpr, dpr);
 
     drawPaths(painter, viewport, true);
     painter.end();
@@ -504,6 +498,16 @@ void DkPaintViewPort::textEditFinsh()
         undoLastPaint();
     mTextInputActive = false;
     emit editShowSignal(false);
+}
+
+QPointF DkPaintViewPort::mapViewPortToImage(const QPointF &pos) const
+{
+    auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+    if (!viewport)
+        return {};
+    QTransform tx = viewport->getWorldMatrix().inverted() * viewport->getImageMatrix().inverted()
+        * viewport->devicePixelRatioF();
+    return tx.map(pos);
 }
 
 void DkPaintViewPort::clear()
