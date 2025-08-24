@@ -51,7 +51,7 @@ namespace nmp
  **/
 DkPaintPlugin::DkPaintPlugin()
 {
-    viewport = nullptr;
+    mViewPort = nullptr;
 }
 
 /**
@@ -160,13 +160,13 @@ QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &ru
         return image;
 
     // for a viewport plugin runID and image are null
-    if (viewport) {
-        auto *paintViewport = dynamic_cast<DkPaintViewPort *>(viewport);
+    if (mViewPort) {
+        auto *paintViewport = dynamic_cast<DkPaintViewPort *>(mViewPort);
 
         if (!paintViewport->isCanceled())
             image->setImage(paintViewport->getPaintedImage(), tr("Drawings Added"));
 
-        viewport->setVisible(false);
+        mViewPort->setVisible(false);
     }
 
     return image;
@@ -177,27 +177,27 @@ QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &ru
  **/
 nmc::DkPluginViewPort *DkPaintPlugin::getViewPort()
 {
-    return viewport;
+    return mViewPort;
 }
 
 DkPaintViewPort *DkPaintPlugin::getPaintViewPort()
 {
-    return dynamic_cast<DkPaintViewPort *>(viewport);
+    return dynamic_cast<DkPaintViewPort *>(mViewPort);
 }
 
 bool DkPaintPlugin::createViewPort(QWidget *parent)
 {
-    viewport = new DkPaintViewPort(parent);
+    mViewPort = new DkPaintViewPort(parent);
 
     return true;
 }
 
 void DkPaintPlugin::setVisible(bool visible)
 {
-    if (!viewport)
+    if (!mViewPort)
         return;
 
-    viewport->setVisible(visible);
+    mViewPort->setVisible(visible);
     if (!visible)
         getPaintViewPort()->clear();
 }
@@ -219,9 +219,9 @@ DkPaintViewPort::~DkPaintViewPort()
     // active deletion since the MainWindow takes ownership...
     // if we have issues with this, we could disconnect all signals between viewport and toolbar too
     // however, then we have lot's of toolbars in memory if the user opens the plugin again and again
-    if (paintToolbar) {
-        delete paintToolbar;
-        paintToolbar = nullptr;
+    if (mPaintToolbar) {
+        delete mPaintToolbar;
+        mPaintToolbar = nullptr;
     }
 }
 
@@ -247,43 +247,43 @@ void DkPaintViewPort::loadSettings()
 
 void DkPaintViewPort::init()
 {
-    panning = false;
-    cancelTriggered = false;
-    isOutside = false;
-    defaultCursor = Qt::CrossCursor;
-    setCursor(defaultCursor);
+    mPanningToolActive = false;
+    mCanceledEditing = false;
+    mIsMouseOutside = false;
+    mCurrentCursor = Qt::CrossCursor;
+    setCursor(mCurrentCursor);
     mPen = QColor(0, 0, 0);
     mPen.setCapStyle(Qt::RoundCap);
     mPen.setJoinStyle(Qt::RoundJoin);
     mPen.setWidth(1);
 
-    paintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
+    mPaintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
 
-    connect(paintToolbar, &DkPaintToolBar::colorSignal, this, &DkPaintViewPort::setPenColor);
-    connect(paintToolbar, &DkPaintToolBar::widthSignal, this, &DkPaintViewPort::setPenWidth);
-    connect(paintToolbar, &DkPaintToolBar::panSignal, this, &DkPaintViewPort::setPanning);
-    connect(paintToolbar, &DkPaintToolBar::cancelSignal, this, &DkPaintViewPort::discardChangesAndClose);
-    connect(paintToolbar, &DkPaintToolBar::undoSignal, this, &DkPaintViewPort::undoLastPaint);
-    connect(paintToolbar, &DkPaintToolBar::modeChangeSignal, this, &DkPaintViewPort::setMode);
-    connect(paintToolbar, &DkPaintToolBar::applySignal, this, &DkPaintViewPort::applyChangesAndClose);
-    connect(paintToolbar, &DkPaintToolBar::textChangeSignal, this, &DkPaintViewPort::textChange);
-    connect(paintToolbar, &DkPaintToolBar::editFinishSignal, this, &DkPaintViewPort::textEditFinsh);
-    connect(this, &DkPaintViewPort::editShowSignal, paintToolbar, &DkPaintToolBar::showLineEdit);
+    connect(mPaintToolbar, &DkPaintToolBar::colorSignal, this, &DkPaintViewPort::setPenColor);
+    connect(mPaintToolbar, &DkPaintToolBar::widthSignal, this, &DkPaintViewPort::setPenWidth);
+    connect(mPaintToolbar, &DkPaintToolBar::panSignal, this, &DkPaintViewPort::setPanning);
+    connect(mPaintToolbar, &DkPaintToolBar::cancelSignal, this, &DkPaintViewPort::discardChangesAndClose);
+    connect(mPaintToolbar, &DkPaintToolBar::undoSignal, this, &DkPaintViewPort::undoLastPaint);
+    connect(mPaintToolbar, &DkPaintToolBar::modeChangeSignal, this, &DkPaintViewPort::setMode);
+    connect(mPaintToolbar, &DkPaintToolBar::applySignal, this, &DkPaintViewPort::applyChangesAndClose);
+    connect(mPaintToolbar, &DkPaintToolBar::textChangeSignal, this, &DkPaintViewPort::textChange);
+    connect(mPaintToolbar, &DkPaintToolBar::editFinishSignal, this, &DkPaintViewPort::textEditFinsh);
+    connect(this, &DkPaintViewPort::editShowSignal, mPaintToolbar, &DkPaintToolBar::showLineEdit);
 
     loadSettings();
-    paintToolbar->setPenColor(mPen.color());
-    paintToolbar->setPenWidth(mPen.width());
-    textinputenable = false;
+    mPaintToolbar->setPenColor(mPen.color());
+    mPaintToolbar->setPenWidth(mPen.width());
+    mTextInputActive = false;
 }
 
 void DkPaintViewPort::undoLastPaint()
 {
-    if (paths.empty())
+    if (mPaths.empty())
         return; // nothing to undo
 
-    paths.pop_back();
-    pathsPen.pop_back();
-    pathsMode.pop_back();
+    mPaths.pop_back();
+    mPathsPen.pop_back();
+    mPathsMode.pop_back();
     update();
 }
 
@@ -291,7 +291,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event)
 {
     // panning -> redirect to viewport
     if (event->buttons() == Qt::LeftButton
-        && (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning)) {
+        && (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || mPanningToolActive)) {
         setCursor(Qt::ClosedHandCursor);
         event->setModifiers(Qt::NoModifier); // we want a 'normal' action in the viewport
         event->ignore();
@@ -302,28 +302,28 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event)
         auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
         if (viewport) {
             if (QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
-                isOutside = false;
+                mIsMouseOutside = false;
 
                 // roll back the empty painterpath generated by click mouse
-                if (!paths.empty())
-                    if (paths.last().isEmpty())
+                if (!mPaths.empty())
+                    if (mPaths.last().isEmpty())
                         undoLastPaint();
 
                 // create new painterpath
-                paths.append(QPainterPath());
-                paths.last().moveTo(mapToImage(event->pos()));
+                mPaths.append(QPainterPath());
+                mPaths.last().moveTo(mapToImage(event->pos()));
                 // paths.last().lineTo(mapToImage(event->pos())+QPointF(0.1,0));
-                begin = mapToImage(event->pos());
-                pathsPen.append(mPen);
-                pathsMode.append(selectedMode);
-                if (selectedMode == mode_text) {
-                    textinputenable = true;
+                mBeginPos = mapToImage(event->pos());
+                mPathsPen.append(mPen);
+                mPathsMode.append(mCurrentMode);
+                if (mCurrentMode == mode_text) {
+                    mTextInputActive = true;
                     // lineedit show only when in text mode and mouse click
                     emit editShowSignal(true);
                 }
                 update();
             } else
-                isOutside = true;
+                mIsMouseOutside = true;
         }
     }
 
@@ -335,7 +335,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
     // qDebug() << "paint viewport...";
 
     // panning -> redirect to viewport
-    if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning) {
+    if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || mPanningToolActive) {
         event->setModifiers(Qt::NoModifier);
         event->ignore();
         update();
@@ -350,52 +350,52 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
 
             if (event->buttons() == Qt::LeftButton && parent()) {
                 if (QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
-                    if (isOutside) {
-                        paths.append(QPainterPath());
-                        paths.last().moveTo(mapToImage(event->pos()));
-                        pathsPen.append(mPen);
-                        pathsMode.append(selectedMode);
+                    if (mIsMouseOutside) {
+                        mPaths.append(QPainterPath());
+                        mPaths.last().moveTo(mapToImage(event->pos()));
+                        mPathsPen.append(mPen);
+                        mPathsMode.append(mCurrentMode);
                     } else {
                         QPointF point = mapToImage(event->pos());
-                        switch (selectedMode) {
+                        switch (mCurrentMode) {
                         case mode_pencil:
-                            paths.last().lineTo(point);
+                            mPaths.last().lineTo(point);
                             break;
 
                         case mode_line:
                         case mode_arrow:
                             // paths.last().clear();
-                            paths.last() = QPainterPath();
-                            paths.last().moveTo(begin);
-                            paths.last().lineTo(point);
+                            mPaths.last() = QPainterPath();
+                            mPaths.last().moveTo(mBeginPos);
+                            mPaths.last().lineTo(point);
                             break;
 
                         case mode_circle:
                             // paths.last().clear();
-                            paths.last() = QPainterPath();
-                            paths.last().addEllipse(QRectF(begin, point));
+                            mPaths.last() = QPainterPath();
+                            mPaths.last().addEllipse(QRectF(mBeginPos, point));
                             break;
 
                         case mode_square:
                         case mode_square_fill:
                         case mode_blur:
                             // paths.last().clear();
-                            paths.last() = QPainterPath();
-                            paths.last().addRect(QRectF(begin, point));
+                            mPaths.last() = QPainterPath();
+                            mPaths.last().addRect(QRectF(mBeginPos, point));
                             break;
 
                         case mode_text:
                             break;
 
                         default:
-                            paths.last().lineTo(point);
+                            mPaths.last().lineTo(point);
                             break;
                         }
                         update();
                     }
-                    isOutside = false;
+                    mIsMouseOutside = false;
                 } else
-                    isOutside = true;
+                    mIsMouseOutside = true;
             }
         }
     }
@@ -405,8 +405,8 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
 void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event)
 {
     // panning -> redirect to viewport
-    if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning) {
-        setCursor(defaultCursor);
+    if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || mPanningToolActive) {
+        setCursor(mCurrentCursor);
         event->setModifiers(Qt::NoModifier);
         event->ignore();
         return;
@@ -415,34 +415,34 @@ void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event)
 
 void DkPaintViewPort::drawPaths(QPainter &painter, nmc::DkBaseViewPort *viewport, bool toImage) const
 {
-    for (int idx = 0; idx < paths.size(); idx++) {
-        painter.setPen(pathsPen.at(idx));
-        if (pathsMode.at(idx) == mode_arrow) {
-            painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
-            painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
-        } else if (pathsMode.at(idx) == mode_square_fill)
-            painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
-        else if (pathsMode.at(idx) == mode_text) {
-            painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
-            if (!toImage && (idx == paths.size() - 1) && (textinputenable)) {
-                QPointF p = paths.at(idx).boundingRect().bottomRight();
-                painter.setPen(QPen(QBrush(QColor(0, 0, 0, 180)), pathsPen.at(idx).width(), Qt::DotLine));
-                if (sbuffer.isEmpty())
-                    painter.drawLine(QLineF(begin, begin - QPoint(0, pathsPen.at(idx).width() * 10)));
+    for (int idx = 0; idx < mPaths.size(); idx++) {
+        painter.setPen(mPathsPen.at(idx));
+        if (mPathsMode.at(idx) == mode_arrow) {
+            painter.fillPath(getArrowHead(mPaths.at(idx), mPathsPen.at(idx).width()), QBrush(mPathsPen.at(idx).color()));
+            painter.drawLine(getShorterLine(mPaths.at(idx), mPathsPen.at(idx).width()));
+        } else if (mPathsMode.at(idx) == mode_square_fill)
+            painter.fillPath(mPaths.at(idx), QBrush(mPathsPen.at(idx).color()));
+        else if (mPathsMode.at(idx) == mode_text) {
+            painter.fillPath(mPaths.at(idx), QBrush(mPathsPen.at(idx).color()));
+            if (!toImage && (idx == mPaths.size() - 1) && (mTextInputActive)) {
+                QPointF p = mPaths.at(idx).boundingRect().bottomRight();
+                painter.setPen(QPen(QBrush(QColor(0, 0, 0, 180)), mPathsPen.at(idx).width(), Qt::DotLine));
+                if (!mHasTextInput)
+                    painter.drawLine(QLineF(mBeginPos, mBeginPos - QPoint(0, mPathsPen.at(idx).width() * 10)));
                 else
-                    painter.drawLine(QLineF(p, p - QPoint(0, pathsPen.at(idx).width() * 10)));
+                    painter.drawLine(QLineF(p, p - QPoint(0, mPathsPen.at(idx).width() * 10)));
             }
-        } else if (pathsMode.at(idx) == mode_blur) {
+        } else if (mPathsMode.at(idx) == mode_blur) {
             QImage img = viewport->getImage();
             qreal dpr = viewport->devicePixelRatioF();
             QTransform tx = QTransform::fromScale(dpr, dpr);
-            QRectF rect = tx.map(paths.at(idx)).boundingRect();
+            QRectF rect = tx.map(mPaths.at(idx)).boundingRect();
             painter.save();
             painter.scale(1.0 / dpr, 1.0 / dpr);
-            getBlur(rect, &painter, img, pathsPen.at(idx).width());
+            getBlur(rect, &painter, img, mPathsPen.at(idx).width());
             painter.restore();
         } else {
-            painter.drawPath(paths.at(idx));
+            painter.drawPath(mPaths.at(idx));
         }
     }
 }
@@ -469,7 +469,7 @@ QImage DkPaintViewPort::getPaintedImage()
     auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
     if (!viewport)
         return {};
-    if (paths.empty())
+    if (mPaths.empty())
         return {};
 
     QImage img = viewport->getImage();
@@ -489,8 +489,8 @@ QImage DkPaintViewPort::getPaintedImage()
 
 void DkPaintViewPort::setMode(int mode)
 {
-    selectedMode = mode;
-    setCursor(defaultCursor);
+    mCurrentMode = mode;
+    setCursor(mCurrentCursor);
     emit editShowSignal(false);
 
     this->repaint();
@@ -501,27 +501,27 @@ void DkPaintViewPort::textChange(const QString &text)
     QFont font;
     font.setFamily(font.defaultFamily());
     font.setPixelSize(mPen.width() * TextEnlarge);
-    if (textinputenable) {
-        sbuffer = text;
-        paths.last() = QPainterPath();
-        paths.last().addText(begin, font, text);
+    if (mTextInputActive) {
+        mHasTextInput = !text.isEmpty();
+        mPaths.last() = QPainterPath();
+        mPaths.last().addText(mBeginPos, font, text);
         update();
     }
 }
 
 void DkPaintViewPort::textEditFinsh()
 {
-    if (sbuffer.isEmpty())
+    if (!mHasTextInput)
         undoLastPaint();
-    textinputenable = false;
+    mTextInputActive = false;
     emit editShowSignal(false);
 }
 
 void DkPaintViewPort::clear()
 {
-    paths.clear();
-    pathsPen.clear();
-    pathsMode.clear();
+    mPaths.clear();
+    mPathsPen.clear();
+    mPathsMode.clear();
 }
 
 void DkPaintViewPort::setBrush(const QBrush &brush)
@@ -546,23 +546,23 @@ void DkPaintViewPort::setPenColor(QColor color)
 
 void DkPaintViewPort::setPanning(bool checked)
 {
-    this->panning = checked;
+    this->mPanningToolActive = checked;
     if (checked)
-        defaultCursor = Qt::OpenHandCursor;
+        mCurrentCursor = Qt::OpenHandCursor;
     else
-        defaultCursor = Qt::CrossCursor;
-    setCursor(defaultCursor);
+        mCurrentCursor = Qt::CrossCursor;
+    setCursor(mCurrentCursor);
 }
 
 void DkPaintViewPort::applyChangesAndClose()
 {
-    cancelTriggered = false;
+    mCanceledEditing = false;
     emit closePlugin();
 }
 
 void DkPaintViewPort::discardChangesAndClose()
 {
-    cancelTriggered = true;
+    mCanceledEditing = true;
     emit closePlugin();
 }
 
@@ -578,13 +578,13 @@ QPen DkPaintViewPort::getPen() const
 
 bool DkPaintViewPort::isCanceled()
 {
-    return cancelTriggered;
+    return mCanceledEditing;
 }
 
 void DkPaintViewPort::setVisible(bool visible)
 {
-    if (paintToolbar)
-        nmc::DkToolBarManager::inst().showToolBar(paintToolbar, visible);
+    if (mPaintToolbar)
+        nmc::DkToolBarManager::inst().showToolBar(mPaintToolbar, visible);
 
     DkPluginViewPort::setVisible(visible);
 }
@@ -609,22 +609,22 @@ DkPaintToolBar::~DkPaintToolBar()
 void DkPaintToolBar::createIcons()
 {
     // create icons
-    icons.resize(icons_end);
+    mIcons.resize(icons_end);
 
-    icons[apply_icon] = nmc::DkImage::loadIcon(":/nomacs/img/save.svg");
-    icons[cancel_icon] = nmc::DkImage::loadIcon(":/nomacs/img/close.svg");
-    icons[pan_icon] = nmc::DkImage::loadIcon(":/nomacs/img/pan.svg");
-    icons[pan_icon].addFile(":/nomacs/img/pan-checked.svg", QSize(), QIcon::Normal, QIcon::On);
-    icons[undo_icon] = nmc::DkImage::loadIcon(":/nomacs/img/edit-undo.svg");
+    mIcons[apply_icon] = nmc::DkImage::loadIcon(":/nomacs/img/save.svg");
+    mIcons[cancel_icon] = nmc::DkImage::loadIcon(":/nomacs/img/close.svg");
+    mIcons[pan_icon] = nmc::DkImage::loadIcon(":/nomacs/img/pan.svg");
+    mIcons[pan_icon].addFile(":/nomacs/img/pan-checked.svg", QSize(), QIcon::Normal, QIcon::On);
+    mIcons[undo_icon] = nmc::DkImage::loadIcon(":/nomacs/img/edit-undo.svg");
 
-    icons[pencil_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/pencil.svg");
-    icons[line_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/line.svg");
-    icons[arrow_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/arrow.svg");
-    icons[circle_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/circle-outline.svg");
-    icons[square_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square-outline.svg");
-    icons[square_fill_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square.svg");
-    icons[blur_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/blur.svg");
-    icons[text_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/text.svg");
+    mIcons[pencil_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/pencil.svg");
+    mIcons[line_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/line.svg");
+    mIcons[arrow_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/arrow.svg");
+    mIcons[circle_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/circle-outline.svg");
+    mIcons[square_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square-outline.svg");
+    mIcons[square_fill_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square.svg");
+    mIcons[blur_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/blur.svg");
+    mIcons[text_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/text.svg");
 }
 
 void DkPaintToolBar::createLayout()
@@ -633,118 +633,118 @@ void DkPaintToolBar::createLayout()
     enterSc.append(QKeySequence(Qt::Key_Enter));
     enterSc.append(QKeySequence(Qt::Key_Return));
 
-    auto *applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
+    auto *applyAction = new QAction(mIcons[apply_icon], tr("Apply (ENTER)"), this);
     applyAction->setShortcuts(enterSc);
     connect(applyAction, &QAction::triggered, this, &DkPaintToolBar::applySignal);
 
-    auto *cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
+    auto *cancelAction = new QAction(mIcons[cancel_icon], tr("Cancel (ESC)"), this);
     cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
     connect(cancelAction, &QAction::triggered, this, &DkPaintToolBar::cancelSignal);
 
-    panAction = new QAction(icons[pan_icon], tr("Pan"), this);
-    panAction->setShortcut(QKeySequence(Qt::Key_P));
-    panAction->setCheckable(true);
-    panAction->setChecked(false);
-    connect(panAction, &QAction::triggered, this, &DkPaintToolBar::panSignal);
+    mPanAction = new QAction(mIcons[pan_icon], tr("Pan"), this);
+    mPanAction->setShortcut(QKeySequence(Qt::Key_P));
+    mPanAction->setCheckable(true);
+    mPanAction->setChecked(false);
+    connect(mPanAction, &QAction::triggered, this, &DkPaintToolBar::panSignal);
 
     // mBrush modes
-    pencilAction = new QAction(icons[pencil_icon], tr("Pencil"), this);
+    auto *pencilAction = new QAction(mIcons[pencil_icon], tr("Pencil"), this);
     pencilAction->setCheckable(true);
     pencilAction->setChecked(true);
     connect(pencilAction, &QAction::triggered, this, [this] {
         emit modeChangeSignal(mode_pencil);
     });
 
-    lineAction = new QAction(icons[line_icon], tr("Line"), this);
+    auto *lineAction = new QAction(mIcons[line_icon], tr("Line"), this);
     lineAction->setCheckable(true);
     lineAction->setChecked(false);
     connect(lineAction, &QAction::triggered, this, [this] {
         emit modeChangeSignal(mode_line);
     });
 
-    arrowAction = new QAction(icons[arrow_icon], tr("Arrow"), this);
+    auto *arrowAction = new QAction(mIcons[arrow_icon], tr("Arrow"), this);
     arrowAction->setCheckable(true);
     arrowAction->setChecked(false);
     connect(arrowAction, &QAction::triggered, this, [this] {
         emit modeChangeSignal(mode_arrow);
     });
 
-    circleAction = new QAction(icons[circle_icon], tr("Circle"), this);
+    auto *circleAction = new QAction(mIcons[circle_icon], tr("Circle"), this);
     circleAction->setCheckable(true);
     circleAction->setChecked(false);
     connect(circleAction, &QAction::triggered, this, [this] {
         emit modeChangeSignal(mode_circle);
     });
 
-    squareAction = new QAction(icons[square_icon], tr("Square"), this);
+    auto *squareAction = new QAction(mIcons[square_icon], tr("Square"), this);
     squareAction->setCheckable(true);
     squareAction->setChecked(false);
     connect(squareAction, &QAction::triggered, this, [this] {
         emit modeChangeSignal(mode_square);
     });
 
-    squarefillAction = new QAction(icons[square_fill_icon], tr("Filled Square"), this);
+    auto *squarefillAction = new QAction(mIcons[square_fill_icon], tr("Filled Square"), this);
     squarefillAction->setCheckable(true);
     squarefillAction->setChecked(false);
     connect(squarefillAction, &QAction::triggered, this, [this] {
         emit modeChangeSignal(mode_square_fill);
     });
 
-    blurAction = new QAction(icons[blur_icon], tr("Blur"), this);
+    auto *blurAction = new QAction(mIcons[blur_icon], tr("Blur"), this);
     blurAction->setCheckable(true);
     blurAction->setChecked(false);
     connect(blurAction, &QAction::triggered, this, [this] {
         emit modeChangeSignal(mode_blur);
     });
 
-    textAction = new QAction(icons[text_icon], tr("Text"), this);
+    auto *textAction = new QAction(mIcons[text_icon], tr("Text"), this);
     textAction->setCheckable(true);
     textAction->setChecked(false);
     connect(textAction, &QAction::triggered, this, [this] {
         emit modeChangeSignal(mode_text);
     });
 
-    textInput = new QLineEdit(this);
-    textInput->setFixedWidth(100);
-    connect(textInput, &QLineEdit::textChanged, this, &DkPaintToolBar::textChangeSignal);
-    connect(textInput, &QLineEdit::editingFinished, this, [this] {
+    mTextInput = new QLineEdit(this);
+    mTextInput->setFixedWidth(100);
+    connect(mTextInput, &QLineEdit::textChanged, this, &DkPaintToolBar::textChangeSignal);
+    connect(mTextInput, &QLineEdit::editingFinished, this, [this] {
         emit editFinishSignal();
-        textInput->clear();
+        mTextInput->clear();
     });
 
     // mPen color
-    penCol = QColor(0, 0, 0);
-    penColButton = new QPushButton(this);
-    penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol)
-                                + "; border: 1px solid #888;}");
-    penColButton->setToolTip(tr("Background Color"));
-    penColButton->setStatusTip(penColButton->toolTip());
-    connect(penColButton, &QPushButton::clicked, this, &DkPaintToolBar::choosePenColor);
+    mPenColor = QColor(0, 0, 0);
+    mPenColorButton = new QPushButton(this);
+    mPenColorButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(mPenColor)
+                                   + "; border: 1px solid #888;}");
+    mPenColorButton->setToolTip(tr("Background Color"));
+    mPenColorButton->setStatusTip(mPenColorButton->toolTip());
+    connect(mPenColorButton, &QPushButton::clicked, this, &DkPaintToolBar::choosePenColor);
 
     // undo Button
-    undoAction = new QAction(icons[undo_icon], tr("Undo (CTRL+Z)"), this);
+    auto *undoAction = new QAction(mIcons[undo_icon], tr("Undo (CTRL+Z)"), this);
     undoAction->setShortcut(QKeySequence::Undo);
     connect(undoAction, &QAction::triggered, this, &DkPaintToolBar::undoSignal);
 
-    colorDialog = new QColorDialog(this);
-    colorDialog->setObjectName("colorDialog");
+    mColorDialog = new QColorDialog(this);
+    mColorDialog->setObjectName("colorDialog");
 
     // mPen width
-    widthBox = new QSpinBox(this);
-    widthBox->setSuffix("px");
-    widthBox->setMinimum(1);
-    widthBox->setMaximum(500); // huge sizes since images might have high resolutions
-    connect(widthBox, &QSpinBox::valueChanged, this, &DkPaintToolBar::widthSignal);
+    mWidthBox = new QSpinBox(this);
+    mWidthBox->setSuffix("px");
+    mWidthBox->setMinimum(1);
+    mWidthBox->setMaximum(500); // huge sizes since images might have high resolutions
+    connect(mWidthBox, &QSpinBox::valueChanged, this, &DkPaintToolBar::widthSignal);
 
     // mPen alpha
-    alphaBox = new QSpinBox(this);
-    alphaBox->setSuffix("%");
-    alphaBox->setMinimum(0);
-    alphaBox->setMaximum(100);
-    connect(alphaBox, &QSpinBox::valueChanged, this, [this](int val) {
-        penAlpha = val;
-        QColor penColWA = penCol;
-        penColWA.setAlphaF(penAlpha / 100.0);
+    mAlphaBox = new QSpinBox(this);
+    mAlphaBox->setSuffix("%");
+    mAlphaBox->setMinimum(0);
+    mAlphaBox->setMaximum(100);
+    connect(mAlphaBox, &QSpinBox::valueChanged, this, [this](int val) {
+        mPenAlpha = val;
+        QColor penColWA = mPenColor;
+        penColWA.setAlphaF(mPenAlpha / 100.0);
         emit colorSignal(penColWA);
     });
 
@@ -758,12 +758,12 @@ void DkPaintToolBar::createLayout()
     modesGroup->addAction(blurAction);
     modesGroup->addAction(textAction);
 
-    toolbarWidgetList = QMap<QString, QAction *>();
+    mToolbarWidgetList = QMap<QString, QAction *>();
 
     addAction(applyAction);
     addAction(cancelAction);
     addSeparator();
-    addAction(panAction);
+    addAction(mPanAction);
     addAction(undoAction);
     addSeparator();
     addAction(pencilAction);
@@ -775,12 +775,12 @@ void DkPaintToolBar::createLayout()
     addAction(blurAction);
     addAction(textAction);
     addSeparator();
-    addWidget(widthBox);
-    addWidget(penColButton);
-    addWidget(alphaBox);
+    addWidget(mWidthBox);
+    addWidget(mPenColorButton);
+    addWidget(mAlphaBox);
     addSeparator();
     // addWidget(textInput);
-    toolbarWidgetList.insert(textInput->objectName(), this->addWidget(textInput));
+    mToolbarWidgetList.insert(mTextInput->objectName(), this->addWidget(mTextInput));
 
     showLineEdit(false);
 }
@@ -788,10 +788,10 @@ void DkPaintToolBar::createLayout()
 void DkPaintToolBar::showLineEdit(bool show)
 {
     if (show) {
-        toolbarWidgetList.value(textInput->objectName())->setVisible(true);
-        textInput->setFocus();
+        mToolbarWidgetList.value(mTextInput->objectName())->setVisible(true);
+        mTextInput->setFocus();
     } else
-        toolbarWidgetList.value(textInput->objectName())->setVisible(false);
+        mToolbarWidgetList.value(mTextInput->objectName())->setVisible(false);
 }
 
 void DkPaintToolBar::setVisible(bool visible)
@@ -802,7 +802,7 @@ void DkPaintToolBar::setVisible(bool visible)
         // emit colorSignal(penCol);
         // widthBox->setValue(10);
         // alphaBox->setValue(100);
-        panAction->setChecked(false);
+        mPanAction->setChecked(false);
     }
 
     qDebug() << "[PAINT TOOLBAR] set visible: " << visible;
@@ -812,32 +812,32 @@ void DkPaintToolBar::setVisible(bool visible)
 
 void DkPaintToolBar::setPenColor(const QColor &col)
 {
-    penCol = col;
-    penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol)
-                                + "; border: 1px solid #888;}");
-    penAlpha = col.alpha();
-    alphaBox->setValue(col.alphaF() * 100);
+    mPenColor = col;
+    mPenColorButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(mPenColor)
+                                   + "; border: 1px solid #888;}");
+    mPenAlpha = col.alpha();
+    mAlphaBox->setValue(col.alphaF() * 100);
 }
 
 void DkPaintToolBar::setPenWidth(int width)
 {
-    widthBox->setValue(width);
+    mWidthBox->setValue(width);
 }
 
 void DkPaintToolBar::choosePenColor()
 {
-    QColor tmpCol = penCol;
+    QColor tmpCol = mPenColor;
 
-    colorDialog->setCurrentColor(tmpCol);
-    int ok = colorDialog->exec();
+    mColorDialog->setCurrentColor(tmpCol);
+    int ok = mColorDialog->exec();
 
     if (ok == QDialog::Accepted) {
-        penCol = colorDialog->currentColor();
-        penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol)
-                                    + "; border: 1px solid #888;}");
+        mPenColor = mColorDialog->currentColor();
+        mPenColorButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(mPenColor)
+                                       + "; border: 1px solid #888;}");
 
-        QColor penColWA = penCol;
-        penColWA.setAlphaF(penAlpha / 100.0);
+        QColor penColWA = mPenColor;
+        penColWA.setAlphaF(mPenAlpha / 100.0);
         emit colorSignal(penColWA);
     }
 }
