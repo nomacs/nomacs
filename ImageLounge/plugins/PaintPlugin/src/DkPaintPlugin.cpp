@@ -176,29 +176,37 @@ QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &ru
 
         if (!paintViewport->isCanceled())
             image->setImage(paintViewport->getPaintedImage(), tr("Drawings Added"));
-
-        mViewPort->setVisible(false);
     }
 
     return image;
 };
 
-/**
- * returns paintViewPort
- **/
 nmc::DkPluginViewPort *DkPaintPlugin::getViewPort()
 {
     return mViewPort;
 }
 
-DkPaintViewPort *DkPaintPlugin::getPaintViewPort()
-{
-    return dynamic_cast<DkPaintViewPort *>(mViewPort);
-}
-
 bool DkPaintPlugin::createViewPort(QWidget *parent)
 {
     mViewPort = new DkPaintViewPort(parent);
+    mToolBar = new DkPaintToolBar(tr("Paint Toolbar"), parent);
+
+    QPen pen = mViewPort->getPen();
+    mToolBar->setPenColor(pen.color());
+    mToolBar->setPenWidth(pen.width());
+    // mToolBar->setAlpha();
+
+    connect(mToolBar, &DkPaintToolBar::colorSignal, mViewPort, &DkPaintViewPort::setPenColor);
+    connect(mToolBar, &DkPaintToolBar::widthSignal, mViewPort, &DkPaintViewPort::setPenWidth);
+    connect(mToolBar, &DkPaintToolBar::panSignal, mViewPort, &DkPaintViewPort::setPanning);
+    connect(mToolBar, &DkPaintToolBar::cancelSignal, mViewPort, &DkPaintViewPort::discardChangesAndClose);
+    connect(mToolBar, &DkPaintToolBar::undoSignal, mViewPort, &DkPaintViewPort::undoLastPaint);
+    connect(mToolBar, &DkPaintToolBar::modeChangeSignal, mViewPort, &DkPaintViewPort::setMode);
+    connect(mToolBar, &DkPaintToolBar::applySignal, mViewPort, &DkPaintViewPort::applyChangesAndClose);
+    connect(mToolBar, &DkPaintToolBar::textChangeSignal, mViewPort, &DkPaintViewPort::textChange);
+    connect(mToolBar, &DkPaintToolBar::editFinishSignal, mViewPort, &DkPaintViewPort::textEditFinsh);
+
+    connect(mViewPort, &DkPaintViewPort::editShowSignal, mToolBar, &DkPaintToolBar::showLineEdit);
 
     return true;
 }
@@ -208,9 +216,12 @@ void DkPaintPlugin::setVisible(bool visible)
     if (!mViewPort)
         return;
 
-    mViewPort->setVisible(visible);
+    nmc::DkToolBarManager::inst().showToolBar(mToolBar, visible);
+
+    mViewPort->setPanning(false); // always reset panning and make painting tool active
+
     if (!visible)
-        getPaintViewPort()->clear();
+        mViewPort->clear();
 }
 
 /*-----------------------------------DkPaintViewPort ---------------------------------------------*/
@@ -226,14 +237,6 @@ DkPaintViewPort::DkPaintViewPort(QWidget *parent, Qt::WindowFlags flags)
 DkPaintViewPort::~DkPaintViewPort()
 {
     saveSettings();
-
-    // active deletion since the MainWindow takes ownership...
-    // if we have issues with this, we could disconnect all signals between viewport and toolbar too
-    // however, then we have lot's of toolbars in memory if the user opens the plugin again and again
-    if (mPaintToolbar) {
-        delete mPaintToolbar;
-        mPaintToolbar = nullptr;
-    }
 }
 
 void DkPaintViewPort::saveSettings() const
@@ -268,22 +271,7 @@ void DkPaintViewPort::init()
     mPen.setWidth(1);
     mMouseDown = false;
 
-    mPaintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
-
-    connect(mPaintToolbar, &DkPaintToolBar::colorSignal, this, &DkPaintViewPort::setPenColor);
-    connect(mPaintToolbar, &DkPaintToolBar::widthSignal, this, &DkPaintViewPort::setPenWidth);
-    connect(mPaintToolbar, &DkPaintToolBar::panSignal, this, &DkPaintViewPort::setPanning);
-    connect(mPaintToolbar, &DkPaintToolBar::cancelSignal, this, &DkPaintViewPort::discardChangesAndClose);
-    connect(mPaintToolbar, &DkPaintToolBar::undoSignal, this, &DkPaintViewPort::undoLastPaint);
-    connect(mPaintToolbar, &DkPaintToolBar::modeChangeSignal, this, &DkPaintViewPort::setMode);
-    connect(mPaintToolbar, &DkPaintToolBar::applySignal, this, &DkPaintViewPort::applyChangesAndClose);
-    connect(mPaintToolbar, &DkPaintToolBar::textChangeSignal, this, &DkPaintViewPort::textChange);
-    connect(mPaintToolbar, &DkPaintToolBar::editFinishSignal, this, &DkPaintViewPort::textEditFinsh);
-    connect(this, &DkPaintViewPort::editShowSignal, mPaintToolbar, &DkPaintToolBar::showLineEdit);
-
     loadSettings();
-    mPaintToolbar->setPenColor(mPen.color());
-    mPaintToolbar->setPenWidth(mPen.width());
     mTextInputActive = false;
 }
 
@@ -582,16 +570,6 @@ bool DkPaintViewPort::isCanceled()
     return mCanceledEditing;
 }
 
-void DkPaintViewPort::setVisible(bool visible)
-{
-    setPanning(false);
-
-    if (mPaintToolbar)
-        nmc::DkToolBarManager::inst().showToolBar(mPaintToolbar, visible);
-
-    DkPluginViewPort::setVisible(visible);
-}
-
 /*-----------------------------------DkPaintToolBar ---------------------------------------------*/
 DkPaintToolBar::DkPaintToolBar(const QString &title, QWidget *parent /* = 0 */)
     : QToolBar(title, parent)
@@ -795,13 +773,6 @@ void DkPaintToolBar::showLineEdit(bool show)
         mTextInput->setFocus();
     } else
         mToolbarWidgetList.value(mTextInput->objectName())->setVisible(false);
-}
-
-void DkPaintToolBar::setVisible(bool visible)
-{
-    qDebug() << "[PAINT TOOLBAR] set visible: " << visible;
-
-    QToolBar::setVisible(visible);
 }
 
 void DkPaintToolBar::setPenColor(const QColor &col)
