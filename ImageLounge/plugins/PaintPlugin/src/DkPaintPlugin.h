@@ -99,7 +99,7 @@ class DkPaintViewPort : public nmc::DkPluginViewPort
     Q_OBJECT
 
 public:
-    explicit DkPaintViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkPaintViewPort(QWidget *parent, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkPaintViewPort() override;
 
     QBrush getBrush() const;
@@ -150,10 +150,12 @@ protected:
     bool mTextInputActive; // true if text input box has input focus
 
     bool mCanceledEditing;
-    bool mIsMouseOutside; // true if mouse cursor outside image while dragging
     QBrush mBrush;
     QPen mPen;
     bool mPanningToolActive; // true if panning tool is active (this is not a mode for some reason)
+    bool mMouseDown; // true if mouse button is down
+    QPointF mLastMousePos; // last mouse position in viewport coordinates
+
     DkPaintToolBar *mPaintToolbar;
     QCursor mCurrentCursor; // cursor for the current mode/tool
 };
