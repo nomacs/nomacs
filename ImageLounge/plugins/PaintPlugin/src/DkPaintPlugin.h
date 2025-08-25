@@ -154,6 +154,8 @@ protected:
     QPointF mLastMousePos; // last mouse position in viewport coordinates
 
     QCursor mCurrentCursor; // cursor for the current mode/tool
+    bool mWasOutside; // true if dragging outside image
+    QPointF mOutsidePos; // position outside image while dragging
 };
 
 class DkPaintToolBar : public QToolBar
