@@ -264,13 +264,13 @@ void DkPaintViewPort::init()
     mPanningToolActive = false;
     mCanceledEditing = false;
     mCurrentCursor = Qt::CrossCursor;
-    setCursor(mCurrentCursor);
     mPen = QColor(0, 0, 0);
     mPen.setCapStyle(Qt::RoundCap);
     mPen.setJoinStyle(Qt::RoundJoin);
     mPen.setWidth(1);
     mMouseDown = false;
 
+    setMode(mode_pencil);
     loadSettings();
     mTextInputActive = false;
 }
@@ -294,22 +294,24 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event)
     if (event->buttons() != Qt::LeftButton)
         return;
 
+    const QPointF pos = event->position();
+    const QPointF currPos = mapViewPortToImage(pos);
+
+    // for simplicity, drawing must start inside the image
+    bool isOutside = !QRectF(QPointF(), viewport->getImage().size()).contains(currPos);
+    if (isOutside)
+        return;
+
+    // we are handling the event, don't send to viewport
     event->accept();
     mMouseDown = true;
-
-    const QPointF pos = event->position();
     mLastMousePos = pos;
+    mWasOutside = false;
 
     if (mPanningToolActive || event->modifiers() == nmc::DkSettingsManager::param().global().altMod) {
         setCursor(Qt::ClosedHandCursor);
         return;
     }
-
-    const QPointF currPos = mapViewPortToImage(pos);
-
-    bool isMouseOutside = !QRectF(QPointF(), viewport->getImage().size()).contains(currPos);
-    if (isMouseOutside)
-        return;
 
     // rollback empty painterpath from click but no dragging
     if (!mPaths.empty() && mPaths.last().isEmpty())
@@ -337,11 +339,10 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
         return;
     if (event->buttons() != Qt::LeftButton)
         return;
-
-    event->accept();
     if (!mMouseDown) // there was no mouse press event, we are not dragging
         return;
 
+    event->accept();
     const QPointF pos = event->position();
 
     if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || mPanningToolActive) {
@@ -352,41 +353,60 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
+    if (mPaths.empty()) // should never happen, but mPaths.last() would segfault
+        return;
+
     viewport->unsetCursor();
     const QPointF currPos = mapViewPortToImage(pos);
-    bool isMouseOutside = !QRectF(QPointF(), viewport->getImage().size()).contains(currPos);
+    const QRectF imageRect = QRectF(QPointF(), viewport->getImage().size());
 
-    if (isMouseOutside) {
-        // FIXME: creates empty paths outside image
-        mPaths.append(QPainterPath{currPos});
-        mPathsPen.append(mPen);
-        mPathsMode.append(mCurrentMode);
-    } else {
-        switch (mCurrentMode) {
-        case mode_pencil:
-            mPaths.last().lineTo(currPos);
-            break;
-        case mode_line:
-        case mode_arrow:
-            mPaths.last() = QPainterPath{mBeginPos};
-            mPaths.last().lineTo(currPos);
-            break;
-        case mode_circle:
-            mPaths.last() = QPainterPath();
-            mPaths.last().addEllipse(QRectF(mBeginPos, currPos));
-            break;
-        case mode_square:
-        case mode_square_fill:
-        case mode_blur:
-            mPaths.last() = QPainterPath();
-            mPaths.last().addRect(QRectF(mBeginPos, currPos));
-            break;
-        case mode_text:
-            break;
-        default:
-            mPaths.last().lineTo(currPos);
-            break;
+    bool isOutside = !imageRect.contains(currPos);
+
+    auto clamp = [&currPos, &imageRect](qreal inset) {
+        return QPointF{qBound(inset, currPos.x(), imageRect.width() - inset),
+                       qBound(inset, currPos.y(), imageRect.height() - inset)};
+    };
+
+    qreal halfPen = mPen.widthF() / 2.0;
+
+    switch (mCurrentMode) {
+    case mode_pencil:
+        // break up into segments if dragging past the edge, other modes just clamp to the edge
+        // TODO: clip the path when going over the edge so it doesn't poke out
+        if (isOutside) {
+            mOutsidePos = clamp(0.0);
+            if (!mWasOutside)
+                mPaths.last().lineTo(mOutsidePos); // inside->outside
+        } else {
+            if (mWasOutside)
+                mPaths.last().moveTo(mOutsidePos); // outside->inside
+            else
+                mPaths.last().lineTo(currPos); // inside->inside
         }
+        mWasOutside = isOutside;
+        break;
+    case mode_line:
+    case mode_arrow:
+        mPaths.last() = QPainterPath{mBeginPos};
+        mPaths.last().lineTo(clamp(0.0));
+        break;
+    case mode_circle:
+        mPaths.last() = QPainterPath();
+        mPaths.last().addEllipse(QRectF(mBeginPos, clamp(halfPen)));
+        break;
+    case mode_square:
+        mPaths.last() = QPainterPath();
+        mPaths.last().addRect(QRectF(mBeginPos, clamp(halfPen)));
+        break;
+    case mode_blur:
+    case mode_square_fill:
+        mPaths.last() = QPainterPath();
+        mPaths.last().addRect(QRectF(mBeginPos, clamp(0.0)));
+    case mode_text:
+        break;
+    default:
+        mPaths.last().lineTo(clamp(0.0));
+        break;
     }
 
     update();
