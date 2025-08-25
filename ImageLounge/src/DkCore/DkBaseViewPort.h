@@ -85,15 +85,24 @@ public:
         mPanControl = panControl;
     };
 
-    virtual QTransform getWorldMatrix()
+    // world to viewport/widget transform
+    QTransform getWorldMatrix() const
     {
         return mWorldMatrix;
-    };
+    }
+
+    // image to world transform
+    QTransform getImageMatrix() const
+    {
+        return mImgMatrix;
+    }
+
     virtual QRect getMainGeometry()
     {
         return geometry();
     };
 
+    // visible region of the image, unscaled
     QImage getCurrentImageRegion();
 
     virtual DkImageStorage *getImageStorage()
@@ -106,9 +115,12 @@ public:
 #endif
 
     virtual QImage getImage() const;
-    virtual QSize getImageSize() const;
-    virtual QRectF getImageViewRect() const;
-    virtual bool imageInside() const;
+
+    // image size in logical pixels (actual size divided by device pixel ratio)
+    QSizeF getImageSize() const;
+
+    QRectF getImageViewRect() const;
+    bool imageInside() const;
 
 signals:
     void keyReleaseSignal(QKeyEvent *event) const; // make key presses available

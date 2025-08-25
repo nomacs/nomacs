@@ -77,14 +77,12 @@ void DkQuickAccess::addActions(const QVector<QAction *> &actions)
 
 void DkQuickAccess::addFiles(const QStringList &filePaths)
 {
-    QPixmap pm = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg");
-    addItems(filePaths, pm);
+    addItems(filePaths, DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg"));
 }
 
 void DkQuickAccess::addDirs(const QStringList &dirPaths)
 {
-    QPixmap pm = DkImage::loadIcon(":/nomacs/img/dir.svg");
-    addItems(dirPaths, pm);
+    addItems(dirPaths, DkImage::loadIcon(":/nomacs/img/dir.svg"));
 }
 
 void DkQuickAccess::addItems(const QStringList &itemTexts, const QIcon &icon)

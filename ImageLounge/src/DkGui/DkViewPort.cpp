@@ -79,7 +79,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
     if (mImgBg.isNull() && DkSettingsManager::param().global().showBgImage) {
         QColor col = backgroundBrush().color().darker();
-        mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col, QSize(100, 100)).toImage();
+        mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col).pixmap(100).toImage();
     }
 
     mRepeatZoomTimer->setInterval(20);
@@ -106,7 +106,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
         setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     }
 
-    mController->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
+    mController->getOverview()->setViewPort(this);
     mController->getCropWidget()->setWorldTransform(&mWorldMatrix);
     mController->getCropWidget()->setImageTransform(&mImgMatrix);
     mController->getCropWidget()->setImageRect(&mImgViewRect);
@@ -320,8 +320,6 @@ void DkViewPort::setImage(QImage newImg)
     if (mManipulatorWatcher.isRunning())
         mManipulatorWatcher.cancel();
 
-    mController->getOverview()->setImage(QImage()); // clear overview
-
     bool wasImageLoaded = !mImgStorage.isEmpty();
     bool isImageLoaded = !newImg.isNull();
     mImgStorage.setImage(newImg);
@@ -331,7 +329,7 @@ void DkViewPort::setImage(QImage newImg)
     if (mLoader->hasSvg() && !mLoader->isEdited())
         loadSvg();
 
-    mImgRect = QRectF(QPoint(), getImageSize());
+    mImgRect = QRectF(QPointF(), getImageSize());
 
     DkActionManager::instance().enableImageActions(!newImg.isNull());
 
@@ -356,7 +354,7 @@ void DkViewPort::setImage(QImage newImg)
     }
 
     mController->getPlayer()->startTimer();
-    mController->getOverview()->setImage(newImg); // TODO: maybe we could make use of the image pyramid here
+    mController->getOverview()->imageUpdated();
 
     mOldImgRect = mImgRect;
 
@@ -575,7 +573,7 @@ void DkViewPort::updateImageMatrix()
 
     mImgMatrix.reset();
 
-    QSize imgSize = getImageSize();
+    QSizeF imgSize = getImageSize();
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect()))
@@ -1167,7 +1165,7 @@ void DkViewPort::resizeEvent(QResizeEvent *event)
     centerImage();
     changeCursor();
 
-    mController->getOverview()->setViewPortRect(geometry());
+    // mController->getOverview()->setViewPortRect(geometry());
     mController->resize(width(), height());
 
     return QGraphicsView::resizeEvent(event);
@@ -1452,14 +1450,16 @@ void DkViewPort::setFullScreen(bool fullScreen)
 QPoint DkViewPort::mapToImage(const QPoint &windowPos) const
 {
     QPointF imgPos = mWorldMatrix.inverted().map(QPointF(windowPos));
-    imgPos = mImgMatrix.inverted().map(imgPos);
+    imgPos = (mImgMatrix.inverted() * devicePixelRatioF()).map(imgPos);
 
-    QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
+    QPoint p(qFloor(imgPos.x()), qFloor(imgPos.y()));
+    QSize sz = mImgStorage.size();
 
-    if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
+    if (p.x() < 0 || p.y() < 0 || p.x() >= sz.width() || p.y() >= sz.height()) {
         return QPoint(-1, -1);
+    }
 
-    return xy;
+    return p;
 }
 
 void DkViewPort::getPixelInfo(const QPoint &pos)
@@ -2363,7 +2363,7 @@ void DkViewPortFrameless::updateImageMatrix()
 
     mImgMatrix.reset();
 
-    QSize imgSize = getImageSize();
+    QSizeF imgSize = getImageSize();
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect())) {
@@ -2402,7 +2402,8 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(ttb, &DkTransferToolBar::colorTableChanged, this, &DkViewPortContrast::changeColorTable);
     connect(ttb, &DkTransferToolBar::channelChanged, this, &DkViewPortContrast::changeChannel);
     connect(ttb, &DkTransferToolBar::pickColorRequest, this, &DkViewPortContrast::pickColor);
-    connect(ttb, &DkTransferToolBar::tFEnabled, this, &DkViewPortContrast::enableTF);
+    connect(ttb, &DkTransferToolBar::tFEnabled, this, &DkViewPortContrast::updateImage);
+    connect(this, &DkViewPortContrast::cancelPickColor, ttb, &DkTransferToolBar::pickColorCancelled);
     connect(this, &DkViewPortContrast::tFSliderAdded, ttb, &DkTransferToolBar::insertSlider);
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
@@ -2414,15 +2415,9 @@ void DkViewPortContrast::changeChannel(int channel)
     if (channel < 0 || channel >= mImgs.size())
         return;
 
-    if (!mImgStorage.isEmpty()) {
-        mFalseColorImg = mImgs[channel];
-        mFalseColorImg.setColorTable(mColorTable);
-        mDrawFalseColorImg = true;
-
-        update();
-
-        drawImageHistogram();
-    }
+    mActiveChannel = channel;
+    if (mDrawFalseColorImg)
+        updateImage(true);
 }
 
 void DkViewPortContrast::changeColorTable(QGradientStops stops)
@@ -2484,30 +2479,8 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops)
         }
     }
 
-    mFalseColorImg.setColorTable(mColorTable);
-
-    update();
-}
-
-void DkViewPortContrast::draw(QPainter &painter, double opacity)
-{
-    if (!mDrawFalseColorImg || mSvg || mMovie) {
-        DkBaseViewPort::draw(painter, opacity);
-        return;
-    }
-
-    if (DkUtils::getMainWindow()->isFullScreen())
-        painter.setBackground(DkSettingsManager::param().slideShow().backgroundColor);
-
-    QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
-    QImage img = mImgStorage.image(dr.size());
-
-    // opacity == 1.0f -> do not show pattern if we crossfade two images
-    if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
-        drawTransparencyPattern(painter);
-
     if (mDrawFalseColorImg)
-        painter.drawImage(mImgViewRect, mFalseColorImg, mImgRect);
+        updateImage(true);
 }
 
 void DkViewPortContrast::setImage(QImage newImg)
@@ -2572,9 +2545,6 @@ void DkViewPortContrast::setImage(QImage newImg)
 
 #endif
 
-    mFalseColorImg = mImgs[mActiveChannel];
-    mFalseColorImg.setColorTable(mColorTable);
-
     // images with valid color table return img.isGrayScale() false...
     if (mSvg || mMovie)
         emit imageModeSet(mode_invalid_format);
@@ -2583,21 +2553,42 @@ void DkViewPortContrast::setImage(QImage newImg)
     else
         emit imageModeSet(mode_rgb);
 
-    update();
+    if (mDrawFalseColorImg) // we can skip update if disabled (already handled by parent)
+        updateImage(true);
 }
 
 void DkViewPortContrast::pickColor(bool enable)
 {
     mIsColorPickerActive = enable;
-    this->setCursor(Qt::CrossCursor);
+    if (enable) {
+        setCursor(Qt::CrossCursor);
+    } else {
+        unsetCursor();
+        emit cancelPickColor();
+    }
 }
 
-void DkViewPortContrast::enableTF(bool enable)
+void DkViewPortContrast::updateImage(bool enable)
 {
     mDrawFalseColorImg = enable;
-    update();
 
-    drawImageHistogram();
+    if (enable) {
+        QImage falseColorImg = mImgs[mActiveChannel];
+        falseColorImg.setColorTable(mColorTable);
+        mImgStorage.setImage(falseColorImg);
+    } else if (imageContainer()) {
+        mImgStorage.setImage(imageContainer()->image());
+        pickColor(false);
+    }
+
+    mController->getOverview()->imageUpdated();
+
+    // the histogram normally redraws from imageContainer, we want it to use the grayscale image
+    if (mController->getHistogram() && mController->getHistogram()->isVisible()) {
+        mController->getHistogram()->drawHistogram(getImage());
+    }
+
+    update();
 }
 
 void DkViewPortContrast::mousePressEvent(QMouseEvent *event)
@@ -2616,57 +2607,41 @@ void DkViewPortContrast::mouseMoveEvent(QMouseEvent *event)
 
 void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (mIsColorPickerActive) {
-        QPointF imgPos = mWorldMatrix.inverted().map(event->pos());
-        imgPos = mImgMatrix.inverted().map(imgPos);
-
-        QPoint xy = imgPos.toPoint();
-
-        bool isPointValid = true;
-
-        if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
-            isPointValid = false;
-
-        if (isPointValid) {
-            int colorIdx = mImgs[mActiveChannel].pixelIndex(xy);
-            qreal normedPos = (qreal)colorIdx / 255;
-            emit tFSliderAdded(normedPos);
-        }
-
-        // unsetCursor();
-        // isColorPickerActive = false;
-    } else
+    if (!mIsColorPickerActive) {
         DkViewPort::mouseReleaseEvent(event);
+        return;
+    }
+
+    QPoint p = mapToImage(event->position().toPoint());
+    if (p.x() < 0 || p.y() < 0)
+        return;
+
+    int colorIdx = mImgs[mActiveChannel].pixelIndex(p);
+    auto normedPos = (qreal)colorIdx / 255.0;
+    emit tFSliderAdded(normedPos);
+}
+
+void DkViewPortContrast::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (!mIsColorPickerActive)
+        DkViewPort::mouseDoubleClickEvent(event);
+    else
+        event->accept();
 }
 
 void DkViewPortContrast::keyPressEvent(QKeyEvent *event)
 {
-    if ((event->key() == Qt::Key_Escape) && mIsColorPickerActive) {
-        unsetCursor();
-        mIsColorPickerActive = false;
-        update();
-        return;
-    } else
+    if (mIsColorPickerActive && (event->key() == Qt::Key_Escape))
+        pickColor(false);
+    else
         DkViewPort::keyPressEvent(event);
 }
 
 QImage DkViewPortContrast::getImage() const
 {
     if (mDrawFalseColorImg)
-        return mFalseColorImg;
+        return mImgStorage.imageConst();
     else
-        return imageContainer() ? imageContainer()->image() : QImage();
+        return DkViewPort::getImage();
 }
-
-// in contrast mode: if the histogram widget is visible redraw the histogram from the selected image channel data
-void DkViewPortContrast::drawImageHistogram()
-{
-    if (mController->getHistogram() && mController->getHistogram()->isVisible()) {
-        if (mDrawFalseColorImg)
-            mController->getHistogram()->drawHistogram(mFalseColorImg);
-        else
-            mController->getHistogram()->drawHistogram(getImage());
-    }
-}
-
 }
