@@ -516,13 +516,18 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
 {
     eraseBackground(painter);
 
-    const QRectF displayRectF = mWorldMatrix.mapRect(mImgViewRect); // use float size for QPainter
-    const QRect displayRect = displayRectF.toRect(); // must use rounded size for 100%/AA
+    const QRectF displayRect = mWorldMatrix.mapRect(mImgViewRect); // use float size for QPainter
 
     // HiDPI: mImgViewRect is in logical pixels, we need physical for 100% scale and AA to work correctly
-    const QSize physicalSize = (displayRectF.size() * devicePixelRatioF()).toSize(); // rounded
+    const qreal dpr = devicePixelRatioF();
+    const QSizeF imgSizeF = displayRect.size() * dpr;
 
-    const QImage img = mImgStorage.image(physicalSize);
+    // round size UP to prevent artifacts, e.g. transparency pattern showing around the edges,
+    // the image may appear to shift slightly when toggling AA
+    const QSize reqSize{qCeil(imgSizeF.width()), qCeil(imgSizeF.height())};
+
+    // this may return the size we want or give the full size image and rescale in the background
+    const QImage img = mImgStorage.image(reqSize);
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
@@ -537,10 +542,18 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
         painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
     } else {
         painter.setWorldMatrixEnabled(false);
-        if (std::abs(physicalSize.width() - img.width()) < 1.0) { // close enough (< 1 pixel)
+        if (reqSize == img.size()) {
             // we are 100% or prescaled/antialiased, draw 1:1 pixels, avoiding any Qt transformation
             painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
-            painter.drawImage(displayRect, img);
+
+            // due to rounding, displayRectF.size()*dpr != image.size(), so make a small adjustment
+            // take half off each side to keep the image centered
+            QSizeF adj = (QSizeF(img.size()) / dpr - displayRect.size()) / 2.0;
+            qreal dx = adj.width();
+            qreal dy = adj.height();
+            QRectF adjusted = displayRect.adjusted(-dx, -dy, dx, dy);
+            painter.drawImage(adjusted, img);
+            // qDebug() << (adjusted.size() * dpr) - img.size();
         } else {
             // we are not prescaled
             // use smooth scale if we are downsampling
@@ -548,7 +561,7 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
             if (scaleFactor - std::numeric_limits<double>::epsilon() < 1.0)
                 painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-            painter.drawImage(displayRectF, img);
+            painter.drawImage(displayRect, img);
         }
         painter.setWorldMatrixEnabled(true);
     }
