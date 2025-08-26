@@ -578,9 +578,11 @@ void DkBaseViewPort::drawTransparencyPattern(QPainter &painter) const
     scaleIv.scale(mWorldMatrix.m11(), mWorldMatrix.m22());
     pt.setTransform(scaleIv.inverted());
 
+    painter.save();
     painter.setPen(QPen(Qt::NoPen)); // no border
     painter.setBrush(pt);
     painter.drawRect(mImgViewRect);
+    painter.restore();
 }
 
 void DkBaseViewPort::eraseBackground(QPainter &painter)
