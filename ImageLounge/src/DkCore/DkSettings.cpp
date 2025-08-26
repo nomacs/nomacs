@@ -435,7 +435,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     global_p.horZoomSkips = settings.value("horZoomSkips", global_p.horZoomSkips).toBool();
     global_p.doubleClickForFullscreen = settings.value("doubleClickForFullscreen", global_p.doubleClickForFullscreen)
                                             .toBool();
-    global_p.showBgImage = settings.value("showBgImage", global_p.showBgImage).toBool();
+    global_p.showLogoImage = settings.value("showBgImage", global_p.showLogoImage).toBool();
 
     settings.endGroup();
     // Display Settings --------------------------------------------------------------------
@@ -680,8 +680,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("horZoomSkips", global_p.horZoomSkips);
     if (force || global_p.doubleClickForFullscreen != global_d.doubleClickForFullscreen)
         settings.setValue("doubleClickForFullscreen", global_p.doubleClickForFullscreen);
-    if (force || global_p.showBgImage != global_d.showBgImage)
-        settings.setValue("showBgImage", global_p.showBgImage);
+    if (force || global_p.showLogoImage != global_d.showLogoImage)
+        settings.setValue("showBgImage", global_p.showLogoImage);
 
     settings.endGroup();
     // Display Settings --------------------------------------------------------------------
@@ -902,7 +902,7 @@ void DkSettings::setToDefaultSettings()
     global_p.zoomOnWheel = true;
     global_p.horZoomSkips = true;
     global_p.doubleClickForFullscreen = true;
-    global_p.showBgImage = true;
+    global_p.showLogoImage = true;
 
 #ifdef Q_OS_LINUX
     sync_p.switchModifier = true;
