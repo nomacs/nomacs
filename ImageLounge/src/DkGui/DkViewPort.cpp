@@ -80,6 +80,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     if (mImgBg.isNull() && DkSettingsManager::param().global().showBgImage) {
         QColor col = backgroundBrush().color().darker();
         mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col).pixmap(100).toImage();
+        mImgBg.setDevicePixelRatio(1.0); // handle device scaling ourselves
     }
 
     mRepeatZoomTimer->setInterval(20);
@@ -1018,18 +1019,27 @@ void DkViewPort::eraseBackground(QPainter &painter)
 {
     DkBaseViewPort::eraseBackground(painter);
 
-    // fit to mViewport
-    QSize s = mImgBg.size();
+    // draw logo/bg.png in the bottom-right corner, 1:1 pixels unless too big
+    painter.save();
+    painter.setWorldMatrixEnabled(false);
+    painter.setTransform(QTransform());
+
+    qreal dpr = devicePixelRatioF();
+    QSizeF s = mImgBg.size() / dpr;
+
     if (s.width() > (float)(size().width() * 0.5))
         s = s * ((size().width() * 0.5) / s.width());
 
     if (s.height() > size().height() * 0.6)
         s = s * ((size().height() * 0.6) / s.height());
 
-    QRect bgRect(QPoint(), s);
-    bgRect.moveBottomRight(QPoint(width() - 20, height() - 20));
+    QRectF bgRect(QPointF(), s);
+    bgRect.moveBottomRight(geometry().bottomRight() - QPoint(20, 20));
 
-    painter.drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
+    painter.translate(bgRect.topLeft());
+    painter.scale(1.0 / dpr, 1.0 / dpr);
+    painter.drawImage(QRectF(QPointF(), bgRect.size() * dpr), mImgBg);
+    painter.restore();
 }
 
 void DkViewPort::loadMovie()
