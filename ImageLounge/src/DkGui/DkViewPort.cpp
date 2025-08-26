@@ -2118,7 +2118,13 @@ void DkViewPortFrameless::paintEvent(QPaintEvent *event)
     DkViewPort::paintEvent(event);
 }
 
-void DkViewPortFrameless::draw(QPainter &painter, double)
+void DkViewPortFrameless::draw(QPainter &painter, double opacity)
+{
+    opacity = 1.0; // slideshow: prevents desktop from showing where the faded images overlap
+    DkViewPort::draw(painter, opacity);
+}
+
+void DkViewPortFrameless::eraseBackground(QPainter &painter)
 {
     if (DkUtils::getMainWindow()->isFullScreen()) {
         QColor col = QColor(0, 0, 0);
@@ -2128,24 +2134,9 @@ void DkViewPortFrameless::draw(QPainter &painter, double)
         painter.setWorldMatrixEnabled(true);
     }
 
-    if (mSvg && mSvg->isValid()) {
-        mSvg->render(&painter, mImgViewRect);
-    } else if (mMovie && mMovie->isValid()) {
-        painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
-    } else {
-        QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
-        QImage img = mImgStorage.image(displayRect.size());
+    if (!mImgStorage.isEmpty())
+        return;
 
-        // opacity == 1.0f -> do not show pattern if we crossfade two images
-        if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel())
-            drawTransparencyPattern(painter);
-
-        painter.drawImage(mImgViewRect, img, QRect(QPoint(), img.size()));
-    }
-}
-
-void DkViewPortFrameless::eraseBackground(QPainter &painter)
-{
     painter.setWorldTransform(mImgMatrix);
     painter.setBrush(QColor(127, 144, 144, 200));
     painter.setPen(QColor(100, 100, 100, 255));
