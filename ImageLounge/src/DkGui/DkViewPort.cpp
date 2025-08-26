@@ -78,8 +78,9 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     // try loading a custom file
     mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
     if (mImgBg.isNull() && DkSettingsManager::param().global().showLogoImage) {
-        QColor col = backgroundBrush().color().darker();
-        mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col).pixmap(100).toImage();
+        QColor col = Qt::black;
+        col.setAlpha(90);
+        mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col).pixmap(80).toImage();
         mImgBg.setDevicePixelRatio(1.0); // handle device scaling ourselves
     }
 
