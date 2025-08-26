@@ -446,9 +446,9 @@ void DkGeneralPreference::createLayout()
             this,
             &DkGeneralPreference::onDoubleClickForFullscreenToggled);
 
-    auto *cbShowBgImage = new QCheckBox(tr("Show Background Image"), this);
+    auto *cbShowBgImage = new QCheckBox(tr("Show Nomacs Logo"), this);
     cbShowBgImage->setToolTip(tr("If checked, the nomacs logo is shown in the bottom right corner."));
-    cbShowBgImage->setChecked(DkSettingsManager::param().global().showBgImage);
+    cbShowBgImage->setChecked(DkSettingsManager::param().global().showLogoImage);
     connect(cbShowBgImage, &QCheckBox::toggled, this, &DkGeneralPreference::onShowBgImageToggled);
 
     auto *cbEnableAnimation = new QCheckBox(tr("Enable Animations"), this);
@@ -598,8 +598,8 @@ void DkGeneralPreference::onDoubleClickForFullscreenToggled(bool checked) const
 
 void DkGeneralPreference::onShowBgImageToggled(bool checked) const
 {
-    if (DkSettingsManager::param().global().showBgImage != checked) {
-        DkSettingsManager::param().global().showBgImage = checked;
+    if (DkSettingsManager::param().global().showLogoImage != checked) {
+        DkSettingsManager::param().global().showLogoImage = checked;
         showRestartLabel();
     }
 }
