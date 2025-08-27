@@ -330,11 +330,6 @@ QImage DkBaseViewPort::getCurrentImageRegion()
     return imgR;
 }
 
-bool DkBaseViewPort::unloadImage(bool)
-{
-    return true;
-}
-
 // events --------------------------------------------------------------------
 void DkBaseViewPort::paintEvent(QPaintEvent *event)
 {

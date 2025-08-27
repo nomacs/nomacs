@@ -131,7 +131,6 @@ public slots:
     void scrollVertically(int val);
     void scrollHorizontally(int val);
 
-    virtual bool unloadImage(bool fileChange = true);
     virtual void setImage(QImage newImg);
     void hideCursor();
 
