@@ -223,7 +223,6 @@ void DkImgTransformationsViewPort::init()
 
     mIntrRect = new DkInteractionRects(this);
     mSkewEstimator = DkSkewEstimator(this);
-
 }
 
 QPoint DkImgTransformationsViewPort::map(const QPointF &pos)
@@ -407,87 +406,79 @@ void DkImgTransformationsViewPort::mouseReleaseEvent(QMouseEvent *event)
 
 void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
 {
-    QImage inImage = QImage();
-    QRect imgRect = QRect();
+    Q_UNUSED(event)
 
-    if (parent()) {
-        auto *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
-        if (mViewport) {
-            imgRect = mViewport->getImage().rect();
-            inImage = QImage(mViewport->getImage());
-        }
-    }
+    auto *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+    if (!mViewport)
+        return;
 
-    QRect imgRectT = imgRect;
-    QTransform affineTransform = QTransform();
+    const QImage img = mViewport->getImage();
+    const QRect imgRect = img.rect();
 
-    QPainter painter(this);
-
-    painter.fillRect(this->rect(), nmc::DkSettingsManager::param().display().bgColor);
-
-    // This is true 16:9 code (sorry : )
-    if (mWorldMatrix)
-        painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));
+    QTransform imgMat;
 
     if (mSelectedMode == mode_scale) {
-        painter.save();
-
-        imgRectT.setSize(QSizeF(imgRectT.width() * mScaleValues.x(), imgRectT.height() * mScaleValues.y()).toSize());
-        imgRectT.translate(QPointF(imgRectT.width() * 0.5 * (1 - mScaleValues.x()) * (1 / mScaleValues.x()),
-                                   imgRectT.height() * 0.5 * (1 - mScaleValues.y()) * (1 / mScaleValues.y()))
-                               .toPoint());
-
-        affineTransform.scale(mScaleValues.x(), mScaleValues.y());
-        affineTransform.translate(inImage.width() * 0.5 * (1 - mScaleValues.x()) * (1 / mScaleValues.x()),
-                                  inImage.height() * 0.5 * (1 - mScaleValues.y()) * (1 / mScaleValues.y()));
+        imgMat.scale(mScaleValues.x(), mScaleValues.y());
+        imgMat.translate(img.width() * 0.5 * (1.0 - mScaleValues.x()) * (1.0 / mScaleValues.x()),
+                         img.height() * 0.5 * (1.0 - mScaleValues.y()) * (1.0 / mScaleValues.y()));
     } else if (mSelectedMode == mode_rotate) {
-        painter.save();
+        double diag = qSqrt(img.height() * img.height() + img.width() * img.width());
+        double initAngle = qAcos(img.width() / diag) * 180 / PI;
 
-        double diag = qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width());
-        double initAngle = qAcos(inImage.width() / diag) * 180 / PI;
-        affineTransform.translate(0.5 * inImage.width() - diag * 0.5 * qCos((initAngle + mRotationValue) * PI / 180.0),
-                                  0.5 * inImage.height() - diag * 0.5 * qSin((initAngle + mRotationValue) * PI / 180.0));
-        affineTransform.rotate(mRotationValue);
+        imgMat.translate(0.5 * img.width() - diag * 0.5 * qCos((initAngle + mRotationValue) * PI / 180.0),
+                         0.5 * img.height() - diag * 0.5 * qSin((initAngle + mRotationValue) * PI / 180.0));
+        imgMat.rotate(mRotationValue);
 
-        painter.fillRect(affineTransform.mapRect(inImage.rect()), Qt::white);
-        imgRectT = affineTransform.mapRect(inImage.rect());
     } else if (mSelectedMode == mode_shear) {
-        affineTransform.shear(mShearValues.x(), mShearValues.y());
+        imgMat.shear(mShearValues.x(), mShearValues.y());
 
-        QRect transfRect = affineTransform.mapRect(inImage.rect());
+        QRect transfRect = imgMat.mapRect(imgRect);
         int signX = (mShearValues.x() < 0) ? -1 : 1;
         int signY = (mShearValues.y() < 0) ? -1 : 1;
 
-        affineTransform.reset();
-        affineTransform.translate(signX * (inImage.width() / 2 - transfRect.width() / 2),
-                                  signY * (inImage.height() / 2 - transfRect.height() / 2));
-        affineTransform.shear(mShearValues.x(), mShearValues.y());
-
-        painter.fillRect(affineTransform.mapRect(inImage.rect()), Qt::white);
+        imgMat.reset();
+        imgMat.translate(signX * (img.width() / 2 - transfRect.width() / 2),
+                         signY * (img.height() / 2 - transfRect.height() / 2));
+        imgMat.shear(mShearValues.x(), mShearValues.y());
     }
 
-    affineTransform *= painter.transform();
+    QPainter painter(this);
 
-    painter.setTransform(affineTransform);
+    // We are an overlay on the viewport, prevent the viewport image from showing
+    painter.fillRect(this->rect(), nmc::DkSettingsManager::param().display().bgColor);
 
-    painter.drawImage(inImage.rect(), inImage);
+    // set the transform to get to the viewport from image space
+    QTransform worldMat;
+    if (mWorldMatrix)
+        worldMat = (*mImgMatrix) * (*mWorldMatrix);
 
+    painter.setWorldTransform(worldMat);
+
+    const QRect imgRectT = imgMat.mapRect(imgRect);
+    if (mSelectedMode != mode_scale)
+        painter.fillRect(imgRectT, Qt::white); // TODO: user option
+
+    painter.setWorldTransform(imgMat, true);
+    painter.drawImage(imgRect, img);
+
+    painter.setPen(QColor(255, 255, 255, 150));
     drawGuide(&painter, QPolygonF(QRectF(imgRect)), mGuideMode);
     painter.drawRect(imgRect);
 
     if (mSelectedMode == mode_scale) {
+        // control handles
         mIntrRect->updateRects(imgRectT);
-        painter.restore();
+        painter.setTransform(worldMat);
         mIntrRect->draw(&painter);
     } else if (mSelectedMode == mode_rotate) {
         if (mAngleLinesEnabled) {
+            // lines detected by auto rotate
             QPen linePen(nmc::DkSettingsManager::param().display().highlightColor,
                          qCeil(2.0 * imgRect.width() / 1000.0),
                          Qt::SolidLine);
             QColor hCAlpha(50, 50, 50);
             hCAlpha.setAlpha(200);
 
-            // QPen linePen(Qt::red, qCeil(3.0 * imgRect.width() / 1000.0), Qt::SolidLine);
             QVector<QVector4D> lines = mSkewEstimator.getLines();
             QVector<int> lineTypes = mSkewEstimator.getLineTypes();
             for (int i = 0; i < lines.size(); i++) {
@@ -498,13 +489,13 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
             }
         }
 
-        painter.restore();
+        painter.setTransform(worldMat);
+
         if (mRotCropEnabled) {
-            double newHeight = -((double)(inImage.height())
-                                 - (double)(inImage.width()) * qAbs(qTan(mRotationValue * PI / 180)))
+            double newHeight = -((double)(img.height()) - (double)(img.width()) * qAbs(qTan(mRotationValue * PI / 180)))
                 / (qAbs(qTan(mRotationValue * PI / 180)) * qAbs(qSin(mRotationValue * PI / 180))
                    - qAbs(qCos(mRotationValue * PI / 180)));
-            QSize cropSize = QSize(qRound(((double)(inImage.width()) - newHeight * qAbs(qSin(mRotationValue * PI / 180)))
+            QSize cropSize = QSize(qRound(((double)(img.width()) - newHeight * qAbs(qSin(mRotationValue * PI / 180)))
                                           / qAbs(qCos(mRotationValue * PI / 180))),
                                    qRound(newHeight));
             QRect cropRect = QRect(QPointF(mRotationCenter.x() - 0.5 * cropSize.width(),
@@ -512,9 +503,8 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
                                        .toPoint(),
                                    cropSize);
 
-            if (cropSize.width() <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width())
-                && cropSize.height()
-                    <= qSqrt(inImage.height() * inImage.height() + inImage.width() * inImage.width())) {
+            if (cropSize.width() <= qSqrt(img.height() * img.height() + img.width() * img.width())
+                && cropSize.height() <= qSqrt(img.height() * img.height() + img.width() * img.width())) {
                 QBrush cropBrush = QBrush(QColor(128, 128, 128, 200));
                 painter.fillRect(imgRectT.left(),
                                  imgRectT.top(),
@@ -541,23 +531,12 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
             }
         }
     }
-
-    painter.end();
-
-    DkPluginViewPort::paintEvent(event);
 }
 
 void DkImgTransformationsViewPort::drawGuide(QPainter *painter, const QPolygonF &p, int paintMode)
 {
     if (p.isEmpty() || paintMode == guide_no_guide)
         return;
-
-    QColor col = painter->pen().color();
-    col.setAlpha(150);
-    QPen pen = painter->pen();
-    QPen cPen = pen;
-    cPen.setColor(col);
-    painter->setPen(cPen);
 
     // vertical
     nmc::DkVector lp = p[1] - p[0]; // parallel to drawing
@@ -594,8 +573,6 @@ void DkImgTransformationsViewPort::drawGuide(QPainter *painter, const QPolygonF 
         painter->drawLine(l);
         offsetVec += offset;
     }
-
-    painter->setPen(pen); // revert painter
 }
 
 QImage DkImgTransformationsViewPort::getTransformedImage()
