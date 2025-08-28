@@ -43,7 +43,6 @@ class QComboBox;
 
 namespace nmp
 {
-
 class DkImgTransformationsViewPort;
 class DkImgTransformationsToolBar;
 class DkInteractionRects;
@@ -130,28 +129,28 @@ protected:
     void init();
     void drawGuide(QPainter *painter, const QPolygonF &p, int paintMode);
 
-    bool cancelTriggered;
-    bool panning;
-    DkImgTransformationsToolBar *imgTransformationsToolbar;
-    QCursor defaultCursor;
-    DkInteractionRects *intrRect;
-    QPointF scaleValues;
-    QPointF shearValues;
-    QPointF shearValuesTemp;
-    QPointF shearValuesDir;
-    bool insideIntrRect;
-    int intrIdx;
-    int selectedMode;
-    int defaultMode;
-    double rotationValue;
-    double rotationValueTemp;
-    QPoint referencePoint;
-    QPoint rotationCenter;
-    double imgRatioAngle;
-    QCursor rotatingCursor;
-    bool rotCropEnabled;
-    DkSkewEstimator skewEstimator;
-    bool angleLinesEnabled;
+    bool mCancelTriggered;
+    bool mPanning;
+    DkImgTransformationsToolBar *mImgTransformationsToolbar;
+    QCursor mDefaultCursor;
+    DkInteractionRects *mIntrRect;
+    QPointF mScaleValues;
+    QPointF mShearValues;
+    QPointF mShearValuesTemp;
+    QPointF mShearValuesDir;
+    bool mInsideIntrRect;
+    int mIntrIdx;
+    int mSelectedMode;
+    int mDefaultMode;
+    double mRotationValue;
+    double mRotationValueTemp;
+    QPoint mReferencePoint;
+    QPoint mRotationCenter;
+    double mImgRatioAngle;
+    QCursor mRotatingCursor;
+    bool mRotCropEnabled;
+    DkSkewEstimator mSkewEstimator;
+    bool mAngleLinesEnabled;
     int mGuideMode;
 };
 
@@ -229,22 +228,19 @@ protected:
     void modifyLayout(int mode);
     void updateAffineTransformPluginSettings(int val, int type);
 
-    QDoubleSpinBox *scaleXBox;
-    QDoubleSpinBox *scaleYBox;
-    QDoubleSpinBox *shearXBox;
-    QDoubleSpinBox *shearYBox;
-    QDoubleSpinBox *rotationBox;
-    QCheckBox *cropEnabledBox;
-    QPushButton *autoRotateButton;
-    QCheckBox *showLinesBox;
-    QMap<QString, QAction *> toolbarWidgetList;
-    QComboBox *guideBox;
+    QDoubleSpinBox *mScaleXBox;
+    QDoubleSpinBox *mScaleYBox;
+    QDoubleSpinBox *mShearXBox;
+    QDoubleSpinBox *mShearYBox;
+    QDoubleSpinBox *mRotationBox;
+    QCheckBox *mCropEnabledBox;
+    QPushButton *mAutoRotateButton;
+    QCheckBox *mShowLinesBox;
+    QMap<QString, QAction *> mToolbarWidgetList;
+    QComboBox *mGuideBox;
 
-    QAction *panAction;
-    QAction *scaleAction;
-    QAction *rotateAction;
-    QAction *shearAction;
-    QVector<QIcon> icons; // needed for colorizing
+    QAction *mPanAction;
+    QVector<QIcon> mIcons; // needed for colorizing
 };
 
 class DkInteractionRects : public QWidget
@@ -268,12 +264,11 @@ public:
 protected:
     void init();
 
-    QVector<QRect> intrRect;
-    QVector<QCursor> intrCursors;
-    QVector<QPointF> initialPoints;
-    QSize initialSize;
-
-    QSize size;
+    QVector<QRect> mIntrRect;
+    QVector<QCursor> mIntrCursors;
+    QVector<QPointF> mInitialPoints;
+    QSize mInitialSize;
+    QSize mSize;
 };
 
 };
