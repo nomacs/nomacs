@@ -833,7 +833,6 @@ DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString &title,
 {
     createIcons();
     createLayout(defaultMode);
-    QMetaObject::connectSlotsByName(this);
 }
 
 DkImgTransformationsToolBar::~DkImgTransformationsToolBar() = default;
@@ -861,31 +860,55 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     auto *applyAction = new QAction(mIcons[apply_icon], tr("Apply (ENTER)"), this);
     applyAction->setShortcuts(enterSc);
     applyAction->setObjectName("applyAction");
+    connect(applyAction, &QAction::triggered, this, &DkImgTransformationsToolBar::applySignal);
 
     auto *cancelAction = new QAction(mIcons[cancel_icon], tr("Cancel (ESC)"), this);
     cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
     cancelAction->setObjectName("cancelAction");
+    connect(cancelAction, &QAction::triggered, this, &DkImgTransformationsToolBar::cancelSignal);
 
     mPanAction = new QAction(mIcons[pan_icon], tr("Pan"), this);
     mPanAction->setShortcut(QKeySequence(Qt::Key_P));
     mPanAction->setObjectName("panAction");
     mPanAction->setCheckable(true);
     mPanAction->setChecked(false);
+    connect(mPanAction, &QAction::toggled, this, &DkImgTransformationsToolBar::panSignal);
 
     auto *scaleAction = new QAction(mIcons[scale_icon], tr("Scale"), this);
     scaleAction->setShortcut(QKeySequence(Qt::Key_S));
     scaleAction->setObjectName("scaleAction");
     scaleAction->setCheckable(true);
+    connect(scaleAction, &QAction::toggled, this, [this](bool checked) {
+        if (checked) {
+            saveSetting(mode_scale, settings_mode);
+            modifyLayout(mode_scale);
+            emit modeChangedSignal(mode_scale);
+        }
+    });
 
     auto *rotateAction = new QAction(mIcons[rotate_icon], tr("Rotate"), this);
     rotateAction->setShortcut(QKeySequence(Qt::Key_R));
     rotateAction->setObjectName("rotateAction");
     rotateAction->setCheckable(true);
+    connect(rotateAction, &QAction::toggled, this, [this](bool checked) {
+        if (checked) {
+            saveSetting(mode_rotate, settings_mode);
+            modifyLayout(mode_rotate);
+            emit modeChangedSignal(mode_rotate);
+        }
+    });
 
     auto *shearAction = new QAction(mIcons[shear_icon], tr("Shear"), this);
     shearAction->setShortcut(QKeySequence(Qt::Key_H));
     shearAction->setObjectName("shearAction");
     shearAction->setCheckable(true);
+    connect(shearAction, &QAction::toggled, this, [this](bool checked) {
+        if (checked) {
+            saveSetting(mode_shear, settings_mode);
+            modifyLayout(mode_shear);
+            emit modeChangedSignal(mode_shear);
+        }
+    });
 
     // scale X value
     mScaleXBox = new QDoubleSpinBox(this);
@@ -896,6 +919,7 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mScaleXBox->setDecimals(2);
     mScaleXBox->setToolTip(tr("Scale in x direction"));
     mScaleXBox->setStatusTip(mScaleXBox->toolTip());
+    connect(mScaleXBox, &QDoubleSpinBox::valueChanged, this, &DkImgTransformationsToolBar::scaleXValSignal);
 
     // scale Y value
     mScaleYBox = new QDoubleSpinBox(this);
@@ -906,6 +930,7 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mScaleYBox->setDecimals(2);
     mScaleYBox->setToolTip(tr("Scale in y direction"));
     mScaleYBox->setStatusTip(mScaleYBox->toolTip());
+    connect(mScaleYBox, &QDoubleSpinBox::valueChanged, this, &DkImgTransformationsToolBar::scaleYValSignal);
 
     // rotation value
     mRotationBox = new QDoubleSpinBox(this);
@@ -919,12 +944,17 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     QString tip = tr("Rotation angle [-180%1,180%2]").arg(dk_degree_str).arg(dk_degree_str);
     mRotationBox->setToolTip(tip);
     mRotationBox->setStatusTip(tip);
+    connect(mRotationBox, &QDoubleSpinBox::valueChanged, this, [this](double val) {
+        mRotationBox->setValue(val);
+        emit rotationValSignal(val);
+    });
 
     // auto rotation selection
     mAutoRotateButton = new QPushButton(tr("Auto &Rotate"), this);
     mAutoRotateButton->setObjectName("autoRotateButton");
     mAutoRotateButton->setToolTip(tr("Automatically rotate image"));
     mAutoRotateButton->setStatusTip(mAutoRotateButton->toolTip());
+    connect(mAutoRotateButton, &QPushButton::pressed, this, &DkImgTransformationsToolBar::calculateAutoRotationSignal);
 
     // show lines for automatic angle detection
     mShowLinesBox = new QCheckBox(tr("Show Angle Lines"), this);
@@ -933,6 +963,10 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mShowLinesBox->setToolTip(tr("Show lines for angle detection."));
     mShowLinesBox->setStatusTip(
         tr("Show lines (red) for angle detection. Green lines correspond to the selected angle."));
+    connect(mShowLinesBox, &QCheckBox::checkStateChanged, this, [this](Qt::CheckState state) {
+        saveSetting(state, settings_lines);
+        emit showLinesSignal(state == Qt::Checked);
+    });
 
     // crop rotated image
     mCropEnabledBox = new QCheckBox(tr("Crop Image"), this);
@@ -940,6 +974,10 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mCropEnabledBox->setCheckState(Qt::Unchecked);
     mCropEnabledBox->setToolTip(tr("Crop rotated image if possible"));
     mCropEnabledBox->setStatusTip(mCropEnabledBox->toolTip());
+    connect(mCropEnabledBox, &QCheckBox::checkStateChanged, this, [this](Qt::CheckState state) {
+        saveSetting(state, settings_crop);
+        emit cropEnabledSignal(state == Qt::Checked);
+    });
 
     // shear X value
     mShearXBox = new QDoubleSpinBox(this);
@@ -950,6 +988,7 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mShearXBox->setDecimals(2);
     mShearXBox->setToolTip(tr("Shear in x direction"));
     mShearXBox->setStatusTip(mShearXBox->toolTip());
+    connect(mShearXBox, &QDoubleSpinBox::valueChanged, this, &DkImgTransformationsToolBar::shearXValSignal);
 
     // shear Y value
     mShearYBox = new QDoubleSpinBox(this);
@@ -960,6 +999,7 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mShearYBox->setDecimals(2);
     mShearYBox->setToolTip(tr("Shear in y direction"));
     mShearYBox->setStatusTip(mShearYBox->toolTip());
+    connect(mShearYBox, &QDoubleSpinBox::valueChanged, this, &DkImgTransformationsToolBar::shearYValSignal);
 
     // crop customization
     QStringList guides;
@@ -971,28 +1011,15 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mGuideBox->setObjectName("guideBox");
     mGuideBox->setToolTip(tr("Show Guides in the Preview"));
     mGuideBox->setStatusTip(mGuideBox->toolTip());
+    connect(mGuideBox, &QComboBox::currentIndexChanged, this, [this](int index) {
+        saveSetting(index, settings_guide);
+        emit guideStyleSignal(index);
+    });
 
     auto *modesGroup = new QActionGroup(this);
     modesGroup->addAction(scaleAction);
     modesGroup->addAction(rotateAction);
     modesGroup->addAction(shearAction);
-
-    switch (defaultMode) {
-    case mode_scale:
-        scaleAction->setChecked(true);
-        break;
-    case mode_rotate:
-        rotateAction->setChecked(true);
-        break;
-    case mode_shear:
-        shearAction->setChecked(true);
-        break;
-    default:
-        scaleAction->setChecked(true);
-        break;
-    }
-
-    mToolbarWidgetList = QMap<QString, QAction *>();
 
     addAction(applyAction);
     addAction(cancelAction);
@@ -1015,7 +1042,20 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     addSeparator();
     addWidget(mGuideBox);
 
-    modifyLayout(defaultMode);
+    switch (defaultMode) {
+    case mode_scale:
+        scaleAction->setChecked(true);
+        break;
+    case mode_rotate:
+        rotateAction->setChecked(true);
+        break;
+    case mode_shear:
+        shearAction->setChecked(true);
+        break;
+    default:
+        scaleAction->setChecked(true);
+        break;
+    }
 }
 
 void DkImgTransformationsToolBar::modifyLayout(int mode)
@@ -1079,97 +1119,6 @@ void DkImgTransformationsToolBar::setVisible(bool visible)
     QToolBar::setVisible(visible);
 }
 
-void DkImgTransformationsToolBar::on_applyAction_triggered()
-{
-    emit applySignal();
-}
-
-void DkImgTransformationsToolBar::on_cancelAction_triggered()
-{
-    emit cancelSignal();
-}
-
-void DkImgTransformationsToolBar::on_panAction_toggled(bool checked)
-{
-    emit panSignal(checked);
-}
-
-void DkImgTransformationsToolBar::on_scaleAction_toggled(bool checked)
-{
-    if (checked) {
-        updateAffineTransformPluginSettings(mode_scale, settings_mode);
-        modifyLayout(mode_scale);
-        emit modeChangedSignal(mode_scale);
-    }
-}
-
-void DkImgTransformationsToolBar::on_rotateAction_toggled(bool checked)
-{
-    if (checked) {
-        updateAffineTransformPluginSettings(mode_rotate, settings_mode);
-        modifyLayout(mode_rotate);
-        emit modeChangedSignal(mode_rotate);
-    }
-}
-
-void DkImgTransformationsToolBar::on_shearAction_toggled(bool checked)
-{
-    if (checked) {
-        updateAffineTransformPluginSettings(mode_shear, settings_mode);
-        modifyLayout(mode_shear);
-        emit modeChangedSignal(mode_shear);
-    }
-}
-
-void DkImgTransformationsToolBar::on_scaleXBox_valueChanged(double val)
-{
-    emit scaleXValSignal(val);
-}
-
-void DkImgTransformationsToolBar::on_scaleYBox_valueChanged(double val)
-{
-    emit scaleYValSignal(val);
-}
-
-void DkImgTransformationsToolBar::on_shearXBox_valueChanged(double val)
-{
-    emit shearXValSignal(val);
-}
-
-void DkImgTransformationsToolBar::on_shearYBox_valueChanged(double val)
-{
-    emit shearYValSignal(val);
-}
-
-void DkImgTransformationsToolBar::on_rotationBox_valueChanged(double val)
-{
-    mRotationBox->setValue(val);
-    emit rotationValSignal(val);
-}
-
-void DkImgTransformationsToolBar::on_autoRotateButton_clicked()
-{
-    emit calculateAutoRotationSignal();
-}
-
-void DkImgTransformationsToolBar::on_showLinesBox_stateChanged(int val)
-{
-    updateAffineTransformPluginSettings(val, settings_lines);
-    emit showLinesSignal((val == Qt::Checked));
-}
-
-void DkImgTransformationsToolBar::on_cropEnabledBox_stateChanged(int val)
-{
-    updateAffineTransformPluginSettings(val, settings_crop);
-    emit cropEnabledSignal((val == Qt::Checked));
-}
-
-void DkImgTransformationsToolBar::on_guideBox_currentIndexChanged(int val)
-{
-    updateAffineTransformPluginSettings(val, settings_guide);
-    emit guideStyleSignal(val);
-}
-
 void DkImgTransformationsToolBar::setRotationValue(double val)
 {
     if (val > 180)
@@ -1204,7 +1153,7 @@ void DkImgTransformationsToolBar::setAngleLineState(int val)
     mShowLinesBox->setChecked(val);
 }
 
-void DkImgTransformationsToolBar::updateAffineTransformPluginSettings(int val, int type)
+void DkImgTransformationsToolBar::saveSetting(int val, int type)
 {
     QSettings settings;
 
