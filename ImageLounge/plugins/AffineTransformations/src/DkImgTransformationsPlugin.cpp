@@ -227,13 +227,11 @@ void DkImgTransformationsViewPort::init()
 
 QPoint DkImgTransformationsViewPort::map(const QPointF &pos)
 {
-    QPoint posM = pos.toPoint();
-    if (mWorldMatrix)
-        posM = mWorldMatrix->inverted().map(posM);
-    if (mImgMatrix)
-        posM = mImgMatrix->inverted().map(posM);
+    if (!mWorldMatrix)
+        return {};
 
-    return posM;
+    QTransform tx = mWorldMatrix->inverted() * mImgMatrix->inverted() * devicePixelRatioF();
+    return tx.map(pos).toPoint();
 }
 
 void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
@@ -408,11 +406,11 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
 
-    auto *mViewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
-    if (!mViewport)
+    auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+    if (!viewport)
         return;
 
-    const QImage img = mViewport->getImage();
+    const QImage img = viewport->getImage();
     const QRect imgRect = img.rect();
 
     QTransform imgMat;
@@ -447,10 +445,9 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
     // We are an overlay on the viewport, prevent the viewport image from showing
     painter.fillRect(this->rect(), nmc::DkSettingsManager::param().display().bgColor);
 
-    // set the transform to get to the viewport from image space
-    QTransform worldMat;
-    if (mWorldMatrix)
-        worldMat = (*mImgMatrix) * (*mWorldMatrix);
+    // set the transform from image space to viewport
+    QTransform worldMat = viewport->getImageMatrix() * viewport->getWorldMatrix();
+    worldMat.scale(1.0 / devicePixelRatioF(), 1.0 / devicePixelRatioF());
 
     painter.setWorldTransform(worldMat);
 
@@ -459,6 +456,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
         painter.fillRect(imgRectT, Qt::white); // TODO: user option
 
     painter.setWorldTransform(imgMat, true);
+
     painter.drawImage(imgRect, img);
 
     painter.setPen(QColor(255, 255, 255, 150));
