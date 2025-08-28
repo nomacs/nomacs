@@ -87,7 +87,8 @@ public:
     void setVisible(bool visible) override;
 
 protected:
-    nmc::DkPluginViewPort *mViewport = nullptr;
+    DkImgTransformationsViewPort *mViewport = nullptr;
+    DkImgTransformationsToolBar *mToolBar = nullptr;
 };
 
 class DkImgTransformationsViewPort : public nmc::DkPluginViewPort
@@ -96,10 +97,30 @@ class DkImgTransformationsViewPort : public nmc::DkPluginViewPort
 
 public:
     explicit DkImgTransformationsViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkImgTransformationsViewPort() override;
+    ~DkImgTransformationsViewPort() override = default;
 
     bool isCanceled();
     QImage getTransformedImage();
+
+    int defaultMode() const
+    {
+        return mDefaultMode;
+    }
+
+    int guideMode() const
+    {
+        return mGuideMode;
+    }
+
+    bool rotationCropEnabled() const
+    {
+        return mRotCropEnabled;
+    }
+
+    bool angleLinesEnabled() const
+    {
+        return mAngleLinesEnabled;
+    }
 
 public slots:
     void setPanning(bool checked);
@@ -115,10 +136,12 @@ public slots:
     void setCropEnabled(bool enabled);
     void setAngleLinesEnabled(bool enabled);
     void setGuideStyle(int guideMode);
-
-protected slots:
-
     void setMode(int mode);
+
+signals:
+    void rotationChanged(qreal &);
+    void scaleChanged(const QPointF &);
+    void shearChanged(const QPointF &);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -131,7 +154,6 @@ protected:
 
     bool mCancelTriggered;
     bool mPanning;
-    DkImgTransformationsToolBar *mImgTransformationsToolbar;
     QCursor mDefaultCursor;
     DkInteractionRects *mIntrRect;
     QPointF mScaleValues;
