@@ -100,8 +100,76 @@ QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(
 
 bool DkImgTransformationsPlugin::createViewPort(QWidget *parent)
 {
-    Q_UNUSED(parent);
-    mViewport = new DkImgTransformationsViewPort();
+    mViewport = new DkImgTransformationsViewPort(parent);
+
+    mToolBar = new DkImgTransformationsToolBar(tr("ImgTransformations Toolbar"), mViewport->defaultMode(), parent);
+
+    mToolBar->setCropState(mViewport->rotationCropEnabled() ? Qt::Checked : Qt::Unchecked);
+    mToolBar->setGuideLineState(mViewport->guideMode());
+    mToolBar->setAngleLineState(mViewport->angleLinesEnabled() ? Qt::Checked : Qt::Unchecked);
+
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::scaleXValSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setScaleXValue);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::scaleYValSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setScaleYValue);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::shearXValSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setShearXValue);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::shearYValSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setShearYValue);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::rotationValSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setRotationValue);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::calculateAutoRotationSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::calculateAutoRotation);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::cropEnabledSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setCropEnabled);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::showLinesSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setAngleLinesEnabled);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::modeChangedSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setMode);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::guideStyleSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::setGuideStyle);
+    connect(mToolBar, &DkImgTransformationsToolBar::panSignal, mViewport, &DkImgTransformationsViewPort::setPanning);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::cancelSignal,
+            mViewport,
+            &DkImgTransformationsViewPort::discardChangesAndClose);
+    connect(mToolBar,
+            &DkImgTransformationsToolBar::applySignal,
+            mViewport,
+            &DkImgTransformationsViewPort::applyChangesAndClose);
+
+    connect(mViewport,
+            &DkImgTransformationsViewPort::scaleChanged,
+            mToolBar,
+            &DkImgTransformationsToolBar::setScaleValue);
+    connect(mViewport,
+            &DkImgTransformationsViewPort::shearChanged,
+            mToolBar,
+            &DkImgTransformationsToolBar::setShearValue);
+    connect(mViewport,
+            &DkImgTransformationsViewPort::rotationChanged,
+            mToolBar,
+            &DkImgTransformationsToolBar::setRotationValue);
 
     return true;
 }
@@ -116,6 +184,7 @@ nmc::DkPluginViewPort *DkImgTransformationsPlugin::getViewPort()
 
 void DkImgTransformationsPlugin::setVisible(bool visible)
 {
+    nmc::DkToolBarManager::inst().showToolBar(mToolBar, visible);
     mViewport->setVisible(visible);
 }
 
@@ -125,17 +194,6 @@ DkImgTransformationsViewPort::DkImgTransformationsViewPort(QWidget *parent, Qt::
     : nmc::DkPluginViewPort(parent, flags)
 {
     init();
-}
-
-DkImgTransformationsViewPort::~DkImgTransformationsViewPort()
-{
-    // active deletion since the MainWindow takes ownership...
-    // if we have issues with this, we could disconnect all signals between mViewport and toolbar too
-    // however, then we have lot's of toolbars in memory if the user opens the plugin again and again
-    if (mImgTransformationsToolbar) {
-        delete mImgTransformationsToolbar;
-        mImgTransformationsToolbar = nullptr;
-    }
 }
 
 void DkImgTransformationsViewPort::init()
@@ -166,25 +224,6 @@ void DkImgTransformationsViewPort::init()
     mIntrRect = new DkInteractionRects(this);
     mSkewEstimator = DkSkewEstimator(this);
 
-    mImgTransformationsToolbar = new DkImgTransformationsToolBar(tr("ImgTransformations Toolbar"), mDefaultMode, this);
-
-    mImgTransformationsToolbar->setCropState((mRotCropEnabled) ? Qt::Checked : Qt::Unchecked);
-    mImgTransformationsToolbar->setGuideLineState(mGuideMode);
-    mImgTransformationsToolbar->setAngleLineState((mAngleLinesEnabled) ? Qt::Checked : Qt::Unchecked);
-
-    connect(mImgTransformationsToolbar, SIGNAL(scaleXValSignal(double)), this, SLOT(setScaleXValue(double)));
-    connect(mImgTransformationsToolbar, SIGNAL(scaleYValSignal(double)), this, SLOT(setScaleYValue(double)));
-    connect(mImgTransformationsToolbar, SIGNAL(shearXValSignal(double)), this, SLOT(setShearXValue(double)));
-    connect(mImgTransformationsToolbar, SIGNAL(shearYValSignal(double)), this, SLOT(setShearYValue(double)));
-    connect(mImgTransformationsToolbar, SIGNAL(rotationValSignal(double)), this, SLOT(setRotationValue(double)));
-    connect(mImgTransformationsToolbar, SIGNAL(calculateAutoRotationSignal()), this, SLOT(calculateAutoRotation()));
-    connect(mImgTransformationsToolbar, SIGNAL(cropEnabledSignal(bool)), this, SLOT(setCropEnabled(bool)));
-    connect(mImgTransformationsToolbar, SIGNAL(showLinesSignal(bool)), this, SLOT(setAngleLinesEnabled(bool)));
-    connect(mImgTransformationsToolbar, SIGNAL(modeChangedSignal(int)), this, SLOT(setMode(int)));
-    connect(mImgTransformationsToolbar, SIGNAL(guideStyleSignal(int)), this, SLOT(setGuideStyle(int)));
-    connect(mImgTransformationsToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
-    connect(mImgTransformationsToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
-    connect(mImgTransformationsToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
 }
 
 QPoint DkImgTransformationsViewPort::map(const QPointF &pos)
@@ -291,7 +330,7 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
                                       / (initSize.width() * 0.5))));
                 }
 
-                mImgTransformationsToolbar->setScaleValue(mScaleValues);
+                emit scaleChanged(mScaleValues);
                 this->repaint();
             }
 
@@ -325,7 +364,7 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
             if (mRotationValue < 0)
                 mRotationValue += 360;
 
-            mImgTransformationsToolbar->setRotationValue(mRotationValue);
+            emit rotationChanged(mRotationValue);
             // this->repaint();
         }
     } else if (mSelectedMode == mode_shear) {
@@ -347,7 +386,7 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
             mShearValues.setY(mShearValuesTemp.y()
                               + mShearValuesDir.y() * (currPoint.y() - mReferencePoint.y()) * 0.001);
 
-            mImgTransformationsToolbar->setShearValue(mShearValues);
+            emit shearChanged(mShearValues);
         }
     }
 }
@@ -726,7 +765,7 @@ void DkImgTransformationsViewPort::calculateAutoRotation()
                 mRotationValue = mSkewEstimator.getSkewAngle();
                 if (mRotationValue < 0)
                     mRotationValue += 360;
-                mImgTransformationsToolbar->setRotationValue(mRotationValue);
+                emit rotationChanged(mRotationValue);
                 this->repaint();
                 return;
             }
@@ -734,7 +773,7 @@ void DkImgTransformationsViewPort::calculateAutoRotation()
     }
 
     mRotationValue = 0;
-    mImgTransformationsToolbar->setRotationValue(mRotationValue);
+    emit rotationChanged(mRotationValue);
 }
 
 void DkImgTransformationsViewPort::setPanning(bool checked)
@@ -781,9 +820,6 @@ void DkImgTransformationsViewPort::setVisible(bool visible)
             mImgRatioAngle = atan2(mViewport->getImage().height(), mViewport->getImage().width());
         }
     }
-
-    if (mImgTransformationsToolbar)
-        nmc::DkToolBarManager::inst().showToolBar(mImgTransformationsToolbar, visible);
 
     setMode(mDefaultMode);
     DkPluginViewPort::setVisible(visible);
