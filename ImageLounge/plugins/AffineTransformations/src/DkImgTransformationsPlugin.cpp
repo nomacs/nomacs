@@ -67,7 +67,7 @@ QImage DkImgTransformationsPlugin::image() const
 }
 bool DkImgTransformationsPlugin::hideHUD() const
 {
-    return false;
+    return true;
 }
 
 /**
