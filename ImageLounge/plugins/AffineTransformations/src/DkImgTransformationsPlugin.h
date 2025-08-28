@@ -212,21 +212,6 @@ public:
     void setAngleLineState(int val);
 
 public slots:
-    void on_applyAction_triggered();
-    void on_cancelAction_triggered();
-    void on_panAction_toggled(bool checked);
-    void on_scaleAction_toggled(bool checked);
-    void on_rotateAction_toggled(bool checked);
-    void on_shearAction_toggled(bool checked);
-    void on_scaleXBox_valueChanged(double val);
-    void on_scaleYBox_valueChanged(double val);
-    void on_shearXBox_valueChanged(double val);
-    void on_shearYBox_valueChanged(double val);
-    void on_rotationBox_valueChanged(double val);
-    void on_cropEnabledBox_stateChanged(int val);
-    void on_showLinesBox_stateChanged(int val);
-    void on_autoRotateButton_clicked();
-    void on_guideBox_currentIndexChanged(int val);
     void setVisible(bool visible) override;
 
 signals:
@@ -248,7 +233,7 @@ protected:
     void createLayout(int defaultMode);
     void createIcons();
     void modifyLayout(int mode);
-    void updateAffineTransformPluginSettings(int val, int type);
+    void saveSetting(int val, int type);
 
     QDoubleSpinBox *mScaleXBox;
     QDoubleSpinBox *mScaleYBox;
