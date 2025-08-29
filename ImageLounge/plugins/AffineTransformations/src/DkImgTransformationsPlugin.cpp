@@ -938,7 +938,11 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mShowLinesBox->setToolTip(tr("Show lines for angle detection."));
     mShowLinesBox->setStatusTip(
         tr("Show lines (red) for angle detection. Green lines correspond to the selected angle."));
+#if QT_VERSION < QT_VERSION_CHECK(6, 9, 0)
+    connect(mShowLinesBox, &QCheckBox::stateChanged, this, [this](int state) {
+#else
     connect(mShowLinesBox, &QCheckBox::checkStateChanged, this, [this](Qt::CheckState state) {
+#endif
         saveSetting(state, settings_lines);
         emit showLinesSignal(state == Qt::Checked);
     });
@@ -949,7 +953,11 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode)
     mCropEnabledBox->setCheckState(Qt::Unchecked);
     mCropEnabledBox->setToolTip(tr("Crop rotated image if possible"));
     mCropEnabledBox->setStatusTip(mCropEnabledBox->toolTip());
+#if QT_VERSION < QT_VERSION_CHECK(6, 9, 0)
+    connect(mCropEnabledBox, &QCheckBox::stateChanged, this, [this](int state) {
+#else
     connect(mCropEnabledBox, &QCheckBox::checkStateChanged, this, [this](Qt::CheckState state) {
+#endif
         saveSetting(state, settings_crop);
         emit cropEnabledSignal(state == Qt::Checked);
     });
