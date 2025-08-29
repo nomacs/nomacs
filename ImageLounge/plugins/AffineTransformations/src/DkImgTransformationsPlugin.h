@@ -148,7 +148,6 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    QPoint map(const QPointF &pos);
     void init();
     void drawGuide(QPainter *painter, const QPolygonF &p, int paintMode);
 

@@ -190,16 +190,6 @@ public:
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     };
 
-    void setWorldMatrix(QTransform *worldMatrix)
-    {
-        mWorldMatrix = worldMatrix;
-    };
-
-    void setImgMatrix(QTransform *imgMatrix)
-    {
-        mImgMatrix = imgMatrix;
-    };
-
     virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC)
     {
         Q_UNUSED(imgC);
@@ -217,28 +207,6 @@ protected:
         emit closePlugin();
         QWidget::closeEvent(event);
     };
-
-    virtual QPointF mapToImage(const QPointF &pos) const
-    {
-        if (!mWorldMatrix || !mImgMatrix)
-            return pos;
-
-        QPointF imgPos = mWorldMatrix->inverted().map(pos);
-        imgPos = mImgMatrix->inverted().map(imgPos);
-
-        return imgPos;
-    };
-
-    virtual QPointF mapToViewport(const QPointF &pos) const
-    {
-        if (!mWorldMatrix)
-            return pos;
-
-        return mWorldMatrix->inverted().map(pos);
-    };
-
-    QTransform *mWorldMatrix = nullptr;
-    QTransform *mImgMatrix = nullptr;
 };
 
 }
