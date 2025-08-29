@@ -41,6 +41,11 @@ class QLineEdit;
 class QColorDialog;
 class QPushButton;
 
+namespace nmc
+{
+class DkBaseViewPort;
+}
+
 namespace nmp
 {
 
@@ -83,10 +88,9 @@ public:
 
     void setVisible(bool visible) override;
 
-    DkPaintViewPort *getPaintViewPort();
-
 protected:
-    nmc::DkPluginViewPort *viewport;
+    DkPaintViewPort *mViewPort;
+    DkPaintToolBar *mToolBar;
 };
 
 class DkPaintViewPort : public nmc::DkPluginViewPort
@@ -94,7 +98,7 @@ class DkPaintViewPort : public nmc::DkPluginViewPort
     Q_OBJECT
 
 public:
-    explicit DkPaintViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit DkPaintViewPort(QWidget *parent, Qt::WindowFlags flags = Qt::WindowFlags());
     ~DkPaintViewPort() override;
 
     QBrush getBrush() const;
@@ -111,45 +115,46 @@ public slots:
     void setPanning(bool checked);
     void applyChangesAndClose();
     void discardChangesAndClose();
-    void setVisible(bool visible) override;
     void undoLastPaint();
-
-signals:
-    void editShowSignal(bool show);
-
-protected slots:
     void setMode(int mode);
     void textChange(const QString &text);
     void textEditFinsh();
+
+signals:
+    void editShowSignal(bool show);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void init();
 
+    void init();
     void loadSettings();
     void saveSettings() const;
 
-    QVector<QPainterPath> paths;
-    QVector<QPen> pathsPen;
-    QVector<int> pathsMode;
-    QPointF begin;
-    QString sbuffer;
+    void drawPaths(QPainter &painter, nmc::DkBaseViewPort *viewport, bool toImage) const;
 
-    int selectedMode;
-    bool textinputenable;
-    QPainterPath ArrowHead;
+    QVector<QPainterPath> mPaths; // list of paths, one per mouse down-drag-up cycle
+    QVector<QPen> mPathsPen; // corresponding pen that was used for each path
+    QVector<int> mPathsMode; // corresponding mode that was used for each path
 
-    bool cancelTriggered;
-    bool isOutside;
+    QPointF mBeginPos; // starting position of a new painter path (mouse down location mapped to image)
+    bool mHasTextInput;
+
+    int mCurrentMode; // current editing tool, except panning
+    bool mTextInputActive; // true if text input box has input focus
+
+    bool mCanceledEditing;
     QBrush mBrush;
     QPen mPen;
-    QPointF lastPoint;
-    bool panning;
-    DkPaintToolBar *paintToolbar;
-    QCursor defaultCursor;
+    bool mPanningToolActive; // true if panning tool is active (this is not a mode for some reason)
+    bool mMouseDown; // true if mouse button is down
+    QPointF mLastMousePos; // last mouse position in viewport coordinates
+
+    QCursor mCurrentCursor; // cursor for the current mode/tool
+    bool mWasOutside; // true if dragging outside image
+    QPointF mOutsidePos; // position outside image while dragging
 };
 
 class DkPaintToolBar : public QToolBar
@@ -182,25 +187,8 @@ public:
     void setPenWidth(int width);
 
 public slots:
-    void on_applyAction_triggered();
-    void on_cancelAction_triggered();
-    void on_panAction_toggled(bool checked);
-    void on_pencilAction_toggled(bool checked);
-    void on_lineAction_toggled(bool checked);
-    void on_arrowAction_toggled(bool checked);
-    void on_circleAction_toggled(bool checked);
-    void on_squareAction_toggled(bool checked);
-    void on_squarefillAction_toggled(bool checked);
-    void on_blurAction_toggled(bool checked);
-    void on_textAction_toggled(bool checked);
-    void on_penColButton_clicked();
-    void on_widthBox_valueChanged(int val);
-    void on_alphaBox_valueChanged(int val);
-    void on_textInput_textChanged(const QString &text);
-    void on_textInput_editingFinished();
-    void on_undoAction_triggered();
+    void choosePenColor();
     void showLineEdit(bool show);
-    void setVisible(bool visible) override;
 
 signals:
     void applySignal();
@@ -219,28 +207,15 @@ protected:
     void createLayout();
     void createIcons();
 
-    QPushButton *penColButton;
-    QColorDialog *colorDialog;
-    QSpinBox *widthBox;
-    QSpinBox *alphaBox;
-    QColor penCol;
-    int penAlpha;
-    QMap<QString, QAction *> toolbarWidgetList;
-    QAction *panAction;
-    QAction *undoAction;
-
-    QAction *pencilAction;
-    QAction *lineAction;
-    QAction *arrowAction;
-    QAction *circleAction;
-    QAction *squareAction;
-    QAction *squarefillAction;
-    QAction *blurAction;
-    QAction *textAction;
-
-    QLineEdit *textInput;
-
-    QVector<QIcon> icons; // needed for colorizing
+    QPushButton *mPenColorButton;
+    QColorDialog *mColorDialog;
+    QSpinBox *mWidthBox;
+    QSpinBox *mAlphaBox;
+    QColor mPenColor;
+    int mPenAlpha;
+    QMap<QString, QAction *> mToolbarWidgetList;
+    QAction *mPanAction;
+    QLineEdit *mTextInput;
+    QVector<QIcon> mIcons;
 };
-
 };

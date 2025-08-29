@@ -269,12 +269,6 @@ void DkControlWidget::connectWidgets()
     // metadata widget
     connect(mMetaDataInfo, &DkMetaDataHUD::positionChangeSignal, this, &DkControlWidget::changeMetaDataPosition);
 
-    // overview
-    connect(mZoomWidget->getOverview(), &DkOverview::moveViewSignal, mViewport, &DkViewPort::moveView);
-    connect(mZoomWidget->getOverview(), &DkOverview::sendTransformSignal, mViewport, [this]() {
-        mViewport->tcpSynchronize();
-    });
-
     // zoom widget
     connect(mZoomWidget, &DkZoomWidget::zoomSignal, mViewport, &DkViewPort::zoomTo);
     connect(mViewport, &DkViewPort::zoomSignal, mZoomWidget, &DkZoomWidget::updateZoom);
@@ -658,8 +652,6 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
     DkActionManager::instance().enableViewPortPluginActions(removeWidget);
 
     if (!removeWidget) {
-        mPluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
-        mPluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
         mPluginViewport->updateImageContainer(mViewport->imageContainer());
 
         // NOTE: unique connections can no longer use lambdas, this was unreliable

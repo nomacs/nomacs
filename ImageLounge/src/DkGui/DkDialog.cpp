@@ -928,13 +928,13 @@ void DkResizeDialog::createLayout()
             this,
             &DkResizeDialog::onWPixelSpinValueChanged);
 
-    mLockButton = new DkButton(DkImage::loadIcon(":/nomacs/img/lock.svg"),
-                               DkImage::loadIcon(":/nomacs/img/lock-unlocked.svg"),
-                               "lock",
-                               this);
+    QIcon lockIcon = DkImage::loadIcon(":/nomacs/img/lock-unlocked.svg");
+    lockIcon.addFile(":/nomacs/img/lock.svg", QSize(), QIcon::Normal, QIcon::On);
+    mLockButton = new QPushButton(lockIcon, "", this);
+    mLockButton->setObjectName("DkLockButton");
     mLockButton->setCheckable(true);
     mLockButton->setChecked(true);
-    connect(mLockButton, &DkButton::clicked, this, &DkResizeDialog::onLockButtonClicked);
+    connect(mLockButton, &QPushButton::clicked, this, &DkResizeDialog::onLockButtonClicked);
 
     auto *hPixelLabel = new QLabel(tr("Height: "), this);
     hPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -960,7 +960,7 @@ void DkResizeDialog::createLayout()
     int rIdx = 0;
     gridLayout->addWidget(wPixelLabel, 0, rIdx);
     gridLayout->addWidget(mWPixelSpin, 0, ++rIdx);
-    gridLayout->addWidget(mLockButton, 0, ++rIdx);
+    gridLayout->addWidget(mLockButton, 0, ++rIdx, Qt::AlignLeft);
     gridLayout->addWidget(hPixelLabel, 0, ++rIdx);
     gridLayout->addWidget(mHPixelSpin, 0, ++rIdx);
     gridLayout->addWidget(mSizeBox, 0, ++rIdx);
@@ -976,10 +976,8 @@ void DkResizeDialog::createLayout()
             this,
             &DkResizeDialog::onWidthSpinValueChanged);
 
-    mLockButtonDim = new DkButton(DkImage::loadIcon(":/nomacs/img/lock.svg"),
-                                  DkImage::loadIcon(":/nomacs/img/lock-unlocked.svg"),
-                                  "lock");
-    // mLockButtonDim->setFixedSize(QSize(16,16));
+    mLockButtonDim = new QPushButton(lockIcon, "", this);
+    mLockButtonDim->setObjectName("DkLockButton");
     mLockButtonDim->setCheckable(true);
     mLockButtonDim->setChecked(true);
     connect(mLockButtonDim, &DkButton::clicked, this, &DkResizeDialog::onLockButtonDimClicked);
@@ -1010,7 +1008,7 @@ void DkResizeDialog::createLayout()
     rIdx = 0;
     gridLayout->addWidget(widthLabel, 1, rIdx);
     gridLayout->addWidget(mWidthSpin, 1, ++rIdx);
-    gridLayout->addWidget(mLockButtonDim, 1, ++rIdx);
+    gridLayout->addWidget(mLockButtonDim, 1, ++rIdx, Qt::AlignLeft);
     gridLayout->addWidget(heightLabel, 1, ++rIdx);
     gridLayout->addWidget(mHeightSpin, 1, ++rIdx);
     gridLayout->addWidget(mUnitBox, 1, ++rIdx);
@@ -1413,9 +1411,15 @@ void DkResizeDialog::drawPreview()
     // TODO: thread here!
     QImage img = resizeImg(newImg);
 
+    qreal deviceScale = devicePixelRatioF();
+
     // TODO: is there a better way of mapping the pixels? (ipl here introduces artifacts that are not in the final
     // image)
-    img = img.scaled(mPreviewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+    img = img.scaled(mOrigView->size() * deviceScale, Qt::KeepAspectRatio, Qt::FastTransformation);
+
+    // HiDPI: pixmap inherits this; label paintEvent uses it
+    img.setDevicePixelRatio(deviceScale);
+
     mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 }
 
@@ -1491,7 +1495,7 @@ DkShortcutDelegate::DkShortcutDelegate(QObject *parent)
     : QItemDelegate(parent)
 {
     mItem = nullptr;
-    mClearPm = DkImage::loadIcon(":/nomacs/img/close.svg");
+    mClearIcon = DkImage::loadIcon(":/nomacs/img/close.svg");
 }
 
 QWidget *DkShortcutDelegate::createEditor(QWidget *parent,
@@ -1566,7 +1570,7 @@ void DkShortcutDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         int pad = r.height() * 0.1;
         int size = r.height() - pad * 2;
         QRect pmr(r.right() - size - pad, r.top() + pad, size, size);
-        painter->drawPixmap(pmr, mClearPm);
+        painter->drawPixmap(pmr, mClearIcon.pixmap(pmr.size()));
     }
 }
 

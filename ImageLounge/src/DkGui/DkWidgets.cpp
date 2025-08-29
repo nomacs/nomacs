@@ -37,6 +37,7 @@
 #include "DkTimer.h"
 #include "DkToolbars.h"
 #include "DkUtils.h"
+#include "DkViewPort.h"
 
 #include <QAction>
 #include <QBoxLayout>
@@ -604,195 +605,174 @@ DkOverview::DkOverview(QWidget *parent)
 {
     setObjectName("DkOverview");
     setMinimumSize(0, 0);
-    setMaximumSize(200, 200);
+    setMaximumSize(200, 200); // originally wanted 15% of mViewportRect
     setCursor(Qt::ArrowCursor);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
+bool DkOverview::updateThumb()
+{
+    // get the image used in DkViewPort::draw() or else we may desync with view (manipulators, etc)
+    auto storage = mViewPort->getImageStorage();
+    if (!storage)
+        return false;
+
+    QImage fullImage = storage->imageConst();
+    if (fullImage.isNull())
+        return false;
+
+    mOriginalImageSize = fullImage.size(); // retain size so we don't have to fetch the image on every paintEvent
+    mImageToLocal = imageToLocal();
+
+    // for best appearance, thumb is sized to draw 1:1 with screen pixels
+    QSize thumbSize = mImageToLocal.mapRect(fullImage.rect()).size() * devicePixelRatioF();
+
+    // fast downscaling before smooth scaling (similar to AA technique)
+    mThumb = fullImage.scaled(thumbSize.width() * 2,
+                              thumbSize.height() * 2,
+                              Qt::KeepAspectRatio,
+                              Qt::FastTransformation);
+    mThumb = mThumb.scaled(thumbSize.width(), thumbSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    return true;
+}
+
 void DkOverview::paintEvent(QPaintEvent *event)
 {
-    if (mImgT.isNull()) {
-        mImgT = resizedImg(mImg);
-        mImg = QImage(); // free-up space
-    }
+    Q_UNUSED(event)
 
-    if (!mImgMatrix || !mWorldMatrix)
+    if (!mViewPort)
         return;
 
+    if (mThumb.isNull() && !updateThumb())
+        return;
+
+    // map original image (disregarding viewport transform)
+    const QRectF thumbRect = mImageToLocal.mapRect(QRectF(QPointF(), mOriginalImageSize));
+
+    // map visible region of the viewport
+    QRectF viewRect = viewPortToLocal().mapRect(mViewPort->geometry());
+
+    // draw thumbnail
     QPainter painter(this);
+    painter.drawImage(thumbRect, mThumb);
 
-    int lm = 0;
-    int tm = 0;
-    int rm = 0;
-    int bm = 0;
-    if (layout() != nullptr)
-        layout()->getContentsMargins(&lm, &tm, &rm, &bm);
-
-    QSize viewSize = QSize(width() - lm - rm, height() - tm - bm); // overview shall take 15% of the mViewport....
-
-    if (viewSize.width() > 2 && viewSize.height() > 2) {
-        QTransform overviewImgMatrix = getScaledImageMatrix();
-        QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), mImgSize));
-
-        // now render the current view
-        QRectF viewRect = mViewPortRect;
-        viewRect = mWorldMatrix->inverted().mapRect(viewRect);
-        viewRect = mImgMatrix->inverted().mapRect(viewRect);
-        viewRect = overviewImgMatrix.mapRect(viewRect);
-        viewRect.moveTopLeft(viewRect.topLeft() + QPointF(lm, tm));
-
-        if (viewRect.topLeft().x() < overviewImgRect.topLeft().x())
-            viewRect.setTopLeft(QPointF(overviewImgRect.topLeft().x(), viewRect.topLeft().y()));
-        if (viewRect.topLeft().y() < overviewImgRect.topLeft().y())
-            viewRect.setTopLeft(QPointF(viewRect.topLeft().x(), overviewImgRect.topLeft().y()));
-        if (viewRect.bottomRight().x() > overviewImgRect.bottomRight().x())
-            viewRect.setBottomRight(QPointF(overviewImgRect.bottomRight().x() - 1, viewRect.bottomRight().y()));
-        if (viewRect.bottomRight().y() > overviewImgRect.bottomRight().y())
-            viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewImgRect.bottomRight().y() - 1));
-
-        // draw the image's location
-        painter.setRenderHints(QPainter::SmoothPixmapTransform);
-        painter.setBrush(DkSettingsManager::param().display().hudBgColor);
-        painter.setPen(QColor(200, 200, 200));
-        // painter.drawRect(overviewRect);
-        painter.setOpacity(0.8f);
-        painter.drawImage(overviewImgRect, mImgT, QRect(0, 0, mImgT.width(), mImgT.height()));
+    // highlight the visible region, only draw if we cannot see the entire image
+    QSizeF sizeDiff(thumbRect.size() - viewRect.size());
+    if (sizeDiff.width() >= 1.0 || sizeDiff.height() >= 1.0) {
+        // clip to thumbnail
+        viewRect = viewRect.intersected(thumbRect);
 
         QColor col = DkSettingsManager::param().display().highlightColor;
         col.setAlpha(255);
         painter.setPen(col);
         col.setAlpha(50);
         painter.setBrush(col);
-
-        if (viewRect.width() + 1 < overviewImgRect.width()
-            || viewRect.height() + 1
-                < overviewImgRect.height()) // draw viewrect if we do not see all parts of the image
-            painter.drawRect(viewRect);
+        painter.drawRect(viewRect);
     }
-    painter.end();
+}
 
-    QWidget::paintEvent(event);
+void DkOverview::moveImage(const QPointF &p1, const QPointF &p2)
+{
+    // DkViewPort::moveView() requires world coordinates
+    // divide by devicePixelRatioF() since mImageToLocal is in physical pixels and imageToWorld is in logical pixels
+    QTransform imageToWorld = mViewPort->getImageMatrix();
+    QTransform localToWorld = imageToWorld * mImageToLocal.inverted() * (1.0 / devicePixelRatioF());
+    QPointF w1 = localToWorld.map(p1);
+    QPointF w2 = localToWorld.map(p2);
+
+    mViewPort->moveView(w1 - w2);
 }
 
 void DkOverview::mousePressEvent(QMouseEvent *event)
 {
-    mEnterPos = event->pos();
-    mPosGrab = event->pos();
+    if (event->buttons() != Qt::LeftButton)
+        return;
+
+    mLastMousePos = event->position();
+    mMouseMoved = false;
 }
 
 void DkOverview::mouseReleaseEvent(QMouseEvent *event)
 {
-    QPointF dxy = mEnterPos - QPointF(event->pos());
+    if (!mViewPort)
+        return;
 
-    if (dxy.manhattanLength() < 4) {
-        int lm = 0;
-        int tm = 0;
-        int rm = 0;
-        int bm = 0;
-        if (layout() != nullptr)
-            layout()->getContentsMargins(&lm, &tm, &rm, &bm);
+    // we already panned, do not jump to cursor location
+    if (mMouseMoved)
+        return;
 
-        // move to the current position
-        QRectF viewRect = mViewPortRect;
-        viewRect = mWorldMatrix->inverted().mapRect(viewRect);
-        viewRect = mImgMatrix->inverted().mapRect(viewRect);
-        viewRect = getScaledImageMatrix().mapRect(viewRect);
-        QPointF currentViewPoint = viewRect.center();
+    // jump to cursor; we need two points to send a delta x/y to viewport
+    QPointF currentCenter = viewPortToLocal().mapRect(mViewPort->geometry()).center();
+    QPointF newCenter = event->position();
 
-        float panningSpeed = (float)-(mWorldMatrix->m11() / (getScaledImageMatrix().m11() / mImgMatrix->m11()));
+    moveImage(currentCenter, newCenter);
 
-        QPointF cPos = event->pos() - QPointF(lm, tm);
-        QPointF lDxy = (cPos - currentViewPoint) / mWorldMatrix->m11() * panningSpeed;
-        emit moveViewSignal(lDxy);
+    if (event->modifiers() == DkSettingsManager::param().global().altMod)
+        mViewPort->tcpSynchronize();
+}
 
-        if (event->modifiers() == DkSettingsManager::param().global().altMod)
-            emit sendTransformSignal();
-    }
+void DkOverview::resizeEvent(QResizeEvent *event)
+{
+    Q_UNUSED(event)
+    // contentRect() changed, update thumb
+    mThumb = {};
 }
 
 void DkOverview::mouseMoveEvent(QMouseEvent *event)
 {
+    if (!mViewPort)
+        return;
+
     if (event->buttons() != Qt::LeftButton)
         return;
 
-    float panningSpeed = (float)-(mWorldMatrix->m11() / (getScaledImageMatrix().m11() / mImgMatrix->m11()));
+    mMouseMoved = true;
 
-    QPointF cPos = event->pos();
-    QPointF dxy = (cPos - mPosGrab) / mWorldMatrix->m11() * panningSpeed;
-    mPosGrab = cPos;
-    emit moveViewSignal(dxy);
+    QPointF cursorPos = event->position();
+    moveImage(mLastMousePos, cursorPos);
+    mLastMousePos = cursorPos;
 
     if (event->modifiers() == DkSettingsManager::param().global().altMod)
-        emit sendTransformSignal();
+        mViewPort->tcpSynchronize();
 }
 
-QRectF DkOverview::getImageRect() const
+QTransform DkOverview::viewPortToLocal() const
 {
-    QRectF imgRect = QRectF(QPoint(), size()); // get the overview rect
+    // multiply by devicePixelRatioF() since imageToWorld is in logical pixels and mImageToLocal is in physical pixels
+    QTransform worldToViewPort = mViewPort->getWorldMatrix();
+    QTransform imageToWorld = mViewPort->getImageMatrix();
 
-    if ((float)mImgT.width() / mImgT.height() < (float)imgRect.width() / imgRect.height())
-        imgRect.setWidth(width() * (float)height() / (float)mImgT.height());
-    else
-        imgRect.setHeight(height() * (float)width() / (float)mImgT.width());
+    QTransform mat = worldToViewPort.inverted() * imageToWorld.inverted() * devicePixelRatioF() * mImageToLocal;
 
-    return imgRect;
+    return mat;
 }
 
-QImage DkOverview::resizedImg(const QImage &src)
+QTransform DkOverview::imageToLocal() const
 {
-    if (src.isNull())
-        return QImage();
+    QRectF content = contentsRect();
 
-    QTransform overviewImgMatrix = getScaledImageMatrix();
+    // prevent divide-by-zero
+    if (content.isEmpty() || mOriginalImageSize.isEmpty())
+        return {};
 
-    // is the overviewImgMatrix empty?
-    if (overviewImgMatrix.isIdentity())
-        return src;
+    QRectF imgRect = QRectF(QPoint{0, 0}, mOriginalImageSize);
+    qreal imgAspect = imgRect.width() / imgRect.height();
+    qreal contenAspect = content.width() / content.height();
 
-    // fast downscaling
-    QImage sImg = src.scaled(maximumWidth() * 2, maximumHeight() * 2, Qt::KeepAspectRatio, Qt::FastTransformation);
-    sImg = sImg.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    // fit thumbnail to content and center it
+    qreal scaleFactor = (imgAspect > contenAspect) ? content.width() / imgRect.width() //
+                                                   : content.height() / imgRect.height();
+    QPointF center = content.center();
+    QSizeF thumbSize = imgRect.size() * scaleFactor;
 
-    return sImg;
-}
+    QTransform mat;
+    mat.translate(center.x() - thumbSize.width() * 0.5, //
+                  center.y() - thumbSize.height() * 0.5);
 
-QTransform DkOverview::getScaledImageMatrix()
-{
-    if (mImgT.isNull() && mImg.isNull())
-        return QTransform();
+    mat.scale(scaleFactor, scaleFactor);
 
-    int lm = 0;
-    int tm = 0;
-    int rm = 0;
-    int bm = 0;
-    if (layout() != nullptr)
-        layout()->getContentsMargins(&lm, &tm, &rm, &bm);
-
-    QSize iSize = QSize(width() - lm - rm, height() - tm - bm); // inner size
-
-    if (iSize.width() < 2 || iSize.height() < 2)
-        return QTransform();
-
-    // the image resizes as we zoom
-    QRectF imgRect = QRectF(QPoint(lm, tm), mImgSize);
-    auto ratioImg = (float)(imgRect.width() / imgRect.height());
-    float ratioWin = (float)(iSize.width()) / (float)(iSize.height());
-
-    QTransform imgMatrix;
-    float s;
-    if (imgRect.width() == 0 || imgRect.height() == 0)
-        s = 1.0f;
-    else
-        s = (ratioImg > ratioWin) ? (float)(iSize.width() / imgRect.width())
-                                  : (float)(iSize.height() / imgRect.height());
-
-    imgMatrix.scale(s, s);
-
-    QRectF imgViewRect = imgMatrix.mapRect(imgRect);
-    imgMatrix.translate((iSize.width() - imgViewRect.width()) * 0.5f / s,
-                        (iSize.height() - imgViewRect.height()) * 0.5f / s);
-
-    return imgMatrix;
+    return mat;
 }
 
 // DkZoomWidget --------------------------------------------------------------------
@@ -1024,12 +1004,8 @@ void DkRatingLabel::updateRating()
 
 void DkRatingLabel::init()
 {
-    QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg",
-                                       QSize(),
-                                       DkSettingsManager::param().display().hudFgdColor);
-    QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg",
-                                        QSize(),
-                                        DkSettingsManager::param().display().hudFgdColor);
+    QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg", DkSettingsManager::param().display().hudFgdColor);
+    QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg", DkSettingsManager::param().display().hudFgdColor);
 
     DkActionManager &am = DkActionManager::instance();
 
@@ -1213,21 +1189,19 @@ void DkPlayer::createLayout()
     int height = 50;
     QSize ih(height - 12, height - 12);
 
-    previousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous.svg", ih, Qt::white), "", this);
+    QColor iconColor = DkSettingsManager::param().display().hudFgdColor;
+    previousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous.svg", iconColor), "", this);
     // previousButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    previousButton->setIconSize(ih);
     previousButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     previousButton->setToolTip(tr("Show previous image"));
     previousButton->setObjectName("DkPlayerButton");
     previousButton->setFlat(true);
     connect(previousButton, &QPushButton::pressed, this, &DkPlayer::previous);
 
-    QIcon icon;
-    icon.addPixmap(DkImage::loadIcon(":/nomacs/img/pause.svg", ih, Qt::white), QIcon::Normal, QIcon::On);
-    icon.addPixmap(DkImage::loadIcon(":/nomacs/img/play.svg", ih, Qt::white), QIcon::Normal, QIcon::Off);
+    QIcon icon = DkImage::loadIcon(":/nomacs/img/play.svg", iconColor);
+    icon.addFile(":/nomacs/img/pause.svg", QSize(), QIcon::Normal, QIcon::On);
     playButton = new QPushButton(icon, "", this);
     // playButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    playButton->setIconSize(ih);
     playButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     playButton->setToolTip(tr("Play/Pause"));
     playButton->setObjectName("DkPlayerButton");
@@ -1237,9 +1211,8 @@ void DkPlayer::createLayout()
     playButton->addAction(DkActionManager::instance().action(DkActionManager::menu_view_slideshow));
     connect(playButton, &QPushButton::clicked, this, &DkPlayer::play);
 
-    nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", ih, Qt::white), "", this);
+    nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", iconColor), "", this);
     // nextButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    nextButton->setIconSize(ih);
     nextButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     nextButton->setToolTip(tr("Show next image"));
     nextButton->setObjectName("DkPlayerButton");
@@ -1367,22 +1340,17 @@ DkHudNavigation::DkHudNavigation(QWidget *parent)
 void DkHudNavigation::createLayout()
 {
     // previous/next buttons
-    QSize s(64, 64);
-    QColor c(0, 0, 0);
-    c.setAlpha(0);
-
-    mPreviousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous-hud.svg", s, c), "", this);
+    QColor iconColor = DkSettingsManager::param().display().hudFgdColor;
+    mPreviousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous-hud.svg", iconColor), "", this);
     mPreviousButton->setObjectName("hudNavigationButton");
     mPreviousButton->setToolTip(tr("Show previous image"));
     mPreviousButton->setFlat(true);
-    mPreviousButton->setIconSize(s);
     connect(mPreviousButton, &QPushButton::pressed, this, &DkHudNavigation::previousSignal);
 
-    mNextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next-hud.svg", s, c), "", this);
+    mNextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next-hud.svg", iconColor), "", this);
     mNextButton->setObjectName("hudNavigationButton");
     mNextButton->setToolTip(tr("Show next image"));
     mNextButton->setFlat(true);
-    mNextButton->setIconSize(s);
     connect(mNextButton, &QPushButton::pressed, this, &DkHudNavigation::nextSignal);
 
     auto *l = new QHBoxLayout(this);
@@ -1489,7 +1457,7 @@ DkEditableRect::DkEditableRect(const QRectF &rect, QWidget *parent, Qt::WindowFl
     : DkFadeWidget(parent, f)
 {
     mRect = rect;
-    mRotatingCursor = QCursor(DkImage::loadFromSvg(":/nomacs/img/rotating-cursor.svg", QSize(24, 24)));
+    mRotatingCursor = QCursor(DkImage::loadIcon(":/nomacs/img/rotating-cursor.svg").pixmap(24));
 
     setAttribute(Qt::WA_MouseTracking);
 
@@ -1859,6 +1827,10 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() == Qt::LeftButton) {
         QPolygonF p = mRect.getPoly();
 
+        // mRect is in logical coordinates, we want physical pixels for info display
+        const QTransform mat = mRtform * devicePixelRatioF();
+        p = mat.map(p);
+
         float sAngle = DkMath::getReadableAngle(mRect.getAngle() + angle);
         int height = qRound(DkVector(p[1] - p[0]).norm());
         int width = qRound(DkVector(p[3] - p[0]).norm());
@@ -1868,13 +1840,13 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event)
         QPoint tl;
 
         if (sAngle == 0.0f || fabs(sAngle) == 90.0f) {
-            tl = mRtform.map(mRect.getTopLeft()).toPoint();
+            tl = mat.map(mRect.getTopLeft()).toPoint();
             info += "x: ";
         } else {
             // Because we rotate around the center, there's no need to do rotation.
             // However, we need to check whether the center is tranlated.
             // Not sure why, but the tranlation is stored in mRtform in the above.
-            const QTransform transform{1, 0, 0, 1, mRtform.dx(), mRtform.dy()};
+            QTransform transform{mat.m11(), 0, 0, mat.m22(), mat.dx(), mat.dy()};
             tl = transform.map(mRect.getCenter()).toPoint();
             info += "center x: ";
         }
@@ -2061,8 +2033,13 @@ void DkCropWidget::crop(bool cropToMetadata)
     if (!cropToolbar)
         return;
 
-    if (!mRect.isEmpty())
-        emit cropImageSignal(mRect, cropToolbar->getColor(), cropToMetadata);
+    if (!mRect.isEmpty()) {
+        QTransform mat = mRtform * devicePixelRatioF();
+        QPolygonF poly = mat.map(mRect.getPoly());
+        DkRotatingRect rect;
+        rect.setPoly(poly);
+        emit cropImageSignal(rect, cropToolbar->getColor(), cropToMetadata);
+    }
 
     setVisible(false);
     setWindowOpacity(0);
@@ -2889,11 +2866,7 @@ DkTabEntryWidget::DkTabEntryWidget(const QIcon &icon, const QString &text, QWidg
     : QPushButton(text, parent)
 {
     setObjectName("DkTabEntryWidget");
-
-    QPixmap pm = DkImage::colorizePixmap(icon.pixmap(100), QColor(255, 255, 255));
-    setIcon(pm);
-    setIconSize(pm.size());
-
+    setIcon(DkImage::loadIcon(icon.name(), Qt::white));
     setFlat(true);
     setCheckable(true);
 }

@@ -43,7 +43,6 @@ class QComboBox;
 
 namespace nmp
 {
-
 class DkImgTransformationsViewPort;
 class DkImgTransformationsToolBar;
 class DkInteractionRects;
@@ -88,7 +87,8 @@ public:
     void setVisible(bool visible) override;
 
 protected:
-    nmc::DkPluginViewPort *mViewport = nullptr;
+    DkImgTransformationsViewPort *mViewport = nullptr;
+    DkImgTransformationsToolBar *mToolBar = nullptr;
 };
 
 class DkImgTransformationsViewPort : public nmc::DkPluginViewPort
@@ -97,10 +97,30 @@ class DkImgTransformationsViewPort : public nmc::DkPluginViewPort
 
 public:
     explicit DkImgTransformationsViewPort(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkImgTransformationsViewPort() override;
+    ~DkImgTransformationsViewPort() override = default;
 
     bool isCanceled();
     QImage getTransformedImage();
+
+    int defaultMode() const
+    {
+        return mDefaultMode;
+    }
+
+    int guideMode() const
+    {
+        return mGuideMode;
+    }
+
+    bool rotationCropEnabled() const
+    {
+        return mRotCropEnabled;
+    }
+
+    bool angleLinesEnabled() const
+    {
+        return mAngleLinesEnabled;
+    }
 
 public slots:
     void setPanning(bool checked);
@@ -116,42 +136,42 @@ public slots:
     void setCropEnabled(bool enabled);
     void setAngleLinesEnabled(bool enabled);
     void setGuideStyle(int guideMode);
-
-protected slots:
-
     void setMode(int mode);
+
+signals:
+    void rotationChanged(qreal &);
+    void scaleChanged(const QPointF &);
+    void shearChanged(const QPointF &);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    QPoint map(const QPointF &pos);
     void init();
     void drawGuide(QPainter *painter, const QPolygonF &p, int paintMode);
 
-    bool cancelTriggered;
-    bool panning;
-    DkImgTransformationsToolBar *imgTransformationsToolbar;
-    QCursor defaultCursor;
-    DkInteractionRects *intrRect;
-    QPointF scaleValues;
-    QPointF shearValues;
-    QPointF shearValuesTemp;
-    QPointF shearValuesDir;
-    bool insideIntrRect;
-    int intrIdx;
-    int selectedMode;
-    int defaultMode;
-    double rotationValue;
-    double rotationValueTemp;
-    QPoint referencePoint;
-    QPoint rotationCenter;
-    double imgRatioAngle;
-    QCursor rotatingCursor;
-    bool rotCropEnabled;
-    DkSkewEstimator skewEstimator;
-    bool angleLinesEnabled;
+    bool mCancelTriggered;
+    bool mPanning;
+    QCursor mDefaultCursor;
+    DkInteractionRects *mIntrRect;
+    QPointF mScaleValues;
+    QPointF mShearValues;
+    QPointF mShearValuesTemp;
+    QPointF mShearValuesDir;
+    bool mInsideIntrRect;
+    int mIntrIdx;
+    int mSelectedMode;
+    int mDefaultMode;
+    double mRotationValue;
+    double mRotationValueTemp;
+    QPoint mReferencePoint;
+    QPoint mRotationCenter;
+    double mImgRatioAngle;
+    QCursor mRotatingCursor;
+    bool mRotCropEnabled;
+    DkSkewEstimator mSkewEstimator;
+    bool mAngleLinesEnabled;
     int mGuideMode;
 };
 
@@ -191,21 +211,6 @@ public:
     void setAngleLineState(int val);
 
 public slots:
-    void on_applyAction_triggered();
-    void on_cancelAction_triggered();
-    void on_panAction_toggled(bool checked);
-    void on_scaleAction_toggled(bool checked);
-    void on_rotateAction_toggled(bool checked);
-    void on_shearAction_toggled(bool checked);
-    void on_scaleXBox_valueChanged(double val);
-    void on_scaleYBox_valueChanged(double val);
-    void on_shearXBox_valueChanged(double val);
-    void on_shearYBox_valueChanged(double val);
-    void on_rotationBox_valueChanged(double val);
-    void on_cropEnabledBox_stateChanged(int val);
-    void on_showLinesBox_stateChanged(int val);
-    void on_autoRotateButton_clicked();
-    void on_guideBox_currentIndexChanged(int val);
     void setVisible(bool visible) override;
 
 signals:
@@ -227,24 +232,21 @@ protected:
     void createLayout(int defaultMode);
     void createIcons();
     void modifyLayout(int mode);
-    void updateAffineTransformPluginSettings(int val, int type);
+    void saveSetting(int val, int type);
 
-    QDoubleSpinBox *scaleXBox;
-    QDoubleSpinBox *scaleYBox;
-    QDoubleSpinBox *shearXBox;
-    QDoubleSpinBox *shearYBox;
-    QDoubleSpinBox *rotationBox;
-    QCheckBox *cropEnabledBox;
-    QPushButton *autoRotateButton;
-    QCheckBox *showLinesBox;
-    QMap<QString, QAction *> toolbarWidgetList;
-    QComboBox *guideBox;
+    QDoubleSpinBox *mScaleXBox;
+    QDoubleSpinBox *mScaleYBox;
+    QDoubleSpinBox *mShearXBox;
+    QDoubleSpinBox *mShearYBox;
+    QDoubleSpinBox *mRotationBox;
+    QCheckBox *mCropEnabledBox;
+    QPushButton *mAutoRotateButton;
+    QCheckBox *mShowLinesBox;
+    QMap<QString, QAction *> mToolbarWidgetList;
+    QComboBox *mGuideBox;
 
-    QAction *panAction;
-    QAction *scaleAction;
-    QAction *rotateAction;
-    QAction *shearAction;
-    QVector<QIcon> icons; // needed for colorizing
+    QAction *mPanAction;
+    QVector<QIcon> mIcons; // needed for colorizing
 };
 
 class DkInteractionRects : public QWidget
@@ -268,12 +270,11 @@ public:
 protected:
     void init();
 
-    QVector<QRect> intrRect;
-    QVector<QCursor> intrCursors;
-    QVector<QPointF> initialPoints;
-    QSize initialSize;
-
-    QSize size;
+    QVector<QRect> mIntrRect;
+    QVector<QCursor> mIntrCursors;
+    QVector<QPointF> mInitialPoints;
+    QSize mInitialSize;
+    QSize mSize;
 };
 
 };

@@ -77,9 +77,11 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
 
     // try loading a custom file
     mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
-    if (mImgBg.isNull() && DkSettingsManager::param().global().showBgImage) {
-        QColor col = backgroundBrush().color().darker();
-        mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col, QSize(100, 100)).toImage();
+    if (mImgBg.isNull() && DkSettingsManager::param().global().showLogoImage) {
+        QColor col = Qt::black;
+        col.setAlpha(90);
+        mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col).pixmap(80).toImage();
+        mImgBg.setDevicePixelRatio(1.0); // handle device scaling ourselves
     }
 
     mRepeatZoomTimer->setInterval(20);
@@ -106,7 +108,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
         setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     }
 
-    mController->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
+    mController->getOverview()->setViewPort(this);
     mController->getCropWidget()->setWorldTransform(&mWorldMatrix);
     mController->getCropWidget()->setImageTransform(&mImgMatrix);
     mController->getCropWidget()->setImageRect(&mImgViewRect);
@@ -320,8 +322,6 @@ void DkViewPort::setImage(QImage newImg)
     if (mManipulatorWatcher.isRunning())
         mManipulatorWatcher.cancel();
 
-    mController->getOverview()->setImage(QImage()); // clear overview
-
     bool wasImageLoaded = !mImgStorage.isEmpty();
     bool isImageLoaded = !newImg.isNull();
     mImgStorage.setImage(newImg);
@@ -331,7 +331,7 @@ void DkViewPort::setImage(QImage newImg)
     if (mLoader->hasSvg() && !mLoader->isEdited())
         loadSvg();
 
-    mImgRect = QRectF(QPoint(), getImageSize());
+    mImgRect = QRectF(QPointF(), getImageSize());
 
     DkActionManager::instance().enableImageActions(!newImg.isNull());
 
@@ -356,7 +356,7 @@ void DkViewPort::setImage(QImage newImg)
     }
 
     mController->getPlayer()->startTimer();
-    mController->getOverview()->setImage(newImg); // TODO: maybe we could make use of the image pyramid here
+    mController->getOverview()->imageUpdated();
 
     mOldImgRect = mImgRect;
 
@@ -575,7 +575,9 @@ void DkViewPort::updateImageMatrix()
 
     mImgMatrix.reset();
 
-    QSize imgSize = getImageSize();
+    // getImageSize() is in logical pixels; it will change if dpr changes but image remains the same!
+    QSizeF imgSize = getImageSize();
+    mImgRect = QRectF(QPointF(), imgSize);
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect()))
@@ -1026,18 +1028,27 @@ void DkViewPort::eraseBackground(QPainter &painter)
 {
     DkBaseViewPort::eraseBackground(painter);
 
-    // fit to mViewport
-    QSize s = mImgBg.size();
+    // draw logo/bg.png in the bottom-right corner, 1:1 pixels unless too big
+    painter.save();
+    painter.setWorldMatrixEnabled(false);
+    painter.setTransform(QTransform());
+
+    qreal dpr = devicePixelRatioF();
+    QSizeF s = mImgBg.size() / dpr;
+
     if (s.width() > (float)(size().width() * 0.5))
         s = s * ((size().width() * 0.5) / s.width());
 
     if (s.height() > size().height() * 0.6)
         s = s * ((size().height() * 0.6) / s.height());
 
-    QRect bgRect(QPoint(), s);
-    bgRect.moveBottomRight(QPoint(width() - 20, height() - 20));
+    QRectF bgRect(QPointF(), s);
+    bgRect.moveBottomRight(geometry().bottomRight() - QPoint(20, 20));
 
-    painter.drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
+    painter.translate(bgRect.topLeft());
+    painter.scale(1.0 / dpr, 1.0 / dpr);
+    painter.drawImage(QRectF(QPointF(), bgRect.size() * dpr), mImgBg);
+    painter.restore();
 }
 
 void DkViewPort::loadMovie()
@@ -1167,7 +1178,7 @@ void DkViewPort::resizeEvent(QResizeEvent *event)
     centerImage();
     changeCursor();
 
-    mController->getOverview()->setViewPortRect(geometry());
+    // mController->getOverview()->setViewPortRect(geometry());
     mController->resize(width(), height());
 
     return QGraphicsView::resizeEvent(event);
@@ -1176,6 +1187,13 @@ void DkViewPort::resizeEvent(QResizeEvent *event)
 // mouse events --------------------------------------------------------------------
 bool DkViewPort::event(QEvent *event)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    if (event->type() == QEvent::DevicePixelRatioChange) {
+        // image matrix includes dpr adjustment
+        updateImageMatrix();
+    }
+#endif
+
     // ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them
     // delivered here
     if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonDblClick
@@ -1452,14 +1470,16 @@ void DkViewPort::setFullScreen(bool fullScreen)
 QPoint DkViewPort::mapToImage(const QPoint &windowPos) const
 {
     QPointF imgPos = mWorldMatrix.inverted().map(QPointF(windowPos));
-    imgPos = mImgMatrix.inverted().map(imgPos);
+    imgPos = (mImgMatrix.inverted() * devicePixelRatioF()).map(imgPos);
 
-    QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
+    QPoint p(qFloor(imgPos.x()), qFloor(imgPos.y()));
+    QSize sz = mImgStorage.size();
 
-    if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
+    if (p.x() < 0 || p.y() < 0 || p.x() >= sz.width() || p.y() >= sz.height()) {
         return QPoint(-1, -1);
+    }
 
-    return xy;
+    return p;
 }
 
 void DkViewPort::getPixelInfo(const QPoint &pos)
@@ -2153,7 +2173,13 @@ void DkViewPortFrameless::paintEvent(QPaintEvent *event)
     DkViewPort::paintEvent(event);
 }
 
-void DkViewPortFrameless::draw(QPainter &painter, double)
+void DkViewPortFrameless::draw(QPainter &painter, double opacity)
+{
+    opacity = 1.0; // slideshow: prevents desktop from showing where the faded images overlap
+    DkViewPort::draw(painter, opacity);
+}
+
+void DkViewPortFrameless::eraseBackground(QPainter &painter)
 {
     if (DkUtils::getMainWindow()->isFullScreen()) {
         QColor col = QColor(0, 0, 0);
@@ -2163,24 +2189,9 @@ void DkViewPortFrameless::draw(QPainter &painter, double)
         painter.setWorldMatrixEnabled(true);
     }
 
-    if (mSvg && mSvg->isValid()) {
-        mSvg->render(&painter, mImgViewRect);
-    } else if (mMovie && mMovie->isValid()) {
-        painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
-    } else {
-        QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
-        QImage img = mImgStorage.image(displayRect.size());
+    if (!mImgStorage.isEmpty())
+        return;
 
-        // opacity == 1.0f -> do not show pattern if we crossfade two images
-        if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel())
-            drawTransparencyPattern(painter);
-
-        painter.drawImage(mImgViewRect, img, QRect(QPoint(), img.size()));
-    }
-}
-
-void DkViewPortFrameless::eraseBackground(QPainter &painter)
-{
     painter.setWorldTransform(mImgMatrix);
     painter.setBrush(QColor(127, 144, 144, 200));
     painter.setPen(QColor(100, 100, 100, 255));
@@ -2363,7 +2374,8 @@ void DkViewPortFrameless::updateImageMatrix()
 
     mImgMatrix.reset();
 
-    QSize imgSize = getImageSize();
+    QSizeF imgSize = getImageSize();
+    mImgRect = QRectF(QPoint(), imgSize);
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect())) {
@@ -2402,7 +2414,8 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(ttb, &DkTransferToolBar::colorTableChanged, this, &DkViewPortContrast::changeColorTable);
     connect(ttb, &DkTransferToolBar::channelChanged, this, &DkViewPortContrast::changeChannel);
     connect(ttb, &DkTransferToolBar::pickColorRequest, this, &DkViewPortContrast::pickColor);
-    connect(ttb, &DkTransferToolBar::tFEnabled, this, &DkViewPortContrast::enableTF);
+    connect(ttb, &DkTransferToolBar::tFEnabled, this, &DkViewPortContrast::updateImage);
+    connect(this, &DkViewPortContrast::cancelPickColor, ttb, &DkTransferToolBar::pickColorCancelled);
     connect(this, &DkViewPortContrast::tFSliderAdded, ttb, &DkTransferToolBar::insertSlider);
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
@@ -2414,15 +2427,9 @@ void DkViewPortContrast::changeChannel(int channel)
     if (channel < 0 || channel >= mImgs.size())
         return;
 
-    if (!mImgStorage.isEmpty()) {
-        mFalseColorImg = mImgs[channel];
-        mFalseColorImg.setColorTable(mColorTable);
-        mDrawFalseColorImg = true;
-
-        update();
-
-        drawImageHistogram();
-    }
+    mActiveChannel = channel;
+    if (mDrawFalseColorImg)
+        updateImage(true);
 }
 
 void DkViewPortContrast::changeColorTable(QGradientStops stops)
@@ -2484,30 +2491,8 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops)
         }
     }
 
-    mFalseColorImg.setColorTable(mColorTable);
-
-    update();
-}
-
-void DkViewPortContrast::draw(QPainter &painter, double opacity)
-{
-    if (!mDrawFalseColorImg || mSvg || mMovie) {
-        DkBaseViewPort::draw(painter, opacity);
-        return;
-    }
-
-    if (DkUtils::getMainWindow()->isFullScreen())
-        painter.setBackground(DkSettingsManager::param().slideShow().backgroundColor);
-
-    QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
-    QImage img = mImgStorage.image(dr.size());
-
-    // opacity == 1.0f -> do not show pattern if we crossfade two images
-    if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
-        drawTransparencyPattern(painter);
-
     if (mDrawFalseColorImg)
-        painter.drawImage(mImgViewRect, mFalseColorImg, mImgRect);
+        updateImage(true);
 }
 
 void DkViewPortContrast::setImage(QImage newImg)
@@ -2572,9 +2557,6 @@ void DkViewPortContrast::setImage(QImage newImg)
 
 #endif
 
-    mFalseColorImg = mImgs[mActiveChannel];
-    mFalseColorImg.setColorTable(mColorTable);
-
     // images with valid color table return img.isGrayScale() false...
     if (mSvg || mMovie)
         emit imageModeSet(mode_invalid_format);
@@ -2583,21 +2565,42 @@ void DkViewPortContrast::setImage(QImage newImg)
     else
         emit imageModeSet(mode_rgb);
 
-    update();
+    if (mDrawFalseColorImg) // we can skip update if disabled (already handled by parent)
+        updateImage(true);
 }
 
 void DkViewPortContrast::pickColor(bool enable)
 {
     mIsColorPickerActive = enable;
-    this->setCursor(Qt::CrossCursor);
+    if (enable) {
+        setCursor(Qt::CrossCursor);
+    } else {
+        unsetCursor();
+        emit cancelPickColor();
+    }
 }
 
-void DkViewPortContrast::enableTF(bool enable)
+void DkViewPortContrast::updateImage(bool enable)
 {
     mDrawFalseColorImg = enable;
-    update();
 
-    drawImageHistogram();
+    if (enable) {
+        QImage falseColorImg = mImgs[mActiveChannel];
+        falseColorImg.setColorTable(mColorTable);
+        mImgStorage.setImage(falseColorImg);
+    } else if (imageContainer()) {
+        mImgStorage.setImage(imageContainer()->image());
+        pickColor(false);
+    }
+
+    mController->getOverview()->imageUpdated();
+
+    // the histogram normally redraws from imageContainer, we want it to use the grayscale image
+    if (mController->getHistogram() && mController->getHistogram()->isVisible()) {
+        mController->getHistogram()->drawHistogram(getImage());
+    }
+
+    update();
 }
 
 void DkViewPortContrast::mousePressEvent(QMouseEvent *event)
@@ -2616,57 +2619,41 @@ void DkViewPortContrast::mouseMoveEvent(QMouseEvent *event)
 
 void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (mIsColorPickerActive) {
-        QPointF imgPos = mWorldMatrix.inverted().map(event->pos());
-        imgPos = mImgMatrix.inverted().map(imgPos);
-
-        QPoint xy = imgPos.toPoint();
-
-        bool isPointValid = true;
-
-        if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
-            isPointValid = false;
-
-        if (isPointValid) {
-            int colorIdx = mImgs[mActiveChannel].pixelIndex(xy);
-            qreal normedPos = (qreal)colorIdx / 255;
-            emit tFSliderAdded(normedPos);
-        }
-
-        // unsetCursor();
-        // isColorPickerActive = false;
-    } else
+    if (!mIsColorPickerActive) {
         DkViewPort::mouseReleaseEvent(event);
+        return;
+    }
+
+    QPoint p = mapToImage(event->position().toPoint());
+    if (p.x() < 0 || p.y() < 0)
+        return;
+
+    int colorIdx = mImgs[mActiveChannel].pixelIndex(p);
+    auto normedPos = (qreal)colorIdx / 255.0;
+    emit tFSliderAdded(normedPos);
+}
+
+void DkViewPortContrast::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (!mIsColorPickerActive)
+        DkViewPort::mouseDoubleClickEvent(event);
+    else
+        event->accept();
 }
 
 void DkViewPortContrast::keyPressEvent(QKeyEvent *event)
 {
-    if ((event->key() == Qt::Key_Escape) && mIsColorPickerActive) {
-        unsetCursor();
-        mIsColorPickerActive = false;
-        update();
-        return;
-    } else
+    if (mIsColorPickerActive && (event->key() == Qt::Key_Escape))
+        pickColor(false);
+    else
         DkViewPort::keyPressEvent(event);
 }
 
 QImage DkViewPortContrast::getImage() const
 {
     if (mDrawFalseColorImg)
-        return mFalseColorImg;
+        return mImgStorage.imageConst();
     else
-        return imageContainer() ? imageContainer()->image() : QImage();
+        return DkViewPort::getImage();
 }
-
-// in contrast mode: if the histogram widget is visible redraw the histogram from the selected image channel data
-void DkViewPortContrast::drawImageHistogram()
-{
-    if (mController->getHistogram() && mController->getHistogram()->isVisible()) {
-        if (mDrawFalseColorImg)
-            mController->getHistogram()->drawHistogram(mFalseColorImg);
-        else
-            mController->getHistogram()->drawHistogram(getImage());
-    }
-}
-
 }
