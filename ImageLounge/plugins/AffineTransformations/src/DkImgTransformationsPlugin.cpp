@@ -796,7 +796,6 @@ void DkImgTransformationsViewPort::setVisible(bool visible)
         }
     }
 
-    setMode(mDefaultMode);
     DkPluginViewPort::setVisible(visible);
 }
 
