@@ -652,8 +652,6 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface *pluginWidget, bool re
     DkActionManager::instance().enableViewPortPluginActions(removeWidget);
 
     if (!removeWidget) {
-        mPluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
-        mPluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
         mPluginViewport->updateImageContainer(mViewport->imageContainer());
 
         // NOTE: unique connections can no longer use lambdas, this was unreliable

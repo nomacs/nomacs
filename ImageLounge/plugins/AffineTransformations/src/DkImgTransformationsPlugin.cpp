@@ -226,17 +226,12 @@ void DkImgTransformationsViewPort::init()
     setMode(mSelectedMode);
 }
 
-QPoint DkImgTransformationsViewPort::map(const QPointF &pos)
-{
-    if (!mWorldMatrix)
-        return {};
-
-    QTransform tx = mWorldMatrix->inverted() * mImgMatrix->inverted() * devicePixelRatioF();
-    return tx.map(pos).toPoint();
-}
-
 void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
 {
+    auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+    if (!viewport)
+        return;
+
     // panning -> redirect to mViewport
     if (event->buttons() == Qt::LeftButton
         && (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || mPanning)) {
@@ -246,11 +241,13 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
         return;
     }
 
+    const QPoint imagePos = viewport->mapToImagePixel(event->position()).toPoint();
+
     if (mSelectedMode == mode_scale) {
         QVector<QRect> rects = mIntrRect->getInteractionRects();
         int currIdx;
         for (currIdx = 0; currIdx < rects.size(); currIdx++) {
-            if (rects.at(currIdx).contains(map(event->pos()))) {
+            if (rects.at(currIdx).contains(imagePos)) {
                 mIntrIdx = currIdx;
                 mInsideIntrRect = true;
                 break;
@@ -261,7 +258,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
             mIntrIdx = 100;
     } else if (mSelectedMode == mode_rotate) {
         if (event->buttons() == Qt::LeftButton) {
-            mReferencePoint = map(event->pos());
+            mReferencePoint = imagePos;
             mRotationValueTemp = mRotationValue;
         }
     } else if (mSelectedMode == mode_shear) {
@@ -269,7 +266,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
             mShearValuesDir = QPointF(1, 0);
 
             nmc::DkVector c(mRotationCenter);
-            nmc::DkVector xn(map(event->pos()));
+            nmc::DkVector xn(imagePos);
             xn = c - xn;
 
             if ((xn.angle() > mImgRatioAngle && xn.angle() < PI - mImgRatioAngle)
@@ -279,7 +276,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
             } else
                 setCursor(Qt::SizeHorCursor);
 
-            mReferencePoint = map(event->pos());
+            mReferencePoint = imagePos;
             mShearValuesTemp = mShearValues;
         }
     }
@@ -288,6 +285,12 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event)
 
 void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
 {
+    auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
+    if (!viewport)
+        return;
+
+    const QPoint imagePos = viewport->mapToImagePixel(event->position()).toPoint();
+
     // panning -> redirect to mViewport
     if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || mPanning) {
         event->setModifiers(Qt::NoModifier);
@@ -310,22 +313,20 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
                 if (mIntrIdx < 6) {
                     if (mIntrIdx == 2 || mIntrIdx == 3 || mIntrIdx == 5)
                         sign = -1;
-                    mScaleValues.setY(
-                        qMin(2.5,
-                             qMax(0.1,
-                                  (initSize.height() * 0.5 + sign * (initPoint.y() - map(event->pos()).y()))
-                                      / (initSize.height() * 0.5))));
+                    mScaleValues.setY(qMin(2.5,
+                                           qMax(0.1,
+                                                (initSize.height() * 0.5 + sign * (initPoint.y() - imagePos.y()))
+                                                    / (initSize.height() * 0.5))));
                 }
 
                 sign = 1;
                 if ((mIntrIdx >= 6) || (mIntrIdx < 4)) {
                     if (mIntrIdx == 2 || mIntrIdx == 1 || mIntrIdx == 7)
                         sign = -1;
-                    mScaleValues.setX(
-                        qMin(2.5,
-                             qMax(0.1,
-                                  (initSize.width() * 0.5 + sign * (initPoint.x() - map(event->pos()).x()))
-                                      / (initSize.width() * 0.5))));
+                    mScaleValues.setX(qMin(2.5,
+                                           qMax(0.1,
+                                                (initSize.width() * 0.5 + sign * (initPoint.x() - imagePos.x()))
+                                                    / (initSize.width() * 0.5))));
                 }
 
                 emit scaleChanged(mScaleValues);
@@ -336,7 +337,7 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
             int currIdx;
 
             for (currIdx = 0; currIdx < rects.size(); currIdx++) {
-                if (rects.at(currIdx).contains(map(event->pos()))) {
+                if (rects.at(currIdx).contains(imagePos)) {
                     setCursor(mIntrRect->getCursorShape(currIdx));
                     break;
                 }
@@ -349,7 +350,7 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
         if (event->buttons() == Qt::LeftButton) {
             nmc::DkVector c(mRotationCenter);
             nmc::DkVector xt(mReferencePoint);
-            nmc::DkVector xn(map(event->pos()));
+            nmc::DkVector xn(imagePos);
 
             // compute the direction vector;
             xt = c - xt;
@@ -368,7 +369,7 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
     } else if (mSelectedMode == mode_shear) {
         if (event->buttons() != Qt::LeftButton) {
             nmc::DkVector c(mRotationCenter);
-            nmc::DkVector xn(map(event->pos()));
+            nmc::DkVector xn(imagePos);
             xn = c - xn;
 
             if ((xn.angle() > mImgRatioAngle && xn.angle() < PI - mImgRatioAngle)
@@ -377,12 +378,10 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event)
             else
                 setCursor(Qt::SizeHorCursor);
         } else if (event->buttons() == Qt::LeftButton) {
-            QPoint currPoint = map(event->pos());
-
             mShearValues.setX(mShearValuesTemp.x()
-                              + mShearValuesDir.x() * (currPoint.x() - mReferencePoint.x()) * 0.001);
+                              + mShearValuesDir.x() * (imagePos.x() - mReferencePoint.x()) * 0.001);
             mShearValues.setY(mShearValuesTemp.y()
-                              + mShearValuesDir.y() * (currPoint.y() - mReferencePoint.y()) * 0.001);
+                              + mShearValuesDir.y() * (imagePos.y() - mReferencePoint.y()) * 0.001);
 
             emit shearChanged(mShearValues);
         }

@@ -295,7 +295,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event)
         return;
 
     const QPointF pos = event->position();
-    const QPointF currPos = mapViewPortToImage(pos);
+    const QPointF currPos = viewport->mapToImagePixel(pos);
 
     // for simplicity, drawing must start inside the image
     bool isOutside = !QRectF(QPointF(), viewport->getImage().size()).contains(currPos);
@@ -346,10 +346,10 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
     const QPointF pos = event->position();
 
     if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || mPanningToolActive) {
-        QPointF w1 = mapToViewport(pos); // convert to world coordinates
-        QPointF w0 = mapToViewport(mLastMousePos);
+        QPointF p1 = viewport->mapToImage(pos);
+        QPointF p0 = viewport->mapToImage(mLastMousePos);
         mLastMousePos = pos;
-        viewport->moveView(w1 - w0);
+        viewport->moveView(p1 - p0);
         return;
     }
 
@@ -357,7 +357,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
         return;
 
     viewport->unsetCursor();
-    const QPointF currPos = mapViewPortToImage(pos);
+    const QPointF currPos = viewport->mapToImagePixel(pos);
     const QRectF imageRect = QRectF(QPointF(), viewport->getImage().size());
 
     bool isOutside = !imageRect.contains(currPos);
@@ -518,16 +518,6 @@ void DkPaintViewPort::textEditFinsh()
         undoLastPaint();
     mTextInputActive = false;
     emit editShowSignal(false);
-}
-
-QPointF DkPaintViewPort::mapViewPortToImage(const QPointF &pos) const
-{
-    auto *viewport = dynamic_cast<nmc::DkBaseViewPort *>(parent());
-    if (!viewport)
-        return {};
-    QTransform tx = viewport->getWorldMatrix().inverted() * viewport->getImageMatrix().inverted()
-        * viewport->devicePixelRatioF();
-    return tx.map(pos);
 }
 
 void DkPaintViewPort::clear()
