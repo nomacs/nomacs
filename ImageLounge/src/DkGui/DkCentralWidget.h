@@ -170,7 +170,7 @@ public slots:
     void restart() const;
     void showProgress(bool show, int time = -1);
     void startSlideshow(bool start = true) const;
-    void startSlideshowWithFiles(const QStringList& files) const;
+    void startSlideshowWithFiles(const QStringList &files) const;
     void setInfo(const QString &msg) const;
     void renameFile();
 

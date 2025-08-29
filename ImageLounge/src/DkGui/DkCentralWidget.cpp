@@ -1042,7 +1042,7 @@ void DkCentralWidget::startSlideshow(bool start) const
     }
 }
 
-void DkCentralWidget::startSlideshowWithFiles(const QStringList& files) const
+void DkCentralWidget::startSlideshowWithFiles(const QStringList &files) const
 {
     if (hasViewPort()) {
         // Set the file list in the player

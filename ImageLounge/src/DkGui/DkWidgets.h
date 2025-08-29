@@ -155,13 +155,13 @@ public:
     void setTimeToDisplay(int ms = 1000);
 
     // File list management
-    void setFileList(const QStringList& files);
+    void setFileList(const QStringList &files);
     void clearFileList();
 
 signals:
     void nextSignal();
     void previousSignal();
-    void loadFileSignal(const QString& filePath);
+    void loadFileSignal(const QString &filePath);
 
 public slots:
     void play(bool play);
