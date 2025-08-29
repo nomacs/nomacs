@@ -25,6 +25,7 @@
 
  *******************************************************************************************************/
 
+#include "DkFileInfo.h"
 #ifdef Q_OS_WIN
 #include "shlwapi.h"
 #pragma comment(lib, "shlwapi.lib")
@@ -341,11 +342,9 @@ int main(int argc, char *argv[])
                 nmc::DkFileInfo fileInfo(path);
                 if (fileInfo.isDir()) {
                     // Directory: expand to image files
-                    QDir dir(path);
-                    QStringList filters = nmc::DkSettingsManager::param().app().fileFilters;
-                    QStringList imageFiles = dir.entryList(filters, QDir::Files, QDir::Name);
-                    for (const QString &imageFile : imageFiles) {
-                        allImageFiles.append(dir.filePath(imageFile));
+                    nmc::DkFileInfoList imageFiles = nmc::DkFileInfo::readDirectory(fileInfo.dirPath(), "");
+                    for (const nmc::DkFileInfo &imageFile : imageFiles) {
+                        allImageFiles.append(imageFile.path());
                     }
                 } else {
                     // Single file: add directly
