@@ -575,7 +575,9 @@ void DkViewPort::updateImageMatrix()
 
     mImgMatrix.reset();
 
+    // getImageSize() is in logical pixels; it will change if dpr changes but image remains the same!
     QSizeF imgSize = getImageSize();
+    mImgRect = QRectF(QPointF(), imgSize);
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect()))
@@ -1185,6 +1187,13 @@ void DkViewPort::resizeEvent(QResizeEvent *event)
 // mouse events --------------------------------------------------------------------
 bool DkViewPort::event(QEvent *event)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    if (event->type() == QEvent::DevicePixelRatioChange) {
+        // image matrix includes dpr adjustment
+        updateImageMatrix();
+    }
+#endif
+
     // ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them
     // delivered here
     if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonDblClick
@@ -2366,6 +2375,7 @@ void DkViewPortFrameless::updateImageMatrix()
     mImgMatrix.reset();
 
     QSizeF imgSize = getImageSize();
+    mImgRect = QRectF(QPoint(), imgSize);
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect())) {
