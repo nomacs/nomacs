@@ -107,7 +107,10 @@ int main(int argc, char *argv[])
 
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addPositionalArgument("[File|Directory...]", QObject::tr("List of files and/or directories to open"));
+    parser
+        .addPositionalArgument("[File|Directory...]",
+                               QObject::tr(
+                                   "List of files and/or directories to open (use --file-list to expand directories)"));
 
     // fullscreen (-f)
     QCommandLineOption fullScreenOpt(QStringList() << "f" << "fullscreen", QObject::tr("Start in fullscreen."));
@@ -115,6 +118,10 @@ int main(int argc, char *argv[])
 
     QCommandLineOption slideshowOpt(QStringList() << "slideshow", QObject::tr("Start slideshow playback"));
     parser.addOption(slideshowOpt);
+
+    QCommandLineOption fileListOpt(QStringList() << "file-list",
+                                   QObject::tr("Treat directories as file lists (expand to individual files)"));
+    parser.addOption(fileListOpt);
 
     QCommandLineOption pongOpt(QStringList() << "pong", QObject::tr("Start Pong."));
     parser.addOption(pongOpt);
@@ -331,35 +338,64 @@ int main(int argc, char *argv[])
 
     nmc::DkCentralWidget *cw = w->getTabWidget();
 
+    // Helper function to expand directories into file lists when --file-list is set
+    auto expandToFileList = [&parser](const QStringList &paths) -> QStringList {
+        if (!parser.isSet("file-list")) {
+            return paths; // Return as-is if --file-list is not set
+        }
+
+        QStringList allImageFiles;
+        for (const QString &path : paths) {
+            nmc::DkFileInfo fileInfo(path);
+            if (fileInfo.isDir()) {
+                // Directory: expand to image files
+                nmc::DkFileInfoList imageFiles = nmc::DkFileInfo::readDirectory(fileInfo.dirPath(), "");
+                for (const nmc::DkFileInfo &imageFile : imageFiles) {
+                    allImageFiles.append(imageFile.path());
+                }
+            } else {
+                // Single file: add directly
+                allImageFiles.append(path);
+            }
+        }
+        return allImageFiles;
+    };
+
     // Handle slideshow with file list support
     if (parser.isSet(slideshowOpt)) {
         QStringList slideshowFiles = parser.positionalArguments();
 
         if (!slideshowFiles.isEmpty()) {
-            // Expand directories into file lists and collect all image files
-            QStringList allImageFiles;
-            for (const QString &path : slideshowFiles) {
-                nmc::DkFileInfo fileInfo(path);
-                if (fileInfo.isDir()) {
-                    // Directory: expand to image files
-                    nmc::DkFileInfoList imageFiles = nmc::DkFileInfo::readDirectory(fileInfo.dirPath(), "");
-                    for (const nmc::DkFileInfo &imageFile : imageFiles) {
-                        allImageFiles.append(imageFile.path());
-                    }
-                } else {
-                    // Single file: add directly
-                    allImageFiles.append(path);
-                }
-            }
+            if (parser.isSet("file-list")) {
+                // File-list mode: expand directories and start slideshow with file list
+                QStringList allImageFiles = expandToFileList(slideshowFiles);
 
-            if (!allImageFiles.isEmpty()) {
-                // First ensure we have a proper viewport and tab setup by loading the first file normally
-                cw->load(allImageFiles[0]);
-                // Then start slideshow with the expanded file list
-                cw->startSlideshowWithFiles(allImageFiles);
+                if (!allImageFiles.isEmpty()) {
+                    // First ensure we have a proper viewport and tab setup by loading the first file normally
+                    cw->load(allImageFiles[0]);
+                    // Then start slideshow with the expanded file list
+                    cw->startSlideshowWithFiles(allImageFiles);
+                } else {
+                    // No image files found
+                    qWarning() << "No image files found in the provided paths";
+                }
             } else {
-                // No image files found
-                qWarning() << "No image files found in the provided paths";
+                // Original behavior: load all arguments into tabs, then start slideshow in the last one
+                bool loading = false;
+                for (auto &filePath : slideshowFiles) {
+                    if (filePath.isEmpty())
+                        continue;
+
+                    if (loading)
+                        cw->loadToTab(filePath);
+                    else
+                        cw->load(filePath);
+
+                    loading = true;
+                }
+
+                // Start slideshow in the current tab (directory-based slideshow)
+                cw->startSlideshow();
             }
         } else {
             // Directory mode: use current directory for slideshow
@@ -367,18 +403,39 @@ int main(int argc, char *argv[])
         }
     } else {
         // Normal mode: load files into tabs
+        QStringList filePaths = parser.positionalArguments();
         bool loading = false;
 
-        for (auto &filePath : parser.positionalArguments()) {
-            if (filePath.isEmpty())
-                continue;
+        if (parser.isSet("file-list") && !filePaths.isEmpty()) {
+            // Expand directories into file lists if --file-list is set
+            QStringList allImageFiles = expandToFileList(filePaths);
 
-            if (loading)
-                cw->loadToTab(filePath);
-            else
-                cw->load(filePath);
+            if (!allImageFiles.isEmpty()) {
+                for (const QString &filePath : allImageFiles) {
+                    if (filePath.isEmpty())
+                        continue;
 
-            loading = true;
+                    if (loading)
+                        cw->loadToTab(filePath);
+                    else
+                        cw->load(filePath);
+
+                    loading = true;
+                }
+            }
+        } else {
+            // Original behavior: load files/directories as-is
+            for (auto &filePath : filePaths) {
+                if (filePath.isEmpty())
+                    continue;
+
+                if (loading)
+                    cw->loadToTab(filePath);
+                else
+                    cw->load(filePath);
+
+                loading = true;
+            }
         }
 
         // load recent files if there is nothing to display
