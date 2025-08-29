@@ -606,6 +606,16 @@ bool DkBaseViewPort::imageInside() const
     return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(viewRect);
 }
 
+QPointF DkBaseViewPort::mapToImage(const QPointF &p)
+{
+    return (mWorldMatrix.inverted() * mImgMatrix.inverted()).map(p);
+}
+
+QPointF DkBaseViewPort::mapToImagePixel(const QPointF &p)
+{
+    return (mWorldMatrix.inverted() * mImgMatrix.inverted() * devicePixelRatioF()).map(p);
+}
+
 void DkBaseViewPort::updateImageMatrix()
 {
     if (mImgStorage.isEmpty())
