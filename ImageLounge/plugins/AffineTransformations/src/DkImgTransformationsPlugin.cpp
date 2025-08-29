@@ -212,7 +212,6 @@ void DkImgTransformationsViewPort::init()
     mCancelTriggered = false;
     mDefaultCursor = Qt::ArrowCursor;
     mRotatingCursor = QCursor(nmc::DkImage::loadIcon(":/nomacs/img/rotating-cursor.svg").pixmap(24));
-    setCursor(mDefaultCursor);
     setMouseTracking(true);
     mScaleValues = QPointF(1, 1);
     mShearValues = QPointF(0, 0);
@@ -223,6 +222,8 @@ void DkImgTransformationsViewPort::init()
 
     mIntrRect = new DkInteractionRects(this);
     mSkewEstimator = DkSkewEstimator(this);
+
+    setMode(mSelectedMode);
 }
 
 QPoint DkImgTransformationsViewPort::map(const QPointF &pos)
