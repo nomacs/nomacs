@@ -349,7 +349,7 @@ int main(int argc, char *argv[])
             nmc::DkFileInfo fileInfo(path);
             if (fileInfo.isDir()) {
                 // Directory: expand to image files
-                nmc::DkFileInfoList imageFiles = nmc::DkFileInfo::readDirectory(fileInfo.dirPath(), "");
+                nmc::DkFileInfoList imageFiles = nmc::DkFileInfo::readDirectory(fileInfo.path(), "");
                 for (const nmc::DkFileInfo &imageFile : imageFiles) {
                     allImageFiles.append(imageFile.path());
                 }
