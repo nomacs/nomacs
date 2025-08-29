@@ -211,7 +211,7 @@ void DkImgTransformationsViewPort::init()
     mPanning = false;
     mCancelTriggered = false;
     mDefaultCursor = Qt::ArrowCursor;
-    mRotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
+    mRotatingCursor = QCursor(nmc::DkImage::loadIcon(":/nomacs/img/rotating-cursor.svg").pixmap(24));
     setCursor(mDefaultCursor);
     setMouseTracking(true);
     mScaleValues = QPointF(1, 1);
