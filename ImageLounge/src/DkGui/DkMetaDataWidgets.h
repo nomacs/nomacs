@@ -224,7 +224,7 @@ protected:
     void paintEvent(QPaintEvent *e) override;
 };
 
-class DkCommentWidget : public DkFadeLabel
+class DkCommentWidget : public DkFadeWidget
 {
     Q_OBJECT
 
