@@ -1168,7 +1168,7 @@ void DkCommentTextEdit::paintEvent(QPaintEvent *e)
 
 // DkCommentWidget --------------------------------------------------------------------
 DkCommentWidget::DkCommentWidget(QWidget *parent /* = 0 */, Qt::WindowFlags /* = 0 */)
-    : DkFadeLabel("", parent)
+    : DkFadeWidget(parent)
 {
     createLayout();
 }
