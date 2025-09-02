@@ -63,7 +63,11 @@ std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT
             thumb = thumb.transformed(rotationMatrix);
         }
         if (metaData.isOrientationMirrored()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+            thumb = thumb.flipped(Qt::Horizontal);
+#else
             thumb = thumb.mirrored(true, false);
+#endif
         }
     }
 
