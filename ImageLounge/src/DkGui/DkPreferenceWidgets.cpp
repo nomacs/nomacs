@@ -1255,7 +1255,9 @@ void DkFileAssociationsPreference::createLayout()
 
     mModel->setHeaderData(0, Qt::Horizontal, tr("Filter"));
     mModel->setHeaderData(1, Qt::Horizontal, tr("Browse"));
+#ifdef Q_OS_WIN
     mModel->setHeaderData(2, Qt::Horizontal, tr("Register"));
+#endif
     connect(mModel, &QStandardItemModel::itemChanged, this, &DkFileAssociationsPreference::onFileModelItemChanged);
 
     auto *filterTableView = new QTableView(this);
@@ -1336,14 +1338,15 @@ QList<QStandardItem *> DkFileAssociationsPreference::getItems(const QString &fil
     item->setCheckable(true);
     item->setCheckState(browse ? Qt::Checked : Qt::Unchecked);
     items.append(item);
+#ifdef Q_OS_WIN // registering is windows only
     item = new QStandardItem("");
     // item->setFlags(Qt::Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
     item->setCheckable(true);
     item->setCheckState(reg ? Qt::Checked : Qt::Unchecked);
-#ifndef Q_OS_WIN // registering is windows only
-    item->setEnabled(false);
-#endif
     items.append(item);
+#else
+    Q_UNUSED(reg)
+#endif
 
     return items;
 }
@@ -1361,7 +1364,6 @@ void DkFileAssociationsPreference::writeSettings() const
             continue;
 
         QStandardItem *browseItem = mModel->item(idx, 1);
-        QStandardItem *regItem = mModel->item(idx, 2);
 
         if (browseItem && browseItem->checkState() == Qt::Checked) {
             QString cFilter = item->text();
@@ -1370,7 +1372,8 @@ void DkFileAssociationsPreference::writeSettings() const
 
             DkSettingsManager::param().app().browseFilters += cFilter.split(" ");
         }
-
+#ifdef Q_OS_WIN
+        QStandardItem *regItem = mModel->item(idx, 2);
         fh.registerFileType(item->text(), tr("Image"), regItem->checkState() == Qt::Checked);
 
         if (regItem->checkState() == Qt::Checked) {
@@ -1378,6 +1381,7 @@ void DkFileAssociationsPreference::writeSettings() const
             qDebug() << item->text() << " registered";
         } else
             qDebug() << item->text() << " unregistered";
+#endif
     }
 
     fh.registerNomacs(); // register nomacs again - to be save
