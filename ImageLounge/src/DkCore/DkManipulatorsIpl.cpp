@@ -120,7 +120,11 @@ DkFlipHManipulator::DkFlipHManipulator(QAction *action)
 
 QImage DkFlipHManipulator::apply(const QImage &img) const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    return img.flipped(Qt::Horizontal);
+#else
     return img.mirrored(true, false);
+#endif
 }
 
 QString DkFlipHManipulator::errorMessage() const
@@ -136,7 +140,11 @@ DkFlipVManipulator::DkFlipVManipulator(QAction *action)
 
 QImage DkFlipVManipulator::apply(const QImage &img) const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    return img.flipped(Qt::Vertical);
+#else
     return img.mirrored(false, true);
+#endif
 }
 
 QString DkFlipVManipulator::errorMessage() const
