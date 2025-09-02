@@ -1056,7 +1056,7 @@ void DkActionManager::createActions(QWidget *parent)
 
     mFileActions[menu_file_next] = new QAction(mFileIcons[icon_file_next], QObject::tr("Ne&xt File"), parent);
     mFileActions[menu_file_next]->setShortcut(QKeySequence(shortcut_next_file));
-    mFileActions[menu_file_next]->setStatusTip(QObject::tr("Load next image"));
+    mFileActions[menu_file_next]->setStatusTip(QObject::tr("Load next file"));
 
     mFileActions[menu_file_prev] = new QAction(mFileIcons[icon_file_prev], QObject::tr("Pre&vious File"), parent);
     mFileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
