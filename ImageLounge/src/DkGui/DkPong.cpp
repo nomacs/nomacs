@@ -150,8 +150,13 @@ void DkPongSettings::loadSettings()
     int bgAlpha = settings.value("backgroundAlpha", mBgCol.alpha()).toInt();
     int fgAlpha = settings.value("foregroundAlpha", mFgCol.alpha()).toInt();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    mBgCol = QColor::fromString(settings.value("backgroundColor", mBgCol.name()).toString());
+    mFgCol = QColor::fromString(settings.value("foregroundColor", mFgCol.name()).toString());
+#else
     mBgCol.setNamedColor(settings.value("backgroundColor", mBgCol.name()).toString());
     mFgCol.setNamedColor(settings.value("foregroundColor", mFgCol.name()).toString());
+#endif
 
     mBgCol.setAlpha(bgAlpha);
     mFgCol.setAlpha(fgAlpha);
