@@ -1201,7 +1201,7 @@ void DkActionManager::createActions(QWidget *parent)
 
     mEditActions[menu_edit_crop] = new QAction(mEditIcons[icon_edit_crop], QObject::tr("Cr&op Image"), parent);
     mEditActions[menu_edit_crop]->setShortcut(shortcut_crop);
-    mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("cut the current image"));
+    mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("Crop the current image"));
     mEditActions[menu_edit_crop]->setCheckable(true);
     mEditActions[menu_edit_crop]->setChecked(false);
 
