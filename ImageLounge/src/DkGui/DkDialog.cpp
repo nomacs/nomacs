@@ -1862,7 +1862,7 @@ void DkShortcutsDialog::createLayout()
 
     QItemEditorCreatorBase *shortcutListCreator = new QStandardItemEditorCreator<QKeySequenceEdit>();
 
-    factory->registerEditor(QVariant::KeySequence, shortcutListCreator);
+    factory->registerEditor(QMetaType::QKeySequence, shortcutListCreator);
 
     QItemEditorFactory::setDefaultFactory(factory);
 
