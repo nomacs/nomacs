@@ -494,8 +494,12 @@ void DkColorEdit::hashChanged(const QString &name)
 
 void DkColorEdit::hashEditFinished()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    QColor nc = QColor::fromString(mColHash->text());
+#else
     QColor nc;
     nc.setNamedColor(mColHash->text());
+#endif
 
     if (nc.isValid()) {
         setColor(nc);
