@@ -467,7 +467,11 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
             transformed = true;
         }
         if (mirrored) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+            img = img.flipped(Qt::Horizontal);
+#else
             img = img.mirrored(true, false);
+#endif
             transformed = true;
         }
     }
@@ -2665,8 +2669,13 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     mImg = mImg.copy();
 
     // I somehow expected the 5th bit to be 0x10 -> but Paul seems to have a 0th bit : )
-    if (!(header.imagedescriptor & 0x20))
+    if (!(header.imagedescriptor & 0x20)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+        mImg = mImg.flipped(Qt::Vertical);
+#else
         mImg = mImg.mirrored();
+#endif
+    }
 
     delete[] pixels;
 
