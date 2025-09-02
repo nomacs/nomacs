@@ -748,6 +748,9 @@ bool DkBasicLoader::loadTIFF(const QString &filePath, QImage &img, QSharedPointe
     if (bal)
         tiff = TIFFStreamOpen("MemTIFF", &isl);
 #else
+    if (ba)
+        qWarning() << "[TIFF] Loading from buffer is unsupported";
+
     tiff = TIFFOpen(filePath.toLatin1(), "r");
 #endif
 
@@ -824,6 +827,9 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
     uint32_t w;
     uint32_t h;
     uint32_t f;
+
+    if (ba)
+        qWarning() << "[DRIF] Loading from buffer is unsupported";
 
     uint8_t *imgBytes = drifLoadImg(filePath.toLatin1(), &w, &h, &f);
 
@@ -1219,7 +1225,9 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
     if (bal)
         tiff = TIFFStreamOpen("MemTIFF", &isl);
 #else
-    // read from file
+    if (ba)
+        qWarning() << "[TIFF] Loading from buffer is unsupported";
+
     tiff = TIFFOpen(filePath.toLatin1(), "r"); // this->mFile was here before - not sure why
 #endif
 
@@ -1245,7 +1253,8 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
     TIFFSetWarningHandler(oldWarningHandler);
     TIFFSetWarningHandler(oldErrorHandler);
 #else
-    Q_UNUSED(filePath);
+    Q_UNUSED(filePath)
+    Q_UNUSED(ba)
 #endif
 }
 
