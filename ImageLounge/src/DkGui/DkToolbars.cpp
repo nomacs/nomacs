@@ -528,7 +528,12 @@ DkTransferToolBar::DkTransferToolBar(QWidget *parent)
     enableToolBar(false);
     mEnableTFCheckBox->setEnabled(true);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    connect(mEnableTFCheckBox, &QCheckBox::checkStateChanged, this, &DkTransferToolBar::enableTFCheckBoxClicked);
+#else
     connect(mEnableTFCheckBox, &QCheckBox::stateChanged, this, &DkTransferToolBar::enableTFCheckBoxClicked);
+#endif
+
     connect(mGradient, &DkGradient::gradientChanged, this, &DkTransferToolBar::applyTF);
 
     // needed for initialization
