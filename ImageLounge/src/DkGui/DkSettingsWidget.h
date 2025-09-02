@@ -114,7 +114,7 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
-    void addSettingsGroup(const DkSettingsGroup &group, const QString &parentName = "");
+    void addSettingsGroup(const DkSettingsGroup &group, const QString &parentName = "", bool recursion = false);
     void clear();
 
 signals:
