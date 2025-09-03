@@ -589,7 +589,7 @@ QMenu *DkActionManager::createToolsMenu(QWidget *parent /* = 0 */)
 
 QMenu *DkActionManager::createHelpMenu(QWidget *parent)
 {
-    mHelpMenu = new QMenu(QObject::tr("&?"), parent);
+    mHelpMenu = new QMenu(QObject::tr("&Help"), parent);
 
 #ifndef Q_OS_LINUX
     mHelpMenu->addAction(mHelpActions[menu_help_update]);
