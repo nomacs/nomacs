@@ -1158,7 +1158,7 @@ void DkToolBarManager::createDefaultToolBar()
     auto nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
     Q_ASSERT(nomacs);
 
-    mToolBar = new DkMainToolBar(QObject::tr("Edit ToolBar"), nomacs);
+    mToolBar = new DkMainToolBar(QObject::tr("Toolbar"), nomacs);
     mToolBar->setObjectName("EditToolBar");
 
     int is = DkSettingsManager::param().effectiveIconSize(nomacs);
