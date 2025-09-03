@@ -1486,6 +1486,7 @@ void DkResizeDialog::setVisible(bool visible)
 
 void DkResizeDialog::resizeEvent(QResizeEvent *re)
 {
+    mOrigView->zoomConstraints(mOrigView->get100Factor());
     drawPreview();
     QDialog::resizeEvent(re);
 }
