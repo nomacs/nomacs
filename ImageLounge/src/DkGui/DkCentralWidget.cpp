@@ -1131,6 +1131,10 @@ void DkCentralWidget::load(const QString &path)
     QSharedPointer<DkTabInfo> tab = mTabInfos[mTabbar->currentIndex()];
     QSharedPointer<DkImageLoader> loader = tab->getImageLoader();
 
+    // if we have changes to the image, always ask to save them
+    if (!loader->promptSaveBeforeUnload())
+        return;
+
     DkFileInfo fileInfo(path);
     if (fileInfo.isDir()) {
         if (!loader->loadDir(fileInfo.path())) {
