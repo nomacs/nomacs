@@ -278,7 +278,7 @@ public:
         bool zoomOnWheel;
         bool horZoomSkips;
         bool doubleClickForFullscreen;
-        bool showBgImage;
+        bool showLogoImage;
 
         QString setupPath;
         QString setupVersion;

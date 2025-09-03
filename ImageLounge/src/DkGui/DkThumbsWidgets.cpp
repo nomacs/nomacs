@@ -2323,9 +2323,8 @@ void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
     mButtons[button_load_dir]->hide();
     connect(mButtons[button_load_dir], &QPushButton::clicked, this, &DkRecentDirWidget::onLoadDirClicked);
 
-    QIcon pIcon;
-    pIcon.addPixmap(DkImage::loadIcon(":/nomacs/img/pin-checked.svg"), QIcon::Normal, QIcon::On);
-    pIcon.addPixmap(DkImage::loadIcon(":/nomacs/img/pin.svg"), QIcon::Normal, QIcon::Off);
+    QIcon pIcon = DkImage::loadIcon(":/nomacs/img/pin.svg");
+    pIcon.addFile(":/nomacs/img/pin-checked.svg", QSize(), QIcon::Normal, QIcon::On);
 
     mButtons[button_pin] = new QPushButton(pIcon, "", this);
     mButtons[button_pin]->setToolTip(tr("Pin this directory"));

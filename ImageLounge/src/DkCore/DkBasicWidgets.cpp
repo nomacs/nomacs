@@ -676,7 +676,7 @@ void DkColorPicker::createLayout()
     mColorPreview = new QLabel("", this);
     mColorPreview->setFixedHeight(bs);
 
-    auto *mMenu = new QPushButton(DkImage::loadIcon(":/nomacs/img/bars.svg", QSize(bs, bs), Qt::white), "", this);
+    auto *mMenu = new QPushButton(DkImage::loadIcon(":/nomacs/img/bars.svg", Qt::white), "", this);
     mMenu->setObjectName("flatWhite");
     mMenu->setFlat(true);
     mMenu->setFixedSize(bs, bs);

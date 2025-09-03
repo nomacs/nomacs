@@ -107,11 +107,19 @@ public:
     static QImage rotateImage(const QImage &img, double angle);
     static QImage grayscaleImage(const QImage &img);
     static QPixmap colorizePixmap(const QPixmap &icon, const QColor &col, float opacity = 1.0f);
-    static QPixmap loadIcon(const QString &filePath = QString(),
-                            const QSize &size = QSize(),
-                            const QColor &col = QColor());
-    static QPixmap loadIcon(const QString &filePath, const QColor &col, const QSize &size = QSize());
+    static QPixmap loadIcon(const QString &filePath, const QSize &size, const QColor &col);
+    static QPixmap loadIcon(const QString &filePath, const QColor &col, const QSize &size);
     static QPixmap loadFromSvg(const QString &filePath, const QSize &size);
+
+    /**
+     * Load icon with colorization for the default QIcon mode and state
+     *
+     * @param filePath svg file
+     * @param color if unset, use the default ui/user icon color
+     * @note to add icons for other states you must use QIcon::addFile(), addPixMap() is unsupported
+     * @note size passed through QIcon::addFile is ignored; we always render the requested size
+     */
+    static QIcon loadIcon(const QString &filePath, const QColor &color = {});
     static QImage createThumb(const QImage &img, int maxSize = -1);
     static uchar findHistPeak(const int *hist, float quantile = 0.005f);
     static QPixmap makeSquare(const QPixmap &pm);

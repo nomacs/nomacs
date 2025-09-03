@@ -53,6 +53,7 @@ class QVBoxLayout;
 namespace nmc
 {
 class DkCropToolBar;
+class DkViewPort;
 
 class DkButton : public QPushButton
 {
@@ -362,47 +363,43 @@ public:
     explicit DkOverview(QWidget *parent = nullptr);
     ~DkOverview() override = default;
 
-    void setImage(const QImage &img)
+    // get notified when the image in the viewport changes
+    void imageUpdated()
     {
-        mImg = img;
-        mImgSize = img.size();
-        mImgT = QImage();
-    };
+        mThumb = {};
+    }
 
-    void setTransforms(QTransform *worldMatrix, QTransform *imgMatrix)
+    // bind to viewport; viewport owns overview (via controller), so dangling pointer is not possible
+    void setViewPort(DkViewPort *viewPort)
     {
-        mWorldMatrix = worldMatrix;
-        mImgMatrix = imgMatrix;
-    };
-
-    void setViewPortRect(const QRectF &viewPortRect)
-    {
-        mViewPortRect = viewPortRect;
-    };
-
-signals:
-    void moveViewSignal(const QPointF &dxy) const;
-    void sendTransformSignal() const;
+        mViewPort = viewPort;
+        mThumb = {};
+    }
 
 protected:
-    QImage mImg;
-    QImage mImgT;
-    QSize mImgSize;
-    QTransform *mScaledImgMatrix;
-    QTransform *mWorldMatrix;
-    QTransform *mImgMatrix;
-    QRectF mViewPortRect;
-    QPointF mPosGrab;
-    QPointF mEnterPos;
+    DkViewPort *mViewPort{};
 
-    QImage resizedImg(const QImage &src);
+    QSize mOriginalImageSize{};
+    QImage mThumb{};
+    QTransform mImageToLocal{};
+
+    bool mMouseMoved = false; // true if we handled a drag
+    QPointF mLastMousePos; // set on mouse move
+
     void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    QRectF getImageRect() const;
-    // get matrix that resizes the image to the current mViewport
-    QTransform getScaledImageMatrix();
+    void resizeEvent(QResizeEvent *event) override;
+
+    // recompute thumbnail and transforms after imageUpdated()
+    bool updateThumb();
+
+    QTransform viewPortToLocal() const;
+    QTransform imageToLocal() const;
+
+    // move original image in the viewport
+    void moveImage(const QPointF &p1, const QPointF &p2);
 };
 
 class DkZoomWidget : public DkFadeLabel
