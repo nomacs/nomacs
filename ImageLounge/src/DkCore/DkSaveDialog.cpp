@@ -151,6 +151,7 @@ void DkCompressDialog::loadSettings()
 
 void DkCompressDialog::resizeEvent(QResizeEvent *ev)
 {
+    mOrigView->zoomConstraints(mOrigView->get100Factor());
     drawPreview();
     QDialog::resizeEvent(ev);
 }
