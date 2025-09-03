@@ -265,6 +265,20 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
         return;
     }
 
+    // retain the previous image for animation, release when animation ends
+    // we don't do this on unloadImage() because we might be on the last image in the slideshow
+    if (!mImgStorage.isEmpty() //
+        && DkSettingsManager::param().display().animationDuration > 0
+        && (mController->getPlayer()->isPlaying() //
+            || DkUtils::getMainWindow()->isFullScreen() //
+            || DkSettingsManager::param().display().alwaysAnimate)) {
+        QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
+        mAnimationBuffer = mImgStorage.image(dr.size());
+        mFadeImgViewRect = mImgViewRect;
+        mFadeImgRect = mImgRect;
+        mAnimationValue = 1.0f;
+    }
+
     updateLoadedImage();
 
     mController->updateImage(image);
@@ -1699,16 +1713,6 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img)
 
 bool DkViewPort::unloadImage()
 {
-    if (DkSettingsManager::param().display().animationDuration > 0
-        && (mController->getPlayer()->isPlaying() || DkUtils::getMainWindow()->isFullScreen()
-            || DkSettingsManager::param().display().alwaysAnimate)) {
-        QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
-        mAnimationBuffer = mImgStorage.image(dr.size());
-        mFadeImgViewRect = mImgViewRect;
-        mFadeImgRect = mImgRect;
-        mAnimationValue = 1.0f;
-    }
-
     if (!mController->applyPluginChanges(true)) // user wants to apply changes first
         return false;
 
