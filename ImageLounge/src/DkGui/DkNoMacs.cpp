@@ -797,10 +797,6 @@ void DkNoMacs::fitFrame()
     newGeometry.moveTopLeft(newGeometry.topLeft() - frameGeometry().topLeft() + geometry().topLeft());
 
     setGeometry(newGeometry);
-
-    // reset viewport if we did not clip -> compensates round-off errors
-    if (screenRect.contains(nmRect.toRect()))
-        vp->resetView();
 }
 
 void DkNoMacs::setRecursiveScan(bool recursive)
