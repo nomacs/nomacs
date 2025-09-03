@@ -788,7 +788,7 @@ void DkNoMacs::fitFrame()
     nmRect.moveCenter(c);
 
     // still fits on screen?
-    QScreen *sc = QApplication::primaryScreen();
+    QScreen *sc = vp->screen();
     QRect screenRect = sc->availableGeometry();
     QRect newGeometry = screenRect.intersected(nmRect.toRect());
 
