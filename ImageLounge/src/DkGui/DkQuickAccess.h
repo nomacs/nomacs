@@ -80,6 +80,7 @@ public:
 
 signals:
     void executeSignal(const QString &cmd) const;
+    void hideSignal() const;
 
 public slots:
     void clearAccess();
