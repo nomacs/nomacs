@@ -338,14 +338,11 @@ int main(int argc, char *argv[])
 
     nmc::DkCentralWidget *cw = w->getTabWidget();
 
-    // Helper function to expand directories into file lists when --file-list is set
-    auto expandToFileList = [&parser](const QStringList &paths) -> QStringList {
-        if (!parser.isSet("file-list")) {
-            return paths; // Return as-is if --file-list is not set
-        }
-
+    QStringList filePaths = parser.positionalArguments();
+    if (parser.isSet("file-list")) {
+        // Expand directories into file lists
         QStringList allImageFiles;
-        for (const QString &path : paths) {
+        for (const QString &path : filePaths) {
             nmc::DkFileInfo fileInfo(path);
             if (fileInfo.isDir()) {
                 // Directory: expand to image files
@@ -358,84 +355,40 @@ int main(int argc, char *argv[])
                 allImageFiles.append(path);
             }
         }
-        return allImageFiles;
-    };
+        filePaths = allImageFiles;
+    }
 
     // Handle slideshow with file list support
-    if (parser.isSet(slideshowOpt)) {
-        QStringList slideshowFiles = parser.positionalArguments();
-
-        if (!slideshowFiles.isEmpty()) {
-            if (parser.isSet("file-list")) {
-                // File-list mode: expand directories and start slideshow with file list
-                QStringList allImageFiles = expandToFileList(slideshowFiles);
-
-                if (!allImageFiles.isEmpty()) {
-                    // First ensure we have a proper viewport and tab setup by loading the first file normally
-                    cw->load(allImageFiles[0]);
-                    // Then start slideshow with the expanded file list
-                    cw->startSlideshowWithFiles(allImageFiles);
-                } else {
-                    // No image files found
-                    qWarning() << "No image files found in the provided paths";
-                }
-            } else {
-                // Original behavior: load all arguments into tabs, then start slideshow in the last one
-                bool loading = false;
-                for (auto &filePath : slideshowFiles) {
-                    if (filePath.isEmpty())
-                        continue;
-
-                    if (loading)
-                        cw->loadToTab(filePath);
-                    else
-                        cw->load(filePath);
-
-                    loading = true;
-                }
-
-                // Start slideshow in the current tab (directory-based slideshow)
-                cw->startSlideshow();
-            }
+    if (parser.isSet("file-list") && parser.isSet(slideshowOpt)) {
+        if (!filePaths.isEmpty()) {
+            // First ensure we have a proper viewport and tab setup by loading the first file normally
+            cw->load(filePaths[0]);
+            // Then start slideshow with the expanded file list
+            cw->startSlideshowWithFiles(filePaths);
         } else {
-            // Directory mode: use current directory for slideshow
-            cw->startSlideshow();
+            // No image files found
+            qWarning() << "No image files found in the provided paths";
         }
     } else {
         // Normal mode: load files into tabs
-        QStringList filePaths = parser.positionalArguments();
         bool loading = false;
 
-        if (parser.isSet("file-list") && !filePaths.isEmpty()) {
-            // Expand directories into file lists if --file-list is set
-            QStringList allImageFiles = expandToFileList(filePaths);
+        // Original behavior: load files/directories as-is
+        for (auto &filePath : filePaths) {
+            if (filePath.isEmpty())
+                continue;
 
-            if (!allImageFiles.isEmpty()) {
-                for (const QString &filePath : allImageFiles) {
-                    if (filePath.isEmpty())
-                        continue;
+            if (loading)
+                cw->loadToTab(filePath);
+            else
+                cw->load(filePath);
 
-                    if (loading)
-                        cw->loadToTab(filePath);
-                    else
-                        cw->load(filePath);
+            loading = true;
+        }
 
-                    loading = true;
-                }
-            }
-        } else {
-            // Original behavior: load files/directories as-is
-            for (auto &filePath : filePaths) {
-                if (filePath.isEmpty())
-                    continue;
-
-                if (loading)
-                    cw->loadToTab(filePath);
-                else
-                    cw->load(filePath);
-
-                loading = true;
-            }
+        if (parser.isSet(slideshowOpt)) {
+            // Start slideshow in the current tab (directory-based slideshow)
+            cw->startSlideshow();
         }
 
         // load recent files if there is nothing to display
