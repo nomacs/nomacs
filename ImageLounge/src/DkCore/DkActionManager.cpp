@@ -1581,10 +1581,6 @@ void DkActionManager::createActions(QWidget *parent)
     // hidden actions
     mHiddenActions.resize(sc_end);
 
-    mHiddenActions[sc_test_img] = new QAction(QObject::QObject::tr("Lena"), parent);
-    mHiddenActions[sc_test_img]->setStatusTip(QObject::QObject::tr("Show test image"));
-    mHiddenActions[sc_test_img]->setShortcut(QKeySequence(shortcut_test_img));
-
     mHiddenActions[sc_test_rec] = new QAction(QObject::QObject::tr("All Images"), parent);
     mHiddenActions[sc_test_rec]->setStatusTip(QObject::QObject::tr("Generates all images in the world"));
     mHiddenActions[sc_test_rec]->setShortcut(QKeySequence(shortcut_test_rec));
