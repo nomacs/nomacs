@@ -195,6 +195,7 @@ void DkQuickAccessEdit::clearAccess()
 {
     clear();
     hide();
+    emit hideSignal();
 }
 
 }
