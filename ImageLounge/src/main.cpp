@@ -291,6 +291,11 @@ int main(int argc, char *argv[])
             << "maximized:" << w->isMaximized() << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry()
             << "windowState:" << w->windowState();
 
+#ifdef Q_OS_WIN
+    // hide white flash when window first appears
+    w->setWindowOpacity(0.0);
+#endif
+
     if (nmc::DkSettings::modeIsFullscreen(mode))
         w->showFullScreen();
     else if (w->windowState() & Qt::WindowMaximized)
@@ -324,6 +329,14 @@ int main(int argc, char *argv[])
 
     if (w)
         w->onWindowLoaded();
+
+#ifdef Q_OS_WIN
+    // The UI is fully configured now, force repaint so we don't see a white background while loading files
+    // We can't animate smoothly here due to everything going on, so just make it opaque immediately
+    w->update();
+    qApp->processEvents();
+    w->setWindowOpacity(1.0);
+#endif
 
     qInfo() << "Initialization takes: " << dt;
 
