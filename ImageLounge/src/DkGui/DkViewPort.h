@@ -127,7 +127,6 @@ public slots:
     void loadLast();
     void loadSkipNext10();
     void loadSkipPrev10();
-    void loadLena();
     bool unloadImage();
     void deactivate();
     void cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool cropToMetaData);
@@ -225,7 +224,6 @@ protected:
     void eraseBackground(QPainter &painter) override;
     void updateImageMatrix() override;
     void showZoom();
-    void toggleLena(bool fullscreen);
     void getPixelInfo(const QPoint &pos);
 };
 
