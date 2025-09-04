@@ -1160,6 +1160,7 @@ void DkToolBarManager::createDefaultToolBar()
 
     mToolBar = new DkMainToolBar(QObject::tr("Toolbar"), nomacs);
     mToolBar->setObjectName("EditToolBar");
+    mToolBar->setMovable(false); // we don't save toolbar location so lock it for now #283
 
     int is = DkSettingsManager::param().effectiveIconSize(nomacs);
     mToolBar->setIconSize(QSize(is, is));
