@@ -63,7 +63,8 @@ public slots:
 protected:
     void createLayout();
 
-    DkQuickAccessEdit *mQuickAccessEdit;
+    DkQuickAccessEdit *mQuickAccessEdit{};
+    QAction *mQuickAccessAction{};
 };
 
 class DkColorSlider : public DkWidget
