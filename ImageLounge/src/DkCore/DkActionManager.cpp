@@ -1456,7 +1456,7 @@ void DkActionManager::createActions(QWidget *parent)
     mToolsActions[menu_tools_batch]->setStatusTip(QObject::tr("Apply actions to multiple images"));
     mToolsActions[menu_tools_batch]->setShortcut(QKeySequence(shortcut_batch_processing));
 
-    mToolsActions[menu_tools_wallpaper] = new QAction(QObject::tr("&Wallpaper"), parent);
+    mToolsActions[menu_tools_wallpaper] = new QAction(QObject::tr("Set Desktop &Wallpaper"), parent);
     mToolsActions[menu_tools_wallpaper]->setStatusTip(QObject::tr("set the current image as wallpaper"));
 
     mToolsActions[menu_tools_train_format] = new QAction(QObject::tr("Add Image Format"), parent);
