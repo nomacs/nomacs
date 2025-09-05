@@ -465,8 +465,12 @@ void DkBatchInput::setDir(const QString &dirPath)
     mExplorer->setCurrentPath(dirPath);
 
     mCDirPath = dirPath;
-    qDebug() << "setting directory to:" << dirPath;
+
+    // block signals to prevent recursion through updateInputDir->setInputDir->setDir
+    mDirectoryEdit->blockSignals(true);
     mDirectoryEdit->setText(mCDirPath);
+    mDirectoryEdit->blockSignals(false);
+
     emit newHeaderText(mCDirPath);
     emit updateInputDir(mCDirPath);
     mLoader->loadDir(mCDirPath, false);
@@ -482,11 +486,6 @@ void DkBatchInput::selectionChanged()
         msg = tr("%1 File Selected").arg(getSelectedFiles().size());
     else
         msg = tr("%1 Files Selected").arg(getSelectedFiles().size());
-
-    QString d = mInputTextEdit->firstDirPath();
-
-    if (!d.isEmpty() && mCDirPath != d)
-        setDir(d);
 
     emit newHeaderText(msg);
     emit changed();
@@ -2516,7 +2515,6 @@ void DkBatchWidget::createLayout(DkThumbLoader *thumbLoader)
     mWidgets[batch_input] = new DkBatchContainer(tr("Input"), tr("no files selected"), this);
     const auto bi = new DkBatchInput(thumbLoader, this);
     mWidgets[batch_input]->setContentWidget(bi);
-    inputWidget()->setDir(mCurrentDirectory);
     connect(bi, &DkBatchInput::changed, this, &DkBatchWidget::widgetChanged);
 
     // fold content
