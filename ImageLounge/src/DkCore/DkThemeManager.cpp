@@ -38,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QStyle>
 #include <QStyleFactory>
 #include <QStyleHints>
+#include <QWidget>
 
 #include <cmath>
 
@@ -779,6 +780,44 @@ void DkThemeManager::applyTheme()
     emit themeApplied();
 }
 
+void unpolishTree(QObject *object)
+{
+    // find widgets that need their style recomputed
+    // the stylesheet uses the "whatsThis" QWidget property if it has this requirement
+    if (object->isWidgetType()) {
+        QString data = object->property("whatsThis").toString();
+        if (data == "on-unpolish:recompute-style") {
+            auto *w = static_cast<QWidget *>(object);
+            w->setStyleSheet("/**/");
+        }
+    }
+    for (QObject *child : object->children())
+        unpolishTree(child);
+}
+
+void DkThemeManager::unpolish(QObject *rootObject)
+{
+    //
+    // Styles that depend on a widget property ("dynamic styles") are not automatically recomputed.
+    // Suppose you have:
+    //    QMainWindow[fullScreen="true"] QLabel { color:red }
+    //    QMainWindow[fullScreen="false"] QLabel { color:blue }
+    // Then the label text will either by red or blue, depending if the window was fullscreen when it was first
+    // shown. It will never change even if fullscreen is toggled on and off, it keeps the value it started with.
+    //
+    // QWidget::setStyleSheet() with a non-empty value is the only way to fully recompute style on a widget
+    // and solve this problem. This is too slow to do on the entire appication, so we have to know
+    // what widgets require it. The best place to put this is in the stylesheet itself, because it created
+    // the requirement by using properties like "fullScreen" in the widget selector.
+    //
+    // We use the "whatsThis" property since it is not used for anything, we do not have to define a Q_PROPERTY
+    // on every widget. We just have to go look for them when unpolishing.
+    //
+
+    // recompute styles if they have the special marker property
+    unpolishTree(rootObject);
+}
+
 QString DkThemeManager::cleanThemeName(const QString &themeName) const
 {
     QString name = themeName;
@@ -1272,5 +1311,4 @@ void DkThemeManager::timerEvent(QTimerEvent *event)
     qInfo() << "[theme] system palette changed, reapplying theme";
     applyTheme();
 }
-
 }
