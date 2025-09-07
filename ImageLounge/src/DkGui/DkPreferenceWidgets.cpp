@@ -291,13 +291,13 @@ void DkGeneralPreference::createLayout()
 
     struct {
         const QString caption;
-        const bool restartRequired; // TODO: everying using icons must connect a theme change signal!
+        const bool restartRequired;
         const QColor *themeColor; // setting: system palette or theme css
         QColor *userColor; // setting: user modified color
         bool *isThemeColor; // setting: true if user modified a color
         DkColorChooser *chooser = nullptr;
     } colors[] =
-        {{tr("Icon Color"), true, &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
+        {{tr("Icon Color"), false, &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
          {tr("Foreground Color"), false, &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
          {tr("Background Color"), false, &display.themeBgdColor, &display.bgColor, &display.defaultBackgroundColor},
          {tr("Fullscreen Color"), false, &defaultSlideShowColor, &slideshow.backgroundColor, &noSetting}};
