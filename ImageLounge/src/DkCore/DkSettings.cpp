@@ -448,6 +448,10 @@ void DkSettings::load(QSettings &settings, bool defaults)
         settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
     display_p.hudBgColor = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.hudBgColor.rgba()).toInt());
     display_p.hudFgdColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.hudFgdColor.rgba()).toInt());
+    display_p.hudHighlightColor = QColor::fromRgba(
+        settings.value("hudHighlightColorRGBA", display_p.hudHighlightColor.rgba()).toInt());
+    display_p.hudHighlightLightColor = QColor::fromRgba(
+        settings.value("hudHighlightLightColorRGBA", display_p.hudHighlightLightColor.rgba()).toInt());
     display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
     display_p.fgColor = QColor::fromRgba(settings.value("fgColorNoMacsRGBA", display_p.fgColor.rgba()).toInt());
     display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
@@ -699,6 +703,10 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("bgColorWidgetRGBA", display_p.hudBgColor.rgba());
     if (force || display_p.hudFgdColor != display_d.hudFgdColor)
         settings.setValue("fontColorRGBA", display_p.hudFgdColor.rgba());
+    if (force || display_p.hudHighlightColor != display_d.hudHighlightColor)
+        settings.setValue("hudHighlightColorRGBA", display_p.hudHighlightColor.rgba());
+    if (force || display_p.hudHighlightLightColor != display_d.hudHighlightLightColor)
+        settings.setValue("hudHighlightLightColorRGBA", display_p.hudHighlightLightColor.rgba());
     if (force || display_p.bgColor != display_d.bgColor)
         settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
     if (force || display_p.fgColor != display_d.fgColor)
@@ -920,6 +928,8 @@ void DkSettings::setToDefaultSettings()
     display_p.highlightColor = QColor(0, 204, 255);
     display_p.hudBgColor = QColor(0, 0, 0, 100);
     display_p.hudFgdColor = QColor(255, 255, 255);
+    display_p.hudHighlightColor = QColor(0, 0, 0, 153);
+    display_p.hudHighlightLightColor = QColor(80, 80, 80, 100);
     display_p.bgColor = QColor(100, 100, 100, 255);
     display_p.fgColor = QColor(0, 0, 0, 255);
     display_p.iconColor = QColor(100, 100, 100, 255);

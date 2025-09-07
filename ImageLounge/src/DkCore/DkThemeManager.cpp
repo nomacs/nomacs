@@ -891,6 +891,10 @@ QString DkThemeManager::preprocess(const QString &cssString) const
             dpy.hudBgColor = color;
         else if (name == "HUD_FOREGROUND_COLOR")
             dpy.hudFgdColor = color;
+        else if (name == "HUD_HIGHLIGHT_COLOR")
+            dpy.hudHighlightColor = color;
+        else if (name == "HUD_HIGHLIGHT_LIGHT")
+            dpy.hudHighlightLightColor = color;
         else if (name == "ICON_COLOR") {
             dpy.themeIconColor = color;
             if (dpy.defaultIconColor && !app.privateMode)
@@ -1117,7 +1121,10 @@ DkThemeManager::ColorBinding DkThemeManager::cssColors() const
     QColor highlightAlpha = d.highlightColor;
     highlightAlpha.setAlpha(150);
 
-    return {{"HIGHLIGHT_COLOR", d.highlightColor}, // note the order, BACKGROUND_COLOR must follow *_BACKGROUND_COLOR
+    // note the order, BACKGROUND_COLOR must follow *_BACKGROUND_COLOR
+    return {{"HUD_HIGHLIGHT_COLOR", d.hudHighlightColor},
+            {"HUD_HIGHLIGHT_LIGHT", d.hudHighlightLightColor},
+            {"HIGHLIGHT_COLOR", d.highlightColor},
             {"HIGHLIGHT_LIGHT", highlightAlpha},
             {"HUD_BACKGROUND_COLOR", d.hudBgColor},
             {"HUD_FOREGROUND_COLOR", d.hudFgdColor},
