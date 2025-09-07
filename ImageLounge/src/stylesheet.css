@@ -708,18 +708,6 @@ QPushButton#remove {
 	padding: 4px;
 }
 
-QPushButton#load_dir:hover,
-QPushButton#pin:hover,
-QPushButton#remove:hover {
-	background-color: HIGHLIGHT_LIGHT;
-} 
-
-QPushButton#load_dir:pressed,
-QPushButton#pin:pressed,
-QPushButton#remove:pressed {
-	background-color: HIGHLIGHT_LIGHT;
-}
-
 nmc--DkThumbPreviewLabel {
 	padding: 1px;
 }
