@@ -524,7 +524,27 @@ nmc--DkGroupWidget QLabel {
 */
 
 nmc--DkProgressBar {
-	max-height: 3px;
+    max-height: 8px;
+}
+
+QMainWindow[fullScreen="false"] nmc--DkProgressBar {
+    color: FOREGROUND_COLOR;
+    background-color: BACKGROUND_COLOR;
+}
+
+QMainWindow[fullScreen="true"] nmc--DkProgressBar {
+    color: HUD_FOREGROUND_COLOR;
+    background-color: SLIDESHOW_COLOR;
+}
+
+nmc--DkNoMacsFrameless[fullScreen="false"] nmc--DkProgressBar {
+    color: HUD_FOREGROUND_COLOR;
+    background-color: HUD_BACKGROUND_COLOR;
+}
+
+nmc--DkNoMacsFrameless[fullScreen="true"] nmc--DkProgressBar {
+    color: HUD_FOREGROUND_COLOR;
+    background-color: HUD_BACKGROUND_COLOR;
 }
 
 /* plugins */
