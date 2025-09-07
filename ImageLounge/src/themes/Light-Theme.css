@@ -119,6 +119,22 @@ QDialogButtonBox {
     dialogbuttonbox-buttons-have-icons: 0;
 }
 
+QGroupBox {
+    border: 1px solid rgba(0,0,0,60); /* == button border */
+    margin-top: 0.5em; /* center title with top border */
+    margin-left: 3px; /* line up left border with title */
+    margin-right: 3px; /* match left */
+    margin-bottom: 1px; /* top margin is large, give back space at the bottom */
+    padding: 6px 4px 4px 4px; /* extra padding at the top for the title */
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0; /* place as far left as we can */
+    margin: 0;
+}
+
 QHeaderView,
 QHeaderView::section {
     background-color: rgba(0, 0, 0, 30);
