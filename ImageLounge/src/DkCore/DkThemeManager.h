@@ -104,6 +104,11 @@ public:
     void applyTheme();
 
     /**
+     * @brief restyle certain widgets quickly without reapplying the theme
+     */
+    void unpolish(QObject *rootObject);
+
+    /**
      * @param themeName internal theme name (no spaces, file extension)
      * @return human-readable theme name (spaces, no file extension)
      */

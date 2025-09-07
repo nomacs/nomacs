@@ -183,8 +183,11 @@ QGraphicsView#DkThumbsView {
 	border: none;
 }
 
-/* FIXME: the stylesheet is not reevaluted when entering/leaving fullscreen,
-          so it keeps the background it started with */
+QMainWindow {
+    /* re-evaluate style when fullScreen change does unpolish() */
+    qproperty-whatsThis: "on-unpolish:recompute-style";
+}
+
 QMainWindow[fullScreen="false"] QGraphicsView#DkThumbsView {
     background-color: BACKGROUND_COLOR;
 }
@@ -525,6 +528,8 @@ nmc--DkGroupWidget QLabel {
 
 nmc--DkProgressBar {
     max-height: 8px;
+    /* re-evaluate style when fullScreen change does unpolish() */
+    qproperty-whatsThis: "on-unpolish:recompute-style";
 }
 
 QMainWindow[fullScreen="false"] nmc--DkProgressBar {

@@ -45,6 +45,7 @@
 #include "DkQuickAccess.h"
 #include "DkSettings.h"
 #include "DkStatusBar.h"
+#include "DkThemeManager.h"
 #include "DkThumbsWidgets.h"
 #include "DkTimer.h"
 #include "DkToolbars.h"
@@ -646,7 +647,7 @@ void DkNoMacs::enterFullScreen()
     qInfo() << "after enter fullscreen appMode:" << appMode << "geometry:" << geometry()
             << "normalGeometry:" << normalGeometry() << "windowState:" << windowState();
 
-    update();
+    DkThemeManager::instance().unpolish(this);
 }
 
 void DkNoMacs::exitFullScreen()
@@ -692,7 +693,7 @@ void DkNoMacs::exitFullScreen()
         qInfo() << "after exit fullscreen appMode:" << appMode << "geometry:" << geometry()
                 << "normalGeometry:" << normalGeometry() << "windowState:" << windowState();
 
-        update(); // if no resize is triggered, the viewport won't change its color
+        DkThemeManager::instance().unpolish(this);
     }
 }
 
