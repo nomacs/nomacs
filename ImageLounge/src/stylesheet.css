@@ -125,12 +125,12 @@ QPushButton#DkPlayerButton {
 
 QPushButton#hudNavigationButton:hover,
 QPushButton#DkPlayerButton:hover{
-	background-color: rgba(0,0,0,.6);
+    background-color: HUD_HIGHLIGHT_COLOR;
 } 
 
 QPushButton#hudNavigationButton:pressed,
 QPushButton#DkPlayerButton:pressed {
-	background-color: HIGHLIGHT_LIGHT;
+    background-color: HUD_HIGHLIGHT_LIGHT;
 }
 
 QPushButton#hudNavigationButton {

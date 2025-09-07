@@ -222,6 +222,8 @@ public:
         QColor hudFgdColor;
         QColor iconColor;
         QColor fgColor;
+        QColor hudHighlightColor;
+        QColor hudHighlightLightColor;
 
         // theme colors, cannot be modified by user; only valid after applyTheme()
         QColor themeFgdColor;
