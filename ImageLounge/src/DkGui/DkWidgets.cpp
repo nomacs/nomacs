@@ -31,6 +31,7 @@
 #include "DkDialog.h"
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
+#include "DkMath.h"
 #include "DkSettings.h"
 #include "DkStatusBar.h"
 #include "DkThumbs.h"
@@ -2578,22 +2579,8 @@ void DkProgressBar::paintEvent(QPaintEvent *)
 
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-    p.setPen(Qt::NoPen);
 
-    if (parentWidget() && DkUtils::getMainWindow()->isFullScreen())
-        p.setBackground(DkSettingsManager::param().slideShow().backgroundColor);
-
-    p.setBrush(DkSettingsManager::param().display().highlightColor);
-
-    if (value() != minimum()) {
-        int rv = qRound((value() - minimum()) / (double)(maximum() - minimum()) * width());
-
-        // draw the current status bar
-        QRect r(QPoint(), size());
-        r.setRight(rv);
-
-        p.drawRect(r);
-    }
+    QColor pointColor = opt.palette.color(QPalette::WindowText);
 
     bool stillVisible = false;
 
@@ -2604,7 +2591,8 @@ void DkProgressBar::paintEvent(QPaintEvent *)
         QRect r(QPoint(), QSize(height(), height()));
         r.moveLeft(qRound(pt * width()));
 
-        p.drawRect(r);
+        p.setOpacity(std::sin(pt * CV_PI));
+        p.fillRect(r, pointColor);
 
         if (pt < 0.99)
             stillVisible = true;
@@ -2620,7 +2608,7 @@ void DkProgressBar::initPoints()
 
     int m = 7;
     for (int idx = 1; idx < m; idx++) {
-        mPoints.append((double)idx / m * 0.1);
+        mPoints.append((double)idx / m * 0.05);
     }
 }
 
