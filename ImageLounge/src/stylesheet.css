@@ -133,6 +133,12 @@ QPushButton#DkPlayerButton:pressed {
     background-color: HUD_HIGHLIGHT_LIGHT;
 }
 
+QPushButton#hudNavigationButton:focus,
+QPushButton#DkPlayerButton:focus {
+    outline: none;
+    border: none;
+}
+
 QPushButton#hudNavigationButton {
     border: none;
 
