@@ -279,13 +279,13 @@ QPushButton#DkSplashCopyInfoButton:hover {
   background-color: #ddd;
 }
 
-QLineEdit#DkWarningEdit {
-	color: #000;
-}
-
 QLabel#DkDecentInfo[warning="true"],
 QLineEdit#DkWarningEdit[error="true"] {
-	color: #9f1d1d;
+/* nomacs-if-colorscheme-eq-dark */
+    color: #ff5353;
+/* nomacs-else */
+    color: #9f1d1d;
+/* nomacs-endif */
 }
 
 QListView#resultListView[empty="true"] {
