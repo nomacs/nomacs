@@ -79,7 +79,7 @@ QCheckBox::indicator {
 }
 
 QCheckBox::indicator:checked {
-    image: url(:/nomacs/img/check-white.svg);
+    image: nomacsColorize(:/nomacs/img/check.svg);
 }
 
 QRadioButton::indicator {
@@ -98,7 +98,7 @@ QRadioButton::indicator {
 
 QRadioButton::indicator:checked
 {
-    image: url(:/nomacs/img/radio-checked-white.svg);
+    image: nomacsColorize(:/nomacs/img/radio-checked.svg);
 }
 
 QCheckBox::indicator:pressed,
@@ -169,7 +169,7 @@ QComboBox QListView::item:hover {
 }
 
 QComboBox::drop-down {
-    image: url(:/nomacs/img/down-white.svg);
+    image: nomacsColorize(:/nomacs/img/down.svg);
     subcontrol-position: right center;
     border: none;
     background-color: none;
@@ -221,27 +221,30 @@ QDoubleSpinBox::down-button:pressed {
 
 QSpinBox::up-arrow,
 QDoubleSpinBox::up-arrow {
-    image: url(:/nomacs/img/up-white.svg);
+    image: nomacsColorize(:/nomacs/img/up.svg);
     width:1.0em;
     height:0.5em;
 }
 
 QSpinBox::down-arrow,
 QDoubleSpinBox::down-arrow {
-    image: url(:/nomacs/img/down-white.svg);
+    image: nomacsColorize(:/nomacs/img/down.svg);
     width:1.0em;
     height:0.5em;
 }
 
 QSpinBox::up-arrow:disabled,
 QSpinBox::up-arrow:off,
+QDoubleSpinBox::up-arrow:disabled,
+QDoubleSpinBox::up-arrow:off {
+    image: nomacsColorize(:/nomacs/img/up.svg,nomacsBlend(BACKGROUND_COLOR,255,255,255,100));
+}
+
 QSpinBox::down-arrow:disabled,
 QSpinBox::down-arrow:off,
-QDoubleSpinBox::up-arrow:disabled,
-QDoubleSpinBox::up-arrow:off,
 QDoubleSpinBox::down-arrow:disabled,
 QDoubleSpinBox::down-arrow:off {
-    image: none; /* lazy but avoids making two more svgs */
+    image: nomacsColorize(:/nomacs/img/down.svg,nomacsBlend(BACKGROUND_COLOR,255,255,255,100));
 }
 
 QToolBar {
@@ -259,11 +262,11 @@ QToolBar::separator {
 }
 
 QTabBar::close-button {
-    image: url(:/nomacs/img/close-white.svg);
+    image: nomacsColorize(:/nomacs/img/close.svg);
 }
 
 QTabBar::close-button:hover {
-    image: url(:/nomacs/img/close-white-hover.svg);
+    image: nomacsColorize(:/nomacs/img/close-hover.svg);
 }
 
 QTabBar::tab {
@@ -531,7 +534,7 @@ QPushButton#infoButton {
 }
 
 #DkEditDock #darkManipulator QCheckBox::indicator:checked {
-    image: url(:/nomacs/img/check-white.svg);
+    image: nomacsColorize(:/nomacs/img/check.svg,white);
 }
 
 #DkEditDock #darkManipulator QComboBox QAbstractItemView {
