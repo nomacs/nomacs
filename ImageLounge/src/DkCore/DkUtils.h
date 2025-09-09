@@ -400,6 +400,7 @@ public:
     static QString resolveFraction(const QString &frac);
     static std::wstring qStringToStdWString(const QString &str);
     static QString stdWStringToQString(const std::wstring &str);
+    static QString randomString(int length);
 
     static std::string stringTrim(const std::string str)
     {
