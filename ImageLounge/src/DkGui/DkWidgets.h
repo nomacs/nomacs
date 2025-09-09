@@ -191,7 +191,7 @@ protected:
 
     // File list support
     QStringList mFileList;
-    int mCurrentIndex;
+    int mCurrentIndex = 0;
 };
 
 class DkHudNavigation : public DkFadeWidget
