@@ -568,12 +568,23 @@ DkThemeManager::DkThemeManager()
         setStylePlugin(name);
 
     qApp->installEventFilter(this); // receive palette change events
+
+    // temp dir is per-instance to prevent one instance from modifying the other
+    mTempDirPath = DkUtils::getTemporaryDirPath() + "/theme-" + DkUtils::randomString(6);
+    QDir().mkpath(mTempDirPath);
+}
+
+DkThemeManager::~DkThemeManager()
+{
+    for (auto &path : mTempFiles)
+        QFile::remove(path);
+    QDir().rmpath(mTempDirPath);
 }
 
 DkThemeManager &DkThemeManager::instance()
 {
-    static auto *inst = new DkThemeManager; // no destructor will be called, but we don't need to
-    return *inst;
+    static DkThemeManager instance;
+    return instance;
 }
 
 QStringList DkThemeManager::getAvailableThemes() const
@@ -1173,13 +1184,13 @@ DkThemeManager::ColorBinding DkThemeManager::cssColors() const
             {"ICON_COLOR", d.iconColor}};
 }
 
-QString DkThemeManager::replaceMacros(const QString &cssString, const ColorBinding &colors) const
+QString DkThemeManager::replaceMacros(const QString &cssString, const ColorBinding &colors)
 {
     const auto findColor = [&colors](const QString &name) {
         for (auto &c : colors)
             if (c.name == name)
                 return c.color;
-        return QColor();
+        return QColor(name);
     };
 
     const struct Macro {
@@ -1188,7 +1199,6 @@ QString DkThemeManager::replaceMacros(const QString &cssString, const ColorBindi
     } macros[] = {
         // NOTE: macros must be ordered such that shortest common prefix appears last
         //       e.g. "nomacsBlend" must follow "nomacsBlendAndMultiply"
-
         // {"nomacsAlpha",
         //  [&findColor](const QStringList &args) {
         //      // set the alpha channel of a color
@@ -1226,7 +1236,53 @@ QString DkThemeManager::replaceMacros(const QString &cssString, const ColorBindi
              int r = base.red() * da + over.red() * sa;
              int g = base.green() * da + over.green() * sa;
              int b = base.blue() * da + over.blue() * sa;
-             return DkUtils::colorToString(QColor(r, g, b));
+             return QColor(r, g, b).name();
+         }},
+        {"nomacsColorize",
+         [this, &findColor](const QStringList &args) {
+             // return url() to colorized icon file, note svg does not support alpha channel in this way,
+             // nomacsBlend is needed to send the proper color
+             // QPushButton {
+             //   image: nomacsColorize(:img/file.svg, ICON_COLOR)
+             //   image: nomacsColorize(:img/file.svg, nomacsBlend(...))
+             //   image: nomacsColorize(:img/file.svg) => use FOREGROUND_COLOR
+             // };
+             if (args.empty()) // prevent array access oob
+                 return QString("url()");
+
+             QColor color = DkSettingsManager::param().display().fgColor;
+             if (args.count() > 1)
+                 color = findColor(args[1]);
+             if (args.count() > 2)
+                 color.setAlpha(args[2].toInt());
+
+             QString svgColor = color.name(color.HexRgb); // note: svg cannot render transparent colors in Qt
+
+             // Practically all we can do is write a modified svg here, Qt does
+             // not provide any other sane way to do this. We put in a temporary
+             // file and cleanup on exit.
+             QString tmpName = "colorized.";
+             tmpName += svgColor;
+             tmpName += args[0];
+             tmpName.remove(':');
+             tmpName.replace('/', '.');
+             QString tmpPath = mTempDirPath + '/' + tmpName;
+             mTempFiles.insert(tmpPath);
+
+             QFile inFile(args[0]);
+             QFile outFile(tmpPath);
+
+             if (!inFile.open(QFile::ReadOnly))
+                 qWarning() << "nomacsColorize:" << "cannot read input svg";
+             if (!outFile.open(QFile::WriteOnly | QFile::Truncate))
+                 qWarning() << "nomacsColorize:" << "cannot write output svg";
+
+             // replace the placeholder color value
+             QByteArray data = inFile.readAll();
+             data.replace("#231F20", qPrintable(svgColor));
+             outFile.write(data);
+
+             return QString("url(%1)").arg(tmpPath);
          }},
     };
 

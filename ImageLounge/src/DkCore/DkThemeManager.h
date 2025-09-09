@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QColor>
 #include <QObject>
+#include <QSet>
 
 #include "nmc_config.h"
 
@@ -135,6 +136,7 @@ signals:
 
 protected:
     DkThemeManager();
+    ~DkThemeManager();
 
     struct Color {
         const char *name;
@@ -174,7 +176,7 @@ protected:
      * @param binding result of bindColors()
      * @return stylesheet ready for color replacement
      */
-    QString replaceMacros(const QString &cssString, const ColorBinding &colors) const;
+    QString replaceMacros(const QString &cssString, const ColorBinding &colors);
 
     /**
      * @brief replace color constants with nomacs settings
@@ -207,5 +209,7 @@ protected:
     QString mDefaultStyle; // style plugin at startup
     bool mOurPaletteChange = false; // if true, ignore palette change events
     int mTimerId = -1;
+    QString mTempDirPath{}; // per-instance subdirectory in nomacs tempdir
+    QSet<QString> mTempFiles{}; // colorized svgs
 };
 }

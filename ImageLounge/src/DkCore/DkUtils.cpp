@@ -44,6 +44,7 @@
 #include <QMainWindow>
 #include <QMimeDatabase>
 #include <QMouseEvent>
+#include <QRandomGenerator>
 #include <QRegularExpression>
 #include <QSemaphore>
 #include <QStandardPaths>
@@ -469,6 +470,19 @@ QString DkUtils::getAppDataPath()
         qWarning() << "I could not create" << appPath;
 
     return appPath;
+}
+
+QString DkUtils::randomString(int length)
+{
+    static constexpr QStringView chars{u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"};
+
+    QString result;
+    result.reserve(length);
+
+    for (int i = 0; i < length; ++i)
+        result += chars[QRandomGenerator::global()->bounded(chars.size())];
+
+    return result;
 }
 
 QString DkUtils::getTemporaryDirPath()
