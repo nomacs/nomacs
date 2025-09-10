@@ -2154,7 +2154,7 @@ nomacsを起動し直して再試行してください。</translation>
         <location filename="../src/DkCore/DkProcess.cpp" line="482"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="605"/>
         <source>%1 inactive -&gt; skipping</source>
-        <translation>%1 非アクティブ -&gt; スキップ</translation>
+        <translation>%1 非アクティブ -&gt; スキップします</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="311"/>
@@ -2256,7 +2256,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="777"/>
         <source>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</source>
-        <translation>%1 はすでに存在します -&gt; スキップ (ファイルを上書きしたい場合は「上書きする」をチェックしてください)</translation>
+        <translation>%1 はすでに存在します -&gt; スキップします (ファイルを上書きしたい場合は「上書きする」をチェックしてください)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="782"/>
@@ -4240,12 +4240,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2475"/>
         <source>No Multi-Page TIFF loaded</source>
-        <translation>マルチページのTIFFが読み込まれていません</translation>
+        <translation>マルチページTIFFが読み込まれていません</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2478"/>
         <source>Save Folder:</source>
-        <translation>保存するフォルダー:</translation>
+        <translation>保存フォルダー:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2484"/>
