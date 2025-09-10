@@ -194,7 +194,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1042"/>
         <source>Save a newline separated list of the filenames of the open tabs</source>
-        <translation type="unfinished">Save a newline separated list of the filenames of the open tabs</translation>
+        <translation>Сачувај листу са одвојеним именима фајлова отворених картица</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1044"/>
@@ -699,12 +699,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1301"/>
         <source>Show &amp;Log</source>
-        <translation type="unfinished">Show &amp;Log</translation>
+        <translation>Прикажи &amp;дневник</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1302"/>
         <source>Shows the log window</source>
-        <translation type="unfinished">Shows the log window</translation>
+        <translation>Прикажи прозор дневника</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1309"/>
@@ -1292,7 +1292,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1636"/>
         <source>Star Rating 0</source>
-        <translation type="unfinished">Star Rating 0</translation>
+        <translation>Рејтинг 0</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1637"/>
@@ -1337,37 +1337,37 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1661"/>
         <source>Pans the image up if zoomed.</source>
-        <translation type="unfinished">Pans the image up if zoomed.</translation>
+        <translation>Покреће слику горе ако је зумирано.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1664"/>
         <source>Pan Image Down</source>
-        <translation type="unfinished">Pan Image Down</translation>
+        <translation>Покреће слику доле</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1665"/>
         <source>Pans the image down if zoomed.</source>
-        <translation type="unfinished">Pans the image down if zoomed.</translation>
+        <translation>Покреће слику према доле ако је зумирано.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1668"/>
         <source>Pan Image Left</source>
-        <translation type="unfinished">Pan Image Left</translation>
+        <translation>Покреће слику лево</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1669"/>
         <source>Pans the image left if zoomed.</source>
-        <translation type="unfinished">Pans the image left if zoomed.</translation>
+        <translation>Покреће слику лево ако је зумирано.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1672"/>
         <source>Pan Image Right</source>
-        <translation type="unfinished">Pan Image Right</translation>
+        <translation>Покреће слику десно</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1673"/>
         <source>Pans the image right if zoomed.</source>
-        <translation type="unfinished">Pans the image right if zoomed.</translation>
+        <translation>Покреће слику десно ако је зумирано.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="98"/>
@@ -1588,7 +1588,7 @@
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="389"/>
         <source>Cannot threshold image</source>
-        <translation type="unfinished">Cannot threshold image</translation>
+        <translation>Није могуће поставити граничну вредност слике</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="433"/>
@@ -2639,7 +2639,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/main.cpp" line="144"/>
         <source>Register file associations (Windows only).</source>
-        <translation type="unfinished">Register file associations (Windows only).</translation>
+        <translation>Региструј асоцијације фајлова (само Windows).</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="148"/>
@@ -3095,8 +3095,8 @@ This option might destroy your images - so be careful!</source>
         <location filename="../src/DkGui/DkBatch.cpp" line="780"/>
         <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
-        <translation type="unfinished">If checked, output images are not saved at all.
-This option is only useful if plugins save sidecar files - so be careful!</translation>
+        <translation>Ако је означено, излазне слике се уопште не чувају.
+Ова опција је корисна само ако прикључци чувају бочне датотеке - зато будите опрезни!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="785"/>
@@ -3318,7 +3318,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2119"/>
         <source>&amp;Crop Rectangle</source>
-        <translation type="unfinished">&amp;Crop Rectangle</translation>
+        <translation>&amp;Опсеци правоугаоник</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2121"/>
@@ -3499,7 +3499,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="294"/>
         <source>Sigma</source>
-        <translation type="unfinished">Сигма</translation>
+        <translation>Сигма</translation>
     </message>
 </context>
 <context>
@@ -3512,7 +3512,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">Погледајте</translation>
+        <translation>Погледајте</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -4013,22 +4013,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="738"/>
         <source>Display Images with High Quality Anti Aliasing</source>
-        <translation type="unfinished">Display Images with High Quality Anti Aliasing</translation>
+        <translation>Прикажи слике са висококвалитетним анти алиасингом</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="739"/>
         <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-        <translation type="unfinished">NOTE: if checked, nomacs might be slow while zooming.</translation>
+        <translation>НАПОМЕНА: ако је означено, nomacs ће можда бити спор током зумирања.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="744"/>
         <source>Show Scrollbars when zooming into images</source>
-        <translation type="unfinished">Show Scrollbars when zooming into images</translation>
+        <translation>Приказујте траке за клизање приликом зумирања слика</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="745"/>
         <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-        <translation type="unfinished">If checked, scrollbars will appear that allow panning with the mouse.</translation>
+        <translation>If checked, scrollbars will appear that allow panning with the mouse.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="749"/>
@@ -4043,12 +4043,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="764"/>
         <source>Use Fixed Zoom Levels</source>
-        <translation type="unfinished">Use Fixed Zoom Levels</translation>
+        <translation>Користи фиксирани  зум ниво</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="765"/>
         <source>If checked, predefined zoom levels are used when zooming.</source>
-        <translation type="unfinished">If checked, predefined zoom levels are used when zooming.</translation>
+        <translation>Ако је означено, одређени зум ниво ће се користити код зумирања.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="773"/>
@@ -4113,7 +4113,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="843"/>
         <source>Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Navigation</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="847"/>
@@ -4201,7 +4201,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">Отвори слику</translation>
+        <translation>Отвори слику</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
@@ -4440,17 +4440,17 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1136"/>
         <source>After saving, the saved image will be loaded in place</source>
-        <translation type="unfinished">After saving, the saved image will be loaded in place</translation>
+        <translation>Након чувања, сачувана слика ће се учитати на своје место</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1137"/>
         <source>Load to Tab</source>
-        <translation type="unfinished">Load to Tab</translation>
+        <translation>Учитај картицу</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1138"/>
         <source>After saving, the saved image will be loaded to a tab.</source>
-        <translation type="unfinished">After saving, the saved image will be loaded to a tab.</translation>
+        <translation>Након чувања, сачувана слика ће се учитати на картицу.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1139"/>
@@ -4465,7 +4465,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1148"/>
         <source>Image Saving Policy</source>
-        <translation type="unfinished">Image Saving Policy</translation>
+        <translation>Правила чувања слика</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1163"/>
@@ -4781,7 +4781,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="440"/>
         <source>If checked, horizontal wheel events load the next/previous images.</source>
-        <translation type="unfinished">If checked, horizontal wheel events load the next/previous images.</translation>
+        <translation>Ако је означено, хоризонтални догађаји на точкићу учитавају следеће/претходне слике.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="444"/>
@@ -4964,12 +4964,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1376"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Прикажи претходну поруку</translation>
+        <translation>Прикажи претходну поруку</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1383"/>
         <source>Show next image</source>
-        <translation type="unfinished">Прикажи следећу слику</translation>
+        <translation>Прикажи следећу слику</translation>
     </message>
 </context>
 <context>
@@ -5783,7 +5783,7 @@ then press %1</translation>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1233"/>
         <source>The following duplicates were not opened:</source>
-        <translation type="unfinished">The following duplicates were not opened:</translation>
+        <translation>Следећи дупликати нису отворени:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1247"/>
@@ -6593,7 +6593,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="479"/>
         <source>Threshold</source>
-        <translation type="unfinished">Threshold</translation>
+        <translation>Гранично</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="486"/>
@@ -6720,7 +6720,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Отвори слику</translation>
+        <translation>Отвори слику</translation>
     </message>
 </context>
 <context>
@@ -6959,8 +6959,8 @@ Creating thumbnails...
         <location filename="../src/DkCore/DkUpdater.cpp" line="367"/>
         <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-        <translation type="unfinished">nomacs updates are disabled.
-Please contact your system administrator for further information.</translation>
+        <translation>nomacs ажурирања су онемогућена.
+За додатне информације обратите се администратору система.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="416"/>
@@ -7033,8 +7033,8 @@ Please contact your system administrator for further information.</translation>
         <location filename="../src/DkCore/DkUpdater.cpp" line="156"/>
         <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-        <translation type="unfinished">nomacs updates are disabled.
-Please contact your system administrator for further information.</translation>
+        <translation>nomacs ажурирања су онемогућена.
+За додатне информације обратите се администратору система.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="243"/>

@@ -3497,7 +3497,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="294"/>
         <source>Sigma</source>
-        <translation type="unfinished">Сигма</translation>
+        <translation>Сигма</translation>
     </message>
 </context>
 <context>
@@ -3510,7 +3510,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">Преглед</translation>
+        <translation>Преглед</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -4199,7 +4199,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">Отваряне на изображение</translation>
+        <translation>Отваряне на изображение</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
@@ -4962,12 +4962,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1376"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Показване на предишното изображение</translation>
+        <translation>Показване на предишното изображение</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1383"/>
         <source>Show next image</source>
-        <translation type="unfinished">Показване на следващото изображение</translation>
+        <translation>Показване на следващото изображение</translation>
     </message>
 </context>
 <context>
@@ -6715,7 +6715,7 @@ Press ESC to undo changes</translation>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Отваряне на изображение</translation>
+        <translation>Отваряне на изображение</translation>
     </message>
 </context>
 <context>

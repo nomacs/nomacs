@@ -3480,7 +3480,7 @@ Legyen óvatos!</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2931"/>
         <source>Batch Log</source>
-        <translation type="unfinished">Batch Log</translation>
+        <translation>Kötegelt feldolgozás naplója</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="3004"/>
@@ -3511,7 +3511,7 @@ Legyen óvatos!</translation>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">Tallózás</translation>
+        <translation>Tallózás</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -4200,7 +4200,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">Kép megnyitása</translation>
+        <translation>Kép megnyitása</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
@@ -4963,12 +4963,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1376"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Előző kép megjelenítése</translation>
+        <translation>Előző kép megjelenítése</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1383"/>
         <source>Show next image</source>
-        <translation type="unfinished">Következő kép megjelenítése</translation>
+        <translation>Következő kép megjelenítése</translation>
     </message>
 </context>
 <context>
@@ -6713,7 +6713,7 @@ Nyomjon ESC-et a változások visszavonásához</translation>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Kép megnyitása</translation>
+        <translation>Kép megnyitása</translation>
     </message>
 </context>
 <context>

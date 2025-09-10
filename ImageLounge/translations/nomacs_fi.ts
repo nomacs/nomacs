@@ -169,7 +169,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1033"/>
         <source>S&amp;ave As</source>
-        <translation type="unfinished">S&amp;ave As</translation>
+        <translation>Tallenna &amp;nimellä</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1035"/>
@@ -179,12 +179,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1037"/>
         <source>Sa&amp;ve a Copy</source>
-        <translation type="unfinished">Sa&amp;ve a Copy</translation>
+        <translation>Tallenna &amp;kopio</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1038"/>
         <source>Copy the Image</source>
-        <translation type="unfinished">Copy the Image</translation>
+        <translation>Kopioi kuva</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1040"/>
@@ -649,7 +649,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1276"/>
         <source>&amp;Metadata Ribbon</source>
-        <translation type="unfinished">&amp;Metadata Ribbon</translation>
+        <translation>Metatieto&amp;nauha</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1278"/>
@@ -699,12 +699,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1301"/>
         <source>Show &amp;Log</source>
-        <translation type="unfinished">Show &amp;Log</translation>
+        <translation>Näytä &amp;loki</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1302"/>
         <source>Shows the log window</source>
-        <translation type="unfinished">Shows the log window</translation>
+        <translation>Näyttää loki-ikkunan</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1309"/>
@@ -739,17 +739,17 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1320"/>
         <source>&amp;Fit Window to Image</source>
-        <translation type="unfinished"></translation>
+        <translation>S&amp;ovita ikkuna kuvaan</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1348"/>
         <source>&amp;Fit Image to Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sovita kuva ikkunaan</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1351"/>
         <source>Zoom image to fit window</source>
-        <translation type="unfinished"></translation>
+        <translation>Lähennä kuvaa sopimaan ikkunaan</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1322"/>
@@ -1467,12 +1467,12 @@
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="132"/>
         <source>&amp;Blur...</source>
-        <translation type="unfinished"></translation>
+        <translation>S&amp;umenna…</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="133"/>
         <source>Blur the image</source>
-        <translation type="unfinished"></translation>
+        <translation>Sumenna kuvaa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="137"/>
@@ -1497,12 +1497,12 @@
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="147"/>
         <source>&amp;Resize...</source>
-        <translation type="unfinished">&amp;Resize...</translation>
+        <translation>Muuta &amp;kokoa…</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="148"/>
         <source>Resize the image</source>
-        <translation type="unfinished">Resize the image</translation>
+        <translation>Muuta kuvan kokoa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="152"/>
@@ -1568,7 +1568,7 @@
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="231"/>
         <source>Cannot blur image</source>
-        <translation type="unfinished"></translation>
+        <translation>Kuvaa ei voi sumentaa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="263"/>
@@ -1583,7 +1583,7 @@
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="340"/>
         <source>Cannot resize image</source>
-        <translation type="unfinished">Cannot resize image</translation>
+        <translation>Kuvan kokoa ei voi muuttaa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="389"/>
@@ -1879,38 +1879,38 @@
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1635"/>
         <source>Uncompressed</source>
-        <translation type="unfinished">Uncompressed</translation>
+        <translation>Pakkaamaton</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1636"/>
         <source>CCITT 1D</source>
-        <translation type="unfinished">CCITT 1D</translation>
+        <translation>CCITT 1D</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1637"/>
         <source>T4/Group 3 Fax</source>
-        <translation type="unfinished">T4/Group 3 Fax</translation>
+        <translation>T4/Ryhmän 3 faksi</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1638"/>
         <source>T6/Group 4 Fax</source>
-        <translation type="unfinished">T6/Group 4 Fax</translation>
+        <translation>T6/Ryhmän 4 faksi</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1639"/>
         <source>LZW</source>
-        <translation type="unfinished">LZW</translation>
+        <translation>LZW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1640"/>
         <source>JPEG (old-style)</source>
-        <translation type="unfinished">JPEG (old-style)</translation>
+        <translation>JPEG (vanha tyyli)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1641"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1645"/>
         <source>JPEG</source>
-        <translation type="unfinished">JPEG</translation>
+        <translation>JPEG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1642"/>
@@ -1920,17 +1920,17 @@
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1643"/>
         <source>JBIG B&amp;W</source>
-        <translation type="unfinished">JBIG B&amp;W</translation>
+        <translation>JBIG mv</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1644"/>
         <source>JBIG Color</source>
-        <translation type="unfinished">JBIG Color</translation>
+        <translation>JBIG väri</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1646"/>
         <source>Kodak 262</source>
-        <translation type="unfinished">Kodak 262</translation>
+        <translation>Kodak 262</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1647"/>
@@ -1940,27 +1940,27 @@
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1648"/>
         <source>Sony ARW Compressed</source>
-        <translation type="unfinished">Sony ARW Compressed</translation>
+        <translation>Pakattu Sony ARW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1649"/>
         <source>Packed RAW</source>
-        <translation type="unfinished">Packed RAW</translation>
+        <translation>Pakattu RAW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1650"/>
         <source>Samsung SRW Compressed</source>
-        <translation type="unfinished">Samsung SRW Compressed</translation>
+        <translation>Pakattu Samsung SRW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1651"/>
         <source>CCIRLEW</source>
-        <translation type="unfinished">CCIRLEW</translation>
+        <translation>CCIRLEW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1652"/>
         <source>Samsung SRW Compressed 2</source>
-        <translation type="unfinished">Samsung SRW Compressed 2</translation>
+        <translation>Pakattu (2) Samsung SRW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1653"/>
@@ -2190,12 +2190,12 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="435"/>
         <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-        <translation>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</translation>
+        <translation>%1: kuvakokoa tulisi kasvattaa, mutta ”ainoastaan pienennä” on valittu → sivuutetaan.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="440"/>
         <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-        <translation>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</translation>
+        <translation>%1: kuvakokoa pitäisi pienentää, mutta valinta on ”ainoastaan kasvata” → sivuutetaan.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="444"/>
@@ -2256,7 +2256,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="777"/>
         <source>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</source>
-        <translation>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</translation>
+        <translation>%1 on jo olemassa → sivuutetaan (valitse ”korvaa”, jos haluat korvata tiedoston)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="782"/>
@@ -2297,7 +2297,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="859"/>
         <source>%1 not saved - option &apos;Do not Save&apos; is checked...</source>
-        <translation>%1 not saved - option &apos;Do not Save&apos; is checked...</translation>
+        <translation>ei tallennettu: %1 – asetus ”Älä tallenna” on valittu…</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="865"/>
@@ -2364,7 +2364,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="965"/>
         <source>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</source>
-        <translation>Tiedosto pitäisi kopioida, mutta ”Älä tallenna” on valittu, joten en tee mitään...</translation>
+        <translation>Tiedosto pitäisi kopioida, mutta ”Älä tallenna” on valittu, joten mitään ei tehdä…</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="983"/>
@@ -3429,7 +3429,7 @@ Ole varovainen!</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2742"/>
         <source>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</source>
-        <translation>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</translation>
+        <translation>Valitse ”Korvaa olemassa olevat tiedostot” tai valitse toinen kohdekansio.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2763"/>
@@ -3512,7 +3512,7 @@ Ole varovainen!</translation>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">Selaa</translation>
+        <translation>Selaa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -3565,7 +3565,7 @@ Ole varovainen!</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1139"/>
         <source>I could not load &quot;%1&quot;</source>
-        <translation>I could not load &quot;%1&quot;</translation>
+        <translation>Ei voitu ladata: ”%1”</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1209"/>
@@ -4201,7 +4201,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">Avaa kuva</translation>
+        <translation>Avaa kuva</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
@@ -4731,7 +4731,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="409"/>
         <source>If any files are opened which are already open in a tab, don&apos;t open them again.</source>
-        <translation>If any files are opened which are already open in a tab, don&apos;t open them again.</translation>
+        <translation>Jos on tiedostoja, jotka ovat jo auki välilehdellä, älä avaa niitä uudelleen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="413"/>
@@ -4751,7 +4751,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="423"/>
         <source>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</source>
-        <translation>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</translation>
+        <translation>Ottaa käyttöön näkymävalikon valinnat ”Siirry välilehdelle”, ”Ensimmäinen välilehti” ja ”Viimeinen välilehti” sekä tiedostovalikon valinnat ”Avoimet välilehdet” ja ”Tallenna välilehdet”.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="429"/>
@@ -4964,12 +4964,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1376"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Näytä edellinen kuva</translation>
+        <translation>Näytä edellinen kuva</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1383"/>
         <source>Show next image</source>
-        <translation type="unfinished">Näytä seuraava kuva</translation>
+        <translation>Näytä seuraava kuva</translation>
     </message>
 </context>
 <context>
@@ -5023,8 +5023,7 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="815"/>
         <source>I can&apos;t save an empty file, sorry...
 </source>
-        <translation>I can&apos;t save an empty file, sorry...
-</translation>
+        <translation>Tyhjää tiedostoa ei valitettavasti voi tallentaa…</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="820"/>
@@ -5036,7 +5035,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="825"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation>Sorry, I can&apos;t write to the file: %1</translation>
+        <translation>Tiedostoon %1 ei valitettavasti voi kirjoittaa</translation>
     </message>
 </context>
 <context>
@@ -5250,7 +5249,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="77"/>
         <source>Compression</source>
-        <translation type="unfinished">Compression</translation>
+        <translation>Pakkaus</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="79"/>
@@ -5457,7 +5456,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1099"/>
         <source>Change Metadata Entries</source>
-        <translation type="unfinished">Change Metadata Entries</translation>
+        <translation>Muuta metatietokenttiä</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1106"/>
@@ -5758,7 +5757,7 @@ then press %1</translation>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1099"/>
         <source>Console</source>
-        <translation type="unfinished">Console</translation>
+        <translation>Konsoli</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1140"/>
@@ -6344,7 +6343,7 @@ then press %1</translation>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="413"/>
         <source>Scale</source>
-        <translation type="unfinished">Scale</translation>
+        <translation>Mittakaava</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="422"/>
@@ -6369,7 +6368,7 @@ then press %1</translation>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="426"/>
         <source>Lanczos (8x8 interpolation)</source>
-        <translation type="unfinished">Lanczos (8x8 interpolation)</translation>
+        <translation>Lanczos (8 × 8 interpolointi)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="433"/>
@@ -6720,7 +6719,7 @@ Kumoa muutokset painamalla Esc</translation>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Avaa kuva</translation>
+        <translation>Avaa kuva</translation>
     </message>
 </context>
 <context>
@@ -6831,7 +6830,7 @@ Luodaan pienoiskuvia…
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="377"/>
         <source>Sorry, currently we don&apos;t support: *.%1 files</source>
-        <translation>Sorry, currently we don&apos;t support: *.%1 files</translation>
+        <translation>Valitettavasti *.%1-tiedostoja ei tueta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="382"/>

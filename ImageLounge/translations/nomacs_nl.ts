@@ -1063,7 +1063,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1471"/>
         <source>&amp;About Nomacs</source>
-        <translation>$Over Nomacs</translation>
+        <translation>Over Nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1473"/>
@@ -1103,7 +1103,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1485"/>
         <source>&amp;Update Translation</source>
-        <translation>&amp;Vertaling Uptaden</translation>
+        <translation>&amp;Vertaling bijwerken</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1487"/>
@@ -3511,7 +3511,7 @@ Deze optie is alleen nuttig als de plug-ins sidecar bestanden opslaan - dus wees
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">Bladeren</translation>
+        <translation>Bladeren</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -4200,7 +4200,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">Afbeelding openen</translation>
+        <translation>Afbeelding openen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
@@ -4439,7 +4439,7 @@ Wilt u de velden terug zichtbaar maken?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1136"/>
         <source>After saving, the saved image will be loaded in place</source>
-        <translation type="unfinished">After saving, the saved image will be loaded in place</translation>
+        <translation>Na opslaan zal het bestand opnieuw geladen worden</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1137"/>
@@ -4449,7 +4449,7 @@ Wilt u de velden terug zichtbaar maken?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1138"/>
         <source>After saving, the saved image will be loaded to a tab.</source>
-        <translation type="unfinished">After saving, the saved image will be loaded to a tab.</translation>
+        <translation>Na opslaan zal het bestand opnieuw geladen worden in een nieuwe tab</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1139"/>
@@ -4459,7 +4459,7 @@ Wilt u de velden terug zichtbaar maken?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1140"/>
         <source>The saved image will not be loaded.</source>
-        <translation type="unfinished">The saved image will not be loaded.</translation>
+        <translation>Het opgeslagen bestand wordt niet geladen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1148"/>
@@ -4963,12 +4963,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1376"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Vorige afbeelding tonen</translation>
+        <translation>Vorige afbeelding tonen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1383"/>
         <source>Show next image</source>
-        <translation type="unfinished">Toon volgende afbeelding</translation>
+        <translation>Toon volgende afbeelding</translation>
     </message>
 </context>
 <context>
@@ -6714,7 +6714,7 @@ Druk op ESC om de wijzigingen ongedaan te maken</translation>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Afbeelding openen</translation>
+        <translation>Afbeelding openen</translation>
     </message>
 </context>
 <context>
