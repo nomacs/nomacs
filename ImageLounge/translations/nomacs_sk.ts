@@ -47,18 +47,18 @@
         <location filename="../src/DkCore/DkActionManager.cpp" line="439"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="664"/>
         <source>&amp;View</source>
-        <translation>&amp; Zobraziť</translation>
+        <translation>&amp;Zobraziť</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="497"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="670"/>
         <source>&amp;Edit</source>
-        <translation>&amp; Upraviť</translation>
+        <translation>&amp;Upraviť</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="519"/>
         <source>&amp;Adjustments</source>
-        <translation type="unfinished">&amp;Adjustments</translation>
+        <translation>&amp;Operácie</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="535"/>
@@ -109,7 +109,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1006"/>
         <source>&amp;Open Tabs</source>
-        <translation type="unfinished">&amp;Open Tabs</translation>
+        <translation>&amp;Otvoriť Záložky</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1004"/>
@@ -169,7 +169,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1033"/>
         <source>S&amp;ave As</source>
-        <translation type="unfinished">S&amp;ave As</translation>
+        <translation>Uložiť &amp;Ako</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1035"/>
@@ -179,22 +179,22 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1037"/>
         <source>Sa&amp;ve a Copy</source>
-        <translation type="unfinished">Sa&amp;ve a Copy</translation>
+        <translation>Uložiť &amp;Kópiu</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1038"/>
         <source>Copy the Image</source>
-        <translation type="unfinished">Copy the Image</translation>
+        <translation>Kopírovať obrázok</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1040"/>
         <source>&amp;Save Tabs</source>
-        <translation type="unfinished">&amp;Save Tabs</translation>
+        <translation>Uložiť Záložky</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1042"/>
         <source>Save a newline separated list of the filenames of the open tabs</source>
-        <translation type="unfinished">Save a newline separated list of the filenames of the open tabs</translation>
+        <translation>Uloží zoznam súborov z otvorených záložiek</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1044"/>
@@ -320,12 +320,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1099"/>
         <source>by File &amp;Size</source>
-        <translation type="unfinished"></translation>
+        <translation>podľa veľkosti súboru</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1101"/>
         <source>Sort by File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoradiť podľa veľkosti súboru</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1106"/>
@@ -474,37 +474,37 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1186"/>
         <source>delete current fileInfo</source>
-        <translation type="unfinished">delete current fileInfo</translation>
+        <translation>vymazať aktuálny súbor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1188"/>
         <source>&amp;Keyboard Shortcuts</source>
-        <translation type="unfinished">&amp;Keyboard Shortcuts</translation>
+        <translation>&amp;Klávesové Skratky</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1190"/>
         <source>lets you customize your keyboard shortcuts</source>
-        <translation type="unfinished">lets you customize your keyboard shortcuts</translation>
+        <translation>umožní prispôsobiť klávesové skratky</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1192"/>
         <source>&amp;Settings</source>
-        <translation type="unfinished">&amp;Settings</translation>
+        <translation>&amp;Nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1194"/>
         <source>settings</source>
-        <translation type="unfinished">settings</translation>
+        <translation>nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1197"/>
         <source>Image &amp;Adjustments</source>
-        <translation type="unfinished">Image &amp;Adjustments</translation>
+        <translation>Operácie úprav obrázka</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1199"/>
         <source>open image manipulation toolbox</source>
-        <translation type="unfinished">open image manipulation toolbox</translation>
+        <translation>otvorí nástroje na úpravu obrázka</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1202"/>
@@ -529,12 +529,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1214"/>
         <source>Show &amp;Menu</source>
-        <translation type="unfinished">Show &amp;Menu</translation>
+        <translation>Zobraziť &amp;Menu</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1215"/>
         <source>Hides the Menu and Shows it Again on ALT</source>
-        <translation type="unfinished">Hides the Menu and Shows it Again on ALT</translation>
+        <translation>Schová Menu a zobrazí ho po stlačení ALT</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1218"/>
@@ -669,7 +669,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1286"/>
         <source>&amp;Histogram</source>
-        <translation>&amp;Histogram</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1288"/>
@@ -1302,7 +1302,7 @@
         <location filename="../src/DkCore/DkActionManager.cpp" line="1653"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1657"/>
         <source>Star rating which is saved to an image&apos;s metadata</source>
-        <translation>Star rating which is saved to an image&apos;s metadata</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1640"/>
@@ -2190,17 +2190,17 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="435"/>
         <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-        <translation>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="440"/>
         <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-        <translation>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="444"/>
         <source>%1 image size matches scale factor -&gt; skipping.</source>
-        <translation type="unfinished">%1 image size matches scale factor -&gt; skipping.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="492"/>
@@ -2216,7 +2216,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="500"/>
         <source>%1 error, could not apply image adjustments.</source>
-        <translation type="unfinished">%1 error, could not apply image adjustments.</translation>
+        <translation>Chyba %1, nemožno aplikovať operácie.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="509"/>
@@ -2256,7 +2256,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="777"/>
         <source>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</source>
-        <translation>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="782"/>
@@ -2297,7 +2297,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="859"/>
         <source>%1 not saved - option &apos;Do not Save&apos; is checked...</source>
-        <translation>%1 not saved - option &apos;Do not Save&apos; is checked...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="865"/>
@@ -2364,7 +2364,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="965"/>
         <source>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</source>
-        <translation>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="983"/>
@@ -2539,7 +2539,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="208"/>
         <source>Settings</source>
-        <translation type="unfinished">Settings</translation>
+        <translation>Nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="210"/>
@@ -3044,7 +3044,7 @@ Please restart nomacs and try again.</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1811"/>
         <source>Select Image Adjustments</source>
-        <translation type="unfinished">Select Image Adjustments</translation>
+        <translation>Výber Operácie úprav</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2038"/>
@@ -3191,7 +3191,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1723"/>
         <source> Settings</source>
-        <translation type="unfinished"> Settings</translation>
+        <translation> Nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1794"/>
@@ -3381,7 +3381,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2534"/>
         <source>Adjustments</source>
-        <translation type="unfinished">Adjustments</translation>
+        <translation>Operácie</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2534"/>
@@ -3429,7 +3429,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2742"/>
         <source>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</source>
-        <translation>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2763"/>
@@ -3491,7 +3491,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="3004"/>
         <source>Sorry, I cannot save the settings...</source>
-        <translation type="unfinished">Sorry, I cannot save the settings...</translation>
+        <translation>Ľutujem, nastavenia nemožno uložiť...</translation>
     </message>
 </context>
 <context>
@@ -3512,7 +3512,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">Prehliadať</translation>
+        <translation>Prehliadať</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -3565,7 +3565,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1139"/>
         <source>I could not load &quot;%1&quot;</source>
-        <translation>I could not load &quot;%1&quot;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1209"/>
@@ -3590,7 +3590,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1393"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">Prepáčte, nepodarilo sa zapísať do súboru: %1</translation>
+        <translation>Prepáčte, nepodarilo sa zapísať do súboru: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1402"/>
@@ -3649,7 +3649,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4436"/>
         <source>Remember Monitor Settings</source>
-        <translation type="unfinished">Remember Monitor Settings</translation>
+        <translation>Zapamätať Nastavenia Monitora</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4440"/>
@@ -3680,7 +3680,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="371"/>
         <source>Reset</source>
-        <translation>Reset</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3742,12 +3742,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="192"/>
         <source>AVIF Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>AVIF nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="202"/>
         <source>JXL Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>JXL nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="210"/>
@@ -4201,7 +4201,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">Otvoriť obrázok</translation>
+        <translation>Otvoriť obrázok</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
@@ -4365,7 +4365,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1123"/>
         <source>Info Box</source>
-        <translation>Info Box</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1124"/>
@@ -4691,17 +4691,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="374"/>
         <source>&amp;Import Settings</source>
-        <translation type="unfinished">&amp;Import Settings</translation>
+        <translation>&amp;Imporovať nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="378"/>
         <source>&amp;Export Settings</source>
-        <translation type="unfinished">&amp;Export Settings</translation>
+        <translation>&amp;Exportovať nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="382"/>
         <source>Default Settings</source>
-        <translation type="unfinished">Default Settings</translation>
+        <translation>Predvolené nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="397"/>
@@ -4731,7 +4731,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="409"/>
         <source>If any files are opened which are already open in a tab, don&apos;t open them again.</source>
-        <translation>If any files are opened which are already open in a tab, don&apos;t open them again.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="413"/>
@@ -4751,7 +4751,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="423"/>
         <source>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</source>
-        <translation>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="429"/>
@@ -4891,12 +4891,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="654"/>
         <source>Import Settings</source>
-        <translation type="unfinished">Import Settings</translation>
+        <translation>Imporovať nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="672"/>
         <source>Export Settings</source>
-        <translation type="unfinished">Export Settings</translation>
+        <translation>Exportovať nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="696"/>
@@ -5215,7 +5215,7 @@ neobsahuje žiadne obrázky</translation>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="70"/>
         <source>Model</source>
-        <translation>Model</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="71"/>
@@ -5225,7 +5225,7 @@ neobsahuje žiadne obrázky</translation>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="72"/>
         <source>ISO</source>
-        <translation>ISO</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="73"/>
@@ -5638,7 +5638,7 @@ neobsahuje žiadne obrázky</translation>
         <location filename="../src/DkGui/DkDialog.cpp" line="2994"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="3008"/>
         <source>%1 x %2 cm @150 dpi</source>
-        <translation>%1 x %2 cm @150 dpi</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3057"/>
@@ -6718,7 +6718,7 @@ Stlačte ESC aby ste vrátili zmeny</translation>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Otvoriť obrázok</translation>
+        <translation>Otvoriť obrázok</translation>
     </message>
 </context>
 <context>
@@ -6883,7 +6883,7 @@ Vytvárajú sa náhľady...
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="556"/>
         <source>Reset</source>
-        <translation>Reset</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="557"/>
@@ -6918,7 +6918,7 @@ Vytvárajú sa náhľady...
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="690"/>
         <source>RGB</source>
-        <translation>RGB</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="691"/>
@@ -6994,7 +6994,7 @@ Please contact your system administrator for further information.</translation>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="325"/>
         <source>Sigma</source>
-        <translation>Sigma</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="329"/>
