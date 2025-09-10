@@ -3512,7 +3512,7 @@ Budite oprezni!</translation>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">Pregledaj</translation>
+        <translation>Pregledaj</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -4201,7 +4201,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">Otvori sliku</translation>
+        <translation>Otvori sliku</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
@@ -4964,12 +4964,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1376"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Prikaži prethodnu sliku</translation>
+        <translation>Prikaži prethodnu sliku</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1383"/>
         <source>Show next image</source>
-        <translation type="unfinished">Prikaži sljedeću sliku</translation>
+        <translation>Prikaži sljedeću sliku</translation>
     </message>
 </context>
 <context>
@@ -6718,7 +6718,7 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Otvori sliku</translation>
+        <translation>Otvori sliku</translation>
     </message>
 </context>
 <context>

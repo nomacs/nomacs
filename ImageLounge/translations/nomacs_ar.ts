@@ -3511,7 +3511,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">استعراض</translation>
+        <translation>استعراض</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -4200,7 +4200,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">فتح الصورة</translation>
+        <translation>فتح الصورة</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
@@ -4968,7 +4968,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1383"/>
         <source>Show next image</source>
-        <translation type="unfinished">عرض الصورة التالية</translation>
+        <translation>عرض الصورة التالية</translation>
     </message>
 </context>
 <context>
@@ -6713,7 +6713,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">فتح الصورة</translation>
+        <translation>فتح الصورة</translation>
     </message>
 </context>
 <context>
