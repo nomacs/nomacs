@@ -2639,7 +2639,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
         <location filename="../src/main.cpp" line="144"/>
         <source>Register file associations (Windows only).</source>
-        <translation type="unfinished">Register file associations (Windows only).</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="148"/>
@@ -3647,7 +3647,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4436"/>
         <source>Remember Monitor Settings</source>
-        <translation type="unfinished">Remember Monitor Settings</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4440"/>
@@ -5861,7 +5861,7 @@ potom stiskněte %1</translation>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="2220"/>
         <source>Choose a Monitor</source>
-        <translation type="unfinished">Choose a Monitor</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

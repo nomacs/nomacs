@@ -3252,7 +3252,7 @@ Cette option n&apos;est utile que si les modules enregistrent des fichiers au fo
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Zoom</source>
-        <translation type="unfinished">Zoom</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2063"/>
