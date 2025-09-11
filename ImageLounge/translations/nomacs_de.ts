@@ -2665,7 +2665,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">Name: </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
@@ -3251,7 +3251,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Zoom</source>
-        <translation type="unfinished">Zoom</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2063"/>

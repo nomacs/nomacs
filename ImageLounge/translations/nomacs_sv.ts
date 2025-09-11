@@ -3252,7 +3252,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Zoom</source>
-        <translation type="unfinished">Zoom</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2063"/>
