@@ -2665,19 +2665,19 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">Name: </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">Size: </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished">Created: </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -3252,7 +3252,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Zoom</source>
-        <translation type="unfinished">Zoom</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2063"/>
@@ -3590,7 +3590,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1393"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">Sorry, I can&apos;t write to the file: %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1402"/>
@@ -3868,7 +3868,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="889"/>
         <source>Crop (ENTER)</source>
-        <translation type="unfinished">Crop (ENTER)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="893"/>
@@ -3878,37 +3878,37 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="897"/>
         <source>Pan</source>
-        <translation type="unfinished">Pan</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="905"/>
         <source>User Defined</source>
-        <translation type="unfinished">User Defined</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="906"/>
         <source>No Aspect Ratio</source>
-        <translation type="unfinished">No Aspect Ratio</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="913"/>
         <source>Horizontal Constraint</source>
-        <translation type="unfinished">Horizontal Constraint</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="920"/>
         <source>Swap</source>
-        <translation type="unfinished">Swap</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="921"/>
         <source>Swap Dimensions</source>
-        <translation type="unfinished">Swap Dimensions</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="927"/>
         <source>Vertical Constraint</source>
-        <translation type="unfinished">Vertical Constraint</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="948"/>
@@ -3918,37 +3918,37 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="958"/>
         <source>Guides</source>
-        <translation type="unfinished">Guides</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="958"/>
         <source>Rule of Thirds</source>
-        <translation type="unfinished">Rule of Thirds</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="958"/>
         <source>Grid</source>
-        <translation type="unfinished">Grid</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="961"/>
         <source>Show Guides in the Preview</source>
-        <translation type="unfinished">Show Guides in the Preview</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="968"/>
         <source>Invert Crop Tool Color</source>
-        <translation type="unfinished">Invert Crop Tool Color</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="973"/>
         <source>Show Info</source>
-        <translation type="unfinished">Show Info</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="978"/>
         <source>Crop to Metadata</source>
-        <translation type="unfinished">Crop to Metadata</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3956,7 +3956,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2023"/>
         <source>Crop Toolbar</source>
-        <translation type="unfinished">Crop Toolbar</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
