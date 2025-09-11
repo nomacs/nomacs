@@ -3590,7 +3590,7 @@ Tenha cuidado!</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1393"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">Sorry, I can&apos;t write to the file: %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1402"/>
