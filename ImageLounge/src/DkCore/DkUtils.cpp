@@ -574,8 +574,9 @@ QString DkUtils::getBuildInfo()
     info += QSysInfo::prettyProductName() + ", " + memory + "\n";
 
     // library versions (dynamic version where possible)
+    QWidget *window = qApp->activeWindow();
     info += "Qt " + QString(qVersion()) + ", " + qApp->platformName()
-        + ", scale=" + QString::number(qApp->devicePixelRatio(), 10, 2) + "\n";
+        + ", scale=" + (window ? QString::number(window->devicePixelRatio(), 10, 2) : "n/a") + "\n";
     info += "Exiv2 " + QString(Exiv2::version()) + "\n";
 
 #ifdef WITH_LIBRAW
