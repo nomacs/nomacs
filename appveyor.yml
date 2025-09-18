@@ -10,11 +10,11 @@ skip_commits:
 environment:
     matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-      QT6: C:\Qt\6.8.1\msvc2022_64
+      QT6: C:\Qt\6.9.2\msvc2022_64
       VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
-      PYTHON: "C:\\Python312-x64"
+      PYTHON: "C:\\Python313-x64"
       GIT_CLONE_PROTECTION_ACTIVE: false
 
     certpwd:
