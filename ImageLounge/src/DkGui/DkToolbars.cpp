@@ -72,8 +72,16 @@ void DkMainToolBar::createLayout()
 
 void DkMainToolBar::setQuickAccessModel(QStandardItemModel *model)
 {
+    // defer creation of quick access widget so it be rightmost in the toolbar
+    if (!mQuickAccessAction) {
+        mQuickAccessAction = addWidget(mQuickAccessEdit);
+        // hide() on the widget will not work since it is embedded in an action, so we have this signal
+        connect(mQuickAccessEdit, &DkQuickAccessEdit::hideSignal, this, [this] {
+            mQuickAccessAction->setVisible(false);
+        });
+    }
+    mQuickAccessAction->setVisible(true);
     mQuickAccessEdit->setModel(model);
-    addWidget(mQuickAccessEdit);
     mQuickAccessEdit->setFocus(Qt::MouseFocusReason);
 }
 
@@ -1153,8 +1161,9 @@ void DkToolBarManager::createDefaultToolBar()
     auto nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
     Q_ASSERT(nomacs);
 
-    mToolBar = new DkMainToolBar(QObject::tr("Edit ToolBar"), nomacs);
+    mToolBar = new DkMainToolBar(QObject::tr("Toolbar"), nomacs);
     mToolBar->setObjectName("EditToolBar");
+    mToolBar->setMovable(false); // we don't save toolbar location so lock it for now #283
 
     int is = DkSettingsManager::param().effectiveIconSize(nomacs);
     mToolBar->setIconSize(QSize(is, is));

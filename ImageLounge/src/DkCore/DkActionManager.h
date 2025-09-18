@@ -258,7 +258,6 @@ public:
     };
 
     enum HiddenActions {
-        sc_test_img,
         sc_test_rec,
         sc_test_pong,
 
@@ -465,7 +464,6 @@ public:
 
     // eggs
     static constexpr QKeyCombination shortcut_test_pong = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_P;
-    static constexpr QKeyCombination shortcut_test_img = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_L;
     static constexpr QKeyCombination shortcut_test_rec = Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_R;
 
     QMenu *updateOpenWithMenu();

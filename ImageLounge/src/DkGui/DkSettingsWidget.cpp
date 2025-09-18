@@ -454,9 +454,11 @@ Qt::ItemFlags DkSettingsModel::flags(const QModelIndex &index) const
     return flags;
 }
 
-void DkSettingsModel::addSettingsGroup(const DkSettingsGroup &group, const QString &parentName)
+void DkSettingsModel::addSettingsGroup(const DkSettingsGroup &group, const QString &parentName, bool recursion)
 {
-    beginResetModel();
+    if (!recursion)
+        beginResetModel();
+
     // create root
     QVector<QVariant> data;
     data << group.name();
@@ -478,9 +480,11 @@ void DkSettingsModel::addSettingsGroup(const DkSettingsGroup &group, const QStri
     parentItem->appendChild(settingsItem);
 
     for (const DkSettingsGroup &g : group.children()) {
-        addSettingsGroup(g, group.name());
+        addSettingsGroup(g, group.name(), true);
     }
-    endResetModel();
+
+    if (!recursion)
+        endResetModel();
 
     // qDebug() << "item - child count:" << settingsItem->childCount();
 }
