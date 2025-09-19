@@ -414,8 +414,19 @@ QImage rotateImageFast(const QImage &img, double angle)
             return rotateImageCVMat(img.convertToFormat(QImage::Format_ARGB32), rot, CV_32F);
         }
 #else
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+        constexpr auto flipImage = [](QImage image, Qt::Orientations flags) {
+            return image.flipped(flags);
+        };
+#else
+        constexpr auto flipImage = [](QImage image, Qt::Orientations flags) {
+            return image.mirrored(flags & Qt::Horizontal, flags & Qt::Vertical);
+        };
+#endif
+
         if (angle == 180) {
-            return img.mirrored(true, true);
+            return flipImage(img, Qt::Horizontal | Qt::Vertical);
         }
 
         QImage imgIn = img;
@@ -423,42 +434,52 @@ QImage rotateImageFast(const QImage &img, double angle)
         if (angle == 90) {
             switch (imgIn.depth()) {
             case 1:
-                imgIn = img.convertToFormat(QImage::Format_Indexed8);
-                return transposeImage<uint8_t>(imgIn).mirrored(true, false);
+                imgIn = imgIn.convertToFormat(QImage::Format_Indexed8);
+                imgIn = transposeImage<uint8_t>(imgIn);
+                break;
             case 8:
-                return transposeImage<uint8_t>(imgIn).mirrored(true, false);
+                imgIn = transposeImage<uint8_t>(imgIn);
+                break;
             case 16:
-                return transposeImage<uint16_t>(imgIn).mirrored(true, false);
+                imgIn = transposeImage<uint16_t>(imgIn);
+                break;
             case 24:
-                return transposeImage24(imgIn).mirrored(true, false);
+                imgIn = transposeImage24(imgIn);
+                break;
             case 32:
-                return transposeImage<uint32_t>(imgIn).mirrored(true, false);
+                imgIn = transposeImage<uint32_t>(imgIn);
+                break;
             case 64:
-                return transposeImage<uint64_t>(imgIn).mirrored(true, false);
+                imgIn = transposeImage<uint64_t>(imgIn);
+                break;
             default:
-                imgIn = img.convertToFormat(QImage::Format_ARGB32);
-                return transposeImage<uint32_t>(imgIn).mirrored(true, false);
+                imgIn = imgIn.convertToFormat(QImage::Format_ARGB32);
+                return transposeImage<uint32_t>(imgIn);
             }
+
+            return flipImage(imgIn, Qt::Horizontal);
         }
 
         if (angle == 270) {
+            imgIn = flipImage(imgIn, Qt::Horizontal);
+
             switch (imgIn.depth()) {
             case 1:
-                imgIn = img.convertToFormat(QImage::Format_Indexed8);
-                return transposeImage<uint8_t>(imgIn.mirrored(true, false));
+                imgIn = imgIn.convertToFormat(QImage::Format_Indexed8);
+                return transposeImage<uint8_t>(imgIn);
             case 8:
-                return transposeImage<uint8_t>(imgIn.mirrored(true, false));
+                return transposeImage<uint8_t>(imgIn);
             case 16:
-                return transposeImage<uint16_t>(imgIn.mirrored(true, false));
+                return transposeImage<uint16_t>(imgIn);
             case 24:
-                return transposeImage24(imgIn.mirrored(true, false));
+                return transposeImage24(imgIn);
             case 32:
-                return transposeImage<uint32_t>(imgIn.mirrored(true, false));
+                return transposeImage<uint32_t>(imgIn);
             case 64:
-                return transposeImage<uint64_t>(imgIn.mirrored(true, false));
+                return transposeImage<uint64_t>(imgIn);
             default:
-                imgIn = img.convertToFormat(QImage::Format_ARGB32);
-                return transposeImage<uint32_t>(imgIn.mirrored(true, false));
+                imgIn = imgIn.convertToFormat(QImage::Format_ARGB32);
+                return transposeImage<uint32_t>(imgIn);
             }
         }
 #endif

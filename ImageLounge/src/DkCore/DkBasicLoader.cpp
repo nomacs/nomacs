@@ -467,7 +467,11 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
             transformed = true;
         }
         if (mirrored) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+            img = img.flipped(Qt::Horizontal);
+#else
             img = img.mirrored(true, false);
+#endif
             transformed = true;
         }
     }
@@ -744,6 +748,9 @@ bool DkBasicLoader::loadTIFF(const QString &filePath, QImage &img, QSharedPointe
     if (bal)
         tiff = TIFFStreamOpen("MemTIFF", &isl);
 #else
+    if (ba)
+        qWarning() << "[TIFF] Loading from buffer is unsupported";
+
     tiff = TIFFOpen(filePath.toLatin1(), "r");
 #endif
 
@@ -820,6 +827,9 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
     uint32_t w;
     uint32_t h;
     uint32_t f;
+
+    if (ba)
+        qWarning() << "[DRIF] Loading from buffer is unsupported";
 
     uint8_t *imgBytes = drifLoadImg(filePath.toLatin1(), &w, &h, &f);
 
@@ -1215,7 +1225,9 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
     if (bal)
         tiff = TIFFStreamOpen("MemTIFF", &isl);
 #else
-    // read from file
+    if (ba)
+        qWarning() << "[TIFF] Loading from buffer is unsupported";
+
     tiff = TIFFOpen(filePath.toLatin1(), "r"); // this->mFile was here before - not sure why
 #endif
 
@@ -1241,7 +1253,8 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
     TIFFSetWarningHandler(oldWarningHandler);
     TIFFSetWarningHandler(oldErrorHandler);
 #else
-    Q_UNUSED(filePath);
+    Q_UNUSED(filePath)
+    Q_UNUSED(ba)
 #endif
 }
 
@@ -2665,8 +2678,13 @@ bool DkTgaLoader::load(QSharedPointer<QByteArray> ba)
     mImg = mImg.copy();
 
     // I somehow expected the 5th bit to be 0x10 -> but Paul seems to have a 0th bit : )
-    if (!(header.imagedescriptor & 0x20))
+    if (!(header.imagedescriptor & 0x20)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+        mImg = mImg.flipped(Qt::Vertical);
+#else
         mImg = mImg.mirrored();
+#endif
+    }
 
     delete[] pixels;
 
