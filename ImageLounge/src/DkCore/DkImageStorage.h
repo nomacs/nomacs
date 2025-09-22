@@ -100,6 +100,7 @@ public:
     static bool unsharpMask(QImage &img, float sigma = 20.0f, float weight = 1.5f);
     static bool alphaChannelUsed(const QImage &img);
     static QImage thresholdImage(const QImage &img, double thr, bool color = false);
+    static QImage flipImage(const QImage &image, Qt::Orientations flags);
 
     /**
      * Rotates the image clockwise by angle. See rotateImageFast().
