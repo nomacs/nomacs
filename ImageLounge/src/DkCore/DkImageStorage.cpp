@@ -252,6 +252,15 @@ QImage DkImage::thresholdImage(const QImage &img, double thr, bool color)
     return tImg;
 }
 
+QImage DkImage::flipImage(const QImage &image, Qt::Orientations flags)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    return image.flipped(flags);
+#else
+    return image.mirrored(flags & Qt::Horizontal, flags & Qt::Vertical);
+#endif
+}
+
 QImage DkImage::rotateImage(const QImage &img, double angle)
 {
     return rotateImageFast(img, angle);
@@ -414,19 +423,8 @@ QImage rotateImageFast(const QImage &img, double angle)
             return rotateImageCVMat(img.convertToFormat(QImage::Format_ARGB32), rot, CV_32F);
         }
 #else
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-        constexpr auto flipImage = [](QImage image, Qt::Orientations flags) {
-            return image.flipped(flags);
-        };
-#else
-        constexpr auto flipImage = [](QImage image, Qt::Orientations flags) {
-            return image.mirrored(flags & Qt::Horizontal, flags & Qt::Vertical);
-        };
-#endif
-
         if (angle == 180) {
-            return flipImage(img, Qt::Horizontal | Qt::Vertical);
+            return DkImage::flipImage(img, Qt::Horizontal | Qt::Vertical);
         }
 
         QImage imgIn = img;
@@ -457,11 +455,11 @@ QImage rotateImageFast(const QImage &img, double angle)
                 return transposeImage<uint32_t>(imgIn);
             }
 
-            return flipImage(imgIn, Qt::Horizontal);
+            return DkImage::flipImage(imgIn, Qt::Horizontal);
         }
 
         if (angle == 270) {
-            imgIn = flipImage(imgIn, Qt::Horizontal);
+            imgIn = DkImage::flipImage(imgIn, Qt::Horizontal);
 
             switch (imgIn.depth()) {
             case 1:
