@@ -1035,7 +1035,20 @@ void DkCentralWidget::showProgress(bool show, int time)
 
 void DkCentralWidget::startSlideshow(bool start) const
 {
-    getViewPort()->getController()->startSlideshow(start);
+    if (hasViewPort()) {
+        getViewPort()->getController()->startSlideshow(start);
+    }
+}
+
+void DkCentralWidget::startSlideshowWithFiles(const QStringList &files) const
+{
+    if (hasViewPort()) {
+        // Set the file list in the player
+        getViewPort()->getController()->getPlayer()->setFileList(files);
+
+        // Start the slideshow (first file is already loaded by main.cpp)
+        getViewPort()->getController()->startSlideshow(true);
+    }
 }
 
 void DkCentralWidget::setInfo(const QString &msg) const
@@ -1132,11 +1145,18 @@ void DkCentralWidget::load(const QString &path)
     QSharedPointer<DkImageLoader> loader = tab->getImageLoader();
 
     DkFileInfo fileInfo(path);
+
+    // Clear slideshow file list when opening a file/directory, fall back to directory mode
+    if (hasViewPort()) {
+        getViewPort()->getController()->getPlayer()->clearFileList();
+    }
+
     if (fileInfo.isDir()) {
         if (!loader->loadDir(fileInfo.path())) {
             setInfo(tr("I could not load \"%1\"").arg(path));
             return;
         }
+
         // load dir does not set a current image; it seems one is always needed
         // or else switching between tabs could revert to the old directory
         auto img = loader->getImages().value(0);
