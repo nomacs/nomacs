@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="el" sourcelanguage="en">
+<TS version="2.1" language="pt-BR" sourcelanguage="en">
 <context>
     <name>QObject</name>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="179"/>
         <source>&amp;Photoshop</source>
-        <translation>Photoshop</translation>
+        <translation>&amp;Photoshop</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="190"/>
@@ -16,7 +16,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="201"/>
         <source>Picasa Ph&amp;oto Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Visualizad&amp;or de fotos Picasa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="212"/>
@@ -26,90 +26,90 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="222"/>
         <source>&amp;Explorer</source>
-        <translation>&amp;Εξερευνητής</translation>
+        <translation>&amp;Explorador</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="359"/>
         <source>&amp;File</source>
-        <translation>&amp; Αρχείο</translation>
+        <translation>&amp;Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="402"/>
         <source>&amp;Open With</source>
-        <translation>&amp; Άνοιγμα με</translation>
+        <translation>&amp;Abrir com</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="424"/>
         <source>S&amp;ort</source>
-        <translation>Ταξινομηση</translation>
+        <translation>&amp;Ordenar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="439"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="664"/>
         <source>&amp;View</source>
-        <translation>&amp; Προβολή</translation>
+        <translation>&amp;Visualizar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="497"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="670"/>
         <source>&amp;Edit</source>
-        <translation>&amp; Επεξεργασία</translation>
+        <translation>&amp;Editar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="519"/>
         <source>&amp;Adjustments</source>
-        <translation>&amp; Προσαρμογές</translation>
+        <translation>&amp;Ajustes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="535"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="648"/>
         <source>&amp;Panels</source>
-        <translation>&amp;Πλαίσια</translation>
+        <translation>&amp;Painéis</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="537"/>
         <source>Tool&amp;bars</source>
-        <translation>Γραμμές Εργαλείων</translation>
+        <translation>&amp;Barras de ferramentas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="568"/>
         <source>&amp;Tools</source>
-        <translation>&amp; Εργαλεία</translation>
+        <translation>Ferramen&amp;tas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="592"/>
         <source>&amp;?</source>
-        <translation>&amp;;</translation>
+        <translation>&amp;?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="608"/>
         <source>&amp;Sync</source>
-        <translation>&amp;Συγχρονισμός</translation>
+        <translation>&amp;Sincronização</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="611"/>
         <source>&amp;Synchronize</source>
-        <translation>&amp; Συγχρονίσετε</translation>
+        <translation>&amp;Sincronizar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="998"/>
         <source>&amp;Open</source>
-        <translation>&amp; Ανοιγμα</translation>
+        <translation>&amp;Abrir</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1000"/>
         <source>Open an image</source>
-        <translation>Άνοιγμα εικόνας</translation>
+        <translation>Abrir imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1002"/>
         <source>Open &amp;Directory</source>
-        <translation>Άνοιγμα &amp; καταλόγου</translation>
+        <translation>&amp;Pasta Aberta</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1006"/>
         <source>&amp;Open Tabs</source>
-        <translation>&amp; Ανοιξε τις καρτέλες</translation>
+        <translation>&amp;Abrir abas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1004"/>
@@ -124,198 +124,198 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1010"/>
         <source>&amp;Quick Launch</source>
-        <translation>&amp; Γρήγορη εκκίνηση</translation>
+        <translation>&amp;Inicialização Rápida</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1016"/>
         <source>&amp;Manage Applications</source>
-        <translation>&amp; Διαχείριση εφαρμογών</translation>
+        <translation>&amp;Gerenciar aplicativos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1018"/>
         <source>Manage Applications which are Automatically Opened</source>
-        <translation>Διαχειριστείτε τις εφαρμογές που ανοίγουν αυτόματα</translation>
+        <translation>Gerencie Aplicativos que são Abertos Automaticamente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1021"/>
         <source>Re&amp;name</source>
-        <translation>Μετονομασια</translation>
+        <translation>Re&amp;nomear</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1023"/>
         <source>Rename an image</source>
-        <translation>Μετονομασία μιας εικόνας</translation>
+        <translation>Renomear uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1025"/>
         <source>&amp;Go To</source>
-        <translation>&amp; Μετάβαση</translation>
+        <translation>&amp;Ir para</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1027"/>
         <source>Go To an image</source>
-        <translation>Μετάβαση σε μια εικόνα</translation>
+        <translation>Ir para uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1029"/>
         <source>&amp;Save</source>
-        <translation>&amp; Αποθήκευση</translation>
+        <translation>&amp;Salvar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1031"/>
         <source>Save an image</source>
-        <translation>Αποθήκευση εικόνας</translation>
+        <translation>Salvar uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1033"/>
         <source>S&amp;ave As</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar como</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1035"/>
         <source>Save an image as</source>
-        <translation>Αποθήκευση εικόνας ως</translation>
+        <translation>Salvar uma imagem como</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1037"/>
         <source>Sa&amp;ve a Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar uma cópia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1038"/>
         <source>Copy the Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1040"/>
         <source>&amp;Save Tabs</source>
-        <translation>&amp; Αποθηκεύσετε τις καρτέλες</translation>
+        <translation>&amp;Salvar abas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1042"/>
         <source>Save a newline separated list of the filenames of the open tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar uma lista com os nomes de arquivo, separados por linha, correspondentes às abas abertas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1044"/>
         <source>&amp;Save for Web</source>
-        <translation>Αποθήκευση για το Web</translation>
+        <translation>&amp;Salvar na Web</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1045"/>
         <source>Save an Image for Web Applications</source>
-        <translation>Σώστε μια εικόνα για την εφαρμογή διαδικτύου</translation>
+        <translation>Salve uma imagem para aplicativos Web</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1047"/>
         <source>&amp;Print</source>
-        <translation>εκτυπωση</translation>
+        <translation>&amp;Imprimir</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1049"/>
         <source>Print an image</source>
-        <translation>Εκτύπωση εικόνας</translation>
+        <translation>Imprimir uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1051"/>
         <source>&amp;Recent Files</source>
-        <translation>&amp; Πρόσφατα αρχεία</translation>
+        <translation>&amp;Arquivos Recentes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1055"/>
         <source>Show Recent Files</source>
-        <translation>Εμφάνιση πρόσφατων αρχείων</translation>
+        <translation>Mostrar Arquivos Recentes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1057"/>
         <source>&amp;Reload File</source>
-        <translation>&amp; Φορτώσετε εκ νέου το αρχείο</translation>
+        <translation>&amp;Recarregar Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1059"/>
         <source>Reload File</source>
-        <translation>Ξαναφορτώστε το αρχείο</translation>
+        <translation>Recarregar Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1061"/>
         <source>Ne&amp;xt File</source>
-        <translation>Επομενο αρχείο</translation>
+        <translation>Pró&amp;ximo arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1063"/>
         <source>Load next image</source>
-        <translation>Φορτωση επομενης εικονας</translation>
+        <translation>Carregar próxima imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1065"/>
         <source>Pre&amp;vious File</source>
-        <translation>Προηγουμενο αρχειο</translation>
+        <translation>Arquivo Ant&amp;erior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1067"/>
         <source>Load previous file</source>
-        <translation>Φορτωσε το προηγουμενο αρχειο</translation>
+        <translation>Carregar arquivo anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1069"/>
         <source>St&amp;art New Instance</source>
-        <translation>Νέα εκτέλεση του προγράμματος</translation>
+        <translation>In&amp;iciar Nova Instância</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1071"/>
         <source>Open file in new instance</source>
-        <translation>Άνοιγμα αρχείου σε νέα εκτέλεση του προγράμματος</translation>
+        <translation>Abrir arquivo em nova instância</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1073"/>
         <source>St&amp;art Private Instance</source>
-        <translation>Νέα εκτέλεση σε Ιδιωτική Λειτουργία</translation>
+        <translation>In&amp;iciar Intância Privada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1075"/>
         <source>Open private instance</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir uma instância privada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1077"/>
         <source>&amp;Find &amp;&amp; Filter</source>
-        <translation>Εύρεση και Φίλτρο</translation>
+        <translation>&amp;Localizar &amp;&amp;Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1079"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1444"/>
         <source>Find an image</source>
-        <translation>Βρείτε μια εικόνα</translation>
+        <translation>Localize uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1081"/>
         <source>Scan Folder Re&amp;cursive</source>
-        <translation>Σάρωση φακέλου αναδρομικά</translation>
+        <translation>Analisar pasta re&amp;cursivamente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1082"/>
         <source>Step through Folder and Sub Folders</source>
-        <translation>Μετάβαση στον εσωτερικό φάκελο και στους υπό φακέλους</translation>
+        <translation>Percorrer Pastas e Subpastas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1086"/>
         <source>&amp;Exit</source>
-        <translation>Έξοδος</translation>
+        <translation>&amp;Sair</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1087"/>
         <source>Exit</source>
-        <translation>Έξοδος</translation>
+        <translation>Sair</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1092"/>
         <source>by &amp;Filename</source>
-        <translation>με &amp; όνομα_αρχείου</translation>
+        <translation>por &amp;Nome de arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1094"/>
         <source>Sort by Filename</source>
-        <translation>Ταξινόμηση κατά όνομα αρχείου</translation>
+        <translation>Ordenar por nome de arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1099"/>
@@ -330,72 +330,72 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1106"/>
         <source>by Date &amp;Created</source>
-        <translation>κατα ημερομηνία &amp; δημιουργιας</translation>
+        <translation>pela Data de &amp;Criação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1108"/>
         <source>Sort by Date Created</source>
-        <translation>Ταξινόμηση κατά ημερομηνία δημιουργίας</translation>
+        <translation>Ordenar pela data de criação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1113"/>
         <source>by Date Modified</source>
-        <translation>ταξινομιση κατα ημερομηνία τροποποίησης</translation>
+        <translation>pela Data de Alteração</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1115"/>
         <source>Sort by Date Last Modified</source>
-        <translation>Ταξινόμηση κατά ημερομηνία τελευταίας τροποποίησης</translation>
+        <translation>Ordenar pela Data da Última Alteração</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1120"/>
         <source>Random</source>
-        <translation>Τυχαία</translation>
+        <translation>Aleatória</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1122"/>
         <source>Sort in Random Order</source>
-        <translation>Ταξινόμηση σε τυχαία σειρά</translation>
+        <translation>Classificar em ordem aleatória</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1126"/>
         <source>&amp;Ascending</source>
-        <translation>&amp; Αύξουσα</translation>
+        <translation>&amp;Ascendente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1128"/>
         <source>Sort in Ascending Order</source>
-        <translation>Ταξινόμηση κατά αύξουσα σειρά</translation>
+        <translation>Classificar em ordem crescente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1132"/>
         <source>&amp;Descending</source>
-        <translation>&amp; Φθίνουσα</translation>
+        <translation>&amp;Decrescente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1134"/>
         <source>Sort in Descending Order</source>
-        <translation>Ταξινόμηση κατά φθίνουσα σειρά</translation>
+        <translation>Classificar em ordem decrescente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1142"/>
         <source>9&amp;0%1 Clockwise</source>
-        <translation>9 &amp;0%1 Δεξιόστροφα</translation>
+        <translation>9&amp;0%1 no Sentido Horário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1145"/>
         <source>rotate the image 90%1 clockwise</source>
-        <translation>περιστροφη  εικόνας 90%1 δεξιόστροφα</translation>
+        <translation>gire a imagem 90%1 no sentido horário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1148"/>
         <source>&amp;90%1 Counter Clockwise</source>
-        <translation>&amp; 90%1 Αριστερόστροφα</translation>
+        <translation>&amp;90%1 no Sentido Anti-horário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1152"/>
         <source>rotate the image 90%1 counter clockwise</source>
-        <translation>περιστροφη εικόνας 90%1 αριστερόστροφα</translation>
+        <translation>gire a imagem 90%1 no sentido anti-horário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1154"/>
@@ -405,894 +405,894 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1155"/>
         <source>rotate the image by 180%1</source>
-        <translation>περιστροφη εικόνας κατά 180%1</translation>
+        <translation>gire a imagem em 180%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1157"/>
         <source>&amp;Undo</source>
-        <translation>&amp;Αναίρεση</translation>
+        <translation>&amp;Desfazer</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1159"/>
         <source>Undo Last Action</source>
-        <translation>Αναίρεση τελευταίας ενέργειας</translation>
+        <translation>Desfazer a última ação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1161"/>
         <source>&amp;Redo</source>
-        <translation>&amp; Επανάληψη</translation>
+        <translation>&amp;Refazer</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1163"/>
         <source>Redo Last Action</source>
-        <translation>Επανάληψη τελευταίας ενέργειας</translation>
+        <translation>Refazer a última ação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1165"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1559"/>
         <source>&amp;Copy</source>
-        <translation>&amp; Αντιγραφη</translation>
+        <translation>&amp;Copiar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1167"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1171"/>
         <source>copy image</source>
-        <translation>Αντιγραφή εικόνας</translation>
+        <translation>copiar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1169"/>
         <source>Copy &amp;Buffer</source>
-        <translation>Αντιγραφή &amp;Buffer</translation>
+        <translation>Copiar &amp;Buffer</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1173"/>
         <source>Copy Co&amp;lor</source>
-        <translation>Αντιγραφή Χρώ&amp;μα</translation>
+        <translation>Copiar Co&amp;r</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1175"/>
         <source>copy pixel color value as HEX</source>
-        <translation>αντιγραφή της τιμής χρώματος του pixel σε HEX</translation>
+        <translation>copie o valor da cor do pixel como HEX</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1180"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1564"/>
         <source>&amp;Paste</source>
-        <translation>&amp; επικοληση</translation>
+        <translation>&amp;Colar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1182"/>
         <source>paste image</source>
-        <translation>επικόλληση εικόνας</translation>
+        <translation>colar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1184"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1554"/>
         <source>&amp;Delete</source>
-        <translation>&amp; Διαγραφή</translation>
+        <translation>&amp;Apagar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1186"/>
         <source>delete current fileInfo</source>
-        <translation>διαγραφή του fileInfo</translation>
+        <translation>excluir informações do arquivo atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1188"/>
         <source>&amp;Keyboard Shortcuts</source>
-        <translation>&amp; Συντομεύσεις πληκτρολογίου</translation>
+        <translation>Atalhos de &amp;Teclado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1190"/>
         <source>lets you customize your keyboard shortcuts</source>
-        <translation>σας επιτρέπει να προσαρμόσετε τις συντομεύσεις του πληκτρολογίου σας</translation>
+        <translation>permite personalizar seus atalhos de teclado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1192"/>
         <source>&amp;Settings</source>
-        <translation>&amp; Ρυθμίσεις</translation>
+        <translation>&amp;Configurações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1194"/>
         <source>settings</source>
-        <translation>&amp; Ρυθμίσεις</translation>
+        <translation>configurações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1197"/>
         <source>Image &amp;Adjustments</source>
-        <translation>&amp; Προσαρμογές εικόνας</translation>
+        <translation>&amp;Ajustes de Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1199"/>
         <source>open image manipulation toolbox</source>
-        <translation type="unfinished"></translation>
+        <translation>abrir caixa de ferramentas de manipulação de imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1202"/>
         <source>R&amp;esize Image</source>
-        <translation>R &amp; μεταβολη μεγεθους εικόνας</translation>
+        <translation>R&amp;edimensionar Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1204"/>
         <source>resize the current image</source>
-        <translation>μεταβολή μεγέθους της τρέχουσας εικόνας</translation>
+        <translation>redimensionar a imagem atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1206"/>
         <source>Cr&amp;op Image</source>
-        <translation>Αποκοπή εικόνας</translation>
+        <translation>Rec&amp;ortar Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1208"/>
         <source>cut the current image</source>
-        <translation>αποκοπη τρέχουσας εικόνας</translation>
+        <translation>corte a imagem atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1214"/>
         <source>Show &amp;Menu</source>
-        <translation>Δείξε το &amp;Μενού</translation>
+        <translation>Mostrar &amp;Menu</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1215"/>
         <source>Hides the Menu and Shows it Again on ALT</source>
-        <translation type="unfinished"></translation>
+        <translation>Oculta e Mostra o Menu com a tecla ALT</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1218"/>
         <source>Tool&amp;bar</source>
-        <translation>Γραμμή Εργαλείων</translation>
+        <translation>&amp;Barra de ferramentas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1220"/>
         <source>Show Toolbar</source>
-        <translation>Δείξε τη Γραμμή Εργαλείων</translation>
+        <translation>Mostrar Barra de Ferramentas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1223"/>
         <source>&amp;Statusbar</source>
-        <translation>Γραμμή κατάστασης</translation>
+        <translation>&amp;Barra de Status</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1225"/>
         <source>Show Statusbar</source>
-        <translation>Δείξε τη Γραμμή Κατάστασης</translation>
+        <translation>Mostrar Barra de Status</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1228"/>
         <source>&amp;Pseudocolor Function</source>
-        <translation type="unfinished"></translation>
+        <translation>Função &amp;Pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1230"/>
         <source>Show Pseudocolor Function</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Função Pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1234"/>
         <source>O&amp;verview</source>
-        <translation>Προεπισκόπιση Εστίασης</translation>
+        <translation>Res&amp;umo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1236"/>
         <source>Shows the Zoom Overview</source>
-        <translation>Δείχνει την προεπισκόπιση εστίασης</translation>
+        <translation>Mostra resumo do Zoom</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1241"/>
         <source>Pla&amp;yer</source>
-        <translation>Αναπαραγωγή</translation>
+        <translation>Reprod&amp;utor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1243"/>
         <source>Shows the Slide Show Player</source>
-        <translation>Δείχνει την Αναπαραγωγή της Προβολής Εικόνων</translation>
+        <translation>Mostra o Reprodutor de Apresentação de Slides</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1246"/>
         <source>&amp;Hide All Panels</source>
-        <translation>Κρύψε όλα τα πλαίσια</translation>
+        <translation>&amp;Ocultar todos os painéis</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1248"/>
         <source>Hide all panels</source>
-        <translation>Κρύψε όλα τα πλαίσια</translation>
+        <translation>Ocultar todos os painéis</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1252"/>
         <source>File &amp;Explorer</source>
-        <translation>Εξερευνητής Αρχείων</translation>
+        <translation>&amp;Explorador de Arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1254"/>
         <source>Show File Explorer</source>
-        <translation>Δείξε τον Εξερευνητή Αρχείων</translation>
+        <translation>Mostrar Explorador de Arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1257"/>
         <source>Metadata &amp;Info</source>
-        <translation>&amp; Πληροφορίες μεταδεδομένων</translation>
+        <translation>Metadados &amp;Informações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1259"/>
         <source>Show Metadata Info</source>
-        <translation>Εμφάνιση πληροφοριών μετα-δεδομένων</translation>
+        <translation>Mostrar Informações de Metadados</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1262"/>
         <source>&amp;Thumbnails</source>
-        <translation>&amp; Μικρογραφίες</translation>
+        <translation>&amp;Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1264"/>
         <source>Show Thumbnails</source>
-        <translation>Εμφάνιση μικρογραφιών</translation>
+        <translation>Mostrar Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1267"/>
         <source>&amp;Thumbnail Preview</source>
-        <translation>&amp; Προεπισκόπηση μικρογραφίας</translation>
+        <translation>Pré-visualização de &amp;Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1269"/>
         <source>Show Thumbnails Preview</source>
-        <translation>Δείξε προεπισκοπιση μικρογραφιας</translation>
+        <translation>Mostrar Pré-visualização de Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1272"/>
         <source>&amp;Folder Scrollbar</source>
-        <translation>Γραμμή Κύλισης Φακέλου</translation>
+        <translation>&amp;Pasta Barra de Rolagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1273"/>
         <source>Show Folder Scrollbar</source>
-        <translation>Δείξε τη Γραμμή Κύλισης Φακέλου</translation>
+        <translation>Mostrar Barra de Rolagem de Pastas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1276"/>
         <source>&amp;Metadata Ribbon</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de &amp;meta-dados</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1278"/>
         <source>Shows the Metadata Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra o Painel de Metadados</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1281"/>
         <source>File &amp;Info</source>
-        <translation>&amp; Πληροφορίες αρχείου</translation>
+        <translation>Arquivo &amp;informação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1283"/>
         <source>Shows the Info Panel</source>
-        <translation>Δείχνει το Πλαίσιο Πληροφοριών</translation>
+        <translation>Mostra o Painel de Informações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1286"/>
         <source>&amp;Histogram</source>
-        <translation>ιστογραμμα</translation>
+        <translation>&amp;Histograma</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1288"/>
         <source>Shows the Histogram Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra o Painel Histograma</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1291"/>
         <source>Image &amp;Notes</source>
-        <translation>Σημειώσεις Εικόνας</translation>
+        <translation>Imagem &amp;Notas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1293"/>
         <source>Shows Image Notes</source>
-        <translation>Δείχνει τις Σημειώσεις της Εικόνας</translation>
+        <translation>Mostra Notas de Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1296"/>
         <source>Edit &amp;History</source>
-        <translation>Επεξεργασία &amp; ιστορικου</translation>
+        <translation>Editar &amp;História</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1297"/>
         <source>Shows the edit history</source>
-        <translation>Παρουσιάζει το ιστορικο επεξεργασίας</translation>
+        <translation>Mostra o histórico de edições</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1301"/>
         <source>Show &amp;Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar &amp;Registo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1302"/>
         <source>Shows the log window</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra a janela de registos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1309"/>
         <source>New &amp;Tab</source>
-        <translation>Νεα καρτελα</translation>
+        <translation>Nova &amp;Aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1311"/>
         <source>Open a new tab</source>
-        <translation>Ανοιξε νεα καρτελα</translation>
+        <translation>Abrir uma nova aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1313"/>
         <source>&amp;Close Tab</source>
-        <translation>κλεισιμο καρτελας</translation>
+        <translation>Fe&amp;char Aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1315"/>
         <source>Close current tab</source>
-        <translation>Κλείσιμο τρέχουσας καρτέλας</translation>
+        <translation>Fechar a aba atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1317"/>
         <source>&amp;Close All Tabs</source>
-        <translation>&amp; Κλείσιμο όλων των καρτελών</translation>
+        <translation>&amp;Fechar todas as abas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1318"/>
         <source>Close all open tabs</source>
-        <translation>Κλείστε όλες τις ανοιχτές καρτέλες</translation>
+        <translation>Fechar todas as abas abertas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1320"/>
         <source>&amp;Fit Window to Image</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajustar Janela à Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1348"/>
         <source>&amp;Fit Image to Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajustar Imagem à Janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1351"/>
         <source>Zoom image to fit window</source>
-        <translation type="unfinished"></translation>
+        <translation>Aproximar imagem para ajustar à janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1322"/>
         <source>Fit window to the image</source>
-        <translation>Αλλαγή του μεγέθους του παραθύρου στο μέγεθος της εικόνας</translation>
+        <translation>Ajustar janela à imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1324"/>
         <source>F&amp;irst Tab</source>
-        <translation>&amp;Πρώτη καρτέλα</translation>
+        <translation>&amp;Primeira aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1325"/>
         <source>Switch to first tab</source>
-        <translation>Μεταβείτε στην πρώτη καρτέλα</translation>
+        <translation>Alternar para a primeira aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1327"/>
         <source>&amp;Previous Tab</source>
-        <translation>&amp; Προηγούμενη καρτέλα</translation>
+        <translation>Aba &amp;Anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1329"/>
         <source>Switch to previous tab</source>
-        <translation>Μετάβαση στην προηγούμενη καρτέλα</translation>
+        <translation>Trocar para a aba anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1331"/>
         <source>&amp;Go to Tab</source>
-        <translation>&amp; Μεταβείτε στην καρτέλα</translation>
+        <translation>&amp;Vá para a aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1332"/>
         <source>Go to tab by index</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ir para aba por meio do índice</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1334"/>
         <source>&amp;Next Tab</source>
-        <translation>&amp; Επόμενη καρτέλα</translation>
+        <translation>Aba Se&amp;guinte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1336"/>
         <source>Switch to next tab</source>
-        <translation>Γυριστε στην επομενη καρτέλα</translation>
+        <translation>Trocar para a aba seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1338"/>
         <source>La&amp;st Tab</source>
-        <translation>Τελευταια καρτέλα</translation>
+        <translation>&amp;Última aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1339"/>
         <source>Switch to last tab</source>
-        <translation>Γυριστε στην τελευταια καρτέλα</translation>
+        <translation>Alternar para a última aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1342"/>
         <source>Fu&amp;ll Screen</source>
-        <translation>Πλήρης οθόνη</translation>
+        <translation>Tela c&amp;heia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1345"/>
         <source>Full Screen</source>
-        <translation>Πλήρης οθόνη</translation>
+        <translation>Tela Cheia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1353"/>
         <source>Show &amp;100%</source>
-        <translation>Δείξε &amp;100%</translation>
+        <translation>Mostrar &amp;100%</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1355"/>
         <source>Shows the image at 100%</source>
-        <translation>Δείχνει την εικόνα στο 100% του μεγέθους της</translation>
+        <translation>Mostra imagem a 100%</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1357"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1529"/>
         <source>Zoom &amp;In</source>
-        <translation>Zoom &amp;Μέσα</translation>
+        <translation>Ampl&amp;iar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1359"/>
         <source>zoom in</source>
-        <translation>zoom μέσα</translation>
+        <translation>Ampliar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1361"/>
         <source>&amp;Zoom Out</source>
-        <translation>Zoom Έξω</translation>
+        <translation>Reduzir &amp;Zoom</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1363"/>
         <source>zoom out</source>
-        <translation>zoom έξω</translation>
+        <translation>reduzir zoom</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1365"/>
         <source>&amp;Anti Aliasing</source>
-        <translation>&amp;Anti Aliasing</translation>
+        <translation>Su&amp;avização</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1367"/>
         <source>if checked images are smoother</source>
-        <translation>αν οι ελεγμένες εικόνες είναι ομαλότερες</translation>
+        <translation>Se ativado, as imagens serão suavizadas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1371"/>
         <source>&amp;Transparency Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Transparência Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1374"/>
         <source>if checked, a pattern will be displayed for transparent objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o padrão será exibido nos objetos transparentes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1378"/>
         <source>&amp;Frameless</source>
-        <translation>Πλήρης Οθόνη</translation>
+        <translation>&amp;Sem Contornos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1380"/>
         <source>shows a frameless window</source>
-        <translation>εμφανίζει την εφαρμογή σε πλήρη οθόνη</translation>
+        <translation>mostra uma janela sem contornos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1384"/>
         <source>&amp;Change Opacity</source>
-        <translation>Αλλαγή &amp;Διαφάνειας</translation>
+        <translation>&amp;Alterar Opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1386"/>
         <source>change the window opacity</source>
-        <translation>αλλαγή της διαφάνειας του παραθύρου</translation>
+        <translation>Alterar opacidade da janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1388"/>
         <source>Opacity &amp;Up</source>
-        <translation>Διαφάνεια &amp;Πάνω</translation>
+        <translation>A&amp;umentar opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1390"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1394"/>
         <source>changes the window opacity</source>
-        <translation>αλλαγή της διαφάνειας του παραθύρου</translation>
+        <translation>Alterar opacidade da janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1392"/>
         <source>Opacity &amp;Down</source>
-        <translation>Διαφάνεια &amp;Κάτω</translation>
+        <translation>Re&amp;duzir opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1396"/>
         <source>To&amp;ggle Opacity</source>
-        <translation>Διαφάνεια ON/OFF</translation>
+        <translation>Alt&amp;ernar opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1398"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1499"/>
         <source>toggle the window opacity</source>
-        <translation>Μετάβαση από Διαφανές &lt;-&gt; Αδιαφανές παράθυρο</translation>
+        <translation>Alterna a opacidade da janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1400"/>
         <source>Lock &amp;Window</source>
-        <translation>&amp;Κλείδωμα Παραθύρου</translation>
+        <translation>Bloquear &amp;janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1402"/>
         <source>lock the window</source>
-        <translation>κλείδωμα του παραθύρου</translation>
+        <translation>bloquear a janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1406"/>
         <source>&amp;Toggle Slideshow</source>
-        <translation>Αυτόματη Προβολή ON/OFF</translation>
+        <translation>Al&amp;ternar para slides</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1407"/>
         <source>Start/Pause the slideshow</source>
-        <translation>Έναρξη/Παύση αυτόματης προβολής</translation>
+        <translation>Inicia/pausa a apresentação de slides</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1411"/>
         <source>&amp;Pause Movie</source>
-        <translation>&amp;Παύση Ταινίας</translation>
+        <translation>&amp;Pausa no filme</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1413"/>
         <source>pause the current movie</source>
-        <translation>παύση της τρέχουσας ταινίας</translation>
+        <translation>Pausa o filme atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1418"/>
         <source>P&amp;revious Frame</source>
-        <translation>Προηγούμενο καρέ</translation>
+        <translation>Quadro &amp;Anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1420"/>
         <source>show previous frame</source>
-        <translation>δείξε το προηγούμενο καρέ</translation>
+        <translation>mostrar o quadro anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1423"/>
         <source>&amp;Next Frame</source>
-        <translation>Επόμενο καρέ</translation>
+        <translation>&amp;Próximo Quadro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1425"/>
         <source>show next frame</source>
-        <translation>δείξε το επόμενο καρέ</translation>
+        <translation>mostrar o próximo quadro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1427"/>
         <source>Choose &amp;Monitor</source>
-        <translation>Επιλογή &amp;Οθόνης</translation>
+        <translation>Escolher &amp;Monitor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1428"/>
         <source>Choose the Monitor to run nomacs</source>
-        <translation>Επιλογή οθόνης για εκτέλεση του nomacs</translation>
+        <translation>Escolha em qual Monitor executar nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1431"/>
         <source>Show Image Location</source>
-        <translation>Εμφάνιση τοποθεσίας της εικόνας</translation>
+        <translation>Mostrar Localização da Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1433"/>
         <source>shows where the image was taken in Google maps</source>
-        <translation>δείχνει που τραβήχτηκε η φωτό στο Google maps</translation>
+        <translation>mostrar no Google maps onde a foto foi tirada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1439"/>
         <source>Compute &amp;Thumbnails</source>
-        <translation>Υπολογισμός &amp;Μικρογραφιών</translation>
+        <translation>Calcular &amp;Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1440"/>
         <source>compute all thumbnails of the current folder</source>
-        <translation>υπολογισμός όλων των μικρογραφιών του τρέχοντος φακέλου</translation>
+        <translation>calcular todas as miniaturas da pasta atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1443"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1550"/>
         <source>&amp;Filter</source>
-        <translation>φιλτρο</translation>
+        <translation>&amp;Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1448"/>
         <source>Export Multipage &amp;TIFF</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar &amp;TIFF de várias páginas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1449"/>
         <source>Export TIFF pages to multiple tiff files</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar páginas TIFF para vários arquivos tiff</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1451"/>
         <source>Extract From Archive</source>
-        <translation>Εξαγωγή από Αρχείο</translation>
+        <translation>Extrair do Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1453"/>
         <source>Extract images from an archive (%1)</source>
-        <translation>Εξαγωγή εικόνων από ένα αρχείο (%1)</translation>
+        <translation>Extrair imagens de um arquivo (%1)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1456"/>
         <source>&amp;Mosaic Image</source>
-        <translation>Εικόνα Μωσαϊκού</translation>
+        <translation>Imagem em &amp;Mosaico</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1457"/>
         <source>Create a Mosaic Image</source>
-        <translation>Δημιουργία Εικόνας Μωσαϊκού</translation>
+        <translation>Cria uma Imagem em Mosaico</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1459"/>
         <source>Batch Processing</source>
-        <translation>Μαζική Επεξεργασία</translation>
+        <translation>Processamento em Lote</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1460"/>
         <source>Apply actions to multiple images</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar ações para múltiplas imagens</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1463"/>
         <source>&amp;Wallpaper</source>
-        <translation>&amp; Ταπετσαρία</translation>
+        <translation>&amp;Papel de parede</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1464"/>
         <source>set the current image as wallpaper</source>
-        <translation>ορίσετε την τρέχουσα εικόνα ως ταπετσαρία</translation>
+        <translation>definir a imagem atual como papel de parede</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1466"/>
         <source>Add Image Format</source>
-        <translation>Προσθήκη τύπου εικόνας</translation>
+        <translation>Adicionar Formato de Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1467"/>
         <source>Add a new image format to nomacs</source>
-        <translation>Προσθήκη νέου τύπου εικόνας στο nomacs</translation>
+        <translation>Adicione um novo formato de imagem ao nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1471"/>
         <source>&amp;About Nomacs</source>
-        <translation>&amp; Περί του Nomacs</translation>
+        <translation>&amp;Sobre Nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1473"/>
         <source>about</source>
-        <translation>περι</translation>
+        <translation>sobre</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1475"/>
         <source>&amp;Documentation</source>
-        <translation>Τεκμηρίωση (online)</translation>
+        <translation>&amp;Documentação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1476"/>
         <source>Online Documentation</source>
-        <translation>Ηλεκτρονική τεκμηρίωση</translation>
+        <translation>Documentação online</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1478"/>
         <source>&amp;Report a Bug</source>
-        <translation>&amp; Αναφορά σφάλματος</translation>
+        <translation>&amp;Reportar um erro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1479"/>
         <source>Report a Bug</source>
-        <translation>&amp; Αναφορά σφάλματος</translation>
+        <translation>Reportar um erro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1481"/>
         <source>&amp;Check for Updates</source>
-        <translation>&amp; Έλεγχος για ενημερωμένες εκδόσεις</translation>
+        <translation>&amp;Verificar Atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1482"/>
         <source>check for updates</source>
-        <translation>έλεγχος για ενημερωμένες εκδόσεις</translation>
+        <translation>verificar atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1485"/>
         <source>&amp;Update Translation</source>
-        <translation>Ενημέρωση Μετάφρασης</translation>
+        <translation>&amp;Atualizar Tradução</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1487"/>
         <source>Checks for a new version of the translations of the current language</source>
-        <translation type="unfinished"></translation>
+        <translation>Verifica se há nova versão das traduções para o idioma atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1492"/>
         <source>Synchronize &amp;View</source>
-        <translation>Συγχρόνισε &amp;Δες</translation>
+        <translation>Sincronizar &amp;vista</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1494"/>
         <source>synchronize the current view</source>
-        <translation>συγχρόνισε την τρέχουσα θέα</translation>
+        <translation>sincronizar a exibição atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1497"/>
         <source>&amp;Window Overlay</source>
-        <translation>&amp;Επικάλυμμα παραθύρου</translation>
+        <translation>Sobreposição de &amp;janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1502"/>
         <source>Arrange Instances</source>
-        <translation>Οργάνωση στιγμιότυπων</translation>
+        <translation>Organizar instâncias</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1504"/>
         <source>arrange connected instances</source>
-        <translation type="unfinished"></translation>
+        <translation>organizar instâncias conectadas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1507"/>
         <source>Connect &amp;All</source>
-        <translation>Σύνδεση &amp;Όλα</translation>
+        <translation>Conecte &amp;Tudo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1509"/>
         <source>connect all instances</source>
-        <translation type="unfinished"></translation>
+        <translation>conecte todas as instâncias</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1511"/>
         <source>&amp;Sync All Actions</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sincronizar todas as ações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1512"/>
         <source>Transmit All Signals Automatically.</source>
-        <translation type="unfinished"></translation>
+        <translation>Transmita Todos os Sinais Automaticamente.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1518"/>
         <source>&amp;Plugin Manager</source>
-        <translation>Διαχειριστης ενθετων</translation>
+        <translation>Gerenciador de &amp;Plugin</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1519"/>
         <source>manage installed plugins and download new ones</source>
-        <translation type="unfinished"></translation>
+        <translation>gerencie plugins instalados e baixe novos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1524"/>
         <source>Select &amp;All</source>
-        <translation>Επιλογη &amp; όλων</translation>
+        <translation>Selecionar &amp;Tudo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1534"/>
         <source>Zoom &amp;Out</source>
-        <translation>Zoom &amp;Out</translation>
+        <translation>&amp;Reduzir Zoom</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1539"/>
         <source>Display &amp;Squares</source>
-        <translation type="unfinished"></translation>
+        <translation>Exibição &amp;Quadrados</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1545"/>
         <source>Show &amp;Filename</source>
-        <translation>Δείξε όνομα αρχείου</translation>
+        <translation>Mostrar nome de &amp;arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1569"/>
         <source>&amp;Rename</source>
-        <translation>&amp;Μετονομασία</translation>
+        <translation>&amp;Renomear</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1574"/>
         <source>&amp;Batch Process</source>
-        <translation>Μαζική Επεξεργασία</translation>
+        <translation>Processo em &amp;Lote</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1576"/>
         <source>Adds selected files to batch processing.</source>
-        <translation>Προσθήκη επιλεγμένων αρχείων για μαζική επεξεργασία.</translation>
+        <translation>Adiciona arquivos selecionados para processamento em lote.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1580"/>
         <source>&amp;Batch Print</source>
-        <translation>Μαζική εκτύπωση</translation>
+        <translation>Impressão em Lote</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1582"/>
         <source>Prints selected files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Imprime os arquivos selecionados.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1597"/>
         <source>Start pong</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciar pong</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1600"/>
         <source>First File</source>
-        <translation>Πρώτο αρχείο</translation>
+        <translation>Primeiro Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1601"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1617"/>
         <source>Jump to first file</source>
-        <translation>Μετάβαση στο πρώτο αρχείο</translation>
+        <translation>Ir para o primeiro arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1604"/>
         <source>Last File</source>
-        <translation>Τελευταίο αρχείο</translation>
+        <translation>Último Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1605"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1621"/>
         <source>Jump to the end of the current folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Ir para o fim da pasta atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1608"/>
         <source>Skip Previous Images</source>
-        <translation>Παρακαμψη προηγούμενων εικόνων</translation>
+        <translation>Pule Imagens Anteriores</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1609"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1625"/>
         <source>Jumps 10 images before the current image</source>
-        <translation type="unfinished"></translation>
+        <translation>Avançar 10 imagens antes da atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1612"/>
         <source>Skip Next Images</source>
-        <translation>Παραλείψτε επόμενη εικόνες</translation>
+        <translation>Ignorar imagens seguintes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1613"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1629"/>
         <source>Jumps 10 images after the current image</source>
-        <translation>Πήδα 10 εικόνες μετά την τρέχουσα</translation>
+        <translation>Avançar 10 imagens após a atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1616"/>
         <source>First File Sync</source>
-        <translation>Πρώτο αρχείο συγχρονισμός</translation>
+        <translation>Ir para o primeiro arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1620"/>
         <source>Last File Sync</source>
-        <translation>Τελευταίο αρχείο συγχρονισμός</translation>
+        <translation>Ir para o último arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1624"/>
         <source>Skip Previous Images Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorar imagens anteriores</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1628"/>
         <source>Skip Next Images Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorar imagens seguintes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1632"/>
         <source>Delete File Silent</source>
-        <translation>Ήσυχη διαγραφή αρχείων</translation>
+        <translation>Apagar arquivo silenciosamente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1633"/>
         <source>Deletes a file without warning</source>
-        <translation>Διαγραφή αρχείων δίχως ανησυχία</translation>
+        <translation>Apaga um arquivo sem mostrar aviso</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1636"/>
         <source>Star Rating 0</source>
-        <translation>Βαθμολογία αστεριού 0</translation>
+        <translation>Avaliação 0 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1637"/>
@@ -1302,77 +1302,77 @@
         <location filename="../src/DkCore/DkActionManager.cpp" line="1653"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1657"/>
         <source>Star rating which is saved to an image&apos;s metadata</source>
-        <translation>Star rating which is saved to an image&apos;s metadata</translation>
+        <translation>Avaliação que é guardada nos meta-dados de uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1640"/>
         <source>Star Rating 1</source>
-        <translation>Βαθμολογία αστεριού 1</translation>
+        <translation>Avaliação 1 Estrela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1644"/>
         <source>Star Rating 2</source>
-        <translation>Βαθμολογία αστεριού 2</translation>
+        <translation>Avaliação 2 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1648"/>
         <source>Star Rating 3</source>
-        <translation>Βαθμολογία αστεριού 3</translation>
+        <translation>Avaliação 3 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1652"/>
         <source>Star Rating 4</source>
-        <translation>Βαθμολογία αστεριού 5</translation>
+        <translation>Avaliação 4 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1656"/>
         <source>Star Rating 5</source>
-        <translation>Βαθμολογία αστεριού 5</translation>
+        <translation>Avaliação 5 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1660"/>
         <source>Pan Image Up</source>
-        <translation>Πατήστε την εικόνα προς τα πάνω</translation>
+        <translation>Arrastar a Imagem para Cima</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1661"/>
         <source>Pans the image up if zoomed.</source>
-        <translation>Πατάει την εικόνα προς τα πάνω αν έχει γίνει zoom.</translation>
+        <translation>Arrasta a imagem para cima se dado zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1664"/>
         <source>Pan Image Down</source>
-        <translation>Πατήστε την εικόνα προς τα κάτω</translation>
+        <translation>Arrastar Imagem para Baixo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1665"/>
         <source>Pans the image down if zoomed.</source>
-        <translation>Πατάει την εικόνα προς τα κάτω αν έχει γίνει zoom.</translation>
+        <translation>Arrasta a imagem para baixo se dado zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1668"/>
         <source>Pan Image Left</source>
-        <translation>Πατήστε την εικόνα προς τα αριστερά</translation>
+        <translation>Arrasta a Imagem para a Esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1669"/>
         <source>Pans the image left if zoomed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a imagem para a esquerda se dado zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1672"/>
         <source>Pan Image Right</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a Imagem para a Direita</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1673"/>
         <source>Pans the image right if zoomed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a imagem para a direita se dado zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="98"/>
         <source>Cropped</source>
-        <translation>Κομμένη</translation>
+        <translation>Recortada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="949"/>
@@ -1387,291 +1387,291 @@
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="79"/>
         <source>&amp;Grayscale</source>
-        <translation>&amp; Διαβαθμίσεις του γκρι</translation>
+        <translation>&amp;Tons de cinza</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="80"/>
         <source>Convert to Grayscale</source>
-        <translation>Μετατροπή σε αποχρώσεις του γκρι</translation>
+        <translation>Converter em Tons de Cinza</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="84"/>
         <source>&amp;Auto Adjust</source>
-        <translation>&amp; Αυτόματη προσαρμογή</translation>
+        <translation>&amp;Ajuste Automático</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="86"/>
         <source>Auto Adjust Image Contrast and Color Balance</source>
-        <translation>Αυτόματη προσαρμογή αντιθεσης εικονας και ισσοροπιας χρωματος</translation>
+        <translation>Ajuste Automático de Contraste de Imagem e Equilíbrio de Cores</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="91"/>
         <source>Nor&amp;malize Image</source>
-        <translation>Κανονικοποιηση εικονας</translation>
+        <translation>Nor&amp;malizar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="94"/>
         <source>Normalize the Image</source>
-        <translation>Κανονικοποιηση εικονας</translation>
+        <translation>Normalizar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="99"/>
         <source>Flip &amp;Horizontal</source>
-        <translation>&amp; Οριζόντια αναστροφή</translation>
+        <translation>Inversão &amp;horizontal</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="101"/>
         <source>Flip Image Horizontally</source>
-        <translation>Οριζόντια αναστροφή εικόνας</translation>
+        <translation>Virar a imagem horizontalmente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="106"/>
         <source>Flip &amp;Vertical</source>
-        <translation>&amp; Κατακόρυφη αναστροφή</translation>
+        <translation>Inversão &amp;vertical</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="108"/>
         <source>Flip Image Vertically</source>
-        <translation>Κάθετη αναστροφή εικόνας</translation>
+        <translation>Virar a imagem verticalmente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="112"/>
         <source>&amp;Invert Image</source>
-        <translation>Αρνητικό</translation>
+        <translation>&amp;Inverter imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="113"/>
         <source>Invert the Image</source>
-        <translation>Αρνητικό της εικόνας</translation>
+        <translation>Inverter a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="119"/>
         <source>&amp;Tiny Planet...</source>
-        <translation>&amp;Tiny Planet...</translation>
+        <translation>Efeito &quot;&amp;Tiny Planet&quot;...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="121"/>
         <source>Create a Tiny Planet</source>
-        <translation>Δημιουργία Tiny Planet</translation>
+        <translation>&amp;Criar um efeito &quot;Tiny Planet&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="126"/>
         <source>&amp;Background Color...</source>
-        <translation>Χρώμα Φόντου...</translation>
+        <translation>Cor de Fundo...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="128"/>
         <source>Add a background color</source>
-        <translation>Προσθήκη χρώματος φόντου</translation>
+        <translation>Adicionar uma cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="132"/>
         <source>&amp;Blur...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Desfocar...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="133"/>
         <source>Blur the image</source>
-        <translation type="unfinished"></translation>
+        <translation>Desfocar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="137"/>
         <source>&amp;Sharpen...</source>
-        <translation>&amp;Ακονίζει...</translation>
+        <translation>&amp;Apurar...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="138"/>
         <source>Sharpens the image by applying an unsharp mask</source>
-        <translation>Ακονίζει την εικόνα εφαρμόζοντας την μάσκα ακονίσματος</translation>
+        <translation>Aperfeiçoa a imagem aplicando uma máscara de nitidez</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="142"/>
         <source>&amp;Rotate...</source>
-        <translation>&amp; Περιστροφή...</translation>
+        <translation>Gira&amp;r...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="143"/>
         <source>Rotate the image</source>
-        <translation>Περιστροφή της εικόνας</translation>
+        <translation>&amp;Rotacionar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="147"/>
         <source>&amp;Resize...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Redimensionar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="148"/>
         <source>Resize the image</source>
-        <translation type="unfinished"></translation>
+        <translation>Redimensionar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="152"/>
         <source>&amp;Threshold...</source>
-        <translation>&amp; Όριο...</translation>
+        <translation>&amp;Contorno...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="153"/>
         <source>Threshold the image</source>
-        <translation>Εφαρμογή Threshold στην εικόνα</translation>
+        <translation>&amp;Contornar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="158"/>
         <source>&amp;Hue/Saturation...</source>
-        <translation>&amp;Απόχρωση/Κορεσμός...</translation>
+        <translation>&amp;Matiz/Saturação...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="160"/>
         <source>Change Hue and Saturation</source>
-        <translation>Αλλαγή απόχρωσης και κορεσμού</translation>
+        <translation>&amp;Modificar Matiz e Saturação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="164"/>
         <source>&amp;Exposure...</source>
-        <translation>&amp; Έκθεση...</translation>
+        <translation>&amp;Exposição...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="165"/>
         <source>Change the Exposure and Gamma</source>
-        <translation>Αλλαγή της έκθεσης και γάμμα</translation>
+        <translation>Modificar Exposição e Gama</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="53"/>
         <source>Could not convert to grayscale</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível converter para escala de cinza</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="73"/>
         <source>Cannot auto adjust</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível autoajustar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="94"/>
         <source>The Image is Already Normalized...</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem já está normalizada...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="112"/>
         <source>Cannot invert image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível inverter a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="128"/>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="144"/>
         <source>Cannot flip image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível girar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="170"/>
         <source>Sorry, I could not create a tiny planet</source>
-        <translation>Δεν μπόρεσα να δημιουργήσω ένα tiny planet</translation>
+        <translation>Desculpe, não foi possível gerar o efeito &quot;Tiny Planet&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="231"/>
         <source>Cannot blur image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível desfocar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="263"/>
         <source>Cannot sharpen image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível apurar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="307"/>
         <source>Cannot rotate image</source>
-        <translation>Δεν μπορώ να περιστρέψω την εικόνα</translation>
+        <translation>Não foi possível rotacionar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="340"/>
         <source>Cannot resize image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível redimensionar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="389"/>
         <source>Cannot threshold image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível aplicar o limiar à imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="433"/>
         <source>Cannot change Hue/Saturation</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível alterar a Matiz/Saturação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="490"/>
         <source>Cannot apply exposure</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível aplicar exposição</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="548"/>
         <source>Cannot draw background color</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível renderizar a cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="494"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="977"/>
         <source>&lt;data too large to display&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;dados grandes demais para exibição&gt;</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="600"/>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="826"/>
         <source>Filename</source>
-        <translation>Όνομα αρχείου</translation>
+        <translation>Nome de arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="603"/>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="827"/>
         <source>Path</source>
-        <translation>Διαδρομή αρχείου</translation>
+        <translation>Caminho</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="607"/>
         <source>Target</source>
-        <translation>Στόχος</translation>
+        <translation>Destino</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="611"/>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="828"/>
         <source>Size</source>
-        <translation>Μέγεθος</translation>
+        <translation>Tamanho</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="615"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="618"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="621"/>
         <source>Date</source>
-        <translation>Ημερομηνία</translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="615"/>
         <source>Created</source>
-        <translation>Δημιουργήθηκε</translation>
+        <translation>Criada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="618"/>
         <source>Last Modified</source>
-        <translation>Τελευταία τροποποιηση</translation>
+        <translation>Última modificação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="621"/>
         <source>Last Read</source>
-        <translation>Τελευταία ανάγνωση</translation>
+        <translation>Última leitura</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="625"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="638"/>
         <source>Owner</source>
-        <translation>Ιδιοκτήτης</translation>
+        <translation>Proprietário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="629"/>
         <source>OwnerID</source>
-        <translation>Αναγνωριστικό κατόχου</translation>
+        <translation>ID de proprietário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="633"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="652"/>
         <source>Group</source>
-        <translation>Ομάδα</translation>
+        <translation>Grupo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="638"/>
@@ -1679,482 +1679,482 @@
         <location filename="../src/DkCore/DkMetaData.cpp" line="652"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="659"/>
         <source>Permissions</source>
-        <translation>Δικαιώματα</translation>
+        <translation>Permissões</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="645"/>
         <source>User</source>
-        <translation>Χρήστης</translation>
+        <translation>Usuário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="659"/>
         <source>Other</source>
-        <translation>Άλλοι</translation>
+        <translation>Outros</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="669"/>
         <source>File</source>
-        <translation>&amp; Αρχείο</translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1595"/>
         <source>not defined</source>
-        <translation>μη ορισμένο</translation>
+        <translation>não definido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1596"/>
         <source>manual</source>
-        <translation>εγχειρίδιο</translation>
+        <translation>manual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1597"/>
         <source>normal</source>
-        <translation>κανονική</translation>
+        <translation>normal</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1598"/>
         <source>aperture priority</source>
-        <translation>προτεραιότητα διαφράγματος</translation>
+        <translation>prioridade de abertura</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1599"/>
         <source>shutter priority</source>
-        <translation>προτεραιότητα κλείστρου</translation>
+        <translation>prioridade do obturador</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1600"/>
         <source>program creative</source>
-        <translation>πρόγραμμα δημιουργία</translation>
+        <translation>programa de criação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1601"/>
         <source>high-speed program</source>
-        <translation>πρόγραμμα υψηλής ταχύτητας</translation>
+        <translation>programa de alta velocidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1602"/>
         <source>portrait mode</source>
-        <translation>λειτουργία πορτραιτου</translation>
+        <translation>modo retrato</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1603"/>
         <source>landscape mode</source>
-        <translation>λειτουργία τοπίου</translation>
+        <translation>modo paisagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1606"/>
         <source>No Flash</source>
-        <translation>Χωρίς φλας</translation>
+        <translation>Sem flash</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1607"/>
         <source>Fired</source>
-        <translation type="unfinished"></translation>
+        <translation>Disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1608"/>
         <source>Fired, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Disparado, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1609"/>
         <source>Fired, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Disparado, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1610"/>
         <source>On, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativo, não disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1611"/>
         <source>On, Fired</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativo, disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1612"/>
         <source>On, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativo, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1613"/>
         <source>On, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativo, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1614"/>
         <source>Off, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <translation>Inativo, não disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1615"/>
         <source>Off, Did not fire, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Inativo, não disparado, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1616"/>
         <source>Auto, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático, não disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1617"/>
         <source>Auto, Fired</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático, disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1618"/>
         <source>Auto, Fired, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático, disparado, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1619"/>
         <source>Auto, Fired, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático, disparado, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1620"/>
         <source>No flash function</source>
-        <translation type="unfinished"></translation>
+        <translation>Sem flash</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1621"/>
         <source>Off, No flash function</source>
-        <translation type="unfinished"></translation>
+        <translation>Inativo, sem flash</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1622"/>
         <source>Fired, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Disparado, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1623"/>
         <source>Fired, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Disparado, redução de olhos vermelhos, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1624"/>
         <source>Fired, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Disparado, redução de olhos vermelhos, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1625"/>
         <source>On, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativo, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1626"/>
         <source>On, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativo, redução de olhos vermelhos, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1627"/>
         <source>On, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativo, redução de olhos vermelhos, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1628"/>
         <source>Off, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Inativo, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1629"/>
         <source>Auto, Did not fire, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático, não disparado, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1630"/>
         <source>Auto, Fired, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático, disparado, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1631"/>
         <source>Auto, Fired, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático, disparado, redução de olhos vermelhos, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1632"/>
         <source>Auto, Fired, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático, disparado, redução de olhos vermelhos, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1635"/>
         <source>Uncompressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Descomprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1636"/>
         <source>CCITT 1D</source>
-        <translation type="unfinished"></translation>
+        <translation>CCITT 1D</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1637"/>
         <source>T4/Group 3 Fax</source>
-        <translation type="unfinished"></translation>
+        <translation>T4/Grupo 3 Fax</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1638"/>
         <source>T6/Group 4 Fax</source>
-        <translation type="unfinished"></translation>
+        <translation>T6/Grupo 4 Fax</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1639"/>
         <source>LZW</source>
-        <translation type="unfinished"></translation>
+        <translation>LZW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1640"/>
         <source>JPEG (old-style)</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG (estilo antigo)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1641"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1645"/>
         <source>JPEG</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1642"/>
         <source>Adobe Deflate</source>
-        <translation type="unfinished"></translation>
+        <translation>Adobe Deflate</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1643"/>
         <source>JBIG B&amp;W</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG Preto&amp;Branco</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1644"/>
         <source>JBIG Color</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG Colorido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1646"/>
         <source>Kodak 262</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodak 262</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1647"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1648"/>
         <source>Sony ARW Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Sony ARW Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1649"/>
         <source>Packed RAW</source>
-        <translation type="unfinished"></translation>
+        <translation>RAW enpacotado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1650"/>
         <source>Samsung SRW Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Samsung SRW Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1651"/>
         <source>CCIRLEW</source>
-        <translation type="unfinished"></translation>
+        <translation>CCIRLEW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1652"/>
         <source>Samsung SRW Compressed 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Samsung SRW Comprimido 2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1653"/>
         <source>PackBits</source>
-        <translation type="unfinished"></translation>
+        <translation>PackBits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1654"/>
         <source>Thunderscan</source>
-        <translation type="unfinished"></translation>
+        <translation>Thunderscan</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1655"/>
         <source>Kodak KDC Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodak KDC Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1656"/>
         <source>IT8CTPAD</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8CTPAD</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1657"/>
         <source>IT8LW</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8LW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1658"/>
         <source>IT8MP</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8MP</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1659"/>
         <source>IT8BL</source>
-        <translation type="unfinished"></translation>
+        <translation>8</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1660"/>
         <source>PixarFilm</source>
-        <translation type="unfinished"></translation>
+        <translation>PixarFilm</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1661"/>
         <source>PixarLog</source>
-        <translation type="unfinished"></translation>
+        <translation>PixarLog</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1662"/>
         <source>Deflate</source>
-        <translation type="unfinished"></translation>
+        <translation>Deflate</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1663"/>
         <source>DCS</source>
-        <translation type="unfinished"></translation>
+        <translation>DCS</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1664"/>
         <source>Aperio JPEG 2000 YCbCr</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperio JPEG 2000 YCbCr</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1665"/>
         <source>Aperio JPEG 2000 RGB</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperio JPEG 2000 RGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1666"/>
         <source>JBIG</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1667"/>
         <source>SGILog</source>
-        <translation type="unfinished"></translation>
+        <translation>SGILog</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1668"/>
         <source>SGILog24</source>
-        <translation type="unfinished"></translation>
+        <translation>SGILog24</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1669"/>
         <source>JPEG 2000</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG 2000</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1670"/>
         <source>Nikon NEF Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Nikon NEF Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1671"/>
         <source>JBIG2 TIFF FX</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG2 TIFF FX</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1672"/>
         <source>Microsoft Document Imaging(MDI) Binary Level Codec</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) Binary Level Codec</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1673"/>
         <source>Microsoft Document Imaging(MDI) Progressive Transform Codec</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) Progressive Transform Codec</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1674"/>
         <source>Microsoft Document Imaging(MDI) Vector</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) Vector</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1675"/>
         <source>ESRI Lerc</source>
-        <translation type="unfinished"></translation>
+        <translation>ESRI Lerc</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1676"/>
         <source>Lossy JPEG</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG com perdas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1677"/>
         <source>LZMA2</source>
-        <translation type="unfinished"></translation>
+        <translation>LZMA2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1678"/>
         <source>Zstd</source>
-        <translation type="unfinished"></translation>
+        <translation>Zstd</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1679"/>
         <source>WebP</source>
-        <translation type="unfinished"></translation>
+        <translation>WebP</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1680"/>
         <source>PNG</source>
-        <translation type="unfinished"></translation>
+        <translation>PNG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1681"/>
         <source>JPEG XR</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG XR</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1682"/>
         <source>Kodak DCR Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodak DCR Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1683"/>
         <source>Pentax PEF Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Pentax PEF Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1106"/>
         <source>Plugin Manager</source>
-        <translation>Διαχειριστης ενθετων</translation>
+        <translation>Gestor de extras</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1107"/>
         <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-        <translation>Το dll δεν μπόρεσε να διαγραφεί!
-Παρακαλώ επανεκκινήστε το nomacs και προσπαθήστε ξανά.</translation>
+        <translation>Não foi possível apagar a dll!
+Reinicie o nomacs e tente novamente.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1277"/>
         <source>Close plugin</source>
-        <translation>Κλεισιμο ενθετου</translation>
+        <translation>Fechar extra</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1279"/>
         <source>Please close the currently opened plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor feche o extra atualmente aberto.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="80"/>
         <source>Batch Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Ações em lote</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="128"/>
         <source>[Transform Batch]</source>
-        <translation type="unfinished"></translation>
+        <translation>[Transformação em lote]</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="303"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="482"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="605"/>
         <source>%1 inactive -&gt; skipping</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 inativo -&gt; ignorando</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="311"/>
@@ -2180,7 +2180,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="378"/>
         <source>transformed</source>
-        <translation type="unfinished"></translation>
+        <translation>transformado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="381"/>
@@ -2190,146 +2190,146 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="435"/>
         <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-        <translation>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</translation>
+        <translation>%1 O tamanho da imagem deveria ser aumentado, mas a opção &apos;Apenas Diminuir&apos; está ativa -&gt; pulando.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="440"/>
         <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-        <translation>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</translation>
+        <translation>%1 O tamanho da imagem deveria ser diminuído, mas a opção &apos;Apenas Aumentar&apos; está ativa -&gt; pulando.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="444"/>
         <source>%1 image size matches scale factor -&gt; skipping.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 tamanho da imagem coincide com o fator de escala -&gt; ignorando.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="492"/>
         <source>%1 %2 applied.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 %2 aplicado.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="494"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="644"/>
         <source>%1 Cannot apply %2.</source>
-        <translation>%1 Δεν είναι δυνατό να εφαρμόσετε %2.</translation>
+        <translation>%1 - não foi possível aplicar %2.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="500"/>
         <source>%1 error, could not apply image adjustments.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 erro, não foi possível aplicar os ajustes de imagem.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="509"/>
         <source>[Adjustment Batch]</source>
-        <translation type="unfinished"></translation>
+        <translation>[Ajuste por lotes]</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="633"/>
         <source>%1 Cannot cast batch plugin %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Não foi possível iniciar o plugin em lote %2.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="647"/>
         <source>%1 illegal plugin interface: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - interface ilegal: %2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="649"/>
         <source>%1 Cannot apply plugin because it is NULL.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Não foi possível aplicar o extra porque ele está NULL.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="653"/>
         <source>%1 error, could not apply plugins.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro no extra %1. Extras não aplicados.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="656"/>
         <source>%1 plugins applied.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 extras aplicados.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="663"/>
         <source>[Plugin Batch]</source>
-        <translation type="unfinished"></translation>
+        <translation>[Extras em lote]</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="777"/>
         <source>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</source>
-        <translation>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</translation>
+        <translation>%1 já existe -&gt; ignorando (escolha &apos;já existe&apos; se quiser sobrescrever o arquivo)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="782"/>
         <source>Error: input file does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro: arquivo de origem inexistente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="783"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="984"/>
         <source>Input: %1</source>
-        <translation>Είσοδος: %1</translation>
+        <translation>Origem: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="787"/>
         <source>Skipping: nothing to do here.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorando pois aqui não há nada para fazer.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="825"/>
         <source>processing %1</source>
-        <translation>επεξεργασία %1</translation>
+        <translation>processando %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="830"/>
         <source>Error while loading...</source>
-        <translation>Παρουσιάστηκε σφάλμα κατά τη φόρτωση...</translation>
+        <translation>Erro ao carregar...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="837"/>
         <source>Error: cannot process a NULL function.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro: não é possível processar uma função NULL.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="843"/>
         <source>%1 failed</source>
-        <translation>%1 απέτυχε</translation>
+        <translation>%1 falhou</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="859"/>
         <source>%1 not saved - option &apos;Do not Save&apos; is checked...</source>
-        <translation>%1 not saved - option &apos;Do not Save&apos; is checked...</translation>
+        <translation>%1 não foi salvo - opção &apos;Não Salvar&apos; está ativada...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="865"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="897"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="990"/>
         <source>Original filename added to Exif</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome original do arquivo acrescentado ao Exif</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="869"/>
         <source>%1 saved...</source>
-        <translation>%1 Αποθηκεύτηκε σε...</translation>
+        <translation>%1 salvo...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="871"/>
         <source>Could not save: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível salvar: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="886"/>
         <source>Error: could not rename file, the target file exists already.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro: arquivo não renomeado porque o arquivo de destino já existe.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="903"/>
         <source>Error: could not rename file</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro: arquivo não renomeado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="908"/>
         <source>Renaming: %1 -&gt; %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Renomeando: %1 -&gt; %2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="941"/>
@@ -2364,107 +2364,107 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="965"/>
         <source>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</source>
-        <translation>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</translation>
+        <translation>O arquivo deveria ser copiado, mas &apos;Não Salvar&apos; está ativado - portando nada será feito...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="983"/>
         <source>Error: could not copy file</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro: arquivo não copiado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="985"/>
         <source>Output: %1</source>
-        <translation>Έξοδος: %1</translation>
+        <translation>Destino: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="993"/>
         <source>Copying: %1 -&gt; %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiando: %1 -&gt; %2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1011"/>
         <source>Error: back-up (%1) file already exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro: o arquivo de backup (%1) já existe</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1020"/>
         <source>Error: could not rename existing file to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro: não foi possível renomear o arquivo para %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1038"/>
         <source>Error: could not delete existing file</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro: não foi possível apagar o arquivo existente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1048"/>
         <source>Ui - a lot of things went wrong. Your original file can be found here: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Interface - ocorreram vários erros. O arquivo original se encontra em: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1054"/>
         <source>I could not save to %1 so I restored the original file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível salvar em %1 e o arquivo original foi restaurado.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1070"/>
         <source>%1 deleted.</source>
-        <translation>διεγραμμενο.</translation>
+        <translation>%1 apagada.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1073"/>
         <source>I could not delete %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível apagar %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1078"/>
         <source>I did not delete the original because I detected %1 failure(s).</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível apagar a imagem original porque foram detetadas %1 falha(s).</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="1165"/>
         <source>Image</source>
-        <translation>Εικονα</translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="1243"/>
         <source>nomacs - Image Lounge is a lightweight image viewer.</source>
-        <translation>To nomacs - Image Lounge είναι ένας ελαφρύς προβολέας εικόνων.</translation>
+        <translation>O nomacs - Image Lounge é um visualizador de imagens muito leve.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="908"/>
         <source>Binary</source>
-        <translation>Δυαδικό</translation>
+        <translation>Binário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="911"/>
         <source>Indexed 8-bit</source>
-        <translation>Indexed 8-bit</translation>
+        <translation>Indexado 8 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="917"/>
         <source>RGB 32-bit</source>
-        <translation>RGB 32-bit</translation>
+        <translation>RGB 32 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="923"/>
         <source>ARGB 32-bit</source>
-        <translation>ARGB 32-bit</translation>
+        <translation>ARGB 32 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="928"/>
         <source>RGB 16-bit</source>
-        <translation>RGB 16-bit</translation>
+        <translation>RGB 16 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="933"/>
         <source>ARGB 24-bit</source>
-        <translation>ARGB 24-bit</translation>
+        <translation>ARGB 24 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="937"/>
         <source>RGB 24-bit</source>
-        <translation>RGB 24-bit</translation>
+        <translation>RGB 24 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="940"/>
@@ -2474,22 +2474,22 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="943"/>
         <source>ARGB 16-bit</source>
-        <translation>ARGB 16-bit</translation>
+        <translation>ARGB 16 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="946"/>
         <source>BGR 32-bit</source>
-        <translation>BGR 32-bit</translation>
+        <translation>BGR 32 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="949"/>
         <source>ABGR 32-bit</source>
-        <translation>ABGR 32-bit</translation>
+        <translation>ABGR 32 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="952"/>
         <source>Grayscale 8-bit</source>
-        <translation>Grayscale 8-bit</translation>
+        <translation>Escala de cinza 8 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="955"/>
@@ -2499,7 +2499,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="958"/>
         <source>Alpha 8-bit</source>
-        <translation>Alpha 8-bit</translation>
+        <translation>Alfa 8 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="963"/>
@@ -2524,82 +2524,82 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="212"/>
         <source>New Tab</source>
-        <translation>Νεα καρτελα</translation>
+        <translation>Nova aba</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="214"/>
         <source>Thumbnail Preview</source>
-        <translation>&amp; Προεπισκόπηση μικρογραφίας</translation>
+        <translation>Pré-visualizar miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="206"/>
         <source>Recent Files</source>
-        <translation>Πρόσφατα αρχεία</translation>
+        <translation>Arquivos Recentes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="208"/>
         <source>Settings</source>
-        <translation>&amp; Ρυθμίσεις</translation>
+        <translation>Preferências</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="210"/>
         <source>Batch</source>
-        <translation type="unfinished"></translation>
+        <translation>Lote</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.h" line="76"/>
         <source>Player 1</source>
-        <translation>Παίκτης 1</translation>
+        <translation>Jogador 1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.h" line="77"/>
         <source>Player 2</source>
-        <translation>Παίκτης 2</translation>
+        <translation>Jogador 2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.h" line="88"/>
         <source>Anonymous</source>
-        <translation>Ανώνυμος</translation>
+        <translation>Anônimo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="1168"/>
         <source>Edit ToolBar</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Barra de Ferramentas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="1215"/>
         <source>Movie ToolBar</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de Ferramentas de Animação</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="111"/>
         <source>Start in fullscreen.</source>
-        <translation>Εκκίνηση σε λειτουργία πλήρους οθόνης.</translation>
+        <translation>Iniciar em tela cheia.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="114"/>
         <source>Start slideshow playback</source>
-        <translation>Έναρξη Αυτόματης Προβολής</translation>
+        <translation>Pôr em playback o slideshow</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="117"/>
         <source>Start Pong.</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciar pong.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="120"/>
         <source>Start in private mode.</source>
-        <translation>Ξεκινήστε σε ιδιωτική λειτουργία.</translation>
+        <translation>Iniciar no modo privado.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="124"/>
         <source>Set the viewing mode &lt;mode&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir modo de visualização &lt;mode&gt;.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="125"/>
         <source>default | frameless | pseudocolor</source>
-        <translation type="unfinished"></translation>
+        <translation>padrão| sem bordas| pseudocor</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="108"/>
@@ -2609,37 +2609,37 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/main.cpp" line="129"/>
         <source>Batch processing of &lt;batch-settings.pnm&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Processamento em lote de &lt;batch-settings.pnm&gt;.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="130"/>
         <source>batch-settings-path</source>
-        <translation type="unfinished"></translation>
+        <translation>batch-settings-path</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="134"/>
         <source>Saves batch log to &lt;log-path.txt&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva registro do processamento em lote em &lt;log-path.txt&gt;.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="135"/>
         <source>log-path.txt</source>
-        <translation type="unfinished"></translation>
+        <translation>log-path.txt</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="139"/>
         <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-        <translation type="unfinished"></translation>
+        <translation>Importa e salva as definições de &lt;settings-path.ini&gt;.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="140"/>
         <source>settings-path.ini</source>
-        <translation type="unfinished"></translation>
+        <translation>settings-path.ini</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="144"/>
         <source>Register file associations (Windows only).</source>
-        <translation type="unfinished"></translation>
+        <translation>Registrar associação de arquivos (apenas para Windows).</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="148"/>
@@ -2654,30 +2654,30 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/main.cpp" line="373"/>
         <source>Critical Error</source>
-        <translation>Κρίσιμο σφάλμα</translation>
+        <translation>Erro crítico</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="374"/>
         <source>Sorry, nomacs ran out of memory...</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, o nomacs ficou sem memória...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">Ονομα: </translation>
+        <translation type="unfinished">Nome: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">Μέγεθος: </translation>
+        <translation type="unfinished">Tamanho: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Criada: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -2697,27 +2697,27 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1588"/>
         <source>Lena</source>
-        <translation type="unfinished"></translation>
+        <translation>Lena</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1589"/>
         <source>Show test image</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar imagem de teste</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1592"/>
         <source>All Images</source>
-        <translation>Ολες οι εικονες</translation>
+        <translation>Todas as imagens</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1593"/>
         <source>Generates all images in the world</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerar todas as imagens do mundo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1596"/>
         <source>Pong</source>
-        <translation type="unfinished"></translation>
+        <translation>Pong</translation>
     </message>
 </context>
 <context>
@@ -2725,123 +2725,124 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1412"/>
         <source>Always Load JPG if Embedded</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar sempre JPG se incorporada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1413"/>
         <source>Load JPG if it Fits the Screen Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar JPG se couber na resolução da tela</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1415"/>
         <source>Always Load RAW Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar sempre dados não editados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1426"/>
         <source>Apply Noise Filtering to RAW Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar filtro de interferência às imagens não editadas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1427"/>
         <source>If checked, a noise filter is applied which reduced color noise</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, será aplicado um filtro de interferência para reduzir o ruído das cores</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1431"/>
         <source>RAW Loader Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Preferências de imagens não editadas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1439"/>
         <source>Ask to Save Deleted Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Pedir para salvar arquivos apagados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1440"/>
         <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o nomacs irá perguntar antes de salvar arquivos que tenham sido deletados por outras aplicações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1444"/>
         <source>Ignore Exif Orientation when Loading</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorar orientação Exif ao carregar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1445"/>
         <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, as imagens não serão giradas, respeitando a orientação Exif</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1449"/>
         <source>Save Exif Orientation</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar orientação Exif</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1450"/>
         <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, a orientação será escrita nos dados Exif em vez de as girar em matriz
+</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1451"/>
         <source>NOTE: this allows for rotating JPGs without losing information.</source>
-        <translation>Σημ: Αυτό επιτρέπει την περιστροφή των JPGs χωρίς απώλεια πληροφορίας.</translation>
+        <translation>NOTA: esta opção permite-lhe girar as imagens JPGs sem perder as informações.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1455"/>
         <source>File Loading/Saving</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar/Salvar arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1463"/>
         <source>Choose the number of Threads in the thread pool</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha o número de processos a serem usados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1472"/>
         <source>Number of Threads</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de processos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1476"/>
         <source>Enable Native File Dialogs</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar Caixa de Diálogo de Arquivos Nativas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1477"/>
         <source>If checked, native system dialogs are used for opening/saving files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, caixas de diálogo nativas do sistema são usadas para salvar/abrir arquivos.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1481"/>
         <source>Native Dialogs</source>
-        <translation type="unfinished"></translation>
+        <translation>Caixas de Diálogo Nativas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1485"/>
         <source>Use Log File</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizar arquivo de registo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1486"/>
         <source>If checked, a log file will be created.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, será criado um arquivo de registo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1490"/>
         <source>Open Log</source>
-        <translation>Άνοιγμα αρχείου καταγραφής</translation>
+        <translation>Abrir registo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1499"/>
         <source>Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Registo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1546"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>Παρακαλώ επανεκκινήστε το nomacs για να εφαρμοστούν οι αλλαγές</translation>
+        <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
 </context>
 <context>
@@ -2849,42 +2850,42 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="455"/>
         <source>Manage Applications</source>
-        <translation>&amp; Διαχείριση εφαρμογών</translation>
+        <translation>Gerenciar aplicações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="478"/>
         <source>&amp;Run</source>
-        <translation type="unfinished"></translation>
+        <translation>Executa&amp;r</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="481"/>
         <source>&amp;Add</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Adicionar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="484"/>
         <source>&amp;Delete</source>
-        <translation>&amp; Διαγραφή</translation>
+        <translation>&amp;Apagar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="490"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="491"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="522"/>
         <source>Executable Files (*.exe);;</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivos executáveis (*.exe);;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="530"/>
         <source>Open Application</source>
-        <translation>Άνοιγμα εφαρμογής</translation>
+        <translation>Abrir aplicação</translation>
     </message>
 </context>
 <context>
@@ -2892,84 +2893,84 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3783"/>
         <source>Extract images from an archive</source>
-        <translation>Εξαγάγετε τις εικόνες από ένα αρχείο</translation>
+        <translation>Extrair imagens de um arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3792"/>
         <source>Archive (%1)</source>
-        <translation>Αρχείο (%1)</translation>
+        <translation>Arquivo (%1)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3803"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="3812"/>
         <source>&amp;Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;xplorar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3807"/>
         <source>Extract to</source>
-        <translation>Εξαγωγη προς</translation>
+        <translation>Extrair para</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3820"/>
         <source>Remove Subfolders</source>
-        <translation>Αφαιρέστε τους υποφακέλους</translation>
+        <translation>Remover subpastas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3830"/>
         <source>&amp;Extract</source>
-        <translation>&amp; Εξαγωγη</translation>
+        <translation>&amp;Extrair</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3832"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="4062"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3909"/>
         <source>Open Archive</source>
-        <translation>Ανοιγμα αρχείου</translation>
+        <translation>Abrir arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3913"/>
         <source>Archives (%1)</source>
-        <translation>Αρχεία (%1)</translation>
+        <translation>Arquivos (%1)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3930"/>
         <source>Open Directory</source>
-        <translation>Άνοιγμα &amp; καταλόγου</translation>
+        <translation>Abrir pasta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3966"/>
         <source>Not a valid archive.</source>
-        <translation>Δεν είναι ένα έγκυρο αρχείο.</translation>
+        <translation>Não é um arquivo válido.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3992"/>
         <source>Number of images: </source>
-        <translation>Αριθμός εικόνων: </translation>
+        <translation>Número de imagens: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3994"/>
         <source>The archive does not contain any images.</source>
-        <translation>Το αρχείο δεν περιέχει καθόλου εικόνες.</translation>
+        <translation>O arquivo não contém quaisquer imagens.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4021"/>
         <source>The images could not be extracted!</source>
-        <translation>Οι εικόνες δεν έγινε εφικτό να ανακτηθούν!</translation>
+        <translation>As imagens não podem ser extraídas!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4064"/>
         <source>Extracting files...</source>
-        <translation>Εξαγωγή των αρχείων...</translation>
+        <translation>Extraindo arquivos...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4073"/>
         <source>Extracting file %1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Extraindo arquivo %1 de %2</translation>
     </message>
 </context>
 <context>
@@ -2978,12 +2979,12 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkCore/DkBasicLoader.cpp" line="476"/>
         <location filename="../src/DkCore/DkBasicLoader.cpp" line="1327"/>
         <source>Original Image</source>
-        <translation>Αρχική εικόνα</translation>
+        <translation>Imagem original</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp" line="1504"/>
         <source>Sorry, I could not save: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível salvar %1</translation>
     </message>
 </context>
 <context>
@@ -2991,7 +2992,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2398"/>
         <source>Start/Cancel Batch Processing (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciar/Cancelar processamento em lote (%1)</translation>
     </message>
 </context>
 <context>
@@ -2999,43 +3000,43 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="352"/>
         <source>File Explorer</source>
-        <translation>Εξερευνητής Αρχείων</translation>
+        <translation>Explorador de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="360"/>
         <source>Thumbnails</source>
-        <translation>&amp; Μικρογραφίες</translation>
+        <translation>Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="361"/>
         <source>File List</source>
-        <translation>Λίστα αρχείων</translation>
+        <translation>Lista de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="416"/>
         <source>Open an Image Directory</source>
-        <translation>Άνοιγμα ενός Φακέλου Εικόνων</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="480"/>
         <source>No Files Selected</source>
-        <translation>Δεν επιλεχθηκαν αρχεια</translation>
+        <translation>Nenhum arquivo selecionado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="482"/>
         <source>%1 File Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Arquivo Selecionado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="484"/>
         <source>%1 Files Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Arquivos Selecionados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="508"/>
         <location filename="../src/DkGui/DkBatch.cpp" line="522"/>
         <source>Results</source>
-        <translation>Αποτελέσματα</translation>
+        <translation>Resultados</translation>
     </message>
 </context>
 <context>
@@ -3043,17 +3044,17 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1811"/>
         <source>Select Image Adjustments</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar ajustes de imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2038"/>
         <source>inactive</source>
-        <translation>ανενεργό</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2040"/>
         <source>%1 manipulators selected</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 manipuladores selecionados</translation>
     </message>
 </context>
 <context>
@@ -3061,120 +3062,123 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="760"/>
         <source>Output Directory</source>
-        <translation>Κατάλογος εξόδου</translation>
+        <translation>Paste de destino</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="763"/>
         <source>Browse</source>
-        <translation>Αναζήτηση</translation>
+        <translation>Procurar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="765"/>
         <source>Select a Directory</source>
-        <translation>Επιλέξτε έναν κατάλογο</translation>
+        <translation>Selecione uma pasta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="772"/>
         <source>Overwrite Existing Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Substituir arquivos existentes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="774"/>
         <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, os arquivos existentes serão substituídos.
+Esta opção pode destruir os seus arquivos. Tenha cuidado!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="778"/>
         <source>Do not Save Output Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Não Salvar Imagens de Saída</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="780"/>
         <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, as imagens não serão salvas.
+Esta opção só é útil se plugins salvam imagens paralelamente - então seja cuidadoso!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="785"/>
         <source>Use Input Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizar pasta de origem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="786"/>
         <source>If checked, the batch is applied to the input folder - so be careful!</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, a operação em lote será aplicada à pasta de origem. Tenha cuidado!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="790"/>
         <source>Delete Input Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Apagar arquivos originais</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="792"/>
         <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o arquivo original será apagado se a conversão for efetuada com sucesso.
+Tenha cuidado!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="810"/>
         <source>Filename</source>
-        <translation>Όνομα αρχείου</translation>
+        <translation>Nome de arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="833"/>
         <source>Keep Extension</source>
-        <translation type="unfinished"></translation>
+        <translation>Manter extensão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="834"/>
         <source>Convert To</source>
-        <translation>Μετατροπή σε</translation>
+        <translation>Converter para</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="897"/>
         <source>Best Quality</source>
-        <translation>Βέλτιστη Ποιότητα</translation>
+        <translation>Melhor Qualidade</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="898"/>
         <source>High Quality</source>
-        <translation>Υψηλή Ποιότητα</translation>
+        <translation>Qualidade Alta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="899"/>
         <source>Medium Quality</source>
-        <translation>Μέτρια Ποιότητα</translation>
+        <translation>Qualidade Média</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="900"/>
         <source>Low Quality</source>
-        <translation>Χαμηλή Ποιότητα</translation>
+        <translation>Qualidade Baixa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="901"/>
         <source>Bad Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade baixa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="859"/>
         <source>Preview</source>
-        <translation>Προεπισκόπιση</translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="862"/>
         <source>Old Filename: </source>
-        <translation>Παλιό όνομα αρχείου: </translation>
+        <translation>Nome antigo: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="867"/>
         <source>New Filename: </source>
-        <translation>Νέο όνομα αρχείου: </translation>
+        <translation>Novo nome: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="939"/>
         <source>Open an Image Directory</source>
-        <translation>Άνοιγμα ενός Φακέλου Εικόνων</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
 </context>
 <context>
@@ -3182,22 +3186,22 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1554"/>
         <source>Select Plugins</source>
-        <translation>Επιλέξτε ενθετα</translation>
+        <translation>Selecionar Plugins</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1723"/>
         <source> Settings</source>
-        <translation> Ρυθμίσεις</translation>
+        <translation> Configurações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1794"/>
         <source>inactive</source>
-        <translation>ανενεργό</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1796"/>
         <source>%1 plugins selected</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 extras selecionados</translation>
     </message>
 </context>
 <context>
@@ -3210,7 +3214,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1339"/>
         <source>[FAIL]</source>
-        <translation>[FAIL]</translation>
+        <translation>[Falha]</translation>
     </message>
 </context>
 <context>
@@ -3218,37 +3222,37 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2054"/>
         <source>Resize</source>
-        <translation>Αλλαγή μεγέθους</translation>
+        <translation>Redimensionar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Percent</source>
-        <translation>Τοις εκατό</translation>
+        <translation>Por cento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Long Side</source>
-        <translation>Μακριά πλευρά</translation>
+        <translation>Lado Maior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Short Side</source>
-        <translation>Κοντή Πλευρά</translation>
+        <translation>Lado Menor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Width</source>
-        <translation>Πλάτος</translation>
+        <translation>Largura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Height</source>
-        <translation>Ύψος</translation>
+        <translation>Altura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2059"/>
         <source>Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ampliação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2063"/>
@@ -3264,37 +3268,37 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2081"/>
         <source>Transform All</source>
-        <translation>Μετασχηματισμός όλων</translation>
+        <translation>Transformar Tudo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2081"/>
         <source>Shrink Only</source>
-        <translation>Μόνο σμίκρυνση</translation>
+        <translation>Reduzir Apenas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2081"/>
         <source>Enlarge Only</source>
-        <translation>Μόνο μεγέθυνση</translation>
+        <translation>Ampliar Apenas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2097"/>
         <source>Orientation</source>
-        <translation type="unfinished"></translation>
+        <translation>Orientação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2100"/>
         <source>Do &amp;Not Rotate</source>
-        <translation>Μην Περιστρέψεις</translation>
+        <translation>&amp;Não girar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2102"/>
         <source>90%1 Counter Clockwise</source>
-        <translation type="unfinished"></translation>
+        <translation>90%1 à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2103"/>
         <source>90%1 Clockwise</source>
-        <translation>90%1 Δεξιόστροφα</translation>
+        <translation>90%1 à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2104"/>
@@ -3304,17 +3308,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2113"/>
         <source>Transformations</source>
-        <translation>Μετασχηματισμοί</translation>
+        <translation>Transformações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2116"/>
         <source>&amp;Crop from Metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Re&amp;cortar dos meta-dados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2119"/>
         <source>&amp;Crop Rectangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Re&amp;cortar Retângulo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2121"/>
@@ -3324,12 +3328,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2195"/>
         <source>inactive</source>
-        <translation>ανενεργό</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2201"/>
         <source>Resize by: %1%</source>
-        <translation>Αλλαγή μεγέθους κατά:%1%</translation>
+        <translation>Redimensionar por: %1%</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2205"/>
@@ -3339,17 +3343,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2211"/>
         <source>Resize %1 to: %2 px</source>
-        <translation>Αλλαγή μεγέθους %1 σε: %2 px</translation>
+        <translation>Redimensionar %1 para: %2 px</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2219"/>
         <source>Rotating by: %1</source>
-        <translation>Περιστροφή κατά:%1%</translation>
+        <translation>Girar em: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2225"/>
         <source>Crop</source>
-        <translation>Αποκοπή</translation>
+        <translation>Recortar</translation>
     </message>
 </context>
 <context>
@@ -3357,27 +3361,27 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2502"/>
         <source>next</source>
-        <translation>επόμενη</translation>
+        <translation>seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2507"/>
         <source>previous</source>
-        <translation>προηγούμενη</translation>
+        <translation>anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2527"/>
         <source>Input</source>
-        <translation>Είσοδος</translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2527"/>
         <source>no files selected</source>
-        <translation>δεν επιλεχθηκαν αρχεια</translation>
+        <translation>nenhum arquivo selecionado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2534"/>
         <source>Adjustments</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2534"/>
@@ -3385,108 +3389,109 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
         <location filename="../src/DkGui/DkBatch.cpp" line="2541"/>
         <location filename="../src/DkGui/DkBatch.cpp" line="2551"/>
         <source>inactive</source>
-        <translation>ανενεργό</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2537"/>
         <source>Transform</source>
-        <translation>Μετασχηματισμός</translation>
+        <translation>Transformar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2541"/>
         <source>Plugins</source>
-        <translation>Ενθετα</translation>
+        <translation>Extras</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2545"/>
         <source>Output</source>
-        <translation>Έξοδος</translation>
+        <translation>Destino</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2545"/>
         <source>not set</source>
-        <translation>δεν έχει οριστεί</translation>
+        <translation>não definido</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2551"/>
         <source>Profiles</source>
-        <translation>Προφίλ</translation>
+        <translation>Perfis</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2721"/>
         <source>Please select files for processing.</source>
-        <translation>Παρακαλούμε επιλέξτε αρχεία για επεξεργασία.</translation>
+        <translation>Por favor selecione os arquivos.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2729"/>
         <source>I am missing a widget.</source>
-        <translation type="unfinished"></translation>
+        <translation>Está em falta um widget.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2742"/>
         <source>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</source>
-        <translation>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</translation>
+        <translation>Ative a opção &apos;Sobrescrever Arquivos Existentes&apos; ou escolha um diretório diferente.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2763"/>
         <source>Create Output Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar pasta de destino</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2764"/>
         <source>Should I create:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Devo criar:
+%1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2780"/>
         <source>Please select an output directory.</source>
-        <translation>Παρακαλώ επιλέξτε φάκελο αποθήκευσης.</translation>
+        <translation>Por favor escolha a pasta de destino.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2785"/>
         <source>Sorry, I cannot create %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível criar %1.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2791"/>
         <source>Sorry, I cannot find files to process.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foram encontrados arquivos para processar.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2796"/>
         <source>Sorry, the file pattern is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, o arquivo modelo está vazio.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2808"/>
         <source>Sorry, I cannot start processing - please check the configuration.</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, não é possível iniciar o processamento - por favor, verifique a configuração.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2852"/>
         <source>Canceling...</source>
-        <translation>Ακύρωση...</translation>
+        <translation>Cancelando...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2902"/>
         <source>%1/%2 files processed... %3 failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1/%2 arquivos processados... %3 falha(s).</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2931"/>
         <source>Batch Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log do Processamento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="3004"/>
         <source>Error</source>
-        <translation>Σφαλμα</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="3004"/>
         <source>Sorry, I cannot save the settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, não foi possível salvar as configurações...</translation>
     </message>
 </context>
 <context>
@@ -3494,7 +3499,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="294"/>
         <source>Sigma</source>
-        <translation type="unfinished"></translation>
+        <translation>Sigma</translation>
     </message>
 </context>
 <context>
@@ -3502,12 +3507,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="301"/>
         <source>Choose Root Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolher diretório raiz</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="329"/>
         <source>Browse</source>
-        <translation type="unfinished">Αναζήτηση</translation>
+        <translation>Procurar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="335"/>
@@ -3520,47 +3525,47 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="276"/>
         <source>Go to Tab</source>
-        <translation>&amp; Μεταβείτε στην καρτέλα</translation>
+        <translation>Ir para a aba</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="277"/>
         <source>Go to tab number: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ir para a aba número: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="528"/>
         <source>General</source>
-        <translation>Γενικά</translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="535"/>
         <source>Display</source>
-        <translation>Οθόνη</translation>
+        <translation>Exibição</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="542"/>
         <source>File</source>
-        <translation>&amp; Αρχείο</translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="549"/>
         <source>File Associations</source>
-        <translation>Συσχετίσεις αρχείων</translation>
+        <translation>Associação de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="556"/>
         <source>Advanced</source>
-        <translation>Για προχωρημένους</translation>
+        <translation>Avançado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="563"/>
         <source>Editor</source>
-        <translation>Πρόγραμμα επεξεργασίας</translation>
+        <translation>Editor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1139"/>
         <source>I could not load &quot;%1&quot;</source>
-        <translation>I could not load &quot;%1&quot;</translation>
+        <translation>Não foi possível abrir &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1209"/>
@@ -3626,17 +3631,17 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1241"/>
         <source>Sorry, I could not drop the content.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível inserir o conteúdo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1345"/>
         <source>Save File</source>
-        <translation>Αποθήκευση αρχείου</translation>
+        <translation>Salvar arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1356"/>
         <source>%1 vec files merged</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 arquivos unidos</translation>
     </message>
 </context>
 <context>
@@ -3644,17 +3649,17 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4436"/>
         <source>Remember Monitor Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Lembrar as Configurações do Monitor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4440"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4441"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -3662,12 +3667,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkNetwork.cpp" line="251"/>
         <source>connected with: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ligado a: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNetwork.cpp" line="253"/>
         <source>disconnected with: </source>
-        <translation type="unfinished"></translation>
+        <translation>Desligado de: </translation>
     </message>
 </context>
 <context>
@@ -3675,7 +3680,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="371"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Reiniciar</translation>
     </message>
 </context>
 <context>
@@ -3683,7 +3688,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="103"/>
         <source>Drag the slider downwards for elimination</source>
-        <translation type="unfinished"></translation>
+        <translation>Arraste o controle deslizante para baixo para eliminação</translation>
     </message>
 </context>
 <context>
@@ -3691,7 +3696,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1163"/>
         <source>Click here to add notes</source>
-        <translation>Κάνε κλικ εδώ για να προσθέσεις σημειώσεις</translation>
+        <translation>Clique aqui para adicionar notas</translation>
     </message>
 </context>
 <context>
@@ -3699,22 +3704,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1180"/>
         <source>NOTES</source>
-        <translation>ΣΗΜΕΙΏΣΕΙΣ</translation>
+        <translation>Notas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1197"/>
         <source>Enter your notes here. They will be saved to the image metadata.</source>
-        <translation>Γράψε τις σημειώσεις σου εδώ. Θα αποθηκευτούν στα μεταδεδομένα της εικόνας.</translation>
+        <translation>Escreva aqui as notas. As notas serão salvar nos meta-dados.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1219"/>
         <source>Save Note (CTRL + ENTER)</source>
-        <translation>Αποθηκεύση Σημείωσης (CTRL + ENTER)</translation>
+        <translation>Salvar nota (CTRL + ENTER)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1212"/>
         <source>Discard Changes (ESC)</source>
-        <translation>Απόρριψη των αλλαγών (ESC)</translation>
+        <translation>Descartar alterações (ESC)</translation>
     </message>
 </context>
 <context>
@@ -3722,22 +3727,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="174"/>
         <source>JPG Settings</source>
-        <translation>Ρυθμίσεις JPG</translation>
+        <translation>Preferências JPG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="176"/>
         <source>J2K Settings</source>
-        <translation>Ρυθμίσεις J2K</translation>
+        <translation>Preferências J2K</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="184"/>
         <source>WebP Settings</source>
-        <translation>Ρυθμίσεις WebP</translation>
+        <translation>Preferências WebP</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="192"/>
         <source>AVIF Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações de AVIF</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="202"/>
@@ -3747,92 +3752,92 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="210"/>
         <source>Save for Web</source>
-        <translation>Αποθήκευση για το Web</translation>
+        <translation>Salvar para Web</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="222"/>
         <source>Original</source>
-        <translation>Αρχικό</translation>
+        <translation>Original</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="224"/>
         <source>New</source>
-        <translation>Νεο</translation>
+        <translation>Nova</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="245"/>
         <source>Small  (800 x 600)</source>
-        <translation>Μικρό (800 x 600)</translation>
+        <translation>Pequena (800 x 600)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="246"/>
         <source>Medium (1024 x 786)</source>
-        <translation>Μεσαίο (1024 x 786)</translation>
+        <translation>Média (1024 x 786)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="247"/>
         <source>Large  (1920 x 1080)</source>
-        <translation>Μεγάλο (1920 x 1080)</translation>
+        <translation>Grande (1920 x 1080)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="248"/>
         <source>Original Size</source>
-        <translation>Αρχικό μέγεθος</translation>
+        <translation>Tamanho original</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="253"/>
         <source>Best Quality</source>
-        <translation>Βέλτιστη Ποιότητα</translation>
+        <translation>Melhor Qualidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="254"/>
         <source>High Quality</source>
-        <translation>Υψηλή Ποιότητα</translation>
+        <translation>Qualidade Alta</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="255"/>
         <source>Medium Quality</source>
-        <translation>Μέτρια Ποιότητα</translation>
+        <translation>Qualidade Média</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="256"/>
         <source>Low Quality</source>
-        <translation>Χαμηλή Ποιότητα</translation>
+        <translation>Qualidade Baixa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="257"/>
         <source>Bad Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade baixa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="265"/>
         <source>Lossless Compression</source>
-        <translation>Μη απωλεστική συμπίεση</translation>
+        <translation>Compressão sem perdas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="272"/>
         <source>Background Color</source>
-        <translation>Χρώμα φόντου</translation>
+        <translation>Cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="295"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="298"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="418"/>
         <source>File Size: --</source>
-        <translation>Μέγεθος αρχείου:--</translation>
+        <translation>Tamanho: --</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="435"/>
         <source>File Size: ~%1</source>
-        <translation>Μέγεθος αρχείου: ~%1</translation>
+        <translation>Tamanho: ~%1</translation>
     </message>
 </context>
 <context>
@@ -3840,7 +3845,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="346"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">Συγνώμη, δεν μπορώ να αποθηκεύσω παρατηρήσεις για αυτήν τη μορφή εικόνας.</translation>
+        <translation type="unfinished">Não é possível salvar comentários neste formato de arquivo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="349"/>
@@ -3850,12 +3855,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="592"/>
         <source>Closing Plugin</source>
-        <translation>Κλείσιμο ενθετου</translation>
+        <translation>Fechar extras</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="593"/>
         <source>Apply plugin changes?</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar alterações?</translation>
     </message>
 </context>
 <context>
@@ -3863,87 +3868,87 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="889"/>
         <source>Crop (ENTER)</source>
-        <translation>Αποκοπή (ENTER)</translation>
+        <translation>Recortar (ENTER)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="893"/>
         <source>Cancel (ESC)</source>
-        <translation>Ακύρωση (ESC)</translation>
+        <translation>Cancelar (ESC)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="897"/>
         <source>Pan</source>
-        <translation type="unfinished"></translation>
+        <translation>Pan</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="905"/>
         <source>User Defined</source>
-        <translation type="unfinished"></translation>
+        <translation>Definido pelo usuário</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="906"/>
         <source>No Aspect Ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Sem taxa de aspecto</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="913"/>
         <source>Horizontal Constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>Restrição horizontal</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="920"/>
         <source>Swap</source>
-        <translation type="unfinished"></translation>
+        <translation>Trocar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="921"/>
         <source>Swap Dimensions</source>
-        <translation type="unfinished"></translation>
+        <translation>Trocar dimensões</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="927"/>
         <source>Vertical Constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>Restrição vertical</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="948"/>
         <source>Background Color</source>
-        <translation>Χρώμα φόντου</translation>
+        <translation>Cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="958"/>
         <source>Guides</source>
-        <translation type="unfinished"></translation>
+        <translation>Guias</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="958"/>
         <source>Rule of Thirds</source>
-        <translation type="unfinished"></translation>
+        <translation>Regra dos Thirds</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="958"/>
         <source>Grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Grelha</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="961"/>
         <source>Show Guides in the Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar guias na pré-visualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="968"/>
         <source>Invert Crop Tool Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Inverter cor da ferramenta de corte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="973"/>
         <source>Show Info</source>
-        <translation>Εμφάνιση πληροφοριών</translation>
+        <translation>Mostrar informações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="978"/>
         <source>Crop to Metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Recortar para meta-dados</translation>
     </message>
 </context>
 <context>
@@ -3951,7 +3956,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2023"/>
         <source>Crop Toolbar</source>
-        <translation>Γραμμή Εργαλείου Αποκοπής</translation>
+        <translation>Barra de ferramentas de corte</translation>
     </message>
 </context>
 <context>
@@ -3959,7 +3964,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1003"/>
         <source>No metadata available!</source>
-        <translation type="unfinished"></translation>
+        <translation>Meta-dados não disponíveis!</translation>
     </message>
 </context>
 <context>
@@ -3967,17 +3972,17 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4133"/>
         <source>Preview</source>
-        <translation>Προεπισκόπιση</translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4148"/>
         <source>Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Atalhos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4193"/>
         <source>Mosaic</source>
-        <translation type="unfinished"></translation>
+        <translation>Mosaico</translation>
     </message>
 </context>
 <context>
@@ -3985,12 +3990,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2513"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2528"/>
         <source>Open an Image Directory</source>
-        <translation>Άνοιγμα ενός Φακέλου Εικόνων</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
 </context>
 <context>
@@ -3998,197 +4003,197 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="732"/>
         <source>Invert mouse wheel behaviour for zooming</source>
-        <translation type="unfinished"></translation>
+        <translation>Inverter o comportamento da roda do mouse ao ampliar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="733"/>
         <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o comportamento da roda do mouse ao ampliar uma imagem será invertido.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="738"/>
         <source>Display Images with High Quality Anti Aliasing</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Imagens em Alta Qualidade e Antisserrilhamento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="739"/>
         <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-        <translation type="unfinished"></translation>
+        <translation>NOTA: se marcado, talvez nomacs fique lento enquanto se dá zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="744"/>
         <source>Show Scrollbars when zooming into images</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Barras de Rolamento enquanto se dá zoom em imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="745"/>
         <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se marcado, aparecerão barras de rolamento que permitem arrastar as imagens com o mouse.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="749"/>
         <source>Show pixels if zoom level is above</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostar pixels se o nível de ampliação estiver acima do limite</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="752"/>
         <source>nomacs will not interpolate images if the zoom level is larger.</source>
-        <translation type="unfinished"></translation>
+        <translation>nomacs.não interpolará imagens se o nível de ampliação estiver maior.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="764"/>
         <source>Use Fixed Zoom Levels</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar Níveis de Zoom Fixos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="765"/>
         <source>If checked, predefined zoom levels are used when zooming.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se marcado, são usados os níveis predefinidos de zoom quando dado um.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="773"/>
         <source>Load Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar o Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="785"/>
         <source>Zoom</source>
-        <translation>Zoom</translation>
+        <translation>Ampliação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="797"/>
         <source>Always keep zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Manter sempre ampliação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="798"/>
         <source>Keep zoom if the size is the same</source>
-        <translation type="unfinished"></translation>
+        <translation>Manter ampliação se o tamanho for igual</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="800"/>
         <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o nível de ampliação será mantido apenas se a imagem carregada tiver o mesmo nível da anterior.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="801"/>
         <source>Never keep zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Nunca manter ampliação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="803"/>
         <source>Always zoom to fit</source>
-        <translation>Πάντα προβολή της εικόνας στο μέγεθος του παραθύρου</translation>
+        <translation>Sempre ajustar para caber</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="816"/>
         <source>When Displaying New Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Ao mostrar novas imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="824"/>
         <source>Define the icon size in pixel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir o tamanho em pixeis.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="834"/>
         <source>Icon Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho do ícone</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="838"/>
         <source>Show Navigation Arrows</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Setas de Navegação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="839"/>
         <source>If checked, navigation arrows will be displayed on top of the image</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, setas de navegação serão mostradas sobre a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="843"/>
         <source>Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation>Navegação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="847"/>
         <source>Image Transition</source>
-        <translation type="unfinished"></translation>
+        <translation>Transição de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="851"/>
         <source>Choose a transition when loading a new image</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha a transição a ser usada ao carregar a nova imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="858"/>
         <source>Unknown Transition</source>
-        <translation type="unfinished"></translation>
+        <translation>Transição desconhecida</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="862"/>
         <source>Appear</source>
-        <translation type="unfinished"></translation>
+        <translation>Aparecer</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="865"/>
         <source>Swipe</source>
-        <translation type="unfinished"></translation>
+        <translation>Deslizar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="868"/>
         <source>Fade</source>
-        <translation type="unfinished"></translation>
+        <translation>Desvanecer</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="877"/>
         <source>Define the image transition speed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Define a velocidade da transição.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="888"/>
         <source>Always Animate Image Loading</source>
-        <translation type="unfinished"></translation>
+        <translation>Animar imagem ao carregar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="889"/>
         <source>If unchecked, loading is only animated if nomacs is fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Se desativado, o carregamento apenas será animado se estiver no modo de tela cheia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="893"/>
         <source>Display Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar durante</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="896"/>
         <source>Define the time an image is displayed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Define o tempo que uma imagem é mostrada.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="907"/>
         <source>Show Player</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Player</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="911"/>
         <source>Slideshow</source>
-        <translation>Αυτόματη Προβολή</translation>
+        <translation>Apresentação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="921"/>
         <source>Show crop rectangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar caixa de recorte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="925"/>
         <source>Show Metadata Cropping</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar metadados de corte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="967"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>Παρακαλώ επανεκκινήστε το nomacs για να εφαρμοστούν οι αλλαγές</translation>
+        <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
 </context>
 <context>
@@ -4196,22 +4201,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="372"/>
         <source>Open Image</source>
-        <translation type="unfinished">Άνοιγμα Εικόνας</translation>
+        <translation>Abrir imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="469"/>
         <source>Editable</source>
-        <translation>Επεξεργασιμο</translation>
+        <translation>Editável</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="475"/>
         <source>Open Selected Image</source>
-        <translation>Άνοιγμα Επιλεγμένης Εικόνας</translation>
+        <translation>Abrir imagem selecionada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="485"/>
         <source>Adjust Columns</source>
-        <translation>Προσαρμογή Στηλών</translation>
+        <translation>Ajustar colunas</translation>
     </message>
 </context>
 <context>
@@ -4219,83 +4224,83 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2425"/>
         <source>Export Multi-Page TIFF</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportação TIFF de várias páginas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2469"/>
         <source>Multi-Page TIFF:</source>
-        <translation type="unfinished"></translation>
+        <translation>TIFF de várias páginas:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2472"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="2481"/>
         <source>&amp;Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;xplorar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2475"/>
         <source>No Multi-Page TIFF loaded</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum arquivo TIFF carregado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2478"/>
         <source>Save Folder:</source>
-        <translation>Αποθηκευση φακελλου:</translation>
+        <translation>Pasta para salvar:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2484"/>
         <source>Specify a Save Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Especifique a pasta para salvar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2487"/>
         <source>Filename:</source>
-        <translation>Όνομα αρχείου:</translation>
+        <translation>Nome de arquivo:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2498"/>
         <source>Export Pages</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar páginas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2505"/>
         <source>Overwrite</source>
-        <translation type="unfinished"></translation>
+        <translation>Substituir</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2537"/>
         <source>&amp;Export</source>
-        <translation>Εξαγωγη</translation>
+        <translation>&amp;Exportar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2538"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2556"/>
         <source>Open TIFF</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir TIFF</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2574"/>
         <source>Open an Image Directory</source>
-        <translation>Άνοιγμα ενός Φακέλου Εικόνων</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2658"/>
         <source>%1 exists, skipping...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 existe, ignorando...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2663"/>
         <source>Sorry, I could not load page: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível carregar a página: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2673"/>
         <source>Sorry, I could not save: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível salvar %1</translation>
     </message>
 </context>
 <context>
@@ -4303,17 +4308,17 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="603"/>
         <source>Exposure</source>
-        <translation type="unfinished"></translation>
+        <translation>Exposição</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="610"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Deslocamento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="617"/>
         <source>Gamma</source>
-        <translation>Γαμμα</translation>
+        <translation>Gama</translation>
     </message>
 </context>
 <context>
@@ -4321,38 +4326,38 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1259"/>
         <source>Filter</source>
-        <translation>Φιλτρο</translation>
+        <translation>Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1260"/>
         <source>Browse</source>
-        <translation>Αναζήτηση</translation>
+        <translation>Procurar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1261"/>
         <source>Register</source>
-        <translation>Πιστοποιηση</translation>
+        <translation>Registar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1280"/>
         <source>Set File Associations</source>
-        <translation type="unfinished"></translation>
+        <translation>Estabelecer Associações de Arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1283"/>
         <source>Set as Default Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizar como visualizador padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1300"/>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1312"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>Παρακαλώ επανεκκινήστε το nomacs για να εφαρμοστούν οι αλλαγές</translation>
+        <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1377"/>
         <source>Image</source>
-        <translation>Εικονα</translation>
+        <translation>Imagem</translation>
     </message>
 </context>
 <context>
@@ -4360,13 +4365,14 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1123"/>
         <source>Info Box</source>
-        <translation type="unfinished"></translation>
+        <translation>Caixa de informações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1124"/>
         <source>All information fields are currently hidden.
 Do you want to show them again?</source>
-        <translation type="unfinished"></translation>
+        <translation>Os campos de informação estão ocultos.
+Pretende mostrar os campos?</translation>
     </message>
 </context>
 <context>
@@ -4374,97 +4380,97 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1068"/>
         <source>Screenshots are automatically saved to this folder</source>
-        <translation type="unfinished"></translation>
+        <translation>As capturas de tela serão salvas nesta pasta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1070"/>
         <source>Use Temporary Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizar pasta temporária</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1085"/>
         <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-        <translation type="unfinished"></translation>
+        <translation>Recomendamos definir um valor de cache moderado de cerca de 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1090"/>
         <source>Maximal Cache Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho máximo de cache</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1104"/>
         <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-        <translation type="unfinished"></translation>
+        <translation>Recomendamos definir um valor moderado para o histórico de edição de cerca de 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1109"/>
         <source>History Size</source>
-        <translation>Μεγεθος ιστορικου</translation>
+        <translation>Tamanho do histórico</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1115"/>
         <source>Skip Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorar imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1116"/>
         <source>Images are skipped until the Next key is released</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagens são ignoradas enquanto estiver pressionada a tecla Próxima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1117"/>
         <source>Wait for Images to be Loaded</source>
-        <translation type="unfinished"></translation>
+        <translation>Esperar pelo carregamento das imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1118"/>
         <source>The next image is loaded after the current image is shown.</source>
-        <translation type="unfinished"></translation>
+        <translation>A próxima imagem é carregada após a exibição da atual.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1129"/>
         <source>Image Loading Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Política de carregamento de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1135"/>
         <source>Load Saved Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar Imagens Salvas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1136"/>
         <source>After saving, the saved image will be loaded in place</source>
-        <translation type="unfinished"></translation>
+        <translation>Após salvar, a imagem será carregada no lugar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1137"/>
         <source>Load to Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar para Aba</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1138"/>
         <source>After saving, the saved image will be loaded to a tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Após salvar, a imagem carregada será carregada pruma aba.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1139"/>
         <source>Do Nothing</source>
-        <translation type="unfinished"></translation>
+        <translation>Não faça nada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1140"/>
         <source>The saved image will not be loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem salva não será carregada.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1148"/>
         <source>Image Saving Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Políticas de Salvar Imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1163"/>
         <source>Number of Skipped Images on PgUp/PgDown</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de imagens ignoradas com PgUp/PgDown</translation>
     </message>
 </context>
 <context>
@@ -4472,62 +4478,62 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="228"/>
         <source>Show Left</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="229"/>
         <source>Shows the Thumbnail Bar on the Left</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar barra de miniaturas à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="232"/>
         <source>Show Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar em cima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="233"/>
         <source>Shows the Thumbnail Bar at the Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar barra de miniaturas em cima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="236"/>
         <source>Show Right</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="237"/>
         <source>Shows the Thumbnail Bar on the Right</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar barra de miniaturas à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="240"/>
         <source>Show Bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar em baixo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="241"/>
         <source>Shows the Thumbnail Bar at the Bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar barra de miniaturas em baixo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="244"/>
         <source>Undock</source>
-        <translation type="unfinished"></translation>
+        <translation>Desacoplar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="245"/>
         <source>Undock the thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Desacoplar as miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="248"/>
         <source>File Preview Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menu de pré-visualização de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="635"/>
         <source>CTRL+Zoom resizes the thumbnails</source>
-        <translation>CTRL+Zoom αλλάζει το μέγεθος των μικρογραφιών</translation>
+        <translation>CTRL+Roda do mouse redimensiona as miniaturas</translation>
     </message>
 </context>
 <context>
@@ -4535,57 +4541,57 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="552"/>
         <source>Current Filename</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome atual do arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="553"/>
         <source>Text</source>
-        <translation>Κείμενο</translation>
+        <translation>Texto</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="554"/>
         <source>Number</source>
-        <translation>Αριθμός</translation>
+        <translation>Número</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="560"/>
         <source>Keep Case</source>
-        <translation type="unfinished"></translation>
+        <translation>Manter capitalização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="561"/>
         <source>To lowercase</source>
-        <translation>Σε πεζά</translation>
+        <translation>Minúsculas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="562"/>
         <source>To UPPERCASE</source>
-        <translation>Σε ΚΕΦΑΛΑΙΑ</translation>
+        <translation>Maiúsculas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="573"/>
         <source>1 digit</source>
-        <translation type="unfinished"></translation>
+        <translation>1 dígito</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="574"/>
         <source>2 digits</source>
-        <translation type="unfinished"></translation>
+        <translation>2 dígitos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="575"/>
         <source>3 digits</source>
-        <translation type="unfinished"></translation>
+        <translation>3 dígitos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="576"/>
         <source>4 digits</source>
-        <translation type="unfinished"></translation>
+        <translation>4 dígitos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="577"/>
         <source>5 digits</source>
-        <translation>5 ψηφία</translation>
+        <translation>5 dígitos</translation>
     </message>
 </context>
 <context>
@@ -4611,17 +4617,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3687"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3688"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3697"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Salvar miniaturas</translation>
     </message>
 </context>
 <context>
@@ -4629,17 +4635,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="303"/>
         <source>Icon Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor do ícone</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="305"/>
         <source>Background Color</source>
-        <translation>Χρώμα φόντου</translation>
+        <translation>Cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="306"/>
         <source>Fullscreen Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor em tela cheia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="281"/>
@@ -4680,52 +4686,52 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="370"/>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="640"/>
         <source>Reset All Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Resetar todas as preferências</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="374"/>
         <source>&amp;Import Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Importar Configurações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="378"/>
         <source>&amp;Export Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Exportar Configurações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="382"/>
         <source>Default Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Preferências padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="397"/>
         <source>Show Recent Files on Start-Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar arquivos recentes ao iniciar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="398"/>
         <source>Show the History Panel on Start-Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar painel de histórico ao iniciar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="402"/>
         <source>Remember Recent Files History</source>
-        <translation type="unfinished"></translation>
+        <translation>Lembrar histórico de arquivos recentes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="403"/>
         <source>If checked, recent files will be saved.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, os arquivos recentes serão memorizados.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="407"/>
         <source>Check for Duplicates on Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificar por Duplicatas ao Abrir</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="409"/>
         <source>If any files are opened which are already open in a tab, don&apos;t open them again.</source>
-        <translation>If any files are opened which are already open in a tab, don&apos;t open them again.</translation>
+        <translation>Não abrir novamente arquivos que já estejam abertos em uma aba.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="413"/>
@@ -4740,62 +4746,62 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="421"/>
         <source>Show extra options related to tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar opções extras relacionadas às abas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="423"/>
         <source>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</source>
-        <translation>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</translation>
+        <translation>Ativa as opções &quot;Ir para Aba&quot;, &quot;Primeira Aba[=-quot;-=]}, e &quot;Última Aba&quot; no menu Visualizar, e as opções &quot;Abrir Abas&quot; e &quot;Salvar Abas&quot; no menu Arquivo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="429"/>
         <source>Loop Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagens em ciclo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="430"/>
         <source>Start with the first image in a folder after showing the last.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar a primeira imagem da pasta após mostrar a última.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="434"/>
         <source>Mouse Wheel Zooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Ampliar/reduzir com a roda do mouse</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="435"/>
         <source>If checked, the mouse wheel zooms - otherwise it is used to switch between images.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, a roda do mouse amplia/reduz a imagem, caso contrário servirá para trocar de imagem.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="439"/>
         <source>Next Image on Horizontal Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Próxima Imagem em Zoom Horizontal</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="440"/>
         <source>If checked, horizontal wheel events load the next/previous images.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, mover a roda do mouse carrega a imagem próxima/anterior.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="444"/>
         <source>Double Click Opens Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplo clique para tela cheia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="445"/>
         <source>If checked, a double click on the canvas opens the fullscreen mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o duplo clique ativa o modo de tela cheia.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="452"/>
         <source>Show Background Image</source>
-        <translation>Δείξε εικόνα φόντου</translation>
+        <translation>Mostrar imagem de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="453"/>
         <source>If checked, the nomacs logo is shown in the bottom right corner.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o logotipo do nomacs é mostrado no canto inferior direito.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="457"/>
@@ -4810,22 +4816,22 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="464"/>
         <source>Switch CTRL with ALT</source>
-        <translation type="unfinished"></translation>
+        <translation>Trocar Ctrl por Alt</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="465"/>
         <source>If checked, CTRL + Mouse is switched with ALT + Mouse.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o atalho Ctrl+Mouse será substituído por Alt+Mouse.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="469"/>
         <source>Close on ESC</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar com ESC</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="470"/>
         <source>Close nomacs if ESC is pressed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar o nomacs ao pressionar a tecla ESC.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="474"/>
@@ -4840,22 +4846,22 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="479"/>
         <source>Check For Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Procurar atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="480"/>
         <source>Check for updates on start-up.</source>
-        <translation type="unfinished"></translation>
+        <translation>Procurar atualizações ao iniciar.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="485"/>
         <source>General</source>
-        <translation>Γενικά</translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="506"/>
         <source>Choose your preferred language.</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha o seu idioma preferido.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="515"/>
@@ -4865,37 +4871,37 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="517"/>
         <source>Info on how to translate nomacs.</source>
-        <translation>Πληροφορίες για το πως να μεταφράσετε το nomacs.</translation>
+        <translation>Como ajudar a traduzir o nomacs.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="520"/>
         <source>Language</source>
-        <translation>Γλωσσα</translation>
+        <translation>Idioma</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="541"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>Παρακαλώ επανεκκινήστε το nomacs για να εφαρμοστούν οι αλλαγές</translation>
+        <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="641"/>
         <source>This will reset all personal settings!</source>
-        <translation type="unfinished"></translation>
+        <translation>Isto irá remover todas as preferências personalizadas!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="654"/>
         <source>Import Settings</source>
-        <translation>Εισαγωγη ρυθμισεων</translation>
+        <translation>Configurações de Importação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="672"/>
         <source>Export Settings</source>
-        <translation>Εξαγωγη ρυθμισεων</translation>
+        <translation>Configurações de Exportação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="696"/>
         <source>Settings exported</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações exportadas</translation>
     </message>
 </context>
 <context>
@@ -4903,32 +4909,32 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2748"/>
         <source>Set As Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir como Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2805"/>
         <source>Profile Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Perfil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2806"/>
         <source>Profile Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Perfil:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2817"/>
         <source>Profile Already Exists</source>
-        <translation type="unfinished"></translation>
+        <translation>O Perfil Já Existe</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2818"/>
         <source>Do you want to overwrite %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseja sobrescrever %1?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2881"/>
         <source>No Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Sem Perfis</translation>
     </message>
 </context>
 <context>
@@ -4937,7 +4943,7 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkUtils.cpp" line="389"/>
         <source>English</source>
         <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
-        <translation>Ελληνικά</translation>
+        <translation>Português (Brasil)</translation>
     </message>
 </context>
 <context>
@@ -4945,12 +4951,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2095"/>
         <source>Show Statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Estatísticas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2100"/>
         <source>Histogram Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações do Histograma</translation>
     </message>
 </context>
 <context>
@@ -4958,12 +4964,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1376"/>
         <source>Show previous image</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar imagem anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1383"/>
         <source>Show next image</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar imagem seguinte</translation>
     </message>
 </context>
 <context>
@@ -4971,17 +4977,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="545"/>
         <source>Hue</source>
-        <translation type="unfinished"></translation>
+        <translation>Matiz</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="552"/>
         <source>Saturation</source>
-        <translation>Κορεσμος</translation>
+        <translation>Saturação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="559"/>
         <source>Brightness</source>
-        <translation type="unfinished"></translation>
+        <translation>Brilho</translation>
     </message>
 </context>
 <context>
@@ -4989,46 +4995,48 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="561"/>
         <source>Sorry, the file: %1 does not exist... </source>
-        <translation type="unfinished"></translation>
+        <translation>Parece que o arquivo %1 já não existe... </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="566"/>
         <source>Sorry, you are not allowed to read: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não tem permissões para ler %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="685"/>
         <source>updated...</source>
-        <translation type="unfinished"></translation>
+        <translation>atualizado...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="693"/>
         <source>Sorry, I could not load: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível carregar %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="744"/>
         <source>Sorry, I could not download:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível baixar:
+%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="815"/>
         <source>I can&apos;t save an empty file, sorry...
 </source>
-        <translation>I can&apos;t save an empty file, sorry...
+        <translation>Não é possível salvar um arquivo vazio...
 </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="820"/>
         <source>Sorry, the directory: %1  does not exist
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Parece que a pasta %1 não existe
+</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="825"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation>Sorry, I can&apos;t write to the file: %1</translation>
+        <translation>Não foi possível salvar o arquivo: %1</translation>
     </message>
 </context>
 <context>
@@ -5037,73 +5045,76 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="161"/>
         <source>%1 
  does not contain any image</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 
+ não possui imagens</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="465"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="525"/>
         <source>You have reached the beginning</source>
-        <translation type="unfinished"></translation>
+        <translation>Atingiu a imagem inicial</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="471"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="529"/>
         <source>You have reached the end</source>
-        <translation type="unfinished"></translation>
+        <translation>Atingiu a imagem final</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="620"/>
         <source>Save Image</source>
-        <translation>Αποθηκευση εικονας</translation>
+        <translation>Salvar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="621"/>
         <source>Do you want to save changes to:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Pretende salvar as alterações de:
+%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="732"/>
         <source>sorry, %1 does not exist anymore...</source>
-        <translation type="unfinished"></translation>
+        <translation>Parece que %1 já não existe...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="750"/>
         <source>Sorry, I could not find the GPS coordinates...</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível encontrar as coordenadas GPS...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="816"/>
         <source>%1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 de %2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="877"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="928"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1004"/>
         <source>Save File %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar arquivo %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="943"/>
         <source>Sorry, I could not copy the image...</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível copiar a imagem...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="989"/>
         <source>Overwrite File</source>
-        <translation type="unfinished"></translation>
+        <translation>Substituir arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="990"/>
         <source>Do you want to overwrite:
 %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Pretende substituir o arquivo:
+%1?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1182"/>
         <source>Sorry, I cannot save an empty image...</source>
-        <translation type="unfinished"></translation>
+        <translation>Não pode salvar uma imagem vazia...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1314"/>
@@ -5113,23 +5124,23 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1330"/>
         <source>%1 deleted...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 apagada...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1321"/>
         <source>Sorry, I could not delete: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível apagar %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1366"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1372"/>
         <source>Rotated</source>
-        <translation type="unfinished"></translation>
+        <translation>Giradas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1566"/>
         <source>Error</source>
-        <translation>Σφαλμα</translation>
+        <translation>Erro</translation>
     </message>
 </context>
 <context>
@@ -5137,12 +5148,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp" line="1537"/>
         <source>Anti Aliasing Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Anti-aliasing ativo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp" line="1537"/>
         <source>Anti Aliasing Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Anti-aliasing inativo</translation>
     </message>
 </context>
 <context>
@@ -5150,22 +5161,22 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="774"/>
         <source>Uninstall</source>
-        <translation>Απεγκατάσταση</translation>
+        <translation>Desinstalar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="788"/>
         <source>Name</source>
-        <translation>Ονομα</translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="790"/>
         <source>Version</source>
-        <translation>Εκδοση</translation>
+        <translation>Versão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="792"/>
         <source>Uninstall plugin</source>
-        <translation>Απεγκατασταση ενθετου</translation>
+        <translation>Desinstalar extra</translation>
     </message>
 </context>
 <context>
@@ -5173,7 +5184,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.h" line="838"/>
         <source>Drag Items Here</source>
-        <translation type="unfinished"></translation>
+        <translation>Arraste os itens para aqui</translation>
     </message>
 </context>
 <context>
@@ -5181,7 +5192,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkMessageBox.cpp" line="117"/>
         <source>Remember my choice</source>
-        <translation type="unfinished"></translation>
+        <translation>Memorizar escolha</translation>
     </message>
 </context>
 <context>
@@ -5189,27 +5200,27 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="67"/>
         <source>Image Size</source>
-        <translation>Μέγεθος εικόνας</translation>
+        <translation>Tamanho da imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="68"/>
         <source>Orientation</source>
-        <translation type="unfinished"></translation>
+        <translation>Orientação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="69"/>
         <source>Make</source>
-        <translation type="unfinished"></translation>
+        <translation>Marca</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="70"/>
         <source>Model</source>
-        <translation type="unfinished"></translation>
+        <translation>Modelo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="71"/>
         <source>Aperture Value</source>
-        <translation>Τιμη διαφράγματος</translation>
+        <translation>Valor de abertura</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="72"/>
@@ -5219,102 +5230,102 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="73"/>
         <source>Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>Flash</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="74"/>
         <source>Focal Length</source>
-        <translation>Εστιακη αποσταση</translation>
+        <translation>Distância focal</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="75"/>
         <source>Exposure Mode</source>
-        <translation>Τυπος εκθεσης</translation>
+        <translation>Modo de exposição</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="76"/>
         <source>Exposure Time</source>
-        <translation>Χρονος εκθεσης</translation>
+        <translation>Tempo de exposição</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="77"/>
         <source>Compression</source>
-        <translation type="unfinished"></translation>
+        <translation>Compressão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="79"/>
         <source>Rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Avaliação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="80"/>
         <source>User Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Comentários</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="81"/>
         <source>Date Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Data e hora</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="82"/>
         <source>Date Time Original</source>
-        <translation type="unfinished"></translation>
+        <translation>Data e hora original</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="83"/>
         <source>Image Description</source>
-        <translation>Περιγραφη εικόνας</translation>
+        <translation>Descrição</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="84"/>
         <source>Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Criador</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="85"/>
         <source>Creator Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título do criador</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="86"/>
         <source>City</source>
-        <translation>Πολη</translation>
+        <translation>Cidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="87"/>
         <source>Country</source>
-        <translation>Χωρα</translation>
+        <translation>País</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="88"/>
         <source>Headline</source>
-        <translation type="unfinished"></translation>
+        <translation>Cabeçalho</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="89"/>
         <source>Caption</source>
-        <translation type="unfinished"></translation>
+        <translation>Legenda</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="90"/>
         <source>Copyright</source>
-        <translation type="unfinished"></translation>
+        <translation>Direitos autorais</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="91"/>
         <source>Keywords</source>
-        <translation>Λέξεις-κλειδιά</translation>
+        <translation>Palavras-chave</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="92"/>
         <source>Path</source>
-        <translation>Διαδρομή αρχείου</translation>
+        <translation>Caminho</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="93"/>
         <source>File Size</source>
-        <translation>Μέγεθος αρχείου</translation>
+        <translation>Tamanho do arquivo</translation>
     </message>
 </context>
 <context>
@@ -5322,12 +5333,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="387"/>
         <source>Filter</source>
-        <translation>Φιλτρο</translation>
+        <translation>Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="404"/>
         <source>Thumbnail</source>
-        <translation>Μικρογραφία</translation>
+        <translation>Miniatura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="491"/>
@@ -5337,7 +5348,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Μέγεθος</translation>
+        <translation type="unfinished">Tamanho</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -5365,103 +5376,103 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="704"/>
         <source>Image Information</source>
-        <translation>Πληροφορίες Εικόνας</translation>
+        <translation>Informações da imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="759"/>
         <source>Change Entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar entradas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="760"/>
         <source>You can customize the entries displayed here.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aqui, pode personalizar as entradas mostradas.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="763"/>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1129"/>
         <source>Number of Columns</source>
-        <translation>Αριθμός στηλών</translation>
+        <translation>Número de colunas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="764"/>
         <source>Select the desired number of columns.</source>
-        <translation>Επιλογή επιθυμητού αριθμού στηλών.</translation>
+        <translation>Selecione o número de colunas.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="767"/>
         <source>Set to Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizar padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="768"/>
         <source>Reset the metadata panel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Redefinir painel de metadados.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="772"/>
         <source>Show Left</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="773"/>
         <source>Shows the Metadata on the Left</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra os metadados à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="776"/>
         <source>Show Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar em cima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="777"/>
         <source>Shows the Metadata at the Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra os metadados em cima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="780"/>
         <source>Show Right</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="781"/>
         <source>Shows the Metadata on the Right</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra os metadados à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="784"/>
         <source>Show Bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar em baixo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="785"/>
         <source>Shows the Metadata at the Bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra os metadados em baixo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1046"/>
         <source>Metadata Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menu de metadados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1099"/>
         <source>Change Metadata Entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar Metadados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1106"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1107"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1130"/>
         <source>Number of columns (-1 is default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de colunas (-1 é o padrão)</translation>
     </message>
 </context>
 <context>
@@ -5469,17 +5480,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="64"/>
         <source>Key</source>
-        <translation>Κλειδι</translation>
+        <translation>Chave</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="64"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="141"/>
         <source>Data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dados.</translation>
     </message>
 </context>
 <context>
@@ -5487,7 +5498,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="575"/>
         <source>Check All</source>
-        <translation>Ελεγχος ολων</translation>
+        <translation>Marcar tudo</translation>
     </message>
 </context>
 <context>
@@ -5495,174 +5506,174 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2737"/>
         <source>Create Mosaic Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar imagem em mosaico</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2796"/>
         <source>Darken</source>
-        <translation type="unfinished"></translation>
+        <translation>Escurecer</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2797"/>
         <source>Lighten</source>
-        <translation type="unfinished"></translation>
+        <translation>Clarear</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2798"/>
         <source>Saturation</source>
-        <translation>Κορεσμος</translation>
+        <translation>Saturação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2806"/>
         <source>Mosaic Image:</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagem em mosaico:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2809"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="2819"/>
         <source>&amp;Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;xplorar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2810"/>
         <source>Choose which image to mosaic.</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha as imagens a colocar lado a lado.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2813"/>
         <source>No Image loaded</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma imagem carregada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2816"/>
         <source>Mosaic Elements Folder:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasta dos elementos de mosaico</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2820"/>
         <source>Specify the root folder of images used for mosaic elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>Especifique a pasta raiz onde se encontram as imagem utilizadas como elementos de mosaico.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2823"/>
         <source>Specify an Image Database</source>
-        <translation type="unfinished"></translation>
+        <translation>Especifique a base de dados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2826"/>
         <source>Resolution:</source>
-        <translation>Ανάλυση:</translation>
+        <translation>Resolução:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2829"/>
         <source>Pixel Width</source>
-        <translation>Πλάτος Εικονοστοιχείου</translation>
+        <translation>Largura de pixel</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2838"/>
         <source>Pixel Height</source>
-        <translation>Ύψος Εικονοστοιχείου</translation>
+        <translation>Altura de pixel</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2849"/>
         <source>Patches:</source>
-        <translation type="unfinished"></translation>
+        <translation>Partes:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2852"/>
         <source>Number of Horizontal Patches</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de partes horizontais</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2861"/>
         <source>Number of Vertical Patches</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de partes verticais</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2871"/>
         <source>If this label turns red, the computation might be slower.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se este texto ficar vermelho, o processamento poderá ser mais demorado.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2874"/>
         <source>Filters:</source>
-        <translation>Φιλτρα:</translation>
+        <translation>Filtros:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2878"/>
         <source>You can split multiple ignore words with ;</source>
-        <translation type="unfinished"></translation>
+        <translation>Pode indicar palavras para filtrar imagens (separe-as com ;)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2883"/>
         <source>All Images</source>
-        <translation>Ολες οι εικονες</translation>
+        <translation>Todas as imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2933"/>
         <source>&amp;Save</source>
-        <translation>&amp; Αποθήκευση</translation>
+        <translation>&amp;Salvar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2934"/>
         <source>&amp;Generate</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Gerar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2935"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2956"/>
         <source>Open TIFF</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir TIFF</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2971"/>
         <source>Open an Image Directory</source>
-        <translation>Άνοιγμα ενός Φακέλου Εικόνων</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2994"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="3008"/>
         <source>%1 x %2 cm @150 dpi</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 x %2 cm @150 ppp</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3057"/>
         <source>Patch Resolution: %1 px</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolução: %1 pixeis</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3247"/>
         <source>Filling empty areas...</source>
-        <translation type="unfinished"></translation>
+        <translation>Preencher áreas vazias...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3251"/>
         <source>I need to use some images twice - maybe the database is too small?</source>
-        <translation type="unfinished"></translation>
+        <translation>É necessário utilizar algumas imagens duas vezes. Será que a base de dados é pequena?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3255"/>
         <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe mas não foi possível criar o mosaico para esta base de dados.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3368"/>
         <source>Something is seriously wrong, I could not load: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu algo errado pois não foi possível carregar: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3604"/>
         <source>Error</source>
-        <translation>Σφαλμα</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3604"/>
         <source>Sorry, I could not mix the image...</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível misturar a imagem...</translation>
     </message>
 </context>
 <context>
@@ -5670,118 +5681,121 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="229"/>
         <source>Pl&amp;ugins</source>
-        <translation>Ενθετα</translation>
+        <translation>E&amp;xtras</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="376"/>
         <source>Quit nomacs</source>
-        <translation>Έξοδος από το nomacs</translation>
+        <translation>Sair do nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="377"/>
         <source>Do you want nomacs to save your tabs?</source>
-        <translation>Θέλετε ο nomacs να αποθηκεύσει τις καρτέλες σας;</translation>
+        <translation>Deseja que o nomacs memorize as abas?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="380"/>
         <source>&amp;Save and Quit</source>
-        <translation>Αποθήκευση και Έξοδος</translation>
+        <translation>Salvar e &amp;sair</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="381"/>
         <source>&amp;Quit</source>
-        <translation>κλεισιμο</translation>
+        <translation>&amp;Sair</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="816"/>
         <source>Recursive Folder Scan is Now Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Análise recursiva de pastas está habilitada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="818"/>
         <source>Recursive Folder Scan is Now Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Análise recursiva de pastas está desabilitada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="827"/>
         <source>Change Opacity</source>
-        <translation>Αλλαγή Διαφάνειας</translation>
+        <translation>Alterar opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="903"/>
         <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Janela Travada
+Para destravar: foque-a (ALT+Tab),
+e então pressione %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="905"/>
         <source>You should first reduce opacity
  before working through the window.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deve reduzir a opacidade para 
+trabalhar na janela.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="998"/>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1000"/>
         <source>File Explorer</source>
-        <translation>Εξερευνητής Αρχείων</translation>
+        <translation>Explorador de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1035"/>
         <source>Meta Data Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informações de metadados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1058"/>
         <source>Edit Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1078"/>
         <source>History</source>
-        <translation>Ιστορικό</translation>
+        <translation>Histórico</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1099"/>
         <source>Console</source>
-        <translation type="unfinished"></translation>
+        <translation>Console</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1140"/>
         <source>Thumbnails</source>
-        <translation>&amp; Μικρογραφίες</translation>
+        <translation>Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1178"/>
         <source>Open an Image Directory</source>
-        <translation>Άνοιγμα ενός Φακέλου Εικόνων</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1192"/>
         <source>All Files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1196"/>
         <source>Open Image</source>
-        <translation>Άνοιγμα Εικόνας</translation>
+        <translation>Abrir imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1233"/>
         <source>The following duplicates were not opened:</source>
-        <translation type="unfinished"></translation>
+        <translation>As seguintes duplicatas não foram abertas:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1247"/>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1280"/>
         <source>Text file (*.txt)</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo de texto (*.txt)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1248"/>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1281"/>
         <source>All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1252"/>
@@ -5791,58 +5805,58 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1284"/>
         <source>Save Tab List</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar Lista de Abas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1432"/>
         <source>Go To Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Ir para a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1432"/>
         <source>Image Index:</source>
-        <translation type="unfinished"></translation>
+        <translation>Índice de imagens:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1775"/>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1792"/>
         <source> [Private Mode]</source>
-        <translation type="unfinished"></translation>
+        <translation> [Modo privado]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1878"/>
         <source>Already downloading update</source>
-        <translation type="unfinished"></translation>
+        <translation>Download de atualização em andamento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1905"/>
         <source>Downloading update...</source>
-        <translation type="unfinished"></translation>
+        <translation>Baixando atualização...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1905"/>
         <source>Cancel Update</source>
-        <translation>Ακύρωση Ενημέρωσης</translation>
+        <translation>Cancelar atualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1940"/>
         <source>Unable to install new version&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível instalar a nova versão&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1940"/>
         <source>You can download the new version from our web page</source>
-        <translation type="unfinished"></translation>
+        <translation>Você pode baixar a nova versão na nossa página web</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1954"/>
         <source>Downloading new translations...</source>
-        <translation type="unfinished"></translation>
+        <translation>Baixando novas traduções...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1955"/>
         <source>Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
@@ -5850,7 +5864,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="2220"/>
         <source>Choose a Monitor</source>
-        <translation>Επιλογή Οθόνης</translation>
+        <translation>Escolher um Monitor</translation>
     </message>
 </context>
 <context>
@@ -5858,17 +5872,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2402"/>
         <source>Window Opacity</source>
-        <translation>Διαφάνεια Παραθύρου</translation>
+        <translation>Opacidade da janela</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2407"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2408"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -5876,17 +5890,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1220"/>
         <source>Show previous image</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar imagem anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1232"/>
         <source>Play/Pause</source>
-        <translation type="unfinished"></translation>
+        <translation>Reproduzir/pausa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1244"/>
         <source>Show next image</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar imagem seguinte</translation>
     </message>
 </context>
 <context>
@@ -5894,22 +5908,22 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="418"/>
         <source>Author:</source>
-        <translation type="unfinished"></translation>
+        <translation>Autor:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="419"/>
         <source>Company:</source>
-        <translation type="unfinished"></translation>
+        <translation>Organização:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="420"/>
         <source>Created:</source>
-        <translation type="unfinished"></translation>
+        <translation>Criada:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="421"/>
         <source>Last Modified:</source>
-        <translation type="unfinished"></translation>
+        <translation>Última modificação:</translation>
     </message>
 </context>
 <context>
@@ -5917,12 +5931,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="538"/>
         <source>Plugin Manager</source>
-        <translation>Διαχειριστης ενθετων</translation>
+        <translation>Gestor de extras</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="550"/>
         <source>&amp;Close</source>
-        <translation>κλεισιμο</translation>
+        <translation>Fe&amp;char</translation>
     </message>
 </context>
 <context>
@@ -5930,7 +5944,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="606"/>
         <source>Search plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Procurar extras</translation>
     </message>
 </context>
 <context>
@@ -5938,22 +5952,22 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkPong.cpp" line="354"/>
         <source>PAUSED</source>
-        <translation type="unfinished"></translation>
+        <translation>Pausa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.cpp" line="355"/>
         <source>Press &lt;SPACE&gt; to start.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperte &lt;SPACE&gt; para iniciar.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.cpp" line="499"/>
         <source>%1 won!</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 ganhou!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.cpp" line="500"/>
         <source>Hit &lt;SPACE&gt; to start a new Game</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperte &lt;SPACE&gt; para iniciar um novo jogo</translation>
     </message>
 </context>
 <context>
@@ -5969,17 +5983,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="64"/>
         <source>next</source>
-        <translation>επόμενη</translation>
+        <translation>seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="69"/>
         <source>previous</source>
-        <translation>προηγούμενη</translation>
+        <translation>anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="87"/>
         <source>Restart nomacs</source>
-        <translation type="unfinished"></translation>
+        <translation>Reiniciar o nomacs</translation>
     </message>
 </context>
 <context>
@@ -5988,52 +6002,52 @@ then press %1</source>
         <location filename="../src/DkGui/DkDialog.cpp" line="2055"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="2147"/>
         <source>Print Preview</source>
-        <translation>Προεπισκοπιση εκτυπωσης</translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2116"/>
         <source>Fit Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar à largura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2117"/>
         <source>Fit Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar à página</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2119"/>
         <source>Zoom in</source>
-        <translation type="unfinished"></translation>
+        <translation>Ampliar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2122"/>
         <source>Zoom out</source>
-        <translation type="unfinished"></translation>
+        <translation>Reduzir</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2125"/>
         <source>keep ALT key pressed to zoom with the mouse wheel</source>
-        <translation type="unfinished"></translation>
+        <translation>Mantenha pressionada a tecla ALT para ampliar com a roda do mouse</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2136"/>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Retrato</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2139"/>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Paisagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2143"/>
         <source>Page setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurar página</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2144"/>
         <source>Print</source>
-        <translation>Εκτυπωση</translation>
+        <translation>Imprimir</translation>
     </message>
 </context>
 <context>
@@ -6041,42 +6055,42 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1231"/>
         <source>Summary: </source>
-        <translation type="unfinished"></translation>
+        <translation>Resumo: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1232"/>
         <source>Files</source>
-        <translation>&amp; Αρχεία</translation>
+        <translation>Arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1262"/>
         <source>Input</source>
-        <translation>Είσοδος</translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1266"/>
         <source>Output</source>
-        <translation>Έξοδος</translation>
+        <translation>Destino</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1270"/>
         <source>Functions</source>
-        <translation type="unfinished"></translation>
+        <translation>Funções</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1287"/>
         <source>Update</source>
-        <translation>Αναβαθμιση</translation>
+        <translation>Atualizar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1291"/>
         <source>Delete</source>
-        <translation>&amp; Διαγραφή</translation>
+        <translation>Apagar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1295"/>
         <source>Export</source>
-        <translation>Εξαγωγη</translation>
+        <translation>Exportar</translation>
     </message>
 </context>
 <context>
@@ -6084,63 +6098,63 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1330"/>
         <source>Create New Profile</source>
-        <translation>Δημιουργια νεου προφιλ</translation>
+        <translation>Criar Novo Perfil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1333"/>
         <source>Apply Default</source>
-        <translation>Εφαρμογή προκαθορισμένων</translation>
+        <translation>Aplicar Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1374"/>
         <location filename="../src/DkGui/DkBatch.cpp" line="1430"/>
         <source>inactive</source>
-        <translation>ανενεργό</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1399"/>
         <source>Default</source>
-        <translation>Προκαθορισμενα</translation>
+        <translation>Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1466"/>
         <source>Deleting Profile</source>
-        <translation>Διαγραφη προφιλ</translation>
+        <translation>Excluindo Perfil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1467"/>
         <source>Sorry, I cannot delete %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, não foi possível excluir %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1482"/>
         <source>Export Batch Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar perfil de lotes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1484"/>
         <source>nomacs Batch Profile (*.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfil de lotes do nomacs (*.%1)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1498"/>
         <source>Profile Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Perfil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1498"/>
         <source>Profile Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Perfil:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1506"/>
         <source>Profile Already Exists</source>
-        <translation type="unfinished"></translation>
+        <translation>O Perfil Já Existe</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1507"/>
         <source>Do you want to overwrite %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseja sobrescrever %1?</translation>
     </message>
 </context>
 <context>
@@ -6148,7 +6162,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkQuickAccess.cpp" line="141"/>
         <source>Quick Launch (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Lançador rápido (%1)</translation>
     </message>
 </context>
 <context>
@@ -6156,17 +6170,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1040"/>
         <source>one star</source>
-        <translation type="unfinished"></translation>
+        <translation>uma estrela</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1041"/>
         <source>two stars</source>
-        <translation type="unfinished"></translation>
+        <translation>duas estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1042"/>
         <source>three star</source>
-        <translation type="unfinished"></translation>
+        <translation>três estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1043"/>
@@ -6184,17 +6198,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2320"/>
         <source>Load the directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar o diretório</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2331"/>
         <source>Pin this directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Fixar este diretório</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2340"/>
         <source>Remove this directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover este diretório</translation>
     </message>
 </context>
 <context>
@@ -6212,12 +6226,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="799"/>
         <source>width:</source>
-        <translation>πλάτος:</translation>
+        <translation>largura:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="803"/>
         <source>height:</source>
-        <translation>ύψος:</translation>
+        <translation>altura:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="808"/>
@@ -6230,99 +6244,99 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="873"/>
         <source>Resize Image</source>
-        <translation>Αλλαγή μεγέθους εικόνας</translation>
+        <translation>Redimensionar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="890"/>
         <source>Original</source>
-        <translation>Αρχικό</translation>
+        <translation>Original</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="892"/>
         <source>New</source>
-        <translation>Νεο</translation>
+        <translation>Nova</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="921"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="969"/>
         <source>Width: </source>
-        <translation>Πλάτος: </translation>
+        <translation>Largura: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="939"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="987"/>
         <source>Height: </source>
-        <translation>Ύψος: </translation>
+        <translation>Altura: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1019"/>
         <source>Resolution: </source>
-        <translation>Αναλυση: </translation>
+        <translation>Resolução: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1031"/>
         <source>pixel/inch</source>
-        <translation type="unfinished"></translation>
+        <translation>pixel/polegada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1032"/>
         <source>pixel/cm</source>
-        <translation type="unfinished"></translation>
+        <translation>pixel/cm</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1046"/>
         <source>Resample Image:</source>
-        <translation>Αναδειγματοληψια εικονας:</translation>
+        <translation>Recriar imagem:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1053"/>
         <source>Nearest Neighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vizinhança</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1054"/>
         <source>Area (best for downscaling)</source>
-        <translation type="unfinished"></translation>
+        <translation>Área (para redução de escala)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1055"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1056"/>
         <source>Bicubic (4x4 pixel interpolation)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bicúbica (interpolação de 4x4 pixeis)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1057"/>
         <source>Lanczos (8x8 pixel interpolation)</source>
-        <translation type="unfinished"></translation>
+        <translation>Lanczos (interpolação de 8x8 pixeis)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1070"/>
         <source>Gamma Correction</source>
-        <translation>Διορθωση γαμμα</translation>
+        <translation>Correção de gama</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1082"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1083"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1455"/>
         <source>Sorry, but the image size %1 x %2 is illegal.</source>
-        <translation type="unfinished"></translation>
+        <translation>O tamanho de imagem %1 x %2 é inválido.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1467"/>
         <source>Sorry, the image is too large: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem é muito grande: %1</translation>
     </message>
 </context>
 <context>
@@ -6330,37 +6344,37 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="413"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Escala</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="422"/>
         <source>Nearest Neighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vizinhança</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="423"/>
         <source>Area (best for downscaling)</source>
-        <translation type="unfinished"></translation>
+        <translation>Área (para redução de escala)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="424"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="425"/>
         <source>Bicubic (4x4 interpolatia)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bicúbica (interpolação de 4x4 pixels)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="426"/>
         <source>Lanczos (8x8 interpolation)</source>
-        <translation type="unfinished"></translation>
+        <translation>Lanczos (interpolação de 8x8 pixels)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="433"/>
         <source>Gamma Correction</source>
-        <translation>Διορθωση γαμμα</translation>
+        <translation>Correção de gama</translation>
     </message>
 </context>
 <context>
@@ -6368,7 +6382,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="369"/>
         <source>Angle</source>
-        <translation>Γωνια</translation>
+        <translation>Ângulo</translation>
     </message>
 </context>
 <context>
@@ -6376,32 +6390,32 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="611"/>
         <source>Find &amp; Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Localizar e filtrar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="613"/>
         <source>Load All</source>
-        <translation>Φορτωση ολων</translation>
+        <translation>Carregar todas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="620"/>
         <source>Type search words or a regular expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Pesquisar palavras ou expressão regular</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="634"/>
         <source>&amp;Filter</source>
-        <translation>φιλτρο</translation>
+        <translation>&amp;Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="639"/>
         <source>F&amp;ind</source>
-        <translation>Ευρεση</translation>
+        <translation>Local&amp;izar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="683"/>
         <source>No Matching Items</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum item coincidente</translation>
     </message>
 </context>
 <context>
@@ -6409,12 +6423,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="317"/>
         <source>Settings</source>
-        <translation>&amp; Ρυθμίσεις</translation>
+        <translation>Preferências</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="317"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
 </context>
 <context>
@@ -6422,12 +6436,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="134"/>
         <source>Filter Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações de Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="162"/>
         <source>Delete</source>
-        <translation>&amp; Διαγραφή</translation>
+        <translation>Apagar</translation>
     </message>
 </context>
 <context>
@@ -6435,27 +6449,27 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1851"/>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Atalhos de teclado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1881"/>
         <source>Set to &amp;Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizar o &amp;padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1882"/>
         <source>Removes All Custom Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover todos os atalhos personalizados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1894"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1895"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -6463,24 +6477,26 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1591"/>
         <source>Name</source>
-        <translation>Ονομα</translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1591"/>
         <source>Shortcut</source>
-        <translation type="unfinished"></translation>
+        <translation>Atalho</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1770"/>
         <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 já é utilizado por %2&gt; %3
+Aperte ESC para reverter as alterações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1775"/>
         <source>%1 already used by %2
 Press ESC to undo changes</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 já é utilizada por %2
+Pressione Esc para cancelar as alterações</translation>
     </message>
 </context>
 <context>
@@ -6488,7 +6504,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="138"/>
         <source>Close (ESC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar (ESC)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="184"/>
@@ -6501,22 +6517,22 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4350"/>
         <source>width:</source>
-        <translation>πλάτος:</translation>
+        <translation>largura:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4360"/>
         <source>height:</source>
-        <translation>ύψος:</translation>
+        <translation>altura:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4379"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4380"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -6524,7 +6540,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkMenu.cpp" line="204"/>
         <source>no clients found</source>
-        <translation type="unfinished"></translation>
+        <translation>nenhum cliente encontrado</translation>
     </message>
 </context>
 <context>
@@ -6532,43 +6548,44 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1942"/>
         <source>Text Editor</source>
-        <translation>Επεξεργαστης κειμενου</translation>
+        <translation>Editor de texto</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1952"/>
         <source>&amp;Save</source>
-        <translation>&amp; Αποθήκευση</translation>
+        <translation>&amp;Salvar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1953"/>
         <source>&amp;Close</source>
-        <translation>κλεισιμο</translation>
+        <translation>Fe&amp;char</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1978"/>
         <source>Text File (*.txt)</source>
-        <translation>Αρχειο κειμενου (*.txt)</translation>
+        <translation>Arquivo de texto (*. txt)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1978"/>
         <source>All Files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1982"/>
         <source>Save Text File</source>
-        <translation>Αποθηκευση αρχειου κειμενου</translation>
+        <translation>Salvar arquivo de texto</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1997"/>
         <source>Error</source>
-        <translation>Σφαλμα</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1997"/>
         <source>Could not save: %1
 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível salvar: %1
+%2</translation>
     </message>
 </context>
 <context>
@@ -6576,12 +6593,12 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="479"/>
         <source>Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation>Limiar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="486"/>
         <source>Color</source>
-        <translation>Χρωμα</translation>
+        <translation>Cor</translation>
     </message>
 </context>
 <context>
@@ -6589,18 +6606,18 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1341"/>
         <source> selected</source>
-        <translation type="unfinished"></translation>
+        <translation> selecionado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1335"/>
         <source> images</source>
-        <translation type="unfinished"></translation>
+        <translation> imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1336"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1342"/>
         <source>%1 | %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 | %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1512"/>
@@ -6623,58 +6640,59 @@ Press ESC to undo changes</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1616"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1666"/>
         <source>Error</source>
-        <translation>Σφαλμα</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1538"/>
         <source>Sorry, I cannot %1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, mas não é possível %1 %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1550"/>
         <source>move</source>
-        <translation type="unfinished"></translation>
+        <translation>mover</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1560"/>
         <source>create link</source>
-        <translation type="unfinished"></translation>
+        <translation>criar ligação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1568"/>
         <source>copy</source>
-        <translation type="unfinished"></translation>
+        <translation>copiar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1588"/>
         <source>Shall I move %1 file(s) to trash?</source>
-        <translation type="unfinished"></translation>
+        <translation>Mover %1 arquivo(s) para a lixeira?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1587"/>
         <source>Delete File</source>
-        <translation>&amp; Διαγραφή αρχειου</translation>
+        <translation>Apagar arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1617"/>
         <source>Sorry, I cannot delete:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível apagar:
+%1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1646"/>
         <source>Rename File(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Renomear arquivo(s)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1647"/>
         <source>New Filename:</source>
-        <translation>Νέο όνομα αρχείου:</translation>
+        <translation>Novo nome do arquivo:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1667"/>
         <source>Sorry, I cannot rename: %1 to %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível renomear %1 para %2</translation>
     </message>
 </context>
 <context>
@@ -6682,27 +6700,27 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1952"/>
         <source>Thumb Preview Toolbar</source>
-        <translation>Γραμμή Εργαλείου Προεπισκόπισης Μικρογραφιών</translation>
+        <translation>Barra de pré-visualização de miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1971"/>
         <source>&amp;Sort</source>
-        <translation>Ταξινόμηση</translation>
+        <translation>&amp;Ordenar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1986"/>
         <source>Filter Files (Ctrl + F)</source>
-        <translation>Φιλτράρισμα Αρχείων (Ctrl+F)</translation>
+        <translation>Filtrar arquivos (Ctrl + F)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1999"/>
         <source>Thumb</source>
-        <translation>Μικρογραφία</translation>
+        <translation>Miniatura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Άνοιγμα Εικόνας</translation>
+        <translation>Abrir imagem</translation>
     </message>
 </context>
 <context>
@@ -6712,17 +6730,19 @@ Press ESC to undo changes</source>
         <source>
 Creating thumbnails...
 </source>
-        <translation type="unfinished"></translation>
+        <translation>
+Criação de miniaturas...
+</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="157"/>
         <source>Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="161"/>
         <source>Thumbnails</source>
-        <translation>&amp; Μικρογραφίες</translation>
+        <translation>Miniaturas</translation>
     </message>
 </context>
 <context>
@@ -6730,27 +6750,27 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="65"/>
         <source>TIF compression</source>
-        <translation type="unfinished"></translation>
+        <translation>Compactação TIF</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="68"/>
         <source>&amp;no compression</source>
-        <translation type="unfinished"></translation>
+        <translation>Sem co&amp;mpressão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="69"/>
         <source>&amp;LZW compression (lossless)</source>
-        <translation type="unfinished"></translation>
+        <translation>Compressão &amp;LZW (sem perda)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="79"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="80"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -6758,17 +6778,17 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="240"/>
         <source>Planet Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho do &quot;Planeta&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="246"/>
         <source>Angle</source>
-        <translation>Γωνια</translation>
+        <translation>Ângulo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="252"/>
         <source>Invert Planet</source>
-        <translation type="unfinished"></translation>
+        <translation>Inverter o &quot;Planeta&quot;</translation>
     </message>
 </context>
 <context>
@@ -6776,57 +6796,57 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="261"/>
         <source>Add New Image Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar novo formato de imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="270"/>
         <source>Load New Image Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar novo formato de imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="279"/>
         <source>&amp;Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;xplorar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="292"/>
         <source>&amp;Add</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Adicionar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="294"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="327"/>
         <source>Open Image</source>
-        <translation>Άνοιγμα Εικόνας</translation>
+        <translation>Abrir imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="329"/>
         <source>All Files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="377"/>
         <source>Sorry, currently we don&apos;t support: *.%1 files</source>
-        <translation>Sorry, currently we don&apos;t support: *.%1 files</translation>
+        <translation>Desculpe, no momento não suportamos: *.%1 arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="382"/>
         <source>*.%1 is already supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>*.%1 já é suportado.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="385"/>
         <source>*.%1 is supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>*.%1 é suportado.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="404"/>
         <source>Please name the new format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Indique o nome do formato:</translation>
     </message>
 </context>
 <context>
@@ -6834,68 +6854,68 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="477"/>
         <source>Pseudo Color Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de ferramentas pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="481"/>
         <source>Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="482"/>
         <location filename="../src/DkGui/DkToolbars.cpp" line="725"/>
         <source>Enables the Pseudo Color function</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativa a função pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="491"/>
         <source>Changes the displayed color channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Mudar canal da cor exibida</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="496"/>
         <source>Delete</source>
-        <translation>&amp; Διαγραφή</translation>
+        <translation>Apagar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="514"/>
         <source>Click into the field for a new slider</source>
-        <translation type="unfinished"></translation>
+        <translation>Clique no campo para um novo controle</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="556"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Reiniciar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="557"/>
         <source>Resets the Pseudo Color function</source>
-        <translation type="unfinished"></translation>
+        <translation>Reiniciar a função pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="562"/>
         <source>Select Color</source>
-        <translation>Επιλογη χρωματος</translation>
+        <translation>Escolha a cor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="563"/>
         <source>Adds a slider at the selected color value</source>
-        <translation type="unfinished"></translation>
+        <translation>Adiciona um controle no valor de cor escolhido</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="568"/>
         <source>Save Gradient</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar gradiente</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="569"/>
         <source>Saves the current Gradient</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva o gradiente atual</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="688"/>
         <source>Gray</source>
-        <translation>Γκρι</translation>
+        <translation>Cinza</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="690"/>
@@ -6905,22 +6925,22 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="691"/>
         <source>Red</source>
-        <translation>Κοκκινο</translation>
+        <translation>Vermelho</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="692"/>
         <source>Green</source>
-        <translation>Πρασινο</translation>
+        <translation>Verde</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="693"/>
         <source>Blue</source>
-        <translation>Μπλε</translation>
+        <translation>Azul</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="723"/>
         <source>Disables the Pseudo Color function</source>
-        <translation type="unfinished"></translation>
+        <translation>Desativa a função pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="785"/>
@@ -6933,18 +6953,19 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="366"/>
         <source>Updates Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações Desativadas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="367"/>
         <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações do nomacs estão desativadas.
+Por favor, contate o administrador de sistemas para maiores informações.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="416"/>
         <source>Unable to download translation</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível baixar a tradução</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="416"/>
@@ -6952,22 +6973,22 @@ Please contact your system administrator for further information.</source>
         <location filename="../src/DkCore/DkUpdater.cpp" line="457"/>
         <location filename="../src/DkCore/DkUpdater.cpp" line="462"/>
         <source>update</source>
-        <translation>αναβαθμιση</translation>
+        <translation>atualizar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="435"/>
         <source>Unable to update translation</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível atualizar a tradução</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="457"/>
         <source>Translation updated</source>
-        <translation type="unfinished"></translation>
+        <translation>Tradução atualizada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="462"/>
         <source>No newer translations found</source>
-        <translation>Δεν βρέθηκαν νεώτερες μεταφράσεις</translation>
+        <translation>Não existem novas atualizações</translation>
     </message>
 </context>
 <context>
@@ -6975,12 +6996,12 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="325"/>
         <source>Sigma</source>
-        <translation type="unfinished"></translation>
+        <translation>Sigma</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="329"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
 </context>
 <context>
@@ -6988,17 +7009,17 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2024"/>
         <source>nomacs updater</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualização nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2032"/>
         <source>Install Now</source>
-        <translation>Εγκαταστάση τώρα</translation>
+        <translation>Instalar agora</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2033"/>
         <source>Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
@@ -7006,43 +7027,44 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="155"/>
         <source>Updates Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações Desativadas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="156"/>
         <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações do nomacs estão desativadas.
+Por favor, contate o administrador de sistemas para maiores informações.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="243"/>
         <source>sorry, I could not check for newer versions</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível procurar atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="243"/>
         <source>Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="256"/>
         <source>A new version</source>
-        <translation>Μια νεα εκδοση</translation>
+        <translation>Uma nova versão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="256"/>
         <source>is available</source>
-        <translation>ειναι διαθεσιμη</translation>
+        <translation>está disponível</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="257"/>
         <source>Do you want to download and install it now?</source>
-        <translation>Θελετε να το κατεβασετε και να το εγκαταστησετε τωρα;</translation>
+        <translation>Deseja baixar e instalar a nova versão?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="258"/>
         <source>For more information see </source>
-        <translation>Για περισοτερες πληροφοριες δειτε </translation>
+        <translation>Para mais informações consulte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="265"/>
@@ -7050,22 +7072,22 @@ Please contact your system administrator for further information.</source>
         <location filename="../src/DkCore/DkUpdater.cpp" line="274"/>
         <location filename="../src/DkCore/DkUpdater.cpp" line="348"/>
         <source>updates</source>
-        <translation>ενημερώσεις</translation>
+        <translation>atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="267"/>
         <source>nomacs is up-to-date</source>
-        <translation>Το nomacs είναι ενημερωμένο</translation>
+        <translation>nomacs está atualizado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="274"/>
         <source>sorry, unable to download the new version</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível baixar a nova versão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="348"/>
         <source>Unable to connect to server ... please try again later</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível conectar ao servidor. Tente mais tarde</translation>
     </message>
 </context>
 <context>
@@ -7073,83 +7095,83 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="284"/>
         <source>Original Image</source>
-        <translation>Αρχική εικόνα</translation>
+        <translation>Imagem original</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="731"/>
         <source>Resize</source>
-        <translation>Αλλαγή μεγέθους</translation>
+        <translation>Redimensionar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="754"/>
         <source>Shall I move %1 to trash?</source>
-        <translation type="unfinished"></translation>
+        <translation>Mover %1 para a lixeira?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="756"/>
         <source>Do you want to permanently delete %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseja apagar %1 permanentemente?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="760"/>
         <source>Delete File</source>
-        <translation>&amp; Διαγραφή αρχειου</translation>
+        <translation>Apagar arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="827"/>
         <source>Error</source>
-        <translation>Σφαλμα</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="827"/>
         <source>Sorry, I could not create a wallpaper...</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível definir o papel de parede...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="869"/>
         <source>Busy</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocupado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1587"/>
         <source>Transparency Pattern Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Padrão de transparência ativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1587"/>
         <source>Transparency Pattern Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Padrão de transparência inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1623"/>
         <source>Lenna</source>
-        <translation type="unfinished"></translation>
+        <translation>Lenna</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1623"/>
         <source>A remarkable woman</source>
-        <translation type="unfinished"></translation>
+        <translation>Uma mulher notável</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1632"/>
         <source>you cannot cancel this</source>
-        <translation type="unfinished"></translation>
+        <translation>não pode cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1639"/>
         <source>did you understand the brainteaser?</source>
-        <translation type="unfinished"></translation>
+        <translation>percebeu o quebra-cabeças?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1641"/>
         <source>%1 is wrong...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 está errado...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1674"/>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1697"/>
         <source>Attempted to set NULL image</source>
-        <translation type="unfinished"></translation>
+        <translation>Tentativa de definir imagem NULL</translation>
     </message>
 </context>
 <context>
@@ -7157,7 +7179,7 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="2245"/>
         <source>Press F10 to exit Frameless view</source>
-        <translation>Πατήστε F10 για να βγείτε από την Πλήρη Οθόνη</translation>
+        <translation>Pressione F10 para sair deste modo</translation>
     </message>
 </context>
 <context>
@@ -7165,32 +7187,32 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3709"/>
         <source>Welcome</source>
-        <translation>Καλως ηρθατε</translation>
+        <translation>Bem-vindo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3718"/>
         <source>Welcome to nomacs, please choose your preferred language below.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bem-vindo ao nomacs. Por favor escolha o idioma da aplicação abaixo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3723"/>
         <source>&amp;Register File Associations</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Registar associação de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3726"/>
         <source>Set As &amp;Default Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizar como visualizador pa&amp;drão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3731"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3732"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Άκυρο</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 </TS>
