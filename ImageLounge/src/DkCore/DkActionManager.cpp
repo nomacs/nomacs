@@ -589,7 +589,7 @@ QMenu *DkActionManager::createToolsMenu(QWidget *parent /* = 0 */)
 
 QMenu *DkActionManager::createHelpMenu(QWidget *parent)
 {
-    mHelpMenu = new QMenu(QObject::tr("&?"), parent);
+    mHelpMenu = new QMenu(QObject::tr("&Help"), parent);
 
 #ifndef Q_OS_LINUX
     mHelpMenu->addAction(mHelpActions[menu_help_update]);
@@ -1056,7 +1056,7 @@ void DkActionManager::createActions(QWidget *parent)
 
     mFileActions[menu_file_next] = new QAction(mFileIcons[icon_file_next], QObject::tr("Ne&xt File"), parent);
     mFileActions[menu_file_next]->setShortcut(QKeySequence(shortcut_next_file));
-    mFileActions[menu_file_next]->setStatusTip(QObject::tr("Load next image"));
+    mFileActions[menu_file_next]->setStatusTip(QObject::tr("Load next file"));
 
     mFileActions[menu_file_prev] = new QAction(mFileIcons[icon_file_prev], QObject::tr("Pre&vious File"), parent);
     mFileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
@@ -1201,7 +1201,7 @@ void DkActionManager::createActions(QWidget *parent)
 
     mEditActions[menu_edit_crop] = new QAction(mEditIcons[icon_edit_crop], QObject::tr("Cr&op Image"), parent);
     mEditActions[menu_edit_crop]->setShortcut(shortcut_crop);
-    mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("cut the current image"));
+    mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("Crop the current image"));
     mEditActions[menu_edit_crop]->setCheckable(true);
     mEditActions[menu_edit_crop]->setChecked(false);
 
@@ -1456,7 +1456,7 @@ void DkActionManager::createActions(QWidget *parent)
     mToolsActions[menu_tools_batch]->setStatusTip(QObject::tr("Apply actions to multiple images"));
     mToolsActions[menu_tools_batch]->setShortcut(QKeySequence(shortcut_batch_processing));
 
-    mToolsActions[menu_tools_wallpaper] = new QAction(QObject::tr("&Wallpaper"), parent);
+    mToolsActions[menu_tools_wallpaper] = new QAction(QObject::tr("&Set Desktop Wallpaper"), parent);
     mToolsActions[menu_tools_wallpaper]->setStatusTip(QObject::tr("set the current image as wallpaper"));
 
     mToolsActions[menu_tools_train_format] = new QAction(QObject::tr("Add Image Format"), parent);
@@ -1580,10 +1580,6 @@ void DkActionManager::createActions(QWidget *parent)
 
     // hidden actions
     mHiddenActions.resize(sc_end);
-
-    mHiddenActions[sc_test_img] = new QAction(QObject::QObject::tr("Lena"), parent);
-    mHiddenActions[sc_test_img]->setStatusTip(QObject::QObject::tr("Show test image"));
-    mHiddenActions[sc_test_img]->setShortcut(QKeySequence(shortcut_test_img));
 
     mHiddenActions[sc_test_rec] = new QAction(QObject::QObject::tr("All Images"), parent);
     mHiddenActions[sc_test_rec]->setStatusTip(QObject::QObject::tr("Generates all images in the world"));

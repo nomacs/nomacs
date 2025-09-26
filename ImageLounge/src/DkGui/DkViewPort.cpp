@@ -164,7 +164,6 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
             &DkViewPort::previousMovieFrame);
     connect(am.action(DkActionManager::menu_view_movie_next), &QAction::triggered, this, &DkViewPort::nextMovieFrame);
 
-    connect(am.action(DkActionManager::sc_test_img), &QAction::triggered, this, &DkViewPort::loadLena);
     connect(am.action(DkActionManager::menu_sync_view), &QAction::triggered, this, &DkViewPort::tcpForceSynchronize);
 
     // playing
@@ -263,6 +262,20 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
         mController->getPlayer()->startTimer();
         mController->updateImage(nullptr);
         return;
+    }
+
+    // retain the previous image for animation, release when animation ends
+    // we don't do this on unloadImage() because we might be on the last image in the slideshow
+    if (!mImgStorage.isEmpty() //
+        && DkSettingsManager::param().display().animationDuration > 0
+        && (mController->getPlayer()->isPlaying() //
+            || DkUtils::getMainWindow()->isFullScreen() //
+            || DkSettingsManager::param().display().alwaysAnimate)) {
+        QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
+        mAnimationBuffer = mImgStorage.image(dr.size());
+        mFadeImgViewRect = mImgViewRect;
+        mFadeImgRect = mImgRect;
+        mAnimationValue = 1.0f;
     }
 
     updateLoadedImage();
@@ -1453,7 +1466,6 @@ void DkViewPort::setFullScreen(bool fullScreen)
 {
     Q_ASSERT(mController);
     mController->setFullScreen(fullScreen);
-    toggleLena(fullScreen);
 
     if (fullScreen)
         mHideCursorTimer->start();
@@ -1631,43 +1643,6 @@ void DkViewPort::rotate180()
 }
 
 // file handling --------------------------------------------------------------------
-void DkViewPort::loadLena()
-{
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, nullptr, &ok);
-
-    // pass phrase
-    if (ok && !text.isEmpty() && text == "lenna") {
-        mTestLoaded = true;
-        toggleLena(DkUtils::getMainWindow()->isFullScreen());
-    } else if (!ok) {
-        QMessageBox warningDialog(DkUtils::getMainWindow());
-        warningDialog.setIcon(QMessageBox::Warning);
-        warningDialog.setText(tr("you cannot cancel this"));
-        warningDialog.exec();
-        loadLena();
-    } else {
-        QApplication::beep();
-
-        if (text.isEmpty())
-            mController->setInfo(tr("did you understand the brainteaser?"));
-        else
-            mController->setInfo(tr("%1 is wrong...").arg(text));
-    }
-}
-
-void DkViewPort::toggleLena(bool fullscreen)
-{
-    if (!mTestLoaded)
-        return;
-
-    if (mLoader) {
-        if (fullscreen)
-            mLoader->downloadFile(QUrl("http://www.lenna.org/lena_std.tif"));
-        else
-            mLoader->load(DkFileInfo(":/nomacs/img/we.jpg"));
-    }
-}
 
 void DkViewPort::settingsChanged()
 {
@@ -1699,16 +1674,6 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img)
 
 bool DkViewPort::unloadImage()
 {
-    if (DkSettingsManager::param().display().animationDuration > 0
-        && (mController->getPlayer()->isPlaying() || DkUtils::getMainWindow()->isFullScreen()
-            || DkSettingsManager::param().display().alwaysAnimate)) {
-        QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
-        mAnimationBuffer = mImgStorage.image(dr.size());
-        mFadeImgViewRect = mImgViewRect;
-        mFadeImgRect = mImgRect;
-        mAnimationValue = 1.0f;
-    }
-
     if (!mController->applyPluginChanges(true)) // user wants to apply changes first
         return false;
 

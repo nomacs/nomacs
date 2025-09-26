@@ -1131,6 +1131,10 @@ void DkCentralWidget::load(const QString &path)
     QSharedPointer<DkTabInfo> tab = mTabInfos[mTabbar->currentIndex()];
     QSharedPointer<DkImageLoader> loader = tab->getImageLoader();
 
+    // if we have changes to the image, always ask to save them
+    if (!loader->promptSaveBeforeUnload())
+        return;
+
     DkFileInfo fileInfo(path);
     if (fileInfo.isDir()) {
         if (!loader->loadDir(fileInfo.path())) {
@@ -1149,7 +1153,11 @@ void DkCentralWidget::load(const QString &path)
         }
     } else {
         tab->setMode(DkTabInfo::tab_single_image);
-        loader->load(fileInfo);
+        // load() does nothing if file matches; but we want to reset edit history etc if we have changes
+        if (loader->isEdited() && fileInfo == loader->getCurrentImage()->fileInfo())
+            loader->reloadImage();
+        else
+            loader->load(fileInfo);
     }
     updateTab(tab); // required to set the tab text on background tabs
 }
