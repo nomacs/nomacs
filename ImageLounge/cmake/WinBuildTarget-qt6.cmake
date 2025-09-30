@@ -111,9 +111,9 @@ set_target_properties(
 set(DELAY_DLL_NAMES raw.dll exiv2.dll)
 
 # dear future me: sorry, for manually defining them - but I have no time right now
-set(DELAY_DLL_NAMES_DEBUG opencv_core4110d.dll opencv_imgproc4110d.dll ${DELAY_DLL_NAMES})
+set(DELAY_DLL_NAMES_DEBUG opencv_core4120d.dll opencv_imgproc4120d.dll ${DELAY_DLL_NAMES})
 
-set(DELAY_DLL_NAMES_RELEASE opencv_core4110.dll opencv_imgproc4110.dll quazip1-qt6.dll ${DELAY_DLL_NAMES})
+set(DELAY_DLL_NAMES_RELEASE opencv_core4120.dll opencv_imgproc4120.dll quazip1-qt6.dll ${DELAY_DLL_NAMES})
 
 foreach(DLL_NAME ${DELAY_DLL_NAMES_DEBUG})
     set(DELAY_LOAD_DEBUG "${DELAY_LOAD_DEBUG} /DELAYLOAD:${DLL_NAME}")
@@ -143,8 +143,8 @@ file(COPY ${NOMACS_THEMES} DESTINATION ${CMAKE_BINARY_DIR}/Release/themes/)
 file(COPY ${EXIV2_BUILD_PATH}/Release/bin/exiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 file(COPY ${EXPAT_BUILD_PATH}/Release/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 file(COPY ${LIBRAW_BUILD_PATH}/Release/raw.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${OpenCV_DIR}/bin/Release/opencv_core4110.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${OpenCV_DIR}/bin/Release/opencv_imgproc4110.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${OpenCV_DIR}/bin/Release/opencv_core4120.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+file(COPY ${OpenCV_DIR}/bin/Release/opencv_imgproc4120.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 if(ENABLE_QUAZIP)
     file(COPY "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt6.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 endif(ENABLE_QUAZIP)
