@@ -284,6 +284,7 @@ void DkControlWidget::connectWidgets()
     // playing
     connect(mPlayer, &DkPlayer::previousSignal, mViewport, &DkViewPort::loadPrevFileFast);
     connect(mPlayer, &DkPlayer::nextSignal, mViewport, &DkViewPort::loadNextFileFast);
+    connect(mPlayer, &DkPlayer::loadFileSignal, mViewport, qOverload<const QString &>(&DkViewPort::loadFile));
 
     // cropping
     connect(mCropWidget, &DkCropWidget::cropImageSignal, mViewport, &DkViewPort::cropImage);
