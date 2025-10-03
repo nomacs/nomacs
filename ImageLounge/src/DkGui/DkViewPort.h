@@ -43,8 +43,8 @@ class DkControlWidget;
 class DkPluginContainer;
 class DkBaseManipulator;
 class DkResizeDialog;
-class DkHudNavigation;
 class DkThumbLoader;
+class DkFadeButton;
 
 class DllCoreExport DkViewPort : public DkBaseViewPort
 {
@@ -209,7 +209,8 @@ protected:
 
     DkRotatingRect mCropRect;
 
-    DkHudNavigation *mNavigationWidget = nullptr;
+    DkFadeButton *mNextButton = nullptr;
+    DkFadeButton *mPrevButton = nullptr;
 
     // image manipulators
     QFutureWatcher<QImage> mManipulatorWatcher;

@@ -571,4 +571,10 @@ QSize DkResizableScrollArea::minimumSizeHint() const
     return s;
 }
 
+template class DkFadeMixin<QPushButton>;
+
+DkFadeButton::DkFadeButton(const QIcon &icon, const QString &text, QWidget *parent)
+    : DkFadeMixin<QPushButton>(icon, text, parent)
+{
+}
 }

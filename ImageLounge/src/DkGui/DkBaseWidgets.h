@@ -29,6 +29,7 @@
 
 #include <QDockWidget>
 #include <QLabel>
+#include <QPushButton>
 #include <QScrollArea>
 #include <QWidget>
 
@@ -400,4 +401,13 @@ protected:
     bool eventFilter(QObject *o, QEvent *e) override;
 };
 
+extern template class DkFadeMixin<QPushButton>;
+
+class DkFadeButton : public DkFadeMixin<QPushButton>
+{
+    Q_OBJECT
+
+public:
+    explicit DkFadeButton(const QIcon &icon, const QString &text, QWidget *parent = nullptr);
+};
 }

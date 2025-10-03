@@ -185,29 +185,6 @@ protected:
     QWidget *container;
 };
 
-class DkHudNavigation : public DkFadeWidget
-{
-    Q_OBJECT
-
-public:
-    explicit DkHudNavigation(QWidget *parent = nullptr);
-    ~DkHudNavigation() override = default;
-
-signals:
-    void nextSignal();
-    void previousSignal();
-
-public slots:
-    void showNext();
-    void showPrevious();
-
-protected:
-    void createLayout();
-
-    QPushButton *mPreviousButton;
-    QPushButton *mNextButton;
-};
-
 class DkFolderScrollBar : public DkFadeMixin<QSlider>
 {
     Q_OBJECT
