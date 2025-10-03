@@ -113,10 +113,29 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     mController->getCropWidget()->setImageTransform(&mImgMatrix);
     mController->getCropWidget()->setImageRect(&mImgViewRect);
 
-    // this must be initialized after mController to be above it
-    mNavigationWidget = new DkHudNavigation(this);
-    mPaintLayout->addWidget(mNavigationWidget);
-    // TODO: if visible, currently mNavigationWidget eats all mouse events that are supposed for control widget
+    // nav buttons initialized after mController to place them above all other hud widgets
+    QSize s(64, 64);
+    QColor c(0, 0, 0);
+    c.setAlpha(0);
+
+    mPrevButton = new DkFadeButton(DkImage::loadIcon(":/nomacs/img/previous-hud.svg", s, c), "", this);
+    mPrevButton->setObjectName("hudNavigationButton");
+    mPrevButton->setToolTip(tr("Show previous image"));
+    mPrevButton->setFlat(true);
+    mPrevButton->setIconSize(s);
+
+    mNextButton = new DkFadeButton(DkImage::loadIcon(":/nomacs/img/next-hud.svg", s, c), "", this);
+    mNextButton->setObjectName("hudNavigationButton");
+    mNextButton->setToolTip(tr("Show next image"));
+    mNextButton->setFlat(true);
+    mNextButton->setIconSize(s);
+
+    auto *navLayout = new QHBoxLayout(this);
+    navLayout->setContentsMargins(0, 0, 0, 0);
+    navLayout->addWidget(mPrevButton);
+    navLayout->addStretch();
+    navLayout->addWidget(mNextButton);
+    mPaintLayout->addLayout(navLayout);
 
     // add actions that cannot be found in the main menu
     DkActionManager &am = DkActionManager::instance();
@@ -167,8 +186,8 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     connect(am.action(DkActionManager::menu_sync_view), &QAction::triggered, this, &DkViewPort::tcpForceSynchronize);
 
     // playing
-    connect(mNavigationWidget, &DkHudNavigation::previousSignal, this, &DkViewPort::loadPrevFileFast);
-    connect(mNavigationWidget, &DkHudNavigation::nextSignal, this, &DkViewPort::loadNextFileFast);
+    connect(mPrevButton, &QPushButton::pressed, this, &DkViewPort::loadPrevFileFast);
+    connect(mNextButton, &QPushButton::pressed, this, &DkViewPort::loadNextFileFast);
 
     // trivial connects
     connect(this, &DkViewPort::movieLoadedSignal, [](bool movie) {
@@ -230,8 +249,9 @@ void DkViewPort::setPaintWidget(QWidget *widget, bool removeWidget)
         mPaintLayout->removeWidget(widget);
         // widget->deleteLater();
     }
-
     mController->raise();
+    mNextButton->raise();
+    mPrevButton->raise();
 }
 
 #ifdef WITH_OPENCV
@@ -1026,7 +1046,8 @@ void DkViewPort::paintEvent(QPaintEvent *event)
 void DkViewPort::leaveEvent(QEvent *event)
 {
     // hide navigation buttons if the mouse leaves the viewport
-    mNavigationWidget->hide();
+    mNextButton->hide();
+    mPrevButton->hide();
     DkBaseViewPort::leaveEvent(event);
 }
 
@@ -1304,12 +1325,16 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
         int left = qMin(100, qRound(0.1 * width()));
         int right = qMax(width() - 100, qRound(0.9 * width()));
 
-        if (event->pos().x() < left)
-            mNavigationWidget->showPrevious();
-        else if (event->pos().x() > right)
-            mNavigationWidget->showNext();
-        else if (mNavigationWidget->isVisible())
-            mNavigationWidget->hide();
+        if (event->pos().x() < left) {
+            mNextButton->hide();
+            mPrevButton->show();
+        } else if (event->pos().x() > right) {
+            mNextButton->show();
+            mPrevButton->hide();
+        } else {
+            mNextButton->hide();
+            mPrevButton->hide();
+        }
     }
 
     // qDebug() << "mouse move (DkViewPort)";
