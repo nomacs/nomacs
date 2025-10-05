@@ -67,6 +67,6 @@ protected:
 
     void createLayout(QMessageBox::Icon userIcon, const QString &userText, QMessageBox::StandardButtons buttons);
     void updateSize();
+    QPixmap msgBoxStandardIcon(QMessageBox::Icon icon);
 };
-
 }

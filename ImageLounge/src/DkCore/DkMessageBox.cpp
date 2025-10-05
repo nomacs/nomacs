@@ -66,9 +66,9 @@ DkMessageBox::~DkMessageBox()
 
 // Modified from
 // https://github.com/qt/qtbase/blob/cca658d4821b6d7378df13c29d1dab53c44359ac/src/widgets/dialogs/qmessagebox.cpp#L2735C1-L2761C2
-QPixmap msgBoxStandardIcon(QMessageBox::Icon icon)
+QPixmap DkMessageBox::msgBoxStandardIcon(QMessageBox::Icon icon)
 {
-    QStyle *style = QApplication::style();
+    QStyle *style = this->style();
     int iconSize = style->pixelMetric(QStyle::PM_MessageBoxIconSize);
     QIcon tmpIcon;
     switch (icon) {
@@ -90,7 +90,11 @@ QPixmap msgBoxStandardIcon(QMessageBox::Icon icon)
     if (tmpIcon.isNull()) {
         return {};
     }
-    return tmpIcon.pixmap(QSize(iconSize, iconSize), qApp->devicePixelRatio());
+
+    iconSize *= devicePixelRatio();
+    QPixmap pm = tmpIcon.pixmap(QSize(iconSize, iconSize), 1.0);
+    pm.setDevicePixelRatio(devicePixelRatio());
+    return pm;
 }
 
 void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
@@ -99,15 +103,18 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
 
+    auto *grid = new QGridLayout;
+    int leftMargin = style()->pixelMetric(QStyle::PM_LayoutLeftMargin, nullptr, this);
+    grid->setSpacing(leftMargin);
+
     // schamlos von qmessagebox.cpp geklaut
     textLabel = new QLabel(userText);
     textLabel->setTextInteractionFlags(
         Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, nullptr, this)));
-
+    textLabel->setObjectName(QLatin1String("textLabel"));
     textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     textLabel->setOpenExternalLinks(true);
-    textLabel->setContentsMargins(2, 0, 0, 0);
-    textLabel->setIndent(9);
+    textLabel->setIndent(0);
 
     iconLabel = new QLabel;
     iconLabel->setPixmap(msgBoxStandardIcon(userIcon));
@@ -115,6 +122,7 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     showAgain = new QCheckBox(tr("Remember my choice"));
+    showAgain->setObjectName(QLatin1String("checkBox"));
     showAgain->setChecked(true);
 
     buttonBox = new QDialogButtonBox;
@@ -124,10 +132,9 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
 
     buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
 
-    auto *grid = new QGridLayout;
 #if 1
     grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
-    grid->addWidget(textLabel, 0, 1, 1, 1);
+    grid->addWidget(textLabel, 0, 1, 2, 1);
     grid->addWidget(showAgain, 2, 1, 1, 2);
     grid->addWidget(buttonBox, 3, 0, 1, 2);
 #else
