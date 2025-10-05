@@ -658,6 +658,11 @@ void DkThemeManager::applyTheme()
             display.iconColor = display.themeIconColor;
         if (app.privateMode) // show pink icons if nomacs is in private mode; overrides user icon color
             display.iconColor = QColor(136, 0, 125);
+
+        auto &slideShow = DkSettingsManager::param().slideShow();
+        slideShow.themeBgdColor = QColor(51, 51, 51);
+        if (slideShow.defaultBgdColor)
+            slideShow.backgroundColor = slideShow.themeBgdColor;
     }
 
     QFileInfo themeFileInfo(themeDir(), getCurrentThemeName());
@@ -758,10 +763,11 @@ void DkThemeManager::applyTheme()
     DkPalette::printColor("themeIconColor", d.themeIconColor);
     DkPalette::printColor("iconColor", d.iconColor, d.defaultIconColor);
     DkPalette::printColor("bgColorFrameless", d.bgColorFrameless);
+    DkPalette::printColor("slideshow/themeBgdColor", DkSettingsManager::param().slideShow().themeBgdColor);
+    DkPalette::printColor("slideshow/bgColor", DkSettingsManager::param().slideShow().backgroundColor);
     DkPalette::printColor("highlightColor", d.highlightColor);
     DkPalette::printColor("hudBgColor", d.hudBgColor);
     DkPalette::printColor("hudFgdColor", d.hudFgdColor);
-    DkPalette::printColor("slideshowColor", DkSettingsManager::param().slideShow().backgroundColor);
 
     qDebug("-------palette---------");
     palette.print();
@@ -925,6 +931,7 @@ QString DkThemeManager::preprocess(const QString &cssString) const
         }
 
         auto &dpy = DkSettingsManager::param().display();
+        auto &slideShow = DkSettingsManager::param().slideShow();
         const auto &app = DkSettingsManager::param().app();
 
         if (name == "BACKGROUND_COLOR") {
@@ -949,6 +956,10 @@ QString DkThemeManager::preprocess(const QString &cssString) const
             dpy.themeIconColor = color;
             if (dpy.defaultIconColor && !app.privateMode)
                 dpy.iconColor = color;
+        } else if (name == "SLIDESHOW_COLOR") {
+            slideShow.themeBgdColor = color;
+            if (slideShow.defaultBgdColor)
+                slideShow.backgroundColor = color;
         } else
             qWarning() << "[theme] unknown color name" << name << color;
     };

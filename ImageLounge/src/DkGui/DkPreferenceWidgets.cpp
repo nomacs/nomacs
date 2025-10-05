@@ -286,19 +286,17 @@ void DkGeneralPreference::createLayout()
     auto &display = DkSettingsManager::param().display();
     auto &slideshow = DkSettingsManager::param().slideShow();
 
-    static bool noSetting = true; // TODO: defaultSlideShowColor
-    static const QColor defaultSlideShowColor(51, 51, 51); // TODO: themeSlideShowColor
-
     struct {
         const QString caption;
         const QColor *themeColor; // setting: system palette or theme css
         QColor *userColor; // setting: user modified color
         bool *isThemeColor; // setting: true if user modified a color
         DkColorChooser *chooser = nullptr;
-    } colors[] = {{tr("Icon Color"), &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
-                  {tr("Foreground Color"), &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
-                  {tr("Background Color"), &display.themeBgdColor, &display.bgColor, &display.defaultBackgroundColor},
-                  {tr("Fullscreen Color"), &defaultSlideShowColor, &slideshow.backgroundColor, &noSetting}};
+    } colors[] =
+        {{tr("Icon Color"), &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
+         {tr("Foreground Color"), &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
+         {tr("Background Color"), &display.themeBgdColor, &display.bgColor, &display.defaultBackgroundColor},
+         {tr("Fullscreen Color"), &slideshow.themeBgdColor, &slideshow.backgroundColor, &slideshow.defaultBgdColor}};
 
     for (auto &c : colors) {
         c.chooser = new DkColorChooser(*c.themeColor, c.caption, this);
