@@ -502,6 +502,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
     slideShow_p.backgroundColor = QColor::fromRgba(
         settings.value("backgroundColorRGBA", slideShow_p.backgroundColor.rgba()).toInt());
+    slideShow_p.defaultBgdColor = settings.value("defaultBackgroundColor", slideShow_p.defaultBgdColor).toBool();
     slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
     QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
 
@@ -789,6 +790,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("display", slideShow_p.display);
     if (force || slideShow_p.backgroundColor != slideShow_d.backgroundColor)
         settings.setValue("backgroundColorRGBA", slideShow_p.backgroundColor.rgba());
+    if (force || slideShow_p.defaultBgdColor != slideShow_d.defaultBgdColor)
+        settings.setValue("defaultBackgroundColor", slideShow_p.defaultBgdColor);
     if (force || slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
         settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
 
@@ -964,6 +967,7 @@ void DkSettings::setToDefaultSettings()
     slideShow_p.moveSpeed = 0; // TODO: set to 1 for finishing slideshow
     slideShow_p.display = QBitArray(display_end, true);
     slideShow_p.backgroundColor = QColor(51, 51, 51, 255);
+    slideShow_p.defaultBgdColor = true;
     slideShow_p.silentFullscreen = true;
 
     meta_p.saveExifOrientation = true;

@@ -299,6 +299,8 @@ public:
         bool silentFullscreen;
         QBitArray display;
         QColor backgroundColor;
+        bool defaultBgdColor;
+        QColor themeBgdColor;
         float moveSpeed;
     };
     struct Sync {
