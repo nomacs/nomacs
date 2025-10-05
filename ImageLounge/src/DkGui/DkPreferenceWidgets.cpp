@@ -291,16 +291,14 @@ void DkGeneralPreference::createLayout()
 
     struct {
         const QString caption;
-        const bool restartRequired;
         const QColor *themeColor; // setting: system palette or theme css
         QColor *userColor; // setting: user modified color
         bool *isThemeColor; // setting: true if user modified a color
         DkColorChooser *chooser = nullptr;
-    } colors[] =
-        {{tr("Icon Color"), false, &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
-         {tr("Foreground Color"), false, &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
-         {tr("Background Color"), false, &display.themeBgdColor, &display.bgColor, &display.defaultBackgroundColor},
-         {tr("Fullscreen Color"), false, &defaultSlideShowColor, &slideshow.backgroundColor, &noSetting}};
+    } colors[] = {{tr("Icon Color"), &display.themeIconColor, &display.iconColor, &display.defaultIconColor},
+                  {tr("Foreground Color"), &display.themeFgdColor, &display.fgColor, &display.defaultForegroundColor},
+                  {tr("Background Color"), &display.themeBgdColor, &display.bgColor, &display.defaultBackgroundColor},
+                  {tr("Fullscreen Color"), &defaultSlideShowColor, &slideshow.backgroundColor, &noSetting}};
 
     for (auto &c : colors) {
         c.chooser = new DkColorChooser(*c.themeColor, c.caption, this);
@@ -311,12 +309,9 @@ void DkGeneralPreference::createLayout()
         connect(c.chooser, &DkColorChooser::colorReset, this, [c]() {
             *c.isThemeColor = true;
         });
-        connect(c.chooser, &DkColorChooser::colorChanged, this, [this, c](const QColor &color) {
+        connect(c.chooser, &DkColorChooser::colorChanged, this, [c](const QColor &color) {
             *c.userColor = *c.isThemeColor ? *c.themeColor : color;
-            if (c.restartRequired)
-                emit infoSignal(restartText);
-            else
-                DkThemeManager::instance().applyTheme();
+            DkThemeManager::instance().applyTheme();
         });
         connect(&tm, &DkThemeManager::themeApplied, this, [c] {
             c.chooser->setDefaultColor(*c.themeColor); // reset uses new color
