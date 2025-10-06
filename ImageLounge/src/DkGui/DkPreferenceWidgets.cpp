@@ -810,6 +810,16 @@ void DkDisplayPreference::createLayout()
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
 
+    auto *enableHqThumbs = new QCheckBox(tr("Enable High Quality Thumbnails"));
+    enableHqThumbs->setChecked(DkSettingsManager::param().display().highQualityThumbs);
+    enableHqThumbs->setToolTip(tr("If checked, use the full-resolution image if EXIF thumbnail is too small."));
+    connect(enableHqThumbs, &QCheckBox::toggled, this, [](bool checked) {
+        DkSettingsManager::param().display().highQualityThumbs = checked;
+    });
+
+    auto *thumbsGroup = new DkGroupWidget(tr("Thumbnails"), this);
+    thumbsGroup->addWidget(enableHqThumbs);
+
     mColorProfiles = new QComboBox(this);
     mColorProfiles->setToolTip(tr("Choose the color profile of the monitor"));
     connect(mColorProfiles, &QComboBox::activated, this, &DkDisplayPreference::onColorProfileActivated);
@@ -938,6 +948,7 @@ void DkDisplayPreference::createLayout()
     l->setAlignment(Qt::AlignTop);
     l->addWidget(zoomGroup);
     l->addWidget(keepZoomGroup);
+    l->addWidget(thumbsGroup);
     l->addWidget(colorGroup);
     l->addWidget(iconGroup);
     l->addWidget(navigationGroup);
