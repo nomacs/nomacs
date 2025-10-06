@@ -164,6 +164,7 @@ private:
     std::vector<DkFileInfo> mFiles{};
 
     struct Thumb {
+        LoadThumbnailRequest request{};
         QImage image{};
         bool notExist{};
         bool fromExif{};
@@ -223,8 +224,11 @@ private:
     QPen mSelectPen;
     QBrush mSelectBrush;
     DkThumbLoader *mThumbLoader = nullptr;
+    LoadThumbnailRequest mThumbRequest{};
     bool mThumbNotExist = false;
     bool mFetchingThumb = false;
+    qreal mDevicePixelRatio = 1.0;
+    LoadThumbnailOption mThumbOption = LoadThumbnailOption::none;
     bool mIsHovered = false;
     bool mFillSquare = false;
 

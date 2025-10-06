@@ -366,7 +366,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         if (oobStart || oobEnd) {
             if (existsInTable && thumb->loading) {
-                mThumbLoader->cancelThumbnailRequest(filePath);
+                mThumbLoader->cancelThumbnailRequest(mThumbs[filePath].request);
                 mThumbs.remove(filePath);
             }
 
@@ -380,8 +380,9 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         if (!existsInTable) {
             Thumb newThumb;
             newThumb.loading = true;
+            newThumb.request = LoadThumbnailRequest{filePath};
             mThumbs.insert(filePath, newThumb);
-            mThumbLoader->requestThumbnail(filePath);
+            mThumbLoader->requestThumbnail(newThumb.request);
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0
@@ -918,6 +919,8 @@ void DkThumbLabel::onThumbnailLoaded(const QString &filePath, const QImage &thum
     }
 
     mFetchingThumb = false;
+    mThumbRequest = {};
+
     // update label
     mText.setPos(0, DkSettingsManager::param().effectiveThumbPreviewSize());
 
@@ -935,6 +938,7 @@ void DkThumbLabel::onThumbnailLoadFailed(const QString &filePath)
     }
     mThumbNotExist = true;
     mFetchingThumb = false;
+    mThumbRequest = {};
     update();
 }
 
@@ -957,8 +961,9 @@ void DkThumbLabel::cancelLoading()
     if (!mFetchingThumb) {
         return;
     }
-    mThumbLoader->cancelThumbnailRequest(mFilePath);
+    mThumbLoader->cancelThumbnailRequest(mThumbRequest);
     mFetchingThumb = false;
+    mThumbRequest = {};
 }
 
 QRectF DkThumbLabel::boundingRect() const
@@ -993,11 +998,13 @@ void DkThumbLabel::generatePixmap(const QImage &thumb)
         targetRect.moveCenter(br.center());
     }
 
-    const int w = DkSettingsManager::param().effectiveThumbPreviewSize();
-    QPixmap pm(w, w);
+    const QSize pixmapSize = (br.size() * mDevicePixelRatio).toSize();
+    QPixmap pm(pixmapSize);
+    pm.setDevicePixelRatio(mDevicePixelRatio);
     pm.fill(Qt::transparent);
+
     QPainter painter(&pm);
-    painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform);
     painter.drawImage(targetRect, thumb, srcRect);
 
     if (mPixmapKey) {
@@ -1044,11 +1051,17 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 {
     std::optional<QPixmap> pm = pixmap();
 
-    if (!mFetchingThumb && (!pm || pm->size() != boundingRect().size()) && !mThumbNotExist) {
+    mThumbOption = LoadThumbnailOption::none; // TODO: select current options from settings
+    mDevicePixelRatio = painter->device()->devicePixelRatio();
+    const QSize pixmapSize = (boundingRect().size() * mDevicePixelRatio).toSize();
+
+    if (!mFetchingThumb && (!pm || pm->size() != pixmapSize) && !mThumbNotExist) {
         // setting fetching flag first, because requestThumbnail might return thumbnail immediately
         // This avoids stucking infinitely in fetching thumb state
         mFetchingThumb = true;
-        mThumbLoader->requestThumbnail(mFilePath);
+        int maxSize = mThumbOption == LoadThumbnailOption::force_size ? pixmapSize.height() : max_thumb_size;
+        mThumbRequest = LoadThumbnailRequest{mFilePath, mThumbOption, maxSize};
+        mThumbLoader->requestThumbnail(mThumbRequest);
 
         // It is possible we have pixmap now (from cache), check again.
         pm = pixmap();
@@ -1420,6 +1433,7 @@ void DkThumbScene::resizeThumbs(float dx)
     if (newSize > 6 && newSize <= max_thumb_size) {
         DkSettingsManager::param().display().thumbPreviewSize = newSize;
         updateLayout();
+        // TODO: cancel anything no longer visible
     }
 }
 
@@ -2273,7 +2287,7 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
     QFileInfo fInfo(filePath);
     setToolTip(fInfo.fileName());
 
-    mLoader->requestThumbnail(filePath);
+    mLoader->requestThumbnail(LoadThumbnailRequest{filePath});
 }
 
 void DkThumbPreviewLabel::thumbLoaded(const QString &filePath, const QImage &img)
