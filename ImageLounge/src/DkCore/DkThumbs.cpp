@@ -118,12 +118,16 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
     }
 
     std::optional<ThumbnailFromMetadata> exifThumb{};
-    if (opt != LoadThumbnailOption::force_full) {
+    if (request.option != LoadThumbnailOption::force_full) {
         exifThumb = loadThumbnailFromMetadata(*metaData);
     }
 
     std::optional<QImage> fullThumb{};
-    if (opt != LoadThumbnailOption::force_exif && !exifThumb) {
+    bool loadFull = request.option != LoadThumbnailOption::force_exif && !exifThumb;
+    loadFull |= request.option == LoadThumbnailOption::force_size && exifThumb
+        && qMax(exifThumb->thumb.height(), exifThumb->thumb.width()) < request.size;
+    if (loadFull) {
+        exifThumb = {};
         fullThumb = loadThumbnailFromFullImage(thumbPath, ba);
     }
 
