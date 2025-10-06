@@ -65,6 +65,9 @@ enum class LoadThumbnailOption {
     // Only load EXIF thumbnail.
     force_exif,
 
+    // Return requested size if smaller than full image
+    force_size,
+
     // Only load full image.
     force_full,
 };
