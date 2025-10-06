@@ -84,16 +84,16 @@ std::optional<QImage> loadThumbnailFromFullImage(const QString &filePath, QShare
     }
 }
 
-std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt)
+std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request)
 {
     DkTimer dt{};
 
     auto metaData = std::make_unique<DkMetaDataT>();
     QSharedPointer<QByteArray> ba{};
-    DkFileInfo fileInfo(filePath);
+    DkFileInfo fileInfo(request.filePath);
 
     if (fileInfo.isSymLink() && !fileInfo.resolveSymLink()) {
-        qWarning() << "[Thumbnail] broken link:" << filePath;
+        qWarning() << "[Thumbnail] broken link:" << request.filePath;
         return std::nullopt;
     }
 
@@ -233,68 +233,69 @@ DkThumbLoader::DkThumbLoader()
     }
 }
 
-DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const QString &filePath)
+DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const LoadThumbnailRequest &request)
 {
-    const auto res = loadThumbnail(filePath, LoadThumbnailOption::none);
+    const auto res = loadThumbnail(request);
     if (!res) {
-        return {QImage(), filePath, false, false};
+        return {request, QImage(), false, false};
     }
-    return {DkImage::createThumb(res->thumb), filePath, true, res->fromExif};
+    return {request, DkImage::createThumb(res->thumb, request.size), true, res->fromExif};
 }
 
-DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const QString &filePath, const QImage &img)
+DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const LoadThumbnailRequest &request,
+                                                                          const QImage &img)
 {
-    return {DkImage::createThumb(img), filePath, true, false};
+    return {request, DkImage::createThumb(img), true, false};
 }
 
-void DkThumbLoader::requestThumbnail(const QString &filePath)
+void DkThumbLoader::requestThumbnail(const LoadThumbnailRequest &request)
 {
-    const auto *cached = mThumbnailCache.object(filePath);
+    const auto *cached = mThumbnailCache.object(request.id);
     if (cached) {
         if (!cached->valid) {
-            emit thumbnailLoadFailed(cached->filePath);
+            emit thumbnailLoadFailed(cached->request.filePath);
             return;
         }
 
-        emit thumbnailLoaded(cached->filePath, cached->thumb, cached->fromExif);
+        emit thumbnailLoaded(cached->request.filePath, cached->thumb, cached->fromExif);
         return;
     }
 
     if (mIdleWatchers.size() == 0) {
-        const int count = mCounts.value(filePath, 0);
+        const int count = mCounts.value(request.id, 0);
         if (count == 0) {
-            mQueue.push(filePath);
+            mQueue.push(request);
         }
-        mCounts.insert(filePath, count + 1);
+        mCounts.insert(request.id, count + 1);
         return;
     }
 
     auto *w = mIdleWatchers.back();
     mIdleWatchers.pop_back();
-    w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
+    w->setFuture(QtConcurrent::run(loadThumbnailLocal, request));
 }
 
-void DkThumbLoader::cancelThumbnailRequest(const QString &filePath)
+void DkThumbLoader::cancelThumbnailRequest(const LoadThumbnailRequest &request)
 {
-    auto it = mCounts.find(filePath);
+    auto it = mCounts.find(request.id);
     if (it == mCounts.end()) {
         return;
     }
     it.value() -= 1;
 }
 
-void DkThumbLoader::dispatchFullImage(const QString &filePath, const QImage &img)
+void DkThumbLoader::dispatchFullImage(const LoadThumbnailRequest &request, const QImage &img)
 {
     if (mIdleWatchers.size() == 0) {
         // Full image takes priority, so we can skip the pending requests
-        mCounts.remove(filePath);
-        mFullImageQueue.push({img, filePath, true, false});
+        mCounts.remove(request.id);
+        mFullImageQueue.push({request, img, true, false});
         return;
     }
 
     auto *w = mIdleWatchers.back();
     mIdleWatchers.pop_back();
-    w->setFuture(QtConcurrent::run(scaleFullThumbnail, filePath, img));
+    w->setFuture(QtConcurrent::run(scaleFullThumbnail, request, img));
 }
 
 void DkThumbLoader::onThumbnailLoadFinished()
@@ -307,36 +308,48 @@ void DkThumbLoader::onThumbnailLoadFinished()
     handleFinishedWatcher(w);
 
     if (!res->valid) { // NOLINT(clang-analyzer-core.uninitialized.Branch) -- false positive
-        emit thumbnailLoadFailed(res->filePath);
-        mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size());
+        emit thumbnailLoadFailed(res->request.filePath);
+        mThumbnailCache.insert(res->request.id, res, 1 + res->sizeInBytes());
         return;
     }
 
-    emit thumbnailLoaded(res->filePath, res->thumb, res->fromExif);
+    emit thumbnailLoaded(res->request.filePath, res->thumb, res->fromExif);
 
     // Add cache after finished using res because the cache takes ownership.
     // Add 1 to avoid zero cost.
-    mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size() + res->thumb.sizeInBytes());
+    mThumbnailCache.insert(res->request.id, res, 1 + res->sizeInBytes());
 }
 
 void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w)
 {
     if (mFullImageQueue.size() > 0) {
         const LoadThumbnailResultLocal &item = mFullImageQueue.front();
-        w->setFuture(QtConcurrent::run(scaleFullThumbnail, item.filePath, item.thumb));
+        w->setFuture(QtConcurrent::run(scaleFullThumbnail, item.request, item.thumb));
         mFullImageQueue.pop();
         return;
     }
 
     while (mQueue.size() > 0) {
-        const QString filePath = mQueue.front();
+        const auto request = mQueue.front();
         mQueue.pop();
-        if (mCounts.value(filePath, 0) > 0) {
-            mCounts.remove(filePath);
-            w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
+        if (mCounts.value(request.id, 0) > 0) {
+            mCounts.remove(request.id);
+            w->setFuture(QtConcurrent::run(loadThumbnailLocal, request));
             return;
         }
     }
     mIdleWatchers.push_back(w);
+}
+
+LoadThumbnailRequest::LoadThumbnailRequest(const QString &filePath_, LoadThumbnailOption option_, int maxSize_)
+    : filePath(filePath_)
+    , option(option_)
+    , size(maxSize_)
+{
+    QString key = filePath;
+    key += QString::number(static_cast<int>(option));
+    key += QString::number(size);
+
+    id = qHash(key);
 }
 }

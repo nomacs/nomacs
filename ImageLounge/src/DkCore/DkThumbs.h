@@ -58,14 +58,6 @@ private:
     QThreadPool *mPool;
 };
 
-struct LoadThumbnailResult {
-    QImage thumb{};
-    QString filePath{};
-    std::unique_ptr<DkMetaDataT> metaData{};
-    bool fromExif{};
-    bool transformed{};
-};
-
 enum class LoadThumbnailOption {
     // Try to load EXIF thumbnail first, and fall back to full image if not exist.
     none,
@@ -77,7 +69,35 @@ enum class LoadThumbnailOption {
     force_full,
 };
 
-std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt);
+using ThumbnailId = size_t;
+
+struct LoadThumbnailRequest {
+    ThumbnailId id{};
+    QString filePath{};
+    LoadThumbnailOption option{};
+    int size{};
+
+    LoadThumbnailRequest() = default;
+
+    explicit LoadThumbnailRequest(const QString &filePath,
+                                  LoadThumbnailOption option = LoadThumbnailOption::none,
+                                  int maxSize = 400);
+
+    size_t sizeInBytes()
+    {
+        return sizeof(this) + filePath.size() * 2;
+    }
+};
+
+struct LoadThumbnailResult {
+    QImage thumb{};
+    QString filePath{};
+    std::unique_ptr<DkMetaDataT> metaData{};
+    bool fromExif{};
+    bool transformed{};
+};
+
+std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request);
 
 struct ThumbnailFromMetadata {
     QImage thumb{};
@@ -91,37 +111,41 @@ class DkThumbLoader : public QObject
     Q_OBJECT
 
     struct LoadThumbnailResultLocal {
+        LoadThumbnailRequest request;
         QImage thumb{};
-        QString filePath{};
         bool valid{};
         bool fromExif{};
+        size_t sizeInBytes()
+        {
+            return sizeof(this) + request.sizeInBytes() + request.sizeInBytes() + thumb.sizeInBytes();
+        }
     };
 
-    QCache<QString, LoadThumbnailResultLocal> mThumbnailCache{100000000}; // 100 MB
+    QCache<ThumbnailId, LoadThumbnailResultLocal> mThumbnailCache{100000000}; // 100 MB
     std::vector<QFutureWatcher<LoadThumbnailResultLocal>> mWatchers{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal> *> mIdleWatchers{};
-    std::queue<QString> mQueue{};
+    std::queue<LoadThumbnailRequest> mQueue{};
     std::queue<LoadThumbnailResultLocal> mFullImageQueue{};
-    QHash<QString, int> mCounts{};
+    QHash<ThumbnailId, int> mCounts{};
 
 public:
     DkThumbLoader();
-    void requestThumbnail(const QString &filePath);
-    void cancelThumbnailRequest(const QString &filePath);
+    void requestThumbnail(const LoadThumbnailRequest &request);
+    void cancelThumbnailRequest(const LoadThumbnailRequest &request);
 
     // When we have full image loaded in the viewport,
     // create a side effect to update the thumbnail.
-    void dispatchFullImage(const QString &filePath, const QImage &img);
+    void dispatchFullImage(const LoadThumbnailRequest &request, const QImage &img);
 
 signals:
+    // TODO: signals should return request object or id
     void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
     void thumbnailLoadFailed(const QString &filePath);
-    void thumbnailRequested(const QString &filePath, LoadThumbnailOption opt = LoadThumbnailOption::force_exif);
 
 private:
     void onThumbnailLoadFinished();
-    static LoadThumbnailResultLocal loadThumbnailLocal(const QString &filePath);
-    static LoadThumbnailResultLocal scaleFullThumbnail(const QString &filePath, const QImage &img);
+    static LoadThumbnailResultLocal loadThumbnailLocal(const LoadThumbnailRequest &request);
+    static LoadThumbnailResultLocal scaleFullThumbnail(const LoadThumbnailRequest &request, const QImage &img);
     void handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w);
 };
 }
