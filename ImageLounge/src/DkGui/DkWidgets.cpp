@@ -182,7 +182,7 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
             }
 
             // FIXME: must ignore orientation metadata here
-            std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
+            std::optional<LoadThumbnailResult> res = loadThumbnail(LoadThumbnailRequest{filePath, opt});
             if (!res || (!forceSave && res->fromExif)) {
                 return;
             }
