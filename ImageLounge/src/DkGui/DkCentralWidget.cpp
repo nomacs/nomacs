@@ -793,7 +793,7 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
     }
 
     if (img && !img->isEdited()) {
-        mThumbLoader.dispatchFullImage(img->filePath(), img->pixmap());
+        mThumbLoader.dispatchFullImage(LoadThumbnailRequest{img->filePath()}, img->pixmap());
     }
 }
 
