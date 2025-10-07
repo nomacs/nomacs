@@ -34,6 +34,7 @@
 #include <optional>
 #include <queue>
 
+#include "DkImageStorage.h"
 #include "DkMetaData.h"
 
 class QThreadPool;
@@ -79,12 +80,14 @@ struct LoadThumbnailRequest {
     QString filePath{};
     LoadThumbnailOption option{};
     int size{};
+    ScaleConstraint constraint{};
 
     LoadThumbnailRequest() = default;
 
     explicit LoadThumbnailRequest(const QString &filePath_,
                                   LoadThumbnailOption option_ = {},
-                                  int size_ = max_thumb_size);
+                                  int size_ = max_thumb_size,
+                                  ScaleConstraint constraint_ = {});
 
     size_t sizeInBytes()
     {

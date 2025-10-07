@@ -29,7 +29,6 @@
 
 #include "DkBasicLoader.h"
 #include "DkFileInfo.h"
-#include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
@@ -243,13 +242,13 @@ DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const 
     if (!res) {
         return {request, QImage(), false, false};
     }
-    return {request, DkImage::createThumb(res->thumb, request.size), true, res->fromExif};
+    return {request, DkImage::createThumb(res->thumb, request.size, request.constraint), true, res->fromExif};
 }
 
 DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const LoadThumbnailRequest &request,
                                                                           const QImage &img)
 {
-    return {request, DkImage::createThumb(img), true, false};
+    return {request, DkImage::createThumb(img, request.size, request.constraint), true, false};
 }
 
 void DkThumbLoader::requestThumbnail(const LoadThumbnailRequest &request)
@@ -345,13 +344,18 @@ void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLoca
     mIdleWatchers.push_back(w);
 }
 
-LoadThumbnailRequest::LoadThumbnailRequest(const QString &filePath_, LoadThumbnailOption option_, int size_)
+LoadThumbnailRequest::LoadThumbnailRequest(const QString &filePath_,
+                                           LoadThumbnailOption option_,
+                                           int size_,
+                                           ScaleConstraint constraint_)
     : filePath(filePath_)
     , option(option_)
     , size(size_)
+    , constraint(constraint_)
 {
     QString key = filePath;
     key += QString::number(static_cast<int>(option));
+    key += QString::number(static_cast<int>(constraint_));
     key += QString::number(size);
 
     id = qHash(key);
