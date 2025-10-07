@@ -47,6 +47,14 @@ namespace nmc
 {
 class DkRotatingRect;
 
+// sets if width or height is used for aspect-preserving rescale (createThumb etc)
+enum class ScaleConstraint {
+    longest_side, // use width if > height
+    shortest_side, // use width if < height
+    width,
+    height
+};
+
 /**
  * DkImage holds some basic image processing
  * methods that are generally needed.
@@ -121,7 +129,7 @@ public:
      * @note size passed through QIcon::addFile is ignored; we always render the requested size
      */
     static QIcon loadIcon(const QString &filePath, const QColor &color = {});
-    static QImage createThumb(const QImage &img, int maxSize = -1);
+    static QImage createThumb(const QImage &img, int maxSize = -1, ScaleConstraint constraint = {});
     static uchar findHistPeak(const int *hist, float quantile = 0.005f);
     static QPixmap makeSquare(const QPixmap &pm);
     static QPixmap merge(const QVector<QImage> &imgs);
