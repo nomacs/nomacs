@@ -998,13 +998,30 @@ void DkThumbLabel::generatePixmap(const QImage &thumb)
         targetRect.moveCenter(br.center());
     }
 
+    bool unscaled = std::abs(targetRect.height() * mDevicePixelRatio - srcRect.height()) < 1.0;
+    if (unscaled) {
+        // we have a device-scaled thumbnail, but rounding will result in interpolation
+        // adjust to get closer to ideal scale factor and reduce this
+        qreal scaleFactor = srcRect.height() / targetRect.height();
+        qreal scaleDiff = mDevicePixelRatio - scaleFactor;
+        qreal dx = srcRect.width() * scaleDiff / 2.0;
+        qreal dy = srcRect.height() * scaleDiff / 2.0;
+        srcRect = srcRect.adjusted(-dx, -dy, dx, dy);
+
+        // qreal adjFactorH = mDevicePixelRatio - (srcRect.height() / targetRect.height());
+        // qreal adjFactorW = mDevicePixelRatio - (srcRect.width() / targetRect.width());
+        // qDebug() << "SF" << scaleDiff << adjFactorH << adjFactorW;
+    }
+
     const QSize pixmapSize = (br.size() * mDevicePixelRatio).toSize();
     QPixmap pm(pixmapSize);
     pm.setDevicePixelRatio(mDevicePixelRatio);
     pm.fill(Qt::transparent);
 
     QPainter painter(&pm);
-    painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    if (!unscaled) {
+        painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    }
     painter.drawImage(targetRect, thumb, srcRect);
 
     if (mPixmapKey) {
@@ -1051,7 +1068,8 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 {
     std::optional<QPixmap> pm = pixmap();
 
-    mThumbOption = LoadThumbnailOption::none; // TODO: select current options from settings
+    mThumbOption = DkSettingsManager::param().display().highQualityThumbs ? LoadThumbnailOption::force_size
+                                                                          : LoadThumbnailOption::none;
     mDevicePixelRatio = painter->device()->devicePixelRatio();
     const QSize pixmapSize = (boundingRect().size() * mDevicePixelRatio).toSize();
 
@@ -1060,7 +1078,9 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         // This avoids stucking infinitely in fetching thumb state
         mFetchingThumb = true;
         int maxSize = mThumbOption == LoadThumbnailOption::force_size ? pixmapSize.height() : max_thumb_size;
-        mThumbRequest = LoadThumbnailRequest{mFilePath, mThumbOption, maxSize};
+        auto constraint = DkSettingsManager::param().display().displaySquaredThumbs ? ScaleConstraint::shortest_side
+                                                                                    : ScaleConstraint::longest_side;
+        mThumbRequest = LoadThumbnailRequest{mFilePath, mThumbOption, maxSize, constraint};
         mThumbLoader->requestThumbnail(mThumbRequest);
 
         // It is possible we have pixmap now (from cache), check again.

@@ -1625,11 +1625,26 @@ QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint co
         Q_UNREACHABLE();
     }
 
-    // fast downscaling
-    QImage thumb = image.scaled(QSize(imgW * 2, imgH * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
-    thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QImage thumb;
 
-    // qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
+#ifdef WITH_OPENCV
+    if (DkSettingsManager::param().display().highQualityThumbs) {
+        try {
+            cv::Mat rImgCv = DkImage::qImage2Mat(image);
+            cv::Mat tmp;
+            cv::resize(rImgCv, tmp, cv::Size(imgW, imgH), 0, 0, CV_INTER_AREA);
+            thumb = DkImage::mat2QImage(tmp);
+        } catch (...) {
+            qWarning() << "imageStorageScaleToSize: OpenCV exception caught while resizing...";
+        }
+    }
+#endif
+
+    if (thumb.isNull()) {
+        // fast downscaling
+        thumb = image.scaled(QSize(imgW * 2, imgH * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
+        thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
 
     return thumb;
 }
