@@ -345,10 +345,10 @@ void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLoca
     mIdleWatchers.push_back(w);
 }
 
-LoadThumbnailRequest::LoadThumbnailRequest(const QString &filePath_, LoadThumbnailOption option_, int maxSize_)
+LoadThumbnailRequest::LoadThumbnailRequest(const QString &filePath_, LoadThumbnailOption option_, int size_)
     : filePath(filePath_)
     , option(option_)
-    , size(maxSize_)
+    , size(size_)
 {
     QString key = filePath;
     key += QString::number(static_cast<int>(option));

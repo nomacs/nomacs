@@ -82,9 +82,9 @@ struct LoadThumbnailRequest {
 
     LoadThumbnailRequest() = default;
 
-    explicit LoadThumbnailRequest(const QString &filePath,
-                                  LoadThumbnailOption option = LoadThumbnailOption::none,
-                                  int maxSize = 400);
+    explicit LoadThumbnailRequest(const QString &filePath_,
+                                  LoadThumbnailOption option_ = {},
+                                  int size_ = max_thumb_size);
 
     size_t sizeInBytes()
     {
