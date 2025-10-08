@@ -282,7 +282,6 @@ void DkFilePreview::paintEvent(QPaintEvent *)
     painter.setWorldTransform(worldMatrix);
     painter.setWorldMatrixEnabled(true);
 
-    painter.setRenderHint(QPainter::SmoothPixmapTransform);
     drawThumbs(&painter);
 
     if (currentFileIdx != oldFileIdx && currentFileIdx >= 0) {
@@ -379,6 +378,8 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         // only fetch thumbs if we are not moving too fast...
         if (!existsInTable) {
             int size = max_thumb_size;
+            ScaleConstraint constraint = orientation == Qt::Horizontal ? ScaleConstraint::height
+                                                                       : ScaleConstraint::width;
             LoadThumbnailOption option = LoadThumbnailOption::none;
             if (DkSettingsManager::param().display().highQualityThumbs) {
                 size = r.height() * this->devicePixelRatio();
@@ -387,7 +388,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
             Thumb newThumb;
             newThumb.loading = true;
-            newThumb.request = LoadThumbnailRequest{filePath, option, size, ScaleConstraint::height};
+            newThumb.request = LoadThumbnailRequest{filePath, option, size, constraint};
 
             mThumbs.insert(filePath, newThumb);
             mThumbLoader->requestThumbnail(newThumb.request);
