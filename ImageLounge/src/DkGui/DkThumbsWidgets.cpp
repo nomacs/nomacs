@@ -93,7 +93,7 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
                 if (!mThumbs.contains(filePath)) {
                     return;
                 }
-                mThumbs[filePath].image = DkImage::createThumb(thumb);
+                mThumbs[filePath].image = thumb;
                 mThumbs[filePath].fromExif = fromExif;
                 mThumbs[filePath].loading = false;
                 update();
@@ -326,7 +326,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         //	qDebug() << thumb->getFilePath() << "size:" << img.size();
 
         QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
-        QRectF r = !img.isNull() ? QRectF(anchor, img.size())
+        QRectF r = !img.isNull() ? QRectF(anchor, img.size() / devicePixelRatio())
                                  : QRectF(anchor,
                                           QSize(DkSettingsManager::param().effectiveThumbSize(this),
                                                 DkSettingsManager::param().effectiveThumbSize(this)));
@@ -378,9 +378,17 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         // only fetch thumbs if we are not moving too fast...
         if (!existsInTable) {
+            int size = max_thumb_size;
+            LoadThumbnailOption option = LoadThumbnailOption::none;
+            if (DkSettingsManager::param().display().highQualityThumbs) {
+                size = r.height() * this->devicePixelRatio();
+                option = LoadThumbnailOption::force_size;
+            }
+
             Thumb newThumb;
             newThumb.loading = true;
-            newThumb.request = LoadThumbnailRequest{filePath};
+            newThumb.request = LoadThumbnailRequest{filePath, option, size, ScaleConstraint::height};
+
             mThumbs.insert(filePath, newThumb);
             mThumbLoader->requestThumbnail(newThumb.request);
         }
@@ -397,8 +405,16 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         if (isRightGradient && !img.isNull())
             img = applyFadeOut(rightGradient, imgWorldRect, img);
 
+        bool unscaled = std::abs(r.height() * devicePixelRatio() - img.height()) < 1.0;
+        painter->setRenderHint(QPainter::SmoothPixmapTransform, !unscaled);
+        if (unscaled) {
+            qreal adj = img.height() / devicePixelRatio() - r.height();
+            adj /= 2.0;
+            r = r.adjusted(-adj, -adj, adj, adj);
+        }
+
         if (!img.isNull())
-            painter->drawImage(r, img, QRect(QPoint(), img.size()));
+            painter->drawImage(r, img);
         else
             drawNoImgEffect(painter, r);
 

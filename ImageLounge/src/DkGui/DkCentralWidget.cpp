@@ -792,7 +792,7 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
         switchWidget(tabInfo->getMode());
     }
 
-    if (img && !img->isEdited()) {
+    if (img && !img->isEdited() && !DkSettingsManager::param().display().highQualityThumbs) {
         mThumbLoader.dispatchFullImage(LoadThumbnailRequest{img->filePath()}, img->pixmap());
     }
 }
