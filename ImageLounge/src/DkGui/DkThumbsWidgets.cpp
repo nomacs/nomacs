@@ -1208,7 +1208,6 @@ void DkThumbScene::updateLayout()
     int tso = psz + mXOffset;
     setSceneRect(0, 0, mNumCols * tso + mXOffset, mNumRows * tso + mXOffset);
 
-    DkTimer dt;
     int cYOffset = mXOffset;
 
     for (int rIdx = 0; rIdx < mNumRows; rIdx++) {
@@ -1229,10 +1228,14 @@ void DkThumbScene::updateLayout()
         cYOffset += psz + mXOffset; // 20 for label
     }
 
-    for (int idx = 0; idx < mThumbLabels.size(); idx++) {
-        if (mThumbLabels.at(idx)->isSelected())
-            mThumbLabels.at(idx)->ensureVisible();
+    DkThumbLabel *lastSelected = nullptr;
+    for (DkThumbLabel *thumb : std::as_const(mThumbLabels)) {
+        thumb->cancelLoading(); // visibility and/or size may have changed
+        if (thumb->isSelected())
+            lastSelected = thumb;
     }
+    if (lastSelected)
+        lastSelected->ensureVisible();
     update();
 }
 
