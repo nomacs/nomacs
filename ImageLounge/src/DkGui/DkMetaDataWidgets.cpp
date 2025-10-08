@@ -481,6 +481,7 @@ void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC)
     }
 
     QImage thumbImg = res->thumb;
+    thumbImg.setDevicePixelRatio(devicePixelRatio());
 
     const QSize tSize = thumbImg.size();
     const qint64 tSizeBytes = thumbImg.sizeInBytes();
