@@ -145,9 +145,11 @@ void DkManipulatorWidget::createLayout()
 void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC)
 {
     if (imgC) {
+        qreal dpr = devicePixelRatio();
         QImage img = imgC->image();
-        QSize newSize = img.size().scaled(mPreview->contentsRect().size(), Qt::KeepAspectRatio);
+        QSize newSize = img.size().scaled(mPreview->contentsRect().size() * dpr, Qt::KeepAspectRatio);
         img = img.scaledToWidth(newSize.width(), Qt::SmoothTransformation);
+        img.setDevicePixelRatio(dpr);
         mPreview->setPixmap(QPixmap::fromImage(img));
         mPreview->show();
     } else {
