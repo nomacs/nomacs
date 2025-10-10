@@ -164,7 +164,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
     connect(am.action(DkActionManager::menu_edit_rotate_180), &QAction::triggered, this, &DkViewPort::rotate180);
     connect(am.action(DkActionManager::menu_edit_transform), &QAction::triggered, this, &DkViewPort::resizeImage);
     connect(am.action(DkActionManager::menu_edit_delete), &QAction::triggered, this, &DkViewPort::deleteImage);
-    connect(am.action(DkActionManager::menu_edit_copy), &QAction::triggered, this, &DkViewPort::copyImage);
+    connect(am.action(DkActionManager::menu_edit_copy), &QAction::triggered, this, &DkViewPort::copyImagePath);
     connect(am.action(DkActionManager::menu_edit_copy_buffer), &QAction::triggered, this, &DkViewPort::copyImageBuffer);
     connect(am.action(DkActionManager::menu_edit_copy_color),
             &QAction::triggered,
@@ -1370,7 +1370,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
         && !getImage().isNull() && mLoader
         && !QApplication::widgetAt(event->globalPosition().toPoint())) { // is NULL if the mouse leaves the window
 
-        QMimeData *mimeData = createMime();
+        QMimeData *mimeData = createMimeForDrag();
 
         QPixmap pm;
         if (!getImage().isNull())
@@ -1559,56 +1559,58 @@ void DkViewPort::copyPixelColorValue()
         return;
 
     auto *mimeData = new QMimeData;
-
-    if (!getImage().isNull())
-        mimeData->setText(getCurrentPixelHexValue());
-
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setMimeData(mimeData);
+    mimeData->setText(getCurrentPixelHexValue());
+    QApplication::clipboard()->setMimeData(mimeData);
 }
 
-void DkViewPort::copyImage()
+void DkViewPort::copyImagePath()
 {
-    QMimeData *mimeData = createMime();
-
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setMimeData(mimeData);
-}
-
-QMimeData *DkViewPort::createMime() const
-{
-    if (getImage().isNull() || !mLoader)
-        return nullptr;
-
-    // NOTE: if we do the file:/// thingy, we will get into problems with mounted drives (e.g. //hermes...)
-    QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
-
-    QList<QUrl> urls;
-    urls.append(fileUrl);
+    if (!mLoader) {
+        return;
+    }
 
     auto *mimeData = new QMimeData;
 
-    if (QFileInfo(mLoader->filePath()).exists() && !mLoader->isEdited()) {
-        mimeData->setUrls(urls);
+    // NOTE: if we simply prepend "file://", we will get into problems with mounted drives (e.g. //hermes...)
+    QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
+    mimeData->setUrls({fileUrl});
+    mimeData->setText(fileUrl.toLocalFile());
+    QApplication::clipboard()->setMimeData(mimeData);
+}
+
+QMimeData *DkViewPort::createMimeForDrag() const
+{
+    if (!mLoader) {
+        return nullptr;
+    }
+
+    auto *mimeData = new QMimeData;
+
+    QImage img = getImage();
+    QString filePath = mLoader->filePath();
+    DkFileInfo fileInfo(filePath);
+
+    // Provide image buffer if file edited or cannot be opened by receiver
+    if (!img.isNull() && (mLoader->isEdited() || !fileInfo.exists() || fileInfo.isFromZip())) {
+        mimeData->setImageData(img);
+    } else {
+        QUrl fileUrl = QUrl::fromLocalFile(filePath);
+        mimeData->setUrls({fileUrl});
         mimeData->setText(fileUrl.toLocalFile());
-    } else if (!getImage().isNull())
-        mimeData->setImageData(getImage());
+    }
 
     return mimeData;
 }
 
 void DkViewPort::copyImageBuffer()
 {
-    if (getImage().isNull())
+    QImage img = getImage();
+    if (img.isNull())
         return;
 
     auto *mimeData = new QMimeData;
-
-    if (!getImage().isNull())
-        mimeData->setImageData(getImage());
-
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setMimeData(mimeData);
+    mimeData->setImageData(img);
+    QApplication::clipboard()->setMimeData(mimeData);
 }
 
 void DkViewPort::animateFade()
