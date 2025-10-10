@@ -534,6 +534,16 @@ void DkFilePreview::resizeEvent(QResizeEvent *event)
         moveImageTimer->start();
     }
 
+    if (DkSettingsManager::param().display().highQualityThumbs
+        && ((orientation == Qt::Horizontal && event->size().height() != event->oldSize().height())
+            || (orientation == Qt::Vertical && event->size().width() != event->oldSize().width()))) {
+        for (auto &thumb : mThumbs) {
+            if (thumb.loading)
+                mThumbLoader->cancelThumbnailRequest(thumb.request);
+        }
+        mThumbs.clear();
+    }
+
     // now update...
     borderTrigger = (orientation == Qt::Horizontal) ? (float)width() * winPercent : (float)height() * winPercent;
     int borderTriggerI = qRound(borderTrigger);
