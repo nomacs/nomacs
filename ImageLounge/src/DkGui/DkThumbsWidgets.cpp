@@ -633,13 +633,14 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
                     // if (fileLabel->height() < height())
                     //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
                     const DkFileInfo &fileInfo = mFiles[selected];
-                    auto thumb = mThumbs.constFind(fileInfo.path());
-                    Q_ASSERT(thumb != mThumbs.constEnd());
 
                     QString str = QObject::tr("Name: ") % fileInfo.fileName() % "\n" % QObject::tr("Size: ")
                         % DkUtils::readableByte((float)fileInfo.size()) % "\n" % QObject::tr("Created: ")
                         % fileInfo.birthTime().toString();
-                    if (!thumb->notExist) {
+
+                    // NOTE: it is possible thumb was not found, may have been dropped for a refresh
+                    auto thumb = mThumbs.constFind(fileInfo.path());
+                    if (thumb != mThumbs.constEnd() && !thumb->notExist) {
                         const QImage &img = thumb->image;
                         str = str % "\n" % QObject::tr("Thumb: ") % QString::number(img.size().width()) % "x"
                             % QString::number(img.size().height()) % " "
