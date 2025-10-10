@@ -1160,11 +1160,11 @@ void DkActionManager::createActions(QWidget *parent)
 
     mEditActions[menu_edit_copy] = new QAction(mEditIcons[icon_edit_copy], QObject::tr("&Copy"), parent);
     mEditActions[menu_edit_copy]->setShortcut(QKeySequence::Copy);
-    mEditActions[menu_edit_copy]->setStatusTip(QObject::tr("copy image"));
+    mEditActions[menu_edit_copy]->setStatusTip(QObject::tr("copy file path"));
 
     mEditActions[menu_edit_copy_buffer] = new QAction(QObject::tr("Copy &Buffer"), parent);
     mEditActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
-    mEditActions[menu_edit_copy_buffer]->setStatusTip(QObject::tr("copy image"));
+    mEditActions[menu_edit_copy_buffer]->setStatusTip(QObject::tr("copy image pixels"));
 
     mEditActions[menu_edit_copy_color] = new QAction(QObject::tr("Copy Co&lor"), parent);
     mEditActions[menu_edit_copy_color]->setShortcut(shortcut_copy_color);

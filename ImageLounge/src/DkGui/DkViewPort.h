@@ -145,8 +145,8 @@ public slots:
     // copy & paste
     void copyPixelColorValue();
     void copyImageBuffer();
-    void copyImage();
-    QMimeData *createMime() const;
+    void copyImagePath();
+    QMimeData *createMimeForDrag() const;
 
     // image manipulators
     virtual void applyManipulator();
