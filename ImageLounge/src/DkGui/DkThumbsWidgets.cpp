@@ -90,21 +90,26 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
             &DkThumbLoader::thumbnailLoaded,
             this,
             [this](const QString &filePath, const QImage &thumb, const bool fromExif) {
-                if (!mThumbs.contains(filePath)) {
+                auto it = mThumbs.find(filePath);
+                if (it == mThumbs.end()) {
                     return;
                 }
-                mThumbs[filePath].image = thumb;
-                mThumbs[filePath].fromExif = fromExif;
-                mThumbs[filePath].loading = false;
+                Thumb &th = *it;
+                th.request = {};
+                th.image = thumb;
+                th.fromExif = fromExif;
+                th.loading = false;
                 update();
             });
 
     connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &filePath) {
-        if (!mThumbs.contains(filePath)) {
+        auto it = mThumbs.find(filePath);
+        if (it == mThumbs.end()) {
             return;
         }
-        mThumbs[filePath].notExist = true;
-        mThumbs[filePath].loading = false;
+        Thumb &th = *it;
+        th.notExist = true;
+        th.loading = false;
         update();
     });
 }
@@ -365,7 +370,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         if (oobStart || oobEnd) {
             if (existsInTable && thumb->loading) {
-                mThumbLoader->cancelThumbnailRequest(mThumbs[filePath].request);
+                mThumbLoader->cancelThumbnailRequest(thumb->request);
                 mThumbs.remove(filePath);
             }
 
