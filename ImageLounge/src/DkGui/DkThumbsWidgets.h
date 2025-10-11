@@ -247,6 +247,9 @@ public:
     QStringList getSelectedFiles() const;
     QVector<DkThumbLabel *> getSelectedThumbs() const;
 
+    /// return thumb in the middle of the (visible) view
+    DkThumbLabel *getCenterThumb() const;
+
     void setImageLoader(QSharedPointer<DkImageLoader> loader);
     void copyImages(const QMimeData *mimeData, const Qt::DropAction &da = Qt::CopyAction) const;
     int findThumb(DkThumbLabel *thumb) const;

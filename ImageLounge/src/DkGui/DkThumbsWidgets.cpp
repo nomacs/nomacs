@@ -1500,8 +1500,20 @@ void DkThumbScene::resizeThumbs(float dx)
 
     if (newSize > 6 && newSize <= max_thumb_size) {
         DkSettingsManager::param().display().thumbPreviewSize = newSize;
+
+        QString centerPath{};
+        DkThumbLabel *centerThumb = getCenterThumb();
+        if (centerThumb) {
+            centerPath = centerThumb->filePath();
+            centerThumb = nullptr; // potentially invalidated by updateLayout()
+        }
+
         updateLayout();
         // TODO: cancel anything no longer visible
+
+        if (selectedItems().empty() && !centerPath.isEmpty()) {
+            ensureVisible(centerPath);
+        }
     }
 }
 
@@ -1780,6 +1792,24 @@ QVector<DkThumbLabel *> DkThumbScene::getSelectedThumbs() const
     }
 
     return selected;
+}
+
+DkThumbLabel *DkThumbScene::getCenterThumb() const
+{
+    DkThumbLabel *centerThumb = nullptr;
+
+    auto viewList = views();
+    if (!viewList.empty()) {
+        QGraphicsView *view = viewList.at(0);
+        // we can't test a point since we might hit the space between items
+        QRect centerRect = QRect{view->rect().center(), QSize{1, 1}}.adjusted(-8, -8, 8, 8);
+        QList<QGraphicsItem *> centerItems = view->items(centerRect, Qt::IntersectsItemBoundingRect);
+        if (!centerItems.isEmpty()) {
+            centerThumb = static_cast<DkThumbLabel *>(centerItems.at(0));
+        }
+    }
+
+    return centerThumb;
 }
 
 int DkThumbScene::findThumb(DkThumbLabel *thumb) const
