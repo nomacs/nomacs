@@ -1267,8 +1267,10 @@ void DkThumbScene::updateLayout()
         if (thumb->isSelected())
             lastSelected = thumb;
     }
+
     if (lastSelected)
-        lastSelected->ensureVisible();
+        ensureVisible(lastSelected->filePath());
+
     update();
 }
 
@@ -1418,9 +1420,19 @@ void DkThumbScene::showFile(const QString &filePath)
 
 void DkThumbScene::ensureVisible(const QString &path) const
 {
-    for (DkThumbLabel *label : mThumbLabels) {
+    for (DkThumbLabel *label : std::as_const(mThumbLabels)) {
         if (label->filePath() == path) {
-            label->ensureVisible();
+            int xMargin = 50, yMargin = 50;
+
+            const QList<QGraphicsView *> viewList = this->views();
+            if (!viewList.isEmpty()) {
+                QGraphicsView *view = viewList.at(0);
+                QRectF br = label->boundingRect();
+                xMargin = (view->width() - br.width()) / 2;
+                yMargin = (view->height() - br.height()) / 2;
+            }
+
+            label->ensureVisible(QRect(), xMargin, yMargin);
             break;
         }
     }
