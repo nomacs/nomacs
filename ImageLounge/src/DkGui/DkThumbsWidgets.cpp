@@ -2192,7 +2192,6 @@ void DkThumbScrollWidget::setVisible(bool visible)
     connectToActions(visible);
 
     if (visible) {
-        mThumbsScene->updateThumbLabels();
         mFilterEdit->setText("");
     } else
         mThumbsScene->cancelLoading();

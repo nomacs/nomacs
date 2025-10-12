@@ -166,7 +166,8 @@ void DkTabInfo::deactivate()
 
 void DkTabInfo::activate(bool isActive)
 {
-    if (mImageLoader)
+    // on thumb preview causes duplicate updates which are very slow for large directories
+    if (mImageLoader && mTabMode != tab_thumb_preview)
         mImageLoader->activate(isActive);
 }
 
