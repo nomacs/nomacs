@@ -825,11 +825,17 @@ void DkCentralWidget::showThumbView(bool show)
         auto tw = getThumbScrollWidget();
         Q_ASSERT(tw);
 
-        tw->updateThumbs(tabInfo->getImageLoader()->getImages());
-        tw->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
+        auto imageLoader = tabInfo->getImageLoader();
 
-        if (tabInfo->getImage())
-            tw->getThumbWidget()->ensureVisible(tabInfo->getImage()->filePath());
+        tw->getThumbWidget()->setImageLoader(imageLoader);
+
+        if (imageLoader) {
+            tw->updateThumbs(imageLoader->getImages());
+
+            auto image = imageLoader->getCurrentImage();
+            if (image)
+                tw->getThumbWidget()->ensureVisible(image->filePath());
+        }
 
         connect(tw,
                 &DkThumbScrollWidget::updateDirSignal,

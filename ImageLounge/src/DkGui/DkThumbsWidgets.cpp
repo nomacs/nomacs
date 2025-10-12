@@ -1330,11 +1330,11 @@ void DkThumbScene::updateThumbLabels()
 
 void DkThumbScene::setImageLoader(QSharedPointer<DkImageLoader> loader)
 {
-    connectLoader(mLoader, false); // disconnect
-    mLoader = loader;
-    connectLoader(loader);
-    showFile(""); // if we don't do this, then if the FIRST directory opened after startup is empty, no directory will
-                  // be displayed in the status bar
+    if (mLoader != loader) {
+        connectLoader(mLoader, false); // disconnect
+        mLoader = loader;
+        connectLoader(loader);
+    }
 }
 
 void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals)
