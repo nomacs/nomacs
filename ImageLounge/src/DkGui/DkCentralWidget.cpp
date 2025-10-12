@@ -821,26 +821,26 @@ void DkCentralWidget::showThumbView(bool show)
         switchWidget(thumbs_widget);
         tabInfo->activate();
 
-        // should be definitely true
-        if (auto tw = getThumbScrollWidget()) {
-            tw->updateThumbs(tabInfo->getImageLoader()->getImages());
-            tw->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
+        auto tw = getThumbScrollWidget();
+        Q_ASSERT(tw);
 
-            if (tabInfo->getImage())
-                tw->getThumbWidget()->ensureVisible(tabInfo->getImage()->filePath());
+        tw->updateThumbs(tabInfo->getImageLoader()->getImages());
+        tw->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
 
-            connect(tw,
-                    &DkThumbScrollWidget::updateDirSignal,
-                    tabInfo->getImageLoader().data(),
-                    &DkImageLoader::loadDirRecursive,
-                    Qt::UniqueConnection);
-            connect(tw,
-                    &DkThumbScrollWidget::filterChangedSignal,
-                    tabInfo->getImageLoader().data(),
-                    &DkImageLoader::setFolderFilter,
-                    Qt::UniqueConnection);
-            emit thumbViewLoadedSignal(tabInfo->getImageLoader().data()->getDirPath());
-        }
+        if (tabInfo->getImage())
+            tw->getThumbWidget()->ensureVisible(tabInfo->getImage()->filePath());
+
+        connect(tw,
+                &DkThumbScrollWidget::updateDirSignal,
+                tabInfo->getImageLoader().data(),
+                &DkImageLoader::loadDirRecursive,
+                Qt::UniqueConnection);
+        connect(tw,
+                &DkThumbScrollWidget::filterChangedSignal,
+                tabInfo->getImageLoader().data(),
+                &DkImageLoader::setFolderFilter,
+                Qt::UniqueConnection);
+        emit thumbViewLoadedSignal(tabInfo->getImageLoader().data()->getDirPath());
 
     } else {
         if (auto tw = getThumbScrollWidget()) {
