@@ -1420,6 +1420,16 @@ void DkThumbScene::showFile(const QString &filePath)
 
 void DkThumbScene::ensureVisible(const QString &path) const
 {
+    // it is not clear why we need this hack, but it fixes #1408
+    static bool firstTime = true;
+    if (firstTime) {
+        firstTime = false;
+        QTimer::singleShot(0, [this, path] {
+            ensureVisible(path);
+        });
+        return;
+    }
+
     for (DkThumbLabel *label : std::as_const(mThumbLabels)) {
         if (label->filePath() == path) {
             int xMargin = 50, yMargin = 50;
