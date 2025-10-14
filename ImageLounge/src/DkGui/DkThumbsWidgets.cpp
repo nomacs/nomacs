@@ -1282,6 +1282,27 @@ void DkThumbScene::updateLayout()
         ensureVisible(lastSelected->filePath());
 
     update();
+
+    // The pixmap cache must be large enough for all thumbnails that need to be painted
+    // If the cache is too small, the paint event will loop back to itself:
+    // paintEvent()->(cache miss)->fetchThumbnail()->update()->paintEvent()
+    const auto gfxViews = views();
+    if (!gfxViews.empty()) {
+        int cacheKb = 9 * 1024; // +1 below puts us at 10MB, the Qt default
+        const QGraphicsView *view = gfxViews.first();
+        const QList<QGraphicsItem *> visibleItems = view->items(view->rect());
+        if (visibleItems.count() > 0) {
+            QSize sz = (visibleItems.first()->boundingRect().size() * view->devicePixelRatio()).toSize();
+            const int bytesPerPixel = 4;
+            const int extraRows = 2;
+            cacheKb += sz.width() * sz.height() * bytesPerPixel * //
+                (visibleItems.count() + extraRows * mNumCols) / 1024;
+        }
+
+        cacheKb = (cacheKb / 1024 + 1) * 1024; // to nearest MB
+
+        QPixmapCache::setCacheLimit(cacheKb);
+    }
 }
 
 void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
