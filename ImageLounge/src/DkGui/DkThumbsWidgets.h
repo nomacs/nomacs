@@ -201,6 +201,7 @@ public:
     QString filePath() const;
     QImage image() const;
     void setFillSquare(bool value);
+    void setFileInfo(const DkFileInfo &info);
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;

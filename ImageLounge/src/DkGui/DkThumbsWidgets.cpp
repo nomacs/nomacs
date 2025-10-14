@@ -911,19 +911,10 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader,
                            QGraphicsItem *parent)
     : QGraphicsObject(parent)
     , mText(this)
-    , mFilePath{fileInfo.path()}
     , mThumbLoader{thumbLoader}
     , mFillSquare{fillSquare}
 
 {
-    // clang-format off
-    mTooltip =
-        QObject::tr("Name: ") % fileInfo.fileName() % "\n" %
-        QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size()) % "\n" %
-        QObject::tr("Created: ") % fileInfo.birthTime().toString();
-    // clang-format on
-    setToolTip(mTooltip);
-
     QColor col = DkSettingsManager::param().display().highlightColor;
     col.setAlpha(90);
     mSelectBrush = col;
@@ -933,7 +924,6 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader,
     font.setBold(false);
     font.setPointSize(9); // two sizes smaller than default font see:stylesheet.css
     mText.setFont(font);
-    mText.setPlainText(fileInfo.fileName());
     mText.setDefaultTextColor(QColor(255, 255, 255));
     mText.hide();
 
@@ -943,6 +933,8 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader,
     setAcceptHoverEvents(true);
     connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, &DkThumbLabel::onThumbnailLoaded);
     connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, &DkThumbLabel::onThumbnailLoadFailed);
+
+    setFileInfo(fileInfo);
 }
 
 void DkThumbLabel::onThumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif)
@@ -1202,6 +1194,26 @@ void DkThumbLabel::setFillSquare(bool value)
     update();
 }
 
+void DkThumbLabel::setFileInfo(const DkFileInfo &fileInfo)
+{
+    mFilePath = fileInfo.path();
+    mText.setPlainText(fileInfo.fileName());
+    mThumbNotExist = false;
+
+    // TODO: we can keep pixmap if file did not change
+    if (mPixmapKey)
+        QPixmapCache::remove(mPixmapKey.value());
+    mPixmapKey = std::nullopt;
+
+    // clang-format off
+    mTooltip =
+        QObject::tr("Name: ") % fileInfo.fileName() % "\n" %
+        QObject::tr("Size: ") % DkUtils::readableByte((float)fileInfo.size()) % "\n" %
+        QObject::tr("Created: ") % fileInfo.birthTime().toString();
+    // clang-format on
+    setToolTip(mTooltip);
+}
+
 // DkThumbWidget --------------------------------------------------------------------
 DkThumbScene::DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent /* = 0 */)
     : QGraphicsScene(parent)
@@ -1224,7 +1236,7 @@ DkThumbScene::DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent /* = 0 */
 
 void DkThumbScene::updateLayout()
 {
-    if (mThumbLabels.empty())
+    if (mThumbs.empty())
         return;
 
     QSize pSize;
@@ -1235,8 +1247,8 @@ void DkThumbScene::updateLayout()
     int psz = DkSettingsManager::param().effectiveThumbPreviewSize();
     mXOffset = 2; // qCeil(psz*0.1f);
     mNumCols = qMax(qFloor(((float)pSize.width() - mXOffset) / (psz + mXOffset)), 1);
-    mNumCols = qMin(mThumbLabels.size(), mNumCols);
-    mNumRows = qCeil((float)mThumbLabels.size() / mNumCols);
+    mNumCols = qMin(mThumbs.size(), mNumCols);
+    mNumRows = qCeil((float)mThumbs.size() / mNumCols);
 
     int tso = psz + mXOffset;
     setSceneRect(0, 0, mNumCols * tso + mXOffset, mNumRows * tso + mXOffset);
@@ -1303,15 +1315,19 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
 
 void DkThumbScene::updateThumbLabels()
 {
-    blockSignals(true); // do not emit selection changed while clearing!
-    clear(); // deletes the thumbLabels
-    blockSignals(false);
+    // it is quite expensive to add/remove things from scene, we can
+    // update them instead and use a little more memory to keep them around
+    int i = 0;
+    int end = std::min(mThumbLabels.size(), mThumbs.size());
+    for (; i < end; ++i) {
+        DkThumbLabel *thumb = mThumbLabels.at(i);
+        thumb->setFileInfo(mThumbs.at(i));
+        thumb->setVisible(true);
+    }
 
-    mThumbLabels.clear();
-
-    for (const auto &fileInfo : std::as_const(mThumbs)) {
+    for (; i < mThumbs.size(); ++i) {
         auto *thumb = new DkThumbLabel(mThumbLoader,
-                                       fileInfo,
+                                       mThumbs.at(i),
                                        DkSettingsManager::param().display().displaySquaredThumbs);
         connect(thumb, &DkThumbLabel::loadFileSignal, this, &DkThumbScene::loadFileSignal);
         connect(thumb, &DkThumbLabel::showFileSignal, this, &DkThumbScene::showFile);
@@ -1320,12 +1336,13 @@ void DkThumbScene::updateThumbLabels()
         mThumbLabels.append(thumb);
     }
 
+    for (; i < mThumbLabels.size(); ++i) {
+        DkThumbLabel *thumb = mThumbLabels.at(i);
+        thumb->setVisible(false);
+    }
+
     showFile();
-
-    if (!mThumbs.empty())
-        updateLayout();
-
-    emit selectionChanged();
+    updateLayout();
 }
 
 void DkThumbScene::setImageLoader(QSharedPointer<DkImageLoader> loader)
