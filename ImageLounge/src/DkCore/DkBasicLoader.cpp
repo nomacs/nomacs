@@ -1439,9 +1439,14 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
     } else
 #endif
     {
-        bool hasAlpha = DkImage::alphaChannelUsed(img);
-
         QImage sImg = img;
+
+        // we might have premultiplied alpha or a different pixel format and next check will fail
+        if (img.hasAlphaChannel() && img.depth() == 32 && img.format() != QImage::Format_ARGB32)
+            sImg = img.convertToFormat(QImage::Format_ARGB32);
+
+        // if the alpha channel is not actually used we can drop it (requires ARGB32)
+        bool hasAlpha = DkImage::alphaChannelUsed(sImg);
 
         // JPEG 2000 can only handle 32 or 8bit images
         if (!hasAlpha && img.colorTable().empty()
