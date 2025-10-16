@@ -1308,8 +1308,10 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
     int selectedIdx = mLastSelectedIdx;
     mLastSelectedIdx = -1;
 
+    Q_ASSERT(mThumbLabels.size() >= mThumbs.size());
+
     if (selectedIdx < 0) {
-        for (int idx = 0; idx < mThumbLabels.size(); idx++) {
+        for (int idx = 0; idx < mThumbs.size(); idx++) {
             if (mThumbLabels.at(idx)->isSelected()) {
                 selectedIdx = idx;
                 break;
@@ -1325,7 +1327,7 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
     updateThumbLabels();
 
     if (selectedIdx >= 0) {
-        selectedIdx = qMax(0, qMin(selectedIdx, mThumbLabels.size() - 1));
+        selectedIdx = qMax(0, qMin(selectedIdx, mThumbs.size() - 1));
         selectThumb(selectedIdx);
     }
 }
@@ -1405,7 +1407,7 @@ void DkThumbScene::keyPressEvent(QKeyEvent *event)
         break;
     }
     case Qt::Key_Right: {
-        selectThumb(qMin(idx + 1, mThumbLabels.size() - 1));
+        selectThumb(qMin(idx + 1, mThumbs.size() - 1));
         break;
     }
     case Qt::Key_Up: {
@@ -1413,7 +1415,7 @@ void DkThumbScene::keyPressEvent(QKeyEvent *event)
         break;
     }
     case Qt::Key_Down: {
-        selectThumb(qMin(idx + mNumCols, mThumbLabels.size() - 1));
+        selectThumb(qMin(idx + mNumCols, mThumbs.size() - 1));
         break;
     }
     }
@@ -1437,7 +1439,7 @@ void DkThumbScene::showFile(const QString &filePath)
     DkStatusBar *bar = DkStatusBarManager::instance().statusbar();
     if (filePath == QDir::currentPath() || filePath.isEmpty()) { // i.e. user is NO LONGER hovering over a file
         if (sf == 0) {
-            QString info = QString::number(mThumbLabels.size()) + tr(" images");
+            QString info = QString::number(mThumbs.size()) + tr(" images");
             bar->setMessage(tr("%1 | %2").arg(info, currentDir()));
             bar->setMessage("", DkStatusBar::status_filesize_info);
         } else if (sf == 1) {
@@ -1498,7 +1500,7 @@ QString DkThumbScene::currentDir() const
 int DkThumbScene::selectedThumbIndex(bool first)
 {
     int selIdx = -1;
-    for (int idx = 0; idx < mThumbLabels.size(); idx++) {
+    for (int idx = 0; idx < mThumbs.size(); idx++) {
         if (first && mThumbLabels[idx]->isSelected())
             return idx;
         else if (mThumbLabels[idx]->isSelected())
@@ -1575,11 +1577,11 @@ void DkThumbScene::selectAllThumbs(bool selected)
 
 void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, int to /* = -1 */)
 {
-    if (mThumbLabels.empty())
+    if (mThumbs.empty())
         return;
 
     if (to == -1)
-        to = mThumbLabels.size() - 1;
+        to = mThumbs.size() - 1;
 
     if (from > to) {
         int tmp = to;
@@ -1588,7 +1590,7 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
     }
 
     blockSignals(true);
-    for (int idx = from; idx <= to && idx < mThumbLabels.size(); idx++) {
+    for (int idx = from; idx <= to && idx < mThumbs.size(); idx++) {
         mThumbLabels.at(idx)->setSelected(selected);
     }
     blockSignals(false);
@@ -1598,10 +1600,10 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 
 void DkThumbScene::selectThumb(int idx, bool select)
 {
-    if (mThumbLabels.empty())
+    if (mThumbs.empty())
         return;
 
-    if (idx < 0 || idx >= mThumbLabels.size()) {
+    if (idx < 0 || idx >= mThumbs.size()) {
         qWarning() << "index out of bounds in selectThumbs()" << idx;
         return;
     }
@@ -1613,7 +1615,7 @@ void DkThumbScene::selectThumb(int idx, bool select)
     emit selectionChanged();
     showFile(); // update selection label
 
-    Q_ASSERT(mThumbLabels.size() > idx && mThumbLabels[idx]);
+    Q_ASSERT(mThumbs.size() > idx && mThumbLabels[idx]);
     mThumbLabels[idx]->ensureVisible();
 }
 
@@ -1737,7 +1739,7 @@ void DkThumbScene::deleteSelected()
 
         mLastSelectedIdx = -1;
 
-        for (int i = 0; i < mThumbLabels.size(); i++) {
+        for (int i = 0; i < mThumbs.size(); i++) {
             DkThumbLabel *thumb = mThumbLabels.at(i);
             if (!thumb->isSelected())
                 continue;
@@ -1816,7 +1818,7 @@ QStringList DkThumbScene::getSelectedFiles() const
 {
     QStringList fileList;
 
-    for (int idx = 0; idx < mThumbLabels.size(); idx++) {
+    for (int idx = 0; idx < mThumbs.size(); idx++) {
         if (mThumbLabels.at(idx) && mThumbLabels.at(idx)->isSelected()) {
             fileList.append(mThumbLabels.at(idx)->filePath());
         }
@@ -1872,7 +1874,7 @@ int DkThumbScene::findThumb(DkThumbLabel *thumb) const
 bool DkThumbScene::allThumbsSelected() const
 {
     for (DkThumbLabel *label : mThumbLabels)
-        if (label->flags() & QGraphicsItem::ItemIsSelectable && !label->isSelected())
+        if (label->isVisible() && label->flags() & QGraphicsItem::ItemIsSelectable && !label->isSelected())
             return false;
 
     return true;
