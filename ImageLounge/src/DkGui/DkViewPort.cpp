@@ -943,10 +943,8 @@ void DkViewPort::manipulatorApplied()
     if (!img.isNull()) {
         const QSharedPointer<DkImageContainerT> currImg = mLoader->getCurrentImage();
         if (currImg) {
-            auto imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT());
-            imgC->fromImageContainer(currImg);
-            imgC->setImage(img, mActiveManipulator->name());
-            setEditedImage(imgC);
+            currImg->setImage(img, mActiveManipulator->name());
+            setEditedImage(currImg);
         }
     } else {
         mController->setInfo(mActiveManipulator->errorMessage());
