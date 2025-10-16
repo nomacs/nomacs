@@ -1112,6 +1112,19 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         pm = pixmap();
     }
 
+    if (pm) {
+        static QHash<QString, int> counts;
+        int count = ++counts[mFilePath];
+        QPixmap &px = pm.value();
+        QPainter p(&px);
+        QRect r(0, 0, 32, 16);
+        p.fillRect(r, Qt::white);
+        p.drawText(r, QString::number(count));
+        r.moveTo(QPoint{pm->width() - r.width(), pm->height() - r.height()});
+        p.fillRect(r, Qt::white);
+        p.drawText(r, QString::number(count));
+    }
+
     if (mThumbNotExist) {
         painter->setPen(sNoImagePen);
         painter->setBrush(sNoImageBrush);
@@ -1857,6 +1870,7 @@ DkThumbLabel *DkThumbScene::getCenterThumb() const
     return centerThumb;
 }
 
+// FIXME: use QVector::indexOf() or map
 int DkThumbScene::findThumb(DkThumbLabel *thumb) const
 {
     int thumbIdx = -1;
@@ -1898,6 +1912,8 @@ void DkThumbsView::onScroll()
 {
     const QRectF portRect = mapToScene(viewport()->rect()).boundingRect();
 
+    // FIXME: instead of bounds check on each item, this can use
+    // one call to get all visible items.
     for (const auto item : items()) {
         auto it = dynamic_cast<DkThumbLabel *>(item);
         if (it == nullptr) {
@@ -2396,6 +2412,7 @@ void DkThumbScrollWidget::enableSelectionActions()
     am.action(DkActionManager::preview_delete)->setEnabled(hasSelection && !isFromZip);
     am.action(DkActionManager::preview_batch)->setEnabled(hasSelection);
 
+    // FIXME: what is the point of having a checkbox on this action?
     am.action(DkActionManager::preview_select_all)->setChecked(mThumbsScene->allThumbsSelected());
 }
 
