@@ -952,8 +952,8 @@ void DkThumbLabel::onThumbnailLoaded(const QString &filePath, const QImage &thum
     prepareGeometryChange();
     generatePixmap(thumb);
     updateTooltip(thumb, fromExif);
-    update();
     setFlag(ItemIsSelectable, true);
+    update();
 }
 
 void DkThumbLabel::onThumbnailLoadFailed(const QString &filePath)
@@ -1191,7 +1191,6 @@ void DkThumbLabel::setFillSquare(bool value)
         QPixmapCache::remove(mPixmapKey.value());
     }
     mPixmapKey = std::nullopt;
-    update();
 }
 
 void DkThumbLabel::setFileInfo(const DkFileInfo &fileInfo)
@@ -1282,8 +1281,6 @@ void DkThumbScene::updateLayout()
 
     if (lastSelected)
         ensureVisible(lastSelected->filePath());
-
-    update();
 
     // The pixmap cache must be large enough for all thumbnails that need to be painted
     // If the cache is too small, the paint event will loop back to itself:
@@ -1514,9 +1511,7 @@ int DkThumbScene::selectedThumbIndex(bool first)
 void DkThumbScene::toggleThumbLabels(bool show)
 {
     DkSettingsManager::param().display().showThumbLabel = show;
-
-    for (const auto t : mThumbLabels)
-        t->update();
+    update();
 }
 
 void DkThumbScene::toggleSquaredThumbs(bool squares)
@@ -1526,6 +1521,7 @@ void DkThumbScene::toggleSquaredThumbs(bool squares)
     for (const auto t : mThumbLabels) {
         t->setFillSquare(squares);
     }
+    update();
 }
 
 void DkThumbScene::increaseThumbs()
