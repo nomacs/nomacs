@@ -2469,7 +2469,7 @@ Indítsa újra a nomacs-ot, és próbálja meg újra.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="941"/>
         <source>BGR 24-bit</source>
-        <translation type="unfinished">BGR 32-bit {24-?}</translation>
+        <translation>BGR 32-bit {24-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="944"/>
@@ -2494,7 +2494,7 @@ Indítsa újra a nomacs-ot, és próbálja meg újra.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="956"/>
         <source>Grayscale 16-bit</source>
-        <translation type="unfinished">Szürkeárnyalat 8-bit {16-?}</translation>
+        <translation>Szürkeárnyalat 8-bit {16-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="959"/>
@@ -2665,19 +2665,19 @@ Indítsa újra a nomacs-ot, és próbálja meg újra.</translation>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">Név: </translation>
+        <translation>Név: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">Méret: </translation>
+        <translation>Méret: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished">Készítette: </translation>
+        <translation>Készítette: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -3240,7 +3240,7 @@ Legyen óvatos!</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Zoom</source>
-        <translation type="unfinished">Nagyítás</translation>
+        <translation>Nagyítás</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2062"/>
@@ -3578,7 +3578,7 @@ Legyen óvatos!</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1399"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">Sajnálom, nem lehet írni a fájlhoz: %1</translation>
+        <translation>Sajnálom, nem lehet írni a fájlhoz: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1408"/>
@@ -3833,7 +3833,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">Sajnálom, nem tudom elmenteni a megjegyzéseket ehhez a képformátumhoz.</translation>
+        <translation>Sajnálom, nem tudom elmenteni a megjegyzéseket ehhez a képformátumhoz.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -4615,7 +4615,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">Bélyegképek mentése</translation>
+        <translation>Bélyegképek mentése</translation>
     </message>
 </context>
 <context>
@@ -5319,7 +5319,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Méret</translation>
+        <translation>Méret</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -7061,12 +7061,12 @@ Kérjük forduljon a rendszergazdához további információkért.</translation>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="123"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Előző kép megjelenítése</translation>
+        <translation>Előző kép megjelenítése</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="129"/>
         <source>Show next image</source>
-        <translation type="unfinished">Következő kép megjelenítése</translation>
+        <translation>Következő kép megjelenítése</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="320"/>

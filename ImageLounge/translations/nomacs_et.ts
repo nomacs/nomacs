@@ -3237,7 +3237,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Zoom</source>
-        <translation type="unfinished">Suurendamine</translation>
+        <translation>Suurendamine</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2062"/>
@@ -3283,7 +3283,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2102"/>
         <source>90%1 Clockwise</source>
-        <translation type="unfinished">9&amp;0%1 päripäeva {90%1 ?}</translation>
+        <translation>9&amp;0%1 päripäeva {90%1 ?}</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2103"/>

@@ -2491,7 +2491,7 @@
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="941"/>
         <source>BGR 24-bit</source>
-        <translation type="unfinished">32 位 BGR {24-?}</translation>
+        <translation>32 位 BGR {24-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="944"/>
@@ -2516,7 +2516,7 @@
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="956"/>
         <source>Grayscale 16-bit</source>
-        <translation type="unfinished">8 位灰度 {16-?}</translation>
+        <translation>8 位灰度 {16-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="959"/>
@@ -2664,19 +2664,19 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">名稱：</translation>
+        <translation>名稱：</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">大小：</translation>
+        <translation>大小：</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished">建立：</translation>
+        <translation>建立：</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -3239,7 +3239,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Zoom</source>
-        <translation type="unfinished">縮放</translation>
+        <translation>縮放</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2062"/>
@@ -3576,7 +3576,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1399"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">抱歉，不能寫入檔案: %1</translation>
+        <translation>抱歉，不能寫入檔案: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1408"/>
@@ -3831,7 +3831,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">對不起，不能儲存該圖片檔案格式的備註。</translation>
+        <translation>對不起，不能儲存該圖片檔案格式的備註。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -4612,7 +4612,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">儲存縮圖</translation>
+        <translation>儲存縮圖</translation>
     </message>
 </context>
 <context>
@@ -5315,7 +5315,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">大小</translation>
+        <translation>大小</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -7056,12 +7056,12 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="123"/>
         <source>Show previous image</source>
-        <translation type="unfinished">顯示前一個圖片</translation>
+        <translation>顯示前一個圖片</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="129"/>
         <source>Show next image</source>
-        <translation type="unfinished">顯示下一個圖片</translation>
+        <translation>顯示下一個圖片</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="320"/>

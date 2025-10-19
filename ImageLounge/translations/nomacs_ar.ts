@@ -2664,19 +2664,19 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">الاسم: </translation>
+        <translation>الاسم: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">الحجم: </translation>
+        <translation>الحجم: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished">تاريخ الإنشاء: </translation>
+        <translation>تاريخ الإنشاء: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -3239,7 +3239,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Zoom</source>
-        <translation type="unfinished">تكبير</translation>
+        <translation>تكبير</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2062"/>
@@ -3285,7 +3285,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2102"/>
         <source>90%1 Clockwise</source>
-        <translation type="unfinished">9&amp;0%1 مع عقارب الساعة {90%1 ?}</translation>
+        <translation>9&amp;0%1 مع عقارب الساعة {90%1 ?}</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2103"/>
@@ -3576,7 +3576,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1399"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">عذرا لا يمكننى الكتابة على الملف : %1</translation>
+        <translation>عذرا لا يمكننى الكتابة على الملف : %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1408"/>
@@ -3831,7 +3831,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">عذرا , لا يمكننى حفظ تعليقات لامتداد هذه الصورة</translation>
+        <translation>عذرا , لا يمكننى حفظ تعليقات لامتداد هذه الصورة</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -4613,7 +4613,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">حفظ الصور المصغرة</translation>
+        <translation>حفظ الصور المصغرة</translation>
     </message>
 </context>
 <context>
@@ -5318,7 +5318,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">الحجم</translation>
+        <translation>الحجم</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -7060,7 +7060,7 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="129"/>
         <source>Show next image</source>
-        <translation type="unfinished">عرض الصورة التالية</translation>
+        <translation>عرض الصورة التالية</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="320"/>

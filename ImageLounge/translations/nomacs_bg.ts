@@ -2493,7 +2493,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="956"/>
         <source>Grayscale 16-bit</source>
-        <translation type="unfinished">8-битово в оттенъци на сивото  {16-?}</translation>
+        <translation>8-битово в оттенъци на сивото  {16-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="959"/>
@@ -2664,19 +2664,19 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">Име: </translation>
+        <translation>Име: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">Размер: </translation>
+        <translation>Размер: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished">Създадено: </translation>
+        <translation>Създадено: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -3237,7 +3237,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Zoom</source>
-        <translation type="unfinished">Мащаб</translation>
+        <translation>Мащаб</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2062"/>
@@ -4612,7 +4612,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">Запазване на миниатюрите</translation>
+        <translation>Запазване на миниатюрите</translation>
     </message>
 </context>
 <context>
@@ -5316,7 +5316,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Размер</translation>
+        <translation>Размер</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -7054,12 +7054,12 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="123"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Показване на предишното изображение</translation>
+        <translation>Показване на предишното изображение</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="129"/>
         <source>Show next image</source>
-        <translation type="unfinished">Показване на следващото изображение</translation>
+        <translation>Показване на следващото изображение</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="320"/>

@@ -2313,7 +2313,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="871"/>
         <source>Could not save: %1</source>
-        <translation type="unfinished">Nepodarilo sa uložiť: %1%2 {1?}</translation>
+        <translation>Nepodarilo sa uložiť: %1%2 {1?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="886"/>
@@ -3283,7 +3283,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2102"/>
         <source>90%1 Clockwise</source>
-        <translation type="unfinished">9 &amp; 0%1 v smere hodinových ručičiek {90%1 ?}</translation>
+        <translation>9 &amp; 0%1 v smere hodinových ručičiek {90%1 ?}</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2103"/>
@@ -4611,7 +4611,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">Uložiť miniatúry</translation>
+        <translation>Uložiť miniatúry</translation>
     </message>
 </context>
 <context>
@@ -5317,7 +5317,7 @@ neobsahuje žiadne obrázky</translation>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Veľkosť</translation>
+        <translation>Veľkosť</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -6390,7 +6390,7 @@ kým začnete pracovať s oknom.</translation>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="317"/>
         <source>Settings</source>
-        <translation type="unfinished">Nastavenia</translation>
+        <translation>Nastavenia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="317"/>
