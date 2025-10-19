@@ -501,7 +501,9 @@ void DkGeneralPreference::createLayout()
             this,
             &DkGeneralPreference::onLanguageComboCurrentIndexChanged);
 
-    auto *translateLabel = new QLabel(QString("<a href=\"https://nomacs.org/docs/contributing/translation\">%1</a>")
+    auto *translateLabel = new QLabel(QString("<a "
+                                              "href=\"https://github.com/nomacs/nomacs/blob/master/ImageLounge/manuals/"
+                                              "Translation.md\">%1</a>")
                                           .arg(tr("Help translate nomacs")),
                                       this);
     translateLabel->setToolTip(tr("Info on how to translate nomacs."));
