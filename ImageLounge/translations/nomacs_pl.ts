@@ -2469,7 +2469,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="941"/>
         <source>BGR 24-bit</source>
-        <translation type="unfinished">BGR 32-bitowe {24-?}</translation>
+        <translation>BGR 32-bitowe {24-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="944"/>
@@ -2494,7 +2494,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="956"/>
         <source>Grayscale 16-bit</source>
-        <translation type="unfinished">Skala szarości 8-bitowa {16-?}</translation>
+        <translation>Skala szarości 8-bitowa {16-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="959"/>
@@ -2665,19 +2665,19 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">Nazwa: </translation>
+        <translation>Nazwa: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">Rozmiar: </translation>
+        <translation>Rozmiar: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished">Utworzony: </translation>
+        <translation>Utworzony: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -3241,7 +3241,7 @@ Używaj ostrożnie!</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Zoom</source>
-        <translation type="unfinished">Powiększanie</translation>
+        <translation>Powiększanie</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2062"/>
@@ -3579,7 +3579,7 @@ Używaj ostrożnie!</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1399"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">Przepraszam, nie można zapisać do pliku: %1</translation>
+        <translation>Przepraszam, nie można zapisać do pliku: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1408"/>
@@ -3834,7 +3834,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">Nie można zapisać komentarzy dla tego formatu obrazu.</translation>
+        <translation>Nie można zapisać komentarzy dla tego formatu obrazu.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -4615,7 +4615,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">Zapisz miniatury</translation>
+        <translation>Zapisz miniatury</translation>
     </message>
 </context>
 <context>
@@ -5322,7 +5322,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Rozmiar</translation>
+        <translation>Rozmiar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -7068,12 +7068,12 @@ skontaktuj się z administratorem systemu, aby uzyskać dodatkowe informacje.</t
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="123"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Pokaż poprzedni obraz</translation>
+        <translation>Pokaż poprzedni obraz</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="129"/>
         <source>Show next image</source>
-        <translation type="unfinished">Pokaż następny obraz</translation>
+        <translation>Pokaż następny obraz</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="320"/>

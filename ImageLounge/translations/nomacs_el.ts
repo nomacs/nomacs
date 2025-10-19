@@ -2469,7 +2469,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="941"/>
         <source>BGR 24-bit</source>
-        <translation type="unfinished">BGR 32-bit {24-?}</translation>
+        <translation>BGR 32-bit {24-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="944"/>
@@ -2494,7 +2494,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="956"/>
         <source>Grayscale 16-bit</source>
-        <translation type="unfinished">Grayscale 8-bit {16-?}</translation>
+        <translation>Grayscale 8-bit {16-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="959"/>
@@ -2665,13 +2665,13 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">Ονομα: </translation>
+        <translation>Ονομα: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">Μέγεθος: </translation>
+        <translation>Μέγεθος: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
@@ -3497,7 +3497,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="330"/>
         <source>Browse</source>
-        <translation type="unfinished">Αναζήτηση</translation>
+        <translation>Αναζήτηση</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="336"/>
@@ -3830,7 +3830,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">Συγνώμη, δεν μπορώ να αποθηκεύσω παρατηρήσεις για αυτήν τη μορφή εικόνας.</translation>
+        <translation>Συγνώμη, δεν μπορώ να αποθηκεύσω παρατηρήσεις για αυτήν τη μορφή εικόνας.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -4186,7 +4186,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="373"/>
         <source>Open Image</source>
-        <translation type="unfinished">Άνοιγμα Εικόνας</translation>
+        <translation>Άνοιγμα Εικόνας</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="470"/>
@@ -4560,17 +4560,17 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="573"/>
         <source>2 digits</source>
-        <translation type="unfinished">5 ψηφία {2 ?}</translation>
+        <translation>5 ψηφία {2 ?}</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="574"/>
         <source>3 digits</source>
-        <translation type="unfinished">5 ψηφία {3 ?}</translation>
+        <translation>5 ψηφία {3 ?}</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="575"/>
         <source>4 digits</source>
-        <translation type="unfinished">5 ψηφία {4 ?}</translation>
+        <translation>5 ψηφία {4 ?}</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="576"/>
@@ -5314,7 +5314,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Μέγεθος</translation>
+        <translation>Μέγεθος</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -6679,7 +6679,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Άνοιγμα Εικόνας</translation>
+        <translation>Άνοιγμα Εικόνας</translation>
     </message>
 </context>
 <context>

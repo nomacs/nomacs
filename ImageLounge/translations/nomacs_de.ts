@@ -2469,7 +2469,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="941"/>
         <source>BGR 24-bit</source>
-        <translation type="unfinished">BGR 32-bit {24-?}</translation>
+        <translation>BGR 32-bit {24-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="944"/>
@@ -2494,7 +2494,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="956"/>
         <source>Grayscale 16-bit</source>
-        <translation type="unfinished">8-Bit Graustufen {16-?}</translation>
+        <translation>8-Bit Graustufen {16-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="959"/>
@@ -2671,13 +2671,13 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">Größe: </translation>
+        <translation>Größe: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished">Erstellt: </translation>
+        <translation>Erstellt: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -3578,7 +3578,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1399"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">Entschuldigung, ich kann die Datei &apos;%1&apos; nicht schreiben.</translation>
+        <translation>Entschuldigung, ich kann die Datei &apos;%1&apos; nicht schreiben.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1408"/>
@@ -3833,7 +3833,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">Kommentare für dieses Bildformat können nicht gespeichert werden.</translation>
+        <translation>Kommentare für dieses Bildformat können nicht gespeichert werden.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -4614,7 +4614,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">Miniaturansichten speichern</translation>
+        <translation>Miniaturansichten speichern</translation>
     </message>
 </context>
 <context>
@@ -5317,7 +5317,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Größe</translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -7059,12 +7059,12 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="123"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Vorheriges Bild anzeigen</translation>
+        <translation>Vorheriges Bild anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="129"/>
         <source>Show next image</source>
-        <translation type="unfinished">Nächstes Bild anzeigen</translation>
+        <translation>Nächstes Bild anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="320"/>

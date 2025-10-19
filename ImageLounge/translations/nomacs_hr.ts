@@ -2664,19 +2664,19 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation type="unfinished">Ime: </translation>
+        <translation>Ime: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation type="unfinished">Veličina: </translation>
+        <translation>Veličina: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished">Kreirano:</translation>
+        <translation>Kreirano:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -3498,7 +3498,7 @@ Budite oprezni!</translation>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="330"/>
         <source>Browse</source>
-        <translation type="unfinished">Pregledaj</translation>
+        <translation>Pregledaj</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="336"/>
@@ -3576,7 +3576,7 @@ Budite oprezni!</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1399"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">Izvini, ne mogu pisati u fajl: %1</translation>
+        <translation>Izvini, ne mogu pisati u fajl: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1408"/>
@@ -3831,7 +3831,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">Izvini, ne mogu sačuvati komentare za ovaj format slike.</translation>
+        <translation>Izvini, ne mogu sačuvati komentare za ovaj format slike.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -4187,7 +4187,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="373"/>
         <source>Open Image</source>
-        <translation type="unfinished">Otvori sliku</translation>
+        <translation>Otvori sliku</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="470"/>
@@ -4613,7 +4613,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">Sačuvaj sličice</translation>
+        <translation>Sačuvaj sličice</translation>
     </message>
 </context>
 <context>
@@ -5319,7 +5319,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Veličina</translation>
+        <translation>Veličina</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -6688,7 +6688,7 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation type="unfinished">Otvori sliku</translation>
+        <translation>Otvori sliku</translation>
     </message>
 </context>
 <context>

@@ -2469,7 +2469,7 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="941"/>
         <source>BGR 24-bit</source>
-        <translation type="unfinished">BGR 32-bits {24-?}</translation>
+        <translation>BGR 32-bits {24-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="944"/>
@@ -2494,7 +2494,7 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="956"/>
         <source>Grayscale 16-bit</source>
-        <translation type="unfinished">Escala de grisos 8-bits {16-?}</translation>
+        <translation>Escala de grisos 8-bits {16-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="959"/>
@@ -3580,7 +3580,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1399"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">No es pot escriure al fitxer: %1</translation>
+        <translation>No es pot escriure al fitxer: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1408"/>
@@ -3835,7 +3835,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">No es pot desar els comentaris en aquest format d&apos;imatge.</translation>
+        <translation>No es pot desar els comentaris en aquest format d&apos;imatge.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -4617,7 +4617,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">Desa les miniatures</translation>
+        <translation>Desa les miniatures</translation>
     </message>
 </context>
 <context>
@@ -5324,7 +5324,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation type="unfinished">Mida</translation>
+        <translation>Mida</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -7071,12 +7071,12 @@ Contacteu amb el vostre administrador per a més informació.</translation>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="123"/>
         <source>Show previous image</source>
-        <translation type="unfinished">Mostra la imatge anterior</translation>
+        <translation>Mostra la imatge anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="129"/>
         <source>Show next image</source>
-        <translation type="unfinished">Mostra la imatge següent</translation>
+        <translation>Mostra la imatge següent</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="320"/>
