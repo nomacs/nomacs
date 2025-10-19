@@ -4,7 +4,7 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 [![Build status](https://ci.appveyor.com/api/projects/status/ye6wd1hap4cebyo8?svg=true)](https://ci.appveyor.com/project/novomesk/nomacs)
 [![Downloads](https://img.shields.io/github/downloads/nomacs/nomacs/total.svg)](https://github.com/nomacs/nomacs/releases/latest)
-[![Crowdin](https://badges.crowdin.net/nomacs/localized.svg)](http://translate.nomacs.org/project/nomacs)
+[![Crowdin](https://badges.crowdin.net/nomacs-neo/localized.svg)](https://crowdin.com/project/nomacs-neo)
 
 ## Get the Source
 

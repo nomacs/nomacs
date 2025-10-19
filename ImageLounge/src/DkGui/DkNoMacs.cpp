@@ -1942,6 +1942,10 @@ void DkNoMacs::startSetup(QString filePath)
 
 void DkNoMacs::updateTranslations()
 {
+    QUrl url("https://github.com/nomacs/nomacs/blob/master/ImageLounge/manuals/Translation.md");
+    QDesktopServices::openUrl(url);
+    return;
+
     if (!mTranslationUpdater) {
         mTranslationUpdater = new DkTranslationUpdater(false, this);
         connect(mTranslationUpdater, &DkTranslationUpdater::showUpdaterMessage, this, &DkNoMacs::showUpdaterMessage);

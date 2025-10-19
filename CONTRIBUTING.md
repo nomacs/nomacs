@@ -21,7 +21,7 @@ The best way to improve nomacs is your contribution. There are several areas in 
   - Document features (sync, batch, etc)
   - Describe workflows, use cases
 
-- **[Translate Nomacs](https://crowdin.com/project/nomacs)**
+- **[Translate Nomacs](https://github.com/nomacs/nomacs/blob/master/ImageLounge/manuals/Translation.md)**
 
 ## Contributing Code
 
