@@ -1,110 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ko" sourcelanguage="en">
+<TS version="2.1" language="pt-BR" sourcelanguage="en">
 <context>
     <name>QObject</name>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="179"/>
         <source>&amp;Photoshop</source>
-        <translation>포토샵(&amp;P)</translation>
+        <translation>&amp;Photoshop</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="190"/>
         <source>Pic&amp;asa</source>
-        <translation>피카사(&amp;a)</translation>
+        <translation>Pic&amp;asa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="201"/>
         <source>Picasa Ph&amp;oto Viewer</source>
-        <translation>피카사 포토 뷰어(&amp;o)</translation>
+        <translation>Visualizad&amp;or de fotos Picasa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="212"/>
         <source>&amp;IrfanView</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;IrfanView</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="222"/>
         <source>&amp;Explorer</source>
-        <translation>탐색기(&amp;E)</translation>
+        <translation>&amp;Explorador</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="359"/>
         <source>&amp;File</source>
-        <translation>파일(&amp;F)</translation>
+        <translation>&amp;Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="402"/>
         <source>&amp;Open With</source>
-        <translation>다른 프로그램으로 열기(&amp;O)</translation>
+        <translation>&amp;Abrir com</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="424"/>
         <source>S&amp;ort</source>
-        <translation>정렬(&amp;o)</translation>
+        <translation>&amp;Ordenar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="439"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="664"/>
         <source>&amp;View</source>
-        <translation>보기(&amp;V)</translation>
+        <translation>&amp;Visualizar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="497"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="670"/>
         <source>&amp;Edit</source>
-        <translation>편집(&amp;E)</translation>
+        <translation>&amp;Editar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="519"/>
         <source>&amp;Adjustments</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajustes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="535"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="648"/>
         <source>&amp;Panels</source>
-        <translation>패널(&amp;P)</translation>
+        <translation>&amp;Painéis</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="537"/>
         <source>Tool&amp;bars</source>
-        <translation>도구 바(&amp;b)</translation>
+        <translation>&amp;Barras de ferramentas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="568"/>
         <source>&amp;Tools</source>
-        <translation>도구(&amp;T)</translation>
+        <translation>Ferramen&amp;tas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="608"/>
         <source>&amp;Sync</source>
-        <translation>동기화( &amp;S)</translation>
+        <translation>&amp;Sincronização</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="611"/>
         <source>&amp;Synchronize</source>
-        <translation>동기화(&amp;S)</translation>
+        <translation>&amp;Sincronizar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="994"/>
         <source>&amp;Open</source>
-        <translation>열기(&amp;O)</translation>
+        <translation>&amp;Abrir</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="996"/>
         <source>Open an image</source>
-        <translation>이미지 열기</translation>
+        <translation>Abrir imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="998"/>
         <source>Open &amp;Directory</source>
-        <translation>디렉토리 열기(&amp;D)</translation>
+        <translation>&amp;Pasta Aberta</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1002"/>
         <source>&amp;Open Tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abrir abas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1000"/>
@@ -119,193 +119,193 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1006"/>
         <source>&amp;Quick Launch</source>
-        <translation>빠른 실행(&amp;Q)</translation>
+        <translation>&amp;Inicialização Rápida</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1012"/>
         <source>&amp;Manage Applications</source>
-        <translation>관리 응용프로그램(&amp;M)</translation>
+        <translation>&amp;Gerenciar aplicativos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1014"/>
         <source>Manage Applications which are Automatically Opened</source>
-        <translation>자동으로 열리는 응용프로그램들을 관리</translation>
+        <translation>Gerencie Aplicativos que são Abertos Automaticamente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1017"/>
         <source>Re&amp;name</source>
-        <translation>개명(&amp;n)</translation>
+        <translation>Re&amp;nomear</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1019"/>
         <source>Rename an image</source>
-        <translation>이미지의 이름 바꾸기</translation>
+        <translation>Renomear uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1021"/>
         <source>&amp;Go To</source>
-        <translation>가기(&amp;G)</translation>
+        <translation>&amp;Ir para</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1023"/>
         <source>Go To an image</source>
-        <translation>이미지로 가기</translation>
+        <translation>Ir para uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1025"/>
         <source>&amp;Save</source>
-        <translation>저장(&amp;S)</translation>
+        <translation>&amp;Salvar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1027"/>
         <source>Save an image</source>
-        <translation>이미지 저장</translation>
+        <translation>Salvar uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1029"/>
         <source>S&amp;ave As</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar como</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1031"/>
         <source>Save an image as</source>
-        <translation>이미지를 다른 이름으로 저장</translation>
+        <translation>Salvar uma imagem como</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1033"/>
         <source>Sa&amp;ve a Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar uma cópia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1034"/>
         <source>Copy the Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1036"/>
         <source>&amp;Save Tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Salvar abas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1038"/>
         <source>Save a newline separated list of the filenames of the open tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar uma lista com os nomes de arquivo, separados por linha, correspondentes às abas abertas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1040"/>
         <source>&amp;Save for Web</source>
-        <translation>웹용으로 저장(&amp;S)</translation>
+        <translation>&amp;Salvar na Web</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1041"/>
         <source>Save an Image for Web Applications</source>
-        <translation>웹 응용프로그램용으로 이미지 저장</translation>
+        <translation>Salve uma imagem para aplicativos Web</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1043"/>
         <source>&amp;Print</source>
-        <translation>인쇄(&amp;P)</translation>
+        <translation>&amp;Imprimir</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1045"/>
         <source>Print an image</source>
-        <translation>이미지 인쇄</translation>
+        <translation>Imprimir uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1047"/>
         <source>&amp;Recent Files</source>
-        <translation>최근 파일(&amp;R)</translation>
+        <translation>&amp;Arquivos Recentes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1051"/>
         <source>Show Recent Files</source>
-        <translation>최근 파일 보이기</translation>
+        <translation>Mostrar Arquivos Recentes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1053"/>
         <source>&amp;Reload File</source>
-        <translation>파일 다시 불러오기(&amp;R)</translation>
+        <translation>&amp;Recarregar Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1055"/>
         <source>Reload File</source>
-        <translation>파일 다시 불러오기</translation>
+        <translation>Recarregar Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1057"/>
         <source>Ne&amp;xt File</source>
-        <translation>다음 파일(&amp;x)</translation>
+        <translation>Pró&amp;ximo arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1061"/>
         <source>Pre&amp;vious File</source>
-        <translation>이전 파일(&amp;v)</translation>
+        <translation>Arquivo Ant&amp;erior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1063"/>
         <source>Load previous file</source>
-        <translation>이전 파일 불러오기</translation>
+        <translation>Carregar arquivo anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1065"/>
         <source>St&amp;art New Instance</source>
-        <translation>새 인스턴스 시작(&amp;a)</translation>
+        <translation>In&amp;iciar Nova Instância</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1067"/>
         <source>Open file in new instance</source>
-        <translation>새 인스턴스에 파일 열기</translation>
+        <translation>Abrir arquivo em nova instância</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1069"/>
         <source>St&amp;art Private Instance</source>
-        <translation>개인 인스턴스 시작(&amp;a)</translation>
+        <translation>In&amp;iciar Intância Privada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1071"/>
         <source>Open private instance</source>
-        <translation>개인 인스턴스 열기</translation>
+        <translation>Abrir uma instância privada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1073"/>
         <source>&amp;Find &amp;&amp; Filter</source>
-        <translation>찾기 &amp;&amp; 필터(&amp;F)</translation>
+        <translation>&amp;Localizar &amp;&amp;Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1075"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1440"/>
         <source>Find an image</source>
-        <translation>이미지 찾기</translation>
+        <translation>Localize uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1077"/>
         <source>Scan Folder Re&amp;cursive</source>
-        <translation>재귀적으로 폴더 스캔(&amp;c)</translation>
+        <translation>Analisar pasta re&amp;cursivamente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1078"/>
         <source>Step through Folder and Sub Folders</source>
-        <translation>폴더와 하위 폴더들로 들어가기</translation>
+        <translation>Percorrer Pastas e Subpastas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1082"/>
         <source>&amp;Exit</source>
-        <translation>종료(&amp;E)</translation>
+        <translation>&amp;Sair</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1083"/>
         <source>Exit</source>
-        <translation>종료하기</translation>
+        <translation>Sair</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1088"/>
         <source>by &amp;Filename</source>
-        <translation>파일명으로(&amp;F)</translation>
+        <translation>por &amp;Nome de arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1090"/>
         <source>Sort by Filename</source>
-        <translation>파일명으로 정렬</translation>
+        <translation>Ordenar por nome de arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1095"/>
@@ -320,72 +320,72 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1102"/>
         <source>by Date &amp;Created</source>
-        <translation>생성일로(&amp;C)</translation>
+        <translation>pela Data de &amp;Criação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1104"/>
         <source>Sort by Date Created</source>
-        <translation>데이터 생성일로 정렬</translation>
+        <translation>Ordenar pela data de criação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1109"/>
         <source>by Date Modified</source>
-        <translation>변경일로</translation>
+        <translation>pela Data de Alteração</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1111"/>
         <source>Sort by Date Last Modified</source>
-        <translation>마지막 변경일로 정렬</translation>
+        <translation>Ordenar pela Data da Última Alteração</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1116"/>
         <source>Random</source>
-        <translation>무작위로</translation>
+        <translation>Aleatória</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1118"/>
         <source>Sort in Random Order</source>
-        <translation>무작위로 정렬</translation>
+        <translation>Classificar em ordem aleatória</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1122"/>
         <source>&amp;Ascending</source>
-        <translation>오름차순(&amp;A)</translation>
+        <translation>&amp;Ascendente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1124"/>
         <source>Sort in Ascending Order</source>
-        <translation>오름차순으로 정렬</translation>
+        <translation>Classificar em ordem crescente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1128"/>
         <source>&amp;Descending</source>
-        <translation>내림차순(&amp;D)</translation>
+        <translation>&amp;Decrescente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1130"/>
         <source>Sort in Descending Order</source>
-        <translation>내림차순으로 정렬</translation>
+        <translation>Classificar em ordem decrescente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1138"/>
         <source>9&amp;0%1 Clockwise</source>
-        <translation>9&amp;0%1 시계 방향으로</translation>
+        <translation>9&amp;0%1 no Sentido Horário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1141"/>
         <source>rotate the image 90%1 clockwise</source>
-        <translation>이미지를 90%1 시계 방향으로 회전</translation>
+        <translation>gire a imagem 90%1 no sentido horário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1144"/>
         <source>&amp;90%1 Counter Clockwise</source>
-        <translation>&amp;90%1 반시계 방향으로</translation>
+        <translation>&amp;90%1 no Sentido Anti-horário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1148"/>
         <source>rotate the image 90%1 counter clockwise</source>
-        <translation>이미지를 90%1 반시계 방향으로 회전</translation>
+        <translation>gire a imagem 90%1 no sentido anti-horário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1150"/>
@@ -395,351 +395,351 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1151"/>
         <source>rotate the image by 180%1</source>
-        <translation>이미지를 180%1 회전</translation>
+        <translation>gire a imagem em 180%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1153"/>
         <source>&amp;Undo</source>
-        <translation>실행 취소(&amp;U)</translation>
+        <translation>&amp;Desfazer</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1155"/>
         <source>Undo Last Action</source>
-        <translation>마지막 작업 취소</translation>
+        <translation>Desfazer a última ação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1157"/>
         <source>&amp;Redo</source>
-        <translation>다시 하기(&amp;R)</translation>
+        <translation>&amp;Refazer</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1159"/>
         <source>Redo Last Action</source>
-        <translation>마지막 작업 다시 하기</translation>
+        <translation>Refazer a última ação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1161"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1555"/>
         <source>&amp;Copy</source>
-        <translation>복사(&amp;C)</translation>
+        <translation>&amp;Copiar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1163"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1167"/>
         <source>copy image</source>
-        <translation>이미지 복사</translation>
+        <translation>copiar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1165"/>
         <source>Copy &amp;Buffer</source>
-        <translation>버퍼 복사(&amp;B)</translation>
+        <translation>Copiar &amp;Buffer</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1169"/>
         <source>Copy Co&amp;lor</source>
-        <translation>색상 복사(&amp;l)</translation>
+        <translation>Copiar Co&amp;r</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1171"/>
         <source>copy pixel color value as HEX</source>
-        <translation>픽셀 색상 값을 16진 값으로 복사</translation>
+        <translation>copie o valor da cor do pixel como HEX</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1176"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1560"/>
         <source>&amp;Paste</source>
-        <translation>붙이기(&amp;P)</translation>
+        <translation>&amp;Colar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1178"/>
         <source>paste image</source>
-        <translation>이미지 붙이기</translation>
+        <translation>colar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1180"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1550"/>
         <source>&amp;Delete</source>
-        <translation>삭제(&amp;D)</translation>
+        <translation>&amp;Apagar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1182"/>
         <source>delete current fileInfo</source>
-        <translation>현 파일 정보 삭제</translation>
+        <translation>excluir informações do arquivo atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1184"/>
         <source>&amp;Keyboard Shortcuts</source>
-        <translation>키보드 단축키(&amp;K)</translation>
+        <translation>Atalhos de &amp;Teclado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1186"/>
         <source>lets you customize your keyboard shortcuts</source>
-        <translation>키보드 단축키 설정하기</translation>
+        <translation>permite personalizar seus atalhos de teclado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1188"/>
         <source>&amp;Settings</source>
-        <translation>설정(&amp;S)</translation>
+        <translation>&amp;Configurações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1190"/>
         <source>settings</source>
-        <translation>설정</translation>
+        <translation>configurações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1193"/>
         <source>Image &amp;Adjustments</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajustes de Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1195"/>
         <source>open image manipulation toolbox</source>
-        <translation type="unfinished"></translation>
+        <translation>abrir caixa de ferramentas de manipulação de imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1198"/>
         <source>R&amp;esize Image</source>
-        <translation>이미지 크기 변경(&amp;e)</translation>
+        <translation>R&amp;edimensionar Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1200"/>
         <source>resize the current image</source>
-        <translation>현 이미지 크기 변경</translation>
+        <translation>redimensionar a imagem atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1202"/>
         <source>Cr&amp;op Image</source>
-        <translation>이미지 자르기(&amp;o)</translation>
+        <translation>Rec&amp;ortar Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1210"/>
         <source>Show &amp;Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar &amp;Menu</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1211"/>
         <source>Hides the Menu and Shows it Again on ALT</source>
-        <translation>ALT 키로 메뉴 감추고 다시 보이게 하기</translation>
+        <translation>Oculta e Mostra o Menu com a tecla ALT</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1214"/>
         <source>Tool&amp;bar</source>
-        <translation>도구 바(&amp;b)</translation>
+        <translation>&amp;Barra de ferramentas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1216"/>
         <source>Show Toolbar</source>
-        <translation>도구 바 보이기</translation>
+        <translation>Mostrar Barra de Ferramentas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1219"/>
         <source>&amp;Statusbar</source>
-        <translation>상태바(&amp;S)</translation>
+        <translation>&amp;Barra de Status</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1221"/>
         <source>Show Statusbar</source>
-        <translation>상태바 보이기</translation>
+        <translation>Mostrar Barra de Status</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1224"/>
         <source>&amp;Pseudocolor Function</source>
-        <translation>&amp;Pseudo Color 기능</translation>
+        <translation>Função &amp;Pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1226"/>
         <source>Show Pseudocolor Function</source>
-        <translation>Pseudo Color 기능 보이기</translation>
+        <translation>Mostrar Função Pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1230"/>
         <source>O&amp;verview</source>
-        <translation>개요(&amp;v)</translation>
+        <translation>Res&amp;umo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1232"/>
         <source>Shows the Zoom Overview</source>
-        <translation>줌 개요 보이기</translation>
+        <translation>Mostra resumo do Zoom</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1237"/>
         <source>Pla&amp;yer</source>
-        <translation>플레이어(&amp;y)</translation>
+        <translation>Reprod&amp;utor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1239"/>
         <source>Shows the Slide Show Player</source>
-        <translation>슬라이드 쇼 플레이어 보이기</translation>
+        <translation>Mostra o Reprodutor de Apresentação de Slides</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1242"/>
         <source>&amp;Hide All Panels</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ocultar todos os painéis</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1244"/>
         <source>Hide all panels</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocultar todos os painéis</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1248"/>
         <source>File &amp;Explorer</source>
-        <translation>파일 탐색기(&amp;E)</translation>
+        <translation>&amp;Explorador de Arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1250"/>
         <source>Show File Explorer</source>
-        <translation>파일 탐색기 보이기</translation>
+        <translation>Mostrar Explorador de Arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1253"/>
         <source>Metadata &amp;Info</source>
-        <translation>메타데이터 정보(&amp;I)</translation>
+        <translation>Metadados &amp;Informações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1255"/>
         <source>Show Metadata Info</source>
-        <translation>메타데이터 정보 보이기</translation>
+        <translation>Mostrar Informações de Metadados</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1258"/>
         <source>&amp;Thumbnails</source>
-        <translation>썸네일(&amp;T)</translation>
+        <translation>&amp;Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1260"/>
         <source>Show Thumbnails</source>
-        <translation>썸네일 보이기</translation>
+        <translation>Mostrar Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1263"/>
         <source>&amp;Thumbnail Preview</source>
-        <translation>썸네일 미리보기(&amp;T)</translation>
+        <translation>Pré-visualização de &amp;Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1265"/>
         <source>Show Thumbnails Preview</source>
-        <translation>썸네일 미리보기 보이기</translation>
+        <translation>Mostrar Pré-visualização de Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1268"/>
         <source>&amp;Folder Scrollbar</source>
-        <translation>폴더 스크롤바(&amp;F)</translation>
+        <translation>&amp;Pasta Barra de Rolagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1269"/>
         <source>Show Folder Scrollbar</source>
-        <translation>폴더 스크롤바 보이기</translation>
+        <translation>Mostrar Barra de Rolagem de Pastas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1272"/>
         <source>&amp;Metadata Ribbon</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de &amp;meta-dados</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1274"/>
         <source>Shows the Metadata Panel</source>
-        <translation>메타데이터 패널 보이기</translation>
+        <translation>Mostra o Painel de Metadados</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1277"/>
         <source>File &amp;Info</source>
-        <translation>파일 정보(&amp;I)</translation>
+        <translation>Arquivo &amp;informação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1279"/>
         <source>Shows the Info Panel</source>
-        <translation>정보 패널 보이기</translation>
+        <translation>Mostra o Painel de Informações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1282"/>
         <source>&amp;Histogram</source>
-        <translation>히스토그램(&amp;H)</translation>
+        <translation>&amp;Histograma</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1284"/>
         <source>Shows the Histogram Panel</source>
-        <translation>히스토그램 패널 보이기</translation>
+        <translation>Mostra o Painel Histograma</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1287"/>
         <source>Image &amp;Notes</source>
-        <translation>이미지 노트(&amp;N)</translation>
+        <translation>Imagem &amp;Notas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1289"/>
         <source>Shows Image Notes</source>
-        <translation>이미지 노트 보이기</translation>
+        <translation>Mostra Notas de Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1292"/>
         <source>Edit &amp;History</source>
-        <translation>히스토리 편집(&amp;H)</translation>
+        <translation>Editar &amp;História</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1293"/>
         <source>Shows the edit history</source>
-        <translation>히스토리 편집 보이기</translation>
+        <translation>Mostra o histórico de edições</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1297"/>
         <source>Show &amp;Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar &amp;Registo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1298"/>
         <source>Shows the log window</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra a janela de registos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1305"/>
         <source>New &amp;Tab</source>
-        <translation>새 탭(&amp;T)</translation>
+        <translation>Nova &amp;Aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1307"/>
         <source>Open a new tab</source>
-        <translation>새 탭 열기</translation>
+        <translation>Abrir uma nova aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1309"/>
         <source>&amp;Close Tab</source>
-        <translation>탭 닫기(&amp;C)</translation>
+        <translation>Fe&amp;char Aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1311"/>
         <source>Close current tab</source>
-        <translation>현재 탭 닫기</translation>
+        <translation>Fechar a aba atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1313"/>
         <source>&amp;Close All Tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fechar todas as abas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1314"/>
         <source>Close all open tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>Fechar todas as abas abertas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1316"/>
         <source>&amp;Fit Window to Image</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajustar Janela à Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1344"/>
         <source>&amp;Fit Image to Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajustar Imagem à Janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1347"/>
         <source>Zoom image to fit window</source>
-        <translation type="unfinished"></translation>
+        <translation>Aproximar imagem para ajustar à janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1318"/>
         <source>Fit window to the image</source>
-        <translation>이미지를 창 크기에 맞추기</translation>
+        <translation>Ajustar janela à imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="592"/>
@@ -759,286 +759,286 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1320"/>
         <source>F&amp;irst Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Primeira aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1321"/>
         <source>Switch to first tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar para a primeira aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1323"/>
         <source>&amp;Previous Tab</source>
-        <translation>이전 탭(&amp;P)</translation>
+        <translation>Aba &amp;Anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1325"/>
         <source>Switch to previous tab</source>
-        <translation>이전 탭으로 전환</translation>
+        <translation>Trocar para a aba anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1327"/>
         <source>&amp;Go to Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Vá para a aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1328"/>
         <source>Go to tab by index</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ir para aba por meio do índice</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1330"/>
         <source>&amp;Next Tab</source>
-        <translation>다음 탭(&amp;N)</translation>
+        <translation>Aba Se&amp;guinte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1332"/>
         <source>Switch to next tab</source>
-        <translation>다음 탭으로 전환</translation>
+        <translation>Trocar para a aba seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1334"/>
         <source>La&amp;st Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Última aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1335"/>
         <source>Switch to last tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar para a última aba</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1338"/>
         <source>Fu&amp;ll Screen</source>
-        <translation>전체 화면(&amp;l)</translation>
+        <translation>Tela c&amp;heia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1341"/>
         <source>Full Screen</source>
-        <translation>전체 화면</translation>
+        <translation>Tela Cheia</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1349"/>
         <source>Show &amp;100%</source>
-        <translation>&amp;100%로 보기</translation>
+        <translation>Mostrar &amp;100%</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1351"/>
         <source>Shows the image at 100%</source>
-        <translation>이미지를 100% 크기로 보여주기</translation>
+        <translation>Mostra imagem a 100%</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1353"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1525"/>
         <source>Zoom &amp;In</source>
-        <translation>확대(&amp;I)</translation>
+        <translation>Ampl&amp;iar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1355"/>
         <source>zoom in</source>
-        <translation>확대</translation>
+        <translation>Ampliar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1357"/>
         <source>&amp;Zoom Out</source>
-        <translation>축소(&amp;Z)</translation>
+        <translation>Reduzir &amp;Zoom</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1359"/>
         <source>zoom out</source>
-        <translation>축소</translation>
+        <translation>reduzir zoom</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1361"/>
         <source>&amp;Anti Aliasing</source>
-        <translation>앤티에일리어싱(&amp;A)</translation>
+        <translation>Su&amp;avização</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1363"/>
         <source>if checked images are smoother</source>
-        <translation>선택하면 이미지가 부드러워집니다</translation>
+        <translation>Se ativado, as imagens serão suavizadas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1367"/>
         <source>&amp;Transparency Pattern</source>
-        <translation>투명 패턴(&amp;T)</translation>
+        <translation>&amp;Transparência Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1370"/>
         <source>if checked, a pattern will be displayed for transparent objects</source>
-        <translation>체크하면 패턴이 투명 객체용으로 표시됩니다</translation>
+        <translation>Se ativado, o padrão será exibido nos objetos transparentes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1374"/>
         <source>&amp;Frameless</source>
-        <translation>틀 없음(&amp;F)</translation>
+        <translation>&amp;Sem Contornos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1376"/>
         <source>shows a frameless window</source>
-        <translation>틀이 없는 창 보여주기</translation>
+        <translation>mostra uma janela sem contornos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1380"/>
         <source>&amp;Change Opacity</source>
-        <translation>불투명도 변경(&amp;C)</translation>
+        <translation>&amp;Alterar Opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1382"/>
         <source>change the window opacity</source>
-        <translation>창의 불투명도 변경</translation>
+        <translation>Alterar opacidade da janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1384"/>
         <source>Opacity &amp;Up</source>
-        <translation>불투명도 &amp;Up</translation>
+        <translation>A&amp;umentar opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1386"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1390"/>
         <source>changes the window opacity</source>
-        <translation>창의 불투명도 변경</translation>
+        <translation>Alterar opacidade da janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1388"/>
         <source>Opacity &amp;Down</source>
-        <translation>불투명도 &amp;Down</translation>
+        <translation>Re&amp;duzir opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1392"/>
         <source>To&amp;ggle Opacity</source>
-        <translation>불투명도 토글(&amp;g)</translation>
+        <translation>Alt&amp;ernar opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1394"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1495"/>
         <source>toggle the window opacity</source>
-        <translation>창의 불투명도를 토글 합니다</translation>
+        <translation>Alterna a opacidade da janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1396"/>
         <source>Lock &amp;Window</source>
-        <translation>창 잠금(&amp;W)</translation>
+        <translation>Bloquear &amp;janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1398"/>
         <source>lock the window</source>
-        <translation>창 잠그기</translation>
+        <translation>bloquear a janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1402"/>
         <source>&amp;Toggle Slideshow</source>
-        <translation>슬라이드 쇼 토글(&amp;T)</translation>
+        <translation>Al&amp;ternar para slides</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1403"/>
         <source>Start/Pause the slideshow</source>
-        <translation>슬라이드 쇼 시작/정지</translation>
+        <translation>Inicia/pausa a apresentação de slides</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1407"/>
         <source>&amp;Pause Movie</source>
-        <translation>무비 정지(&amp;P)</translation>
+        <translation>&amp;Pausa no filme</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1409"/>
         <source>pause the current movie</source>
-        <translation>현재의 무비 정지</translation>
+        <translation>Pausa o filme atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1414"/>
         <source>P&amp;revious Frame</source>
-        <translation>이전 프레임(&amp;r)</translation>
+        <translation>Quadro &amp;Anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1416"/>
         <source>show previous frame</source>
-        <translation>이전 프레임 보이기</translation>
+        <translation>mostrar o quadro anterior</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1419"/>
         <source>&amp;Next Frame</source>
-        <translation>다음 프레임(&amp;N)</translation>
+        <translation>&amp;Próximo Quadro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1421"/>
         <source>show next frame</source>
-        <translation>다음 프레임 보이기</translation>
+        <translation>mostrar o próximo quadro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1423"/>
         <source>Choose &amp;Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolher &amp;Monitor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1424"/>
         <source>Choose the Monitor to run nomacs</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolha em qual Monitor executar nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1427"/>
         <source>Show Image Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Localização da Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1429"/>
         <source>shows where the image was taken in Google maps</source>
-        <translation type="unfinished"></translation>
+        <translation>mostrar no Google maps onde a foto foi tirada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1435"/>
         <source>Compute &amp;Thumbnails</source>
-        <translation>썸네일 계산(&amp;T)</translation>
+        <translation>Calcular &amp;Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1436"/>
         <source>compute all thumbnails of the current folder</source>
-        <translation>현 폴더의 모든 썸네일 계산</translation>
+        <translation>calcular todas as miniaturas da pasta atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1439"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1546"/>
         <source>&amp;Filter</source>
-        <translation>필터(&amp;F)</translation>
+        <translation>&amp;Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1444"/>
         <source>Export Multipage &amp;TIFF</source>
-        <translation>멀티페이지 &amp;TIFF 내보내기</translation>
+        <translation>Exportar &amp;TIFF de várias páginas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1445"/>
         <source>Export TIFF pages to multiple tiff files</source>
-        <translation>TIFF 페이지들을 다중 tiff 파일들로 내보내기</translation>
+        <translation>Exportar páginas TIFF para vários arquivos tiff</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1447"/>
         <source>Extract From Archive</source>
-        <translation>압축 파일에서 추출</translation>
+        <translation>Extrair do Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1449"/>
         <source>Extract images from an archive (%1)</source>
-        <translation>이미지를 압축 파일 (%1) 에서 추출</translation>
+        <translation>Extrair imagens de um arquivo (%1)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1452"/>
         <source>&amp;Mosaic Image</source>
-        <translation>모자이크 이미지(&amp;M)</translation>
+        <translation>Imagem em &amp;Mosaico</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1453"/>
         <source>Create a Mosaic Image</source>
-        <translation>모자이크 이미지 생성</translation>
+        <translation>Cria uma Imagem em Mosaico</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1455"/>
         <source>Batch Processing</source>
-        <translation>일괄 처리</translation>
+        <translation>Processamento em Lote</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1456"/>
         <source>Apply actions to multiple images</source>
-        <translation>다중 이미지에 action 적용</translation>
+        <translation>Aplicar ações para múltiplas imagens</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1459"/>
@@ -1048,251 +1048,251 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1460"/>
         <source>set the current image as wallpaper</source>
-        <translation>현 이미지를 바탕화면으로 설정</translation>
+        <translation>definir a imagem atual como papel de parede</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1462"/>
         <source>Add Image Format</source>
-        <translation>이미지 포맷 추가</translation>
+        <translation>Adicionar Formato de Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1463"/>
         <source>Add a new image format to nomacs</source>
-        <translation>nomacs에 새 이미지 포맷 추가</translation>
+        <translation>Adicione um novo formato de imagem ao nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1467"/>
         <source>&amp;About Nomacs</source>
-        <translation>Nomacs 정보(&amp;A)</translation>
+        <translation>&amp;Sobre Nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1469"/>
         <source>about</source>
-        <translation>nomacs 정보</translation>
+        <translation>sobre</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1471"/>
         <source>&amp;Documentation</source>
-        <translation>온라인 문서(&amp;D)</translation>
+        <translation>&amp;Documentação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1472"/>
         <source>Online Documentation</source>
-        <translation>온라인 문서</translation>
+        <translation>Documentação online</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1474"/>
         <source>&amp;Report a Bug</source>
-        <translation>버그 보고(&amp;R)</translation>
+        <translation>&amp;Reportar um erro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1475"/>
         <source>Report a Bug</source>
-        <translation>버그 보고</translation>
+        <translation>Reportar um erro</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1477"/>
         <source>&amp;Check for Updates</source>
-        <translation>업데이트 체크(&amp;C)</translation>
+        <translation>&amp;Verificar Atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1478"/>
         <source>check for updates</source>
-        <translation>업데이트 체크</translation>
+        <translation>verificar atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1481"/>
         <source>&amp;Update Translation</source>
-        <translation>번역 갱신(&amp;U)</translation>
+        <translation>&amp;Atualizar Tradução</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1483"/>
         <source>Checks for a new version of the translations of the current language</source>
-        <translation>현재 언어의 새 버전의 번역이 있는지 체크</translation>
+        <translation>Verifica se há nova versão das traduções para o idioma atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1488"/>
         <source>Synchronize &amp;View</source>
-        <translation>보기 동기화(&amp;V)</translation>
+        <translation>Sincronizar &amp;vista</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1490"/>
         <source>synchronize the current view</source>
-        <translation>현재의 보기를 동기화</translation>
+        <translation>sincronizar a exibição atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1493"/>
         <source>&amp;Window Overlay</source>
-        <translation>창 겹쳐올리기(&amp;W)</translation>
+        <translation>Sobreposição de &amp;janela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1498"/>
         <source>Arrange Instances</source>
-        <translation>인스턴스 정돈</translation>
+        <translation>Organizar instâncias</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1500"/>
         <source>arrange connected instances</source>
-        <translation>연결된 인스턴스들을 정돈</translation>
+        <translation>organizar instâncias conectadas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1503"/>
         <source>Connect &amp;All</source>
-        <translation>전체 연결(&amp;A)</translation>
+        <translation>Conecte &amp;Tudo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1505"/>
         <source>connect all instances</source>
-        <translation>모든 인스턴스 연결</translation>
+        <translation>conecte todas as instâncias</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1507"/>
         <source>&amp;Sync All Actions</source>
-        <translation>모든 행위 동기화(&amp;S)</translation>
+        <translation>&amp;Sincronizar todas as ações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1508"/>
         <source>Transmit All Signals Automatically.</source>
-        <translation>모든 신호들을 자동으로 전송합니다.</translation>
+        <translation>Transmita Todos os Sinais Automaticamente.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1514"/>
         <source>&amp;Plugin Manager</source>
-        <translation>플러그인 관리자(&amp;P)</translation>
+        <translation>Gerenciador de &amp;Plugin</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1515"/>
         <source>manage installed plugins and download new ones</source>
-        <translation>설치된 플러그인을 관리하고 새 플러그인을 다운로드 합니다</translation>
+        <translation>gerencie plugins instalados e baixe novos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1520"/>
         <source>Select &amp;All</source>
-        <translation>모두 선택(&amp;A)</translation>
+        <translation>Selecionar &amp;Tudo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1530"/>
         <source>Zoom &amp;Out</source>
-        <translation>축소(&amp;O)</translation>
+        <translation>&amp;Reduzir Zoom</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1535"/>
         <source>Display &amp;Squares</source>
-        <translation>사각형 디스플레이(&amp;S)</translation>
+        <translation>Exibição &amp;Quadrados</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1541"/>
         <source>Show &amp;Filename</source>
-        <translation>파일명 보이기(&amp;F)</translation>
+        <translation>Mostrar nome de &amp;arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1565"/>
         <source>&amp;Rename</source>
-        <translation>개명(&amp;R)</translation>
+        <translation>&amp;Renomear</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1570"/>
         <source>&amp;Batch Process</source>
-        <translation>일괄 처리(&amp;B)</translation>
+        <translation>Processo em &amp;Lote</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1572"/>
         <source>Adds selected files to batch processing.</source>
-        <translation>선택된 파일들을 일괄 처리에 추가합니다.</translation>
+        <translation>Adiciona arquivos selecionados para processamento em lote.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1576"/>
         <source>&amp;Batch Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Impressão em Lote</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1578"/>
         <source>Prints selected files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Imprime os arquivos selecionados.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1589"/>
         <source>Start pong</source>
-        <translation>Pong 시작</translation>
+        <translation>Iniciar pong</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1592"/>
         <source>First File</source>
-        <translation>첫 번째 파일</translation>
+        <translation>Primeiro Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1593"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1609"/>
         <source>Jump to first file</source>
-        <translation>첫 번째 파일로 가기</translation>
+        <translation>Ir para o primeiro arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1596"/>
         <source>Last File</source>
-        <translation>마지막 파일</translation>
+        <translation>Último Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1597"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1613"/>
         <source>Jump to the end of the current folder</source>
-        <translation>현 폴더의 마지막으로 점프</translation>
+        <translation>Ir para o fim da pasta atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1600"/>
         <source>Skip Previous Images</source>
-        <translation>이전 이미지 skip</translation>
+        <translation>Pule Imagens Anteriores</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1601"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1617"/>
         <source>Jumps 10 images before the current image</source>
-        <translation>현 이미지 앞으로 10개의 이미지 점프</translation>
+        <translation>Avançar 10 imagens antes da atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1604"/>
         <source>Skip Next Images</source>
-        <translation>다음 이미지 skip</translation>
+        <translation>Ignorar imagens seguintes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1605"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1621"/>
         <source>Jumps 10 images after the current image</source>
-        <translation>현 이미지 뒤로 10개의 이미지 점프</translation>
+        <translation>Avançar 10 imagens após a atual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1608"/>
         <source>First File Sync</source>
-        <translation>첫 번째 파일 동기화</translation>
+        <translation>Ir para o primeiro arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1612"/>
         <source>Last File Sync</source>
-        <translation>마지막 파일 동기화</translation>
+        <translation>Ir para o último arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1616"/>
         <source>Skip Previous Images Sync</source>
-        <translation>이전 이미지 동기화 skip</translation>
+        <translation>Ignorar imagens anteriores</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1620"/>
         <source>Skip Next Images Sync</source>
-        <translation>다음 이미지 동기화 skip</translation>
+        <translation>Ignorar imagens seguintes</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1624"/>
         <source>Delete File Silent</source>
-        <translation>파일을 조용히 삭제</translation>
+        <translation>Apagar arquivo silenciosamente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1625"/>
         <source>Deletes a file without warning</source>
-        <translation>파일을 경고 없이 삭제합니다</translation>
+        <translation>Apaga um arquivo sem mostrar aviso</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1628"/>
         <source>Star Rating 0</source>
-        <translation type="unfinished"></translation>
+        <translation>Avaliação 0 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1629"/>
@@ -1302,77 +1302,77 @@
         <location filename="../src/DkCore/DkActionManager.cpp" line="1645"/>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1649"/>
         <source>Star rating which is saved to an image&apos;s metadata</source>
-        <translation>Star rating which is saved to an image&apos;s metadata</translation>
+        <translation>Avaliação que é guardada nos meta-dados de uma imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1632"/>
         <source>Star Rating 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Avaliação 1 Estrela</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1636"/>
         <source>Star Rating 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Avaliação 2 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1640"/>
         <source>Star Rating 3</source>
-        <translation type="unfinished"></translation>
+        <translation>Avaliação 3 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1644"/>
         <source>Star Rating 4</source>
-        <translation type="unfinished"></translation>
+        <translation>Avaliação 4 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1648"/>
         <source>Star Rating 5</source>
-        <translation type="unfinished"></translation>
+        <translation>Avaliação 5 Estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1652"/>
         <source>Pan Image Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrastar a Imagem para Cima</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1653"/>
         <source>Pans the image up if zoomed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a imagem para cima se dado zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1656"/>
         <source>Pan Image Down</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrastar Imagem para Baixo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1657"/>
         <source>Pans the image down if zoomed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a imagem para baixo se dado zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1660"/>
         <source>Pan Image Left</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a Imagem para a Esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1661"/>
         <source>Pans the image left if zoomed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a imagem para a esquerda se dado zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1664"/>
         <source>Pan Image Right</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a Imagem para a Direita</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1665"/>
         <source>Pans the image right if zoomed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrasta a imagem para a direita se dado zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="98"/>
         <source>Cropped</source>
-        <translation type="unfinished"></translation>
+        <translation>Recortada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="935"/>
@@ -1387,291 +1387,291 @@
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="76"/>
         <source>&amp;Grayscale</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tons de cinza</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="77"/>
         <source>Convert to Grayscale</source>
-        <translation>그레이스케일로 변환</translation>
+        <translation>Converter em Tons de Cinza</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="81"/>
         <source>&amp;Auto Adjust</source>
-        <translation>자동 조정(&amp;A)</translation>
+        <translation>&amp;Ajuste Automático</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="83"/>
         <source>Auto Adjust Image Contrast and Color Balance</source>
-        <translation>이미지 대비와 색상 밸런스를 자동 조정</translation>
+        <translation>Ajuste Automático de Contraste de Imagem e Equilíbrio de Cores</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="87"/>
         <source>Nor&amp;malize Image</source>
-        <translation>이미지 정규화(&amp;m)</translation>
+        <translation>Nor&amp;malizar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="89"/>
         <source>Normalize the Image</source>
-        <translation>이미지 정규화하기</translation>
+        <translation>Normalizar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="94"/>
         <source>Flip &amp;Horizontal</source>
-        <translation>수평으로 뒤집기(&amp;H)</translation>
+        <translation>Inversão &amp;horizontal</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="96"/>
         <source>Flip Image Horizontally</source>
-        <translation>수평으로 이미지 뒤집기</translation>
+        <translation>Virar a imagem horizontalmente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="100"/>
         <source>Flip &amp;Vertical</source>
-        <translation>수직으로 뒤집기(&amp;V)</translation>
+        <translation>Inversão &amp;vertical</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="101"/>
         <source>Flip Image Vertically</source>
-        <translation>수직으로 이미지 뒤집기</translation>
+        <translation>Virar a imagem verticalmente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="105"/>
         <source>&amp;Invert Image</source>
-        <translation>이미지 반전(&amp;I)</translation>
+        <translation>&amp;Inverter imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="106"/>
         <source>Invert the Image</source>
-        <translation>이미지를 반전</translation>
+        <translation>Inverter a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="111"/>
         <source>&amp;Tiny Planet...</source>
-        <translation type="unfinished"></translation>
+        <translation>Efeito &quot;&amp;Tiny Planet&quot;...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="112"/>
         <source>Create a Tiny Planet</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Criar um efeito &quot;Tiny Planet&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="116"/>
         <source>&amp;Background Color...</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor de Fundo...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="117"/>
         <source>Add a background color</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar uma cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="121"/>
         <source>&amp;Blur...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Desfocar...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="122"/>
         <source>Blur the image</source>
-        <translation type="unfinished"></translation>
+        <translation>Desfocar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="126"/>
         <source>&amp;Sharpen...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Apurar...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="127"/>
         <source>Sharpens the image by applying an unsharp mask</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperfeiçoa a imagem aplicando uma máscara de nitidez</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="131"/>
         <source>&amp;Rotate...</source>
-        <translation type="unfinished"></translation>
+        <translation>Gira&amp;r...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="132"/>
         <source>Rotate the image</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Rotacionar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="136"/>
         <source>&amp;Resize...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Redimensionar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="137"/>
         <source>Resize the image</source>
-        <translation type="unfinished"></translation>
+        <translation>Redimensionar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="141"/>
         <source>&amp;Threshold...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Contorno...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="142"/>
         <source>Threshold the image</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Contornar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="146"/>
         <source>&amp;Hue/Saturation...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Matiz/Saturação...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="147"/>
         <source>Change Hue and Saturation</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Modificar Matiz e Saturação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="151"/>
         <source>&amp;Exposure...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Exposição...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp" line="152"/>
         <source>Change the Exposure and Gamma</source>
-        <translation type="unfinished"></translation>
+        <translation>Modificar Exposição e Gama</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="53"/>
         <source>Could not convert to grayscale</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível converter para escala de cinza</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="73"/>
         <source>Cannot auto adjust</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível autoajustar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="94"/>
         <source>The Image is Already Normalized...</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem já está normalizada...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="112"/>
         <source>Cannot invert image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível inverter a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="132"/>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="152"/>
         <source>Cannot flip image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível girar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="178"/>
         <source>Sorry, I could not create a tiny planet</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, não foi possível gerar o efeito &quot;Tiny Planet&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="239"/>
         <source>Cannot blur image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível desfocar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="271"/>
         <source>Cannot sharpen image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível apurar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="315"/>
         <source>Cannot rotate image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível rotacionar a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="348"/>
         <source>Cannot resize image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível redimensionar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="397"/>
         <source>Cannot threshold image</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível aplicar o limiar à imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="441"/>
         <source>Cannot change Hue/Saturation</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível alterar a Matiz/Saturação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="498"/>
         <source>Cannot apply exposure</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível aplicar exposição</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="556"/>
         <source>Cannot draw background color</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível renderizar a cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="494"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="977"/>
         <source>&lt;data too large to display&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;dados grandes demais para exibição&gt;</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="600"/>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="826"/>
         <source>Filename</source>
-        <translation>파일명</translation>
+        <translation>Nome de arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="603"/>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="827"/>
         <source>Path</source>
-        <translation>경로</translation>
+        <translation>Caminho</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="607"/>
         <source>Target</source>
-        <translation>대상</translation>
+        <translation>Destino</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="611"/>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="828"/>
         <source>Size</source>
-        <translation>크기</translation>
+        <translation>Tamanho</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="615"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="618"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="621"/>
         <source>Date</source>
-        <translation>날짜</translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="615"/>
         <source>Created</source>
-        <translation type="unfinished"></translation>
+        <translation>Criada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="618"/>
         <source>Last Modified</source>
-        <translation>마지막 수정일</translation>
+        <translation>Última modificação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="621"/>
         <source>Last Read</source>
-        <translation>마지막 접근일</translation>
+        <translation>Última leitura</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="625"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="638"/>
         <source>Owner</source>
-        <translation>소유자</translation>
+        <translation>Proprietário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="629"/>
         <source>OwnerID</source>
-        <translation>소유자 id</translation>
+        <translation>ID de proprietário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="633"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="652"/>
         <source>Group</source>
-        <translation>그룹</translation>
+        <translation>Grupo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="638"/>
@@ -1679,482 +1679,482 @@
         <location filename="../src/DkCore/DkMetaData.cpp" line="652"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="659"/>
         <source>Permissions</source>
-        <translation>권한</translation>
+        <translation>Permissões</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="645"/>
         <source>User</source>
-        <translation>사용자</translation>
+        <translation>Usuário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="659"/>
         <source>Other</source>
-        <translation>기타</translation>
+        <translation>Outros</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="669"/>
         <source>File</source>
-        <translation>파일</translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1595"/>
         <source>not defined</source>
-        <translation>정의되지 않음</translation>
+        <translation>não definido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1596"/>
         <source>manual</source>
-        <translation>수동</translation>
+        <translation>manual</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1597"/>
         <source>normal</source>
-        <translation>정상</translation>
+        <translation>normal</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1598"/>
         <source>aperture priority</source>
-        <translation>조리개 우선</translation>
+        <translation>prioridade de abertura</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1599"/>
         <source>shutter priority</source>
-        <translation>셔터 우선</translation>
+        <translation>prioridade do obturador</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1600"/>
         <source>program creative</source>
-        <translation type="unfinished"></translation>
+        <translation>programa de criação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1601"/>
         <source>high-speed program</source>
-        <translation type="unfinished"></translation>
+        <translation>programa de alta velocidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1602"/>
         <source>portrait mode</source>
-        <translation>세로 보기 모드</translation>
+        <translation>modo retrato</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1603"/>
         <source>landscape mode</source>
-        <translation>가로 보기 모드</translation>
+        <translation>modo paisagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1606"/>
         <source>No Flash</source>
-        <translation>플래시 없음</translation>
+        <translation>Sem flash</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1607"/>
         <source>Fired</source>
-        <translation>발광</translation>
+        <translation>Disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1608"/>
         <source>Fired, Return not detected</source>
-        <translation>발광, 반사광 탐지 안됨</translation>
+        <translation>Disparado, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1609"/>
         <source>Fired, Return detected</source>
-        <translation>발광, 반사광 탐지됨</translation>
+        <translation>Disparado, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1610"/>
         <source>On, Did not fire</source>
-        <translation>켜짐, 발광하지 않음</translation>
+        <translation>Ativo, não disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1611"/>
         <source>On, Fired</source>
-        <translation>켜짐, 발광됨</translation>
+        <translation>Ativo, disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1612"/>
         <source>On, Return not detected</source>
-        <translation>켜짐, 반사광 탐지 안됨</translation>
+        <translation>Ativo, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1613"/>
         <source>On, Return detected</source>
-        <translation>켜짐, 반사광 탐지됨</translation>
+        <translation>Ativo, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1614"/>
         <source>Off, Did not fire</source>
-        <translation>꺼짐, 발광하지 않음</translation>
+        <translation>Inativo, não disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1615"/>
         <source>Off, Did not fire, Return not detected</source>
-        <translation>꺼짐, 발광하지 않음, 반사광 탐지 안됨</translation>
+        <translation>Inativo, não disparado, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1616"/>
         <source>Auto, Did not fire</source>
-        <translation>자동, 발광 안함</translation>
+        <translation>Automático, não disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1617"/>
         <source>Auto, Fired</source>
-        <translation>자동, 발광됨</translation>
+        <translation>Automático, disparado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1618"/>
         <source>Auto, Fired, Return not detected</source>
-        <translation>자동, 발광됨, 반사광 탐지 안됨</translation>
+        <translation>Automático, disparado, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1619"/>
         <source>Auto, Fired, Return detected</source>
-        <translation>자동, 발광됨, 반사광 탐지됨</translation>
+        <translation>Automático, disparado, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1620"/>
         <source>No flash function</source>
-        <translation>플래시 없음 기능</translation>
+        <translation>Sem flash</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1621"/>
         <source>Off, No flash function</source>
-        <translation>끄기. 플래시 없음 기능</translation>
+        <translation>Inativo, sem flash</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1622"/>
         <source>Fired, Red-eye reduction</source>
-        <translation>발광됨, 적목 현상 제거</translation>
+        <translation>Disparado, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1623"/>
         <source>Fired, Red-eye reduction, Return not detected</source>
-        <translation>발광됨, 적목 현상 제거, 반사광 탐지 안됨</translation>
+        <translation>Disparado, redução de olhos vermelhos, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1624"/>
         <source>Fired, Red-eye reduction, Return detected</source>
-        <translation>발광됨, 적목 현상 제거, 반사광 탐지됨</translation>
+        <translation>Disparado, redução de olhos vermelhos, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1625"/>
         <source>On, Red-eye reduction</source>
-        <translation>켜짐, 적목 현상 제거</translation>
+        <translation>Ativo, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1626"/>
         <source>On, Red-eye reduction, Return not detected</source>
-        <translation>켜짐, 적목 현상 제거, 반사광 탐지 안됨</translation>
+        <translation>Ativo, redução de olhos vermelhos, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1627"/>
         <source>On, Red-eye reduction, Return detected</source>
-        <translation>켜짐, 적목 현상 제거, 반사광 탐지됨</translation>
+        <translation>Ativo, redução de olhos vermelhos, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1628"/>
         <source>Off, Red-eye reduction</source>
-        <translation>꺼짐, 적목 현상 제거</translation>
+        <translation>Inativo, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1629"/>
         <source>Auto, Did not fire, Red-eye reduction</source>
-        <translation>자동, 발광하지 않음, 적목 형상 제거</translation>
+        <translation>Automático, não disparado, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1630"/>
         <source>Auto, Fired, Red-eye reduction</source>
-        <translation>자동, 발광됨, 적목 현상 제거</translation>
+        <translation>Automático, disparado, redução de olhos vermelhos</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1631"/>
         <source>Auto, Fired, Red-eye reduction, Return not detected</source>
-        <translation>자동, 발광됨, 적목 현상 제거, 반사광 탐지 안됨</translation>
+        <translation>Automático, disparado, redução de olhos vermelhos, sem retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1632"/>
         <source>Auto, Fired, Red-eye reduction, Return detected</source>
-        <translation>자동, 발광됨, 적목 현상 제거, 반사광 탐지됨</translation>
+        <translation>Automático, disparado, redução de olhos vermelhos, com retorno</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1635"/>
         <source>Uncompressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Descomprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1636"/>
         <source>CCITT 1D</source>
-        <translation type="unfinished"></translation>
+        <translation>CCITT 1D</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1637"/>
         <source>T4/Group 3 Fax</source>
-        <translation type="unfinished"></translation>
+        <translation>T4/Grupo 3 Fax</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1638"/>
         <source>T6/Group 4 Fax</source>
-        <translation type="unfinished"></translation>
+        <translation>T6/Grupo 4 Fax</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1639"/>
         <source>LZW</source>
-        <translation type="unfinished"></translation>
+        <translation>LZW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1640"/>
         <source>JPEG (old-style)</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG (estilo antigo)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1641"/>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1645"/>
         <source>JPEG</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1642"/>
         <source>Adobe Deflate</source>
-        <translation type="unfinished"></translation>
+        <translation>Adobe Deflate</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1643"/>
         <source>JBIG B&amp;W</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG Preto&amp;Branco</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1644"/>
         <source>JBIG Color</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG Colorido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1646"/>
         <source>Kodak 262</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodak 262</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1647"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1648"/>
         <source>Sony ARW Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Sony ARW Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1649"/>
         <source>Packed RAW</source>
-        <translation type="unfinished"></translation>
+        <translation>RAW enpacotado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1650"/>
         <source>Samsung SRW Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Samsung SRW Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1651"/>
         <source>CCIRLEW</source>
-        <translation type="unfinished"></translation>
+        <translation>CCIRLEW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1652"/>
         <source>Samsung SRW Compressed 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Samsung SRW Comprimido 2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1653"/>
         <source>PackBits</source>
-        <translation type="unfinished"></translation>
+        <translation>PackBits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1654"/>
         <source>Thunderscan</source>
-        <translation type="unfinished"></translation>
+        <translation>Thunderscan</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1655"/>
         <source>Kodak KDC Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodak KDC Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1656"/>
         <source>IT8CTPAD</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8CTPAD</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1657"/>
         <source>IT8LW</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8LW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1658"/>
         <source>IT8MP</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8MP</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1659"/>
         <source>IT8BL</source>
-        <translation type="unfinished"></translation>
+        <translation>8</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1660"/>
         <source>PixarFilm</source>
-        <translation type="unfinished"></translation>
+        <translation>PixarFilm</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1661"/>
         <source>PixarLog</source>
-        <translation type="unfinished"></translation>
+        <translation>PixarLog</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1662"/>
         <source>Deflate</source>
-        <translation type="unfinished"></translation>
+        <translation>Deflate</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1663"/>
         <source>DCS</source>
-        <translation type="unfinished"></translation>
+        <translation>DCS</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1664"/>
         <source>Aperio JPEG 2000 YCbCr</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperio JPEG 2000 YCbCr</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1665"/>
         <source>Aperio JPEG 2000 RGB</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperio JPEG 2000 RGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1666"/>
         <source>JBIG</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1667"/>
         <source>SGILog</source>
-        <translation type="unfinished"></translation>
+        <translation>SGILog</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1668"/>
         <source>SGILog24</source>
-        <translation type="unfinished"></translation>
+        <translation>SGILog24</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1669"/>
         <source>JPEG 2000</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG 2000</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1670"/>
         <source>Nikon NEF Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Nikon NEF Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1671"/>
         <source>JBIG2 TIFF FX</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG2 TIFF FX</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1672"/>
         <source>Microsoft Document Imaging(MDI) Binary Level Codec</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) Binary Level Codec</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1673"/>
         <source>Microsoft Document Imaging(MDI) Progressive Transform Codec</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) Progressive Transform Codec</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1674"/>
         <source>Microsoft Document Imaging(MDI) Vector</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) Vector</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1675"/>
         <source>ESRI Lerc</source>
-        <translation type="unfinished"></translation>
+        <translation>ESRI Lerc</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1676"/>
         <source>Lossy JPEG</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG com perdas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1677"/>
         <source>LZMA2</source>
-        <translation type="unfinished"></translation>
+        <translation>LZMA2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1678"/>
         <source>Zstd</source>
-        <translation type="unfinished"></translation>
+        <translation>Zstd</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1679"/>
         <source>WebP</source>
-        <translation type="unfinished"></translation>
+        <translation>WebP</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1680"/>
         <source>PNG</source>
-        <translation type="unfinished"></translation>
+        <translation>PNG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1681"/>
         <source>JPEG XR</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG XR</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1682"/>
         <source>Kodak DCR Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodak DCR Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp" line="1683"/>
         <source>Pentax PEF Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Pentax PEF Comprimido</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1106"/>
         <source>Plugin Manager</source>
-        <translation>플러그인 메니저</translation>
+        <translation>Gestor de extras</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1107"/>
         <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-        <translation>이 dll을 삭제할 수 없습니다!
-nomacs를 재 시작하고 다시 시도하십시오.</translation>
+        <translation>Não foi possível apagar a dll!
+Reinicie o nomacs e tente novamente.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1277"/>
         <source>Close plugin</source>
-        <translation>플러그인 닫기</translation>
+        <translation>Fechar extra</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1279"/>
         <source>Please close the currently opened plugin.</source>
-        <translation>현재 열린 플러그인을 닫기 바랍니다.</translation>
+        <translation>Por favor feche o extra atualmente aberto.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="80"/>
         <source>Batch Action</source>
-        <translation>일괄 처리 행위</translation>
+        <translation>Ações em lote</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="128"/>
         <source>[Transform Batch]</source>
-        <translation>[변형 일괄 처리]</translation>
+        <translation>[Transformação em lote]</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="303"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="482"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="605"/>
         <source>%1 inactive -&gt; skipping</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 inativo -&gt; ignorando</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="311"/>
@@ -2180,7 +2180,7 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="378"/>
         <source>transformed</source>
-        <translation type="unfinished"></translation>
+        <translation>transformado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="381"/>
@@ -2190,146 +2190,146 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="435"/>
         <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-        <translation>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</translation>
+        <translation>%1 O tamanho da imagem deveria ser aumentado, mas a opção &apos;Apenas Diminuir&apos; está ativa -&gt; pulando.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="440"/>
         <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-        <translation>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</translation>
+        <translation>%1 O tamanho da imagem deveria ser diminuído, mas a opção &apos;Apenas Aumentar&apos; está ativa -&gt; pulando.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="444"/>
         <source>%1 image size matches scale factor -&gt; skipping.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 tamanho da imagem coincide com o fator de escala -&gt; ignorando.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="492"/>
         <source>%1 %2 applied.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 %2 aplicado.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="494"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="644"/>
         <source>%1 Cannot apply %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - não foi possível aplicar %2.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="500"/>
         <source>%1 error, could not apply image adjustments.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 erro, não foi possível aplicar os ajustes de imagem.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="509"/>
         <source>[Adjustment Batch]</source>
-        <translation type="unfinished"></translation>
+        <translation>[Ajuste por lotes]</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="633"/>
         <source>%1 Cannot cast batch plugin %2.</source>
-        <translation>%1 일괄 처리 플러그인 %2 를 처리할 수 없습니다.</translation>
+        <translation>%1 Não foi possível iniciar o plugin em lote %2.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="647"/>
         <source>%1 illegal plugin interface: %2</source>
-        <translation>%1 불법적인 플러그인 인터페이스: %2</translation>
+        <translation>%1 - interface ilegal: %2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="649"/>
         <source>%1 Cannot apply plugin because it is NULL.</source>
-        <translation>%1 NULL이기 때문에 플러그인을 적용할 수 없습니다.</translation>
+        <translation>%1 Não foi possível aplicar o extra porque ele está NULL.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="653"/>
         <source>%1 error, could not apply plugins.</source>
-        <translation>%1 에러. 플러그인들을 적용할 수 없습니다.</translation>
+        <translation>Erro no extra %1. Extras não aplicados.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="656"/>
         <source>%1 plugins applied.</source>
-        <translation>%1 플러그인이 적용되었습니다.</translation>
+        <translation>%1 extras aplicados.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="663"/>
         <source>[Plugin Batch]</source>
-        <translation>[플러그인 일괄 처리]</translation>
+        <translation>[Extras em lote]</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="777"/>
         <source>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</source>
-        <translation>%1 은 이미 존재합니다 -&gt; 건너뜀(이 파일을 덮어쓰고 싶다면 &apos;덮어쓰기&apos;를 체크하기 바랍니다)</translation>
+        <translation>%1 já existe -&gt; ignorando (escolha &apos;já existe&apos; se quiser sobrescrever o arquivo)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="782"/>
         <source>Error: input file does not exist</source>
-        <translation>에러: 입력 파일이 존재하지 않습니다</translation>
+        <translation>Erro: arquivo de origem inexistente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="783"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="984"/>
         <source>Input: %1</source>
-        <translation>입력: %1</translation>
+        <translation>Origem: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="787"/>
         <source>Skipping: nothing to do here.</source>
-        <translation>Skip 중: 여기에 할 일이 아무 것도 없습니다.</translation>
+        <translation>Ignorando pois aqui não há nada para fazer.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="825"/>
         <source>processing %1</source>
-        <translation>%1 처리 중</translation>
+        <translation>processando %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="830"/>
         <source>Error while loading...</source>
-        <translation>로딩 중 에러...</translation>
+        <translation>Erro ao carregar...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="837"/>
         <source>Error: cannot process a NULL function.</source>
-        <translation>에러: NULL 기능을 처리할 수 없습니다.</translation>
+        <translation>Erro: não é possível processar uma função NULL.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="843"/>
         <source>%1 failed</source>
-        <translation>%1 실패함</translation>
+        <translation>%1 falhou</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="859"/>
         <source>%1 not saved - option &apos;Do not Save&apos; is checked...</source>
-        <translation>%1 not saved - option &apos;Do not Save&apos; is checked...</translation>
+        <translation>%1 não foi salvo - opção &apos;Não Salvar&apos; está ativada...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="865"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="897"/>
         <location filename="../src/DkCore/DkProcess.cpp" line="990"/>
         <source>Original filename added to Exif</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome original do arquivo acrescentado ao Exif</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="869"/>
         <source>%1 saved...</source>
-        <translation>%1 저장됨...</translation>
+        <translation>%1 salvo...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="871"/>
         <source>Could not save: %1</source>
-        <translation>%1 을(를) 저장할 수 없습니다</translation>
+        <translation>Não foi possível salvar: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="886"/>
         <source>Error: could not rename file, the target file exists already.</source>
-        <translation>에러: 파일 이름을 변경할 수 없습니다. 대상 파일명이 이미 존재합니다.</translation>
+        <translation>Erro: arquivo não renomeado porque o arquivo de destino já existe.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="903"/>
         <source>Error: could not rename file</source>
-        <translation>에러: 파일 이름을 변경할 수 없습니다</translation>
+        <translation>Erro: arquivo não renomeado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="908"/>
         <source>Renaming: %1 -&gt; %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Renomeando: %1 -&gt; %2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="941"/>
@@ -2364,142 +2364,142 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="965"/>
         <source>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</source>
-        <translation>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</translation>
+        <translation>O arquivo deveria ser copiado, mas &apos;Não Salvar&apos; está ativado - portando nada será feito...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="983"/>
         <source>Error: could not copy file</source>
-        <translation>에러: 파일을 복사할 수 없습니다</translation>
+        <translation>Erro: arquivo não copiado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="985"/>
         <source>Output: %1</source>
-        <translation>출력: %1</translation>
+        <translation>Destino: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="993"/>
         <source>Copying: %1 -&gt; %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiando: %1 -&gt; %2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1011"/>
         <source>Error: back-up (%1) file already exists</source>
-        <translation>에러: 백업(%1) 파일이 이미 존재합니다</translation>
+        <translation>Erro: o arquivo de backup (%1) já existe</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1020"/>
         <source>Error: could not rename existing file to %1</source>
-        <translation>에러: 현존하는 파일 이름을 %1 로 변경할 수 없습니다</translation>
+        <translation>Erro: não foi possível renomear o arquivo para %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1038"/>
         <source>Error: could not delete existing file</source>
-        <translation>에러: 현존하는 파일을 삭제할 수 없습니다</translation>
+        <translation>Erro: não foi possível apagar o arquivo existente</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1048"/>
         <source>Ui - a lot of things went wrong. Your original file can be found here: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Interface - ocorreram vários erros. O arquivo original se encontra em: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1054"/>
         <source>I could not save to %1 so I restored the original file.</source>
-        <translation>%1 로 저장할 수 없었으므로 원본 파일을 복원했습니다.</translation>
+        <translation>Não foi possível salvar em %1 e o arquivo original foi restaurado.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1070"/>
         <source>%1 deleted.</source>
-        <translation>%1 삭제됨.</translation>
+        <translation>%1 apagada.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1073"/>
         <source>I could not delete %1</source>
-        <translation>%1 을 삭제할 수 없습니다</translation>
+        <translation>Não foi possível apagar %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1078"/>
         <source>I did not delete the original because I detected %1 failure(s).</source>
-        <translation>%1 문제(들) 을 탐지했으므로 원본을 삭제하지 않았습니다.</translation>
+        <translation>Não foi possível apagar a imagem original porque foram detetadas %1 falha(s).</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="1165"/>
         <source>Image</source>
-        <translation>이미지</translation>
+        <translation>Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="1243"/>
         <source>nomacs - Image Lounge is a lightweight image viewer.</source>
-        <translation>nomacs - 이미지 라운지는 경량급 이미지 뷰어입니다.</translation>
+        <translation>O nomacs - Image Lounge é um visualizador de imagens muito leve.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="909"/>
         <source>Binary</source>
-        <translation type="unfinished"></translation>
+        <translation>Binário</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="912"/>
         <source>Indexed 8-bit</source>
-        <translation>인덱스드 8비트</translation>
+        <translation>Indexado 8 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="918"/>
         <source>RGB 32-bit</source>
-        <translation>RGB 32비트</translation>
+        <translation>RGB 32 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="924"/>
         <source>ARGB 32-bit</source>
-        <translation>ARGB 32비트</translation>
+        <translation>ARGB 32 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="929"/>
         <source>RGB 16-bit</source>
-        <translation>RGB 16비트</translation>
+        <translation>RGB 16 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="934"/>
         <source>ARGB 24-bit</source>
-        <translation>ARGB 24비트</translation>
+        <translation>ARGB 24 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="938"/>
         <source>RGB 24-bit</source>
-        <translation>RGB 24비트</translation>
+        <translation>RGB 24 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="941"/>
         <source>BGR 24-bit</source>
-        <translation>BGR 32비트 {24-?}</translation>
+        <translation>BGR 32 bits {24-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="944"/>
         <source>ARGB 16-bit</source>
-        <translation>ARGB 16비트</translation>
+        <translation>ARGB 16 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="947"/>
         <source>BGR 32-bit</source>
-        <translation>BGR 32비트</translation>
+        <translation>BGR 32 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="950"/>
         <source>ABGR 32-bit</source>
-        <translation>ABGR 32비트</translation>
+        <translation>ABGR 32 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="953"/>
         <source>Grayscale 8-bit</source>
-        <translation>그레이스케일 8비트</translation>
+        <translation>Escala de cinza 8 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="956"/>
         <source>Grayscale 16-bit</source>
-        <translation>그레이스케일 8비트 {16-?}</translation>
+        <translation>Escala de cinza 8 bits {16-?}</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="959"/>
         <source>Alpha 8-bit</source>
-        <translation>알파 8비트</translation>
+        <translation>Alfa 8 bits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp" line="964"/>
@@ -2524,42 +2524,42 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="212"/>
         <source>New Tab</source>
-        <translation>새 탭</translation>
+        <translation>Nova aba</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="214"/>
         <source>Thumbnail Preview</source>
-        <translation>썸네일 미리보기</translation>
+        <translation>Pré-visualizar miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="206"/>
         <source>Recent Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivos Recentes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="208"/>
         <source>Settings</source>
-        <translation>설정</translation>
+        <translation>Preferências</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="210"/>
         <source>Batch</source>
-        <translation>일괄 처리</translation>
+        <translation>Lote</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.h" line="76"/>
         <source>Player 1</source>
-        <translation>플레이어 1</translation>
+        <translation>Jogador 1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.h" line="77"/>
         <source>Player 2</source>
-        <translation>플레이어 2</translation>
+        <translation>Jogador 2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.h" line="88"/>
         <source>Anonymous</source>
-        <translation>익명</translation>
+        <translation>Anônimo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="1169"/>
@@ -2569,37 +2569,37 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="1217"/>
         <source>Movie ToolBar</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de Ferramentas de Animação</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="111"/>
         <source>Start in fullscreen.</source>
-        <translation>최대 화면에서 시작.</translation>
+        <translation>Iniciar em tela cheia.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="114"/>
         <source>Start slideshow playback</source>
-        <translation type="unfinished"></translation>
+        <translation>Pôr em playback o slideshow</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="117"/>
         <source>Start Pong.</source>
-        <translation>Pong 시작.</translation>
+        <translation>Iniciar pong.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="120"/>
         <source>Start in private mode.</source>
-        <translation>개인 모드에서 시작.</translation>
+        <translation>Iniciar no modo privado.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="124"/>
         <source>Set the viewing mode &lt;mode&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir modo de visualização &lt;mode&gt;.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="125"/>
         <source>default | frameless | pseudocolor</source>
-        <translation>기본 값 | 틀 없음 | Pseudo Color</translation>
+        <translation>padrão| sem bordas| pseudocor</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="108"/>
@@ -2609,37 +2609,37 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/main.cpp" line="129"/>
         <source>Batch processing of &lt;batch-settings.pnm&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Processamento em lote de &lt;batch-settings.pnm&gt;.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="130"/>
         <source>batch-settings-path</source>
-        <translation type="unfinished"></translation>
+        <translation>batch-settings-path</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="134"/>
         <source>Saves batch log to &lt;log-path.txt&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva registro do processamento em lote em &lt;log-path.txt&gt;.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="135"/>
         <source>log-path.txt</source>
-        <translation type="unfinished"></translation>
+        <translation>log-path.txt</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="139"/>
         <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-        <translation type="unfinished"></translation>
+        <translation>Importa e salva as definições de &lt;settings-path.ini&gt;.</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="140"/>
         <source>settings-path.ini</source>
-        <translation type="unfinished"></translation>
+        <translation>settings-path.ini</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="144"/>
         <source>Register file associations (Windows only).</source>
-        <translation type="unfinished"></translation>
+        <translation>Registrar associação de arquivos (apenas para Windows).</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="148"/>
@@ -2654,30 +2654,30 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/main.cpp" line="386"/>
         <source>Critical Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro crítico</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="387"/>
         <source>Sorry, nomacs ran out of memory...</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, o nomacs ficou sem memória...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="887"/>
         <source>Name: </source>
-        <translation>이름: </translation>
+        <translation>Nome: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="611"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="888"/>
         <source>Size: </source>
-        <translation>크기: </translation>
+        <translation>Tamanho: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="612"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="889"/>
         <source>Created: </source>
-        <translation type="unfinished"></translation>
+        <translation>Criada: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="616"/>
@@ -2697,12 +2697,12 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1584"/>
         <source>All Images</source>
-        <translation>모든 이미지</translation>
+        <translation>Todas as imagens</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1585"/>
         <source>Generates all images in the world</source>
-        <translation>세상에 있는 모든 이미지를 생성합니다</translation>
+        <translation>Gerar todas as imagens do mundo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp" line="1588"/>
@@ -2715,124 +2715,124 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1413"/>
         <source>Always Load JPG if Embedded</source>
-        <translation>임베드 되었다면 항상 JPG 로드</translation>
+        <translation>Carregar sempre JPG se incorporada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1414"/>
         <source>Load JPG if it Fits the Screen Resolution</source>
-        <translation>화면 해상도에 적합하면 JPG 로드</translation>
+        <translation>Carregar JPG se couber na resolução da tela</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1416"/>
         <source>Always Load RAW Data</source>
-        <translation>항상 RAW 데이터 로드</translation>
+        <translation>Carregar sempre dados não editados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1427"/>
         <source>Apply Noise Filtering to RAW Images</source>
-        <translation>RAW 이미지에 노이즈 필터 적용</translation>
+        <translation>Aplicar filtro de interferência às imagens não editadas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1428"/>
         <source>If checked, a noise filter is applied which reduced color noise</source>
-        <translation>체크하면 색상 노이즈를 줄이는 노이즈 필터가 적용됩니다적용됩니다</translation>
+        <translation>Se ativado, será aplicado um filtro de interferência para reduzir o ruído das cores</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1432"/>
         <source>RAW Loader Settings</source>
-        <translation>RAW 로더 설정</translation>
+        <translation>Preferências de imagens não editadas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1440"/>
         <source>Ask to Save Deleted Files</source>
-        <translation>삭제된 파일들 저장 여부 묻기</translation>
+        <translation>Pedir para salvar arquivos apagados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1441"/>
         <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, o nomacs irá perguntar antes de salvar arquivos que tenham sido deletados por outras aplicações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1445"/>
         <source>Ignore Exif Orientation when Loading</source>
-        <translation>불러올 때 Exif 방향 무시</translation>
+        <translation>Ignorar orientação Exif ao carregar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1446"/>
         <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-        <translation>체크하면 이미지들은 자신의 Exif 방향에 맞추어서 회전하지 않습니다</translation>
+        <translation>Se ativado, as imagens não serão giradas, respeitando a orientação Exif</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1450"/>
         <source>Save Exif Orientation</source>
-        <translation>Exif 방향 저장</translation>
+        <translation>Salvar orientação Exif</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1451"/>
         <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-        <translation>체크하면 이미지 매트릭스를 회전하는 대신 Exif에 방향이 기록됩니다
+        <translation>Se ativado, a orientação será escrita nos dados Exif em vez de as girar em matriz
 </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1452"/>
         <source>NOTE: this allows for rotating JPGs without losing information.</source>
-        <translation>주의: 이것은 JPG들을 정보 상실 없이 회전할 수 있게 합니다.</translation>
+        <translation>NOTA: esta opção permite-lhe girar as imagens JPGs sem perder as informações.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1456"/>
         <source>File Loading/Saving</source>
-        <translation>파일 읽기/저장</translation>
+        <translation>Carregar/Salvar arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1464"/>
         <source>Choose the number of Threads in the thread pool</source>
-        <translation>쓰레드 풀에서의 쓰레드 수를 선택하십시오</translation>
+        <translation>Escolha o número de processos a serem usados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1473"/>
         <source>Number of Threads</source>
-        <translation>쓰레드 수</translation>
+        <translation>Número de processos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1477"/>
         <source>Enable Native File Dialogs</source>
-        <translation type="unfinished"></translation>
+        <translation>Ativar Caixa de Diálogo de Arquivos Nativas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1478"/>
         <source>If checked, native system dialogs are used for opening/saving files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, caixas de diálogo nativas do sistema são usadas para salvar/abrir arquivos.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1482"/>
         <source>Native Dialogs</source>
-        <translation type="unfinished"></translation>
+        <translation>Caixas de Diálogo Nativas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1486"/>
         <source>Use Log File</source>
-        <translation>로그 파일 사용</translation>
+        <translation>Utilizar arquivo de registo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1487"/>
         <source>If checked, a log file will be created.</source>
-        <translation>체크하면 로그 파일이 생성됩니다.</translation>
+        <translation>Se ativado, será criado um arquivo de registo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1491"/>
         <source>Open Log</source>
-        <translation>로그 열기</translation>
+        <translation>Abrir registo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1500"/>
         <source>Logging</source>
-        <translation>로그 기록</translation>
+        <translation>Registo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1547"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>변경 사항을 적용하려면 nomacs를 다시 시작하십시오</translation>
+        <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
 </context>
 <context>
@@ -2840,42 +2840,42 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="455"/>
         <source>Manage Applications</source>
-        <translation>관리 응용프로그램</translation>
+        <translation>Gerenciar aplicações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="478"/>
         <source>&amp;Run</source>
-        <translation>실행(&amp;R)</translation>
+        <translation>Executa&amp;r</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="481"/>
         <source>&amp;Add</source>
-        <translation>추가(&amp;A)</translation>
+        <translation>&amp;Adicionar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="484"/>
         <source>&amp;Delete</source>
-        <translation>삭제(&amp;D)</translation>
+        <translation>&amp;Apagar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="490"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="491"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="522"/>
         <source>Executable Files (*.exe);;</source>
-        <translation>실행 파일 (*.exe);;</translation>
+        <translation>Arquivos executáveis (*.exe);;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="530"/>
         <source>Open Application</source>
-        <translation>응용프로그램 열기</translation>
+        <translation>Abrir aplicação</translation>
     </message>
 </context>
 <context>
@@ -2883,84 +2883,84 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3788"/>
         <source>Extract images from an archive</source>
-        <translation>압축 파일에서 이미지 추출</translation>
+        <translation>Extrair imagens de um arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3797"/>
         <source>Archive (%1)</source>
-        <translation>압축 파일 (%1)</translation>
+        <translation>Arquivo (%1)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3808"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="3817"/>
         <source>&amp;Browse</source>
-        <translation>브라우즈(&amp;B)</translation>
+        <translation>E&amp;xplorar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3812"/>
         <source>Extract to</source>
-        <translation>추출 위치</translation>
+        <translation>Extrair para</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3825"/>
         <source>Remove Subfolders</source>
-        <translation>하위 폴더 제거</translation>
+        <translation>Remover subpastas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3835"/>
         <source>&amp;Extract</source>
-        <translation>추출(&amp;E)</translation>
+        <translation>&amp;Extrair</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3837"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="4067"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3914"/>
         <source>Open Archive</source>
-        <translation>압축 파일 열기</translation>
+        <translation>Abrir arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3918"/>
         <source>Archives (%1)</source>
-        <translation>압축 파일 (%1)</translation>
+        <translation>Arquivos (%1)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3935"/>
         <source>Open Directory</source>
-        <translation>디렉토리 열기</translation>
+        <translation>Abrir pasta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3971"/>
         <source>Not a valid archive.</source>
-        <translation>유효한 압축 파일이 아닙니다.</translation>
+        <translation>Não é um arquivo válido.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3997"/>
         <source>Number of images: </source>
-        <translation>이미지 수: </translation>
+        <translation>Número de imagens: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3999"/>
         <source>The archive does not contain any images.</source>
-        <translation>압축 파일이 어떤 이미지도 포함하고 있지 않습니다.</translation>
+        <translation>O arquivo não contém quaisquer imagens.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4026"/>
         <source>The images could not be extracted!</source>
-        <translation>이미지가 추출될 수 없습니다!</translation>
+        <translation>As imagens não podem ser extraídas!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4069"/>
         <source>Extracting files...</source>
-        <translation>파일 추출 중...</translation>
+        <translation>Extraindo arquivos...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4078"/>
         <source>Extracting file %1 of %2</source>
-        <translation>파일 추출 중 - %1 of %2</translation>
+        <translation>Extraindo arquivo %1 de %2</translation>
     </message>
 </context>
 <context>
@@ -2969,12 +2969,12 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
         <location filename="../src/DkCore/DkBasicLoader.cpp" line="476"/>
         <location filename="../src/DkCore/DkBasicLoader.cpp" line="1336"/>
         <source>Original Image</source>
-        <translation>원본 이미지</translation>
+        <translation>Imagem original</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp" line="1513"/>
         <source>Sorry, I could not save: %1</source>
-        <translation>죄송합니다, %1 을(를) 저장할 수 없습니다</translation>
+        <translation>Não foi possível salvar %1</translation>
     </message>
 </context>
 <context>
@@ -2982,7 +2982,7 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2392"/>
         <source>Start/Cancel Batch Processing (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciar/Cancelar processamento em lote (%1)</translation>
     </message>
 </context>
 <context>
@@ -2990,43 +2990,43 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="352"/>
         <source>File Explorer</source>
-        <translation>파일 탐색기</translation>
+        <translation>Explorador de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="360"/>
         <source>Thumbnails</source>
-        <translation>썸네일</translation>
+        <translation>Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="361"/>
         <source>File List</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="416"/>
         <source>Open an Image Directory</source>
-        <translation>이미지 디렉토리 열기</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="484"/>
         <source>No Files Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum arquivo selecionado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="486"/>
         <source>%1 File Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Arquivo Selecionado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="488"/>
         <source>%1 Files Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Arquivos Selecionados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="507"/>
         <location filename="../src/DkGui/DkBatch.cpp" line="521"/>
         <source>Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Resultados</translation>
     </message>
 </context>
 <context>
@@ -3034,17 +3034,17 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1810"/>
         <source>Select Image Adjustments</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar ajustes de imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2037"/>
         <source>inactive</source>
-        <translation>비활성</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2039"/>
         <source>%1 manipulators selected</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 manipuladores selecionados</translation>
     </message>
 </context>
 <context>
@@ -3052,122 +3052,123 @@ nomacs를 재 시작하고 다시 시도하십시오.</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="759"/>
         <source>Output Directory</source>
-        <translation>출력 디렉토리</translation>
+        <translation>Paste de destino</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="762"/>
         <source>Browse</source>
-        <translation>브라우즈</translation>
+        <translation>Procurar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="764"/>
         <source>Select a Directory</source>
-        <translation>디렉토리 선택</translation>
+        <translation>Selecione uma pasta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="771"/>
         <source>Overwrite Existing Files</source>
-        <translation>현존하는 파일들 덮어쓰기</translation>
+        <translation>Substituir arquivos existentes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="773"/>
         <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
-        <translation>체크하면 현전 파일이 겹쳐써집니다.
-이 옵션은 여러분의 이미지를 파괴할 수도 있으므로 신중하십시오!</translation>
+        <translation>Se ativado, os arquivos existentes serão substituídos.
+Esta opção pode destruir os seus arquivos. Tenha cuidado!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="777"/>
         <source>Do not Save Output Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Não Salvar Imagens de Saída</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="779"/>
         <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, as imagens não serão salvas.
+Esta opção só é útil se plugins salvam imagens paralelamente - então seja cuidadoso!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="784"/>
         <source>Use Input Folder</source>
-        <translation>입력 폴더 이용</translation>
+        <translation>Utilizar pasta de origem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="785"/>
         <source>If checked, the batch is applied to the input folder - so be careful!</source>
-        <translation>체크하면 입력 폴더에 일괄 처리가 적용되므로 주의하시기 바랍니다!</translation>
+        <translation>Se ativado, a operação em lote será aplicada à pasta de origem. Tenha cuidado!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="789"/>
         <source>Delete Input Files</source>
-        <translation>입력 파일 삭제</translation>
+        <translation>Apagar arquivos originais</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="791"/>
         <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-        <translation>선택하면 변환이 성공했을 때 원본 파일이 삭제됩니다.
-주의하시기 바랍니다!</translation>
+        <translation>Se ativado, o arquivo original será apagado se a conversão for efetuada com sucesso.
+Tenha cuidado!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="809"/>
         <source>Filename</source>
-        <translation>파일명</translation>
+        <translation>Nome de arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="832"/>
         <source>Keep Extension</source>
-        <translation>확장자 유지</translation>
+        <translation>Manter extensão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="833"/>
         <source>Convert To</source>
-        <translation>다음으로 변경</translation>
+        <translation>Converter para</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="896"/>
         <source>Best Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Melhor Qualidade</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="897"/>
         <source>High Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade Alta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="898"/>
         <source>Medium Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade Média</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="899"/>
         <source>Low Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade Baixa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="900"/>
         <source>Bad Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade baixa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="858"/>
         <source>Preview</source>
-        <translation>미리보기</translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="861"/>
         <source>Old Filename: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nome antigo: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="866"/>
         <source>New Filename: </source>
-        <translation type="unfinished"></translation>
+        <translation>Novo nome: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="938"/>
         <source>Open an Image Directory</source>
-        <translation>이미지 디렉토리 열기</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
 </context>
 <context>
@@ -3175,22 +3176,22 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1553"/>
         <source>Select Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar Plugins</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1722"/>
         <source> Settings</source>
-        <translation type="unfinished"></translation>
+        <translation> Configurações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1793"/>
         <source>inactive</source>
-        <translation>비활성</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1795"/>
         <source>%1 plugins selected</source>
-        <translation>%1 플러그인이 선택되었습니다</translation>
+        <translation>%1 extras selecionados</translation>
     </message>
 </context>
 <context>
@@ -3198,12 +3199,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1337"/>
         <source>[OK]</source>
-        <translation>[확인]</translation>
+        <translation>[OK]</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp" line="1339"/>
         <source>[FAIL]</source>
-        <translation>[실패]</translation>
+        <translation>[Falha]</translation>
     </message>
 </context>
 <context>
@@ -3211,83 +3212,83 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2053"/>
         <source>Resize</source>
-        <translation>크기 변경</translation>
+        <translation>Redimensionar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Percent</source>
-        <translation type="unfinished"></translation>
+        <translation>Por cento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Long Side</source>
-        <translation type="unfinished"></translation>
+        <translation>Lado Maior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Short Side</source>
-        <translation type="unfinished"></translation>
+        <translation>Lado Menor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Largura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Altura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2058"/>
         <source>Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Ampliação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2062"/>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2067"/>
         <location filename="../src/DkGui/DkBatch.cpp" line="2074"/>
         <source> px</source>
-        <translation type="unfinished"></translation>
+        <translation> px</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2080"/>
         <source>Transform All</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformar Tudo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2080"/>
         <source>Shrink Only</source>
-        <translation type="unfinished"></translation>
+        <translation>Reduzir Apenas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2080"/>
         <source>Enlarge Only</source>
-        <translation type="unfinished"></translation>
+        <translation>Ampliar Apenas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2096"/>
         <source>Orientation</source>
-        <translation>방향</translation>
+        <translation>Orientação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2099"/>
         <source>Do &amp;Not Rotate</source>
-        <translation>회전 하지 않음(&amp;N)</translation>
+        <translation>&amp;Não girar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2101"/>
         <source>90%1 Counter Clockwise</source>
-        <translation>90%1 반시계 방향으로</translation>
+        <translation>90%1 à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2102"/>
         <source>90%1 Clockwise</source>
-        <translation>&amp;90%1 시계 방향으로</translation>
+        <translation>90%1 à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2103"/>
@@ -3297,17 +3298,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2112"/>
         <source>Transformations</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2115"/>
         <source>&amp;Crop from Metadata</source>
-        <translation>메타데이터에서 자르기(&amp;C)</translation>
+        <translation>Re&amp;cortar dos meta-dados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2118"/>
         <source>&amp;Crop Rectangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Re&amp;cortar Retângulo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2120"/>
@@ -3317,12 +3318,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2194"/>
         <source>inactive</source>
-        <translation>비활성</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2200"/>
         <source>Resize by: %1%</source>
-        <translation type="unfinished"></translation>
+        <translation>Redimensionar por: %1%</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2204"/>
@@ -3332,17 +3333,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2210"/>
         <source>Resize %1 to: %2 px</source>
-        <translation type="unfinished"></translation>
+        <translation>Redimensionar %1 para: %2 px</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2218"/>
         <source>Rotating by: %1</source>
-        <translation>회전 수단: %1</translation>
+        <translation>Girar em: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2224"/>
         <source>Crop</source>
-        <translation>자르기</translation>
+        <translation>Recortar</translation>
     </message>
 </context>
 <context>
@@ -3350,27 +3351,27 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2490"/>
         <source>next</source>
-        <translation>다음</translation>
+        <translation>seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2495"/>
         <source>previous</source>
-        <translation>이전</translation>
+        <translation>anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2515"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2515"/>
         <source>no files selected</source>
-        <translation>선택된 파일 없음</translation>
+        <translation>nenhum arquivo selecionado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2521"/>
         <source>Adjustments</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2521"/>
@@ -3378,109 +3379,109 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
         <location filename="../src/DkGui/DkBatch.cpp" line="2528"/>
         <location filename="../src/DkGui/DkBatch.cpp" line="2538"/>
         <source>inactive</source>
-        <translation>비활성</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2524"/>
         <source>Transform</source>
-        <translation>변형</translation>
+        <translation>Transformar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2528"/>
         <source>Plugins</source>
-        <translation>플러그인</translation>
+        <translation>Extras</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2532"/>
         <source>Output</source>
-        <translation>출력</translation>
+        <translation>Destino</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2532"/>
         <source>not set</source>
-        <translation type="unfinished"></translation>
+        <translation>não definido</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2538"/>
         <source>Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfis</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2708"/>
         <source>Please select files for processing.</source>
-        <translation>처리할 파일들을 선택하십시오.</translation>
+        <translation>Por favor selecione os arquivos.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2716"/>
         <source>I am missing a widget.</source>
-        <translation type="unfinished"></translation>
+        <translation>Está em falta um widget.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2729"/>
         <source>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</source>
-        <translation>&apos;현존하는 파일 덮어쓰기&apos;를 체크 설정하거나 다른 출력 디렉토리를 선택하십시오.</translation>
+        <translation>Ative a opção &apos;Sobrescrever Arquivos Existentes&apos; ou escolha um diretório diferente.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2750"/>
         <source>Create Output Directory</source>
-        <translation>출력 디렉토리 생성</translation>
+        <translation>Criar pasta de destino</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2751"/>
         <source>Should I create:
 %1</source>
-        <translation>아래를 생성할까요:
+        <translation>Devo criar:
 %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2767"/>
         <source>Please select an output directory.</source>
-        <translation>출력 디렉토리를 선택하십시오.</translation>
+        <translation>Por favor escolha a pasta de destino.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2772"/>
         <source>Sorry, I cannot create %1.</source>
-        <translation>죄송합니다, %1 을(를) 생성할 수 없습니다.</translation>
+        <translation>Não foi possível criar %1.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2778"/>
         <source>Sorry, I cannot find files to process.</source>
-        <translation>죄송합니다, 처리할 파일들을 발견할 수 없습니다.</translation>
+        <translation>Não foram encontrados arquivos para processar.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2783"/>
         <source>Sorry, the file pattern is empty.</source>
-        <translation>죄송합니다, 파일 패턴이 비어 있습니다.</translation>
+        <translation>Desculpe, o arquivo modelo está vazio.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2795"/>
         <source>Sorry, I cannot start processing - please check the configuration.</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, não é possível iniciar o processamento - por favor, verifique a configuração.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2839"/>
         <source>Canceling...</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancelando...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2889"/>
         <source>%1/%2 files processed... %3 failed.</source>
-        <translation>%1/%2 파일 처리됨... %3 실패함.</translation>
+        <translation>%1/%2 arquivos processados... %3 falha(s).</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2918"/>
         <source>Batch Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log do Processamento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2991"/>
         <source>Error</source>
-        <translation>에러</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="2991"/>
         <source>Sorry, I cannot save the settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, não foi possível salvar as configurações...</translation>
     </message>
 </context>
 <context>
@@ -3488,7 +3489,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="294"/>
         <source>Sigma</source>
-        <translation type="unfinished"></translation>
+        <translation>Sigma</translation>
     </message>
 </context>
 <context>
@@ -3496,12 +3497,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="302"/>
         <source>Choose Root Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolher diretório raiz</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="330"/>
         <source>Browse</source>
-        <translation>브라우즈</translation>
+        <translation>Procurar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="336"/>
@@ -3514,47 +3515,47 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="276"/>
         <source>Go to Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Ir para a aba</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="277"/>
         <source>Go to tab number: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ir para a aba número: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="526"/>
         <source>General</source>
-        <translation>일반</translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="533"/>
         <source>Display</source>
-        <translation>디스플레이</translation>
+        <translation>Exibição</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="540"/>
         <source>File</source>
-        <translation>파일</translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="547"/>
         <source>File Associations</source>
-        <translation>파일 연결</translation>
+        <translation>Associação de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="554"/>
         <source>Advanced</source>
-        <translation>고급 설정</translation>
+        <translation>Avançado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="561"/>
         <source>Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Editor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1141"/>
         <source>I could not load &quot;%1&quot;</source>
-        <translation>I could not load &quot;%1&quot;</translation>
+        <translation>Não foi possível abrir &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1215"/>
@@ -3579,7 +3580,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1399"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation>죄송합니다, %1 파일에 기록할 수 없습니다</translation>
+        <translation>Não foi possível salvar o arquivo: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1408"/>
@@ -3620,17 +3621,17 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1247"/>
         <source>Sorry, I could not drop the content.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível inserir o conteúdo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1351"/>
         <source>Save File</source>
-        <translation>파일 저장</translation>
+        <translation>Salvar arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp" line="1362"/>
         <source>%1 vec files merged</source>
-        <translation>%1 vec 파일들이 병합됨</translation>
+        <translation>%1 arquivos unidos</translation>
     </message>
 </context>
 <context>
@@ -3638,17 +3639,17 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4441"/>
         <source>Remember Monitor Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Lembrar as Configurações do Monitor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4445"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4446"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -3656,12 +3657,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkNetwork.cpp" line="251"/>
         <source>connected with: </source>
-        <translation>연결 대상: </translation>
+        <translation>Ligado a: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNetwork.cpp" line="253"/>
         <source>disconnected with: </source>
-        <translation>연결 해제 대상: </translation>
+        <translation>Desligado de: </translation>
     </message>
 </context>
 <context>
@@ -3669,7 +3670,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="371"/>
         <source>Reset</source>
-        <translation>리셋</translation>
+        <translation>Reiniciar</translation>
     </message>
 </context>
 <context>
@@ -3677,7 +3678,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="111"/>
         <source>Drag the slider downwards for elimination</source>
-        <translation type="unfinished"></translation>
+        <translation>Arraste o controle deslizante para baixo para eliminação</translation>
     </message>
 </context>
 <context>
@@ -3685,7 +3686,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1163"/>
         <source>Click here to add notes</source>
-        <translation>노트를 추가하려면 클릭하세요</translation>
+        <translation>Clique aqui para adicionar notas</translation>
     </message>
 </context>
 <context>
@@ -3693,22 +3694,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1180"/>
         <source>NOTES</source>
-        <translation>노트</translation>
+        <translation>Notas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1197"/>
         <source>Enter your notes here. They will be saved to the image metadata.</source>
-        <translation>노트를 여기에 입력하십시오. 이들은 이미지 메타데이터로 저장됩니다.</translation>
+        <translation>Escreva aqui as notas. As notas serão salvar nos meta-dados.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1218"/>
         <source>Save Note (CTRL + ENTER)</source>
-        <translation>노트 저장(CTRL + ENTER)</translation>
+        <translation>Salvar nota (CTRL + ENTER)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1212"/>
         <source>Discard Changes (ESC)</source>
-        <translation>변경 내용 폐기(ESC)</translation>
+        <translation>Descartar alterações (ESC)</translation>
     </message>
 </context>
 <context>
@@ -3716,22 +3717,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="175"/>
         <source>JPG Settings</source>
-        <translation>JPG 설정</translation>
+        <translation>Preferências JPG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="177"/>
         <source>J2K Settings</source>
-        <translation>J2K 설정</translation>
+        <translation>Preferências J2K</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="185"/>
         <source>WebP Settings</source>
-        <translation>WebP 설정</translation>
+        <translation>Preferências WebP</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="193"/>
         <source>AVIF Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações de AVIF</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="203"/>
@@ -3741,92 +3742,92 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="211"/>
         <source>Save for Web</source>
-        <translation>웹용으로 저장</translation>
+        <translation>Salvar para Web</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="223"/>
         <source>Original</source>
-        <translation>원본</translation>
+        <translation>Original</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="225"/>
         <source>New</source>
-        <translation>신규</translation>
+        <translation>Nova</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="246"/>
         <source>Small  (800 x 600)</source>
-        <translation>작게  (800 x 600)</translation>
+        <translation>Pequena (800 x 600)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="247"/>
         <source>Medium (1024 x 786)</source>
-        <translation>중간 (1024 x 786)</translation>
+        <translation>Média (1024 x 786)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="248"/>
         <source>Large  (1920 x 1080)</source>
-        <translation>크게   (1920 x 1080)</translation>
+        <translation>Grande (1920 x 1080)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="249"/>
         <source>Original Size</source>
-        <translation>원본 크기</translation>
+        <translation>Tamanho original</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="254"/>
         <source>Best Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Melhor Qualidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="255"/>
         <source>High Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade Alta</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="256"/>
         <source>Medium Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade Média</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="257"/>
         <source>Low Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade Baixa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="258"/>
         <source>Bad Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade baixa</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="266"/>
         <source>Lossless Compression</source>
-        <translation>손실 없는 압축</translation>
+        <translation>Compressão sem perdas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="273"/>
         <source>Background Color</source>
-        <translation>배경색</translation>
+        <translation>Cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="296"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="299"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="423"/>
         <source>File Size: --</source>
-        <translation>파일 크기: --</translation>
+        <translation>Tamanho: --</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="440"/>
         <source>File Size: ~%1</source>
-        <translation>파일 크기: ~%1</translation>
+        <translation>Tamanho: ~%1</translation>
     </message>
 </context>
 <context>
@@ -3834,7 +3835,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="340"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation>죄송합니다, 이 이미지 포맷에는 주석을 저장할 수 없습니다.</translation>
+        <translation>Não é possível salvar comentários neste formato de arquivo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="343"/>
@@ -3844,12 +3845,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="586"/>
         <source>Closing Plugin</source>
-        <translation>플러그인 닫는 중</translation>
+        <translation>Fechar extras</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp" line="587"/>
         <source>Apply plugin changes?</source>
-        <translation>플러그인 변경을 적용하겠습니까?</translation>
+        <translation>Aplicar alterações?</translation>
     </message>
 </context>
 <context>
@@ -3857,87 +3858,87 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="890"/>
         <source>Crop (ENTER)</source>
-        <translation>자르기 (ENTER)</translation>
+        <translation>Recortar (ENTER)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="894"/>
         <source>Cancel (ESC)</source>
-        <translation>취소 (ESC)</translation>
+        <translation>Cancelar (ESC)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="898"/>
         <source>Pan</source>
-        <translation type="unfinished"></translation>
+        <translation>Pan</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="906"/>
         <source>User Defined</source>
-        <translation>사용자 정의</translation>
+        <translation>Definido pelo usuário</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="907"/>
         <source>No Aspect Ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Sem taxa de aspecto</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="914"/>
         <source>Horizontal Constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>Restrição horizontal</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="921"/>
         <source>Swap</source>
-        <translation type="unfinished"></translation>
+        <translation>Trocar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="922"/>
         <source>Swap Dimensions</source>
-        <translation type="unfinished"></translation>
+        <translation>Trocar dimensões</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="928"/>
         <source>Vertical Constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>Restrição vertical</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="949"/>
         <source>Background Color</source>
-        <translation>배경색</translation>
+        <translation>Cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="959"/>
         <source>Guides</source>
-        <translation>안내 선</translation>
+        <translation>Guias</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="959"/>
         <source>Rule of Thirds</source>
-        <translation type="unfinished"></translation>
+        <translation>Regra dos Thirds</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="959"/>
         <source>Grid</source>
-        <translation>그리드</translation>
+        <translation>Grelha</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="962"/>
         <source>Show Guides in the Preview</source>
-        <translation>미리보기에 안내 선 보기</translation>
+        <translation>Mostrar guias na pré-visualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="969"/>
         <source>Invert Crop Tool Color</source>
-        <translation>자르기 도구 색상 반전</translation>
+        <translation>Inverter cor da ferramenta de corte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="974"/>
         <source>Show Info</source>
-        <translation>정보 보기</translation>
+        <translation>Mostrar informações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="979"/>
         <source>Crop to Metadata</source>
-        <translation>메타데이터 자르기</translation>
+        <translation>Recortar para meta-dados</translation>
     </message>
 </context>
 <context>
@@ -3945,7 +3946,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1951"/>
         <source>Crop Toolbar</source>
-        <translation>도구 바 자르기</translation>
+        <translation>Barra de ferramentas de corte</translation>
     </message>
 </context>
 <context>
@@ -3953,7 +3954,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="1003"/>
         <source>No metadata available!</source>
-        <translation>이용할 메타데이터가 없습니다!</translation>
+        <translation>Meta-dados não disponíveis!</translation>
     </message>
 </context>
 <context>
@@ -3961,17 +3962,17 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4138"/>
         <source>Preview</source>
-        <translation>미리보기</translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4153"/>
         <source>Shortcuts</source>
-        <translation>단축키</translation>
+        <translation>Atalhos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4198"/>
         <source>Mosaic</source>
-        <translation>모자이크</translation>
+        <translation>Mosaico</translation>
     </message>
 </context>
 <context>
@@ -3984,7 +3985,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2461"/>
         <source>Open an Image Directory</source>
-        <translation>이미지 디렉토리 열기</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
 </context>
 <context>
@@ -3992,197 +3993,197 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="729"/>
         <source>Invert mouse wheel behaviour for zooming</source>
-        <translation>Zoom을 위한 마우스 휠 작용 반전</translation>
+        <translation>Inverter o comportamento da roda do mouse ao ampliar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="730"/>
         <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-        <translation>체크하면 zoom을 하는 동안 마우스 휠 작용이 반전됩니다.</translation>
+        <translation>Se ativado, o comportamento da roda do mouse ao ampliar uma imagem será invertido.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="735"/>
         <source>Display Images with High Quality Anti Aliasing</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Imagens em Alta Qualidade e Antisserrilhamento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="736"/>
         <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-        <translation type="unfinished"></translation>
+        <translation>NOTA: se marcado, talvez nomacs fique lento enquanto se dá zoom.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="741"/>
         <source>Show Scrollbars when zooming into images</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Barras de Rolamento enquanto se dá zoom em imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="742"/>
         <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se marcado, aparecerão barras de rolamento que permitem arrastar as imagens com o mouse.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="746"/>
         <source>Show pixels if zoom level is above</source>
-        <translation>Zoom 레벨이 아래 이상일 때 픽셀 보이기</translation>
+        <translation>Mostar pixels se o nível de ampliação estiver acima do limite</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="749"/>
         <source>nomacs will not interpolate images if the zoom level is larger.</source>
-        <translation>zoom 레벨이 이 이상이면 nomacs가 이미지를 처리하지 않게 됩니다.</translation>
+        <translation>nomacs.não interpolará imagens se o nível de ampliação estiver maior.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="761"/>
         <source>Use Fixed Zoom Levels</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar Níveis de Zoom Fixos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="762"/>
         <source>If checked, predefined zoom levels are used when zooming.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se marcado, são usados os níveis predefinidos de zoom quando dado um.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="770"/>
         <source>Load Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar o Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="782"/>
         <source>Zoom</source>
-        <translation>Zoom</translation>
+        <translation>Ampliação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="794"/>
         <source>Always keep zoom</source>
-        <translation>항상 zoom 유지</translation>
+        <translation>Manter sempre ampliação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="795"/>
         <source>Keep zoom if the size is the same</source>
-        <translation>크기가 동일하면 zoom 유지</translation>
+        <translation>Manter ampliação se o tamanho for igual</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="797"/>
         <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-        <translation>체크하면 읽어온 이미지가 이전 이미지와 같은 레벨일 때만 zoom 레벨이 유지됩니다.</translation>
+        <translation>Se ativado, o nível de ampliação será mantido apenas se a imagem carregada tiver o mesmo nível da anterior.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="798"/>
         <source>Never keep zoom</source>
-        <translation>zoom 유지하지 않음</translation>
+        <translation>Nunca manter ampliação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="800"/>
         <source>Always zoom to fit</source>
-        <translation>항상 최적으로 zoom 설정</translation>
+        <translation>Sempre ajustar para caber</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="813"/>
         <source>When Displaying New Images</source>
-        <translation>새 이미지를 디스플레이 할 때</translation>
+        <translation>Ao mostrar novas imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="821"/>
         <source>Define the icon size in pixel.</source>
-        <translation>아이콘 크기를 픽셀 단위로 정의합니다.</translation>
+        <translation>Definir o tamanho em pixeis.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="831"/>
         <source>Icon Size</source>
-        <translation>이이콘 크기</translation>
+        <translation>Tamanho do ícone</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="835"/>
         <source>Show Navigation Arrows</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Setas de Navegação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="836"/>
         <source>If checked, navigation arrows will be displayed on top of the image</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, setas de navegação serão mostradas sobre a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="840"/>
         <source>Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation>Navegação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="844"/>
         <source>Image Transition</source>
-        <translation>이미지 전환</translation>
+        <translation>Transição de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="848"/>
         <source>Choose a transition when loading a new image</source>
-        <translation>새 이미지를 불러올 때의 전환 방법을 선택합니다</translation>
+        <translation>Escolha a transição a ser usada ao carregar a nova imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="855"/>
         <source>Unknown Transition</source>
-        <translation>알 수 없는 전환</translation>
+        <translation>Transição desconhecida</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="859"/>
         <source>Appear</source>
-        <translation>Appear</translation>
+        <translation>Aparecer</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="862"/>
         <source>Swipe</source>
-        <translation>스와이프</translation>
+        <translation>Deslizar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="865"/>
         <source>Fade</source>
-        <translation>페이드</translation>
+        <translation>Desvanecer</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="874"/>
         <source>Define the image transition speed.</source>
-        <translation>이미지 전환 속도를 정의합니다.</translation>
+        <translation>Define a velocidade da transição.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="885"/>
         <source>Always Animate Image Loading</source>
-        <translation>항상 이미지 로딩 애니메니션</translation>
+        <translation>Animar imagem ao carregar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="886"/>
         <source>If unchecked, loading is only animated if nomacs is fullscreen</source>
-        <translation>체크 해제하면 nomacs가 전체 화면일 때만 로딩이 애니메이션 됩니다</translation>
+        <translation>Se desativado, o carregamento apenas será animado se estiver no modo de tela cheia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="890"/>
         <source>Display Time</source>
-        <translation>디스플레이 시간</translation>
+        <translation>Mostrar durante</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="893"/>
         <source>Define the time an image is displayed.</source>
-        <translation>이미지가 디스플레이 되는 시간을 정의합니다.</translation>
+        <translation>Define o tempo que uma imagem é mostrada.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="904"/>
         <source>Show Player</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Player</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="908"/>
         <source>Slideshow</source>
-        <translation>슬라이드 쇼</translation>
+        <translation>Apresentação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="918"/>
         <source>Show crop rectangle</source>
-        <translation>자르기 사각형 보이기</translation>
+        <translation>Mostrar caixa de recorte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="922"/>
         <source>Show Metadata Cropping</source>
-        <translation>메타데이터 자르기 보이기</translation>
+        <translation>Mostrar metadados de corte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="964"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>변경 사항을 적용하려면 nomacs를 다시 시작하십시오</translation>
+        <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
 </context>
 <context>
@@ -4190,22 +4191,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="373"/>
         <source>Open Image</source>
-        <translation>이미지 열기</translation>
+        <translation>Abrir imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="470"/>
         <source>Editable</source>
-        <translation>편집 가능</translation>
+        <translation>Editável</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="476"/>
         <source>Open Selected Image</source>
-        <translation>선택된 이미지 열기</translation>
+        <translation>Abrir imagem selecionada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="486"/>
         <source>Adjust Columns</source>
-        <translation>칼럼 조정</translation>
+        <translation>Ajustar colunas</translation>
     </message>
 </context>
 <context>
@@ -4213,83 +4214,83 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2430"/>
         <source>Export Multi-Page TIFF</source>
-        <translation>멀티페이지 TIFF 내보내기</translation>
+        <translation>Exportação TIFF de várias páginas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2474"/>
         <source>Multi-Page TIFF:</source>
-        <translation>멀티페이지 TIFF:</translation>
+        <translation>TIFF de várias páginas:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2477"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="2486"/>
         <source>&amp;Browse</source>
-        <translation>브라우즈(&amp;B)</translation>
+        <translation>E&amp;xplorar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2480"/>
         <source>No Multi-Page TIFF loaded</source>
-        <translation>로드된 멀티페이지 TIFF 없음</translation>
+        <translation>Nenhum arquivo TIFF carregado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2483"/>
         <source>Save Folder:</source>
-        <translation>저장 폴더:</translation>
+        <translation>Pasta para salvar:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2489"/>
         <source>Specify a Save Folder</source>
-        <translation>저장 폴더 명세</translation>
+        <translation>Especifique a pasta para salvar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2492"/>
         <source>Filename:</source>
-        <translation>파일명:</translation>
+        <translation>Nome de arquivo:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2503"/>
         <source>Export Pages</source>
-        <translation>페이지 내보내기</translation>
+        <translation>Exportar páginas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2510"/>
         <source>Overwrite</source>
-        <translation>덮어쓰기</translation>
+        <translation>Substituir</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2542"/>
         <source>&amp;Export</source>
-        <translation>내보내기(&amp;E)</translation>
+        <translation>&amp;Exportar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2543"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2561"/>
         <source>Open TIFF</source>
-        <translation>TIFF 열기</translation>
+        <translation>Abrir TIFF</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2579"/>
         <source>Open an Image Directory</source>
-        <translation>이미지 디렉토리 열기</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2663"/>
         <source>%1 exists, skipping...</source>
-        <translation>%1 존재하므로 skip 중...</translation>
+        <translation>%1 existe, ignorando...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2668"/>
         <source>Sorry, I could not load page: %1</source>
-        <translation>죄송합니다, 페이지 %1 을(를) 로드 할 수 없습니다</translation>
+        <translation>Não foi possível carregar a página: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2678"/>
         <source>Sorry, I could not save: %1</source>
-        <translation>죄송합니다, %1 을(를) 저장할 수 없습니다</translation>
+        <translation>Não foi possível salvar %1</translation>
     </message>
 </context>
 <context>
@@ -4297,17 +4298,17 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="603"/>
         <source>Exposure</source>
-        <translation type="unfinished"></translation>
+        <translation>Exposição</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="610"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Deslocamento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="617"/>
         <source>Gamma</source>
-        <translation type="unfinished"></translation>
+        <translation>Gama</translation>
     </message>
 </context>
 <context>
@@ -4315,38 +4316,38 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1256"/>
         <source>Filter</source>
-        <translation>필터</translation>
+        <translation>Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1257"/>
         <source>Browse</source>
-        <translation>브라우즈</translation>
+        <translation>Procurar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1259"/>
         <source>Register</source>
-        <translation>등록</translation>
+        <translation>Registar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1279"/>
         <source>Set File Associations</source>
-        <translation type="unfinished"></translation>
+        <translation>Estabelecer Associações de Arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1282"/>
         <source>Set as Default Viewer</source>
-        <translation>기본 뷰어로 설정</translation>
+        <translation>Utilizar como visualizador padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1299"/>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1311"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>변경 사항을 적용하려면 nomacs를 다시 시작하십시오</translation>
+        <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1377"/>
         <source>Image</source>
-        <translation>이미지</translation>
+        <translation>Imagem</translation>
     </message>
 </context>
 <context>
@@ -4354,14 +4355,14 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1099"/>
         <source>Info Box</source>
-        <translation>정보 박스</translation>
+        <translation>Caixa de informações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1100"/>
         <source>All information fields are currently hidden.
 Do you want to show them again?</source>
-        <translation>현재 모든 정보 필드들이 감추어졌습니다.
-이들을 다시 보고 싶으십니까?</translation>
+        <translation>Os campos de informação estão ocultos.
+Pretende mostrar os campos?</translation>
     </message>
 </context>
 <context>
@@ -4369,97 +4370,97 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1065"/>
         <source>Screenshots are automatically saved to this folder</source>
-        <translation>스크린샷은 자동으로 이 폴더에 저장됩니다</translation>
+        <translation>As capturas de tela serão salvas nesta pasta</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1067"/>
         <source>Use Temporary Folder</source>
-        <translation>임시 폴더 사용</translation>
+        <translation>Utilizar pasta temporária</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1082"/>
         <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-        <translation type="unfinished"></translation>
+        <translation>Recomendamos definir um valor de cache moderado de cerca de 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1087"/>
         <source>Maximal Cache Size</source>
-        <translation>최대 캐시 크기</translation>
+        <translation>Tamanho máximo de cache</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1101"/>
         <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-        <translation type="unfinished"></translation>
+        <translation>Recomendamos definir um valor moderado para o histórico de edição de cerca de 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1106"/>
         <source>History Size</source>
-        <translation>히스토리 크기</translation>
+        <translation>Tamanho do histórico</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1112"/>
         <source>Skip Images</source>
-        <translation>이미지 skip</translation>
+        <translation>Ignorar imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1113"/>
         <source>Images are skipped until the Next key is released</source>
-        <translation>&apos;다음&apos; 키가 떼어질 때까지 이미지가 skip 됩니다</translation>
+        <translation>Imagens são ignoradas enquanto estiver pressionada a tecla Próxima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1114"/>
         <source>Wait for Images to be Loaded</source>
-        <translation>이미지가 로드될 때까지 기다림</translation>
+        <translation>Esperar pelo carregamento das imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1115"/>
         <source>The next image is loaded after the current image is shown.</source>
-        <translation>현 이미지가 보여진 후 다음 이미지가 로드 됩니다.</translation>
+        <translation>A próxima imagem é carregada após a exibição da atual.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1126"/>
         <source>Image Loading Policy</source>
-        <translation>이미지 로딩 정책</translation>
+        <translation>Política de carregamento de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1132"/>
         <source>Load Saved Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar Imagens Salvas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1133"/>
         <source>After saving, the saved image will be loaded in place</source>
-        <translation type="unfinished"></translation>
+        <translation>Após salvar, a imagem será carregada no lugar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1134"/>
         <source>Load to Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar para Aba</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1135"/>
         <source>After saving, the saved image will be loaded to a tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Após salvar, a imagem carregada será carregada pruma aba.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1136"/>
         <source>Do Nothing</source>
-        <translation type="unfinished"></translation>
+        <translation>Não faça nada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1137"/>
         <source>The saved image will not be loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem salva não será carregada.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1145"/>
         <source>Image Saving Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Políticas de Salvar Imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1160"/>
         <source>Number of Skipped Images on PgUp/PgDown</source>
-        <translation>PgUp/PgDown 키를 누를 때 skip 되는 이미지 수</translation>
+        <translation>Número de imagens ignoradas com PgUp/PgDown</translation>
     </message>
 </context>
 <context>
@@ -4467,62 +4468,62 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="228"/>
         <source>Show Left</source>
-        <translation>좌측에 보이기</translation>
+        <translation>Mostrar à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="229"/>
         <source>Shows the Thumbnail Bar on the Left</source>
-        <translation>썸네일 바 좌측에 보이기</translation>
+        <translation>Mostrar barra de miniaturas à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="232"/>
         <source>Show Top</source>
-        <translation>상단에 보이기</translation>
+        <translation>Mostrar em cima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="233"/>
         <source>Shows the Thumbnail Bar at the Top</source>
-        <translation>썸네일 바 상단에 보이기</translation>
+        <translation>Mostrar barra de miniaturas em cima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="236"/>
         <source>Show Right</source>
-        <translation>우측에 보이기</translation>
+        <translation>Mostrar à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="237"/>
         <source>Shows the Thumbnail Bar on the Right</source>
-        <translation>썸네일 바 우측에 보이기</translation>
+        <translation>Mostrar barra de miniaturas à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="240"/>
         <source>Show Bottom</source>
-        <translation>하단에 보이기</translation>
+        <translation>Mostrar em baixo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="241"/>
         <source>Shows the Thumbnail Bar at the Bottom</source>
-        <translation>썸네일 바 하단에 보이기</translation>
+        <translation>Mostrar barra de miniaturas em baixo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="244"/>
         <source>Undock</source>
-        <translation>도킹 해제</translation>
+        <translation>Desacoplar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="245"/>
         <source>Undock the thumbnails</source>
-        <translation>썸네일 도킹 해제</translation>
+        <translation>Desacoplar as miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="248"/>
         <source>File Preview Menu</source>
-        <translation>파일 미리보기 메뉴</translation>
+        <translation>Menu de pré-visualização de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="635"/>
         <source>CTRL+Zoom resizes the thumbnails</source>
-        <translation>CTRL+Zoom 은 썸네일의 크기를 바꿉니다</translation>
+        <translation>CTRL+Roda do mouse redimensiona as miniaturas</translation>
     </message>
 </context>
 <context>
@@ -4530,57 +4531,57 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="551"/>
         <source>Current Filename</source>
-        <translation>현 파일명</translation>
+        <translation>Nome atual do arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="552"/>
         <source>Text</source>
-        <translation>텍스트</translation>
+        <translation>Texto</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="553"/>
         <source>Number</source>
-        <translation>숫자</translation>
+        <translation>Número</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="559"/>
         <source>Keep Case</source>
-        <translation>대소문자 유지</translation>
+        <translation>Manter capitalização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="560"/>
         <source>To lowercase</source>
-        <translation>소문자로</translation>
+        <translation>Minúsculas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="561"/>
         <source>To UPPERCASE</source>
-        <translation>대문자로</translation>
+        <translation>Maiúsculas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="572"/>
         <source>1 digit</source>
-        <translation>1자</translation>
+        <translation>1 dígito</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="573"/>
         <source>2 digits</source>
-        <translation>2자</translation>
+        <translation>2 dígitos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="574"/>
         <source>3 digits</source>
-        <translation>3자</translation>
+        <translation>3 dígitos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="575"/>
         <source>4 digits</source>
-        <translation>4자</translation>
+        <translation>4 dígitos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="576"/>
         <source>5 digits</source>
-        <translation>5자</translation>
+        <translation>5 dígitos</translation>
     </message>
 </context>
 <context>
@@ -4606,17 +4607,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3692"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3693"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3702"/>
         <source>Save Thumbnails</source>
-        <translation>썸네일 저장</translation>
+        <translation>Salvar miniaturas</translation>
     </message>
 </context>
 <context>
@@ -4624,17 +4625,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="300"/>
         <source>Icon Color</source>
-        <translation>아이콘 색상</translation>
+        <translation>Cor do ícone</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="302"/>
         <source>Background Color</source>
-        <translation>배경색</translation>
+        <translation>Cor de fundo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="303"/>
         <source>Fullscreen Color</source>
-        <translation>전체 화면 색상</translation>
+        <translation>Cor em tela cheia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="278"/>
@@ -4675,52 +4676,52 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="367"/>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="637"/>
         <source>Reset All Settings</source>
-        <translation>모든 설정 초기화</translation>
+        <translation>Resetar todas as preferências</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="371"/>
         <source>&amp;Import Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Importar Configurações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="375"/>
         <source>&amp;Export Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Exportar Configurações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="379"/>
         <source>Default Settings</source>
-        <translation>기본값 설정</translation>
+        <translation>Preferências padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="394"/>
         <source>Show Recent Files on Start-Up</source>
-        <translation>시작 시 최근 파일 보여주기</translation>
+        <translation>Mostrar arquivos recentes ao iniciar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="395"/>
         <source>Show the History Panel on Start-Up</source>
-        <translation>시작 시 히스토리 패널 보여주기</translation>
+        <translation>Mostrar painel de histórico ao iniciar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="399"/>
         <source>Remember Recent Files History</source>
-        <translation type="unfinished"></translation>
+        <translation>Lembrar histórico de arquivos recentes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="400"/>
         <source>If checked, recent files will be saved.</source>
-        <translation>체크 하면 최근 파일들이 저장됩니다.</translation>
+        <translation>Se ativado, os arquivos recentes serão memorizados.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="404"/>
         <source>Check for Duplicates on Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificar por Duplicatas ao Abrir</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="406"/>
         <source>If any files are opened which are already open in a tab, don&apos;t open them again.</source>
-        <translation>If any files are opened which are already open in a tab, don&apos;t open them again.</translation>
+        <translation>Não abrir novamente arquivos que já estejam abertos em uma aba.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="410"/>
@@ -4735,52 +4736,52 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="418"/>
         <source>Show extra options related to tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar opções extras relacionadas às abas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="420"/>
         <source>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</source>
-        <translation>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</translation>
+        <translation>Ativa as opções &quot;Ir para Aba&quot;, &quot;Primeira Aba[=-quot;-=]}, e &quot;Última Aba&quot; no menu Visualizar, e as opções &quot;Abrir Abas&quot; e &quot;Salvar Abas&quot; no menu Arquivo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="426"/>
         <source>Loop Images</source>
-        <translation>이미지 순환</translation>
+        <translation>Imagens em ciclo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="427"/>
         <source>Start with the first image in a folder after showing the last.</source>
-        <translation>폴더에서 마지막 이미지 다음에 첫 이미지로 갑니다</translation>
+        <translation>Mostrar a primeira imagem da pasta após mostrar a última.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="431"/>
         <source>Mouse Wheel Zooms</source>
-        <translation>마우스휠 줌</translation>
+        <translation>Ampliar/reduzir com a roda do mouse</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="432"/>
         <source>If checked, the mouse wheel zooms - otherwise it is used to switch between images.</source>
-        <translation>체크하면 마우스 휠로 zoom이 됩니다. 해제하면 이미지 간의 전환에 이용됩니다.</translation>
+        <translation>Se ativado, a roda do mouse amplia/reduz a imagem, caso contrário servirá para trocar de imagem.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="436"/>
         <source>Next Image on Horizontal Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Próxima Imagem em Zoom Horizontal</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="437"/>
         <source>If checked, horizontal wheel events load the next/previous images.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ativado, mover a roda do mouse carrega a imagem próxima/anterior.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="441"/>
         <source>Double Click Opens Fullscreen</source>
-        <translation>더블클릭으로 전체 화면 열기</translation>
+        <translation>Duplo clique para tela cheia</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="442"/>
         <source>If checked, a double click on the canvas opens the fullscreen mode.</source>
-        <translation>체크하면 캔버스에 더블클릭할 때 전체 화면 모드가 열립니다.</translation>
+        <translation>Se ativado, o duplo clique ativa o modo de tela cheia.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="449"/>
@@ -4790,7 +4791,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="450"/>
         <source>If checked, the nomacs logo is shown in the bottom right corner.</source>
-        <translation>체크하면 우하 가장자리에 nomacs 로고가 보입니다.</translation>
+        <translation>Se ativado, o logotipo do nomacs é mostrado no canto inferior direito.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="454"/>
@@ -4805,22 +4806,22 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="461"/>
         <source>Switch CTRL with ALT</source>
-        <translation>CTRL 키와 ALT 키 전환</translation>
+        <translation>Trocar Ctrl por Alt</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="462"/>
         <source>If checked, CTRL + Mouse is switched with ALT + Mouse.</source>
-        <translation>체크하면 CTRL + 마우스 가 ALT + 마우스 로 전환됩니다.</translation>
+        <translation>Se ativado, o atalho Ctrl+Mouse será substituído por Alt+Mouse.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="466"/>
         <source>Close on ESC</source>
-        <translation>ESC 키로 닫기</translation>
+        <translation>Fechar com ESC</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="467"/>
         <source>Close nomacs if ESC is pressed.</source>
-        <translation>ESC 키를 눌러 nomacs를 닫습니다.</translation>
+        <translation>Fechar o nomacs ao pressionar a tecla ESC.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="471"/>
@@ -4835,22 +4836,22 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="476"/>
         <source>Check For Updates</source>
-        <translation>업데이트 체크</translation>
+        <translation>Procurar atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="477"/>
         <source>Check for updates on start-up.</source>
-        <translation>시작 시 업데이트 체크</translation>
+        <translation>Procurar atualizações ao iniciar.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="482"/>
         <source>General</source>
-        <translation>일반</translation>
+        <translation>Geral</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="503"/>
         <source>Choose your preferred language.</source>
-        <translation>선호하는 언어를 선택하십시오.</translation>
+        <translation>Escolha o seu idioma preferido.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="512"/>
@@ -4860,37 +4861,37 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="514"/>
         <source>Info on how to translate nomacs.</source>
-        <translation>nomacs를 번역하는 것에 관한 정보.</translation>
+        <translation>Como ajudar a traduzir o nomacs.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="517"/>
         <source>Language</source>
-        <translation>언어</translation>
+        <translation>Idioma</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="538"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>변경 사항을 적용하려면 nomacs를 다시 시작하십시오</translation>
+        <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="638"/>
         <source>This will reset all personal settings!</source>
-        <translation>개인 설정을 모두 초기화하겠습니다!</translation>
+        <translation>Isto irá remover todas as preferências personalizadas!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="651"/>
         <source>Import Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações de Importação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="669"/>
         <source>Export Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações de Exportação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="693"/>
         <source>Settings exported</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações exportadas</translation>
     </message>
 </context>
 <context>
@@ -4898,32 +4899,32 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2681"/>
         <source>Set As Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Definir como Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2738"/>
         <source>Profile Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Perfil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2739"/>
         <source>Profile Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Perfil:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2750"/>
         <source>Profile Already Exists</source>
-        <translation type="unfinished"></translation>
+        <translation>O Perfil Já Existe</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2751"/>
         <source>Do you want to overwrite %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseja sobrescrever %1?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2814"/>
         <source>No Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Sem Perfis</translation>
     </message>
 </context>
 <context>
@@ -4932,7 +4933,7 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkUtils.cpp" line="389"/>
         <source>English</source>
         <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
-        <translation>한국어</translation>
+        <translation>Português (Brasil)</translation>
     </message>
 </context>
 <context>
@@ -4940,12 +4941,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2028"/>
         <source>Show Statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Estatísticas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="2033"/>
         <source>Histogram Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações do Histograma</translation>
     </message>
 </context>
 <context>
@@ -4953,17 +4954,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="545"/>
         <source>Hue</source>
-        <translation type="unfinished"></translation>
+        <translation>Matiz</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="552"/>
         <source>Saturation</source>
-        <translation>채도</translation>
+        <translation>Saturação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="559"/>
         <source>Brightness</source>
-        <translation type="unfinished"></translation>
+        <translation>Brilho</translation>
     </message>
 </context>
 <context>
@@ -4971,47 +4972,48 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="560"/>
         <source>Sorry, the file: %1 does not exist... </source>
-        <translation>죄송합니다, %1 파일이 존재하지 않습니다... </translation>
+        <translation>Parece que o arquivo %1 já não existe... </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="565"/>
         <source>Sorry, you are not allowed to read: %1</source>
-        <translation>죄송합니다, %1 을(를) 읽을 권한이 없습니다</translation>
+        <translation>Não tem permissões para ler %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="684"/>
         <source>updated...</source>
-        <translation type="unfinished"></translation>
+        <translation>atualizado...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="692"/>
         <source>Sorry, I could not load: %1</source>
-        <translation>죄송합니다, 페이지 %1 을(를) 로드 할 수 없습니다</translation>
+        <translation>Não foi possível carregar %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="743"/>
         <source>Sorry, I could not download:
 %1</source>
-        <translation>죄송합니다. %1 을 다운로드 할 수 없습니다</translation>
+        <translation>Não foi possível baixar:
+%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="807"/>
         <source>I can&apos;t save an empty file, sorry...
 </source>
-        <translation>빈 파일을 저장할 수 없습니다, 죄송합니다...
+        <translation>Não é possível salvar um arquivo vazio...
 </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="812"/>
         <source>Sorry, the directory: %1  does not exist
 </source>
-        <translation>죄송합니다, %1 디렉토리는 존재하지 않습니다
+        <translation>Parece que a pasta %1 não existe
 </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp" line="817"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation>죄송합니다, %1 파일에 기록할 수 없습니다</translation>
+        <translation>Não foi possível salvar o arquivo: %1</translation>
     </message>
 </context>
 <context>
@@ -5020,76 +5022,76 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="161"/>
         <source>%1 
  does not contain any image</source>
-        <translation>%1
-은(는) 어떤 이미지도 포함하지 않습니다</translation>
+        <translation>%1 
+ não possui imagens</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="465"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="525"/>
         <source>You have reached the beginning</source>
-        <translation>첫 번째 파일에 도달했습니다</translation>
+        <translation>Atingiu a imagem inicial</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="471"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="529"/>
         <source>You have reached the end</source>
-        <translation>마지막 파일에 도달했습니다</translation>
+        <translation>Atingiu a imagem final</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="618"/>
         <source>Save Image</source>
-        <translation>이미지 저장</translation>
+        <translation>Salvar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="619"/>
         <source>Do you want to save changes to:
 %1</source>
-        <translation>아래에 변경을 저장하시겠습니까:
+        <translation>Pretende salvar as alterações de:
 %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="737"/>
         <source>sorry, %1 does not exist anymore...</source>
-        <translation>죄송합니다, %1 은(는) 더 이상 존재하지 않습니다...</translation>
+        <translation>Parece que %1 já não existe...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="755"/>
         <source>Sorry, I could not find the GPS coordinates...</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível encontrar as coordenadas GPS...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="821"/>
         <source>%1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 de %2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="882"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="933"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1009"/>
         <source>Save File %1</source>
-        <translation>파일 %1 저장</translation>
+        <translation>Salvar arquivo %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="948"/>
         <source>Sorry, I could not copy the image...</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível copiar a imagem...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="994"/>
         <source>Overwrite File</source>
-        <translation>파일 덮어쓰기</translation>
+        <translation>Substituir arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="995"/>
         <source>Do you want to overwrite:
 %1?</source>
-        <translation>아래 파일을 덮어쓰시겠습니까:
+        <translation>Pretende substituir o arquivo:
 %1?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1187"/>
         <source>Sorry, I cannot save an empty image...</source>
-        <translation>죄송합니다, 빈 이미지를 저장할 수 없습니다...</translation>
+        <translation>Não pode salvar uma imagem vazia...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1319"/>
@@ -5099,23 +5101,23 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1335"/>
         <source>%1 deleted...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 apagada...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1326"/>
         <source>Sorry, I could not delete: %1</source>
-        <translation>죄송합니다, %1 을(를) 삭제할 수 없습니다</translation>
+        <translation>Não foi possível apagar %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1371"/>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1377"/>
         <source>Rotated</source>
-        <translation type="unfinished"></translation>
+        <translation>Giradas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp" line="1571"/>
         <source>Error</source>
-        <translation>에러</translation>
+        <translation>Erro</translation>
     </message>
 </context>
 <context>
@@ -5123,12 +5125,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp" line="1658"/>
         <source>Anti Aliasing Enabled</source>
-        <translation>앤티에일리어싱 활성화</translation>
+        <translation>Anti-aliasing ativo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp" line="1658"/>
         <source>Anti Aliasing Disabled</source>
-        <translation>앤티에일리어싱 비활성화</translation>
+        <translation>Anti-aliasing inativo</translation>
     </message>
 </context>
 <context>
@@ -5136,22 +5138,22 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="774"/>
         <source>Uninstall</source>
-        <translation>설치 해제</translation>
+        <translation>Desinstalar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="788"/>
         <source>Name</source>
-        <translation>이름</translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="790"/>
         <source>Version</source>
-        <translation>버전</translation>
+        <translation>Versão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="792"/>
         <source>Uninstall plugin</source>
-        <translation>플러그인 설치 해제</translation>
+        <translation>Desinstalar extra</translation>
     </message>
 </context>
 <context>
@@ -5159,7 +5161,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.h" line="812"/>
         <source>Drag Items Here</source>
-        <translation>아이템을 이곳으로 drag 하십시오</translation>
+        <translation>Arraste os itens para aqui</translation>
     </message>
 </context>
 <context>
@@ -5167,7 +5169,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkMessageBox.cpp" line="117"/>
         <source>Remember my choice</source>
-        <translation>이 선택 기억하기</translation>
+        <translation>Memorizar escolha</translation>
     </message>
 </context>
 <context>
@@ -5175,27 +5177,27 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="67"/>
         <source>Image Size</source>
-        <translation>이미지 크기</translation>
+        <translation>Tamanho da imagem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="68"/>
         <source>Orientation</source>
-        <translation>방향</translation>
+        <translation>Orientação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="69"/>
         <source>Make</source>
-        <translation>제작</translation>
+        <translation>Marca</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="70"/>
         <source>Model</source>
-        <translation>모델</translation>
+        <translation>Modelo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="71"/>
         <source>Aperture Value</source>
-        <translation>조리개 값</translation>
+        <translation>Valor de abertura</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="72"/>
@@ -5205,102 +5207,102 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="73"/>
         <source>Flash</source>
-        <translation>플래시</translation>
+        <translation>Flash</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="74"/>
         <source>Focal Length</source>
-        <translation>초점 거리</translation>
+        <translation>Distância focal</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="75"/>
         <source>Exposure Mode</source>
-        <translation>노출 모드</translation>
+        <translation>Modo de exposição</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="76"/>
         <source>Exposure Time</source>
-        <translation>노출 시간</translation>
+        <translation>Tempo de exposição</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="77"/>
         <source>Compression</source>
-        <translation type="unfinished"></translation>
+        <translation>Compressão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="79"/>
         <source>Rating</source>
-        <translation>평가</translation>
+        <translation>Avaliação</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="80"/>
         <source>User Comment</source>
-        <translation>사용자 주석</translation>
+        <translation>Comentários</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="81"/>
         <source>Date Time</source>
-        <translation>날짜 시간</translation>
+        <translation>Data e hora</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="82"/>
         <source>Date Time Original</source>
-        <translation>원본 날짜 시간</translation>
+        <translation>Data e hora original</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="83"/>
         <source>Image Description</source>
-        <translation>이미지 설명</translation>
+        <translation>Descrição</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="84"/>
         <source>Creator</source>
-        <translation>창작자</translation>
+        <translation>Criador</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="85"/>
         <source>Creator Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título do criador</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="86"/>
         <source>City</source>
-        <translation>도시</translation>
+        <translation>Cidade</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="87"/>
         <source>Country</source>
-        <translation>국가</translation>
+        <translation>País</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="88"/>
         <source>Headline</source>
-        <translation>헤드라인</translation>
+        <translation>Cabeçalho</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="89"/>
         <source>Caption</source>
-        <translation>표제</translation>
+        <translation>Legenda</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="90"/>
         <source>Copyright</source>
-        <translation>저작권</translation>
+        <translation>Direitos autorais</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="91"/>
         <source>Keywords</source>
-        <translation>키워드</translation>
+        <translation>Palavras-chave</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="92"/>
         <source>Path</source>
-        <translation>경로</translation>
+        <translation>Caminho</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp" line="93"/>
         <source>File Size</source>
-        <translation>파일 크기</translation>
+        <translation>Tamanho do arquivo</translation>
     </message>
 </context>
 <context>
@@ -5308,12 +5310,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="387"/>
         <source>Filter</source>
-        <translation>필터</translation>
+        <translation>Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="404"/>
         <source>Thumbnail</source>
-        <translation>썸네일</translation>
+        <translation>Miniatura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="491"/>
@@ -5323,7 +5325,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="492"/>
         <source>Size</source>
-        <translation>크기</translation>
+        <translation>Tamanho</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="493"/>
@@ -5351,103 +5353,103 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="704"/>
         <source>Image Information</source>
-        <translation>이미지 정보</translation>
+        <translation>Informações da imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="759"/>
         <source>Change Entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar entradas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="760"/>
         <source>You can customize the entries displayed here.</source>
-        <translation>여기에 디스플레이 되는 목록들을 설정할 수 있습니다.</translation>
+        <translation>Aqui, pode personalizar as entradas mostradas.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="763"/>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1129"/>
         <source>Number of Columns</source>
-        <translation>칼럼 수</translation>
+        <translation>Número de colunas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="764"/>
         <source>Select the desired number of columns.</source>
-        <translation>원하는 칼럼 수를 선택하십시오.</translation>
+        <translation>Selecione o número de colunas.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="767"/>
         <source>Set to Default</source>
-        <translation>기본 값으로 설정</translation>
+        <translation>Utilizar padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="768"/>
         <source>Reset the metadata panel.</source>
-        <translation>메타데이터 패털을 리셋합니다.</translation>
+        <translation>Redefinir painel de metadados.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="772"/>
         <source>Show Left</source>
-        <translation>좌측에 보이기</translation>
+        <translation>Mostrar à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="773"/>
         <source>Shows the Metadata on the Left</source>
-        <translation>메타데이터 좌측에 보이기</translation>
+        <translation>Mostra os metadados à esquerda</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="776"/>
         <source>Show Top</source>
-        <translation>상단에 보이기</translation>
+        <translation>Mostrar em cima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="777"/>
         <source>Shows the Metadata at the Top</source>
-        <translation>메타데이터 상단에 보이기</translation>
+        <translation>Mostra os metadados em cima</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="780"/>
         <source>Show Right</source>
-        <translation>우측에 보이기</translation>
+        <translation>Mostrar à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="781"/>
         <source>Shows the Metadata on the Right</source>
-        <translation>메타데이터 우측에 보이기</translation>
+        <translation>Mostra os metadados à direita</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="784"/>
         <source>Show Bottom</source>
-        <translation>하단에 보이기</translation>
+        <translation>Mostrar em baixo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="785"/>
         <source>Shows the Metadata at the Bottom</source>
-        <translation>메타데이터 하단에 보이기</translation>
+        <translation>Mostra os metadados em baixo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1046"/>
         <source>Metadata Menu</source>
-        <translation>메타데이터 메뉴</translation>
+        <translation>Menu de metadados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1099"/>
         <source>Change Metadata Entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Alterar Metadados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1106"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1107"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1130"/>
         <source>Number of columns (-1 is default)</source>
-        <translation>칼럼 수(기본 값은 -1)</translation>
+        <translation>Número de colunas (-1 é o padrão)</translation>
     </message>
 </context>
 <context>
@@ -5455,17 +5457,17 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="64"/>
         <source>Key</source>
-        <translation>키</translation>
+        <translation>Chave</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="64"/>
         <source>Value</source>
-        <translation>값</translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="141"/>
         <source>Data.</source>
-        <translation>데이터.</translation>
+        <translation>Dados.</translation>
     </message>
 </context>
 <context>
@@ -5473,7 +5475,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="575"/>
         <source>Check All</source>
-        <translation>모두 체크</translation>
+        <translation>Marcar tudo</translation>
     </message>
 </context>
 <context>
@@ -5481,174 +5483,174 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2742"/>
         <source>Create Mosaic Image</source>
-        <translation>모자이크 이미지 생성</translation>
+        <translation>Criar imagem em mosaico</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2801"/>
         <source>Darken</source>
-        <translation>어둡게</translation>
+        <translation>Escurecer</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2802"/>
         <source>Lighten</source>
-        <translation>밝게</translation>
+        <translation>Clarear</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2803"/>
         <source>Saturation</source>
-        <translation>채도</translation>
+        <translation>Saturação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2811"/>
         <source>Mosaic Image:</source>
-        <translation>모자이크 이미지:</translation>
+        <translation>Imagem em mosaico:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2814"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="2824"/>
         <source>&amp;Browse</source>
-        <translation>브라우즈(&amp;B)</translation>
+        <translation>E&amp;xplorar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2815"/>
         <source>Choose which image to mosaic.</source>
-        <translation>모자이크 할 이미지를 선택하십시오.</translation>
+        <translation>Escolha as imagens a colocar lado a lado.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2818"/>
         <source>No Image loaded</source>
-        <translation>로드된 이미지 없음</translation>
+        <translation>Nenhuma imagem carregada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2821"/>
         <source>Mosaic Elements Folder:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasta dos elementos de mosaico</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2825"/>
         <source>Specify the root folder of images used for mosaic elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>Especifique a pasta raiz onde se encontram as imagem utilizadas como elementos de mosaico.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2828"/>
         <source>Specify an Image Database</source>
-        <translation>이미지 데이터베이스 명세</translation>
+        <translation>Especifique a base de dados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2831"/>
         <source>Resolution:</source>
-        <translation>해상도:</translation>
+        <translation>Resolução:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2834"/>
         <source>Pixel Width</source>
-        <translation>픽셀 폭</translation>
+        <translation>Largura de pixel</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2843"/>
         <source>Pixel Height</source>
-        <translation>픽셀 높이</translation>
+        <translation>Altura de pixel</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2854"/>
         <source>Patches:</source>
-        <translation>패치:</translation>
+        <translation>Partes:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2857"/>
         <source>Number of Horizontal Patches</source>
-        <translation>수평 패치의 수</translation>
+        <translation>Número de partes horizontais</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2866"/>
         <source>Number of Vertical Patches</source>
-        <translation>수직 패치의 수</translation>
+        <translation>Número de partes verticais</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2876"/>
         <source>If this label turns red, the computation might be slower.</source>
-        <translation>이 라벨이 적색으로 변하면 계산 시간이 더 느려질 것입니다.</translation>
+        <translation>Se este texto ficar vermelho, o processamento poderá ser mais demorado.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2879"/>
         <source>Filters:</source>
-        <translation>필터:</translation>
+        <translation>Filtros:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2883"/>
         <source>You can split multiple ignore words with ;</source>
-        <translation type="unfinished"></translation>
+        <translation>Pode indicar palavras para filtrar imagens (separe-as com ;)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2888"/>
         <source>All Images</source>
-        <translation>모든 이미지</translation>
+        <translation>Todas as imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2938"/>
         <source>&amp;Save</source>
-        <translation>저장(&amp;S)</translation>
+        <translation>&amp;Salvar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2939"/>
         <source>&amp;Generate</source>
-        <translation>생성(&amp;G)</translation>
+        <translation>&amp;Gerar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2940"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2961"/>
         <source>Open TIFF</source>
-        <translation>TIFF 열기</translation>
+        <translation>Abrir TIFF</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2976"/>
         <source>Open an Image Directory</source>
-        <translation>이미지 디렉토리 열기</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2999"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="3013"/>
         <source>%1 x %2 cm @150 dpi</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 x %2 cm @150 ppp</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3062"/>
         <source>Patch Resolution: %1 px</source>
-        <translation>패치 해상도: %1 px</translation>
+        <translation>Resolução: %1 pixeis</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3252"/>
         <source>Filling empty areas...</source>
-        <translation>빈 영역 채우는 중...</translation>
+        <translation>Preencher áreas vazias...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3256"/>
         <source>I need to use some images twice - maybe the database is too small?</source>
-        <translation type="unfinished"></translation>
+        <translation>É necessário utilizar algumas imagens duas vezes. Será que a base de dados é pequena?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3260"/>
         <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
-        <translation>죄송합니다, 이 데이터베이스에는 모자이크를 생성할 수 없는 것으로 보입니다.</translation>
+        <translation>Desculpe mas não foi possível criar o mosaico para esta base de dados.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3373"/>
         <source>Something is seriously wrong, I could not load: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu algo errado pois não foi possível carregar: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3609"/>
         <source>Error</source>
-        <translation>에러</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3609"/>
         <source>Sorry, I could not mix the image...</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível misturar a imagem...</translation>
     </message>
 </context>
 <context>
@@ -5656,118 +5658,121 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="229"/>
         <source>Pl&amp;ugins</source>
-        <translation>플러그인(&amp;u)</translation>
+        <translation>E&amp;xtras</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="376"/>
         <source>Quit nomacs</source>
-        <translation>nomacs 종료</translation>
+        <translation>Sair do nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="377"/>
         <source>Do you want nomacs to save your tabs?</source>
-        <translation>nomacs가 탭을 저장하도록 하겠습니까?</translation>
+        <translation>Deseja que o nomacs memorize as abas?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="380"/>
         <source>&amp;Save and Quit</source>
-        <translation>저장하고 종료(&amp;S)</translation>
+        <translation>Salvar e &amp;sair</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="381"/>
         <source>&amp;Quit</source>
-        <translation>종료(&amp;Q)</translation>
+        <translation>&amp;Sair</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="812"/>
         <source>Recursive Folder Scan is Now Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Análise recursiva de pastas está habilitada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="814"/>
         <source>Recursive Folder Scan is Now Disabled</source>
-        <translation>재귀적 폴더 스캔은 이제 비활성화됩니다</translation>
+        <translation>Análise recursiva de pastas está desabilitada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="823"/>
         <source>Change Opacity</source>
-        <translation>불투명도 변경</translation>
+        <translation>Alterar opacidade</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="899"/>
         <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Janela Travada
+Para destravar: foque-a (ALT+Tab),
+e então pressione %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="901"/>
         <source>You should first reduce opacity
  before working through the window.</source>
-        <translation>창에 작업하기 전에 먼저 불투명도를 줄여야 합니다.</translation>
+        <translation>Deve reduzir a opacidade para 
+trabalhar na janela.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="994"/>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="996"/>
         <source>File Explorer</source>
-        <translation>파일 탐색기</translation>
+        <translation>Explorador de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1031"/>
         <source>Meta Data Info</source>
-        <translation>메타 데이터 정보</translation>
+        <translation>Informações de metadados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1054"/>
         <source>Edit Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1074"/>
         <source>History</source>
-        <translation>히스토리</translation>
+        <translation>Histórico</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1095"/>
         <source>Console</source>
-        <translation type="unfinished"></translation>
+        <translation>Console</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1136"/>
         <source>Thumbnails</source>
-        <translation>썸네일</translation>
+        <translation>Miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1174"/>
         <source>Open an Image Directory</source>
-        <translation>이미지 디렉토리 열기</translation>
+        <translation>Abrir pasta de imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1188"/>
         <source>All Files (*.*)</source>
-        <translation>전체 파일 (*.*)</translation>
+        <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1192"/>
         <source>Open Image</source>
-        <translation>이미지 열기</translation>
+        <translation>Abrir imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1229"/>
         <source>The following duplicates were not opened:</source>
-        <translation type="unfinished"></translation>
+        <translation>As seguintes duplicatas não foram abertas:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1243"/>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1276"/>
         <source>Text file (*.txt)</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo de texto (*.txt)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1244"/>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1277"/>
         <source>All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1248"/>
@@ -5777,58 +5782,58 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1280"/>
         <source>Save Tab List</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvar Lista de Abas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1428"/>
         <source>Go To Image</source>
-        <translation>이미지로 가기</translation>
+        <translation>Ir para a imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1428"/>
         <source>Image Index:</source>
-        <translation>이미지 색인:</translation>
+        <translation>Índice de imagens:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1771"/>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1788"/>
         <source> [Private Mode]</source>
-        <translation> [개인 모드]</translation>
+        <translation> [Modo privado]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1874"/>
         <source>Already downloading update</source>
-        <translation>이미 업데이트를 다운로드 중입니다</translation>
+        <translation>Download de atualização em andamento</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1901"/>
         <source>Downloading update...</source>
-        <translation>업데이트 다운로드 중...</translation>
+        <translation>Baixando atualização...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1901"/>
         <source>Cancel Update</source>
-        <translation>업데이트 취소</translation>
+        <translation>Cancelar atualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1936"/>
         <source>Unable to install new version&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível instalar a nova versão&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1936"/>
         <source>You can download the new version from our web page</source>
-        <translation>웹페이지에서 새 버전을 다운로드 할 수 있습니다</translation>
+        <translation>Você pode baixar a nova versão na nossa página web</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1950"/>
         <source>Downloading new translations...</source>
-        <translation>새 번역 다운로드 중...</translation>
+        <translation>Baixando novas traduções...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="1951"/>
         <source>Cancel</source>
-        <translation>취소</translation>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
@@ -5836,7 +5841,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp" line="2216"/>
         <source>Choose a Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Escolher um Monitor</translation>
     </message>
 </context>
 <context>
@@ -5844,17 +5849,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2407"/>
         <source>Window Opacity</source>
-        <translation>창 불투명도</translation>
+        <translation>Opacidade da janela</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2412"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2413"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -5862,17 +5867,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1196"/>
         <source>Show previous image</source>
-        <translation>이전 이미지 보기</translation>
+        <translation>Mostrar imagem anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1206"/>
         <source>Play/Pause</source>
-        <translation>재생/정지</translation>
+        <translation>Reproduzir/pausa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1217"/>
         <source>Show next image</source>
-        <translation>다음 이미지 보기</translation>
+        <translation>Mostrar imagem seguinte</translation>
     </message>
 </context>
 <context>
@@ -5880,22 +5885,22 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="418"/>
         <source>Author:</source>
-        <translation>저자:</translation>
+        <translation>Autor:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="419"/>
         <source>Company:</source>
-        <translation>회사:</translation>
+        <translation>Organização:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="420"/>
         <source>Created:</source>
-        <translation>생성일:</translation>
+        <translation>Criada:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="421"/>
         <source>Last Modified:</source>
-        <translation>마지막 수정일:</translation>
+        <translation>Última modificação:</translation>
     </message>
 </context>
 <context>
@@ -5903,12 +5908,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="538"/>
         <source>Plugin Manager</source>
-        <translation>플러그인 메니저</translation>
+        <translation>Gestor de extras</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="550"/>
         <source>&amp;Close</source>
-        <translation>닫기(&amp;C)</translation>
+        <translation>Fe&amp;char</translation>
     </message>
 </context>
 <context>
@@ -5916,7 +5921,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp" line="606"/>
         <source>Search plugins</source>
-        <translation>플러그인 검색</translation>
+        <translation>Procurar extras</translation>
     </message>
 </context>
 <context>
@@ -5924,22 +5929,22 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkPong.cpp" line="359"/>
         <source>PAUSED</source>
-        <translation>정지됨</translation>
+        <translation>Pausa</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.cpp" line="360"/>
         <source>Press &lt;SPACE&gt; to start.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperte &lt;SPACE&gt; para iniciar.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.cpp" line="504"/>
         <source>%1 won!</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 ganhou!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.cpp" line="505"/>
         <source>Hit &lt;SPACE&gt; to start a new Game</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperte &lt;SPACE&gt; para iniciar um novo jogo</translation>
     </message>
 </context>
 <context>
@@ -5955,17 +5960,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="64"/>
         <source>next</source>
-        <translation>다음</translation>
+        <translation>seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="69"/>
         <source>previous</source>
-        <translation>이전</translation>
+        <translation>anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="84"/>
         <source>Restart nomacs</source>
-        <translation>nomacs 재시작</translation>
+        <translation>Reiniciar o nomacs</translation>
     </message>
 </context>
 <context>
@@ -5974,52 +5979,52 @@ then press %1</source>
         <location filename="../src/DkGui/DkDialog.cpp" line="2060"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="2152"/>
         <source>Print Preview</source>
-        <translation>인쇄 미리보기</translation>
+        <translation>Pré-visualização</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2121"/>
         <source>Fit Width</source>
-        <translation>폭 맞춤</translation>
+        <translation>Ajustar à largura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2122"/>
         <source>Fit Page</source>
-        <translation>페이지 맞춤</translation>
+        <translation>Ajustar à página</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2124"/>
         <source>Zoom in</source>
-        <translation>확대</translation>
+        <translation>Ampliar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2127"/>
         <source>Zoom out</source>
-        <translation>축소</translation>
+        <translation>Reduzir</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2130"/>
         <source>keep ALT key pressed to zoom with the mouse wheel</source>
-        <translation>마우스 휠로 zoom을 하려면 ALT 키를 계속 누르십시오</translation>
+        <translation>Mantenha pressionada a tecla ALT para ampliar com a roda do mouse</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2141"/>
         <source>Portrait</source>
-        <translation>세로 방향</translation>
+        <translation>Retrato</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2144"/>
         <source>Landscape</source>
-        <translation>가로 방향</translation>
+        <translation>Paisagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2148"/>
         <source>Page setup</source>
-        <translation>페이지 설정</translation>
+        <translation>Configurar página</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2149"/>
         <source>Print</source>
-        <translation>인쇄</translation>
+        <translation>Imprimir</translation>
     </message>
 </context>
 <context>
@@ -6027,42 +6032,42 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1230"/>
         <source>Summary: </source>
-        <translation type="unfinished"></translation>
+        <translation>Resumo: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1231"/>
         <source>Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1261"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1265"/>
         <source>Output</source>
-        <translation>출력</translation>
+        <translation>Destino</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1269"/>
         <source>Functions</source>
-        <translation type="unfinished"></translation>
+        <translation>Funções</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1286"/>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1290"/>
         <source>Delete</source>
-        <translation>삭제</translation>
+        <translation>Apagar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1294"/>
         <source>Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar</translation>
     </message>
 </context>
 <context>
@@ -6070,63 +6075,63 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1329"/>
         <source>Create New Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar Novo Perfil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1332"/>
         <source>Apply Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1373"/>
         <location filename="../src/DkGui/DkBatch.cpp" line="1429"/>
         <source>inactive</source>
-        <translation>비활성</translation>
+        <translation>inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1398"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1465"/>
         <source>Deleting Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Excluindo Perfil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1466"/>
         <source>Sorry, I cannot delete %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, não foi possível excluir %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1481"/>
         <source>Export Batch Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar perfil de lotes</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1483"/>
         <source>nomacs Batch Profile (*.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfil de lotes do nomacs (*.%1)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1497"/>
         <source>Profile Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Perfil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1497"/>
         <source>Profile Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Perfil:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1505"/>
         <source>Profile Already Exists</source>
-        <translation type="unfinished"></translation>
+        <translation>O Perfil Já Existe</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1506"/>
         <source>Do you want to overwrite %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseja sobrescrever %1?</translation>
     </message>
 </context>
 <context>
@@ -6134,7 +6139,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkQuickAccess.cpp" line="139"/>
         <source>Quick Launch (%1)</source>
-        <translation>빠른 실행 (%1)</translation>
+        <translation>Lançador rápido (%1)</translation>
     </message>
 </context>
 <context>
@@ -6142,17 +6147,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1016"/>
         <source>one star</source>
-        <translation>별 하나</translation>
+        <translation>uma estrela</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1017"/>
         <source>two stars</source>
-        <translation>별 둘</translation>
+        <translation>duas estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1018"/>
         <source>three star</source>
-        <translation>별 셋</translation>
+        <translation>três estrelas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="1019"/>
@@ -6170,17 +6175,17 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2320"/>
         <source>Load the directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Carregar o diretório</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2330"/>
         <source>Pin this directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Fixar este diretório</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2339"/>
         <source>Remove this directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover este diretório</translation>
     </message>
 </context>
 <context>
@@ -6188,27 +6193,27 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="795"/>
         <source>x:</source>
-        <translation type="unfinished"></translation>
+        <translation>x:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="799"/>
         <source>y:</source>
-        <translation type="unfinished"></translation>
+        <translation>y:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="803"/>
         <source>width:</source>
-        <translation type="unfinished"></translation>
+        <translation>largura:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="807"/>
         <source>height:</source>
-        <translation type="unfinished"></translation>
+        <translation>altura:</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp" line="812"/>
         <source> px</source>
-        <translation type="unfinished"></translation>
+        <translation> px</translation>
     </message>
 </context>
 <context>
@@ -6216,99 +6221,99 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="873"/>
         <source>Resize Image</source>
-        <translation>이미지 크기 변경</translation>
+        <translation>Redimensionar imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="890"/>
         <source>Original</source>
-        <translation>원본</translation>
+        <translation>Original</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="892"/>
         <source>New</source>
-        <translation>신규</translation>
+        <translation>Nova</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="921"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="969"/>
         <source>Width: </source>
-        <translation>폭: </translation>
+        <translation>Largura: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="939"/>
         <location filename="../src/DkGui/DkDialog.cpp" line="985"/>
         <source>Height: </source>
-        <translation>높이: </translation>
+        <translation>Altura: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1017"/>
         <source>Resolution: </source>
-        <translation>해상도: </translation>
+        <translation>Resolução: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1029"/>
         <source>pixel/inch</source>
-        <translation>픽셀/인치</translation>
+        <translation>pixel/polegada</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1030"/>
         <source>pixel/cm</source>
-        <translation>픽셀/cm</translation>
+        <translation>pixel/cm</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1044"/>
         <source>Resample Image:</source>
-        <translation>이미지 재 추출</translation>
+        <translation>Recriar imagem:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1051"/>
         <source>Nearest Neighbor</source>
-        <translation>최근접 이웃</translation>
+        <translation>Vizinhança</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1052"/>
         <source>Area (best for downscaling)</source>
-        <translation>영역(축소하기에 최적의)</translation>
+        <translation>Área (para redução de escala)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1053"/>
         <source>Linear</source>
-        <translation>선형</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1054"/>
         <source>Bicubic (4x4 pixel interpolation)</source>
-        <translation>Bicubic (4x4 픽셀 보간법)</translation>
+        <translation>Bicúbica (interpolação de 4x4 pixeis)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1055"/>
         <source>Lanczos (8x8 pixel interpolation)</source>
-        <translation>Lanczos (8x8 픽셀 보간법)</translation>
+        <translation>Lanczos (interpolação de 8x8 pixeis)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1068"/>
         <source>Gamma Correction</source>
-        <translation>감마 보정</translation>
+        <translation>Correção de gama</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1080"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1081"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1459"/>
         <source>Sorry, but the image size %1 x %2 is illegal.</source>
-        <translation>죄송합니다, 이미지 크기 %1 x %2 은(는) 비합법적입니다.</translation>
+        <translation>O tamanho de imagem %1 x %2 é inválido.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1471"/>
         <source>Sorry, the image is too large: %1</source>
-        <translation>죄송합니다, %1 이미지가 너무 큽니다</translation>
+        <translation>A imagem é muito grande: %1</translation>
     </message>
 </context>
 <context>
@@ -6316,37 +6321,37 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="413"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Escala</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="422"/>
         <source>Nearest Neighbor</source>
-        <translation>최근접 이웃</translation>
+        <translation>Vizinhança</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="423"/>
         <source>Area (best for downscaling)</source>
-        <translation>영역(축소하기에 최적의)</translation>
+        <translation>Área (para redução de escala)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="424"/>
         <source>Linear</source>
-        <translation>선형</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="425"/>
         <source>Bicubic (4x4 interpolatia)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bicúbica (interpolação de 4x4 pixels)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="426"/>
         <source>Lanczos (8x8 interpolation)</source>
-        <translation type="unfinished"></translation>
+        <translation>Lanczos (interpolação de 8x8 pixels)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="433"/>
         <source>Gamma Correction</source>
-        <translation>감마 보정</translation>
+        <translation>Correção de gama</translation>
     </message>
 </context>
 <context>
@@ -6354,7 +6359,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="369"/>
         <source>Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Ângulo</translation>
     </message>
 </context>
 <context>
@@ -6362,32 +6367,32 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="611"/>
         <source>Find &amp; Filter</source>
-        <translation>찾기 &amp; 필터</translation>
+        <translation>Localizar e filtrar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="613"/>
         <source>Load All</source>
-        <translation>전체 로드</translation>
+        <translation>Carregar todas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="620"/>
         <source>Type search words or a regular expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Pesquisar palavras ou expressão regular</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="634"/>
         <source>&amp;Filter</source>
-        <translation>필터(&amp;F)</translation>
+        <translation>&amp;Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="639"/>
         <source>F&amp;ind</source>
-        <translation>찾기(&amp;i)</translation>
+        <translation>Local&amp;izar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="683"/>
         <source>No Matching Items</source>
-        <translation>일치 항목 없음</translation>
+        <translation>Nenhum item coincidente</translation>
     </message>
 </context>
 <context>
@@ -6395,12 +6400,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="317"/>
         <source>Settings</source>
-        <translation>설정</translation>
+        <translation>Preferências</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="317"/>
         <source>Value</source>
-        <translation>값</translation>
+        <translation>Valor</translation>
     </message>
 </context>
 <context>
@@ -6408,12 +6413,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="134"/>
         <source>Filter Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações de Filtro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkSettingsWidget.cpp" line="162"/>
         <source>Delete</source>
-        <translation>삭제</translation>
+        <translation>Apagar</translation>
     </message>
 </context>
 <context>
@@ -6421,27 +6426,27 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1856"/>
         <source>Keyboard Shortcuts</source>
-        <translation>키보드 단축키</translation>
+        <translation>Atalhos de teclado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1886"/>
         <source>Set to &amp;Default</source>
-        <translation>기본 값으로 설정(&amp;D)</translation>
+        <translation>Utilizar o &amp;padrão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1887"/>
         <source>Removes All Custom Shortcuts</source>
-        <translation>모든 사용자 단축키를 제거합니다</translation>
+        <translation>Remover todos os atalhos personalizados</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1899"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1900"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -6449,24 +6454,26 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1596"/>
         <source>Name</source>
-        <translation>이름</translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1596"/>
         <source>Shortcut</source>
-        <translation>단축키</translation>
+        <translation>Atalho</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1775"/>
         <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 já é utilizado por %2&gt; %3
+Aperte ESC para reverter as alterações</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1780"/>
         <source>%1 already used by %2
 Press ESC to undo changes</source>
-        <translation>%1 은 %2 에 의해 이미 이용되고 있습니다. 변경을 취소하려면 ESC를 누르십시오</translation>
+        <translation>%1 já é utilizada por %2
+Pressione Esc para cancelar as alterações</translation>
     </message>
 </context>
 <context>
@@ -6474,7 +6481,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="138"/>
         <source>Close (ESC)</source>
-        <translation>닫기 (ESC)</translation>
+        <translation>Fechar (ESC)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="184"/>
@@ -6487,22 +6494,22 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4355"/>
         <source>width:</source>
-        <translation type="unfinished"></translation>
+        <translation>largura:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4365"/>
         <source>height:</source>
-        <translation type="unfinished"></translation>
+        <translation>altura:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4384"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="4385"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -6510,7 +6517,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkMenu.cpp" line="204"/>
         <source>no clients found</source>
-        <translation>발견된 클라이언트 없음</translation>
+        <translation>nenhum cliente encontrado</translation>
     </message>
 </context>
 <context>
@@ -6518,43 +6525,44 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1947"/>
         <source>Text Editor</source>
-        <translation>텍스트 편집기</translation>
+        <translation>Editor de texto</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1957"/>
         <source>&amp;Save</source>
-        <translation>저장(&amp;S)</translation>
+        <translation>&amp;Salvar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1958"/>
         <source>&amp;Close</source>
-        <translation>닫기(&amp;C)</translation>
+        <translation>Fe&amp;char</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1983"/>
         <source>Text File (*.txt)</source>
-        <translation>텍스트 파일 (*.txt)</translation>
+        <translation>Arquivo de texto (*. txt)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1983"/>
         <source>All Files (*.*)</source>
-        <translation>전체 파일 (*.*)</translation>
+        <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="1987"/>
         <source>Save Text File</source>
-        <translation>텍스트 파일 저장</translation>
+        <translation>Salvar arquivo de texto</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2002"/>
         <source>Error</source>
-        <translation>에러</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2002"/>
         <source>Could not save: %1
 %2</source>
-        <translation>저장할 수 없습니다: %1 %2</translation>
+        <translation>Não foi possível salvar: %1
+%2</translation>
     </message>
 </context>
 <context>
@@ -6562,12 +6570,12 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="479"/>
         <source>Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation>Limiar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="486"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cor</translation>
     </message>
 </context>
 <context>
@@ -6575,18 +6583,18 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1341"/>
         <source> selected</source>
-        <translation type="unfinished"></translation>
+        <translation> selecionado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1335"/>
         <source> images</source>
-        <translation type="unfinished"></translation>
+        <translation> imagens</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1336"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1342"/>
         <source>%1 | %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 | %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1512"/>
@@ -6609,58 +6617,59 @@ Press ESC to undo changes</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1616"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1666"/>
         <source>Error</source>
-        <translation>에러</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1538"/>
         <source>Sorry, I cannot %1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Desculpe, mas não é possível %1 %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1550"/>
         <source>move</source>
-        <translation type="unfinished"></translation>
+        <translation>mover</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1560"/>
         <source>create link</source>
-        <translation type="unfinished"></translation>
+        <translation>criar ligação</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1568"/>
         <source>copy</source>
-        <translation type="unfinished"></translation>
+        <translation>copiar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1588"/>
         <source>Shall I move %1 file(s) to trash?</source>
-        <translation>%1 파일(들)을 휴지통에 버리겠습니까?</translation>
+        <translation>Mover %1 arquivo(s) para a lixeira?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1587"/>
         <source>Delete File</source>
-        <translation>파일 삭제</translation>
+        <translation>Apagar arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1617"/>
         <source>Sorry, I cannot delete:
 %1</source>
-        <translation>죄송합니다, %1 을 삭제할 수 없습니다</translation>
+        <translation>Não é possível apagar:
+%1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1646"/>
         <source>Rename File(s)</source>
-        <translation>파일명 변경</translation>
+        <translation>Renomear arquivo(s)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1647"/>
         <source>New Filename:</source>
-        <translation>새 파일명:</translation>
+        <translation>Novo nome do arquivo:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1667"/>
         <source>Sorry, I cannot rename: %1 to %2</source>
-        <translation>죄송합니다, %1 을 %2 로 개명할 수 없습니다</translation>
+        <translation>Não é possível renomear %1 para %2</translation>
     </message>
 </context>
 <context>
@@ -6668,27 +6677,27 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1952"/>
         <source>Thumb Preview Toolbar</source>
-        <translation>썸네일 미리보기 도구 바</translation>
+        <translation>Barra de pré-visualização de miniaturas</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1971"/>
         <source>&amp;Sort</source>
-        <translation>정렬(&amp;S)</translation>
+        <translation>&amp;Ordenar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1986"/>
         <source>Filter Files (Ctrl + F)</source>
-        <translation>필터 파일 (Ctrl + F)</translation>
+        <translation>Filtrar arquivos (Ctrl + F)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1999"/>
         <source>Thumb</source>
-        <translation>썸네일</translation>
+        <translation>Miniatura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="2013"/>
         <source>Open Image</source>
-        <translation>이미지 열기</translation>
+        <translation>Abrir imagem</translation>
     </message>
 </context>
 <context>
@@ -6699,18 +6708,18 @@ Press ESC to undo changes</source>
 Creating thumbnails...
 </source>
         <translation>
-썸네일 생성 중…
+Criação de miniaturas...
 </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="158"/>
         <source>Cancel</source>
-        <translation>취소</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp" line="162"/>
         <source>Thumbnails</source>
-        <translation>썸네일</translation>
+        <translation>Miniaturas</translation>
     </message>
 </context>
 <context>
@@ -6718,27 +6727,27 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="65"/>
         <source>TIF compression</source>
-        <translation>TIF 압축</translation>
+        <translation>Compactação TIF</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="68"/>
         <source>&amp;no compression</source>
-        <translation>압축 없음(&amp;n)</translation>
+        <translation>Sem co&amp;mpressão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="69"/>
         <source>&amp;LZW compression (lossless)</source>
-        <translation>LZW 압축(손실 없음)(&amp;L)</translation>
+        <translation>Compressão &amp;LZW (sem perda)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="79"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp" line="80"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 <context>
@@ -6746,17 +6755,17 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="240"/>
         <source>Planet Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamanho do &quot;Planeta&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="246"/>
         <source>Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Ângulo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="252"/>
         <source>Invert Planet</source>
-        <translation type="unfinished"></translation>
+        <translation>Inverter o &quot;Planeta&quot;</translation>
     </message>
 </context>
 <context>
@@ -6764,57 +6773,57 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="261"/>
         <source>Add New Image Format</source>
-        <translation>새 이미지 포맷 추가</translation>
+        <translation>Adicionar novo formato de imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="270"/>
         <source>Load New Image Format</source>
-        <translation>새 이미지 포맷 읽기</translation>
+        <translation>Carregar novo formato de imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="279"/>
         <source>&amp;Browse</source>
-        <translation>브라우즈(&amp;B)</translation>
+        <translation>E&amp;xplorar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="292"/>
         <source>&amp;Add</source>
-        <translation>추가(&amp;A)</translation>
+        <translation>&amp;Adicionar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="294"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="327"/>
         <source>Open Image</source>
-        <translation>이미지 열기</translation>
+        <translation>Abrir imagem</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="329"/>
         <source>All Files (*.*)</source>
-        <translation>전체 파일 (*.*)</translation>
+        <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="377"/>
         <source>Sorry, currently we don&apos;t support: *.%1 files</source>
-        <translation>죄송합니다, 현재 *.%1 파일은 지원하지 않습니다</translation>
+        <translation>Desculpe, no momento não suportamos: *.%1 arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="382"/>
         <source>*.%1 is already supported.</source>
-        <translation>*.%1 은 이미 지원되고있습니다.</translation>
+        <translation>*.%1 já é suportado.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="385"/>
         <source>*.%1 is supported.</source>
-        <translation>*.%1 은 지원됩니다.</translation>
+        <translation>*.%1 é suportado.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="404"/>
         <source>Please name the new format:</source>
-        <translation>새 포맷 이름을 적어주세요:</translation>
+        <translation>Indique o nome do formato:</translation>
     </message>
 </context>
 <context>
@@ -6822,68 +6831,68 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="485"/>
         <source>Pseudo Color Toolbar</source>
-        <translation>Pseudo Color 도구 바</translation>
+        <translation>Barra de ferramentas pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="489"/>
         <source>Enable</source>
-        <translation>활성</translation>
+        <translation>Ativar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="490"/>
         <location filename="../src/DkGui/DkToolbars.cpp" line="738"/>
         <source>Enables the Pseudo Color function</source>
-        <translation>Pseudo Color 기능을 활성화합니다</translation>
+        <translation>Ativa a função pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="499"/>
         <source>Changes the displayed color channel</source>
-        <translation>표시되는 색상 채널을 변경합니다</translation>
+        <translation>Mudar canal da cor exibida</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="504"/>
         <source>Delete</source>
-        <translation>삭제</translation>
+        <translation>Apagar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="522"/>
         <source>Click into the field for a new slider</source>
-        <translation>필드 내를 클릭해서 새 슬라이더 생성</translation>
+        <translation>Clique no campo para um novo controle</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="569"/>
         <source>Reset</source>
-        <translation>리셋</translation>
+        <translation>Reiniciar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="570"/>
         <source>Resets the Pseudo Color function</source>
-        <translation>Pseudo Color 기능을 리셋합니다</translation>
+        <translation>Reiniciar a função pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="575"/>
         <source>Select Color</source>
-        <translation>색상 선택</translation>
+        <translation>Escolha a cor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="576"/>
         <source>Adds a slider at the selected color value</source>
-        <translation>선택된 색상 값에 슬라이더를 추가합니다</translation>
+        <translation>Adiciona um controle no valor de cor escolhido</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="581"/>
         <source>Save Gradient</source>
-        <translation>그라디언트 저장</translation>
+        <translation>Salvar gradiente</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="582"/>
         <source>Saves the current Gradient</source>
-        <translation>현 그라디언트를 저장합니다</translation>
+        <translation>Salva o gradiente atual</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="701"/>
         <source>Gray</source>
-        <translation>회색</translation>
+        <translation>Cinza</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="703"/>
@@ -6893,22 +6902,22 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="704"/>
         <source>Red</source>
-        <translation>적색</translation>
+        <translation>Vermelho</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="705"/>
         <source>Green</source>
-        <translation>녹색</translation>
+        <translation>Verde</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="706"/>
         <source>Blue</source>
-        <translation>청색</translation>
+        <translation>Azul</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="736"/>
         <source>Disables the Pseudo Color function</source>
-        <translation>Pseudo Color 기능을 비활성화합니다</translation>
+        <translation>Desativa a função pseudocor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp" line="785"/>
@@ -6921,18 +6930,19 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="366"/>
         <source>Updates Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações Desativadas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="367"/>
         <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações do nomacs estão desativadas.
+Por favor, contate o administrador de sistemas para maiores informações.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="416"/>
         <source>Unable to download translation</source>
-        <translation>번역을 다운로드 할 수 없습니다</translation>
+        <translation>Não é possível baixar a tradução</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="416"/>
@@ -6940,22 +6950,22 @@ Please contact your system administrator for further information.</source>
         <location filename="../src/DkCore/DkUpdater.cpp" line="457"/>
         <location filename="../src/DkCore/DkUpdater.cpp" line="462"/>
         <source>update</source>
-        <translation>업데이트</translation>
+        <translation>atualizar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="435"/>
         <source>Unable to update translation</source>
-        <translation>번역을 갱신할 수 없습니다</translation>
+        <translation>Não foi possível atualizar a tradução</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="457"/>
         <source>Translation updated</source>
-        <translation>번역이 갱신되었습니다</translation>
+        <translation>Tradução atualizada</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="462"/>
         <source>No newer translations found</source>
-        <translation>새 번역이 발견되지 않습니다</translation>
+        <translation>Não existem novas atualizações</translation>
     </message>
 </context>
 <context>
@@ -6963,12 +6973,12 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="325"/>
         <source>Sigma</source>
-        <translation type="unfinished"></translation>
+        <translation>Sigma</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="329"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
 </context>
 <context>
@@ -6976,17 +6986,17 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2029"/>
         <source>nomacs updater</source>
-        <translation>nomacs 업데이터</translation>
+        <translation>Atualização nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2037"/>
         <source>Install Now</source>
-        <translation>지금 설치</translation>
+        <translation>Instalar agora</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="2038"/>
         <source>Cancel</source>
-        <translation>취소</translation>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
@@ -6994,43 +7004,44 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="155"/>
         <source>Updates Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações Desativadas</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="156"/>
         <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações do nomacs estão desativadas.
+Por favor, contate o administrador de sistemas para maiores informações.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="243"/>
         <source>sorry, I could not check for newer versions</source>
-        <translation>죄송합니다, 새 버전을 체크할 수 없습니다</translation>
+        <translation>Não foi possível procurar atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="243"/>
         <source>Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="256"/>
         <source>A new version</source>
-        <translation>새 버전</translation>
+        <translation>Uma nova versão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="256"/>
         <source>is available</source>
-        <translation>을 이용할 수 있습니다</translation>
+        <translation>está disponível</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="257"/>
         <source>Do you want to download and install it now?</source>
-        <translation>지금 다운로드 하여 설치하시겠습니까?</translation>
+        <translation>Deseja baixar e instalar a nova versão?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="258"/>
         <source>For more information see </source>
-        <translation>자세한 내용은 아래를 참조하세요 </translation>
+        <translation>Para mais informações consulte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="265"/>
@@ -7038,22 +7049,22 @@ Please contact your system administrator for further information.</source>
         <location filename="../src/DkCore/DkUpdater.cpp" line="274"/>
         <location filename="../src/DkCore/DkUpdater.cpp" line="348"/>
         <source>updates</source>
-        <translation>업데이트</translation>
+        <translation>atualizações</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="267"/>
         <source>nomacs is up-to-date</source>
-        <translation>nomacs는 최신 버전입니다</translation>
+        <translation>nomacs está atualizado</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="274"/>
         <source>sorry, unable to download the new version</source>
-        <translation>죄송합니다, 새 버전을 다운로드 할 수 없습니다</translation>
+        <translation>Não foi possível baixar a nova versão</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp" line="348"/>
         <source>Unable to connect to server ... please try again later</source>
-        <translation>서버에 연결할 수 없습니다 ... 다음에 시도하시기 바랍니다</translation>
+        <translation>Não foi possível conectar ao servidor. Tente mais tarde</translation>
     </message>
 </context>
 <context>
@@ -7061,67 +7072,67 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="123"/>
         <source>Show previous image</source>
-        <translation>이전 이미지 보기</translation>
+        <translation>Mostrar imagem anterior</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="129"/>
         <source>Show next image</source>
-        <translation>다음 이미지 보기</translation>
+        <translation>Mostrar imagem seguinte</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="320"/>
         <source>Original Image</source>
-        <translation>원본 이미지</translation>
+        <translation>Imagem original</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="753"/>
         <source>Resize</source>
-        <translation>크기 변경</translation>
+        <translation>Redimensionar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="776"/>
         <source>Shall I move %1 to trash?</source>
-        <translation>%1 을 휴지통으로 이동할까요?</translation>
+        <translation>Mover %1 para a lixeira?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="778"/>
         <source>Do you want to permanently delete %1?</source>
-        <translation>%1 을 영구히 삭제하시겠습니까?</translation>
+        <translation>Deseja apagar %1 permanentemente?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="782"/>
         <source>Delete File</source>
-        <translation>파일 삭제</translation>
+        <translation>Apagar arquivo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="849"/>
         <source>Error</source>
-        <translation>에러</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="849"/>
         <source>Sorry, I could not create a wallpaper...</source>
-        <translation>죄송합니다, 바탕화면을 생성할 수 없습니다...</translation>
+        <translation>Não foi possível definir o papel de parede...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="891"/>
         <source>Busy</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocupado</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1638"/>
         <source>Transparency Pattern Enabled</source>
-        <translation>투명 패턴 활성화</translation>
+        <translation>Padrão de transparência ativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1638"/>
         <source>Transparency Pattern Disabled</source>
-        <translation>투명 패턴 비활성화</translation>
+        <translation>Padrão de transparência inativo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="1685"/>
         <source>Attempted to set NULL image</source>
-        <translation>NULL 이미지를 설정하려고 시도했음</translation>
+        <translation>Tentativa de definir imagem NULL</translation>
     </message>
 </context>
 <context>
@@ -7129,7 +7140,7 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp" line="2211"/>
         <source>Press F10 to exit Frameless view</source>
-        <translation>틀 없는 보기에서 나가려면 F10 키를 누르세요</translation>
+        <translation>Pressione F10 para sair deste modo</translation>
     </message>
 </context>
 <context>
@@ -7137,32 +7148,32 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3714"/>
         <source>Welcome</source>
-        <translation>환영합니다</translation>
+        <translation>Bem-vindo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3723"/>
         <source>Welcome to nomacs, please choose your preferred language below.</source>
-        <translation>nomacs를 사용해주셔서 감사합니다. 아래 목록에서 선호하는 언어를 선택해주십시오.</translation>
+        <translation>Bem-vindo ao nomacs. Por favor escolha o idioma da aplicação abaixo.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3728"/>
         <source>&amp;Register File Associations</source>
-        <translation>연결 프로그램 등록(&amp;R)</translation>
+        <translation>&amp;Registar associação de arquivos</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3731"/>
         <source>Set As &amp;Default Viewer</source>
-        <translation>기본 뷰어로 설정(&amp;D)</translation>
+        <translation>Utilizar como visualizador pa&amp;drão</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3736"/>
         <source>&amp;OK</source>
-        <translation>확인(&amp;O)</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp" line="3737"/>
         <source>&amp;Cancel</source>
-        <translation>취소(&amp;C)</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
 </context>
 </TS>
