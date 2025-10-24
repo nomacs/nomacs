@@ -3269,7 +3269,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
         }
 
         try {
-            std::optional<LoadThumbnailResult> thumb = loadThumbnail(imgPath, LoadThumbnailOption::none);
+            std::optional<LoadThumbnailResult> thumb = loadThumbnail(LoadThumbnailRequest{imgPath});
             if (thumb) {
                 thumb->thumb = DkImage::createThumb(thumb->thumb);
             }

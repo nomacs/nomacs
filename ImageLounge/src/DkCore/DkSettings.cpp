@@ -460,6 +460,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
     display_p.iconSize = settings.value("iconSize", display_p.iconSize).toInt();
     display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
+    display_p.highQualityThumbs = settings.value("highQualityThumbs", display_p.highQualityThumbs).toBool();
     // display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
     display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
     display_p.highQualityAntiAliasing = settings.value("highQualityAntiAliasing", display_p.highQualityAntiAliasing)
@@ -722,6 +723,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("iconSize", display_p.iconSize);
     if (force || display_p.thumbPreviewSize != display_d.thumbPreviewSize)
         settings.setValue("thumbPreviewSize", display_p.thumbPreviewSize);
+    if (force || display_p.highQualityThumbs != display_d.highQualityThumbs)
+        settings.setValue("highQualityThumbs", display_p.highQualityThumbs);
     // if (force ||display_p.saveThumb != display_d.saveThumb)
     //	settings.setValue("saveThumb", display_p.saveThumb);
     if (force || display_p.antiAliasing != display_d.antiAliasing)
@@ -940,6 +943,7 @@ void DkSettings::setToDefaultSettings()
     display_p.thumbSize = 64;
     display_p.iconSize = 20;
     display_p.thumbPreviewSize = 64;
+    display_p.highQualityThumbs = false;
     display_p.antiAliasing = true;
     display_p.highQualityAntiAliasing = false;
     display_p.showCrop = false;
