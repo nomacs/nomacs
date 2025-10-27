@@ -30,7 +30,7 @@ mkdir -p "$PKG_DIR"
 
 # todo: copy the plugins we actually need
 echo "copying qt plugins..."
-for x in imageformats platforms printsupport styles; do
+for x in iconengines imageformats platforms printsupport styles; do
  cp -auv "$QT_DIR/plugins/$x" "$PKG_DIR/"
 done
 

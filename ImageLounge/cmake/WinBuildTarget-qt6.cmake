@@ -232,6 +232,13 @@ file(COPY ${QT_EXTRA_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Debug/imagef
 file(GLOB QT_PSD_LIB "${QT_QMAKE_PATH}/../plugins/imageformats/qpsd.dll")
 file(COPY ${QT_PSD_LIB} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
 
+# Icon Engines (SVG Icons)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/iconengines)
+file(GLOB QT_IMAGE_FORMATS "${QT_QMAKE_PATH}/../plugins/iconengines/*.dll")
+file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/iconengines PATTERN *d.dll EXCLUDE)
+file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/iconengines PATTERN *d.dll EXCLUDE)
+file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Debug/iconengines)
+
 # Platforms
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/platforms)
 file(COPY ${QT_QMAKE_PATH}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/platforms/)
