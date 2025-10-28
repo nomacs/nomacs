@@ -613,6 +613,9 @@ QString DkUtils::getBuildInfo()
     if (DkSettingsManager::param().isPortable())
         info += " Portable"; // same line as __DATE__ (running out of room)
 
+    if (qEnvironmentVariableIsSet("APPIMAGE"))
+        info += " AppImage";
+
     info += "\n\n";
 
     QString memory = QString::number(int(DkMemory::getTotalMemory() / 1000)) + "GB";
