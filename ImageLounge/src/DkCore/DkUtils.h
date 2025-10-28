@@ -120,6 +120,13 @@ public:
     static QString getAppDataPath();
 
     /**
+     * @brief get list of potential directory paths for nomacs data files
+     * @note when looking for themes and translations the paths at the top of this list
+     *       will be prioritzed.
+     */
+    static QStringList getAppDataSearchPaths();
+
+    /**
      * @brief get writeable temporary directory
      * @return empty string if not exists or not writeable
      * @note uses the user tempdir preference or falls back to <system tempdir>/nomacs
