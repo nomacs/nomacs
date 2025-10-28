@@ -37,7 +37,6 @@
 #include <QMimeDatabase>
 #include <QRandomGenerator>
 #include <QScreen>
-#include <QStandardPaths>
 #include <QThreadPool>
 #include <QTranslator>
 #include <QWidget>
@@ -301,7 +300,7 @@ void DkSettings::loadTranslation(const QString &fileName, QTranslator &translato
 
     for (int idx = 0; idx < translationDirs.size(); idx++) {
         if (translator.load(fileName, translationDirs[idx])) {
-            qDebugClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+            qInfoClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
             break;
         }
     }
@@ -310,12 +309,10 @@ void DkSettings::loadTranslation(const QString &fileName, QTranslator &translato
 QStringList DkSettings::getTranslationDirs()
 {
     QStringList trDirs;
-    trDirs << DkUtils::getTranslationPath();
+    trDirs << DkUtils::getTranslationPath(); // FIXME: these two can probably be removed now
     trDirs << qApp->applicationDirPath();
 
-    QStringList rDirs;
-    rDirs << qApp->applicationDirPath();
-    rDirs << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+    QStringList rDirs = DkUtils::getAppDataSearchPaths();
 
     for (const QString &d : rDirs)
         trDirs << d + QDir::separator() + "translations";

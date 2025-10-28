@@ -472,6 +472,37 @@ QString DkUtils::getAppDataPath()
     return appPath;
 }
 
+QStringList DkUtils::getAppDataSearchPaths()
+{
+    QStringList paths;
+
+    // we always include dir containing nomacs binary for portable version and running w/o installation
+    QString appDirPath = qApp->applicationDirPath();
+    paths << appDirPath;
+
+    // standard locations do not include any path within AppImage
+    if (qEnvironmentVariableIsSet("APPIMAGE")) {
+        paths << QString("%1/../share/%2/%3") // AppImage structure is like /usr/local
+                     .arg(appDirPath)
+                     .arg(qApp->organizationName())
+                     .arg(qApp->applicationName());
+    }
+
+    // the install path from cmake might come last (or not at all) on QStandardPaths.
+    // this is a problem in cases where we take the first file/dir found (themes), it may
+    // not be the correct one for *this* build of nomacs
+#ifdef NOMACS_INSTALL_DATAPATH
+    paths << QString("%1/%2/%3") // /usr/local/share/nomacs/Image Lounge
+                 .arg(NOMACS_INSTALL_DATAPATH)
+                 .arg(qApp->organizationName())
+                 .arg(qApp->applicationName());
+#endif
+
+    paths << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+
+    return paths;
+}
+
 QString DkUtils::randomString(int length)
 {
     static constexpr QStringView chars{u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"};

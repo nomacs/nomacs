@@ -34,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QApplication>
 // #include <QDebug>
 #include <QDir>
-#include <QStandardPaths>
 #include <QStyle>
 #include <QStyleFactory>
 #include <QStyleHints>
@@ -871,9 +870,8 @@ void DkThemeManager::setStylePlugin(const QString &name)
 
 QString DkThemeManager::themeDir() const
 {
-    QStringList paths;
-    paths << QCoreApplication::applicationDirPath();
-    paths << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+    // FIXME: cache the result of this function since it touches several dirs
+    QStringList paths = DkUtils::getAppDataSearchPaths();
 
     QDir themeDir;
     bool themes_found = false;
