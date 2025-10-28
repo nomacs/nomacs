@@ -1331,6 +1331,9 @@ void DkPluginManager::createPluginsPath()
     //
     QStringList libPaths;
     libPaths += qApp->applicationDirPath();
+    if (qEnvironmentVariableIsSet("APPIMAGE")) {
+        libPaths += qApp->applicationDirPath() + "/../lib";
+    }
     libPaths += NOMACS_INSTALL_LIBPATH;
     libPaths += QLibraryInfo::path(QLibraryInfo::LibrariesPath);
 
