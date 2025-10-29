@@ -1,0 +1,54 @@
+name: Update Docker Images
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - name: "neon"
+            tag: "22.04"
+            dockerfile: "Dockerfile.kde-neon.2204"
+          - name: "neon"
+            tag: "24.04"
+            dockerfile: "Dockerfile.kde-neon.2404"
+          #- name: "ubuntu"
+          #  tag: "22.04"
+          #  dockerfile: "Dockerfile.ubuntu.2204"
+          - name: "ubuntu"
+            tag: "24.04"
+            dockerfile: "Dockerfile.ubuntu.2404"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          echo "Building image variant: ${{ matrix.config.name }}:${{ matrix.config.tag }}"
+
+          IMAGE="ghcr.io/${{ github.repository_owner }}/${{ matrix.config.name }}:${{ matrix.config.tag }}"
+
+          cp -v "scripts/docker/${{ matrix.config.dockerfile }}" Dockerfile
+
+          docker build -t "${IMAGE}" .
+          docker push "${IMAGE}"
+
+      - name: Summary
+        run: |
+          echo "pushed image: ghcr.io/${{ github.repository_owner }}/${{ matrix.config.name }}:${{ matrix.config.tag }}"
+
