@@ -1,4 +1,4 @@
-version: 3.21.1.{build}
+version: 3.22.0.{build}
 image: Visual Studio 2022
 configuration: Release
 skip_commits:
@@ -19,7 +19,7 @@ environment:
 
     certpwd:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
-    
+
 cache:
     - 3rd-party/build/opencv -> scripts/make.py        # don't rebuild unless the make script changes
     - 3rd-party/build/expat -> scripts/make.py
@@ -37,7 +37,7 @@ install:
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
-    
+
 build_script:
     - python scripts\make.py %QT6% --build-config release
 
@@ -54,7 +54,7 @@ artifacts:
 
     - path: 'installer/nomacs-setup-x64.msi'
       name: nomacs-installer
-        
+
     - path: 'installer/nomacs-setup-x64.exe'
       name: nomacs-multi-user-installer
 
