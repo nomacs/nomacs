@@ -142,10 +142,10 @@ public:
     };
 
     enum keepZoom {
-        zoom_always_keep,
-        zoom_keep_same_size,
-        zoom_never_keep,
-
+        zoom_always_keep, // keep prev image zoom
+        zoom_keep_same_size, // keep if prev image size is the same
+        zoom_never_keep, // zoom to fit, disallow scale > 100%
+        zoom_always_fit, // zoom to fit, allow scale > 100%
         zoom_end,
     };
 
@@ -209,7 +209,6 @@ public:
 
     struct Display {
         int keepZoom;
-        bool zoomToFit;
         bool invertZoom;
         bool tpPattern;
         bool showNavigation;
