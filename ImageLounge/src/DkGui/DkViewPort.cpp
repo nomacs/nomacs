@@ -621,7 +621,7 @@ void DkViewPort::updateImageMatrix()
         mWorldMatrix.translate(dx, dy);
     }
     // NOTE: this is not the same as resetView!
-    else if (DkSettingsManager::param().display().zoomToFit)
+    else if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_fit)
         zoomToFit();
 }
 

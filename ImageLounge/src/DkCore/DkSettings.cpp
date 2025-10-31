@@ -443,7 +443,6 @@ void DkSettings::load(QSettings &settings, bool defaults)
 
     display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
     display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
-    display_p.zoomToFit = settings.value("zoomToFit", display_p.zoomToFit).toBool();
     display_p.highlightColor = QColor::fromRgba(
         settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
     display_p.hudBgColor = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.hudBgColor.rgba()).toInt());
@@ -696,8 +695,6 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("keepZoom", display_p.keepZoom);
     if (force || display_p.invertZoom != display_d.invertZoom)
         settings.setValue("invertZoom", display_p.invertZoom);
-    if (force || display_p.zoomToFit != display_d.zoomToFit)
-        settings.setValue("zoomToFit", display_p.zoomToFit);
     if (force || display_p.highlightColor != display_d.highlightColor)
         settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
     if (force || display_p.hudBgColor != display_d.hudBgColor)
@@ -927,7 +924,6 @@ void DkSettings::setToDefaultSettings()
 
     display_p.keepZoom = zoom_keep_same_size;
     display_p.invertZoom = false;
-    display_p.zoomToFit = false;
     display_p.highlightColor = QColor(0, 204, 255);
     display_p.hudBgColor = QColor(0, 0, 0, 100);
     display_p.hudFgdColor = QColor(255, 255, 255);

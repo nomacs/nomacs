@@ -791,10 +791,7 @@ void DkDisplayPreference::createLayout()
     keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(
         tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
     keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
-
-    auto *cbZoomToFit = new QCheckBox(tr("Always zoom to fit"), this);
-    cbZoomToFit->setChecked(DkSettingsManager::param().display().zoomToFit);
-    connect(cbZoomToFit, &QCheckBox::toggled, this, &DkDisplayPreference::onZoomToFitToggled);
+    keepZoomButtons[DkSettings::zoom_always_fit] = new QRadioButton(tr("Always zoom to fit"), this);
 
     // check wrt the current settings
     keepZoomButtons[DkSettingsManager::param().display().keepZoom]->setChecked(true);
@@ -803,13 +800,14 @@ void DkDisplayPreference::createLayout()
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_always_keep], DkSettings::zoom_always_keep);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_keep_same_size], DkSettings::zoom_keep_same_size);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_never_keep], DkSettings::zoom_never_keep);
+    keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_always_fit], DkSettings::zoom_always_fit);
     connect(keepZoomButtonGroup, &QButtonGroup::idClicked, this, &DkDisplayPreference::onKeepZoomButtonClicked);
 
     auto *keepZoomGroup = new DkGroupWidget(tr("When Displaying New Images"), this);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
-    keepZoomGroup->addWidget(cbZoomToFit);
+    keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
 
     // icon size
     auto *sbIconSize = new QSpinBox(this);
@@ -976,12 +974,6 @@ void DkDisplayPreference::onHQAntiAliasingToggled(bool checked) const
 {
     if (DkSettingsManager::param().display().highQualityAntiAliasing != checked)
         DkSettingsManager::param().display().highQualityAntiAliasing = checked;
-}
-
-void DkDisplayPreference::onZoomToFitToggled(bool checked) const
-{
-    if (DkSettingsManager::param().display().zoomToFit != checked)
-        DkSettingsManager::param().display().zoomToFit = checked;
 }
 
 void DkDisplayPreference::onTransitionCurrentIndexChanged(int index) const
