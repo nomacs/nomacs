@@ -124,6 +124,49 @@ include(CPack)
 # simulate autotools' "make dist"
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
+# AppImage using linuxdeploy which seems to be the most active/supported method
+# This will include kimageformats-plugins if installed on the host
+# FIXME: download correct image for host arch
+set(LINUXDEPLOY_URL "https://api.github.com/repos/linuxdeploy/linuxdeploy/releases/latest")
+set(LINUXDEPLOY_FILE "${CMAKE_BINARY_DIR}/linuxdeploy.AppImage")
+add_custom_command(
+    OUTPUT ${LINUXDEPLOY_FILE}
+    COMMAND curl --silent --location ${LINUXDEPLOY_URL} > release.json
+    COMMAND grep browser_download_url release.json | grep x86_64.AppImage | cut -d\\\" -f4 > download.url
+    COMMAND cat download.url | xargs curl --location --output ${LINUXDEPLOY_FILE}
+    COMMAND chmod +x ${LINUXDEPLOY_FILE}
+    COMMENT "Downloading latest linuxdeploy AppImage"
+)
+
+set(LINUXDEPLOY_QT_URL "https://api.github.com/repos/linuxdeploy/linuxdeploy-plugin-qt/releases/latest")
+set(LINUXDEPLOY_QT_FILE "${CMAKE_BINARY_DIR}/linuxdeploy-plugin-qt.AppImage")
+add_custom_command(
+    OUTPUT ${LINUXDEPLOY_QT_FILE}
+    COMMAND curl --silent --location ${LINUXDEPLOY_QT_URL} > release.json
+    COMMAND grep browser_download_url release.json | grep x86_64.AppImage | cut -d\\\" -f4 > download.url
+    COMMAND cat download.url | xargs curl --location --output ${LINUXDEPLOY_QT_FILE}
+    COMMAND chmod +x ${LINUXDEPLOY_QT_FILE}
+    COMMENT "Downloading latest linuxdeploy-plugin-qt AppImage"
+)
+
+add_custom_target(
+    appimage
+    DEPENDS ${LINUXDEPLOY_FILE} ${LINUXDEPLOY_QT_FILE}
+    COMMAND rm -rf AppDir
+    COMMAND mkdir -p AppDir/usr
+    COMMAND cmake --install . --prefix ./AppDir/usr
+    COMMAND
+        ${CMAKE_COMMAND} -E env # linuxdeploy plugins configured with environment variables
+        "LD_LIBRARY_PATH=." # find libnomacsCore in CWD
+        "LDAI_NO_APPSTREAM=1" # FIXME: support appstream
+        "QMAKE=qmake6" # correct qmake for *this* build (even though we don't use it)
+        "EXTRA_QT_PLUGINS=waylandcompositor" # wayland support not included by default
+        "EXTRA_PLATFORM_PLUGINS=libqwayland-egl.so\\;libqwayland-generic.so" # wayland platforms
+        ${LINUXDEPLOY_FILE} --appdir AppDir --plugin qt --output appimage --verbosity=2
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Building AppImage"
+)
+
 # generate configuration file
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(NOMACS_LIBS ${DLL_CORE_NAME})

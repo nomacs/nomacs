@@ -15,8 +15,16 @@
 
 #define NOMACS_VERSION_RC @NOMACS_VERSION_MAJOR@,@NOMACS_VERSION_MINOR@,@NOMACS_VERSION_PATCH@
 
+// we don't do "cmake --install" on Windows which is only where these make sense
+#ifndef Q_OS_WIN
+
 // install path of shared libs and plugins
 #define NOMACS_INSTALL_LIBPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+
+// install path of themes and translations
+#define NOMACS_INSTALL_DATAPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}"
+
+#endif
 
 // compile-time revision of nomacs
 #define NOMACS_REVISION_STR "${NOMACS_REVISION}"
