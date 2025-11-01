@@ -11,7 +11,7 @@ RUN echo "deb http://archive.neon.kde.org/user noble main" > \
  && wget -qO - https://archive.neon.kde.org/public.key | apt-key add - \
  && apt-get update
 
-RUN apt install -y qt6-base-dev qt6-tools-dev qt6-tools-dev-tools libqt6svg6-dev libqt6core5compat6-dev qt6-l10n-tools qt6-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev libtiff-dev build-essential git cmake lcov libgtest-dev libgl-dev curl kf6-kimageformat-plugins ninja-build libquazip1-qt6-dev
+RUN apt install -y qt6-base-dev qt6-tools-dev qt6-tools-dev-tools libqt6svg6-dev libqt6core5compat6-dev qt6-l10n-tools qt6-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev libtiff-dev build-essential git cmake lcov libgtest-dev libgl-dev curl kf6-kimageformat-plugins ninja-build libquazip1-qt6-dev clang clang-format clang-tidy fuse3
 
 RUN apt clean && rm -rf /var/lib/apt/lists/*
 
