@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update
 
-RUN apt install -y bash coreutils git curl wget gnupg ca-certificates tar gzip unzip sudo
+RUN apt install -y bash coreutils git git-lfs curl wget gnupg ca-certificates tar gzip unzip sudo
 
 RUN echo "deb http://archive.neon.kde.org/user noble main" > \
  /etc/apt/sources.list.d/neon.list \
