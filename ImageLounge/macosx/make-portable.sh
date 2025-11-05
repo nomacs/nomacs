@@ -126,8 +126,8 @@ process_exe()
   DYLD_PRINT_LIBRARIES_POST_LAUNCH=1 DYLD_PRINT_LIBRARIES=1 DYLD_PRINT_RPATHS=1 DYLD_PRINT_SEARCHING=1 \
     "$SRC_EXE" $ARGS 2>&1 | grep -A1 'found: dylib-from-disk:' | grep -v '^--' | sed -n 'N;s/\n/ /p' | sed 's/"//g' > "$LIBS_USED" 2>&1
   
-  # copy .dylib files from the build directory /usr/local and /opt/homebrew, excluding plugins (handled separately)
-  cat "$LIBS_USED" | grep -E "^dyld.*($PWD|/usr/local/|/opt/homebrew).*\.dylib" | \
+  # copy .dylib files from the build directory /usr/local and /opt/, excluding plugins (handled separately)
+  cat "$LIBS_USED" | grep -E "^dyld.*($PWD|/usr/local/|/opt/).*\.dylib" | \
     grep -vE "/PlugIns|plugins/" | /usr/bin/cut -w -f4 -f7 | while read -r LINE; do
 
     local import=$(echo $LINE | /usr/bin/cut -w -f1)
@@ -170,7 +170,7 @@ test_exe()
   DYLD_PRINT_LIBRARIES_POST_LAUNCH=1 DYLD_PRINT_LIBRARIES=1 DYLD_PRINT_RPATHS=1 \
       DYLD_LIBRARY_PATH= $CMD > "$LIBS_PATCHED" 2>&1
 
-  local DYLIBS=$(cat "$LIBS_PATCHED" | grep ^dyld | grep -E "(/usr/local/|/opt)" | /usr/bin/cut -w -f3)
+  local DYLIBS=$(cat "$LIBS_PATCHED" | grep ^dyld | grep -E "(/usr/local/|/opt/)" | /usr/bin/cut -w -f3)
 
   local err=0
   for DYLIB in $DYLIBS; do
@@ -207,7 +207,6 @@ rsync -auv --no-owner --no-group --copy-links \
   "$PLUGINS_SRC/iconengines" \
   "$PLUGINS_SRC/imageformats" \
   "$PLUGINS_SRC/networkinformation" \
-  "$PLUGINS_SRC/platforminputcontexts" \
   "$PLUGINS_SRC/platforms" \
   "$PLUGINS_SRC/styles" \
   "$PLUGINS_SRC/tls" \
