@@ -3,9 +3,17 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - appveyor.yml
+      - .github/workflows/docker.yml
+      - .github/workflows/macos.yml
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - appveyor.yml
+      - .github/workflows/docker.yml
+      - .github/workflows/macos.yml
 
 jobs:
   build:
