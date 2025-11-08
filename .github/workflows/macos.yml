@@ -1,50 +1,65 @@
 name: macOS workflow
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
+    paths-ignore:
+      - appveyor.yml
+      - .github/workflows/docker.yml
+      - .github/workflows/linux.yml
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - appveyor.yml
+      - .github/workflows/docker.yml
+      - .github/workflows/linux.yml
 
 jobs:
   build:
     runs-on: ${{ matrix.runner.name }}
     name: build (Qt${{ matrix.qt.ver }}, ${{ matrix.config.type }}, ${{ matrix.runner.arch }})
     strategy:
+      max-parallel: 1
       matrix:
         runner:
-          - name: macos-13 # github-hosted runner name
-            arch: intel # file/log labeling
+          - name: macos-15-intel # github-hosted runner name
+            packages: googletest exiv2
+            arch: intel
             arch_flags: # cmake flags
-            cpus: 4 # vcpu allocation
             homebrew-opt: "/usr/local/opt" # root of qt_dir
-          - name: macos-14
+
+          - name: macos-15
+            packages: googletest exiv2
             arch: arm64
             arch_flags:
-            cpus: 3
             homebrew-opt: "/opt/homebrew/opt"
+
         qt:
-          # we don't try qt5 since github resources are limited
           - ver: 6
-            packages: "qt6"
+            packages: "qt5compat qtbase qtimageformats qtsvg qttools"
             flags: "-DQT_VERSION_MAJOR=6"
             cmakefiles: "qt6/lib/cmake" # root dir is runner.homebrew-opt
+
         config:
-          # this is extremely slow (~15 minutes) due to opencv and bundle, disabled for now
-          # - type: default
-          #   packages: googletest exiv2 quazip libraw opencv
-          #   flags: "-DENABLE_QUAZIP=ON"
-          #   kimageformats: true # compile kimageformats, currently requires qt6
-          #   portable: false # use the new portable bundle script
-          #   bundle: true # build portable bundle using macdeployqt
-          #   artifacts: true # upload artifacts
-          #   release: true # TODO: publish release
+          # this is extremely slow (~15 minutes) due to opencv
+          - type: quazip
+            packages: quazip libraw
+            flags: "-DENABLE_QUAZIP=ON"
+            kimageformats: true # compile kimageformat-plugins
+            opencv: true # compile a minimal opencv
+            portable: true # use the new portable bundle script
+            bundle: false # build portable bundle using macdeployqt
+            artifacts: true # upload artifacts
+            release: true # TODO: publish release
+
           - type: minimum
-            packages: googletest exiv2
+            packages:
             flags: "-DENABLE_PLUGINS=OFF -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF -DENABLE_QUAZIP=OFF"
-            kimageformats: true
+            kimageformats: false
+            opencv: false
             portable: true
             bundle: false
             artifacts: false
@@ -56,68 +71,105 @@ jobs:
           fetch-depth: 0 # ensure full history for git rev-parse
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Install build dependencies
+      - name: Get System Info
+        id: get_info
         run: |
-          brew install ${{ matrix.qt.packages }} ${{ matrix.config.packages }}
+          # note: our build of opencv has no external deps so compiler and commit is sufficient
+          COMPILER_ID=$(echo $(c++ --version) $(realpath $(xcrun --show-sdk-path)))
+          OPENCV_ID=$(git submodule status 3rd-party/opencv)
+          OPENCV_KEY=$(echo $COMPILER_ID $OPENCV_ID | sha256)
 
-      - name: Checkout submodules
+          echo "Compiler: $COMPILER_ID"
+          echo "OpenCV: $OPENCV_ID"
+          echo "OpenCV Cache Key: $OPENCV_KEY"
+          echo "OPENCV_KEY=${OPENCV_KEY}" >> $GITHUB_OUTPUT
+
+      - name: Setup Cache
+        run: |
+          # we must install things to /opt for packaging script to work, but cache@v4 won't write there
+          sudo mkdir /opt/opencv
+          sudo chown $USER:$(id -gn) /opt/opencv
+
+      - name: Install Packages
+        if: steps.cache_packages.outputs.cache-hit != 'true'
+        run: |
+          brew install --quiet --force-bottle ${{ matrix.runner.packages }} ${{ matrix.qt.packages }} ${{ matrix.config.packages }}
+
+      - name: Checkout Submodules
         run: |
           cd ${GITHUB_WORKSPACE}
-          git submodule init
-          git submodule update 3rd-party/imageformats ImageLounge/plugins
+          git submodule update --init --depth 1 3rd-party/imageformats
 
-      - name: CMake configure
+      - name: Cache opencv
+        id: cache_opencv
+        if: matrix.config.opencv
+        uses: actions/cache@v4
+        with:
+          path: /opt/opencv
+          key: ${{ runner.os }}-opencv-${{ steps.get_info.outputs.OPENCV_KEY }}
+
+      - name: Build opencv
+        if: matrix.config.opencv && steps.cache_opencv.outputs.cache-hit != 'true'
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          # put opencv in /opt to prevent conflicts with homebrew and/or apple silicon
+          # note kimageformats is installed into qt plugins directory so it won't be a problem,
+          ./scripts/build-opencv.sh -D CMAKE_INSTALL_PREFIX=/opt/opencv
+
+      - name: Configure
         run: |
           mkdir ${GITHUB_WORKSPACE}/build
           cd ${GITHUB_WORKSPACE}/build
-          export CMAKE_PREFIX_PATH="${{ matrix.runner.homebrew-opt }}/${{ matrix.qt.cmakefiles }}"
-          cmake ${{ matrix.runner.arch_flags }} ${{ matrix.qt.flags }} ${{ matrix.config.flags }} ../ImageLounge
+          export CMAKE_PREFIX_PATH="/opt/opencv:${{ matrix.runner.homebrew-opt }}/${{ matrix.qt.cmakefiles }}"
+          cmake -G Ninja ${{ matrix.runner.arch_flags }} ${{ matrix.qt.flags }} ${{ matrix.config.flags }} ../ImageLounge
 
       - name: Get Build Version
         id: get_version
         run: |
           cd ${GITHUB_WORKSPACE}/build
-          OS=$(sw_vers -productVersion)
+          ARCH=$(uname -m)
+          OS="$(sw_vers -productName)-$(sw_vers -productVersion)"
           SHA=$(git rev-parse --short ${{ github.event.pull_request.head.sha || github.sha }})
           VERSION=$(cat DkVersion.h | grep NOMACS_VERSION_STR | sed 's/[^0-9\.]*//g')
-          echo "VERSION=${VERSION}-${SHA}-${OS}" >> $GITHUB_OUTPUT
+          echo "VERSION=${VERSION}-${SHA}-${OS}-${ARCH}" >> $GITHUB_OUTPUT
 
       - name: Build
         run: |
           cd ${GITHUB_WORKSPACE}/build
-          make -j${{ matrix.runner.cpus }}
+          ninja
 
       - name: Test
         run: |
           cd ${GITHUB_WORKSPACE}/build
-          make check
+          ninja check
 
       - name: Build kimageformats
         if: matrix.config.kimageformats
         run: |
           cd ${GITHUB_WORKSPACE}/build
           export CMAKE_PREFIX_PATH="${{ matrix.runner.homebrew-opt }}/${{ matrix.qt.cmakefiles }}"
-          make kimageformats
+          ninja kimageformats
 
-      - name: Make Portable Bundle (Fast)
+      - name: Make Portable Bundle
         if: matrix.config.portable
         run: |
           cd ${GITHUB_WORKSPACE}/build
-          make portable
+          ninja portable
+          cd portable && zip -ry nomacs.app.zip nomacs.app
 
-      - name: Make Portable Bundle
+      - name: Make Portable Bundle (Slow)
         if: matrix.config.bundle
         run: |
           cd /usr/local/lib/QtGui.framework/Versions/A
           install_name_tool -id '@rpath/QtGui.framework/Versions/A/QtGui' QtGui
           otool -L QtGui | head -2
           cd ${GITHUB_WORKSPACE}/build
-          make bundle
+          ninja bundle
 
       - name: Upload Artifacts
         if: matrix.config.artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: "nomacs-${{ steps.get_version.outputs.VERSION }}-${{ matrix.runner.arch }}-${{ matrix.config.type }}-qt${{ matrix.qt.ver}}.dmg"
-          path: build/nomacs.dmg
+          name: "nomacs-${{ steps.get_version.outputs.VERSION }}-${{ matrix.config.type }}-qt${{ matrix.qt.ver}}"
+          path: build/portable/nomacs.app.zip
           retention-days: 30

@@ -1,5 +1,5 @@
 <!-- begin list-formats -->
-        <!-- ea280888, 2025-04-02, macOS Ventura (13.7) -->
+        <!-- bd555db0, 2025-11-06, custom, macOS Sequoia (15.7.2) -->
         <key>CFBundleTypeExtensions</key>
         <array>
           <string>3fr</string>
@@ -34,6 +34,7 @@
           <string>icns</string>
           <string>ico</string>
           <string>iiq</string>
+          <string>ilbm</string>
           <string>im1</string>
           <string>im24</string>
           <string>im32</string>
@@ -54,6 +55,7 @@
           <string>k25</string>
           <string>kdc</string>
           <string>kra</string>
+          <string>lbm</string>
           <string>mdc</string>
           <string>mef</string>
           <string>mng</string>
