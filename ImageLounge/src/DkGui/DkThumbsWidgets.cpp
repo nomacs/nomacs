@@ -1699,6 +1699,45 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
 
     connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
     connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
+
+    auto *scrollOnePageUpAction = new QAction(this);
+    scrollOnePageUpAction->setShortcuts({QKeySequence::MoveToPreviousPage, QKeySequence(Qt::SHIFT | Qt::Key_Space)});
+    connect(scrollOnePageUpAction, &QAction::triggered, this, [this] {
+        if (verticalScrollBar()->isVisible()) {
+            verticalScrollBar()->setValue(verticalScrollBar()->value() - verticalScrollBar()->pageStep());
+        }
+    });
+
+    auto *scrollOnePageDownAction = new QAction(this);
+    scrollOnePageDownAction->setShortcuts({QKeySequence::MoveToNextPage, QKeySequence(Qt::Key_Space)});
+    connect(scrollOnePageDownAction, &QAction::triggered, this, [this] {
+        if (verticalScrollBar()->isVisible()) {
+            verticalScrollBar()->setValue(verticalScrollBar()->value() + verticalScrollBar()->pageStep());
+        }
+    });
+
+    auto *scrollToTopAction = new QAction(this);
+    scrollToTopAction->setShortcuts({Qt::Key_Home, QKeySequence::MoveToStartOfDocument});
+    connect(scrollToTopAction, &QAction::triggered, this, [this] {
+        if (verticalScrollBar()->isVisible()) {
+            verticalScrollBar()->setValue(verticalScrollBar()->minimum());
+        }
+    });
+
+    auto *scrollToEndAction = new QAction(this);
+    scrollToEndAction->setShortcuts({Qt::Key_End, QKeySequence::MoveToEndOfDocument});
+    connect(scrollToEndAction, &QAction::triggered, this, [this] {
+        if (verticalScrollBar()->isVisible()) {
+            verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+        }
+    });
+
+    auto *actionFilter = new DkActionEventFilter(this);
+    actionFilter->addAction(scrollOnePageUpAction);
+    actionFilter->addAction(scrollOnePageDownAction);
+    actionFilter->addAction(scrollToTopAction);
+    actionFilter->addAction(scrollToEndAction);
+    this->installEventFilter(actionFilter);
 }
 
 void DkThumbsView::onScroll()
