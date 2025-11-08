@@ -294,6 +294,7 @@ class DkThumbsView : public QGraphicsView
 
 public:
     explicit DkThumbsView(DkThumbScene *scene, QWidget *parent = nullptr);
+    void keyPressEvent(QKeyEvent *event);
 
 signals:
     void updateDirSignal(const QString &dir) const;

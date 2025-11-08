@@ -1441,6 +1441,10 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
     if (mThumbLabels.empty())
         return;
 
+    if (from == -1) {
+        from = mThumbLabels.size() - 1;
+    }
+
     if (to == -1)
         to = mThumbLabels.size() - 1;
 
@@ -1908,6 +1912,42 @@ void DkThumbsView::dropEvent(QDropEvent *event)
     }
 
     QGraphicsView::dropEvent(event);
+}
+
+void DkThumbsView::keyPressEvent(QKeyEvent *event)
+{
+    if (verticalScrollBar()->isVisible()) {
+        switch(event->key()) {
+            case Qt::Key_Home:
+                verticalScrollBar()->setValue(verticalScrollBar()->minimum());
+                mThumbScene->selectAllThumbs(false);
+                mThumbScene->selectThumb(0, true);
+                break;
+            case Qt::Key_End:
+                verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+                mThumbScene->selectAllThumbs(false);
+                mThumbScene->selectThumbs(true, -1, -1);
+                break;
+            case Qt::Key_PageUp:
+                verticalScrollBar()->setValue(verticalScrollBar()->value() - verticalScrollBar()->pageStep());
+                break;
+            case Qt::Key_PageDown:
+                verticalScrollBar()->setValue(verticalScrollBar()->value() + verticalScrollBar()->pageStep());
+                break;
+            case Qt::Key_Space:
+                if (event->modifiers() & Qt::ShiftModifier) {
+                    verticalScrollBar()->setValue(verticalScrollBar()->value() - verticalScrollBar()->pageStep());
+                } else {
+                    verticalScrollBar()->setValue(verticalScrollBar()->value() + verticalScrollBar()->pageStep());
+                }
+                break;
+            default:
+                this->QGraphicsView::keyPressEvent(event);
+                break;
+        }
+    } else {
+        this->QGraphicsView::keyPressEvent(event);
+    }
 }
 
 // DkThumbScrollWidget --------------------------------------------------------------------
