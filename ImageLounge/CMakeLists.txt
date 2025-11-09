@@ -204,7 +204,7 @@ file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")
 qt_add_resources(NOMACS_RCC ${NOMACS_RESOURCES})
 
 if(${ENABLE_TRANSLATIONS})
-    qt_add_translation(NOMACS_QM ${NOMACS_TRANSLATIONS})
+    qt_add_translation(NOMACS_QM ${NOMACS_TRANSLATIONS} OPTIONS -silent)
 endif()
 
 if(MSVC)
