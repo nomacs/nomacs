@@ -93,15 +93,16 @@ We recommend using Crowdin, but it is not absolutely necessary if you prefer a d
 
 1. Create a new feature branch in git for your changes
 2. We recommend pulling the current Crowdin translation if it is newer
-3. Run `update-translation.sh` to get new untranslated strings
+3. Run `update-translation.sh --keep-line-numbers` to get new untranslated strings
 4. Edit the translation .ts file with your tool of choice
-5. Compile nomacs to test your changes
-6. Create a pull request with your changes
-7. Crowdin Managers: After merging, update the new translation in Crowdin
+5. Run `update-translation.sh` to remove line numbers from .ts
+6. Compile nomacs to test your changes
+7. Create a pull request with your changes
+8. Crowdin Managers: After merging, update the new translation in Crowdin
 
 ## Adding a New Language (not Crowdin)
 
-1. Run `update-translation.sh` to make `nomacs.ts` current
+1. Run `update-translation.sh --keep-line-numbers` to make `nomacs.ts` current
 2. Copy `ImageLounge/translations/src/nomacs.ts` 
   to `ImageLounge/translations/nomacs_lang.ts`,
   where `lang` is the correct language code of the localization.
@@ -110,8 +111,9 @@ We recommend using Crowdin, but it is not absolutely necessary if you prefer a d
 <TS version="2.1" language="ko" sourcelanguage="en">
 ```
 4. Edit the file using Qt `linguist` program or your editor of choice
-5. Recompile nomacs
-6. Submit a pull request with your changes
+5. Run `update-translation.sh` to drop line numbers from .ts file
+6. Recompile nomacs
+7. Submit a pull request with your changes
 
 ## Updating Translation Files for Source Code Changes
 
@@ -122,7 +124,9 @@ The `lupdate` command looks for `tr()` macros and adds them to the .ts file spec
 Note that whenever `nomacs.ts` changes, it is ideal to update it on Crowdin as it
 is the source document. It is not necessary to update all translation files on Crowdin.
 
-We have a script to simplify this process:
+We have a script to simplify this process. It should always be used because
+it does extra steps to ensure the cleanest possible diff.
+
 ```
 # this needs to be the working directory
 cd ImageLounge/translations/src
@@ -164,6 +168,7 @@ Crowdin import.
 Nevertheless, it is possible to do this should Crowdin be shut down
 or nomacs changes to another service/workflow:
 
+- Run `update-translation.sh` and commit any changes
 - Place .ts files to import into a new folder
 - Ensure names match the nomacs filenames
 - Ensure Unix line endings
