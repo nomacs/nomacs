@@ -484,7 +484,7 @@ void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC)
 
     const QSize tSize = thumbImg.size();
     const qint64 tSizeBytes = thumbImg.sizeInBytes();
-    thumbImg = thumbImg.scaled(tSize.boundedTo(QSize(mTreeView->width(), mTreeView->width())), Qt::KeepAspectRatio);
+    thumbImg = thumbImg.scaledToHeight(160, Qt::SmoothTransformation);
 
     mThumbNailLabel->setPixmap(QPixmap::fromImage(thumbImg));
 
