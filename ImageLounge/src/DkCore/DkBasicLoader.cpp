@@ -597,7 +597,7 @@ bool DkBasicLoader::loadROH(const QString &filePath, QImage &img, QSharedPointer
         const auto *pData = (const unsigned char *)ba->constData();
         auto *buffer = new unsigned char[rohW * rohH];
 
-        if (!buffer)
+        if (!buffer || ba->size() < (2 * rohW * rohH))
             return imgLoaded;
 
         for (long long i = 0; i < (rohW * rohH); i++) {
