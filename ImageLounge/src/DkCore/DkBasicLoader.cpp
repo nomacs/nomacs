@@ -94,24 +94,18 @@ DkEditImage::DkEditImage()
     , mNewMetaData(false)
 {
 }
-DkEditImage::DkEditImage(const QImage &img, const QSharedPointer<DkMetaDataT> &metaData, const QString &editName)
-    : mMetaData(metaData)
-    , mImg(img)
-    , mEditName(editName)
-    , mNewImg(true)
-    , mNewMetaData(false)
-{
-    // history edit item with modified image
-}
 
-DkEditImage::DkEditImage(const QSharedPointer<DkMetaDataT> &metaData, const QImage &img, const QString &editName)
+DkEditImage::DkEditImage(const Edits &edits,
+                         const QImage &img,
+                         const QSharedPointer<DkMetaDataT> &metaData,
+                         const QString &editName)
     : mMetaData(metaData)
     , mImg(img)
     , mEditName(editName)
-    , mNewImg(false)
-    , mNewMetaData(true)
+    , mNewImg(edits & EditType::data)
+    , mNewMetaData(edits & EditType::metadata)
 {
-    // history edit item with modified metadata
+    Q_ASSERT((edits & EditType::data) || (edits & EditType::metadata)); // editing both possibly unimplemented
 }
 
 bool DkEditImage::hasImage() const
@@ -971,7 +965,7 @@ void DkBasicLoader::setEditImage(const QImage &img, const QString &editName)
     if (!mImages.isEmpty())
         mMetaData->clearOrientation();
     // new history item with new pixmap (and old or original metadata)
-    DkEditImage newImg(img, mMetaData->copy(), editName); // new image, old/unchanged metadata
+    DkEditImage newImg(DkEditImage::EditType::data, img, mMetaData->copy(), editName);
 
     if (historySize + newImg.size() > DkSettingsManager::param().resources().historyMemory
         && mImages.size() > mMinHistorySize) {
@@ -993,7 +987,7 @@ void DkBasicLoader::setEditMetaData(const QSharedPointer<DkMetaDataT> &metaData,
     // not removing second history item if oversized (see setEditImage())
 
     // new history item with new metadata (and image, but hasNewImage() will be false)
-    DkEditImage newImg(metaData->copy(), img, editName); // new metadata, old/unchanged image
+    DkEditImage newImg(DkEditImage::EditType::metadata, img, metaData->copy(), editName);
 
     mImages.append(newImg);
     mImageIndex = mImages.size() - 1; // set the index again to the last

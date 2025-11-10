@@ -49,9 +49,17 @@ class DkMetaDataT;
 class DllCoreExport DkEditImage
 {
 public:
+    enum EditType {
+        data = 1, // image data changed
+        metadata = 2, // metadata changed
+    };
+    Q_DECLARE_FLAGS(Edits, EditType);
+
     DkEditImage();
-    DkEditImage(const QImage &img, const QSharedPointer<DkMetaDataT> &metaData, const QString &editName = "");
-    DkEditImage(const QSharedPointer<DkMetaDataT> &metaData, const QImage &img, const QString &editName = "");
+    DkEditImage(const Edits &edits,
+                const QImage &img,
+                const QSharedPointer<DkMetaDataT> &metaData,
+                const QString &editName);
 
     void setImage(const QImage &img);
     QString editName() const;
