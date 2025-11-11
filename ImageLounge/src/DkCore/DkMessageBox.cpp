@@ -207,6 +207,11 @@ void DkMessageBox::setButtonText(QMessageBox::StandardButton button, const QStri
         abstractButton->setText(text);
 }
 
+void DkMessageBox::setCheckBoxText(const QString &text)
+{
+    showAgain->setText(text);
+}
+
 void DkMessageBox::buttonClicked(QAbstractButton *button)
 {
     int ret = buttonBox->standardButton(button);

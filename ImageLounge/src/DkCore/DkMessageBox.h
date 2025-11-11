@@ -54,6 +54,7 @@ public:
     void setVisible(bool visible) override;
     void setDefaultButton(QMessageBox::StandardButton button);
     void setButtonText(QMessageBox::StandardButton button, const QString &text);
+    void setCheckBoxText(const QString &text);
 
 public slots:
     void buttonClicked(QAbstractButton *button);
