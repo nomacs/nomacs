@@ -159,6 +159,21 @@ class DllCoreExport DkBasicLoader : public QObject
     Q_OBJECT
 
 public:
+    /**
+     * @brief Static information about the loaded image; must not change
+     *        after the image loaded/reloaded from file
+     */
+    enum class Flag {
+        none = 0,
+        ignored_orientation = 1, // exif orientation was ignored when loading the image
+    };
+    Q_DECLARE_FLAGS(Flags, Flag);
+
+    Flags flags() const
+    {
+        return mFlags;
+    }
+
     DkBasicLoader();
 
     ~DkBasicLoader() override
@@ -401,6 +416,7 @@ protected:
     QVector<DkEditImage> mImages;
     int mMinHistorySize = 2;
     int mImageIndex = 0;
+    Flags mFlags{Flag::none};
 
 private:
     QSharedPointer<DkMetaDataT> lastMetaDataEdit() const;
