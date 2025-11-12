@@ -188,6 +188,8 @@ protected:
     bool mFolderUpdated = false;
     bool mSortingImages = false;
     bool mSortingIsDirty = false;
+    bool mOrientationWarningShown = false;
+    bool mSaveOrientationWarningShown = false;
     QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>> mCreateImageWatcher;
 };
 
