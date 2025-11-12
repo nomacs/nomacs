@@ -453,9 +453,10 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     if (maybeTransformed && disableTransform)
         qWarning() << "[Loader] the plugin for" << suffix << "does not support disabling orientation/transform";
 
+    bool validOrientation = rotation != DkMetaDataT::or_invalid && rotation != DkMetaDataT::or_not_set;
+    bool enableTransform = !disableTransform && !maybeTransformed && validOrientation;
     bool transformed = false;
-    if (!loader.isNull() && !disableTransform && !maybeTransformed && rotation != DkMetaDataT::or_invalid
-        && rotation != DkMetaDataT::or_not_set) {
+    if (!loader.isNull() && enableTransform) {
         if (rotation != 0) {
             img = DkImage::rotateImage(img, rotation);
             transformed = true;
@@ -468,6 +469,9 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 
     if (!loader.isNull()) {
         setEditImage(img, tr("Original Image"));
+
+        if (!enableTransform && validOrientation)
+            mFlags |= Flag::ignored_orientation;
 
         // log some details, this is formatted to make parsing easier
         // e.g. nomacs 2>&1 | grep Loader::  | column -t
@@ -1573,6 +1577,7 @@ void DkBasicLoader::release()
 
     mImages.clear(); // clear history
     mImageIndex = -1;
+    mFlags = Flag::none;
 
     // Unload metadata
     mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
