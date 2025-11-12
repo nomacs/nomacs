@@ -983,9 +983,8 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
             saveName.remove("." + saveFileInfo.suffix());
     }
 
+    bool overwriteFile = false;
     QString fileName;
-
-    int answer = QDialog::Rejected;
 
     // don't ask the user if save was hit & the file format is supported for saving
     if (silent && !selectedFilter.isEmpty() && isEdited()) {
@@ -993,13 +992,17 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
         auto *msg = new DkMessageBox(QMessageBox::Question,
                                      tr("Overwrite File"),
                                      tr("Do you want to overwrite:\n%1?").arg(fileName),
-                                     (QMessageBox::Yes | QMessageBox::No),
+                                     (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
                                      dialogParent);
         msg->setObjectName("overwriteDialog");
 
-        answer = msg->exec();
+        int answer = msg->exec();
+        overwriteFile = answer == QMessageBox::Yes;
+        if (answer == QDialog::Rejected || answer == QMessageBox::Cancel)
+            return;
     }
-    if (answer == QDialog::Rejected || answer == QMessageBox::No) {
+
+    if (!overwriteFile) {
         // note: basename removes the whole file name from the first dot...
         QString savePath = (!selectedFilter.isEmpty())
             ? saveFileInfo.absoluteFilePath()
