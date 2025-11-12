@@ -637,7 +637,7 @@ bool DkImageLoader::promptSaveBeforeUnload()
             else if (metaEdited)
                 mCurrentImage->saveMetaData();
         } else {
-            saveUserFileAs(mCurrentImage->image(), false); // we loose all metadata here - right?
+            saveUserFile(mCurrentImage->image(), false); // we loose all metadata here - right?
         }
 
         // Clear the image container to force reload so we get correct state.
@@ -950,7 +950,7 @@ void DkImageLoader::copyUserFile()
     }
 }
 
-void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
+void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 {
     // TODO glitch if (!mCurrentImage->getMetaData()->isLoaded()); see rotateImage()
 
