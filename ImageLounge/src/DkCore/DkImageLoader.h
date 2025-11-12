@@ -108,7 +108,13 @@ public slots:
     void changeFile(int skipIdx);
     void directoryChanged(const QString &path = QString());
     void saveFileWeb(const QImage &saveImg);
-    void saveUserFileAs(const QImage &saveImg, bool silent);
+    /**
+     * @brief Save/SaveAs dialogs
+     * @param saveImg image to save
+     * @param silent if true, the user wants "Save" and not "Save As"
+     * @note "Save" falls back to "Save As" if it is not supported
+     */
+    void saveUserFile(const QImage &saveImg, bool silent);
     void copyUserFile();
     void saveFile(const QString &filename,
                   const QImage &saveImg = QImage(),

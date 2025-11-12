@@ -820,7 +820,7 @@ void DkViewPort::saveFileAs(bool silent)
             }
         }
 
-        mLoader->saveUserFileAs(img, silent);
+        mLoader->saveUserFile(img, silent);
     }
 }
 
