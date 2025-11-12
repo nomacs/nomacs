@@ -39,6 +39,7 @@
 #include "DkUtils.h"
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QDesktopServices>
 #include <QDir>
 #include <QDirIterator>
@@ -769,6 +770,9 @@ void DkImageLoader::load(const DkFileInfo &info)
 
 void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPointer<DkImageContainerT> */)
 {
+    mOrientationWarningShown = false;
+    mSaveOrientationWarningShown = false;
+
     if (!image)
         return;
 
@@ -1350,42 +1354,93 @@ bool DkImageLoader::deleteFile()
  **/
 void DkImageLoader::rotateImage(double angle)
 {
-    qDebug() << "rotating image...";
-
     if (!mCurrentImage || !mCurrentImage->hasImage()) {
-        qDebug() << "sorry, loader has no image";
         return;
     }
 
     QImage img = DkImage::rotateImage(mCurrentImage->pixmap(), qRound(angle));
 
-    QImage thumb = DkImage::createThumb(mCurrentImage->pixmap());
-
     QSharedPointer<DkMetaDataT> metaData = mCurrentImage->getMetaData(); // via ImageContainer, BasicLoader
 
-    if (metaData->hasMetaData() && DkSettingsManager::param().metaData().saveExifOrientation) {
-        try {
-            // Set orientation in exif data
-            if (!metaData->isJpg())
-                metaData->setThumbnail(thumb); // FIXME: creates wrong thumb for non-JPG formats supporting EXIF! (PNG)
-            metaData->setOrientation(qRound(angle));
+    const auto loader = mCurrentImage->getLoader();
+    DkBasicLoader::Flags flags = loader->flags();
 
-            // Add history item with edited metadata (exif rotation)
+    // if we touched image pixels, we cannot use metadata rotation
+    bool modifiedPixels = loader->isImageEdited();
+
+    bool saveMetaData = DkSettingsManager::param().metaData().saveExifOrientation;
+
+    // TODO: if format supports EXIF, here we may offer to create default EXIF metadata
+    // if (!modifiedPixels && saveMetaData) { }
+
+    if (metaData->hasMetaData() && saveMetaData && !modifiedPixels && metaData->isWriteable()) {
+        // We may have ignored orientation metadata when loading the image (HEIC/AVIF or user enabled it).
+        // Warn if this may result in invalid metadata
+        // This is not a problem if there is no write support, "Save As" will clear orientation metadata
+        if (!mOrientationWarningShown && (flags & DkBasicLoader::Flag::ignored_orientation)) {
+            auto *msgBox = new DkMessageBox(QMessageBox::Warning,
+                                            tr("Creating Inconsistent Metadata"),
+                                            tr("Orientation metadata is disabled or ignored, you must use\n"
+                                               "\"Save As\" for correct metadata."),
+                                            QMessageBox::Ok | QMessageBox::Cancel,
+                                            DkUtils::getMainWindow());
+            msgBox->setDefaultButton(QMessageBox::Ok);
+            msgBox->setCheckBoxText(tr("&Do not warn me again"));
+            msgBox->setObjectName("rotateOrientationIgnored");
+            int result = msgBox->exec();
+            if (result == QMessageBox::Rejected || result == QMessageBox::Cancel) {
+                return;
+            }
+            mOrientationWarningShown = true;
+        }
+
+        try {
+            // NOTE: we cannot set a thumbnail reliably here. We cannot even know what the raw
+            // untransformed image is for formats that have internal/intrinsic transform like HEIC,
+            // maybe this is an exiv2 limitation, or just a format problem in general.
+            // However, this should not be too big of an issue because:
+            // - if there is a thumb, it rotates (correctly) along with the image
+            // - we were not asked to add one
+            // - save-as will add/update thumb if metadata-only save is not possible
+            metaData->setOrientation(qRound(angle));
             mCurrentImage->setMetaData(metaData, img, tr("Rotated (EXIF)")); // new edit with modified metadata
 
+            // we are done; setMetaData()->setEdited()->imageUpdated()
             return;
 
+        } catch (const Exiv2::Error &e) {
+            qWarning() << "[Exiv2] rotate metadata failed" << e.code() << e.what();
         } catch (...) {
-            qWarning() << "Rotation via metadata failed, perhaps the image format is unsupported";
+            qWarning() << "[Exiv2] rotate metadata failed";
         }
+
+        emit tr("Sorry, metadata rotation failed (check log).");
     }
 
-    // Update the image itself, along with the history and everything
-    // In other words, the rotated image is saved to the history and the edit flag is set
-    // the exif rotation flag will be reset when adding the new image to the history (BasicLoader)
-    mCurrentImage->setImage(img, tr("Rotated")); // new edit with rotated pixmap (clears orientation)
-    // setImageUpdated(); // TODO: remove this method, it just calls setEdited() and "updated" could mean anything
-    // NOTE: setImage() does not call setEdited() like setMetaData does()
+    // User may not be aware they disabled this
+    if (!mSaveOrientationWarningShown && metaData->hasMetaData() && !saveMetaData && !modifiedPixels
+        && metaData->isWriteable()) {
+        auto *msgBox = new DkMessageBox(QMessageBox::Warning,
+                                        tr("Lossless Rotation Disabled"),
+                                        tr("This file could be rotated losslessly with EXIF metadata,\n"
+                                           "but saving orientation metadata has been disabled in settings."),
+                                        QMessageBox::Ok | QMessageBox::Cancel,
+                                        DkUtils::getMainWindow());
+        msgBox->setDefaultButton(QMessageBox::Ok);
+        msgBox->setCheckBoxText(tr("&Do not warn me again"));
+        msgBox->setObjectName("rotateSaveOrientationDisabled");
+        int result = msgBox->exec();
+        if (result == QMessageBox::Rejected || result == QMessageBox::Cancel) {
+            return;
+        }
+        mSaveOrientationWarningShown = true;
+    }
+
+    // Add image to edit history with a copy of current metadata (if any).
+    // This forces "Save As" which will clear the orientation when saved; nothing else is needed here.
+    mCurrentImage->setImage(img, tr("Rotated"));
+
+    // We need this; setImage() does not call setEdited() like setMetaData().
     mCurrentImage->setEdited();
 
     // TODO There's a glitch when rotating/changing the image after switching back from settings
