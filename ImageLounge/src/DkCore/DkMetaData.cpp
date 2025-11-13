@@ -810,6 +810,32 @@ bool DkMetaDataT::hasMetaData() const
     return !(mExifState == no_data || mExifState == not_loaded);
 }
 
+bool DkMetaDataT::isWriteable() const
+{
+    if (!mExifImg) {
+        qWarning() << "[Exiv2] isWriteable() cannot check status";
+        return false;
+    }
+
+    // all formats that can read/write EXIF can also read/write the other types they may contain (see man exiv2),
+    // so we need not worry about truncating metadata
+    Exiv2::AccessMode mode = mExifImg->checkMode(Exiv2::mdExif);
+    if (!(mode & Exiv2::amWrite)) {
+        qInfo() << "[Exiv2] write unsupported for type:" << mExifImg->imageType() << mExifImg->mimeType().c_str();
+        return false;
+    }
+
+    // here we do what copy() does, if create() does not work then DkEditImage will store null metadata
+    try {
+        auto image = Exiv2::ImageFactory::create(mExifImg->imageType());
+        return true;
+    } catch (...) {
+        qInfo() << "[Exiv2] create() unsupported for type:" << mExifImg->imageType() << mExifImg->mimeType().c_str();
+    }
+
+    return false;
+}
+
 bool DkMetaDataT::isLoaded() const
 {
     return mExifState == loaded || mExifState == dirty || mExifState == no_data;
