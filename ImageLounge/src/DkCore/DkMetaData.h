@@ -132,6 +132,7 @@ public:
     QImage cleanImage(const QImage &img);
 
     bool hasMetaData() const;
+    bool isWriteable() const;
     bool isLoaded() const;
     bool isTiff() const;
     bool isJpg() const;
