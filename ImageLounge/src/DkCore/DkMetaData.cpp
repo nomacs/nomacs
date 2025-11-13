@@ -1329,10 +1329,6 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo)
         return false;
 
     try {
-        if (mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite
-            && mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amWrite)
-            return false;
-
         Exiv2::ExifData &exifData = mExifImg->exifData();
 
         if (!exifData.empty() && getExifKeys().contains(key)) {
