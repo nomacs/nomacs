@@ -306,6 +306,10 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void scrollOnePageUp();
+    void scrollOnePageDown();
+    void scrollToTop();
+    void scrollToEnd();
 
     DkThumbScene *mThumbScene = nullptr;
     QPointF mMouseDownPos;
