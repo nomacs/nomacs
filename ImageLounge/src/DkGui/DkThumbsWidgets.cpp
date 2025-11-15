@@ -1739,6 +1739,32 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
 
     connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
     connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
+
+    QAction *scrollOnePageUpAction = new QAction(this);
+    scrollOnePageUpAction->setShortcuts({
+        QKeySequence(Qt::Key_PageUp),
+        QKeySequence(Qt::SHIFT | Qt::Key_Space)
+    });
+    connect(scrollOnePageUpAction, &QAction::triggered, this, &DkThumbsView::scrollOnePageUp);
+    this->addAction(scrollOnePageUpAction);
+
+    QAction *scrollOnePageDownAction = new QAction(this);
+    scrollOnePageDownAction->setShortcuts({
+        QKeySequence(Qt::Key_PageDown),
+        QKeySequence(Qt::Key_Space)
+    });
+    connect(scrollOnePageDownAction, &QAction::triggered, this, &DkThumbsView::scrollOnePageDown);
+    this->addAction(scrollOnePageDownAction);
+
+    QAction *scrollToTopAction = new QAction(this);
+    scrollToTopAction->setShortcut(QKeySequence(Qt::Key_Home));
+    connect(scrollToTopAction, &QAction::triggered, this, &DkThumbsView::scrollToTop);
+    this->addAction(scrollToTopAction);
+
+    QAction *scrollToEndAction = new QAction(this);
+    scrollToEndAction->setShortcut(QKeySequence(Qt::Key_End));
+    connect(scrollToEndAction, &QAction::triggered, this, &DkThumbsView::scrollToEnd);
+    this->addAction(scrollToEndAction);
 }
 
 void DkThumbsView::onScroll()
@@ -1914,40 +1940,36 @@ void DkThumbsView::dropEvent(QDropEvent *event)
     QGraphicsView::dropEvent(event);
 }
 
-void DkThumbsView::keyPressEvent(QKeyEvent *event)
+void DkThumbsView::scrollOnePageUp()
 {
     if (verticalScrollBar()->isVisible()) {
-        switch(event->key()) {
-            case Qt::Key_Home:
-                verticalScrollBar()->setValue(verticalScrollBar()->minimum());
-                mThumbScene->selectAllThumbs(false);
-                mThumbScene->selectThumb(0, true);
-                break;
-            case Qt::Key_End:
-                verticalScrollBar()->setValue(verticalScrollBar()->maximum());
-                mThumbScene->selectAllThumbs(false);
-                mThumbScene->selectThumbs(true, -1, -1);
-                break;
-            case Qt::Key_PageUp:
-                verticalScrollBar()->setValue(verticalScrollBar()->value() - verticalScrollBar()->pageStep());
-                break;
-            case Qt::Key_PageDown:
-                verticalScrollBar()->setValue(verticalScrollBar()->value() + verticalScrollBar()->pageStep());
-                break;
-            case Qt::Key_Space:
-                if (event->modifiers() & Qt::ShiftModifier) {
-                    verticalScrollBar()->setValue(verticalScrollBar()->value() - verticalScrollBar()->pageStep());
-                } else {
-                    verticalScrollBar()->setValue(verticalScrollBar()->value() + verticalScrollBar()->pageStep());
-                }
-                break;
-            default:
-                this->QGraphicsView::keyPressEvent(event);
-                break;
-        }
-    } else {
-        this->QGraphicsView::keyPressEvent(event);
+        verticalScrollBar()->setValue(verticalScrollBar()->value() - verticalScrollBar()->pageStep());
     }
+}
+
+void DkThumbsView::scrollOnePageDown()
+{
+    if (verticalScrollBar()->isVisible()) {
+        verticalScrollBar()->setValue(verticalScrollBar()->value() + verticalScrollBar()->pageStep());
+    }
+}
+
+void DkThumbsView::scrollToTop()
+{
+    if (verticalScrollBar()->isVisible()) {
+        verticalScrollBar()->setValue(verticalScrollBar()->minimum());
+    }
+    mThumbScene->selectAllThumbs(false);
+    mThumbScene->selectThumb(0, true);
+}
+
+void DkThumbsView::scrollToEnd()
+{
+    if (verticalScrollBar()->isVisible()) {
+        verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+    }
+    mThumbScene->selectAllThumbs(false);
+    mThumbScene->selectThumbs(true, -1, -1);
 }
 
 // DkThumbScrollWidget --------------------------------------------------------------------

@@ -294,7 +294,6 @@ class DkThumbsView : public QGraphicsView
 
 public:
     explicit DkThumbsView(DkThumbScene *scene, QWidget *parent = nullptr);
-    void keyPressEvent(QKeyEvent *event);
 
 signals:
     void updateDirSignal(const QString &dir) const;
@@ -307,6 +306,10 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void scrollOnePageUp();
+    void scrollOnePageDown();
+    void scrollToTop();
+    void scrollToEnd();
 
     DkThumbScene *mThumbScene = nullptr;
     QPointF mMouseDownPos;
