@@ -53,7 +53,7 @@ public:
         data = 1, // image data changed
         metadata = 2, // metadata changed
     };
-    Q_DECLARE_FLAGS(Edits, EditType);
+    Q_DECLARE_FLAGS(Edits, EditType)
 
     DkEditImage();
     DkEditImage(const Edits &edits,
@@ -167,7 +167,7 @@ public:
         none = 0,
         ignored_orientation = 1, // exif orientation was ignored when loading the image
     };
-    Q_DECLARE_FLAGS(Flags, Flag);
+    Q_DECLARE_FLAGS(Flags, Flag)
 
     Flags flags() const
     {
@@ -179,7 +179,7 @@ public:
     ~DkBasicLoader() override
     {
         release();
-    };
+    }
 
     /**
      * Get rotation value
@@ -228,12 +228,12 @@ public:
     int getNumPages() const
     {
         return mNumPages;
-    };
+    }
 
     int getPageIdx() const
     {
         return mPageIdx;
-    };
+    }
 
     /**
      * Set page index but do not load anything (loadGeneral() is required)
@@ -289,7 +289,7 @@ public:
     bool isDirty() const
     {
         return mPageIdxDirty;
-    };
+    }
 
     /**
      * Returns true if an image is currently loaded.
@@ -298,7 +298,7 @@ public:
     bool hasImage()
     {
         return !image().isNull();
-    };
+    }
 
     void undo();
     void redo();
@@ -341,16 +341,18 @@ public:
                            QSize = QSize())
     {
         return false;
-    };
+    }
     int mergeVecFiles(const QStringList &, QString &) const
     {
         return 0;
-    };
+    }
     bool readHeader(const unsigned char **, int &, int &) const
     {
         return false;
-    };
-    void getPatchSizeFromFileName(const QString &, int &, int &) const {};
+    }
+    void getPatchSizeFromFileName(const QString &, int &, int &) const
+    {
+    }
 
 #endif
     LoaderResult loadQt(const QString &filePath,
