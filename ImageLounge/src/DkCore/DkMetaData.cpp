@@ -821,7 +821,8 @@ bool DkMetaDataT::isWriteable() const
     // so we need not worry about truncating metadata
     Exiv2::AccessMode mode = mExifImg->checkMode(Exiv2::mdExif);
     if (!(mode & Exiv2::amWrite)) {
-        qInfo() << "[Exiv2] write unsupported for type:" << mExifImg->imageType() << mExifImg->mimeType().c_str();
+        qInfo() << "[Exiv2] write unsupported for type:" << static_cast<int>(mExifImg->imageType())
+                << mExifImg->mimeType().c_str();
         return false;
     }
 
@@ -830,7 +831,8 @@ bool DkMetaDataT::isWriteable() const
         auto image = Exiv2::ImageFactory::create(mExifImg->imageType());
         return true;
     } catch (...) {
-        qInfo() << "[Exiv2] create() unsupported for type:" << mExifImg->imageType() << mExifImg->mimeType().c_str();
+        qInfo() << "[Exiv2] create() unsupported for type:" << static_cast<int>(mExifImg->imageType())
+                << mExifImg->mimeType().c_str();
     }
 
     return false;
