@@ -1409,7 +1409,7 @@ void DkImageLoader::rotateImage(double angle)
             return;
 
         } catch (const Exiv2::Error &e) {
-            qWarning() << "[Exiv2] rotate metadata failed" << e.code() << e.what();
+            qWarning() << "[Exiv2] rotate metadata failed" << static_cast<int>(e.code()) << e.what();
         } catch (...) {
             qWarning() << "[Exiv2] rotate metadata failed";
         }
