@@ -34,6 +34,18 @@
 
     <screenshots>
         <screenshot type="default">
+            <image>https://github.com/nomacs/nomacs/raw/ff9b92e5afa0c34d4f2c302fd0ab9b987ca40a5e/ImageLounge/screenshots/nomacs_3_22-thumbnails.png</image>
+            <caption>Image thumbnails in nomacs viewer</caption>
+        </screenshot>
+        <screenshot type="default">
+            <image>https://github.com/nomacs/nomacs/raw/ff9b92e5afa0c34d4f2c302fd0ab9b987ca40a5e/ImageLounge/screenshots/nomacs_3_22-jxl_metadata.png</image>
+            <caption>JPEG XL (JXL) image with metadata in nomacs viewer</caption>
+        </screenshot>
+        <screenshot type="default">
+            <image>https://github.com/nomacs/nomacs/raw/ff9b92e5afa0c34d4f2c302fd0ab9b987ca40a5e/ImageLounge/screenshots/nomacs_3_22-avif_settings.png</image>
+            <caption>Saving AVIF image in nomacs viewer</caption>
+        </screenshot>
+        <screenshot type="default">
             <image>https://github.com/nomacs/nomacs/raw/fbb4e3ef48f5264b15ebb16521a105d4518e6000/ImageLounge/screenshots/nomacs_3_21-thumbnails.png</image>
             <caption>Image thumbnails in nomacs viewer</caption>
         </screenshot>
