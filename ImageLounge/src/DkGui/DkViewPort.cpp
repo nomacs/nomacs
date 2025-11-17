@@ -1151,6 +1151,11 @@ void DkViewPort::nextMovieFrame()
     if (!mMovie)
         return;
 
+    if (mMovie->state() == QMovie::Running) {
+        DkActionManager::instance().action(DkActionManager::menu_view_movie_pause)->trigger();
+        return;
+    }
+
     mMovie->jumpToNextFrame();
     update();
 }
@@ -1160,16 +1165,20 @@ void DkViewPort::previousMovieFrame()
     if (!mMovie)
         return;
 
+    if (mMovie->state() == QMovie::Running) {
+        DkActionManager::instance().action(DkActionManager::menu_view_movie_pause)->trigger();
+        return;
+    }
+
     int fn = mMovie->currentFrameNumber() - 1;
     if (fn == -1)
         fn = mMovie->frameCount() - 1;
-    // qDebug() << "retrieving frame: " << fn;
 
+    // NOTE: we'd prefer QMovie::jumpToFrame but it does not always work
+    // and might cause freezes after a few clicks (GIF images)
     while (mMovie->currentFrameNumber() != fn)
         mMovie->jumpToNextFrame();
 
-    //// the subsequent thing is not working if the movie is paused
-    // bool success = movie->jumpToFrame(movie->currentFrameNumber()-1);
     update();
 }
 
