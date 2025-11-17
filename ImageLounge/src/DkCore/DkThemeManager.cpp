@@ -577,7 +577,7 @@ DkThemeManager::~DkThemeManager()
 {
     for (auto &path : mTempFiles)
         QFile::remove(path);
-    QDir().rmpath(mTempDirPath);
+    QDir().rmdir(mTempDirPath);
 }
 
 DkThemeManager &DkThemeManager::instance()
