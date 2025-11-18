@@ -1271,18 +1271,15 @@ bool DkMetaDataT::setRating(int r)
         if (pos != exifData.end())
             exifData.erase(pos);
 
-        // Xmp data is add instead of set, so the key could be duplicated.
-        constexpr std::string_view xmpK1 = "Xmp.xmp.Rating";
-        constexpr std::string_view xmpK2 = "Xmp.MicrosoftPhoto.Rating";
-        auto it = xmpData.begin();
-        while (it != xmpData.end()) {
-            const std::string k = it->key();
-            if (k != xmpK1 && k != xmpK2) {
-                it++;
-                continue;
-            }
-            it = xmpData.erase(it);
-        }
+        Exiv2::XmpKey key2 = Exiv2::XmpKey("Xmp.xmp.Rating");
+        auto pos2 = xmpData.findKey(key2);
+        if (pos2 != xmpData.end())
+            xmpData.erase(pos2);
+
+        key2 = Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating");
+        pos2 = xmpData.findKey(key2);
+        if (pos2 != xmpData.end())
+            xmpData.erase(pos2);
     }
 
     try {
