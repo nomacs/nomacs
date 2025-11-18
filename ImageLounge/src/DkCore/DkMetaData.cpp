@@ -1258,12 +1258,8 @@ bool DkMetaDataT::setRating(int r)
     if (r > 0) {
         exifData["Exif.Image.Rating"] = uint16_t(r);
         exifData["Exif.Image.RatingPercent"] = ratingPercent;
-
-        auto v = Exiv2::Value::create(Exiv2::xmpText);
-        v->read(std::to_string(r));
-        xmpData.add(Exiv2::XmpKey("Xmp.xmp.Rating"), v.get());
-        v->read(std::to_string(ratingPercent));
-        xmpData.add(Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating"), v.get());
+        xmpData["Xmp.xmp.Rating"] = r;
+        xmpData["Xmp.MicrosoftPhoto.Rating"] = ratingPercent;
     } else {
         Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Rating");
         auto pos = exifData.findKey(key);
