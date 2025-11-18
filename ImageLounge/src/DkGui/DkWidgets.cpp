@@ -1045,7 +1045,7 @@ void DkRatingLabel::init()
 void DkRatingLabel::editRating(int rating)
 {
     if (mRating == rating) {
-        return;
+        rating--; // unchecking a star
     }
 
     emit ratingEdited(rating);
