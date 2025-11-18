@@ -81,10 +81,6 @@ if(ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -pthread -g -O0 -fprofile-arcs -ftest-coverage")
 endif()
 
-if(NOT DEFINED QT_VERSION_MAJOR)
-    add_definitions(-DQT_VERSION_MAJOR="6")
-endif()
-
 if(NOT ${QT_VERSION_MAJOR} VERSION_EQUAL "6")
     message(FATAL_ERROR "only Qt6 is supported")
 endif()
