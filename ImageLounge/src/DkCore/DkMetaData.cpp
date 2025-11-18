@@ -66,9 +66,10 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
         try {
             // Load new Exiv2::Image object
             metaDataN->mExifImg = Exiv2::ImageFactory::create(mExifImg->imageType());
-            // Copy exif data from old object into new object
-            Exiv2::ExifData data = mExifImg->exifData();
-            metaDataN->mExifImg->setExifData(data); // explicit copy of list<Exifdatum>
+            // Copy any data from old object that we are going to save back to the image
+            metaDataN->mExifImg->setExifData(mExifImg->exifData());
+            metaDataN->mExifImg->setXmpData(mExifImg->xmpData());
+            metaDataN->mExifImg->setIptcData(mExifImg->iptcData());
             metaDataN->mExifState = dirty;
         } catch (...) {
             metaDataN->mExifState = no_data;
