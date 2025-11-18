@@ -20,19 +20,8 @@ add_executable(
     ${NOMACS_QM}
     ${NOMACS_TRANSLATIONS}
     ${NOMACS_RC}
-    ${QUAZIP_SOURCES}
 )
-target_link_libraries(
-    ${BINARY_NAME}
-    ${DLL_CORE_NAME}
-    ${EXIV2_LIBRARIES}
-    ${LIBRAW_LIBRARIES}
-    ${OpenCV_LIBS}
-    ${TIFF_LIBRARIES}
-    ${QUAZIP_LIBRARIES}
-    ${ZLIB_LIBRARY}
-    ${LIBQPSD_LIBRARY}
-)
+target_link_libraries(${BINARY_NAME} ${DLL_CORE_NAME})
 
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 set_target_properties(${BINARY_NAME} PROPERTIES IMPORTED_IMPLIB "")
@@ -59,6 +48,8 @@ target_link_libraries(
     ${OpenCV_LIBS}
     ${TIFF_LIBRARIES}
     ${QUAZIP_LIBRARIES}
+    ${ZLIB_LIBRARY}
+    ${LIBQPSD_LIBRARY}
 )
 
 set_property(
@@ -69,15 +60,7 @@ set_property(TARGET ${DLL_CORE_NAME} PROPERTY SOVERSION ${NOMACS_VERSION_MAJOR})
 
 add_dependencies(${BINARY_NAME} ${DLL_CORE_NAME} ${QUAZIP_DEPENDENCY} ${LIBQPSD_LIBRARY})
 
-target_link_libraries(
-    ${BINARY_NAME}
-    Qt::Widgets
-    Qt::Gui
-    Qt::Network
-    Qt::PrintSupport
-    Qt::Concurrent
-    Qt::Svg
-)
+target_link_libraries(${BINARY_NAME} Qt::Widgets Qt::Gui)
 target_link_libraries(
     ${DLL_CORE_NAME}
     Qt::Widgets
