@@ -2234,12 +2234,10 @@ void DkThumbScrollWidget::enableSelectionActions()
     bool isFromZip = hasSelection && DkFileInfo(files[0]).isFromZip();
 
     DkActionManager &am = DkActionManager::instance();
-    am.action(DkActionManager::preview_copy)->setEnabled(hasSelection && !isFromZip);
-
+    am.action(DkActionManager::preview_copy)->setEnabled(hasSelection);
     am.action(DkActionManager::preview_rename)->setEnabled(hasSelection && !isFromZip);
     am.action(DkActionManager::preview_delete)->setEnabled(hasSelection && !isFromZip);
     am.action(DkActionManager::preview_batch)->setEnabled(hasSelection);
-
     am.action(DkActionManager::preview_select_all)->setChecked(mThumbsScene->allThumbsSelected());
 }
 
