@@ -57,6 +57,7 @@ class QItemSelection;
 namespace nmc
 {
 class DkThumbLoader;
+class DkBaseManipulatorWidget;
 
 // TODO: these enums are global - they should be put into the respective classes
 enum fileNameTypes {
@@ -489,6 +490,7 @@ public:
 public slots:
     void itemChanged(QStandardItem *item);
     void selectionChanged(const QItemSelection &selected);
+    void renderPreview(QSharedPointer<DkBaseManipulator> mpl);
     void selectManipulator(QSharedPointer<DkBaseManipulator> mpl);
     void selectManipulator();
 
@@ -502,7 +504,7 @@ protected:
 
     QStandardItemModel *mModel = nullptr;
     DkManipulatorManager mManager;
-    QVector<QWidget *> mMplWidgets;
+    QVector<DkBaseManipulatorWidget *> mMplWidgets;
     QVBoxLayout *mSettingsLayout = nullptr;
     QLabel *mSettingsTitle = nullptr;
     QLabel *mPreviewLabel = nullptr;

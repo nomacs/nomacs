@@ -1879,8 +1879,12 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager &manager)
     mMplWidgets << new DkColorWidget(manager.manipulatorExt(DkManipulatorManager::m_color), this);
     mMplWidgets << new DkResizeWidget(manager.manipulatorExt(DkManipulatorManager::m_resize), this);
 
-    for (QWidget *w : mMplWidgets)
+    for (auto *w : mMplWidgets) {
+        connect(w->baseManipulator()->action(), &QAction::triggered, this, [this, w] {
+            renderPreview(QSharedPointer<DkBaseManipulator>(w->baseManipulator()));
+        });
         mSettingsLayout->addWidget(w);
+    }
 
     for (QAction *a : manager.actions())
         connect(a,
@@ -1958,6 +1962,19 @@ void DkBatchManipulatorWidget::selectionChanged(const QItemSelection &selected)
     // qDebug() << "selection changed...";
 }
 
+void DkBatchManipulatorWidget::renderPreview(QSharedPointer<DkBaseManipulator> mpl)
+{
+    QImage img = mpl->apply(mPreview);
+    if (qMax(img.width(), img.height()) > mMaxPreview) {
+        // center crop for manipulators that change image size
+        QRect rect = QRect{0, 0, qMin(img.width(), mMaxPreview), qMin(img.height(), mMaxPreview)};
+        rect.moveCenter(img.rect().center());
+        img = img.copy(rect);
+    }
+    img.setDevicePixelRatio(devicePixelRatio());
+    mPreviewLabel->setPixmap(QPixmap::fromImage(img));
+}
+
 void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulator> mpl)
 {
     for (auto w : mMplWidgets)
@@ -1987,22 +2004,21 @@ void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulato
         if (bl.loadGeneral(mPreviewPath)) {
             QImage img = bl.image();
 
+            // TODO: use hq scale filter here
             if (img.height() > img.width())
-                img = img.scaledToHeight(qMin(img.height(), mMaxPreview));
+                img = img.scaledToHeight(qMin(img.height(), mMaxPreview), Qt::SmoothTransformation);
             else
-                img = img.scaledToWidth(qMin(img.width(), mMaxPreview));
+                img = img.scaledToWidth(qMin(img.width(), mMaxPreview), Qt::SmoothTransformation);
 
             mPreview = img;
         } else
             qInfo() << "could not load" << mPreviewPath << "for preview...";
     }
 
-    // update preview
-    if (!mPreview.isNull()) {
-        mPreviewLabel->setPixmap(QPixmap::fromImage(mpl->apply(mPreview)));
-        mPreviewLabel->show();
-    } else
-        mPreviewLabel->hide();
+    mPreviewLabel->setHidden(mPreview.isNull());
+    if (!mPreviewLabel->isHidden()) {
+        renderPreview(mpl);
+    }
 }
 
 void DkBatchManipulatorWidget::selectManipulator()
