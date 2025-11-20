@@ -176,7 +176,7 @@ public:
     static QString colorToString(const QColor &col);
     static QString readableByte(float bytes);
     static QStringList filterStringList(const QString &query, const QStringList &list);
-    static bool moveToTrash(const QString &filePath);
+    static bool moveToTrash(const QStringList &files);
     static QList<QUrl> findUrlsInTextNewline(QString text);
 
 #ifdef WITH_OPENCV
