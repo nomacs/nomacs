@@ -1595,42 +1595,7 @@ void DkThumbScene::deleteSelected()
     int answer = msgBox->exec();
 
     if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
-        blockSignals(true); // setSelected may emit
-        mLoader->blockSignals(true); // use-after-free if loader emits in the loop
-
-        mLastSelectedIdx = -1;
-
-        for (int i = 0; i < mThumbLabels.size(); i++) {
-            DkThumbLabel *thumb = mThumbLabels.at(i);
-            if (!thumb->isSelected())
-                continue;
-
-            if (mLastSelectedIdx < 0)
-                mLastSelectedIdx = i;
-
-            const QString filePath = thumb->filePath();
-            const QString fileName = QFileInfo(filePath).fileName();
-
-            if (!DkUtils::moveToTrash(filePath)) {
-                QMessageBox::critical(DkUtils::getMainWindow(),
-                                      tr("Error"),
-                                      tr("Sorry, I cannot delete:\n%1").arg(fileName),
-                                      QMessageBox::Ok | QMessageBox::Cancel);
-
-                if (answer == QMessageBox::Cancel) {
-                    break;
-                }
-            }
-
-            // we might try to delete it twice because directoryChanged() can defer the update
-            thumb->setSelected(false);
-        }
-
-        mLoader->blockSignals(false);
-        blockSignals(false);
-
-        if (mLoader)
-            mLoader->directoryChanged(mLoader->getDirPath());
+        (void)DkUtils::moveToTrash(getSelectedFiles());
     }
 }
 

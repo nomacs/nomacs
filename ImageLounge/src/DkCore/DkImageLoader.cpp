@@ -1329,7 +1329,7 @@ bool DkImageLoader::deleteFile()
 
     QString fileName = mCurrentImage->fileName();
     int currFileIdx = findFileIdx(mCurrentImage->filePath(), mImages);
-    if (!DkUtils::moveToTrash(mCurrentImage->filePath())) {
+    if (!DkUtils::moveToTrash({mCurrentImage->filePath()})) {
         emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(fileName));
         return false;
     }
