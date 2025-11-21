@@ -544,7 +544,12 @@ void DkFilenameWidget::createLayout()
 {
     mLayout = new QGridLayout(this);
     mLayout->setContentsMargins(0, 0, 0, 5);
-    setMaximumWidth(500);
+    mLayout->setColumnStretch(0, 0); // segment type (fixed)
+    mLayout->setColumnStretch(1, 1); // option 1 (stretch)
+    mLayout->setColumnStretch(2, 1); // option 2 (stretch)
+    mLayout->setColumnStretch(3, 0); // plus (fixed)
+    mLayout->setColumnStretch(4, 0); // minus (fixed)
+    setMaximumWidth(640);
 
     mCbType = new QComboBox(this);
     mCbType->setSizeAdjustPolicy(QComboBox::AdjustToContents);
@@ -580,14 +585,10 @@ void DkFilenameWidget::createLayout()
     mLeText = new QLineEdit(this);
     connect(mLeText, &QLineEdit::textChanged, this, &DkFilenameWidget::changed);
 
-    mPbPlus = new QPushButton("+", this);
-    mPbPlus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    mPbPlus->setMinimumSize(10, 10);
-    mPbPlus->setMaximumSize(30, 30);
-    mPbMinus = new QPushButton("-", this);
-    mPbMinus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    mPbMinus->setMinimumSize(10, 10);
-    mPbMinus->setMaximumSize(30, 30);
+    const char *plusSign = "\xEF\xBC\x8B"; // U+FF0B FULLWIDTH PLUS SIGN
+    const char *minusSign = "\xE2\x88\x92"; // U+2212 MINUS SIGN
+    mPbPlus = new QPushButton(QString::fromUtf8(plusSign), this);
+    mPbMinus = new QPushButton(QString::fromUtf8(minusSign), this);
     connect(mPbPlus, &QPushButton::clicked, this, &DkFilenameWidget::pbPlusPressed);
     connect(mPbMinus, &QPushButton::clicked, this, &DkFilenameWidget::pbMinusPressed);
     connect(mPbPlus, &QPushButton::clicked, this, &DkFilenameWidget::changed);
@@ -623,8 +624,7 @@ void DkFilenameWidget::showOnlyFilename()
     mLeText->hide();
 
     mLayout->addWidget(mCbType, 0, fileNameWidget_type);
-    mLayout->addWidget(mCbCase, 0, fileNameWidget_input1);
-    // curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2 );
+    mLayout->addWidget(mCbCase, 0, fileNameWidget_input1, 1, 2);
     mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
     mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
 }
@@ -653,8 +653,7 @@ void DkFilenameWidget::showOnlyText()
     mCbCase->hide();
 
     mLayout->addWidget(mCbType, 0, fileNameWidget_type);
-    mLayout->addWidget(mLeText, 0, fileNameWidget_input1);
-    // curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2);
+    mLayout->addWidget(mLeText, 0, fileNameWidget_input1, 1, 2);
     mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
     mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
 }
