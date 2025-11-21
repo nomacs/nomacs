@@ -847,6 +847,26 @@ void DkSettings::save(QSettings &settings, bool force)
     resources_d = resources_p;
 }
 
+void DkSettings::loadHistory()
+{
+    DefaultSettings settings;
+    settings.beginGroup("GlobalSettings");
+    DkSettingsManager::param().global().recentFolders = settings.value("recentFolders").toStringList();
+    DkSettingsManager::param().global().recentFiles = settings.value("recentFiles").toStringList();
+}
+
+void DkSettings::saveHistory()
+{
+    if (DkSettingsManager::param().app().privateMode) {
+        return;
+    }
+
+    DefaultSettings settings;
+    settings.beginGroup("GlobalSettings");
+    settings.setValue("recentFolders", DkSettingsManager::param().global().recentFolders);
+    settings.setValue("recentFiles", DkSettingsManager::param().global().recentFiles);
+}
+
 void DkSettings::setToDefaultSettings()
 {
     app_p.showToolBar = true;

@@ -2520,11 +2520,18 @@ void DkRecentDir::removeFromHistory() const
         pinnedFiles.removeAll(filePath);
         recentFiles.removeAll(filePath);
     }
+
+    DkSettingsManager::param().saveHistory();
 }
 
 // -------------------------------------------------------------------- DkRecentDirManager
 DkRecentDirManager::DkRecentDirManager()
 {
+    // sync with other instances, but allow private mode to have its own temporary history
+    if (!DkSettingsManager::param().app().privateMode) {
+        DkSettingsManager::param().loadHistory();
+    }
+
     // pinned dirs appear first, followed by dirs of recent files
     mDirs = genFileLists(DkSettingsManager::param().global().pinnedFiles, true);
     QList<DkRecentDir> recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);

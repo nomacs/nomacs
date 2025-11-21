@@ -1253,32 +1253,32 @@ void DkImageLoader::imageSaved(const QString &filePath, bool saved, bool loadToT
  **/
 void DkImageLoader::updateHistory()
 {
-    if (!DkSettingsManager::param().global().logRecentFiles || DkSettingsManager::param().app().privateMode)
+    if (!DkSettingsManager::param().global().logRecentFiles)
         return;
 
     if (!mCurrentImage || mCurrentImage->hasImage() != DkImageContainer::loaded || !mCurrentImage->exists())
         return;
 
-    QFileInfo file = QFileInfo(mCurrentImage->filePath());
+    const DkFileInfo file = mCurrentImage->fileInfo();
+    const QString path = file.path();
+    const QString dirPath = file.dirPath();
 
-    // sync with other instances
-    DefaultSettings settings;
-    settings.beginGroup("GlobalSettings");
-    QStringList rFolders = settings.value("recentFolders", DkSettingsManager::param().global().recentFolders)
-                               .toStringList();
-    QStringList rFiles = settings.value("recentFiles", DkSettingsManager::param().global().recentFiles).toStringList();
-    settings.endGroup();
+    // sync with other instances, but allow private mode to have its own temporary history
+    if (!DkSettingsManager::param().app().privateMode) {
+        DkSettingsManager::param().loadHistory();
+    }
+    QStringList rFolders = DkSettingsManager::param().global().recentFolders;
+    QStringList rFiles = DkSettingsManager::param().global().recentFiles;
 
-    rFiles.removeAll(file.absoluteFilePath());
-    rFolders.removeAll(file.absolutePath());
+    rFiles.removeAll(path);
+    rFolders.removeAll(dirPath);
 
     QStringList tmpRecentFiles;
 
     // try to collect images from different folders
     for (const QString &cFile : DkSettingsManager::param().global().recentFiles) {
-        QFileInfo fi(cFile);
-
-        if (fi.absolutePath() == file.absolutePath())
+        DkFileInfo fi(cFile);
+        if (fi.dirPath() == dirPath)
             tmpRecentFiles.append(cFile);
     }
 
@@ -1287,8 +1287,8 @@ void DkImageLoader::updateHistory()
         rFiles.removeAll(tmpRecentFiles.at(idx));
     }
 
-    rFiles.push_front(file.absoluteFilePath());
-    rFolders.push_front(file.absolutePath());
+    rFiles.push_front(path);
+    rFolders.push_front(dirPath);
 
     rFiles.removeDuplicates();
     rFolders.removeDuplicates();
@@ -1299,18 +1299,12 @@ void DkImageLoader::updateHistory()
     for (int idx = 0; idx < rFolders.size() - DkSettingsManager::param().global().numFiles - 10; idx++)
         rFolders.pop_back();
 
-    // sync with other instances
-    settings.beginGroup("GlobalSettings");
-    settings.setValue("recentFolders", rFolders);
-    settings.setValue("recentFiles", rFiles);
-    settings.endGroup();
-
     // update
     DkSettingsManager::param().global().recentFiles = rFiles;
     DkSettingsManager::param().global().recentFolders = rFolders;
 
-    // DkSettings s = DkSettings();
-    // s.save();
+    // sync with other instances
+    DkSettingsManager::param().saveHistory();
 }
 
 // image manipulation --------------------------------------------------------------------
