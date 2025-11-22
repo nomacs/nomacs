@@ -33,6 +33,7 @@
 #include "DkStatusBar.h"
 #include "DkUtils.h"
 
+#include <QColorSpace>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMainWindow>
@@ -512,10 +513,8 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event)
 }
 
 // protected functions --------------------------------------------------------------------
-void DkBaseViewPort::draw(QPainter &painter, double opacity)
+void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
 {
-    eraseBackground(painter);
-
     const QRectF displayRect = mWorldMatrix.mapRect(mImgViewRect); // use float size for QPainter
 
     // HiDPI: mImgViewRect is in logical pixels, we need physical for 100% scale and AA to work correctly
@@ -528,6 +527,36 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
 
     // this may return the size we want or give the full size image and rescale in the background
     const QImage img = mImgStorage.image(reqSize);
+
+    // draw into an offscreen buffer for display colorspace conversion
+    const QColorSpace targetColorSpace = QColorSpace(QColorSpace::SRgb); // TODO: get profile of this window
+    QColorSpace srcColorSpace;
+    if (mSvg && mSvg->isValid()) {
+        ; // unsupported, rarely used
+    } else if (mMovie && mMovie->isValid()) {
+        srcColorSpace = mMovie->currentImage().colorSpace();
+    } else {
+        srcColorSpace = mImgStorage.imageConst().colorSpace();
+    }
+
+    // this has a slight performance hit, skip if we don't need it
+    std::unique_ptr<QPainter> backPainter;
+    if (srcColorSpace.isValid() && srcColorSpace != targetColorSpace) {
+        QSize backingSize = this->size() * dpr;
+        if (mBackBuffer.size() != backingSize) {
+            mBackBuffer = QImage(backingSize, QImage::Format_ARGB32_Premultiplied);
+        }
+        mBackBuffer.fill(Qt::transparent); // eraseBackground() does not touch all pixels
+        mBackBuffer.setDevicePixelRatio(dpr);
+        mBackBuffer.setColorSpace(srcColorSpace);
+
+        backPainter = std::make_unique<QPainter>(&mBackBuffer);
+        backPainter->setWorldTransform(frontPainter.worldTransform());
+    }
+
+    QPainter &painter = backPainter ? *(backPainter.get()) : frontPainter;
+
+    eraseBackground(painter);
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
@@ -567,6 +596,15 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
     }
 
     painter.setOpacity(oldOp);
+
+    if (backPainter) {
+        backPainter->end();
+        mBackBuffer.convertToColorSpace(targetColorSpace);
+        frontPainter.setWorldMatrixEnabled(false);
+        frontPainter.setRenderHint(QPainter::SmoothPixmapTransform, false);
+        frontPainter.drawImage(QPoint{0, 0}, mBackBuffer);
+        frontPainter.setWorldMatrixEnabled(true);
+    }
 }
 
 void DkBaseViewPort::drawTransparencyPattern(QPainter &painter) const
