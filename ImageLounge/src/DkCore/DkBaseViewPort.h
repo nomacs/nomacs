@@ -197,9 +197,10 @@ protected:
     bool mForceFastRendering = false;
     bool mBlockZooming = false;
     QTimer *mZoomTimer;
+    QImage mBackBuffer;
 
     // draw the entire viewport
-    virtual void draw(QPainter &painter, double opacity = 1.0);
+    virtual void draw(QPainter &frontPainter, double opacity = 1.0);
 
     // draw transparency pattern behind where the image will draw
     virtual void drawTransparencyPattern(QPainter &painter) const;
