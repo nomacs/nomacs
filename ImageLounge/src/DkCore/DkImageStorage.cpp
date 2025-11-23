@@ -96,13 +96,13 @@ float DkImage::getBufferSizeFloat(const QSize &imgSize, const int depth)
 
 /**
  * This function resizes an image according to the interpolation method specified.
- * @param img the image to resize
+ * @param src the image to resize
  * @param newSize the new size
  * @param factor the resize factor
  * @param interpolation the interpolation method
  * @return QImage the resized image
  **/
-QImage DkImage::resizeImage(const QImage &img,
+QImage DkImage::resizeImage(const QImage &src,
                             const QSize &newSize,
                             double factor /* = 1.0 */,
                             int interpolation /* = ipl_cubic */,
@@ -111,11 +111,11 @@ QImage DkImage::resizeImage(const QImage &img,
     QSize nSize = newSize;
 
     // nothing to do
-    if (img.size() == nSize && factor == 1.0)
-        return img;
+    if (src.size() == nSize && factor == 1.0)
+        return src;
 
     if (factor != 1.0)
-        nSize = QSize(qRound(img.width() * factor), qRound(img.height() * factor));
+        nSize = QSize(qRound(src.width() * factor), qRound(src.height() * factor));
 
     if (nSize.width() < 1 || nSize.height() < 1) {
         return QImage();
@@ -156,7 +156,7 @@ QImage DkImage::resizeImage(const QImage &img,
 
     try {
         QImage qImg;
-        cv::Mat resizeImage = DkImage::qImage2Mat(img);
+        cv::Mat resizeImage = DkImage::qImage2Mat(src);
 
         if (correctGamma) {
             resizeImage.convertTo(resizeImage, CV_16U, USHRT_MAX / 255.0f);
@@ -165,7 +165,7 @@ QImage DkImage::resizeImage(const QImage &img,
 
         // is the image convertible?
         if (resizeImage.empty()) {
-            qImg = img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
+            qImg = src.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
         } else {
             cv::Mat tmp;
             cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
@@ -176,11 +176,8 @@ QImage DkImage::resizeImage(const QImage &img,
                 resizeImage.convertTo(resizeImage, CV_8U, 255.0f / USHRT_MAX);
             }
 
-            qImg = DkImage::mat2QImage(resizeImage);
+            qImg = DkImage::mat2QImage(resizeImage, src);
         }
-
-        if (!img.colorTable().isEmpty())
-            qImg.setColorTable(img.colorTable());
 
         return qImg;
 
@@ -189,8 +186,7 @@ QImage DkImage::resizeImage(const QImage &img,
     }
 
 #else
-
-    QImage qImg = img.copy();
+    QImage qImg = src.copy();
 
     if (correctGamma)
         DkImage::gammaToLinear(qImg);
@@ -288,6 +284,7 @@ QImage rotateImage(const QImage &img, double angle)
 
     // create image
     QImage imgR(newSize, QImage::Format_RGBA8888);
+    imgR.setColorSpace(img.colorSpace());
     imgR.fill(Qt::transparent);
 
     // create transformation
@@ -505,7 +502,7 @@ QImage DkImage::grayscaleImage(const QImage &img)
     // convert it back for the painter
     cv::cvtColor(cvImg, cvImg, CV_GRAY2RGB);
 
-    imgR = DkImage::mat2QImage(cvImg);
+    imgR = DkImage::mat2QImage(cvImg, img);
 #else
 
     QVector<QRgb> table(256);
@@ -858,6 +855,7 @@ QImage DkImage::cropToImage(const QImage &src, const DkRotatingRect &rect, const
     double minD = qMin(std::abs(angle), std::abs(angle - CV_PI * 0.5));
 
     QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
+    img.setColorSpace(src.colorSpace());
     img.fill(fillColor.rgba());
 
     // render the image into the new coordinate system
@@ -928,7 +926,7 @@ QImage DkImage::hueSaturation(const QImage &src, int hue, int sat, int brightnes
     }
 
     cv::cvtColor(hsvImg, hsvImg, CV_HSV2BGR);
-    imgR = DkImage::mat2QImage(hsvImg);
+    imgR = DkImage::mat2QImage(hsvImg, src);
 
 #endif // WITH_OPENCV
 
@@ -956,7 +954,7 @@ QImage DkImage::exposure(const QImage &src, double exposure, double offset, doub
         rgbImg = gammaMat(rgbImg, gamma);
 
     rgbImg.convertTo(rgbImg, CV_8U, 1.0 / 256.0);
-    imgR = DkImage::mat2QImage(rgbImg);
+    imgR = DkImage::mat2QImage(rgbImg, src);
 
 #endif // WITH_OPENCV
 
@@ -966,6 +964,7 @@ QImage DkImage::exposure(const QImage &src, double exposure, double offset, doub
 QImage DkImage::bgColor(const QImage &src, const QColor &col)
 {
     QImage dst(src.size(), QImage::Format_RGB32);
+    dst.setColorSpace(src.colorSpace());
     dst.fill(col);
 
     QPainter p(&dst);
@@ -1382,7 +1381,7 @@ cv::Mat DkImage::qImage2Mat(const QImage &img)
  * @param img supported formats CV8UC1 | CV_8UC3 | CV_8UC4
  * @return QImage the corresponding QImage
  **/
-QImage DkImage::mat2QImage(cv::Mat img)
+QImage DkImage::mat2QImage(cv::Mat img, const QImage &srcImg)
 {
     QImage qImg;
 
@@ -1399,6 +1398,8 @@ QImage DkImage::mat2QImage(cv::Mat img)
         // Mat tmp;
         // cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
         // img = tmp;
+        if (!srcImg.colorTable().isEmpty())
+            qImg.setColorTable(srcImg.colorTable());
     }
     if (img.type() == CV_8UC3) {
         // cv::cvtColor(img, img, CV_RGB2BGR);
@@ -1409,6 +1410,7 @@ QImage DkImage::mat2QImage(cv::Mat img)
     }
 
     qImg = qImg.copy();
+    qImg.setColorSpace(srcImg.colorSpace());
 
     return qImg;
 }
@@ -1531,7 +1533,7 @@ void DkImage::tinyPlanet(QImage &img, double scaleLog, double angle, QSize s, bo
     qDebug() << "scale log: " << scaleLog << " inverted: " << invert;
     logPolar(mImg, mImg, cv::Point2d(mImg.cols * 0.5, mImg.rows * 0.5), scaleLog, angle);
 
-    img = DkImage::mat2QImage(mImg);
+    img = DkImage::mat2QImage(mImg, img);
 }
 
 #endif
@@ -1546,7 +1548,7 @@ bool DkImage::gaussianBlur(QImage &img, float sigma)
     cv::Mat gx = cv::getGaussianKernel(qRound(4 * sigma + 1), sigma);
     cv::Mat gy = gx.t();
     cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
-    img = DkImage::mat2QImage(imgG);
+    img = DkImage::mat2QImage(imgG, img);
 
     qDebug() << "gaussian blur takes: " << dt;
 #else
@@ -1570,7 +1572,7 @@ bool DkImage::unsharpMask(QImage &img, float sigma, float weight)
     cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
     // cv::GaussianBlur(imgCv, imgG, cv::Size(4*sigma+1, 4*sigma+1), sigma);		// this is awesomely slow
     cv::addWeighted(imgCv, weight, imgG, 1 - weight, 0, imgCv);
-    img = DkImage::mat2QImage(imgCv);
+    img = DkImage::mat2QImage(imgCv, img);
 
     qDebug() << "unsharp mask takes: " << dt;
     // DkImage::linearToGamma(img);
@@ -1736,7 +1738,7 @@ QImage imageStorageScaleToSize(const QImage &src, const QSize &size)
         cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
         cv::Mat tmp;
         cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
-        resizedImg = DkImage::mat2QImage(tmp);
+        resizedImg = DkImage::mat2QImage(tmp, resizedImg);
     } catch (...) {
         qWarning() << "imageStorageScaleToSize: OpenCV exception caught while resizing...";
     }

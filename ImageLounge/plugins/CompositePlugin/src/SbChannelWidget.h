@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QColorSpace>
 #include <QImage>
 #include <QSlider>
 #include <QStyleOptionSlider>
@@ -71,12 +72,16 @@ public:
         QString name = ""); // "override" from outside. call with empty mat --> reset. also resets intensity slider.
 
     const Channel mChannel; // so that this channel knows which one it is
-
+    QImage srcFormat() const
+    {
+        return mSrcFormat;
+    } // for conversion back to QImage
 protected:
     static constexpr int kSliderMin = 0;
     static constexpr int kSliderMax = 200;
     static constexpr int kSliderInit = 100;
 
+    QImage mSrcFormat;
     cv::Mat mImg; // the channel content
     QPushButton *mThumbnail;
     QLabel *mFilenameLabel;

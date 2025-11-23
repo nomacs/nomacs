@@ -73,6 +73,9 @@ void SbChannelWidget::loadImage(QString file)
         // this is optional; markus says it makes the grayscale image nicer
         qImg = DkImage::grayscaleImage(qImg);
 
+        // remember the image format for converting back to QImage
+        mSrcFormat = qImg.copy(0, 0, 1, 1);
+
         mImg = DkImage::qImage2Mat(qImg);
         cv::cvtColor(mImg, mImg, CV_RGB2GRAY);
 
@@ -139,7 +142,7 @@ void SbChannelWidget::updateThumbnail()
     cv::Mat imgTinted;
     cv::merge(channels, 3, imgTinted);
 
-    QImage qimg = DkImage::mat2QImage(imgTinted);
+    QImage qimg = DkImage::mat2QImage(imgTinted, mSrcFormat);
     QPixmap pxm = QPixmap::fromImage(qimg);
     mThumbnail->setIcon(pxm);
 }

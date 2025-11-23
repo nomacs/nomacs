@@ -776,6 +776,7 @@ protected:
     bool mUpdatePostProcessing = false;
     bool mPostProcessing = false;
     bool mProcessing = false;
+    QImage mSrcImg;
     cv::Mat mOrigImg;
     cv::Mat mMosaicMat;
     cv::Mat mMosaicMatSmall;
