@@ -3076,7 +3076,7 @@ void DkMosaicDialog::updatePatchRes()
 QImage DkMosaicDialog::getImage()
 {
     if (mMosaic.isNull() && !mMosaicMat.empty())
-        return DkImage::mat2QImage(mMosaicMat);
+        return DkImage::mat2QImage(mMosaicMat, mSrcImg);
 
     return mMosaic;
 }
@@ -3189,6 +3189,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
     DkTimer dt;
 
     // compute new image size
+    mSrcImg = mLoader.image();
     cv::Mat mImg = DkImage::qImage2Mat(mLoader.image());
 
     QSize numPatches = QSize(numPatchesH, 0);
@@ -3314,7 +3315,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
                     cv::Mat imgT3;
                     cv::merge(channels, imgT3);
                     cv::cvtColor(imgT3, imgT3, CV_Lab2BGR);
-                    emit updateImage(DkImage::mat2QImage(imgT3));
+                    emit updateImage(DkImage::mat2QImage(imgT3, mSrcImg));
                 }
 
                 if (ccPtr[maxIdx.x] == 0) {
@@ -3600,7 +3601,7 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */,
         cv::cvtColor(origR, origR, CV_Lab2BGR);
         qDebug() << "color converted";
 
-        mMosaic = DkImage::mat2QImage(origR);
+        mMosaic = DkImage::mat2QImage(origR, mSrcImg);
         qDebug() << "mosaicing computed...";
 
     } catch (...) {
@@ -3608,7 +3609,7 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */,
 
         QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I could not mix the image..."));
         qDebug() << "exception caught...";
-        mMosaic = DkImage::mat2QImage(mMosaicMat);
+        mMosaic = DkImage::mat2QImage(mMosaicMat, mSrcImg);
     }
 
     if (computePreview)

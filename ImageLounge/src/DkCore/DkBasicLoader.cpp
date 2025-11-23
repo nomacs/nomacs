@@ -1808,7 +1808,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString &filePath,
             cPatch.copyTo(cPatchAll);
     }
 
-    img = DkImage::mat2QImage(allPatches);
+    img = DkImage::mat2QImage(allPatches, QImage{});
     img = img.convertToFormat(QImage::Format_ARGB32);
 
     // setEditImage(img, tr("Original Image"));
@@ -2112,7 +2112,7 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
         if (rimg) {
             mImg = QImage(rimg->data, rimg->width, rimg->height, rimg->width * 3, QImage::Format_RGB888);
             mImg = mImg.copy(); // make a deep copy...
-            mImg.setColorSpace(QColorSpace(QColorSpace::SRgb));
+            mImg.setColorSpace(QColorSpace(QColorSpace::SRgb)); // for output_color = 1
             LibRaw::dcraw_clear_mem(rimg);
             mImg.setText("RAW.Loader", "Default");
             mImg.setText("RAW.IsPreview", "no");
@@ -2525,7 +2525,9 @@ QImage DkRawLoader::raw2Img(const LibRaw &iProcessor, cv::Mat &img) const
     if (img.channels() == 1)
         cv::cvtColor(img, img, CV_GRAY2RGB);
 
-    return DkImage::mat2QImage(img);
+    QImage src;
+    src.setColorSpace(QColorSpace{QColorSpace::SRgb}); // for output_color=1
+    return DkImage::mat2QImage(img, src);
 }
 
 #endif

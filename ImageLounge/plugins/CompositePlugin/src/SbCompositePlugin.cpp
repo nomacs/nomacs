@@ -196,7 +196,12 @@ QImage SbCompositePlugin::buildComposite() const
                            mAlpha}; // when merging 4 channels, blue and red are reversed again.. why..
         cv::merge(bgra, 4, composite);
     }
-    return DkImage::mat2QImage(composite);
+
+    QImage srcFormat = mChannelWidgets[0]->srcFormat();
+    if (srcFormat.isNull()) // no image assigned to channel, use viewport image
+        srcFormat = mViewport->getImgC()->image();
+
+    return DkImage::mat2QImage(composite, srcFormat);
 }
 
 void SbCompositePlugin::onImageChanged(int c)
