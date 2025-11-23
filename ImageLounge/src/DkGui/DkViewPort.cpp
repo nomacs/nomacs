@@ -46,6 +46,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
+#include <QColorSpace>
 #include <QDrag>
 #include <QDragLeaveEvent>
 #include <QInputDialog>
@@ -397,11 +398,19 @@ void DkViewPort::setImage(QImage newImg)
 
     // status info
     if (!newImg.isNull()) {
+        QString colorSpaceDesc = tr("Unspecified"); // No color profile in the image
+        QColorSpace colorSpace = newImg.colorSpace();
+        if (colorSpace.isValid()) {
+            colorSpaceDesc = colorSpace.description();
+            if (colorSpaceDesc.isEmpty())
+                colorSpaceDesc = tr("Custom"); // Unrecognized but valid color profile
+        }
+
         DkStatusBarManager::instance().setMessage(QString::number(
                                                       qRound((float)(mWorldMatrix.m11() * mImgMatrix.m11() * 100)))
                                                       + "%",
                                                   DkStatusBar::status_zoom_info);
-        DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()),
+        DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()) + u'|' + colorSpaceDesc,
                                                   DkStatusBar::status_format_info);
         DkStatusBarManager::instance().setMessage(QString::number(newImg.width()) + " x "
                                                       + QString::number(newImg.height()),
