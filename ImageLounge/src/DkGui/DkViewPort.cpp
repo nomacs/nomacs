@@ -253,15 +253,6 @@ void DkViewPort::setPaintWidget(QWidget *widget, bool removeWidget)
     mNextButton->raise();
     mPrevButton->raise();
 }
-
-#ifdef WITH_OPENCV
-void DkViewPort::setImage(cv::Mat newImg)
-{
-    QImage imgQt = DkImage::mat2QImage(newImg);
-    setImage(imgQt);
-}
-#endif
-
 void DkViewPort::updateLoadedImage()
 {
     // should not happen -> the mLoader should send this signal

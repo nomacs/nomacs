@@ -110,10 +110,6 @@ public:
         return &mImgStorage;
     };
 
-#ifdef WITH_OPENCV
-    virtual void setImage(cv::Mat newImg);
-#endif
-
     virtual QImage getImage() const;
 
     // image size in logical pixels (actual size divided by device pixel ratio)

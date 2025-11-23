@@ -257,14 +257,6 @@ void DkBaseViewPort::stopBlockZooming()
 }
 
 // set image --------------------------------------------------------------------
-#ifdef WITH_OPENCV
-void DkBaseViewPort::setImage(cv::Mat newImg)
-{
-    QImage imgQt = DkImage::mat2QImage(newImg);
-    setImage(imgQt);
-}
-#endif
-
 void DkBaseViewPort::setImage(QImage newImg)
 {
     mImgStorage.setImage(newImg);

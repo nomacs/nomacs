@@ -70,10 +70,6 @@ public:
 
     void setPaintWidget(QWidget *widget, bool removeWidget);
 
-#ifdef WITH_OPENCV
-    void setImage(cv::Mat newImg) override;
-#endif
-
     // getter
     QSharedPointer<DkImageContainerT> imageContainer() const;
     void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
