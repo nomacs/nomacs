@@ -34,6 +34,7 @@
 #include "DkSettings.h"
 #include "DkTimer.h"
 
+#include <QColorSpace>
 #include <QStringBuilder>
 #include <QtConcurrentRun>
 
@@ -131,8 +132,10 @@ std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadTh
         return std::nullopt;
     }
 
+    QImage thumb = exifThumb ? exifThumb.value().thumb : fullThumb.value();
+
     LoadThumbnailResult res = {
-        exifThumb ? exifThumb.value().thumb : fullThumb.value(),
+        thumb,
         thumbPath,
         std::move(metaData),
         exifThumb.has_value(),
