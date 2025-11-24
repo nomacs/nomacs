@@ -521,7 +521,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
     const QImage img = mImgStorage.image(reqSize);
 
     // draw into an offscreen buffer for display colorspace conversion
-    const QColorSpace targetColorSpace = QColorSpace(QColorSpace::SRgb); // TODO: get profile of this window
+    const QColorSpace targetColorSpace = DkImage::targetColorSpace(this);
     QColorSpace srcColorSpace;
     if (mSvg && mSvg->isValid()) {
         ; // unsupported, rarely used

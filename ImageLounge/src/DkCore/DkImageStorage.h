@@ -141,6 +141,8 @@ public:
     static cv::Mat gammaMat(const cv::Mat &src, double gmma);
     static cv::Mat applyLUT(const cv::Mat &src, const cv::Mat &lut);
 #endif // WITH_OPENCV
+
+    static QColorSpace targetColorSpace(const QWidget *widget);
 };
 
 class DllCoreExport DkImageStorage : public QObject
