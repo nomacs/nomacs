@@ -48,6 +48,7 @@
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QClipboard>
+#include <QColorSpace>
 #include <QComboBox>
 #include <QCompleter>
 #include <QDialogButtonBox>
@@ -1419,6 +1420,8 @@ void DkResizeDialog::drawPreview()
 
     // HiDPI: pixmap inherits this; label paintEvent uses it
     img.setDevicePixelRatio(deviceScale);
+
+    img.convertToColorSpace(DkImage::targetColorSpace(this));
 
     mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 }

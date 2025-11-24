@@ -1164,6 +1164,13 @@ cv::Mat DkImage::applyLUT(const cv::Mat &src, const cv::Mat &lut)
 }
 #endif // WITH_OPENCV
 
+QColorSpace DkImage::targetColorSpace(const QWidget *widget)
+{
+    // TODO: use platform-specific APIs or wait for Qt to get one
+    (void)widget;
+    return {QColorSpace::SRgb};
+}
+
 QPixmap DkImage::colorizePixmap(const QPixmap &icon, const QColor &col, float opacity)
 {
     if (icon.isNull())
