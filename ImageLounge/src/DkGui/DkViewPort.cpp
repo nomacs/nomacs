@@ -285,6 +285,7 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
             || DkSettingsManager::param().display().alwaysAnimate)) {
         QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
         mAnimationBuffer = mImgStorage.image(dr.size());
+        mAnimationBuffer.convertToColorSpace(DkImage::targetColorSpace(this));
         mFadeImgViewRect = mImgViewRect;
         mFadeImgRect = mImgRect;
         mAnimationValue = 1.0f;
