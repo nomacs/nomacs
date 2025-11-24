@@ -40,10 +40,12 @@
 #include "DkUtils.h"
 #include "DkViewPort.h"
 
+#include <DkUtils.h>
 #include <QAction>
 #include <QBoxLayout>
 #include <QButtonGroup>
 #include <QColor>
+#include <QColorSpace>
 #include <QComboBox>
 #include <QCompleter>
 #include <QDoubleSpinBox>
@@ -634,6 +636,8 @@ bool DkOverview::updateThumb()
                               Qt::KeepAspectRatio,
                               Qt::FastTransformation);
     mThumb = mThumb.scaled(thumbSize.width(), thumbSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    mThumb.convertToColorSpace(DkImage::targetColorSpace(this));
 
     return true;
 }
