@@ -936,10 +936,14 @@ void DkActionManager::createMenus(QWidget *parent)
 
 void DkActionManager::init()
 {
+    // FIXME: find a way not to hold pointers to things we do not own
     mAppManager = new DkAppManager(DkUtils::getMainWindow());
 
 #ifdef WITH_PLUGINS
     mPluginManager = new DkPluginActionManager(DkUtils::getMainWindow());
+    QObject::connect(mPluginManager, &QObject::destroyed, [this] {
+        mPluginManager = nullptr;
+    });
 #endif
 
     createIcons();
@@ -1826,6 +1830,11 @@ void DkActionManager::enableViewPortPluginActions(bool enable) const
     // and disable when de-activated
 
 #ifdef WITH_PLUGINS
+    // fix use-after-free since mPluginManger is owned by main window
+    if (!mPluginManager) {
+        return;
+    }
+
     // opening another plugin is currently broken
     // fixme: for some reason these don't disable in the menu ?!
     for (auto *a : mPluginManager->pluginActions())
