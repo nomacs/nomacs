@@ -473,7 +473,16 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     if (!loader.isNull()) {
-        setEditImage(img, tr("Original Image"));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        QColorSpace colorSpace = img.colorSpace();
+        if (colorSpace.colorModel() == QColorSpace::ColorModel::Cmyk) {
+            img.convertToColorSpace(QColorSpace(QColorSpace::SRgb));
+            setEditImage(img, tr("CMYK to sRGB"));
+        } else
+#endif
+        {
+            setEditImage(img, tr("Original Image"));
+        }
 
         // log some details, this is formatted to make parsing easier
         // e.g. nomacs 2>&1 | grep Loader::  | column -t
