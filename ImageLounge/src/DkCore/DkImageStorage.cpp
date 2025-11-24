@@ -1620,6 +1620,8 @@ QImage DkImage::createThumb(const QImage &image, int maxSize)
     QImage thumb = image.scaled(QSize(imgW * 2, imgH * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
     thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
+    thumb.convertToColorSpace(QColorSpace{QColorSpace::SRgb});
+
     // qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
 
     return thumb;
