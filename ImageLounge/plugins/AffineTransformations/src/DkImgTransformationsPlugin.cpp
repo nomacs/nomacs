@@ -411,7 +411,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
     if (!viewport)
         return;
 
-    const QImage img = viewport->getImage();
+    QImage img = viewport->getImage();
     const QRect imgRect = img.rect();
 
     QTransform imgMat;
@@ -458,6 +458,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
 
     painter.setWorldTransform(imgMat, true);
 
+    img.convertToColorSpace(nmc::DkImage::targetColorSpace(this));
     painter.drawImage(imgRect, img);
 
     painter.setPen(QColor(255, 255, 255, 150));
