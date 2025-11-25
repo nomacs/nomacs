@@ -26,7 +26,9 @@
  *******************************************************************************************************/
 
 #include "DkFakeMiniaturesDialog.h"
+#include "DkImageStorage.h"
 
+#include <QColorSpace>
 #include <QLayout>
 #include <QMouseEvent>
 #include <QPainter>
@@ -193,13 +195,16 @@ void DkFakeMiniaturesDialog::createImgPreview()
  **/
 void DkFakeMiniaturesDialog::drawImgPreview()
 {
-    QImage preview = QImage(previewWidth, previewHeight, QImage::Format_ARGB32);
+    QImage preview = QImage(previewWidth, previewHeight, imgPreview.format());
+    preview.setColorSpace(imgPreview.colorSpace());
     preview.fill(Qt::transparent);
     QPainter painter(&preview);
     painter.setPen(QColor(0, 0, 0));
     painter.drawRect(0, 0, previewWidth - 1, previewHeight - 1);
     painter.setBackgroundMode(Qt::TransparentMode);
     painter.drawImage(previewImgRect, imgPreview);
+    painter.end();
+    preview.convertToColorSpace(nmc::DkImage::targetColorSpace(this));
     previewLabel->setPixmap(QPixmap::fromImage(preview));
 }
 
@@ -223,7 +228,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
     int saturation = saturationWidget->getToolValue();
     float satFactor = saturation / 50.0f + 1;
 
-    cv::Mat blurImg = DkFakeMiniaturesDialog::qImage2Mat(inImg);
+    cv::Mat blurImg = nmc::DkImage::qImage2Mat(inImg);
     cv::Mat distImg(blurImg.size(), CV_8UC1);
     distImg = 255;
     cv::Mat roi(distImg, cv::Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
@@ -280,7 +285,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
         }
     }
 
-    return (DkFakeMiniaturesDialog::mat2QImage(blurImg));
+    return nmc::DkImage::mat2QImage(blurImg, inImg);
 #else
     return inImg;
 #endif
