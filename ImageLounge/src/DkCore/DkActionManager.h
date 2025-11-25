@@ -75,7 +75,7 @@ protected:
     void saveSettings() const;
     void loadSettings();
     void assignIcon(QAction *app) const;
-    bool containsApp(QVector<QAction *> apps, const QString &appName) const;
+    bool containsApp(QStringView appName) const;
 
     QString searchForSoftware(const QString &organization,
                               const QString &application,
