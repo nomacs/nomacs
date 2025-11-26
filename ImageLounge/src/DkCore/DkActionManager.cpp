@@ -70,6 +70,29 @@ DkAppManager::DkAppManager(QWidget *parent)
     mDefaultNames[app_explorer] = "ExplorerAction";
 
     loadSettings();
+
+#ifndef Q_OS_WIN
+    if (!containsApp(kOpenDirAppName)) {
+#if defined(Q_OS_MACOS)
+        QString fileManagerName = tr("&Finder");
+#else
+        QString fileManagerName = tr("&File Manager");
+#endif
+        auto *action = new QAction(fileManagerName);
+        action->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
+        action->setToolTip(kOpenDirAppName.toString());
+        action->setObjectName(kOpenDirAppName);
+        mApps.append(action);
+    }
+#endif
+
+    if (!containsApp(kOpenFileAppName)) {
+        auto *action = new QAction(tr("&Default Application"));
+        action->setToolTip(kOpenFileAppName.toString());
+        action->setObjectName(kOpenFileAppName);
+        mApps.append(action);
+    }
+
     if (mFirstTime)
         findDefaultSoftware();
 
