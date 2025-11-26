@@ -132,6 +132,12 @@ if(NOT LINUXDEPLOY_BINARY)
     message(NOTICE "linuxdeploy is not available or working, required for AppImage")
     message(NOTICE "you may install a compatible version with scripts/build-linuxdeploy.sh")
 else()
+    if (Qt6_VERSION VERSION_LESS "6.10.0")
+        set(PLATFORM_PLUGINS "libqwayland-egl.so\\;libqwayland-generic.so")
+    else()
+        set(PLATFORM_PLUGINS "libqwayland.so")
+    endif()
+
     # we may have multiple targets writing into ./AppDir/usr/lib, this target serializes them properly
     add_custom_target(
         _appdir_create
@@ -204,7 +210,7 @@ else()
             "LDAI_NO_APPSTREAM=1" # FIXME: support appstream
             "QMAKE=qmake6" # correct qmake for *this* build (even though we don't use it)
             "EXTRA_QT_PLUGINS=waylandcompositor" # wayland support not included by default
-            "EXTRA_PLATFORM_PLUGINS=libqwayland-egl.so\\;libqwayland-generic.so" # wayland platforms
+            "EXTRA_PLATFORM_PLUGINS=${PLATFORM_PLUGINS}" # wayland platforms
             ${LINUXDEPLOY_BINARY} --appdir AppDir --plugin=qt --output appimage --verbosity=2
             --desktop-file=./AppDir/usr/share/applications/org.nomacs.ImageLounge.desktop ${LIBHEIF_ARGS}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
