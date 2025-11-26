@@ -47,6 +47,9 @@ class DllCoreExport DkAppManager : public QObject
     Q_OBJECT
 
 public:
+    static constexpr QStringView kOpenDirAppName = u"OpenDir";
+    static constexpr QStringView kOpenFileAppName = u"OpenFile";
+
     explicit DkAppManager(QWidget *parent = nullptr);
     ~DkAppManager() override;
 

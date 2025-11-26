@@ -1695,8 +1695,54 @@ void DkNoMacs::openFileWith(QAction *action)
 {
     if (!action)
         return;
+    static constexpr auto extractToTmpFile = [](const DkFileInfo &fileInfo) {
+        DkFileInfo result;
 
-    QFileInfo app(action->toolTip());
+        // copy to temporary file
+        QString tmpFilePath = DkUtils::getTemporaryFilePath(fileInfo.baseName(), fileInfo.suffix());
+        if (tmpFilePath.isEmpty())
+            return result;
+
+        QFile tmpFile(tmpFilePath);
+        if (!tmpFile.open(QFile::WriteOnly))
+            return result;
+
+        auto io = fileInfo.getIODevice();
+        if (!io)
+            return result;
+
+        QByteArray bytes = io->readAll();
+        if (bytes.size() != tmpFile.write(bytes))
+            return result;
+
+        result = DkFileInfo(tmpFilePath);
+        return result;
+    };
+
+    const QString appPath = action->toolTip();
+    DkFileInfo fileInfo(getTabWidget()->getCurrentFilePath());
+
+    if (appPath == DkAppManager::kOpenDirAppName) {
+        if (fileInfo.isFromZip()) {
+            fileInfo = DkFileInfo(fileInfo.dirPath());
+        }
+        QUrl url = QUrl::fromLocalFile(fileInfo.dirPath());
+        QDesktopServices::openUrl(url);
+        return;
+    }
+
+    if (appPath == DkAppManager::kOpenFileAppName) {
+        if (fileInfo.isFromZip()) {
+            fileInfo = extractToTmpFile(fileInfo);
+        }
+        if (fileInfo.exists()) {
+            QUrl url = QUrl::fromLocalFile(fileInfo.path());
+            QDesktopServices::openUrl(url);
+        }
+        return;
+    }
+
+    QFileInfo app(appPath);
 
     if (!app.exists())
         getTabWidget()->setInfo("Sorry, " % app.fileName() % " does not exist");
@@ -1706,26 +1752,11 @@ void DkNoMacs::openFileWith(QAction *action)
     // open the file location, not the file itself
     bool openLocation = app.fileName() == "explorer.exe";
 
-    DkFileInfo fileInfo(getTabWidget()->getCurrentFilePath());
     if (!openLocation && fileInfo.isFromZip()) {
-        // copy to temporary file
-        QString tmpFilePath = DkUtils::getTemporaryFilePath(fileInfo.baseName(), fileInfo.suffix());
-        if (tmpFilePath.isEmpty())
+        fileInfo = extractToTmpFile(fileInfo);
+        if (!fileInfo.exists()) {
             return;
-
-        QFile tmpFile(tmpFilePath);
-        if (!tmpFile.open(QFile::WriteOnly))
-            return;
-
-        auto io = fileInfo.getIODevice();
-        if (!io)
-            return;
-
-        QByteArray bytes = io->readAll();
-        if (bytes.size() != tmpFile.write(bytes))
-            return;
-
-        fileInfo = DkFileInfo(tmpFilePath);
+        }
     }
     QString filePath = fileInfo.path();
     if (openLocation)
