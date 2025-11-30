@@ -237,6 +237,8 @@ public:
         int thumbSize;
         int iconSize;
         int thumbPreviewSize;
+        bool highQualityThumbs;
+
         // bool saveThumb;
         int interpolateZoomLevel;
         bool showCrop;

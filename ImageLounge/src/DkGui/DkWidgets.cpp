@@ -179,7 +179,7 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
                 opt = LoadThumbnailOption::force_full;
             }
 
-            std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
+            std::optional<LoadThumbnailResult> res = loadThumbnail(LoadThumbnailRequest{filePath, opt});
             if (!res || (!forceSave && res->fromExif)) {
                 return;
             }

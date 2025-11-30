@@ -34,6 +34,7 @@
 #include <optional>
 #include <queue>
 
+#include "DkImageStorage.h"
 #include "DkMetaData.h"
 
 class QThreadPool;
@@ -58,6 +59,42 @@ private:
     QThreadPool *mPool;
 };
 
+enum class LoadThumbnailOption {
+    // Try to load EXIF thumbnail first, and fall back to full image if not exist.
+    none,
+
+    // Only load EXIF thumbnail.
+    force_exif,
+
+    // Return requested size if smaller than full image
+    force_size,
+
+    // Only load full image.
+    force_full,
+};
+
+using ThumbnailId = size_t;
+
+struct LoadThumbnailRequest {
+    ThumbnailId id{};
+    QString filePath{};
+    LoadThumbnailOption option{};
+    int size{};
+    ScaleConstraint constraint{};
+
+    LoadThumbnailRequest() = default;
+
+    explicit LoadThumbnailRequest(const QString &filePath_,
+                                  LoadThumbnailOption option_ = {},
+                                  int size_ = max_thumb_size,
+                                  ScaleConstraint constraint_ = {});
+
+    size_t sizeInBytes()
+    {
+        return sizeof(this) + filePath.size() * 2;
+    }
+};
+
 struct LoadThumbnailResult {
     QImage thumb{};
     QString filePath{};
@@ -66,18 +103,7 @@ struct LoadThumbnailResult {
     bool transformed{};
 };
 
-enum class LoadThumbnailOption {
-    // Try to load EXIF thumbnail first, and fall back to full image if not exist.
-    none,
-
-    // Only load EXIF thumbnail.
-    force_exif,
-
-    // Only load full image.
-    force_full,
-};
-
-std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt);
+std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request);
 
 struct ThumbnailFromMetadata {
     QImage thumb{};
@@ -91,37 +117,41 @@ class DkThumbLoader : public QObject
     Q_OBJECT
 
     struct LoadThumbnailResultLocal {
+        LoadThumbnailRequest request;
         QImage thumb{};
-        QString filePath{};
         bool valid{};
         bool fromExif{};
+        size_t sizeInBytes()
+        {
+            return sizeof(this) + request.sizeInBytes() + request.sizeInBytes() + thumb.sizeInBytes();
+        }
     };
 
-    QCache<QString, LoadThumbnailResultLocal> mThumbnailCache{100000000}; // 100 MB
+    QCache<ThumbnailId, LoadThumbnailResultLocal> mThumbnailCache{100000000}; // 100 MB
     std::vector<QFutureWatcher<LoadThumbnailResultLocal>> mWatchers{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal> *> mIdleWatchers{};
-    std::queue<QString> mQueue{};
+    std::queue<LoadThumbnailRequest> mQueue{};
     std::queue<LoadThumbnailResultLocal> mFullImageQueue{};
-    QHash<QString, int> mCounts{};
+    QHash<ThumbnailId, int> mCounts{};
 
 public:
     DkThumbLoader();
-    void requestThumbnail(const QString &filePath);
-    void cancelThumbnailRequest(const QString &filePath);
+    void requestThumbnail(const LoadThumbnailRequest &request);
+    void cancelThumbnailRequest(const LoadThumbnailRequest &request);
 
     // When we have full image loaded in the viewport,
     // create a side effect to update the thumbnail.
-    void dispatchFullImage(const QString &filePath, const QImage &img);
+    void dispatchFullImage(const LoadThumbnailRequest &request, const QImage &img);
 
 signals:
+    // TODO: signals should return request object or id
     void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
     void thumbnailLoadFailed(const QString &filePath);
-    void thumbnailRequested(const QString &filePath, LoadThumbnailOption opt = LoadThumbnailOption::force_exif);
 
 private:
     void onThumbnailLoadFinished();
-    static LoadThumbnailResultLocal loadThumbnailLocal(const QString &filePath);
-    static LoadThumbnailResultLocal scaleFullThumbnail(const QString &filePath, const QImage &img);
+    static LoadThumbnailResultLocal loadThumbnailLocal(const LoadThumbnailRequest &request);
+    static LoadThumbnailResultLocal scaleFullThumbnail(const LoadThumbnailRequest &request, const QImage &img);
     void handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w);
 };
 }

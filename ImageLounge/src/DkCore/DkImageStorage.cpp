@@ -1583,35 +1583,68 @@ bool DkImage::unsharpMask(QImage &img, float sigma, float weight)
     return true;
 }
 
-QImage DkImage::createThumb(const QImage &image, int maxSize)
+QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint constraint)
 {
-    if (image.isNull()) {
+    if (image.isNull())
         return image;
-    }
-    const double maxThumbSize = maxSize == -1 ? max_thumb_size * DkSettingsManager::param().dpiScaleFactor() : maxSize;
+
+    maxSize = maxSize == -1 ? max_thumb_size * DkSettingsManager::param().dpiScaleFactor() : maxSize;
     int imgW = image.width();
     int imgH = image.height();
 
-    if (imgW <= maxThumbSize && imgH <= maxThumbSize) {
+    if (imgW <= maxSize && imgH <= maxSize)
         return image;
+
+    int heightForMaxWidth = maxSize * imgH / imgW; // height if imgW == maxSize
+    int widthForMaxHeight = maxSize * imgW / imgH; // width if imgH == maxSize
+
+    bool wide = imgW > imgH;
+    imgW = maxSize;
+    imgH = maxSize;
+
+    switch (constraint) {
+    case ScaleConstraint::longest_side:
+        if (wide)
+            imgH = heightForMaxWidth;
+        else
+            imgW = widthForMaxHeight;
+        break;
+    case ScaleConstraint::shortest_side:
+        if (wide)
+            imgW = widthForMaxHeight;
+        else
+            imgH = heightForMaxWidth;
+        break;
+    case ScaleConstraint::width:
+        imgH = heightForMaxWidth;
+        break;
+    case ScaleConstraint::height:
+        imgW = widthForMaxHeight;
+        break;
+    default:
+        Q_UNREACHABLE();
     }
 
-    if (imgW > imgH) {
-        imgH = qRound(maxThumbSize / imgW * imgH);
-        imgW = maxThumbSize;
-    } else if (imgW < imgH) {
-        imgW = qRound(maxThumbSize / imgH * imgW);
-        imgH = maxThumbSize;
-    } else {
-        imgW = maxThumbSize;
-        imgH = maxThumbSize;
+    QImage thumb;
+
+#ifdef WITH_OPENCV
+    if (DkSettingsManager::param().display().highQualityThumbs) {
+        try {
+            cv::Mat rImgCv = DkImage::qImage2Mat(image);
+            cv::Mat tmp;
+            cv::resize(rImgCv, tmp, cv::Size(imgW, imgH), 0, 0, CV_INTER_AREA);
+            thumb = DkImage::mat2QImage(tmp);
+        } catch (...) {
+            qWarning() << "imageStorageScaleToSize: OpenCV exception caught while resizing...";
+        }
     }
+#endif
 
-    // fast downscaling
-    QImage thumb = image.scaled(QSize(imgW * 2, imgH * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
-    thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    // qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
+    if (thumb.isNull()) {
+        // fast downscaling
+        thumb = image.scaled(QSize(imgW * 2, imgH * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
+        thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
 
     return thumb;
 }

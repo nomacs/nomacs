@@ -164,6 +164,7 @@ private:
     std::vector<DkFileInfo> mFiles{};
 
     struct Thumb {
+        LoadThumbnailRequest request{};
         QImage image{};
         bool notExist{};
         bool fromExif{};
@@ -200,6 +201,7 @@ public:
     QString filePath() const;
     QImage image() const;
     void setFillSquare(bool value);
+    void setFileInfo(const DkFileInfo &info);
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;
@@ -223,8 +225,11 @@ private:
     QPen mSelectPen;
     QBrush mSelectBrush;
     DkThumbLoader *mThumbLoader = nullptr;
+    LoadThumbnailRequest mThumbRequest{};
     bool mThumbNotExist = false;
     bool mFetchingThumb = false;
+    qreal mDevicePixelRatio = 1.0;
+    LoadThumbnailOption mThumbOption = LoadThumbnailOption::none;
     bool mIsHovered = false;
     bool mFillSquare = false;
 
@@ -242,6 +247,9 @@ public:
     void updateLayout();
     QStringList getSelectedFiles() const;
     QVector<DkThumbLabel *> getSelectedThumbs() const;
+
+    /// return thumb in the middle of the (visible) view
+    DkThumbLabel *getCenterThumb() const;
 
     void setImageLoader(QSharedPointer<DkImageLoader> loader);
     void copyImages(const QMimeData *mimeData, const Qt::DropAction &da = Qt::CopyAction) const;
