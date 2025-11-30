@@ -36,6 +36,7 @@
 #include <QBuffer>
 #include <QButtonGroup>
 #include <QCheckBox>
+#include <QColorSpace>
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QGroupBox>
@@ -324,6 +325,7 @@ void DkCompressDialog::drawPreview()
 
     QImage origImg = mOrigView->getCurrentImageRegion();
     mNewImg = QImage(origImg.size(), QImage::Format_ARGB32);
+    mNewImg.setColorSpace(origImg.colorSpace());
 
     if ((mDialogMode == jpg_dialog || mDialogMode == j2k_dialog) && mHasAlpha)
         mNewImg.fill(mBgCol.rgb());
@@ -410,7 +412,7 @@ void DkCompressDialog::drawPreview()
     QImage img = mNewImg.scaled(mPreviewLabel->size() * deviceScale, Qt::KeepAspectRatio, Qt::FastTransformation);
 
     img.setDevicePixelRatio(devicePixelRatioF());
-
+    img.convertToColorSpace(DkImage::targetColorSpace(this));
     mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 }
 
