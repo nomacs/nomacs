@@ -70,10 +70,6 @@ public:
 
     void setPaintWidget(QWidget *widget, bool removeWidget);
 
-#ifdef WITH_OPENCV
-    void setImage(cv::Mat newImg) override;
-#endif
-
     // getter
     QSharedPointer<DkImageContainerT> imageContainer() const;
     void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
@@ -145,8 +141,8 @@ public slots:
     // copy & paste
     void copyPixelColorValue();
     void copyImageBuffer();
-    void copyImage();
-    QMimeData *createMime() const;
+    void copyImagePath();
+    QMimeData *createMimeForDrag() const;
 
     // image manipulators
     virtual void applyManipulator();

@@ -468,7 +468,16 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     if (!loader.isNull()) {
-        setEditImage(img, tr("Original Image"));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        QColorSpace colorSpace = img.colorSpace();
+        if (colorSpace.colorModel() == QColorSpace::ColorModel::Cmyk) {
+            img.convertToColorSpace(QColorSpace(QColorSpace::SRgb));
+            setEditImage(img, tr("CMYK to sRGB"));
+        } else
+#endif
+        {
+            setEditImage(img, tr("Original Image"));
+        }
 
         if (!enableTransform && validOrientation)
             mFlags |= Flag::ignored_orientation;
@@ -1439,9 +1448,14 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
     } else
 #endif
     {
-        bool hasAlpha = DkImage::alphaChannelUsed(img);
-
         QImage sImg = img;
+
+        // we might have premultiplied alpha or a different pixel format and next check will fail
+        if (img.hasAlphaChannel() && img.depth() == 32 && img.format() != QImage::Format_ARGB32)
+            sImg = img.convertToFormat(QImage::Format_ARGB32);
+
+        // if the alpha channel is not actually used we can drop it (requires ARGB32)
+        bool hasAlpha = DkImage::alphaChannelUsed(sImg);
 
         // JPEG 2000 can only handle 32 or 8bit images
         if (!hasAlpha && img.colorTable().empty()
@@ -1803,7 +1817,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString &filePath,
             cPatch.copyTo(cPatchAll);
     }
 
-    img = DkImage::mat2QImage(allPatches);
+    img = DkImage::mat2QImage(allPatches, QImage{});
     img = img.convertToFormat(QImage::Format_ARGB32);
 
     // setEditImage(img, tr("Original Image"));
@@ -2107,7 +2121,7 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba)
         if (rimg) {
             mImg = QImage(rimg->data, rimg->width, rimg->height, rimg->width * 3, QImage::Format_RGB888);
             mImg = mImg.copy(); // make a deep copy...
-            mImg.setColorSpace(QColorSpace(QColorSpace::SRgb));
+            mImg.setColorSpace(QColorSpace(QColorSpace::SRgb)); // for output_color = 1
             LibRaw::dcraw_clear_mem(rimg);
             mImg.setText("RAW.Loader", "Default");
             mImg.setText("RAW.IsPreview", "no");
@@ -2520,7 +2534,9 @@ QImage DkRawLoader::raw2Img(const LibRaw &iProcessor, cv::Mat &img) const
     if (img.channels() == 1)
         cv::cvtColor(img, img, CV_GRAY2RGB);
 
-    return DkImage::mat2QImage(img);
+    QImage src;
+    src.setColorSpace(QColorSpace{QColorSpace::SRgb}); // for output_color=1
+    return DkImage::mat2QImage(img, src);
 }
 
 #endif

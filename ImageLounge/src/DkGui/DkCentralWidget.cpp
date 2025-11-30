@@ -49,6 +49,7 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QColorSpace>
 #include <QDragEnterEvent>
 #include <QFileDialog>
 #include <QIcon>
@@ -197,7 +198,9 @@ QIcon DkTabInfo::getIcon(const QSize &size)
     }
 
     // TODO: better scaling that consider aspect ratio
-    return QPixmap::fromImage(img->imageScaledToHeight(size.height()));
+    QImage icon = img->imageScaledToHeight(size.height());
+    icon.convertToColorSpace(QColorSpace{QColorSpace::SRgb});
+    return QPixmap::fromImage(icon);
 }
 
 QString DkTabInfo::getTabText() const
@@ -950,7 +953,11 @@ void DkCentralWidget::showBatch(bool show)
 {
     showViewPort(!show);
     if (show) {
-        Q_ASSERT(mWidgets[batch_widget]);
+        if (!mWidgets[batch_widget]) {
+            // FIXME: createBatch() wants current dir, but there may be no current dir when restoring tabs
+            mWidgets[batch_widget] = createBatch();
+            mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
+        }
 
         switchWidget(mWidgets[batch_widget]);
 

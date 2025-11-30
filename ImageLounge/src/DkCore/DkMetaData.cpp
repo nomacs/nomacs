@@ -66,9 +66,10 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
         try {
             // Load new Exiv2::Image object
             metaDataN->mExifImg = Exiv2::ImageFactory::create(mExifImg->imageType());
-            // Copy exif data from old object into new object
-            Exiv2::ExifData data = mExifImg->exifData();
-            metaDataN->mExifImg->setExifData(data); // explicit copy of list<Exifdatum>
+            // Copy any data from old object that we are going to save back to the image
+            metaDataN->mExifImg->setExifData(mExifImg->exifData());
+            metaDataN->mExifImg->setXmpData(mExifImg->xmpData());
+            metaDataN->mExifImg->setIptcData(mExifImg->iptcData());
             metaDataN->mExifState = dirty;
         } catch (...) {
             metaDataN->mExifState = no_data;
@@ -1258,12 +1259,8 @@ bool DkMetaDataT::setRating(int r)
     if (r > 0) {
         exifData["Exif.Image.Rating"] = uint16_t(r);
         exifData["Exif.Image.RatingPercent"] = ratingPercent;
-
-        auto v = Exiv2::Value::create(Exiv2::xmpText);
-        v->read(std::to_string(r));
-        xmpData.add(Exiv2::XmpKey("Xmp.xmp.Rating"), v.get());
-        v->read(std::to_string(ratingPercent));
-        xmpData.add(Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating"), v.get());
+        xmpData["Xmp.xmp.Rating"] = r;
+        xmpData["Xmp.MicrosoftPhoto.Rating"] = ratingPercent;
     } else {
         Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Rating");
         auto pos = exifData.findKey(key);
@@ -1275,18 +1272,15 @@ bool DkMetaDataT::setRating(int r)
         if (pos != exifData.end())
             exifData.erase(pos);
 
-        // Xmp data is add instead of set, so the key could be duplicated.
-        constexpr std::string_view xmpK1 = "Xmp.xmp.Rating";
-        constexpr std::string_view xmpK2 = "Xmp.MicrosoftPhoto.Rating";
-        auto it = xmpData.begin();
-        while (it != xmpData.end()) {
-            const std::string k = it->key();
-            if (k != xmpK1 && k != xmpK2) {
-                it++;
-                continue;
-            }
-            it = xmpData.erase(it);
-        }
+        Exiv2::XmpKey key2 = Exiv2::XmpKey("Xmp.xmp.Rating");
+        auto pos2 = xmpData.findKey(key2);
+        if (pos2 != xmpData.end())
+            xmpData.erase(pos2);
+
+        key2 = Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating");
+        pos2 = xmpData.findKey(key2);
+        if (pos2 != xmpData.end())
+            xmpData.erase(pos2);
     }
 
     try {

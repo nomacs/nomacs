@@ -577,7 +577,7 @@ DkThemeManager::~DkThemeManager()
 {
     for (auto &path : mTempFiles)
         QFile::remove(path);
-    QDir().rmpath(mTempDirPath);
+    QDir().rmdir(mTempDirPath);
 }
 
 DkThemeManager &DkThemeManager::instance()
@@ -1291,7 +1291,10 @@ QString DkThemeManager::replaceMacros(const QString &cssString, const ColorBindi
              data.replace("#231F20", qPrintable(svgColor));
              outFile.write(data);
 
-             return QString("url(%1)").arg(tmpPath);
+             // supply a valid CSS path, escape backslashes and double-quotes
+             tmpPath = tmpPath.replace("\\", "\\\\");
+             tmpPath = tmpPath.replace("\"", "\\\"");
+             return QStringView(u"url(\"%1\")").arg(tmpPath);
          }},
     };
 

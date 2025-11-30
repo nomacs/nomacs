@@ -1595,42 +1595,7 @@ void DkThumbScene::deleteSelected()
     int answer = msgBox->exec();
 
     if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
-        blockSignals(true); // setSelected may emit
-        mLoader->blockSignals(true); // use-after-free if loader emits in the loop
-
-        mLastSelectedIdx = -1;
-
-        for (int i = 0; i < mThumbLabels.size(); i++) {
-            DkThumbLabel *thumb = mThumbLabels.at(i);
-            if (!thumb->isSelected())
-                continue;
-
-            if (mLastSelectedIdx < 0)
-                mLastSelectedIdx = i;
-
-            const QString filePath = thumb->filePath();
-            const QString fileName = QFileInfo(filePath).fileName();
-
-            if (!DkUtils::moveToTrash(filePath)) {
-                QMessageBox::critical(DkUtils::getMainWindow(),
-                                      tr("Error"),
-                                      tr("Sorry, I cannot delete:\n%1").arg(fileName),
-                                      QMessageBox::Ok | QMessageBox::Cancel);
-
-                if (answer == QMessageBox::Cancel) {
-                    break;
-                }
-            }
-
-            // we might try to delete it twice because directoryChanged() can defer the update
-            thumb->setSelected(false);
-        }
-
-        mLoader->blockSignals(false);
-        blockSignals(false);
-
-        if (mLoader)
-            mLoader->directoryChanged(mLoader->getDirPath());
+        (void)DkUtils::moveToTrash(getSelectedFiles());
     }
 }
 
@@ -2234,12 +2199,10 @@ void DkThumbScrollWidget::enableSelectionActions()
     bool isFromZip = hasSelection && DkFileInfo(files[0]).isFromZip();
 
     DkActionManager &am = DkActionManager::instance();
-    am.action(DkActionManager::preview_copy)->setEnabled(hasSelection && !isFromZip);
-
+    am.action(DkActionManager::preview_copy)->setEnabled(hasSelection);
     am.action(DkActionManager::preview_rename)->setEnabled(hasSelection && !isFromZip);
     am.action(DkActionManager::preview_delete)->setEnabled(hasSelection && !isFromZip);
     am.action(DkActionManager::preview_batch)->setEnabled(hasSelection);
-
     am.action(DkActionManager::preview_select_all)->setChecked(mThumbsScene->allThumbsSelected());
 }
 
@@ -2557,11 +2520,18 @@ void DkRecentDir::removeFromHistory() const
         pinnedFiles.removeAll(filePath);
         recentFiles.removeAll(filePath);
     }
+
+    DkSettingsManager::param().saveHistory();
 }
 
 // -------------------------------------------------------------------- DkRecentDirManager
 DkRecentDirManager::DkRecentDirManager()
 {
+    // sync with other instances, but allow private mode to have its own temporary history
+    if (!DkSettingsManager::param().app().privateMode) {
+        DkSettingsManager::param().loadHistory();
+    }
+
     // pinned dirs appear first, followed by dirs of recent files
     mDirs = genFileLists(DkSettingsManager::param().global().pinnedFiles, true);
     QList<DkRecentDir> recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);

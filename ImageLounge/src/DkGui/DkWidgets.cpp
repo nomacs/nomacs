@@ -40,10 +40,12 @@
 #include "DkUtils.h"
 #include "DkViewPort.h"
 
+#include <DkUtils.h>
 #include <QAction>
 #include <QBoxLayout>
 #include <QButtonGroup>
 #include <QColor>
+#include <QColorSpace>
 #include <QComboBox>
 #include <QCompleter>
 #include <QDoubleSpinBox>
@@ -635,6 +637,8 @@ bool DkOverview::updateThumb()
                               Qt::FastTransformation);
     mThumb = mThumb.scaled(thumbSize.width(), thumbSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
+    mThumb.convertToColorSpace(DkImage::targetColorSpace(this));
+
     return true;
 }
 
@@ -1045,7 +1049,7 @@ void DkRatingLabel::init()
 void DkRatingLabel::editRating(int rating)
 {
     if (mRating == rating) {
-        return;
+        rating--; // unchecking a star
     }
 
     emit ratingEdited(rating);

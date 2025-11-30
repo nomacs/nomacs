@@ -36,6 +36,7 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QCheckBox>
+#include <QColorSpace>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QMouseEvent>
@@ -410,7 +411,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
     if (!viewport)
         return;
 
-    const QImage img = viewport->getImage();
+    QImage img = viewport->getImage();
     const QRect imgRect = img.rect();
 
     QTransform imgMat;
@@ -457,6 +458,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
 
     painter.setWorldTransform(imgMat, true);
 
+    img.convertToColorSpace(nmc::DkImage::targetColorSpace(this));
     painter.drawImage(imgRect, img);
 
     painter.setPen(QColor(255, 255, 255, 150));
@@ -585,6 +587,8 @@ QImage DkImgTransformationsViewPort::getTransformedImage()
                 affineTransform.scale(mScaleValues.x(), mScaleValues.y());
 
                 QImage paintedImage = QImage(affineTransform.mapRect(inImage.rect()).size(), inImage.format());
+                paintedImage.setColorSpace(inImage.colorSpace());
+                paintedImage.setColorTable(inImage.colorTable());
                 QPainter imagePainter(&paintedImage);
                 imagePainter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
                 imagePainter.setTransform(affineTransform);
@@ -603,6 +607,8 @@ QImage DkImgTransformationsViewPort::getTransformedImage()
                 affineTransform.translate(-inImage.width() / 2, -inImage.height() / 2);
 
                 QImage paintedImage = QImage(affineTransform.mapRect(inImage.rect()).size(), inImage.format());
+                paintedImage.setColorSpace(inImage.colorSpace());
+                paintedImage.setColorTable(inImage.colorTable());
                 QPainter imagePainter(&paintedImage);
                 imagePainter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
                 imagePainter.fillRect(paintedImage.rect(), Qt::white);
@@ -652,6 +658,8 @@ QImage DkImgTransformationsViewPort::getTransformedImage()
                 affineTransform.shear(shearValues.x(),shearValues.y());
                 */
                 QImage paintedImage = QImage(affineTransform.mapRect(inImage.rect()).size(), inImage.format());
+                paintedImage.setColorSpace(inImage.colorSpace());
+                paintedImage.setColorTable(inImage.colorTable());
                 QPainter imagePainter(&paintedImage);
                 imagePainter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
                 imagePainter.fillRect(paintedImage.rect(), Qt::white);

@@ -544,7 +544,12 @@ void DkFilenameWidget::createLayout()
 {
     mLayout = new QGridLayout(this);
     mLayout->setContentsMargins(0, 0, 0, 5);
-    setMaximumWidth(500);
+    mLayout->setColumnStretch(0, 0); // segment type (fixed)
+    mLayout->setColumnStretch(1, 1); // option 1 (stretch)
+    mLayout->setColumnStretch(2, 1); // option 2 (stretch)
+    mLayout->setColumnStretch(3, 0); // plus (fixed)
+    mLayout->setColumnStretch(4, 0); // minus (fixed)
+    setMaximumWidth(640);
 
     mCbType = new QComboBox(this);
     mCbType->setSizeAdjustPolicy(QComboBox::AdjustToContents);
@@ -580,14 +585,10 @@ void DkFilenameWidget::createLayout()
     mLeText = new QLineEdit(this);
     connect(mLeText, &QLineEdit::textChanged, this, &DkFilenameWidget::changed);
 
-    mPbPlus = new QPushButton("+", this);
-    mPbPlus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    mPbPlus->setMinimumSize(10, 10);
-    mPbPlus->setMaximumSize(30, 30);
-    mPbMinus = new QPushButton("-", this);
-    mPbMinus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    mPbMinus->setMinimumSize(10, 10);
-    mPbMinus->setMaximumSize(30, 30);
+    const char *plusSign = "\xEF\xBC\x8B"; // U+FF0B FULLWIDTH PLUS SIGN
+    const char *minusSign = "\xE2\x88\x92"; // U+2212 MINUS SIGN
+    mPbPlus = new QPushButton(QString::fromUtf8(plusSign), this);
+    mPbMinus = new QPushButton(QString::fromUtf8(minusSign), this);
     connect(mPbPlus, &QPushButton::clicked, this, &DkFilenameWidget::pbPlusPressed);
     connect(mPbMinus, &QPushButton::clicked, this, &DkFilenameWidget::pbMinusPressed);
     connect(mPbPlus, &QPushButton::clicked, this, &DkFilenameWidget::changed);
@@ -623,8 +624,7 @@ void DkFilenameWidget::showOnlyFilename()
     mLeText->hide();
 
     mLayout->addWidget(mCbType, 0, fileNameWidget_type);
-    mLayout->addWidget(mCbCase, 0, fileNameWidget_input1);
-    // curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2 );
+    mLayout->addWidget(mCbCase, 0, fileNameWidget_input1, 1, 2);
     mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
     mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
 }
@@ -653,8 +653,7 @@ void DkFilenameWidget::showOnlyText()
     mCbCase->hide();
 
     mLayout->addWidget(mCbType, 0, fileNameWidget_type);
-    mLayout->addWidget(mLeText, 0, fileNameWidget_input1);
-    // curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2);
+    mLayout->addWidget(mLeText, 0, fileNameWidget_input1, 1, 2);
     mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
     mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
 }
@@ -1879,8 +1878,12 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager &manager)
     mMplWidgets << new DkColorWidget(manager.manipulatorExt(DkManipulatorManager::m_color), this);
     mMplWidgets << new DkResizeWidget(manager.manipulatorExt(DkManipulatorManager::m_resize), this);
 
-    for (QWidget *w : mMplWidgets)
+    for (auto *w : mMplWidgets) {
+        connect(w->baseManipulator()->action(), &QAction::triggered, this, [this, w] {
+            renderPreview(QSharedPointer<DkBaseManipulator>(w->baseManipulator()));
+        });
         mSettingsLayout->addWidget(w);
+    }
 
     for (QAction *a : manager.actions())
         connect(a,
@@ -1958,6 +1961,19 @@ void DkBatchManipulatorWidget::selectionChanged(const QItemSelection &selected)
     // qDebug() << "selection changed...";
 }
 
+void DkBatchManipulatorWidget::renderPreview(QSharedPointer<DkBaseManipulator> mpl)
+{
+    QImage img = mpl->apply(mPreview);
+    if (qMax(img.width(), img.height()) > mMaxPreview) {
+        // center crop for manipulators that change image size
+        QRect rect = QRect{0, 0, qMin(img.width(), mMaxPreview), qMin(img.height(), mMaxPreview)};
+        rect.moveCenter(img.rect().center());
+        img = img.copy(rect);
+    }
+    img.setDevicePixelRatio(devicePixelRatio());
+    mPreviewLabel->setPixmap(QPixmap::fromImage(img));
+}
+
 void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulator> mpl)
 {
     for (auto w : mMplWidgets)
@@ -1987,22 +2003,21 @@ void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulato
         if (bl.loadGeneral(mPreviewPath)) {
             QImage img = bl.image();
 
+            // TODO: use hq scale filter here
             if (img.height() > img.width())
-                img = img.scaledToHeight(qMin(img.height(), mMaxPreview));
+                img = img.scaledToHeight(qMin(img.height(), mMaxPreview), Qt::SmoothTransformation);
             else
-                img = img.scaledToWidth(qMin(img.width(), mMaxPreview));
+                img = img.scaledToWidth(qMin(img.width(), mMaxPreview), Qt::SmoothTransformation);
 
             mPreview = img;
         } else
             qInfo() << "could not load" << mPreviewPath << "for preview...";
     }
 
-    // update preview
-    if (!mPreview.isNull()) {
-        mPreviewLabel->setPixmap(QPixmap::fromImage(mpl->apply(mPreview)));
-        mPreviewLabel->show();
-    } else
-        mPreviewLabel->hide();
+    mPreviewLabel->setHidden(mPreview.isNull());
+    if (!mPreviewLabel->isHidden()) {
+        renderPreview(mpl);
+    }
 }
 
 void DkBatchManipulatorWidget::selectManipulator()

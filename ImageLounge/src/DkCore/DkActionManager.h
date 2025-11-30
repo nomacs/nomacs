@@ -47,6 +47,9 @@ class DllCoreExport DkAppManager : public QObject
     Q_OBJECT
 
 public:
+    static constexpr QStringView kOpenDirAppName = u"OpenDir";
+    static constexpr QStringView kOpenFileAppName = u"OpenFile";
+
     explicit DkAppManager(QWidget *parent = nullptr);
     ~DkAppManager() override;
 
@@ -75,7 +78,7 @@ protected:
     void saveSettings() const;
     void loadSettings();
     void assignIcon(QAction *app) const;
-    bool containsApp(QVector<QAction *> apps, const QString &appName) const;
+    bool containsApp(QStringView appName) const;
 
     QString searchForSoftware(const QString &organization,
                               const QString &application,

@@ -70,6 +70,29 @@ DkAppManager::DkAppManager(QWidget *parent)
     mDefaultNames[app_explorer] = "ExplorerAction";
 
     loadSettings();
+
+#ifndef Q_OS_WIN
+    if (!containsApp(kOpenDirAppName)) {
+#if defined(Q_OS_MACOS)
+        QString fileManagerName = tr("&Finder");
+#else
+        QString fileManagerName = tr("&File Manager");
+#endif
+        auto *action = new QAction(fileManagerName);
+        action->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
+        action->setToolTip(kOpenDirAppName.toString());
+        action->setObjectName(kOpenDirAppName);
+        mApps.append(action);
+    }
+#endif
+
+    if (!containsApp(kOpenFileAppName)) {
+        auto *action = new QAction(tr("&Default Application"));
+        action->setToolTip(kOpenFileAppName.toString());
+        action->setObjectName(kOpenFileAppName);
+        mApps.append(action);
+    }
+
     if (mFirstTime)
         findDefaultSoftware();
 
@@ -173,7 +196,7 @@ void DkAppManager::findDefaultSoftware()
     QString appPath;
 
     // Photoshop
-    if (!containsApp(mApps, mDefaultNames[app_photohsop])) {
+    if (!containsApp(mDefaultNames[app_photohsop])) {
         appPath = searchForSoftware("Adobe", "Photoshop", "ApplicationPath");
         if (!appPath.isEmpty()) {
             auto *a = new QAction(QObject::tr("&Photoshop"), parent());
@@ -183,7 +206,7 @@ void DkAppManager::findDefaultSoftware()
         }
     }
 
-    if (!containsApp(mApps, mDefaultNames[app_picasa])) {
+    if (!containsApp(mDefaultNames[app_picasa])) {
         // Picasa
         appPath = searchForSoftware("Google", "Picasa", "Directory");
         if (!appPath.isEmpty()) {
@@ -194,7 +217,7 @@ void DkAppManager::findDefaultSoftware()
         }
     }
 
-    if (!containsApp(mApps, mDefaultNames[app_picasa_viewer])) {
+    if (!containsApp(mDefaultNames[app_picasa_viewer])) {
         // Picasa Photo Viewer
         appPath = searchForSoftware("Google", "Picasa", "Directory", "PicasaPhotoViewer.exe");
         if (!appPath.isEmpty()) {
@@ -205,7 +228,7 @@ void DkAppManager::findDefaultSoftware()
         }
     }
 
-    if (!containsApp(mApps, mDefaultNames[app_irfan_view])) {
+    if (!containsApp(mDefaultNames[app_irfan_view])) {
         // IrfanView
         appPath = searchForSoftware("IrfanView", "shell");
         if (!appPath.isEmpty()) {
@@ -216,7 +239,7 @@ void DkAppManager::findDefaultSoftware()
         }
     }
 
-    if (!containsApp(mApps, mDefaultNames[app_explorer])) {
+    if (!containsApp(mDefaultNames[app_explorer])) {
         appPath = "C:/Windows/explorer.exe";
         if (QFileInfo(appPath).exists()) {
             auto *a = new QAction(QObject::tr("&Explorer"), parent());
@@ -227,13 +250,12 @@ void DkAppManager::findDefaultSoftware()
     }
 }
 
-bool DkAppManager::containsApp(QVector<QAction *> apps, const QString &appName) const
+bool DkAppManager::containsApp(QStringView appName) const
 {
-    for (int idx = 0; idx < apps.size(); idx++)
-        if (apps.at(idx)->objectName() == appName)
-            return true;
-
-    return false;
+    auto it = std::find_if(mApps.begin(), mApps.end(), [appName](QAction *action) {
+        return action->objectName() == appName;
+    });
+    return it != mApps.end();
 }
 
 void DkAppManager::assignIcon(QAction *app) const
@@ -936,10 +958,14 @@ void DkActionManager::createMenus(QWidget *parent)
 
 void DkActionManager::init()
 {
+    // FIXME: find a way not to hold pointers to things we do not own
     mAppManager = new DkAppManager(DkUtils::getMainWindow());
 
 #ifdef WITH_PLUGINS
     mPluginManager = new DkPluginActionManager(DkUtils::getMainWindow());
+    QObject::connect(mPluginManager, &QObject::destroyed, [this] {
+        mPluginManager = nullptr;
+    });
 #endif
 
     createIcons();
@@ -1160,11 +1186,11 @@ void DkActionManager::createActions(QWidget *parent)
 
     mEditActions[menu_edit_copy] = new QAction(mEditIcons[icon_edit_copy], QObject::tr("&Copy"), parent);
     mEditActions[menu_edit_copy]->setShortcut(QKeySequence::Copy);
-    mEditActions[menu_edit_copy]->setStatusTip(QObject::tr("copy image"));
+    mEditActions[menu_edit_copy]->setStatusTip(QObject::tr("copy file path"));
 
     mEditActions[menu_edit_copy_buffer] = new QAction(QObject::tr("Copy &Buffer"), parent);
     mEditActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
-    mEditActions[menu_edit_copy_buffer]->setStatusTip(QObject::tr("copy image"));
+    mEditActions[menu_edit_copy_buffer]->setStatusTip(QObject::tr("copy image pixels"));
 
     mEditActions[menu_edit_copy_color] = new QAction(QObject::tr("Copy Co&lor"), parent);
     mEditActions[menu_edit_copy_color]->setShortcut(shortcut_copy_color);
@@ -1826,6 +1852,11 @@ void DkActionManager::enableViewPortPluginActions(bool enable) const
     // and disable when de-activated
 
 #ifdef WITH_PLUGINS
+    // fix use-after-free since mPluginManger is owned by main window
+    if (!mPluginManager) {
+        return;
+    }
+
     // opening another plugin is currently broken
     // fixme: for some reason these don't disable in the menu ?!
     for (auto *a : mPluginManager->pluginActions())

@@ -42,8 +42,10 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QMimeDatabase>
 #include <QMouseEvent>
+#include <QPushButton>
 #include <QRandomGenerator>
 #include <QRegularExpression>
 #include <QSemaphore>
@@ -1089,38 +1091,105 @@ QStringList DkUtils::filterStringList(const QString &query, const QStringList &l
     return resultList;
 }
 
-bool DkUtils::moveToTrash(const QString &filePath)
+bool DkUtils::moveToTrash(const QStringList &files)
 {
-    QFileInfo fileInfo(filePath);
+    bool yesToAll = false;
+    for (auto &filePath : files) {
+        bool ok = false;
+        QFileInfo fileInfo(filePath);
 
-    QFile file(filePath);
-    bool ok = false;
+        QFile file(filePath);
 
-    // delete links first; exists() will fail on a broken symlink
-    if (fileInfo.isSymLink()) {
-        qInfo() << "move to trash: deleting symlink" << filePath;
-        ok = file.remove();
-    } else if (!fileInfo.exists()) {
-        qWarning() << "move to trash: cannot delete a non-existing file: " << filePath;
-        return false;
-    } else {
-        qInfo() << "move to trash: moving" << filePath;
-        ok = file.moveToTrash();
+        // delete links first; exists() will fail on a broken symlink
+        if (fileInfo.isSymLink()) {
+            qInfo() << "[moveToTrash] deleting symlink" << filePath;
+            ok = file.remove();
+        } else if (!fileInfo.exists()) {
+            qWarning() << "[moveToTrash] cannot delete a non-existing file:" << filePath;
+            continue;
+        } else if (yesToAll) {
+            qWarning() << "[moveToTrash] deleting without confirmation:" << filePath;
+            ok = true;
+        } else {
+            qInfo() << "[moveToTrash] moving:" << filePath;
+            ok = file.moveToTrash();
+            if (ok) {
+                qInfo() << "[moveToTrash] moved to:" << file.fileName();
+            }
+        }
+
+        if (!ok) {
+            // clang-format off
+            qWarning().nospace() << "[moveToTrash] error:" << file.errorString()
+                            << "\n\terror:" << file.error()
+                            << "\n\tisFile:" << fileInfo.isFile()
+                            << "\n\tfile permissions:" << file.permissions()
+                            << "\n\tdir permissions:" << QFileInfo(fileInfo.absolutePath()).permissions()
+                            << "\n\towner:" << fileInfo.owner()
+                            << "\n\tgroup:" << fileInfo.group();
+            // clang-format on
+        }
+
+        if (!ok || yesToAll) {
+            int result = 0;
+            if (yesToAll) {
+                result = QMessageBox::YesToAll;
+            } else {
+                // This is mostly going to show up on Windows, format dialog similar to Explorer.
+                // Warning is standard HIG practice for destructive actions
+                QMessageBox msgBox( //
+                    QMessageBox::Warning,
+                    QObject::tr("Delete File Permanently?"),
+                    QObject::tr("I could not move this file to the trash.\n"
+                                "Would you like to permanently delete this file?\n\n"
+                                "%1\n"
+                                "Size: %2\n"
+                                "Date modified: %3\n\n"
+                                "This action cannot be undone.\n")
+                        .arg(fileInfo.fileName())
+                        .arg(DkUtils::readableByte(fileInfo.size()))
+                        .arg(fileInfo.lastModified().toString()),
+                    QMessageBox::NoButton,
+                    DkUtils::getMainWindow());
+
+                // Don't use the plain "Yes" or "Yes to All" since this is destructive
+                QPushButton *deleteButton = msgBox.addButton(QObject::tr("&Delete"), QMessageBox::DestructiveRole);
+                QPushButton *deleteAllButton = nullptr;
+                if (files.count() > 1)
+                    deleteAllButton = msgBox.addButton(QObject::tr("Delete &All"), QMessageBox::DestructiveRole);
+
+                msgBox.addButton(QMessageBox::Cancel);
+                msgBox.setDefaultButton(QMessageBox::Cancel);
+
+                result = msgBox.exec();
+                QAbstractButton *clicked = msgBox.clickedButton();
+                if (clicked) {
+                    if (clicked == deleteButton)
+                        result = QMessageBox::Yes;
+                    if (clicked == deleteAllButton)
+                        result = QMessageBox::YesToAll;
+                }
+            }
+
+            switch (result) {
+            case QMessageBox::YesToAll:
+                yesToAll = true;
+                [[fallthrough]];
+            case QMessageBox::Yes:
+                ok = file.remove();
+                if (!ok) {
+                    qWarning() << "[moveToTrash] delete error:" << file.errorString();
+                    return false;
+                }
+                qInfo() << "[moveToTrash] deleted " << file.fileName();
+                break;
+            default:
+                return false;
+            }
+        }
     }
 
-    if (!ok) {
-        // clang-format off
-        qWarning().nospace() << "move to trash: error:" << file.errorString()
-                             << "\n\terror:" << file.error()
-                             << "\n\tisFile:" << fileInfo.isFile()
-                             << "\n\tfile permissions:" << file.permissions()
-                             << "\n\tdir permissions:" << QFileInfo(fileInfo.absolutePath()).permissions()
-                             << "\n\towner:" << fileInfo.owner()
-                             << "\n\tgroup:" << fileInfo.group();
-        // clang-format on
-    }
-
-    return ok;
+    return true;
 }
 
 QString DkUtils::readableByte(float bytes)
