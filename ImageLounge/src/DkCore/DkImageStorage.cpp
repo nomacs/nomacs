@@ -1166,9 +1166,54 @@ cv::Mat DkImage::applyLUT(const cv::Mat &src, const cv::Mat &lut)
 
 QColorSpace DkImage::targetColorSpace(const QWidget *widget)
 {
-    // TODO: use platform-specific APIs or wait for Qt to get one
-    (void)widget;
-    return {QColorSpace::SRgb};
+    // TODO: add an "Auto" setting and use platform-specific APIs or wait for Qt to get one
+    Q_UNUSED(widget)
+
+    // This could be slow to read from disk so keep a cache
+    static int targetId = 0;
+    static QColorSpace colorSpace;
+
+    const auto &dpy = DkSettingsManager::param().display();
+
+    if (targetId != dpy.targetColorSpace) {
+        targetId = dpy.targetColorSpace;
+        if (targetId == 0) {
+            colorSpace = QColorSpace{};
+        } else if (targetId < 100) {
+            colorSpace = QColorSpace{static_cast<QColorSpace::NamedColorSpace>(targetId)};
+        } else if (targetId < 1000) {
+            int iccIndex = targetId - 100;
+            colorSpace = loadIccProfile(dpy.iccProfiles.value(iccIndex));
+        }
+    }
+
+    return colorSpace;
+}
+
+QColorSpace DkImage::loadIccProfile(const QString &filePath)
+{
+    if (filePath.isEmpty()) {
+        qWarning() << "[loadIccProfile] empty file path";
+        return {};
+    }
+
+    QFile profile(filePath);
+    if (!profile.open(QFile::ReadOnly)) {
+        qWarning() << "[loadIccProfile] open failed" << profile.error() << profile.errorString() << filePath;
+        return {};
+    }
+
+    auto colorSpace = QColorSpace::fromIccProfile(profile.readAll());
+    if (!colorSpace.isValid()) {
+        qWarning() << "[loadIccProfile] invalid color profile" << filePath;
+    }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    else if (!colorSpace.isValidTarget()) {
+        qWarning() << "[loadIccProfile] unsupported for output" << filePath;
+    }
+#endif
+
+    return colorSpace;
 }
 
 QPixmap DkImage::colorizePixmap(const QPixmap &icon, const QColor &col, float opacity)
