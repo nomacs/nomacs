@@ -32,6 +32,7 @@
 
 #include "DkBaseWidgets.h"
 
+class QComboBox;
 class QStackedLayout;
 class QVBoxLayout;
 class QStandardItem;
@@ -181,6 +182,7 @@ public slots:
     void onShowNavigationToggled(bool checked) const;
     void onZoomLevelsEditingFinished() const;
     void onZoomLevelsDefaultClicked() const;
+    void onColorProfileActivated(int index);
 
 signals:
     void infoSignal(const QString &msg) const;
@@ -191,6 +193,7 @@ protected:
 
     QWidget *mZoomLevels = nullptr;
     QLineEdit *mZoomLevelsEdit = nullptr;
+    QComboBox *mColorProfiles = nullptr;
 };
 
 class DkFilePreference : public DkWidget
