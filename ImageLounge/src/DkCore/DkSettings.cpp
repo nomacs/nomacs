@@ -31,6 +31,7 @@
 #include "DkVersion.h"
 
 #include <QApplication>
+#include <QColorSpace>
 #include <QDir>
 #include <QFileInfo>
 #include <QImageReader>
@@ -480,6 +481,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
     display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
     display_p.animateWidgets = settings.value("animateWidgets", display_p.animateWidgets).toBool();
+    display_p.targetColorSpace = settings.value("targetColorSpace", display_p.targetColorSpace).toInt();
+    display_p.iccProfiles = settings.value("iccProfiles", display_p.iccProfiles).toStringList();
 
     settings.endGroup();
     // MetaData Settings --------------------------------------------------------------------
@@ -758,6 +761,10 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("interpolateZoomlevel", display_p.interpolateZoomLevel);
     if (force || display_p.animateWidgets != display_d.animateWidgets)
         settings.setValue("animateWidgets", display_p.animateWidgets);
+    if (force || display_p.targetColorSpace != display_d.targetColorSpace)
+        settings.setValue("targetColorSpace", display_p.targetColorSpace);
+    if (force || display_p.iccProfiles != display_d.iccProfiles)
+        settings.setValue("iccProfiles", display_p.iccProfiles);
 
     settings.endGroup();
     // MetaData Settings --------------------------------------------------------------------
@@ -973,6 +980,12 @@ void DkSettings::setToDefaultSettings()
     display_p.defaultIconColor = true;
     display_p.interpolateZoomLevel = 200;
     display_p.animateWidgets = true;
+#ifdef Q_OS_MACOS
+    display_p.targetColorSpace = QColorSpace::DisplayP3;
+#else
+    display_p.targetColorSpace = QColorSpace::SRgb;
+#endif
+    display_p.iccProfiles = {};
 
     slideShow_p.filter = 0;
     slideShow_p.time = 3.0;
