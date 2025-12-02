@@ -143,6 +143,7 @@ public:
 #endif // WITH_OPENCV
 
     static QColorSpace targetColorSpace(const QWidget *widget);
+    static QColorSpace loadIccProfile(const QString &filePath);
 };
 
 class DllCoreExport DkImageStorage : public QObject
