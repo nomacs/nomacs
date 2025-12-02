@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QAction>
 #include <QButtonGroup>
 #include <QCheckBox>
+#include <QColorSpace>
 #include <QComboBox>
 #include <QFileDialog>
 #include <QHeaderView>
@@ -809,6 +810,35 @@ void DkDisplayPreference::createLayout()
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
 
+    mColorProfiles = new QComboBox(this);
+    mColorProfiles->setToolTip(tr("Choose the color profile of the monitor"));
+    connect(mColorProfiles, &QComboBox::activated, this, &DkDisplayPreference::onColorProfileActivated);
+    auto *colorGroup = new DkGroupWidget(tr("Color Management"), this);
+    colorGroup->addWidget(new QLabel(tr("Display Profile"), this));
+    colorGroup->addWidget(mColorProfiles);
+
+    static constexpr QColorSpace::NamedColorSpace builtinProfiles[] = {QColorSpace::SRgb,
+                                                                       QColorSpace::DisplayP3,
+                                                                       QColorSpace::AdobeRgb};
+    mColorProfiles->addItem(tr("Unmanaged"), 0);
+    for (auto &p : builtinProfiles) {
+        mColorProfiles->addItem(QColorSpace(p).description(), static_cast<int>(p));
+    }
+
+    int iccIndex = -1;
+    for (auto &filePath : std::as_const(DkSettingsManager::param().display().iccProfiles)) {
+        iccIndex++;
+        QColorSpace colorSpace = DkImage::loadIccProfile(filePath);
+        if (colorSpace.isValid()) {
+            mColorProfiles->addItem(colorSpace.description(), 100 + iccIndex);
+        }
+    }
+
+    mColorProfiles->addItem(tr("Choose ICC Profile..."), 1000);
+
+    int index = mColorProfiles->findData(DkSettingsManager::param().display().targetColorSpace);
+    mColorProfiles->setCurrentIndex(index);
+
     // icon size
     auto *sbIconSize = new QSpinBox(this);
     sbIconSize->setToolTip(tr("Define the icon size in pixel."));
@@ -920,6 +950,7 @@ void DkDisplayPreference::createLayout()
     l->setAlignment(Qt::AlignTop);
     l->addWidget(zoomGroup);
     l->addWidget(keepZoomGroup);
+    l->addWidget(colorGroup);
     l->addWidget(iconGroup);
     l->addWidget(navigationGroup);
     l->addWidget(slideshowGroup);
@@ -1023,6 +1054,50 @@ void DkDisplayPreference::onZoomLevelsDefaultClicked() const
 {
     DkZoomConfig::instance().setLevelsToDefault();
     mZoomLevelsEdit->setText(DkZoomConfig::instance().levelsToString());
+}
+
+void DkDisplayPreference::onColorProfileActivated(int index)
+{
+    int id = mColorProfiles->itemData(index).toInt();
+    auto &dpy = DkSettingsManager::param().display();
+    dpy.targetColorSpace = id;
+    QColorSpace colorSpace{};
+
+    if (id > 0 && id < 100) {
+        colorSpace = QColorSpace(static_cast<QColorSpace::NamedColorSpace>(id));
+    } else if (id < 1000) {
+        int iccIndex = id - 100;
+        QString filePath = dpy.iccProfiles.value(iccIndex);
+        colorSpace = DkImage::loadIccProfile(filePath);
+    } else {
+        QString filePath = QFileDialog::getOpenFileName(DkUtils::getMainWindow(),
+                                                        tr("Open ICC Profile"),
+                                                        QDir::homePath(),
+                                                        "ICC Color Profiles (*.icc *.icm)",
+                                                        nullptr,
+                                                        DkDialog::fileDialogOptions());
+        colorSpace = DkImage::loadIccProfile(filePath);
+        if (colorSpace.isValid()) {
+            QStringList &iccProfiles = dpy.iccProfiles;
+            int iccIndex = iccProfiles.indexOf(filePath);
+            if (iccIndex < 0) {
+                iccProfiles.append(filePath);
+                iccIndex = iccProfiles.count() - 1;
+                id = 100 + iccIndex;
+                mColorProfiles->insertItem(mColorProfiles->count() - 1, colorSpace.description(), id);
+            } else {
+                id = 100 + iccIndex;
+            }
+            mColorProfiles->setCurrentIndex(mColorProfiles->findData(id));
+            dpy.targetColorSpace = id;
+            return;
+        }
+    }
+
+    if (!colorSpace.isValid()) {
+        dpy.targetColorSpace = 0;
+        mColorProfiles->setCurrentIndex(0);
+    }
 }
 
 void DkDisplayPreference::paintEvent(QPaintEvent *event)
