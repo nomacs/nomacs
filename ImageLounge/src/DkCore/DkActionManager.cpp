@@ -81,7 +81,7 @@ DkAppManager::DkAppManager(QWidget *parent)
         auto *action = new QAction(fileManagerName);
         action->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
         action->setToolTip(kOpenDirAppName.toString());
-        action->setObjectName(kOpenDirAppName);
+        action->setObjectName(kOpenDirAppName.toString());
         mApps.append(action);
     }
 #endif
@@ -89,7 +89,7 @@ DkAppManager::DkAppManager(QWidget *parent)
     if (!containsApp(kOpenFileAppName)) {
         auto *action = new QAction(tr("&Default Application"));
         action->setToolTip(kOpenFileAppName.toString());
-        action->setObjectName(kOpenFileAppName);
+        action->setObjectName(kOpenFileAppName.toString());
         mApps.append(action);
     }
 
