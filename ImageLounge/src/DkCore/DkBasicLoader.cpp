@@ -468,11 +468,20 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     if (!loader.isNull()) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
         QColorSpace colorSpace = img.colorSpace();
+        if (!colorSpace.isValid()) {
+            colorSpace = QColorSpace{QColorSpace::SRgb};
+            colorSpace.setDescription(tr("sRGB (Unspecified)"));
+            img.setColorSpace(colorSpace);
+        }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
         if (colorSpace.colorModel() == QColorSpace::ColorModel::Cmyk) {
             img.convertToColorSpace(QColorSpace(QColorSpace::SRgb));
-            setEditImage(img, tr("CMYK to sRGB"));
+            setEditImage(img, tr("CMYK (%1) to sRGB").arg(colorSpace.description()));
+        } else if (img.format() == QImage::Format_CMYK8888) {
+            img = img.convertToFormat(QImage::Format_RGB32);
+            img.setColorSpace(QColorSpace{QColorSpace::SRgb});
+            setEditImage(img, tr("CMYK (Unspecified) to sRGB"));
         } else
 #endif
         {
