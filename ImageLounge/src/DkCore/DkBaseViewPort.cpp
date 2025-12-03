@@ -278,22 +278,28 @@ void DkBaseViewPort::hideCursor()
 
 QImage DkBaseViewPort::getImage() const
 {
-    if (mMovie && mMovie->isValid())
-        return mMovie->currentImage();
-    if (mSvg && mSvg->isValid() && !mImgViewRect.isEmpty()) {
-        QImage img(mImgViewRect.size().toSize(), QImage::Format_ARGB32);
+    QImage img;
+    if (mMovie && mMovie->isValid()) {
+        img = mMovie->currentImage();
+    } else if (mSvg && mSvg->isValid() && !mImgViewRect.isEmpty()) {
+        img = QImage(mImgViewRect.size().toSize(), QImage::Format_ARGB32);
         img.fill(QColor(0, 0, 0, 0));
 
         QPainter p(&img);
-
         if (mSvg && mSvg->isValid()) {
             mSvg->render(&p, mImgViewRect);
         }
-
-        return img;
+    } else {
+        img = mImgStorage.imageConst();
     }
 
-    return mImgStorage.imageConst();
+    if (!img.colorSpace().isValid()) {
+        QColorSpace srgb{QColorSpace::SRgb};
+        srgb.setDescription(tr("sRGB (Unspecified)"));
+        img.setColorSpace(srgb);
+    }
+
+    return img;
 }
 
 QSizeF DkBaseViewPort::getImageSize() const
@@ -531,9 +537,14 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
         srcColorSpace = mImgStorage.imageConst().colorSpace();
     }
 
+    if (!srcColorSpace.isValid()) {
+        static QColorSpace srgb{QColorSpace::SRgb};
+        srcColorSpace = srgb;
+    }
+
     // this has a slight performance hit, skip if we don't need it
     std::unique_ptr<QPainter> backPainter;
-    if (srcColorSpace.isValid() && srcColorSpace != targetColorSpace) {
+    if (targetColorSpace.isValid() && srcColorSpace != targetColorSpace) {
         QSize backingSize = this->size() * dpr;
         if (mBackBuffer.size() != backingSize) {
             mBackBuffer = QImage(backingSize, QImage::Format_ARGB32_Premultiplied);
