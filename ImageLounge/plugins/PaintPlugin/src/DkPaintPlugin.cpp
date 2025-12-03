@@ -218,6 +218,7 @@ void DkPaintPlugin::setVisible(bool visible)
 
     nmc::DkToolBarManager::inst().showToolBar(mToolBar, visible);
 
+    mViewPort->setVisible(visible);
     mViewPort->setPanning(false); // always reset panning and make painting tool active
 
     if (!visible)
