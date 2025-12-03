@@ -28,11 +28,13 @@
 #include "DkPaintPlugin.h"
 
 #include "DkBaseViewPort.h"
+#include "DkImageStorage.h"
 #include "DkToolbars.h"
 #include "DkUtils.h"
 
 #include <QActionGroup>
 #include <QColorDialog>
+#include <QColorSpace>
 #include <QGraphicsBlurEffect>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
@@ -130,7 +132,7 @@ QLineF getShorterLine(QPainterPath line, const int thickness)
 }
 
 // blur selected rectangle region
-void getBlur(const QRectF &selection, QPainter *painter, QImage &img, int radius)
+void getBlur(const QRectF &selection, QPainter *painter, QImage &img, int radius, const QColorSpace &colorSpace)
 {
     if (selection.isEmpty())
         return;
@@ -159,6 +161,8 @@ void getBlur(const QRectF &selection, QPainter *painter, QImage &img, int radius
     scene.render(&blurPainter);
 
     blurPainter.end();
+
+    blurImg.convertToColorSpace(colorSpace);
     painter->drawImage(selectionScaled, blurImg);
 }
 
@@ -446,7 +450,7 @@ void DkPaintViewPort::drawPaths(QPainter &painter, nmc::DkBaseViewPort *viewport
         } else if (mPathsMode.at(idx) == mode_blur) {
             QImage img = viewport->getImage();
             QRectF rect = mPaths.at(idx).boundingRect();
-            getBlur(rect, &painter, img, mPathsPen.at(idx).width());
+            getBlur(rect, &painter, img, mPathsPen.at(idx).width(), nmc::DkImage::targetColorSpace(viewport));
         } else {
             painter.drawPath(mPaths.at(idx));
         }
@@ -482,11 +486,19 @@ QImage DkPaintViewPort::getPaintedImage()
 
     QImage img = viewport->getImage();
 
+    // we edited in display/target color space, we must render the drawing in that space,
+    // or else the result will look different
+    const QColorSpace srcColorSpace = img.colorSpace();
+    const QColorSpace targetColorSpace = nmc::DkImage::targetColorSpace(viewport);
+
+    img.convertToColorSpace(targetColorSpace);
+
     QPainter painter(&img);
     painter.setRenderHint(QPainter::Antialiasing);
-
     drawPaths(painter, viewport, true);
     painter.end();
+
+    img.convertToColorSpace(srcColorSpace);
 
     return img;
 }
