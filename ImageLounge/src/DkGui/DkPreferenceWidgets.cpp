@@ -817,12 +817,9 @@ void DkDisplayPreference::createLayout()
     colorGroup->addWidget(new QLabel(tr("Display Profile"), this));
     colorGroup->addWidget(mColorProfiles);
 
-    static constexpr QColorSpace::NamedColorSpace builtinProfiles[] = {QColorSpace::SRgb,
-                                                                       QColorSpace::DisplayP3,
-                                                                       QColorSpace::AdobeRgb};
-    mColorProfiles->addItem(tr("Unmanaged"), 0);
-    for (auto &p : builtinProfiles) {
-        mColorProfiles->addItem(QColorSpace(p).description(), static_cast<int>(p));
+    const auto profiles = DkImage::builtinProfiles();
+    for (auto it = profiles.begin(); it != profiles.end(); ++it) {
+        mColorProfiles->addItem(it->second.description(), it->first);
     }
 
     int iccIndex = -1;
@@ -837,6 +834,9 @@ void DkDisplayPreference::createLayout()
     mColorProfiles->addItem(tr("Choose ICC Profile..."), 1000);
 
     int index = mColorProfiles->findData(DkSettingsManager::param().display().targetColorSpace);
+    if (index < 0) {
+        index = 0;
+    }
     mColorProfiles->setCurrentIndex(index);
 
     // icon size
@@ -1063,8 +1063,8 @@ void DkDisplayPreference::onColorProfileActivated(int index)
     dpy.targetColorSpace = id;
     QColorSpace colorSpace{};
 
-    if (id > 0 && id < 100) {
-        colorSpace = QColorSpace(static_cast<QColorSpace::NamedColorSpace>(id));
+    if (id >= 0 && id < 100) {
+        colorSpace = DkImage::profileForId(id);
     } else if (id < 1000) {
         int iccIndex = id - 100;
         QString filePath = dpy.iccProfiles.value(iccIndex);

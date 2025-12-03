@@ -1177,14 +1177,7 @@ QColorSpace DkImage::targetColorSpace(const QWidget *widget)
 
     if (targetId != dpy.targetColorSpace) {
         targetId = dpy.targetColorSpace;
-        if (targetId == 0) {
-            colorSpace = QColorSpace{};
-        } else if (targetId < 100) {
-            colorSpace = QColorSpace{static_cast<QColorSpace::NamedColorSpace>(targetId)};
-        } else if (targetId < 1000) {
-            int iccIndex = targetId - 100;
-            colorSpace = loadIccProfile(dpy.iccProfiles.value(iccIndex));
-        }
+        colorSpace = profileForId(targetId);
     }
 
     return colorSpace;
@@ -1214,6 +1207,40 @@ QColorSpace DkImage::loadIccProfile(const QString &filePath)
 #endif
 
     return colorSpace;
+}
+
+QColorSpace DkImage::profileForId(int id)
+{
+    QColorSpace colorSpace;
+    if (id >= 0 && id < 100) {
+        const auto profiles = builtinProfiles();
+        auto it = std::find_if(profiles.begin(), profiles.end(), [id](auto &pair) {
+            return pair.first == id;
+        });
+        if (it != profiles.end()) {
+            colorSpace = it->second;
+        }
+    } else if (id < 1000) {
+        int iccIndex = id - 100;
+        colorSpace = loadIccProfile(DkSettingsManager::param().display().iccProfiles.value(iccIndex));
+    }
+    return colorSpace;
+}
+
+QVector<std::pair<int, QColorSpace>> DkImage::builtinProfiles()
+{
+    QColorSpace unmanaged{};
+    unmanaged.setDescription(QObject::tr("Unmanaged"));
+
+    // sRGB with true gamma as most displays do not implement sRGB transfer function
+    QColorSpace srgbGamma22{QColorSpace::Primaries::SRgb, QColorSpace::TransferFunction::Gamma, 2.2f};
+    srgbGamma22.setDescription("sRGB (Gamma 2.2)");
+
+    return {{0, unmanaged},
+            {QColorSpace::SRgb, QColorSpace{QColorSpace::SRgb}},
+            {50, srgbGamma22},
+            {QColorSpace::DisplayP3, QColorSpace{QColorSpace::DisplayP3}},
+            {QColorSpace::AdobeRgb, QColorSpace{QColorSpace::AdobeRgb}}};
 }
 
 QPixmap DkImage::colorizePixmap(const QPixmap &icon, const QColor &col, float opacity)
