@@ -254,7 +254,7 @@ public:
         int histogramStyle;
         bool animateWidgets; // animate hide/show of widgets/panels/etc
 
-        int targetColorSpace; // 0==disable, 1-99==QColorSpace::NamedColorSpace, 100-999==icc profile
+        int targetColorSpace; // -1==auto, 0==disable, 1-49==NamedColorSpace, 50-99==custom, 100-999==user icc profile
         QStringList iccProfiles; // paths to icc profiles
     };
 

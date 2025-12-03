@@ -144,6 +144,8 @@ public:
 
     static QColorSpace targetColorSpace(const QWidget *widget);
     static QColorSpace loadIccProfile(const QString &filePath);
+    static QColorSpace profileForId(int id);
+    static QVector<std::pair<int, QColorSpace>> builtinProfiles();
 };
 
 class DllCoreExport DkImageStorage : public QObject
