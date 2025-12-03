@@ -559,7 +559,10 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
 
     QPainter &painter = backPainter ? *(backPainter.get()) : frontPainter;
 
-    eraseBackground(painter);
+    // do not color-manage the viewport background; defer for better locality when swapping
+    if (!backPainter) {
+        eraseBackground(frontPainter);
+    }
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
@@ -603,6 +606,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
     if (backPainter) {
         backPainter->end();
         mBackBuffer.convertToColorSpace(targetColorSpace);
+        eraseBackground(frontPainter);
         frontPainter.setWorldMatrixEnabled(false);
         frontPainter.setRenderHint(QPainter::SmoothPixmapTransform, false);
         frontPainter.drawImage(QPoint{0, 0}, mBackBuffer);
