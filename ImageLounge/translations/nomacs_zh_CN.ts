@@ -16,7 +16,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Picasa Ph&amp;oto Viewer</source>
-        <translation>Picasa图片查看器(&amp;o)</translation>
+        <translation>Picasa 图像查看器(&amp;o)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -144,12 +144,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Save for Web</source>
-        <translation>另存为Web格式(&amp;S)</translation>
+        <translation>另存为 Web 格式(&amp;S)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Save an Image for Web Applications</source>
-        <translation>将图像保存为适用于Web的格式</translation>
+        <translation>将图像保存为适用于 Web 的格式</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -184,12 +184,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Choose &amp;Monitor</source>
-        <translation>选择监视器(&amp;M)</translation>
+        <translation>选择显示屏(&amp;M)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Choose the Monitor to run nomacs</source>
-        <translation>选择用来运行Nomacs的监视器</translation>
+        <translation>选择用来运行 nomacs 的显示屏</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -199,7 +199,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>shows where the image was taken in Google maps</source>
-        <translation>在Google地图中显示图像拍摄地点</translation>
+        <translation>在 Google 地图中显示图像拍摄地点</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -209,7 +209,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Add a new image format to nomacs</source>
-        <translation>向nomacs添加新的图像格式</translation>
+        <translation>向 nomacs 添加新的图像格式</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -340,7 +340,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>9&amp;0%1 Clockwise</source>
-        <translation>顺时针9&amp;0%1</translation>
+        <translation>顺时针90%1(&amp;0)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -350,7 +350,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;90%1 Counter Clockwise</source>
-        <translation>逆时针&amp;90%1</translation>
+        <translation>逆时针90%1(&amp;9)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -406,7 +406,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>copy pixel color value as HEX</source>
-        <translation>复制像素颜色为HEX</translation>
+        <translation>复制像素颜色为 HEX</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -422,12 +422,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>R&amp;esize Image</source>
-        <translation>调整图像大小(&amp;E)</translation>
+        <translation>调整图像尺寸(&amp;E)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>resize the current image</source>
-        <translation>调整当前图像的大小</translation>
+        <translation>调整当前图像的尺寸</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -482,7 +482,7 @@
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
         <source>&amp;Invert Image</source>
-        <translation>反转图像</translation>
+        <translation>反转图像(&amp;I)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
@@ -492,7 +492,7 @@
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
         <source>&amp;Tiny Planet...</source>
-        <translation>小行星视角(&amp;T)</translation>
+        <translation>小行星视角(&amp;T)...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
@@ -512,12 +512,12 @@
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
         <source>&amp;Blur...</source>
-        <translation type="unfinished"></translation>
+        <translation>模糊(&amp;B)...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
         <source>Blur the image</source>
-        <translation type="unfinished"></translation>
+        <translation>模糊图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
@@ -542,12 +542,12 @@
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
         <source>&amp;Resize...</source>
-        <translation type="unfinished"></translation>
+        <translation>调整尺寸(&amp;R)...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
         <source>Resize the image</source>
-        <translation type="unfinished"></translation>
+        <translation>调整图像尺寸</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
@@ -664,7 +664,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Hides the Menu and Shows it Again on ALT</source>
-        <translation>按ALT显示或隐藏菜单</translation>
+        <translation>按 ALT 键显示或隐藏菜单</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -679,7 +679,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Statusbar</source>
-        <translation>状态栏(&amp;B)</translation>
+        <translation>状态栏(&amp;S)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -824,7 +824,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Fit window to the image</source>
-        <translation>调整窗口大小以便适应图像</translation>
+        <translation>调整窗口尺寸以便适应图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -839,12 +839,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Show &amp;100%</source>
-        <translation>&amp;100%显示</translation>
+        <translation>100%显示(&amp;1)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Shows the image at 100%</source>
-        <translation>以 100% 比例显示图片</translation>
+        <translation>以 100% 比例显示图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -885,17 +885,17 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>if checked, a pattern will be displayed for transparent objects</source>
-        <translation>如果选中，则在对象的透明部位显示此图案。</translation>
+        <translation>如果选中，则在对象的透明部位显示此图案</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Frameless</source>
-        <translation>无框(&amp;F)</translation>
+        <translation>无边框(&amp;F)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>shows a frameless window</source>
-        <translation>显示一个无框窗口</translation>
+        <translation>显示一个无边框窗口</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -985,52 +985,52 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>帮助(&amp;H)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Sync</source>
-        <translation type="unfinished">同步(&amp;S)</translation>
+        <translation>同步(&amp;S)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Open a directory</source>
-        <translation type="unfinished"></translation>
+        <translation>打开目录</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Open a text file containing a list of filepaths, and open tabs for them</source>
-        <translation type="unfinished"></translation>
+        <translation>打开一个包含文件路径列表的文本文件，并为每个路径打开一个标签页</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>S&amp;ave As</source>
-        <translation type="unfinished"></translation>
+        <translation>另存为(&amp;A)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Sa&amp;ve a Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>另存为副本(&amp;V)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Copy the Image</source>
-        <translation type="unfinished"></translation>
+        <translation>复制图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Load next file</source>
-        <translation type="unfinished"></translation>
+        <translation>加载下一个文件</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>by File &amp;Size</source>
-        <translation type="unfinished"></translation>
+        <translation>按文件大小(&amp;S)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Sort by File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>按文件大小排序</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1045,7 +1045,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Crop the current image</source>
-        <translation type="unfinished"></translation>
+        <translation>裁剪当前图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1055,17 +1055,17 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Metadata Ribbon</source>
-        <translation type="unfinished"></translation>
+        <translation>元数据功能区(&amp;M)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Show &amp;Log</source>
-        <translation type="unfinished"></translation>
+        <translation>显示日志(&amp;L)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Shows the log window</source>
-        <translation type="unfinished"></translation>
+        <translation>显示日志窗口</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1085,7 +1085,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Fit Window to Image</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口尺寸适应图像(&amp;F)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1140,12 +1140,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Fit Image to Window</source>
-        <translation type="unfinished"></translation>
+        <translation>图像尺寸适应窗口(&amp;F)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Zoom image to fit window</source>
-        <translation type="unfinished"></translation>
+        <translation>将图像缩放以适应窗口</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1258,7 +1258,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Export TIFF pages to multiple tiff files</source>
-        <translation>将TIFF的页面导出为多个tiff文件</translation>
+        <translation>将 TIFF 的页面导出为多个 tiff 文件</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1293,12 +1293,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Set Desktop &amp;Wallpaper</source>
-        <translation type="unfinished"></translation>
+        <translation>设为桌面壁纸(&amp;W)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;About Nomacs</source>
-        <translation>关于Nomacs(&amp;A)</translation>
+        <translation>关于 Nomacs(&amp;A)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1308,22 +1308,22 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Documentation</source>
-        <translation>文档(&amp;D)</translation>
+        <translation>介绍文档(&amp;D)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Online Documentation</source>
-        <translation>在线文档</translation>
+        <translation>在线介绍文档</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Report a Bug</source>
-        <translation>报告Bug(&amp;R)</translation>
+        <translation>报告 Bug(&amp;R)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Report a Bug</source>
-        <translation>报告Bug</translation>
+        <translation>报告 Bug</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1413,7 +1413,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Display &amp;Squares</source>
-        <translation>显示直方图(&amp;S)</translation>
+        <translation>方格布局(&amp;S)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1448,7 +1448,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Start pong</source>
-        <translation>开始pong</translation>
+        <translation>开始乒乓吧</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1584,7 +1584,7 @@
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>OwnerID</source>
-        <translation>所有者ID</translation>
+        <translation>所有者 ID</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
@@ -1798,243 +1798,243 @@
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Uncompressed</source>
-        <translation type="unfinished"></translation>
+        <translation>未压缩</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>CCITT 1D</source>
-        <translation type="unfinished"></translation>
+        <translation>CCITT 1D</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>T4/Group 3 Fax</source>
-        <translation type="unfinished"></translation>
+        <translation>T4/三类传真机</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>T6/Group 4 Fax</source>
-        <translation type="unfinished"></translation>
+        <translation>T6/四类传真机</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>LZW</source>
-        <translation type="unfinished"></translation>
+        <translation>LZW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>JPEG (old-style)</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG （旧式）</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>JPEG</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Adobe Deflate</source>
-        <translation type="unfinished"></translation>
+        <translation>Adobe Deflate</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>JBIG B&amp;W</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG B&amp;W</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>JBIG Color</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG Color</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Kodak 262</source>
-        <translation type="unfinished"></translation>
+        <translation>柯达 262</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>索尼 NeXT</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Sony ARW Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>索尼 ARW 压缩格式</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Packed RAW</source>
-        <translation type="unfinished"></translation>
+        <translation>紧凑 RAW 格式</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Samsung SRW Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>三星 SRW 压缩格式</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>CCIRLEW</source>
-        <translation type="unfinished"></translation>
+        <translation>CCIRLEW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Samsung SRW Compressed 2</source>
-        <translation type="unfinished"></translation>
+        <translation>三星 SRW 压缩格式 2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>PackBits</source>
-        <translation type="unfinished"></translation>
+        <translation>PackBits</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Thunderscan</source>
-        <translation type="unfinished"></translation>
+        <translation>Thunderscan</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Kodak KDC Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>柯达 KDC 压缩格式</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>IT8CTPAD</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8CTPAD</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>IT8LW</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8LW</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>IT8MP</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8MP</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>IT8BL</source>
-        <translation type="unfinished"></translation>
+        <translation>IT8BL</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>PixarFilm</source>
-        <translation type="unfinished"></translation>
+        <translation>PixarFilm</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>PixarLog</source>
-        <translation type="unfinished"></translation>
+        <translation>PixarLog</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Deflate</source>
-        <translation type="unfinished"></translation>
+        <translation>Deflate</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>DCS</source>
-        <translation type="unfinished"></translation>
+        <translation>DCS 标准</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Aperio JPEG 2000 YCbCr</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperio JPEG 2000 YCbCr</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Aperio JPEG 2000 RGB</source>
-        <translation type="unfinished"></translation>
+        <translation>Aperio JPEG 2000 RGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>JBIG</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>SGILog</source>
-        <translation type="unfinished"></translation>
+        <translation>SGILog</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>SGILog24</source>
-        <translation type="unfinished"></translation>
+        <translation>SGILog 24</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>JPEG 2000</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG 2000</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Nikon NEF Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>尼康 NEF 压缩格式</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>JBIG2 TIFF FX</source>
-        <translation type="unfinished"></translation>
+        <translation>JBIG2 TIFF FX</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Microsoft Document Imaging(MDI) Binary Level Codec</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) 二进制级编解码器</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Microsoft Document Imaging(MDI) Progressive Transform Codec</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) 渐进式变换编解码器</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Microsoft Document Imaging(MDI) Vector</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Document Imaging(MDI) 矢量</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>ESRI Lerc</source>
-        <translation type="unfinished"></translation>
+        <translation>ESRI Lerc</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Lossy JPEG</source>
-        <translation type="unfinished"></translation>
+        <translation>有损 JPEG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>LZMA2</source>
-        <translation type="unfinished"></translation>
+        <translation>LZMA2</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Zstd</source>
-        <translation type="unfinished"></translation>
+        <translation>Zstd</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>WebP</source>
-        <translation type="unfinished"></translation>
+        <translation>WebP</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>PNG</source>
-        <translation type="unfinished"></translation>
+        <translation>PNG</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>JPEG XR</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG XR</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Kodak DCR Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>柯达 DCR 压缩格式</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkMetaData.cpp"/>
         <source>Pentax PEF Compressed</source>
-        <translation type="unfinished"></translation>
+        <translation>宾得 PEF 压缩格式</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -2064,7 +2064,7 @@
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image size matches scale factor -&gt; skipping.</source>
-        <translation>%1 图像大小匹配比例因子 -&gt; 跳过。</translation>
+        <translation>%1 图像尺寸匹配比例因子 -&gt; 跳过。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2082,7 +2082,7 @@
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 Cannot apply %2.</source>
-        <translation>%1 不能应用到 %2。</translation>
+        <translation>%1 无法应用到 %2。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2092,23 +2092,23 @@
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image cropped from metadata.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 图像已从元数据中裁剪。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image rotated %2 degrees.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 图像旋转了%2度。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image resized to %2 x %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1  图像缩放至 %2 x %3。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image %2 x %3 cropped to x%4 y%5 w%6 h%7</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 图像 %2 x %3 裁剪为 x%4 y%5 宽度%6 高度%7</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2118,17 +2118,17 @@
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 not transformed.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 未转换。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 我需要增大图像尺寸，但该选项设置为“仅缩小”→ 跳过。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 我需要缩小图像尺寸，但该选项设置为“仅放大”→ 跳过。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2148,7 +2148,7 @@
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 Cannot cast batch plugin %2.</source>
-        <translation>%1 无法施放批处理插件 %2</translation>
+        <translation>%1 无法施放批处理插件 %2。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2256,32 +2256,32 @@
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Output file exists</source>
-        <translation type="unfinished"></translation>
+        <translation>输出文件已存在</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to open output: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>无法打开输出文件：%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Input file does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>输入文件不存在</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to open input file</source>
-        <translation type="unfinished"></translation>
+        <translation>无法打开输入文件</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Empty input file</source>
-        <translation type="unfinished"></translation>
+        <translation>空输入文件</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to write output file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>写入输出文件失败：%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2321,7 +2321,7 @@
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Ui - a lot of things went wrong. Your original file can be found here: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>哎呀，出了不少问题！您的原始文件可在此处找到：%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2351,7 +2351,7 @@
     <message>
         <location filename="../src/DkCore/DkSettings.cpp"/>
         <source>nomacs - Image Lounge is a lightweight image viewer.</source>
-        <translation>nomacs - Image Lounge是一个轻量级图片查看器。</translation>
+        <translation>nomacs - Image Lounge 是一个轻量级图像查看器。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPong.h"/>
@@ -2381,7 +2381,7 @@
     <message>
         <location filename="../src/main.cpp"/>
         <source>Start Pong.</source>
-        <translation>开始Pong</translation>
+        <translation>开始乒乓吧。</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
@@ -2396,12 +2396,12 @@
     <message>
         <location filename="../src/main.cpp"/>
         <source>default | frameless | pseudocolor</source>
-        <translation>默认|无框|假色</translation>
+        <translation>默认|无边框|假色</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
         <source>List of files and/or directories to open</source>
-        <translation type="unfinished"></translation>
+        <translation>待打开的文件和/或目录列表</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
@@ -2441,12 +2441,12 @@
     <message>
         <location filename="../src/main.cpp"/>
         <source>List available image formats</source>
-        <translation type="unfinished"></translation>
+        <translation>列出可用图像格式</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
         <source>Print build information</source>
-        <translation type="unfinished"></translation>
+        <translation>打印构建信息</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
@@ -2456,7 +2456,7 @@
     <message>
         <location filename="../src/main.cpp"/>
         <source>Sorry, nomacs ran out of memory...</source>
-        <translation>抱歉，nomacs溢出了内存...</translation>
+        <translation>抱歉，nomacs 溢出了内存...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2496,7 +2496,7 @@
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>BGR 24-bit</source>
-        <translation type="unfinished">32 位 BGR {24-?}</translation>
+        <translation>24 位 BGR</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2521,7 +2521,7 @@
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Grayscale 16-bit</source>
-        <translation type="unfinished">8 位灰度 {16-?}</translation>
+        <translation>16 位灰度</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2531,22 +2531,22 @@
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA 64-bit</source>
-        <translation type="unfinished"></translation>
+        <translation>64 位 RGBA</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA FP16</source>
-        <translation type="unfinished"></translation>
+        <translation>FP16 浮点精度 RGBA</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA FP32</source>
-        <translation type="unfinished"></translation>
+        <translation>FP32 浮点精度 RGBA</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>CMYK 32-Bit</source>
-        <translation type="unfinished"></translation>
+        <translation>32 位 CMYK</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2579,12 +2579,12 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Clear rating</source>
-        <translation type="unfinished"></translation>
+        <translation>清除评级</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Set rating to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>将评级设为 %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp"/>
@@ -2595,7 +2595,7 @@ This action cannot be undone.
         <location filename="../src/DkCore/DkPluginManager.cpp"/>
         <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-        <translation>此dll不能删除！请重启nomacs，然后重试。</translation>
+        <translation>此 dll 不能删除！请重启 nomacs，然后重试。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkPluginManager.cpp"/>
@@ -2615,7 +2615,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot auto adjust</source>
-        <translation>不能自动调整</translation>
+        <translation>无法自动调整</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
@@ -2625,98 +2625,98 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot invert image</source>
-        <translation>不能反转图像</translation>
+        <translation>无法反转图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot flip image</source>
-        <translation>不能翻转图像</translation>
+        <translation>无法翻转图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Sorry, I could not create a tiny planet</source>
-        <translation>抱歉，无法创建小行星视图。</translation>
+        <translation>抱歉，无法创建小行星视图</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot blur image</source>
-        <translation type="unfinished"></translation>
+        <translation>无法模糊图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot sharpen image</source>
-        <translation>不能锐化图像</translation>
+        <translation>无法锐化图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot rotate image</source>
-        <translation>不能旋转图像</translation>
+        <translation>无法旋转图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot resize image</source>
-        <translation type="unfinished"></translation>
+        <translation>无法调整图像尺寸</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot threshold image</source>
-        <translation>不能阈值化图像</translation>
+        <translation>无法阈值化图像</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot change Hue/Saturation</source>
-        <translation>不能修改色调/饱和度</translation>
+        <translation>无法修改色调/饱和度</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot apply exposure</source>
-        <translation>不能应用曝光量</translation>
+        <translation>无法应用曝光量</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulatorsIpl.cpp"/>
         <source>Cannot draw background color</source>
-        <translation>不能绘制背景色</translation>
+        <translation>无法绘制背景色</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Name: </source>
-        <translation type="unfinished">名称：</translation>
+        <translation>名称： </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Size: </source>
-        <translation type="unfinished">大小：</translation>
+        <translation>大小： </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Created: </source>
-        <translation type="unfinished"></translation>
+        <translation>创建： </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Thumb: </source>
-        <translation type="unfinished"></translation>
+        <translation>缩略图： </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Embedded </source>
-        <translation type="unfinished"></translation>
+        <translation>嵌入 </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source>Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>工具栏</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source>Movie ToolBar</source>
-        <translation type="unfinished"></translation>
+        <translation>影像工具栏</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp"/>
@@ -2739,7 +2739,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Pong</source>
-        <translation>Pong</translation>
+        <translation>乒乓球</translation>
     </message>
 </context>
 <context>
@@ -2747,22 +2747,22 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Always Load JPG if Embedded</source>
-        <translation>如果JPG内嵌则载入它</translation>
+        <translation>如果 JPG 内嵌则载入它</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Load JPG if it Fits the Screen Resolution</source>
-        <translation>如果JPG适合屏幕分辨率则加载它</translation>
+        <translation>如果 JPG 适合屏幕分辨率则加载它</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Always Load RAW Data</source>
-        <translation>总是加载RAW数据</translation>
+        <translation>总是加载 RAW 数据</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Apply Noise Filtering to RAW Images</source>
-        <translation>对RAW图像去噪</translation>
+        <translation>对 RAW 图像去噪</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2772,7 +2772,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>RAW Loader Settings</source>
-        <translation>RAW图像加载设置</translation>
+        <translation>RAW 图像加载设置</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2782,7 +2782,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-        <translation type="unfinished"></translation>
+        <translation>若勾选此选项，nomacs 将询问是否保存被其他应用程序删除的文件</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2792,7 +2792,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-        <translation>如果选中，不会根据Exif方向旋转图像</translation>
+        <translation>如果选中，不会根据 Exif 方向旋转图像</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2803,7 +2803,8 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-        <translation>如果选中，将方向写入 Exif，而不是旋转图像矩阵</translation>
+        <translation>如果选中，将方向写入 Exif，而不是旋转图像矩阵
+</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2828,17 +2829,17 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Enable Native File Dialogs</source>
-        <translation type="unfinished"></translation>
+        <translation>启用原生文件对话框</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, native system dialogs are used for opening/saving files.</source>
-        <translation type="unfinished"></translation>
+        <translation>若勾选此项，则使用本机系统对话框进行文件的打开/保存操作。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Native Dialogs</source>
-        <translation type="unfinished"></translation>
+        <translation>原生对话框</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2863,7 +2864,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation>请重新启动nomacs使修改生效</translation>
+        <translation>请重新启动 nomacs 使修改生效</translation>
     </message>
 </context>
 <context>
@@ -2989,7 +2990,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Number of images: </source>
-        <translation>图像数量：</translation>
+        <translation>图像数量： </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -3223,17 +3224,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Old Filename: </source>
-        <translation>原文件名：</translation>
+        <translation>原文件名： </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>New Filename: </source>
-        <translation>新文件名：</translation>
+        <translation>新文件名： </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Bad Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>劣质量</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3251,7 +3252,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source> Settings</source>
-        <translation>设置</translation>
+        <translation> 设置</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3282,7 +3283,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Resize</source>
-        <translation>调整大小</translation>
+        <translation>调整尺寸</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3312,7 +3313,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Zoom</source>
-        <translation type="unfinished">缩放</translation>
+        <translation>缩放</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3323,7 +3324,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source> px</source>
-        <translation>像素</translation>
+        <translation> 像素</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3383,7 +3384,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>&amp;Crop to center</source>
-        <translation type="unfinished"></translation>
+        <translation>居中裁剪(&amp;C)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3393,17 +3394,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Resize by: %1%</source>
-        <translation>调整大小，按：%1%</translation>
+        <translation>调整尺寸，按：%1%</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Zoom to: %1 px by %2 px</source>
-        <translation type="unfinished"></translation>
+        <translation>缩放至： %1 像素 × %2 像素</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Resize %1 to: %2 px</source>
-        <translation>将 %1 的大小调整到：%2 px</translation>
+        <translation>将 %1 的尺寸调整到：%2 像素</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3474,7 +3475,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>I am missing a widget.</source>
-        <translation>缺少小部件</translation>
+        <translation>缺少小部件。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3541,17 +3542,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Canceling...</source>
-        <translation>正在取消……</translation>
+        <translation>正在取消...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>%1/%2 files processed... %3 failed.</source>
-        <translation>%1/%2 文件已处理……%3 失败。</translation>
+        <translation>%1/%2 文件已处理... %3 失败。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Sorry, I cannot save the settings...</source>
-        <translation>抱歉，不能保存设置……</translation>
+        <translation>抱歉，无法保存设置...</translation>
     </message>
 </context>
 <context>
@@ -3559,7 +3560,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Sigma</source>
-        <translation type="unfinished">西格玛</translation>
+        <translation>西格玛</translation>
     </message>
 </context>
 <context>
@@ -3567,17 +3568,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Choose Root Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>选择根目录</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Browse</source>
-        <translation type="unfinished">浏览</translation>
+        <translation>浏览</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Scroll to current file</source>
-        <translation type="unfinished"></translation>
+        <translation>滚动至当前文件</translation>
     </message>
 </context>
 <context>
@@ -3625,68 +3626,69 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>I could not load &quot;%1&quot;</source>
-        <translation>不能载入“%1”</translation>
+        <translation>无法载入“%1”</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Downloading &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>正在下载 “%1”</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, there are unsaved changes</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，存在未保存的更改</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, renaming archived files is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，不支持重命名已归档的文件。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, the directory: %1 does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，目录：%1 不存在</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation type="unfinished">抱歉，不能写入文件: %1</translation>
+        <translation>抱歉，无法写入文件: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Rename: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>重命名： %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>New File Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>新文件名：</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t rename: NFS mount is case-insensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，无法重命名：NFS挂载不区分大小写</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Overwrite: %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>覆盖：%1？</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>The file: %1 already exists.
 Do you want to replace it?</source>
-        <translation type="unfinished"></translation>
+        <translation>文件：%1 已存在。
+是否要替换它？</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t delete: &quot;%1&quot; : %2</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，我无法删除：“%1” : %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t rename: &quot;%1&quot; : %2</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，我无法重命名：“%1” : %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -3701,7 +3703,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>%1 vec files merged</source>
-        <translation>%1 vec 文件被合并</translation>
+        <translation>%1 矢量文件被合并</translation>
     </message>
 </context>
 <context>
@@ -3709,7 +3711,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Remember Monitor Settings</source>
-        <translation>记住监视器设置</translation>
+        <translation>记住显示屏设置</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -3727,12 +3729,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkNetwork.cpp"/>
         <source>connected with: </source>
-        <translation type="unfinished">已经连接: </translation>
+        <translation>已经连接: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNetwork.cpp"/>
         <source>disconnected with: </source>
-        <translation type="unfinished">断开连接: </translation>
+        <translation>断开连接: </translation>
     </message>
 </context>
 <context>
@@ -3837,12 +3839,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
         <source>AVIF Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>AVIF 设置</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
         <source>JXL Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>JXL 设置</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
@@ -3867,7 +3869,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
         <source>Best Quality</source>
-        <translation>最好质量</translation>
+        <translation>最佳质量</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
@@ -3877,7 +3879,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
         <source>Medium Quality</source>
-        <translation>中午质量</translation>
+        <translation>中等质量</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
@@ -3887,7 +3889,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
         <source>Bad Quality</source>
-        <translation type="unfinished"></translation>
+        <translation>劣质量</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
@@ -3905,12 +3907,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
         <source>Sorry, I cannot save comments for this image format.</source>
-        <translation type="unfinished">抱歉，此图像格式不能保存备注。</translation>
+        <translation>抱歉，此图像格式无法保存备注。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
         <source>File comment</source>
-        <translation type="unfinished"></translation>
+        <translation>文件备注</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
@@ -4042,7 +4044,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Mosaic</source>
-        <translation type="unfinished">马赛克</translation>
+        <translation>马赛克</translation>
     </message>
 </context>
 <context>
@@ -4050,7 +4052,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>...</source>
-        <translation>……</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
@@ -4068,7 +4070,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-        <translation>如果选中，则鼠标滚轮缩放动作效果会反转</translation>
+        <translation>如果选中，则鼠标滚轮缩放动作效果会反转。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4078,7 +4080,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-        <translation>注意：如果选中，缩放时，nomacs可能变慢。</translation>
+        <translation>注意：如果选中，缩放时，nomacs 可能变慢。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4098,7 +4100,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>nomacs will not interpolate images if the zoom level is larger.</source>
-        <translation>如果缩放级别较大，nomacs不去对图像进行插值。</translation>
+        <translation>如果缩放级别较大，nomacs 不去对图像进行插值。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4143,7 +4145,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Always zoom to fit</source>
-        <translation>总是缩放到合适大小</translation>
+        <translation>总是缩放到合适尺寸</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4178,22 +4180,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Icon Size</source>
-        <translation>图标大小</translation>
+        <translation>图标尺寸</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Show Navigation Arrows</source>
-        <translation type="unfinished"></translation>
+        <translation>显示导航箭头</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, navigation arrows will be displayed on top of the image</source>
-        <translation type="unfinished"></translation>
+        <translation>若勾选此项，导航箭头将显示在图像上方</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation>导航</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4253,7 +4255,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Show Player</source>
-        <translation type="unfinished"></translation>
+        <translation>显示播放</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4286,7 +4288,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Open Image</source>
-        <translation type="unfinished">打开图像</translation>
+        <translation>打开图像</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
@@ -4375,12 +4377,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>%1 exists, skipping...</source>
-        <translation>%1 已存在，跳过……</translation>
+        <translation>%1 已存在，跳过...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Sorry, I could not save: %1</source>
-        <translation>抱歉，不能保存：%1</translation>
+        <translation>抱歉，无法保存：%1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -4403,7 +4405,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Gamma</source>
-        <translation>Gamma</translation>
+        <translation>伽马</translation>
     </message>
 </context>
 <context>
@@ -4479,27 +4481,27 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-        <translation>建议设置一个适中的缓存值，100 MB左右。[%1-%2 MB]</translation>
+        <translation>建议设置一个适当的缓存值，100 MB左右。[%1-%2 MB]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-        <translation type="unfinished">建议设置一个适中的编辑历史值，100 MB左右。[%1-%2 MB]</translation>
+        <translation>建议设置一个适当的编辑历史值，100 MB左右。[%1-%2 MB]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>History Size</source>
-        <translation>历史记录大小</translation>
+        <translation>历史记录值</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Skip Images</source>
-        <translation>跳过图片</translation>
+        <translation>跳过图像</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Images are skipped until the Next key is released</source>
-        <translation>在“下一个”按钮松开前，图像会一直跳过。</translation>
+        <translation>在“下一个”按钮松开前，图像会一直跳过</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4524,7 +4526,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>After saving, the saved image will be loaded in place</source>
-        <translation>保存后，图像将被加载到相应位置。</translation>
+        <translation>保存后，图像将被加载到相应位置</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4554,7 +4556,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Number of Skipped Images on PgUp/PgDown</source>
-        <translation>按 PgUp / PgDown 时跳过的图像数目</translation>
+        <translation>按上/下方向键时跳过的图像数目</translation>
     </message>
 </context>
 <context>
@@ -4617,7 +4619,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>CTRL+Zoom resizes the thumbnails</source>
-        <translation>CTRL + 缩放，可调整缩略图大小</translation>
+        <translation>CTRL + 缩放，可调整缩略图尺寸</translation>
     </message>
 </context>
 <context>
@@ -4686,17 +4688,20 @@ Do you want to show them again?</source>
 %1
 and save to metadata.
 Warning: This will modify the files.</source>
-        <translation type="unfinished"></translation>
+        <translation>计算以下路径中图像的缩略图：
+%1
+并将缩略图保存至元数据。
+警告：此操作将修改文件。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Apply to the files without thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>应用于无缩略图的文件</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Apply to all files and overwrite existing thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>应用于所有文件并覆盖现有缩略图</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -4711,7 +4716,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished">保存缩略图</translation>
+        <translation>保存缩略图</translation>
     </message>
 </context>
 <context>
@@ -4765,42 +4770,42 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Previewing theme. Restart nomacs to apply all changes.</source>
-        <translation type="unfinished"></translation>
+        <translation>预览主题。重启 nomacs 以应用所有更改。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Foreground Color</source>
-        <translation type="unfinished"></translation>
+        <translation>前景色</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Sets the overall theme. The System theme uses the operating system theme except for custom widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>设置整体主题。系统主题使用操作系统主题，但自定义小部件除外</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Sets the appearance of buttons, checkboxes, etc. on the System theme or otherwise unstyled elements</source>
-        <translation type="unfinished"></translation>
+        <translation>设置系统主题中按钮、复选框等元素的外观，或未应用样式的其他元素</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>外观</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Nomacs  Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Nomacs 主题</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Widget Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>小部件主题</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Remember Recent Files History</source>
-        <translation type="unfinished"></translation>
+        <translation>记住最近文件历史记录</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4820,12 +4825,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Open First Image in Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>打开文件夹中的第一张图像</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>When opening a folder, show the first image. Otherwise, show the folder&apos;s contents.</source>
-        <translation type="unfinished"></translation>
+        <translation>打开文件夹时，显示第一张图像。否则，显示文件夹内容。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4860,12 +4865,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Next Image on Horizontal Zoom</source>
-        <translation>水平缩放的下一个图像</translation>
+        <translation>横向滑动操作改为切换图像</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, horizontal wheel events load the next/previous images.</source>
-        <translation>如果选中，水平滚轮操作将切换下一个/上一个图像。</translation>
+        <translation>如果选中，横向滚动操作将改为切换下一个/上一个图像。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4880,27 +4885,27 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Show Nomacs Logo</source>
-        <translation type="unfinished"></translation>
+        <translation>显示 Nomacs 徽标</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, the nomacs logo is shown in the bottom right corner.</source>
-        <translation>如果选中，nomacs的图标显示在右下角。</translation>
+        <translation>如果选中，nomacs 的图标显示在右下角。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Enable Animations</source>
-        <translation type="unfinished"></translation>
+        <translation>启用动画效果</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, enable animations on user interface components.</source>
-        <translation type="unfinished"></translation>
+        <translation>若勾选此项，则启用用户界面组件的动画效果。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Switch CTRL with ALT</source>
-        <translation>用ALT键替换CTRL键</translation>
+        <translation>用 ALT 键替换 CTRL 键</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4920,12 +4925,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Close on Middle Mouse Button</source>
-        <translation type="unfinished"></translation>
+        <translation>鼠标中键关闭</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Close nomacs if the Middle Mouse Button is pressed over the image.</source>
-        <translation type="unfinished"></translation>
+        <translation>若在图像上按下中键，则关闭 nomacs。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4935,7 +4940,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Check for updates on start-up.</source>
-        <translation>启动时检查更新</translation>
+        <translation>启动时检查更新。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4950,7 +4955,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Help translate nomacs</source>
-        <translation type="unfinished"></translation>
+        <translation>帮助翻译 nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5066,12 +5071,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, the file: %1 does not exist... </source>
-        <translation>抱歉，此文件不存在：%1</translation>
+        <translation>抱歉，此文件不存在：%1... </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, you are not allowed to read: %1</source>
-        <translation>抱歉，不能读取文件：%1</translation>
+        <translation>抱歉，无法读取文件：%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
@@ -5081,7 +5086,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, I could not load: %1</source>
-        <translation>抱歉，不能加载：%1</translation>
+        <translation>抱歉，无法加载：%1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
@@ -5093,19 +5098,20 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>I can&apos;t save an empty file, sorry...
 </source>
-        <translation>无法保存空文件，抱歉……
+        <translation>无法保存空文件，抱歉...
 </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, the directory: %1  does not exist
 </source>
-        <translation>抱歉，目录：%1 不存在</translation>
+        <translation>抱歉，目录：%1 不存在
+</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation>抱歉，不能写入文件: %1</translation>
+        <translation>抱歉，无法写入文件: %1</translation>
     </message>
 </context>
 <context>
@@ -5141,7 +5147,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, I could not find the GPS coordinates...</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，我无法找到GPS坐标...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5158,7 +5164,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, I could not copy the image...</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，我无法复制这张图像...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5174,12 +5180,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, I cannot save an empty image...</source>
-        <translation>抱歉，无法保存空图像……</translation>
+        <translation>抱歉，无法保存空图像...</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, deleting archived files is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，系统不支持删除归档文件。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5237,7 +5243,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, I could not delete: %1</source>
-        <translation>抱歉，不能删除: %1</translation>
+        <translation>抱歉，无法删除: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5353,7 +5359,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp"/>
         <source>Compression</source>
-        <translation type="unfinished"></translation>
+        <translation>压缩</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp"/>
@@ -5408,7 +5414,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp"/>
         <source>Caption</source>
-        <translation>标题</translation>
+        <translation>图注</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp"/>
@@ -5436,7 +5442,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Filter</source>
-        <translation type="unfinished">筛选</translation>
+        <translation>筛选</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
@@ -5446,32 +5452,32 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Embedded Thumbnail</source>
-        <translation type="unfinished"></translation>
+        <translation>嵌入缩略图</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Size</source>
-        <translation type="unfinished">大小</translation>
+        <translation>大小</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>确定</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Transformed</source>
-        <translation type="unfinished"></translation>
+        <translation>转换</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>yes</source>
-        <translation type="unfinished"></translation>
+        <translation>是</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>no</source>
-        <translation type="unfinished"></translation>
+        <translation>否</translation>
     </message>
 </context>
 <context>
@@ -5560,7 +5566,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Change Metadata Entries</source>
-        <translation type="unfinished"></translation>
+        <translation>修改元数据条目</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
@@ -5640,7 +5646,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Choose which image to mosaic.</source>
-        <translation>选择要马赛克化的图像</translation>
+        <translation>选择要马赛克化的图像。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -5650,12 +5656,12 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Mosaic Elements Folder:</source>
-        <translation type="unfinished"></translation>
+        <translation>马赛克元素文件夹：</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Specify the root folder of images used for mosaic elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>指定用于马赛克元素的图像根文件夹。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -5685,12 +5691,12 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Number of Horizontal Patches</source>
-        <translation>横向修补数量：</translation>
+        <translation>横向修补数量</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Number of Vertical Patches</source>
-        <translation>纵向修补数量：</translation>
+        <translation>纵向修补数量</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -5746,12 +5752,12 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Patch Resolution: %1 px</source>
-        <translation>修补分辨率：%1 px</translation>
+        <translation>修补分辨率：%1 像素</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Filling empty areas...</source>
-        <translation>填补空白区域......</translation>
+        <translation>填补空白区域...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -5826,13 +5832,15 @@ but saving orientation metadata has been disabled in settings.</source>
         <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口已锁定
+解锁方法：获取焦点（ALT+Tab），
+然后按下 %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>You should first reduce opacity
  before working through the window.</source>
-        <translation>在进入工作窗口之前请务必降低窗口的透明度</translation>
+        <translation>在进入工作窗口之前请务必降低窗口的透明度。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
@@ -5858,7 +5866,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Console</source>
-        <translation type="unfinished"></translation>
+        <translation>控制台</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
@@ -5895,7 +5903,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Open Tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>打开标签页</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
@@ -5916,7 +5924,7 @@ then press %1</source>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source> [Private Mode]</source>
-        <translation>[隐私模式]</translation>
+        <translation> [隐私模式]</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
@@ -5926,7 +5934,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Downloading update...</source>
-        <translation>正在下载更新……</translation>
+        <translation>正在下载更新...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
@@ -5951,7 +5959,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Downloading new translations...</source>
-        <translation>正在下载新的翻译……</translation>
+        <translation>正在下载新的翻译...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
@@ -5964,7 +5972,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Choose a Monitor</source>
-        <translation>选择监视器</translation>
+        <translation>选择显示屏</translation>
     </message>
 </context>
 <context>
@@ -6075,7 +6083,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source></source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;上下文备注&gt;</translation>
     </message>
 </context>
 <context>
@@ -6155,7 +6163,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Summary: </source>
-        <translation>摘要：</translation>
+        <translation>摘要： </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -6224,7 +6232,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Sorry, I cannot delete %1</source>
-        <translation>抱歉，不能删除 %1</translation>
+        <translation>抱歉，无法删除 %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -6285,12 +6293,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>four stars</source>
-        <translation type="unfinished"></translation>
+        <translation>四星</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>five stars</source>
-        <translation type="unfinished"></translation>
+        <translation>五星</translation>
     </message>
 </context>
 <context>
@@ -6303,7 +6311,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Pin this directory</source>
-        <translation>钉住此目录Pin this directory</translation>
+        <translation>钉住此目录</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -6316,12 +6324,12 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp"/>
         <source>x:</source>
-        <translation>x：</translation>
+        <translation>长：</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp"/>
         <source>y:</source>
-        <translation>y：</translation>
+        <translation>宽：</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp"/>
@@ -6336,7 +6344,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkCore/DkBasicWidgets.cpp"/>
         <source> px</source>
-        <translation>像素</translation>
+        <translation> 像素</translation>
     </message>
 </context>
 <context>
@@ -6344,7 +6352,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Resize Image</source>
-        <translation>调整图像大小</translation>
+        <translation>调整图像尺寸</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -6431,7 +6439,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Sorry, but the image size %1 x %2 is illegal.</source>
-        <translation>抱歉，但 %1 x %2 的图像大小是非法的。</translation>
+        <translation>抱歉，但 %1 x %2 的图像尺寸是非法的。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -6444,37 +6452,37 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>比例</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Nearest Neighbor</source>
-        <translation type="unfinished">最近邻差值</translation>
+        <translation>最近邻差值</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Area (best for downscaling)</source>
-        <translation type="unfinished">面积 (最适合缩小)</translation>
+        <translation>面积 (最适合缩小)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Linear</source>
-        <translation type="unfinished">线性</translation>
+        <translation>线性</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Bicubic (4x4 interpolatia)</source>
-        <translation type="unfinished"></translation>
+        <translation>双三次插值（4x4插值）</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Lanczos (8x8 interpolation)</source>
-        <translation type="unfinished"></translation>
+        <translation>兰茨插值法（8×8插值）</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkManipulatorWidgets.cpp"/>
         <source>Gamma Correction</source>
-        <translation type="unfinished">伽玛校正</translation>
+        <translation>伽马校正</translation>
     </message>
 </context>
 <context>
@@ -6490,7 +6498,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Find &amp; Filter</source>
-        <translation>查找过滤器(&amp;F)</translation>
+        <translation>查找与过滤器</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -6510,7 +6518,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Type search words or a regular expression</source>
-        <translation>输入搜索字或正则表达式</translation>
+        <translation>输入搜索关键词或正则表达式</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -6609,7 +6617,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Copy build information</source>
-        <translation type="unfinished"></translation>
+        <translation>复制构建信息</translation>
     </message>
 </context>
 <context>
@@ -6684,7 +6692,7 @@ Press ESC to undo changes</source>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Could not save: %1
 %2</source>
-        <translation>不能保存： %1 %2</translation>
+        <translation>无法保存： %1 %2</translation>
     </message>
 </context>
 <context>
@@ -6728,17 +6736,17 @@ Press ESC to undo changes</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Copy Images</source>
-        <translation type="unfinished"></translation>
+        <translation>复制图像</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>The current directory is invalid or no longer exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>当前目录无效或已不存在。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Copying to an archive is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>不支持复制到归档文件。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -6811,7 +6819,7 @@ Press ESC to undo changes</source>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Open Image</source>
-        <translation type="unfinished">打开图像</translation>
+        <translation>打开图像</translation>
     </message>
 </context>
 <context>
@@ -6826,7 +6834,9 @@ Press ESC to undo changes</source>
         <source>
 Creating thumbnails...
 </source>
-        <translation>创建缩略图...</translation>
+        <translation>
+创建缩略图...
+</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
@@ -6839,7 +6849,7 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
         <source>TIF compression</source>
-        <translation>TIF格式压缩</translation>
+        <translation>TIF 格式压缩</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
@@ -7028,7 +7038,7 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source></source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;上下文备注&gt;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
@@ -7048,7 +7058,7 @@ Creating thumbnails...
         <location filename="../src/DkCore/DkUpdater.cpp"/>
         <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-        <translation>Nomacs 更新被禁用。欲了解详情，请联系系统管理员。</translation>
+        <translation>nomacs 更新被禁用。欲了解详情，请联系系统管理员。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
@@ -7115,7 +7125,7 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
         <source>sorry, I could not check for newer versions</source>
-        <translation>抱歉, 不能检查新版本</translation>
+        <translation>抱歉, 无法检查新版本</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
@@ -7139,7 +7149,8 @@ Please contact your system administrator for further information.</source>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
         <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-        <translation>Nomacs 更新被禁用。欲了解详情，请联系系统管理员。</translation>
+        <translation>nomacs 更新被禁用。
+欲了解详情，请联系系统管理员。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
@@ -7159,7 +7170,7 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
         <source>For more information see </source>
-        <translation>有关详情请参阅</translation>
+        <translation>有关详情请参阅 </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
@@ -7169,12 +7180,12 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
         <source>Unable to connect to server ... please try again later</source>
-        <translation>连接服务器失败……请稍后再试</translation>
+        <translation>连接服务器失败...请稍后再试</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUpdater.cpp"/>
         <source>nomacs is up-to-date</source>
-        <translation>nomacs已是最新版</translation>
+        <translation>nomacs 已是最新版</translation>
     </message>
 </context>
 <context>
@@ -7182,7 +7193,7 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Show previous image</source>
-        <translation>显示前一个图像</translation>
+        <translation>显示上一个图像</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
@@ -7207,32 +7218,32 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Resize</source>
-        <translation type="unfinished">调整大小</translation>
+        <translation>调整尺寸</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Shall I move %1 to trash?</source>
-        <translation type="unfinished">是否将 %1 移至垃圾桶？</translation>
+        <translation>是否将 %1 移至垃圾桶？</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Do you want to permanently delete %1?</source>
-        <translation type="unfinished">想要永久删除 %1 吗？</translation>
+        <translation>想要永久删除 %1 吗？</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Delete File</source>
-        <translation type="unfinished">删除文件</translation>
+        <translation>删除文件</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Error</source>
-        <translation type="unfinished">错误</translation>
+        <translation>错误</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Sorry, I could not create a wallpaper...</source>
-        <translation type="unfinished">抱歉，不能创建壁纸……</translation>
+        <translation>抱歉，无法创建壁纸...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
@@ -7260,7 +7271,7 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Press F10 to exit Frameless view</source>
-        <translation>按 F10 退出无框视图</translation>
+        <translation>按 F10 退出无边框视图</translation>
     </message>
 </context>
 <context>
@@ -7273,7 +7284,7 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Welcome to nomacs, please choose your preferred language below.</source>
-        <translation>欢迎使用Nomacs，请在下方选择需要的语言。</translation>
+        <translation>欢迎使用 nomacs，请在下方选择需要的语言。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
