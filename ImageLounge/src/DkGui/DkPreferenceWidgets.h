@@ -174,7 +174,6 @@ public slots:
     void onKeepZoomButtonClicked(int buttonId) const;
     void onInvertZoomToggled(bool checked) const;
     void onHQAntiAliasingToggled(bool checked) const;
-    void onTransitionCurrentIndexChanged(int index) const;
     void onAlwaysAnimateToggled(bool checked) const;
     void onShowCropToggled(bool checked) const;
     void onShowScrollBarsToggled(bool checked) const;
