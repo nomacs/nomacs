@@ -219,7 +219,7 @@ DkSettingsEntry DkSettingsEntry::fromSettings(const QString &key, const QSetting
 
     // we first cast to double & check if the number is rational
     // if it is not, we pass it to the int cast
-    if (ok && (double)qRound(dVal) != dVal) {
+    if (ok && std::floor(dVal) != dVal) {
         se.setValue(dVal);
         return se;
     }
