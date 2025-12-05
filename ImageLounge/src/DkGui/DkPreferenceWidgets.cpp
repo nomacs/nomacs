@@ -869,28 +869,16 @@ void DkDisplayPreference::createLayout()
     auto *cbTransition = new QComboBox(this);
     cbTransition->setView(new QListView()); // fix style
     cbTransition->setToolTip(tr("Choose a transition when loading a new image"));
-    connect(cbTransition,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DkDisplayPreference::onTransitionCurrentIndexChanged);
+    connect(cbTransition, &QComboBox::activated, [](int itemIndex) {
+        DkSettingsManager::param().display().transition = static_cast<DkSettings::TransitionMode>(itemIndex);
+    });
 
-    for (int idx = 0; idx < DkSettings::trans_end; idx++) {
-        QString str = tr("Unknown Transition");
-
-        switch (idx) {
-        case DkSettings::trans_appear:
-            str = tr("Appear");
-            break;
-        case DkSettings::trans_swipe:
-            str = tr("Swipe");
-            break;
-        case DkSettings::trans_fade:
-            str = tr("Fade");
-            break;
-        }
-
-        cbTransition->addItem(str);
-    }
+    QStringList transitionNames(DkSettings::trans_end);
+    transitionNames[DkSettings::trans_appear] = tr("Appear");
+    transitionNames[DkSettings::trans_fade] = tr("Fade");
+    transitionNames[DkSettings::trans_swipe] = tr("Swipe");
+    static_assert(DkSettings::trans_end == 3);
+    cbTransition->addItems(transitionNames);
     cbTransition->setCurrentIndex(DkSettingsManager::param().display().transition);
 
     auto *fadeImageBox = new QDoubleSpinBox(this);
@@ -1005,12 +993,6 @@ void DkDisplayPreference::onHQAntiAliasingToggled(bool checked) const
 {
     if (DkSettingsManager::param().display().highQualityAntiAliasing != checked)
         DkSettingsManager::param().display().highQualityAntiAliasing = checked;
-}
-
-void DkDisplayPreference::onTransitionCurrentIndexChanged(int index) const
-{
-    if (DkSettingsManager::param().display().transition != index)
-        DkSettingsManager::param().display().transition = (DkSettings::TransitionMode)index;
 }
 
 void DkDisplayPreference::onAlwaysAnimateToggled(bool checked) const
