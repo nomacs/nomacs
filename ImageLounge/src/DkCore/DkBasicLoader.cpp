@@ -1176,7 +1176,11 @@ bool DkBasicLoader::writeBufferToFile(const QString &fileInfo, const QSharedPoin
         return false;
 
     QFile file(fileInfo);
-    file.open(QIODevice::WriteOnly);
+    if (!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "[DkBasicLoader] failed to open for writing:" << file.error() << file.errorString()
+                   << file.fileName();
+        return false;
+    }
     qint64 bytesWritten = file.write(*ba.data(), ba->size());
     file.close();
     qDebug() << "[DkBasicLoader] buffer saved, bytes written: " << bytesWritten;
@@ -1935,7 +1939,10 @@ int DkBasicLoader::mergeVecFiles(const QStringList &vecFilePaths, QString &saveF
     }
 
     QFile file(saveFileInfo.absoluteFilePath());
-    file.open(QIODevice::WriteOnly);
+    if (!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "failed to open for writing" << file.error() << file.errorString() << file.fileName();
+        return 0;
+    }
     file.write(vecBuffer);
     file.close();
 
@@ -1993,9 +2000,12 @@ bool FileDownloader::save(const QString &filePath, const QSharedPointer<QByteArr
         QDir().mkpath(fi.absolutePath());
 
     QFile f(filePath);
-    f.open(QIODevice::WriteOnly);
+    if (!f.open(QIODevice::WriteOnly)) {
+        qWarning() << "cannot open for writing" << f.error() << f.errorString() << f.fileName();
+        return false;
+    }
 
-    return f.write(*data);
+    return f.write(*data) == data->size();
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply *pReply)

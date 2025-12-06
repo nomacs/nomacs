@@ -192,10 +192,10 @@ int main(int argc, char *argv[])
         QFile file;
         if (parser.positionalArguments().count()) {
             file.setFileName(parser.positionalArguments().first());
-            file.open(QFile::WriteOnly | QFile::Truncate);
+            (void)file.open(QFile::WriteOnly | QFile::Truncate);
             qInfo() << "[list-formats] writing metadata to" << file.fileName();
         } else
-            file.open(stdout, QFile::WriteOnly);
+            (void)file.open(stdout, QFile::WriteOnly);
 
         if (!file.isOpen()) {
             qCritical() << "open failed:" << file.errorString();
