@@ -679,44 +679,36 @@ bool DkBasicLoader::loadRAW(const QString &filePath, QImage &img, QSharedPointer
 bool DkBasicLoader::loadPSD(const QString &, QImage &, QSharedPointer<QByteArray>) const
 {
     qWarning() << "built-in PSD loader unsupported on Windows, you will need a Qt plugin";
+    return false;
+}
 #else
 bool DkBasicLoader::loadPSD(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
 {
     // load from file?
+    std::unique_ptr<QIODevice> file;
     if (!ba || ba->isEmpty()) {
-        QFile file(filePath);
-        file.open(QIODevice::ReadOnly);
-
-        QPsdHandler psdHandler;
-        psdHandler.setDevice(&file); // QFile is an IODevice
-        // psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
-
-        if (psdHandler.canRead(&file)) {
-            bool success = psdHandler.read(&img);
-            // setEditImage(img, tr("Original Image"));
-
-            return success;
-        }
+        file = std::make_unique<QFile>(filePath);
     } else {
-        QBuffer buffer;
-        buffer.setData(*ba.data());
-        buffer.open(QIODevice::ReadOnly);
-
-        QPsdHandler psdHandler;
-        psdHandler.setDevice(&buffer); // QFile is an IODevice
-        // psdHandler.setFormat(file.suffix().toLocal8Bit());
-
-        if (psdHandler.canRead(&buffer)) {
-            bool success = psdHandler.read(&img);
-            // setEditImage(img, tr("Original Image"));
-
-            return success;
-        }
+        file = std::make_unique<QBuffer>(ba.data());
     }
 
-#endif // !Q_OS_WIN
-    return false;
+    if (!file->open(QIODevice::ReadOnly)) {
+        qWarning() << "[PSD] failed to open file" << file->errorString();
+        return false;
+    }
+
+    QPsdHandler psdHandler;
+    psdHandler.setDevice(file.get()); // QFile is an IODevice
+    // psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
+
+    if (!psdHandler.canRead(file.get())) {
+        qWarning() << "[PSD] invalid psd file" << filePath;
+        return false;
+    }
+
+    return psdHandler.read(&img);
 }
+#endif // !Q_OS_WIN
 
 #ifndef WITH_LIBTIFF
 bool DkBasicLoader::loadTIFF(const QString &, QImage &, QSharedPointer<QByteArray>) const
