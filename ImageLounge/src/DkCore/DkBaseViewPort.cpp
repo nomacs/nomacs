@@ -513,7 +513,7 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event)
 // protected functions --------------------------------------------------------------------
 void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
 {
-    const QRectF displayRect = mWorldMatrix.mapRect(mImgViewRect); // use float size for QPainter
+    const QRectF displayRect = frontPainter.transform().mapRect(mImgViewRect); // use float size for QPainter
 
     // HiDPI: mImgViewRect is in logical pixels, we need physical for 100% scale and AA to work correctly
     const qreal dpr = devicePixelRatioF();
