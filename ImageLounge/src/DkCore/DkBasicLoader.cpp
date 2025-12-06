@@ -602,51 +602,32 @@ bool DkBasicLoader::loadROH(const QString &filePath, QImage &img, QSharedPointer
     if (!ba || ba->isEmpty())
         return false;
 
-    bool imgLoaded = false;
-
     int rohW = 4000;
     int rohH = 2672;
     unsigned char fByte; // first byte
     unsigned char sByte; // second byte
 
-    try {
-        const auto *pData = (const unsigned char *)ba->constData();
-        auto *buffer = new unsigned char[rohW * rohH];
+    const auto *pData = (const unsigned char *)ba->constData();
+    auto buffer = std::make_unique<unsigned char>(rohW * rohH);
+    if (!buffer || ba->size() < (2 * rohW * rohH))
+        return false;
 
-        if (!buffer || ba->size() < (2 * rohW * rohH))
-            return imgLoaded;
+    auto *const buffPtr = buffer.get();
+    for (long long i = 0; i < (rohW * rohH); i++) {
+        fByte = pData[i * 2];
+        sByte = pData[i * 2 + 1];
+        fByte = fByte >> 4;
+        fByte = fByte & 15;
+        sByte = sByte << 4;
+        sByte = sByte & 240;
 
-        for (long long i = 0; i < (rohW * rohH); i++) {
-            fByte = pData[i * 2];
-            sByte = pData[i * 2 + 1];
-            fByte = fByte >> 4;
-            fByte = fByte & 15;
-            sByte = sByte << 4;
-            sByte = sByte & 240;
-
-            buffer[i] = (fByte | sByte);
-        }
-
-        img = QImage(buffer, rohW, rohH, QImage::Format_Indexed8);
-
-        if (img.isNull())
-            return imgLoaded;
-        else
-            imgLoaded = true;
-
-        // img = img.copy();
-        QVector<QRgb> colorTable;
-
-        for (int i = 0; i < 256; i++)
-            colorTable.push_back(QColor(i, i, i).rgb());
-
-        img.setColorTable(colorTable);
-
-    } catch (...) {
-        imgLoaded = false;
+        buffPtr[i] = (fByte | sByte);
     }
 
-    return imgLoaded;
+    img = QImage(buffPtr, rohW, rohH, QImage::Format_Grayscale8);
+    img = img.copy(); // buffPtr is not owned pointer
+
+    return true;
 }
 
 bool DkBasicLoader::loadTGA(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba) const
