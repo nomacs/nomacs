@@ -981,11 +981,8 @@ void DkViewPort::paintEvent(QPaintEvent *event)
         }
 
         if (DkSettingsManager::param().display().transition == DkSettings::trans_swipe && !mAnimationBuffer.isNull()) {
-            double dx = mNextSwipe ? width() * (mAnimationValue) : -width() * (mAnimationValue);
-
-            QTransform swipeTransform;
-            swipeTransform.translate(dx, 0);
-            painter.setTransform(swipeTransform);
+            double dx = mNextSwipe ? width() * mAnimationValue : -width() * mAnimationValue;
+            painter.setTransform(mWorldMatrix * QTransform::fromTranslate(dx, 0));
         }
 
         // TODO: if fading is active we interpolate with background instead of the other image
@@ -1000,11 +997,10 @@ void DkViewPort::paintEvent(QPaintEvent *event)
             // fade transition
             if (DkSettingsManager::param().display().transition == DkSettings::trans_fade) {
                 painter.setOpacity(mAnimationValue);
+                painter.setTransform(mPrevWorldMatrix);
             } else if (DkSettingsManager::param().display().transition == DkSettings::trans_swipe) {
                 double dx = mNextSwipe ? -width() * (1.0 - mAnimationValue) : width() * (1.0 - mAnimationValue);
-                QTransform swipeTransform;
-                swipeTransform.translate(dx, 0);
-                painter.setTransform(swipeTransform);
+                painter.setTransform(mPrevWorldMatrix * QTransform::fromTranslate(dx, 0));
             }
 
             painter.drawImage(mFadeImgViewRect, mAnimationBuffer, mAnimationBuffer.rect());
@@ -1801,6 +1797,7 @@ void DkViewPort::loadFileFast(int skipIdx)
         return;
 
     mNextSwipe = skipIdx > 0;
+    mPrevWorldMatrix = mWorldMatrix;
 
     QApplication::sendPostedEvents();
 
