@@ -190,6 +190,7 @@ protected:
     DkTimer mAnimationTime;
     QImage mAnimationBuffer;
     double mAnimationValue;
+    QTransform mPrevWorldMatrix;
     QRectF mFadeImgViewRect;
     QRectF mFadeImgRect;
     bool mNextSwipe = true;
