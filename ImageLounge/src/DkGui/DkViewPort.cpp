@@ -1780,21 +1780,21 @@ void DkViewPort::reloadFile()
     }
 }
 
-void DkViewPort::loadFile(int skipIdx)
-{
-    if (!unloadImage())
-        return;
-
-    if (mLoader && !mTestLoaded)
-        mLoader->changeFile(skipIdx);
-
-    // alt mod
-    if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
-        && (hasFocus() || mController->hasFocus())) {
-        emit sendNewFileSignal((qint16)skipIdx);
-        qDebug() << "emitting load next";
-    }
-}
+// void DkViewPort::loadFile(int skipIdx)
+// {
+//     if (!unloadImage())
+//         return;
+//
+//     if (mLoader && !mTestLoaded)
+//         mLoader->changeFile(skipIdx);
+//
+//     // alt mod
+//     if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
+//         && (hasFocus() || mController->hasFocus())) {
+//         emit sendNewFileSignal((qint16)skipIdx);
+//         qDebug() << "emitting load next";
+//     }
+// }
 
 void DkViewPort::loadPrevFileFast()
 {
