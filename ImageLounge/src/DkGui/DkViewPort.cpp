@@ -981,26 +981,42 @@ void DkViewPort::paintEvent(QPaintEvent *event)
             painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
         }
 
-        if (DkSettingsManager::param().display().transition == DkSettings::trans_swipe && !mAnimationBuffer.isNull()) {
-            double dx = mNextSwipe ? width() * mAnimationValue : -width() * mAnimationValue;
-            painter.setTransform(mWorldMatrix * QTransform::fromTranslate(dx, 0));
+        double opacity = 1.0;
+        auto transition = DkSettingsManager::param().display().transition;
+        if (!mAnimationBuffer.isNull()) {
+            switch (transition) {
+            case DkSettings::trans_fade:
+                opacity = 1.0 - mAnimationValue;
+                break;
+            case DkSettings::trans_swipe: {
+                double dx = mNextSwipe ? width() * mAnimationValue : -width() * mAnimationValue;
+                painter.setTransform(mWorldMatrix * QTransform::fromTranslate(dx, 0));
+                break;
+            }
+            case DkSettings::trans_appear:
+            case DkSettings::trans_end:
+                break;
+            }
         }
 
-        double opacity = (DkSettingsManager::param().display().transition == DkSettings::trans_fade)
-            ? 1.0 - mAnimationValue
-            : 1.0;
         draw(painter, opacity);
 
         if (!mAnimationBuffer.isNull() && mAnimationValue > 0) {
             auto oldOp = (float)painter.opacity();
 
-            // fade transition
-            if (DkSettingsManager::param().display().transition == DkSettings::trans_fade) {
+            switch (transition) {
+            case DkSettings::trans_fade:
                 painter.setOpacity(mAnimationValue);
                 painter.setTransform(mPrevWorldMatrix);
-            } else if (DkSettingsManager::param().display().transition == DkSettings::trans_swipe) {
+                break;
+            case DkSettings::trans_swipe: {
                 double dx = mNextSwipe ? -width() * (1.0 - mAnimationValue) : width() * (1.0 - mAnimationValue);
                 painter.setTransform(mPrevWorldMatrix * QTransform::fromTranslate(dx, 0));
+                break;
+            }
+            case DkSettings::trans_appear:
+            case DkSettings::trans_end:
+                break;
             }
 
             painter.drawImage(mFadeImgViewRect, mAnimationBuffer, mAnimationBuffer.rect());
