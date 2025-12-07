@@ -191,6 +191,7 @@ protected:
     QImage mAnimationBuffer;
     double mAnimationValue;
     QTransform mPrevWorldMatrix;
+    QString mPrevFilePath;
     QRectF mFadeImgViewRect;
     QRectF mFadeImgRect;
     bool mNextSwipe = true;
