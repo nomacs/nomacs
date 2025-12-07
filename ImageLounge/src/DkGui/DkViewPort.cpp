@@ -335,6 +335,9 @@ void DkViewPort::setImage(QImage newImg)
     if (mManipulatorWatcher.isRunning())
         mManipulatorWatcher.cancel();
 
+    bool isNewFile = mPrevFilePath != mLoader->filePath();
+    mPrevFilePath = mLoader->filePath();
+
     bool wasImageLoaded = !mImgStorage.isEmpty();
     bool isImageLoaded = !newImg.isNull();
     mImgStorage.setImage(newImg);
@@ -374,7 +377,7 @@ void DkViewPort::setImage(QImage newImg)
     mOldImgRect = mImgRect;
 
     // init fading
-    if (DkSettingsManager::param().display().animationDuration
+    if (isNewFile && wasImageLoaded && DkSettingsManager::param().display().animationDuration
         && DkSettingsManager::param().display().transition != DkSettingsManager::param().trans_appear
         && (mController->getPlayer()->isPlaying() || DkUtils::getMainWindow()->isFullScreen()
             || DkSettingsManager::param().display().alwaysAnimate)) {
@@ -985,7 +988,6 @@ void DkViewPort::paintEvent(QPaintEvent *event)
             painter.setTransform(mWorldMatrix * QTransform::fromTranslate(dx, 0));
         }
 
-        // TODO: if fading is active we interpolate with background instead of the other image
         double opacity = (DkSettingsManager::param().display().transition == DkSettings::trans_fade)
             ? 1.0 - mAnimationValue
             : 1.0;
