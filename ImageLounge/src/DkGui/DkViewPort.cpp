@@ -1623,14 +1623,27 @@ void DkViewPort::copyImageBuffer()
 
 void DkViewPort::animateFade()
 {
-    mAnimationValue = 1.0f
-        - (float)(mAnimationTime.elapsed() / 1000.0) / DkSettingsManager::param().display().animationDuration;
+    double duration = DkSettingsManager::param().display().animationDuration;
+    if (duration <= 0.0) {
+        mAnimationBuffer = QImage();
+        mAnimationTimer->stop();
+        mAnimationValue = 0;
+        return;
+    }
 
-    // slow in - slow out
-    double speed = mAnimationValue > 0.5 ? fabs(1.0 - mAnimationValue) : fabs(mAnimationValue);
-    speed *= .05;
+    double elapsed = mAnimationTime.elapsed() / 1000.0;
+    double t = elapsed / duration;
+    t = std::clamp(t, 0.0, 1.0);
 
-    mAnimationValue += (float)speed;
+    // Smootherstep easing curve (Ken Perlin variation)
+    t = t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+    mAnimationValue = 1.0 - t;
+
+    // slow in - slow out (previous)
+    // t = 1.0 - t;
+    // double speed = t > 0.5 ? 1.0 - t : t;
+    // speed *= .05;
+    // mAnimationValue = t;
 
     if (mAnimationValue <= 0) {
         mAnimationBuffer = QImage();
