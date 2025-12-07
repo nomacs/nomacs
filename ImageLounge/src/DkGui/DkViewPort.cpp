@@ -291,8 +291,6 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
         mAnimationValue = 1.0f;
     }
 
-    updateLoadedImage();
-
     mController->updateImage(image);
 }
 
