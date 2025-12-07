@@ -1051,6 +1051,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
         setCurrentImage(mCurrentImage);
         mCurrentImage->setEdited(false);
         emit imageLoadedSignal(mCurrentImage, true);
+        emit imageUpdatedSignal(mCurrentImage);
 
         // Skip the rest which is only relevant when re-encoding/saving the image
         return;
