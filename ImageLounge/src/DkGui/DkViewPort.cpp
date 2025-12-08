@@ -990,7 +990,10 @@ void DkViewPort::paintEvent(QPaintEvent *event)
                 opacity = 1.0 - mAnimationValue;
                 break;
             case DkSettings::trans_swipe: {
-                double dx = mNextSwipe ? width() * mAnimationValue : -width() * mAnimationValue;
+                const QRectF displayRect = mWorldMatrix.mapRect(mImgViewRect);
+                double total = mNextSwipe ? width() - displayRect.x() //
+                                          : -(displayRect.x() + displayRect.width());
+                double dx = total * mAnimationValue;
                 painter.setTransform(mWorldMatrix * QTransform::fromTranslate(dx, 0));
                 break;
             }
@@ -1011,7 +1014,10 @@ void DkViewPort::paintEvent(QPaintEvent *event)
                 painter.setTransform(mPrevWorldMatrix);
                 break;
             case DkSettings::trans_swipe: {
-                double dx = mNextSwipe ? -width() * (1.0 - mAnimationValue) : width() * (1.0 - mAnimationValue);
+                const QRect displayRect = mPrevWorldMatrix.mapRect(mFadeImgViewRect).toRect();
+                double total = mNextSwipe ? -(displayRect.x() + displayRect.width()) //
+                                          : width() - displayRect.x();
+                double dx = total * (1.0 - mAnimationValue);
                 painter.setTransform(mPrevWorldMatrix * QTransform::fromTranslate(dx, 0));
                 if (DkSettingsManager::param().display().tpPattern && mAnimationBufferHasAlpha) {
                     drawTransparencyPattern(painter, mFadeImgViewRect);
