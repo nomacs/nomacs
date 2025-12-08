@@ -199,23 +199,88 @@ QImage DkImage::resizeImage(const QImage &src,
 #endif
 }
 
+// return true if all values masked with mask == value
+// optimal version for packed pixel formats
+template<typename T, typename = std::enable_if_t<std::is_unsigned_v<T>>>
+static bool isMaskedEqual(const QImage &img, T mask, T value)
+{
+    Q_ASSERT(img.depth() == sizeof(T) * 8);
+    auto *bits = reinterpret_cast<const T *>(img.constBits());
+    int stride = img.bytesPerLine() / sizeof(T);
+    const int height = img.height();
+    const int width = img.width();
+    for (int h = 0; h < height; ++h) {
+        for (int w = 0; w < width; ++w) {
+            if ((bits[w] & mask) != value) {
+                return false;
+            }
+        }
+        bits += stride;
+    }
+    return true;
+}
+
+// return true if all values in a channel equal value
+template<typename T>
+static bool isChannelEqual(const QImage &img, int channel, int numChannels, T value)
+{
+    Q_ASSERT(channel >= 0 && channel < numChannels);
+    Q_ASSERT(img.depth() == sizeof(T) * 8 * numChannels);
+    auto *channels = reinterpret_cast<const T *>(img.constBits());
+    int stride = img.bytesPerLine() / sizeof(T);
+    const int height = img.height();
+    const int width = img.width();
+    for (int h = 0; h < height; ++h) {
+        for (int w = 0; w < width; ++w) {
+            if (channels[w * numChannels + channel] != value) {
+                return false;
+            }
+        }
+        channels += stride;
+    }
+    return true;
+}
+
 bool DkImage::alphaChannelUsed(const QImage &img)
 {
-    if (img.format() != QImage::Format_ARGB32)
+    if (!img.hasAlphaChannel()) {
         return false;
+    }
 
-    // number of used bytes per line
-    int bpl = (img.width() * img.depth() + 7) / 8;
-    int pad = img.bytesPerLine() - bpl;
-    const uchar *ptr = img.bits();
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-        for (int cIdx = 0; cIdx < bpl; cIdx++, ptr++) {
-            if (cIdx % 4 == 3 && *ptr != 255)
+    switch (img.format()) {
+    case QImage::Format_ARGB32:
+    case QImage::Format_ARGB32_Premultiplied:
+        return !isMaskedEqual<uint32_t>(img, 0xFF000000, 0xFF000000);
+    case QImage::Format_RGBA8888:
+    case QImage::Format_RGBA8888_Premultiplied: {
+        constexpr bool littleEndian = Q_BYTE_ORDER != Q_BIG_ENDIAN;
+        constexpr uint32_t mask = littleEndian ? 0xFF : 0xFF000000;
+        return !isMaskedEqual<uint32_t>(img, mask, mask);
+    }
+    case QImage::Format_RGBA64:
+    case QImage::Format_RGBA64_Premultiplied:
+        return !isMaskedEqual<uint64_t>(img, 0xFFFF, 0xFFFF);
+    case QImage::Format_Indexed8: {
+        const QList<QRgb> colorTable = img.colorTable();
+        for (auto &rgb : colorTable) {
+            if (qAlpha(rgb) != 0xFF) {
                 return true;
+            }
         }
-
-        ptr += pad;
+        return false;
+    }
+    case QImage::Format_RGBA16FPx4:
+    case QImage::Format_RGBA16FPx4_Premultiplied: {
+        return !isChannelEqual<uint16_t>(img, 3, 4, 0x3C00);
+    }
+    case QImage::Format_RGBA32FPx4:
+    case QImage::Format_RGBA32FPx4_Premultiplied: {
+        return !isChannelEqual<float>(img, 3, 4, 1.0f);
+    } break;
+    default:
+        // supposedly Qt image loaders will never give 16-bit or 24-bit images w/alpha channel,
+        // although there is format support for it
+        qWarning() << "[alphaChannelUsed] unsupported format" << img.format();
     }
 
     return false;
