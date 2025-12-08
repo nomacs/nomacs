@@ -189,6 +189,7 @@ protected:
     QTimer *mAnimationTimer;
     DkTimer mAnimationTime;
     QImage mAnimationBuffer;
+    bool mAnimationBufferHasAlpha = false;
     double mAnimationValue;
     QTransform mPrevWorldMatrix;
     QString mPrevFilePath;

@@ -199,7 +199,7 @@ protected:
     virtual void draw(QPainter &frontPainter, double opacity = 1.0);
 
     // draw transparency pattern behind where the image will draw
-    virtual void drawTransparencyPattern(QPainter &painter) const;
+    virtual void drawTransparencyPattern(QPainter &painter, const QRectF &imgViewRect) const;
 
     // fill entire viewport with bg color, image draws on top
     virtual void eraseBackground(QPainter &painter);

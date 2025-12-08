@@ -285,6 +285,7 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
             || DkSettingsManager::param().display().alwaysAnimate)) {
         QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
         mAnimationBuffer = mImgStorage.image(dr.size());
+        mAnimationBufferHasAlpha = DkImage::alphaChannelUsed(mAnimationBuffer); // TODO: attribute of DkImageStorage
         mAnimationBuffer.convertToColorSpace(DkImage::targetColorSpace(this));
         mFadeImgViewRect = mImgViewRect;
         mFadeImgRect = mImgRect;
@@ -1012,6 +1013,9 @@ void DkViewPort::paintEvent(QPaintEvent *event)
             case DkSettings::trans_swipe: {
                 double dx = mNextSwipe ? -width() * (1.0 - mAnimationValue) : width() * (1.0 - mAnimationValue);
                 painter.setTransform(mPrevWorldMatrix * QTransform::fromTranslate(dx, 0));
+                if (DkSettingsManager::param().display().tpPattern && mAnimationBufferHasAlpha) {
+                    drawTransparencyPattern(painter, mFadeImgViewRect);
+                }
                 break;
             }
             case DkSettings::trans_appear:
