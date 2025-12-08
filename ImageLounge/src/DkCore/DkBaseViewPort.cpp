@@ -566,7 +566,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
-        drawTransparencyPattern(painter);
+        drawTransparencyPattern(painter, mImgViewRect);
 
     double oldOp = painter.opacity();
     painter.setOpacity(opacity);
@@ -614,7 +614,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
     }
 }
 
-void DkBaseViewPort::drawTransparencyPattern(QPainter &painter) const
+void DkBaseViewPort::drawTransparencyPattern(QPainter &painter, const QRectF &imgViewRect) const
 {
     QBrush pt = mPattern;
 
@@ -626,7 +626,7 @@ void DkBaseViewPort::drawTransparencyPattern(QPainter &painter) const
     painter.save();
     painter.setPen(QPen(Qt::NoPen)); // no border
     painter.setBrush(pt);
-    painter.drawRect(mImgViewRect);
+    painter.drawRect(imgViewRect);
     painter.restore();
 }
 
