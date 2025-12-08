@@ -1485,7 +1485,10 @@ QImage DkImage::mat2QImage(cv::Mat img, const QImage &srcImg)
         qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
     }
     if (img.type() == CV_8UC4) {
-        qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32);
+        // do not add back an empty alpha channel
+        // TODO: if the manipulator adds/removes alpha channel, pass as an argument
+        auto format = !srcImg.hasAlphaChannel() ? QImage::Format_RGB32 : QImage::Format_ARGB32;
+        qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, format);
     }
 
     qImg = qImg.copy();
