@@ -990,8 +990,20 @@ void DkViewPort::paintEvent(QPaintEvent *event)
             switch (DkSettingsManager::param().display().transition) {
             case DkSettings::trans_fade: {
                 double oldOpacity = painter.opacity();
-                painter.setTransform(mWorldMatrix);
-                draw(painter, 1.0 - mAnimationValue);
+                QRectF clipRect = mImgViewRect.intersected(mFadeImgViewRect);
+                // To properly cross-fade images we must consider the overlapped part of images
+                // separately from non-overlapped part blended with background.
+                // TODO: blend images in linear colorspace for nicer result
+                if (clipRect == mImgViewRect) {
+                    // Perfect overlap, we do not have to blend bottom image w/background
+                    draw(painter, 1.0, draw_default);
+                } else {
+                    // Mixed overlap, blend bottom image w/background, do not blend overlap
+                    draw(painter, 1.0 - mAnimationValue, draw_default);
+                    painter.setClipRect(mImgViewRect.intersected(mFadeImgViewRect));
+                    draw(painter, 1.0, draw_image);
+                    painter.setClipping(false);
+                }
                 painter.setOpacity(mAnimationValue);
                 painter.setTransform(mPrevWorldMatrix);
                 painter.drawImage(mFadeImgViewRect, mAnimationBuffer, mAnimationBuffer.rect());
@@ -2166,7 +2178,6 @@ void DkViewPortFrameless::paintEvent(QPaintEvent *event)
 
 void DkViewPortFrameless::draw(QPainter &painter, double opacity, int flags)
 {
-    opacity = 1.0; // slideshow: prevents desktop from showing where the faded images overlap
     DkViewPort::draw(painter, opacity, flags);
 }
 
