@@ -2164,10 +2164,10 @@ void DkViewPortFrameless::paintEvent(QPaintEvent *event)
     DkViewPort::paintEvent(event);
 }
 
-void DkViewPortFrameless::draw(QPainter &painter, double opacity)
+void DkViewPortFrameless::draw(QPainter &painter, double opacity, int flags)
 {
     opacity = 1.0; // slideshow: prevents desktop from showing where the faded images overlap
-    DkViewPort::draw(painter, opacity);
+    DkViewPort::draw(painter, opacity, flags);
 }
 
 void DkViewPortFrameless::eraseBackground(QPainter &painter)
