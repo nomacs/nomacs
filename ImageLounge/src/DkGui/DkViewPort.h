@@ -249,7 +249,7 @@ protected:
 
     // functions
     void updateImageMatrix() override;
-    void draw(QPainter &painter, double opacity) override;
+    void draw(QPainter &painter, double opacity, int flags) override;
     void drawFrame(QPainter &painter);
     void eraseBackground(QPainter &painter) override;
     void controlImagePosition(float lb = -1, float ub = -1) override;

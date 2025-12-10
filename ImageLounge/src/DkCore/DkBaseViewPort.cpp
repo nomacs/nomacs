@@ -511,7 +511,7 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event)
 }
 
 // protected functions --------------------------------------------------------------------
-void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
+void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
 {
     const QRectF displayRect = frontPainter.transform().mapRect(mImgViewRect); // use float size for QPainter
 
@@ -560,12 +560,13 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
     QPainter &painter = backPainter ? *(backPainter.get()) : frontPainter;
 
     // do not color-manage the viewport background; defer for better locality when swapping
-    if (!backPainter) {
+    if (flags & draw_background && !backPainter) {
         eraseBackground(frontPainter);
     }
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
-    if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
+    if (flags & draw_pattern && DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel()
+        && opacity == 1.0)
         drawTransparencyPattern(painter, mImgViewRect);
 
     double oldOp = painter.opacity();
@@ -606,7 +607,9 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity)
     if (backPainter) {
         backPainter->end();
         mBackBuffer.convertToColorSpace(targetColorSpace);
-        eraseBackground(frontPainter);
+        if (flags & draw_background) {
+            eraseBackground(frontPainter);
+        }
         frontPainter.setWorldMatrixEnabled(false);
         frontPainter.setRenderHint(QPainter::SmoothPixmapTransform, false);
         frontPainter.drawImage(QPoint{0, 0}, mBackBuffer);

@@ -195,8 +195,16 @@ protected:
     QTimer *mZoomTimer;
     QImage mBackBuffer;
 
+    // flags to draw() call for multi-pass rendering or special cases
+    enum RenderFlag {
+        draw_image = 0, // only draw image
+        draw_background = 1, // draw background behind image
+        draw_pattern = 2, // draw transparency pattern above background, behind image
+        draw_default = draw_background | draw_pattern | draw_image
+    };
+
     // draw the entire viewport
-    virtual void draw(QPainter &frontPainter, double opacity = 1.0);
+    virtual void draw(QPainter &frontPainter, double opacity = 1.0, int flags = draw_default);
 
     // draw transparency pattern behind where the image will draw
     virtual void drawTransparencyPattern(QPainter &painter, const QRectF &imgViewRect) const;
