@@ -218,5 +218,8 @@ for DYLIB in $DYLIBS; do
   rename_imports "$DYLIB"
 done
 
+# sign exe (required for ARM systems)
+codesign --force --deep --sign - "$BUNDLE_DST" || exit 7
+
 # verify we do not use anything from /usr/local or /opt
 test_exe "$EXE_DST" "$EXE_ARGS"
