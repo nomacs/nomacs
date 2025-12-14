@@ -2,7 +2,7 @@
 set -e
 sudo apt install -y patchelf cimg-dev libpng-dev libjpeg-dev libgmock-dev \
   nlohmann-json3-dev qt6-declarative-dev-tools libgpgme-dev libgcrypt-dev \
-  squashfs-tools desktop-file-utils zsync
+  squashfs-tools desktop-file-utils zsync ninja-build
 
 # added for Ubuntu 22.04
 sudo apt install -y libglib2.0-dev libcurl4-openssl-dev
@@ -21,7 +21,7 @@ sudo apt install -y libglib2.0-dev libcurl4-openssl-dev
 (
   git clone https://github.com/linuxdeploy/linuxdeploy
   cd linuxdeploy &&
-  git checkout 98f393c &&
+  git checkout cc7b864 &&
   git submodule update --init --recursive &&
   cmake -G Ninja -D USE_CCACHE=OFF . &&
   ninja &&
@@ -45,7 +45,7 @@ sudo apt install -y libglib2.0-dev libcurl4-openssl-dev
 (
   git clone https://github.com/linuxdeploy/linuxdeploy-plugin-qt
   cd linuxdeploy-plugin-qt &&
-  git checkout b0cb921 &&
+  git checkout d15373b &&
   git submodule update --init --recursive &&
   cmake -G Ninja -D USE_CCACHE=OFF . &&
   ninja &&
