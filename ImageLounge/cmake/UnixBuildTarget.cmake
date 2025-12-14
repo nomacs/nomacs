@@ -144,39 +144,41 @@ else()
     # we can find the heif plugins by inspecting the heif header files, this
     # is the only method to get the correct location as it was determined
     # when libheif was compiled
-    #
-    # we also want to check if kimg_heif.so plugin installed, if not libheif won't be used
-    # and we would be adding a lot of bloat to the AppImage
-    #
-    set(QJPEG_TARGET Qt${QT_VERSION_MAJOR}::QJpegPlugin)
-    if(TARGET ${QJPEG_TARGET})
-        get_target_property(QJPEG_PATH ${QJPEG_TARGET} LOCATION_${CMAKE_BUILD_TYPE})
-        get_filename_component(QT_IMAGEFORMATS_PATH "${QJPEG_PATH}" PATH)
-        if(EXISTS "${QT_IMAGEFORMATS_PATH}/kimg_heif.so")
-            pkg_check_modules(HEIF libheif)
-            set(LIBHEIF_HEADER "libheif/heif_version.h")
-            foreach(dir IN LISTS HEIF_INCLUDE_DIRS)
-                if(EXISTS "${dir}/${LIBHEIF_HEADER}")
-                    file(READ "${dir}/${LIBHEIF_HEADER}" CONTENTS)
-                    string(REGEX MATCH "#define LIBHEIF_PLUGIN_DIRECTORY \"(.+)\"" _ "${CONTENTS}")
-                    if(CMAKE_MATCH_1)
-                        set(LIBHEIF_PLUGIN_PATH ${CMAKE_MATCH_1})
-                        set(APPDIR_LIBHEIF_PLUGIN_PATH "./AppDir/usr/lib/libheif/plugins")
-                        file(GLOB LIBHEIF_PLUGINS "${LIBHEIF_PLUGIN_PATH}/*")
-                        message(STATUS "AppImage will include libheif plugins from: ${LIBHEIF_PLUGIN_PATH}")
-                        set(LIBHEIF_ARGS "--deploy-deps-only=${APPDIR_LIBHEIF_PLUGIN_PATH}")
-                        add_custom_target(
-                            _appdir_copy_libheif
-                            COMMAND ${CMAKE_COMMAND} -E make_directory ${APPDIR_LIBHEIF_PLUGIN_PATH}
-                            COMMAND ${CMAKE_COMMAND} -E copy ${LIBHEIF_PLUGINS} ${APPDIR_LIBHEIF_PLUGIN_PATH}
-                            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                            COMMENT "Copying libheif plugins to AppDir"
-                        )
-                        add_dependencies(_appdir_copy_libheif _appdir_create)
-                    endif()
-                    break()
+    get_target_property(QTPATHS_EXE Qt6::qtpaths LOCATION)
+    execute_process(
+        COMMAND "${QTPATHS_EXE}" --plugin-dir
+        OUTPUT_VARIABLE QT_PLUGINS_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    set(QT_IMAGEFORMATS_PATH "${QT_PLUGINS_PATH}/imageformats")
+
+    if(EXISTS "${QT_IMAGEFORMATS_PATH}/kimg_heif.so")
+        pkg_check_modules(HEIF libheif)
+        set(LIBHEIF_HEADER "libheif/heif_version.h")
+        foreach(dir IN LISTS HEIF_INCLUDE_DIRS)
+            if(EXISTS "${dir}/${LIBHEIF_HEADER}")
+                file(READ "${dir}/${LIBHEIF_HEADER}" CONTENTS)
+                string(REGEX MATCH "#define LIBHEIF_PLUGIN_DIRECTORY \"(.+)\"" _ "${CONTENTS}")
+                if(CMAKE_MATCH_1)
+                    set(LIBHEIF_PLUGIN_PATH ${CMAKE_MATCH_1})
+                    set(APPDIR_LIBHEIF_PLUGIN_PATH "./AppDir/usr/lib/libheif/plugins")
+                    file(GLOB LIBHEIF_PLUGINS "${LIBHEIF_PLUGIN_PATH}/*")
+                    message(STATUS "AppImage will include libheif plugins from: ${LIBHEIF_PLUGIN_PATH}")
+                    set(LIBHEIF_ARGS "--deploy-deps-only=${APPDIR_LIBHEIF_PLUGIN_PATH}")
+                    add_custom_target(
+                        _appdir_copy_libheif
+                        COMMAND ${CMAKE_COMMAND} -E make_directory ${APPDIR_LIBHEIF_PLUGIN_PATH}
+                        COMMAND ${CMAKE_COMMAND} -E copy ${LIBHEIF_PLUGINS} ${APPDIR_LIBHEIF_PLUGIN_PATH}
+                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                        COMMENT "Copying libheif plugins to AppDir"
+                    )
+                    add_dependencies(_appdir_copy_libheif _appdir_create)
                 endif()
-            endforeach()
+                break()
+            endif()
+        endforeach()
+        if(NOT DEFINED LIBHEIF_PLUGIN_PATH)
+            message(FATAL_ERROR "Could not find libheif plugins for kimageformats heif plugin")
         endif()
     endif()
 
