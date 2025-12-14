@@ -204,7 +204,7 @@ QImage DkImage::resizeImage(const QImage &src,
 template<typename T, typename = std::enable_if_t<std::is_unsigned_v<T>>>
 static bool isMaskedEqual(const QImage &img, T mask, T value)
 {
-    Q_ASSERT(img.depth() == sizeof(T) * 8);
+    Q_ASSERT(static_cast<size_t>(img.depth()) == sizeof(T) * 8);
     auto *bits = reinterpret_cast<const T *>(img.constBits());
     int stride = img.bytesPerLine() / sizeof(T);
     const int height = img.height();
@@ -225,7 +225,7 @@ template<typename T>
 static bool isChannelEqual(const QImage &img, int channel, int numChannels, T value)
 {
     Q_ASSERT(channel >= 0 && channel < numChannels);
-    Q_ASSERT(img.depth() == sizeof(T) * 8 * numChannels);
+    Q_ASSERT(static_cast<size_t>(img.depth()) == sizeof(T) * 8 * numChannels);
     auto *channels = reinterpret_cast<const T *>(img.constBits());
     int stride = img.bytesPerLine() / sizeof(T);
     const int height = img.height();
