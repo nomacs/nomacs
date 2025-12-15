@@ -154,31 +154,33 @@ else()
 
     if(EXISTS "${QT_IMAGEFORMATS_PATH}/kimg_heif.so")
         pkg_check_modules(HEIF libheif)
-        set(LIBHEIF_HEADER "libheif/heif_version.h")
-        foreach(dir IN LISTS HEIF_INCLUDE_DIRS)
-            if(EXISTS "${dir}/${LIBHEIF_HEADER}")
-                file(READ "${dir}/${LIBHEIF_HEADER}" CONTENTS)
-                string(REGEX MATCH "#define LIBHEIF_PLUGIN_DIRECTORY \"(.+)\"" _ "${CONTENTS}")
-                if(CMAKE_MATCH_1)
-                    set(LIBHEIF_PLUGIN_PATH ${CMAKE_MATCH_1})
-                    set(APPDIR_LIBHEIF_PLUGIN_PATH "./AppDir/usr/lib/libheif/plugins")
-                    file(GLOB LIBHEIF_PLUGINS "${LIBHEIF_PLUGIN_PATH}/*")
-                    message(STATUS "AppImage will include libheif plugins from: ${LIBHEIF_PLUGIN_PATH}")
-                    set(LIBHEIF_ARGS "--deploy-deps-only=${APPDIR_LIBHEIF_PLUGIN_PATH}")
-                    add_custom_target(
-                        _appdir_copy_libheif
-                        COMMAND ${CMAKE_COMMAND} -E make_directory ${APPDIR_LIBHEIF_PLUGIN_PATH}
-                        COMMAND ${CMAKE_COMMAND} -E copy ${LIBHEIF_PLUGINS} ${APPDIR_LIBHEIF_PLUGIN_PATH}
-                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                        COMMENT "Copying libheif plugins to AppDir"
-                    )
-                    add_dependencies(_appdir_copy_libheif _appdir_create)
+        if(HEIF_VERSION VERSION_GREATER_EQUAL "1.14.0") # plugins path added in 5fb3a74
+            set(LIBHEIF_HEADER "libheif/heif_version.h")
+            foreach(dir IN LISTS HEIF_INCLUDE_DIRS)
+                if(EXISTS "${dir}/${LIBHEIF_HEADER}")
+                    file(READ "${dir}/${LIBHEIF_HEADER}" CONTENTS)
+                    string(REGEX MATCH "#define LIBHEIF_PLUGIN_DIRECTORY \"(.+)\"" _ "${CONTENTS}")
+                    if(CMAKE_MATCH_1)
+                        set(LIBHEIF_PLUGIN_PATH ${CMAKE_MATCH_1})
+                        set(APPDIR_LIBHEIF_PLUGIN_PATH "./AppDir/usr/lib/libheif/plugins")
+                        file(GLOB LIBHEIF_PLUGINS "${LIBHEIF_PLUGIN_PATH}/*")
+                        message(STATUS "AppImage will include libheif plugins from: ${LIBHEIF_PLUGIN_PATH}")
+                        set(LIBHEIF_ARGS "--deploy-deps-only=${APPDIR_LIBHEIF_PLUGIN_PATH}")
+                        add_custom_target(
+                            _appdir_copy_libheif
+                            COMMAND ${CMAKE_COMMAND} -E make_directory ${APPDIR_LIBHEIF_PLUGIN_PATH}
+                            COMMAND ${CMAKE_COMMAND} -E copy ${LIBHEIF_PLUGINS} ${APPDIR_LIBHEIF_PLUGIN_PATH}
+                            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                            COMMENT "Copying libheif plugins to AppDir"
+                        )
+                        add_dependencies(_appdir_copy_libheif _appdir_create)
+                    endif()
+                    break()
                 endif()
-                break()
+            endforeach()
+            if(NOT DEFINED LIBHEIF_PLUGIN_PATH)
+                message(FATAL_ERROR "Could not find libheif plugins for kimageformats heif plugin")
             endif()
-        endforeach()
-        if(NOT DEFINED LIBHEIF_PLUGIN_PATH)
-            message(FATAL_ERROR "Could not find libheif plugins for kimageformats heif plugin")
         endif()
     endif()
 
