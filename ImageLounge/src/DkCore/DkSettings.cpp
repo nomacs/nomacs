@@ -35,6 +35,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QImageReader>
+#include <QImageWriter>
 #include <QMimeDatabase>
 #include <QRandomGenerator>
 #include <QScreen>
@@ -140,7 +141,8 @@ void DkSettings::initFileFilters()
     if (!app_p.openFilters.empty())
         return;
 
-    QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
+    const QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
+    const QList<QByteArray> qtSaveFormats = QImageWriter::supportedImageFormats();
 
     // formats we can save
     if (qtFormats.contains("png"))
@@ -169,12 +171,31 @@ void DkSettings::initFileFilters()
 
     if (qtFormats.contains("webp"))
         app_p.saveFilters.append("WebP (*.webp)");
-    if (qtFormats.contains("avif"))
-        app_p.saveFilters.append("AV1 Image File Format (*.avif)");
     if (qtFormats.contains("qoi"))
         app_p.saveFilters.append("Quite OK Image Format (*.qoi)");
-    if (qtFormats.contains("hej2"))
-        app_p.saveFilters.append("JPEG 2000 image encapsulated in HEIF (*.hej2)");
+
+    // formats we can save optionally
+    if (qtFormats.contains("avif")) {
+        if (qtSaveFormats.contains("avif")) {
+            app_p.saveFilters.append("AV1 Image File Format (*.avif)");
+        } else {
+            app_p.openFilters.append("AV1 Image File Format (*.avif)");
+        }
+    }
+    if (qtFormats.contains("hej2")) {
+        if (qtSaveFormats.contains("hej2")) {
+            app_p.saveFilters.append("JPEG 2000 image encapsulated in HEIF (*.hej2)");
+        } else {
+            app_p.openFilters.append("JPEG 2000 image encapsulated in HEIF (*.hej2)");
+        }
+    }
+    if (qtFormats.contains("avci")) {
+        if (qtSaveFormats.contains("avci")) {
+            app_p.saveFilters.append("AVC-encoded image encapsulated in HEIF (*.avci)");
+        } else {
+            app_p.openFilters.append("AVC-encoded image encapsulated in HEIF (*.avci)");
+        }
+    }
 
 #ifdef Q_OS_WIN
     if (qtFormats.contains("ico"))
@@ -203,8 +224,6 @@ void DkSettings::initFileFilters()
         app_p.openFilters.append("AVIF image sequence (*.avifs)");
     if (qtFormats.contains("apng"))
         app_p.openFilters.append("Animated Portable Network Graphics (*.apng)");
-    if (qtFormats.contains("avci"))
-        app_p.openFilters.append("AVC-encoded image encapsulated in HEIF (*.avci)");
 
 #ifndef Q_OS_WIN
     if (qtFormats.contains("ico"))
