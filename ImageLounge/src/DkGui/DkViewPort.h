@@ -189,12 +189,10 @@ protected:
     QTimer *mAnimationTimer;
     DkTimer mAnimationTime;
     QImage mAnimationBuffer;
+    RenderParams mAnimationParams;
     bool mAnimationBufferHasAlpha = false;
     double mAnimationValue;
-    QTransform mPrevWorldMatrix;
     QString mPrevFilePath;
-    QRectF mFadeImgViewRect;
-    QRectF mFadeImgRect;
     bool mNextSwipe = true;
 
     QImage mImgBg;
