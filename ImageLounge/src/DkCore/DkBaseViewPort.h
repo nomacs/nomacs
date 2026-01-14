@@ -203,6 +203,34 @@ protected:
         draw_default = draw_background | draw_pattern | draw_image
     };
 
+    struct RenderParams {
+        double devicePixelRatio; // scaling of widget coordinates to window server coordinates
+        QRectF imgViewRect; // full image rect scaled to widget
+        QTransform worldMatrix; // transformation from imgViewRect to widget
+        QRectF displayRect; // final rect for drawing the image
+        QSize imageSize; // size of image needed for AA, rounded to pixels
+    };
+
+    /**
+     * @brief get parameters needed to draw image
+     * @param devicePixelRatio pixel ratio of widget we intend to paint on
+     * @param worldMatrix transformation from imgViewRect to viewport (zoom and pan)
+     * @param imgViewRect full image rectangle when scaled to fit widget
+     *
+     * @note This is intentionally static for use besides normal drawing
+     */
+    static RenderParams getRenderParams(double devicePixelRatio,
+                                        const QTransform &worldMatrix,
+                                        const QRectF &imgViewRect);
+
+    /**
+     * @brief draw image from precalculated parameters
+     * @param painter target
+     * @param img full-size or scaled image
+     * @param params from getRenderParams()
+     */
+    static void renderImage(QPainter &painter, const QImage &img, const RenderParams &params);
+
     // draw the entire viewport
     virtual void draw(QPainter &frontPainter, double opacity = 1.0, int flags = draw_default);
 
