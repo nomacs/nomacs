@@ -278,17 +278,17 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
 
     // retain the previous image for animation, release when animation ends
     // we don't do this on unloadImage() because we might be on the last image in the slideshow
+    const auto &dpy = DkSettingsManager::param().display();
     if (!mImgStorage.isEmpty() //
-        && DkSettingsManager::param().display().animationDuration > 0
-        && (mController->getPlayer()->isPlaying() //
-            || DkUtils::getMainWindow()->isFullScreen() //
-            || DkSettingsManager::param().display().alwaysAnimate)) {
-        QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
-        mAnimationBuffer = mImgStorage.image(dr.size());
+        && dpy.transition != DkSettings::trans_appear //
+        && dpy.animationDuration > 0.0 && //
+        (mController->getPlayer()->isPlaying() //
+         || DkUtils::getMainWindow()->isFullScreen() //
+         || DkSettingsManager::param().display().alwaysAnimate)) {
+        mAnimationParams = getRenderParams(devicePixelRatio(), mWorldMatrix, mImgViewRect);
+        mAnimationBuffer = mImgStorage.image(mAnimationParams.imageSize);
         mAnimationBufferHasAlpha = DkImage::alphaChannelUsed(mAnimationBuffer); // TODO: attribute of DkImageStorage
         mAnimationBuffer.convertToColorSpace(DkImage::targetColorSpace(this));
-        mFadeImgViewRect = mImgViewRect;
-        mFadeImgRect = mImgRect;
         mAnimationValue = 1.0f;
     }
 
@@ -982,55 +982,62 @@ void DkViewPort::paintEvent(QPaintEvent *event)
             painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
         }
 
-        double opacity = 1.0;
-        auto transition = DkSettingsManager::param().display().transition;
-        if (!mAnimationBuffer.isNull()) {
-            switch (transition) {
-            case DkSettings::trans_fade:
-                opacity = 1.0 - mAnimationValue;
+        if (mAnimationBuffer.isNull()) {
+            draw(painter, 1.0);
+        } else {
+            switch (DkSettingsManager::param().display().transition) {
+            case DkSettings::trans_fade: {
+                double oldOpacity = painter.opacity();
+                QRectF clipRect = mImgViewRect.intersected(mAnimationParams.imgViewRect);
+                // To properly cross-fade images we must consider the overlapped part of images
+                // separately from non-overlapped part blended with background.
+                // TODO: blend images in linear colorspace for nicer result
+                if (clipRect == mImgViewRect) {
+                    // Perfect overlap, we do not have to blend bottom image w/background
+                    draw(painter, 1.0, draw_default);
+                } else {
+                    // Mixed overlap, blend bottom image w/background, do not blend overlap
+                    draw(painter, 1.0 - mAnimationValue, draw_default);
+                    painter.setClipRect(clipRect);
+                    draw(painter, 1.0, draw_image);
+                    painter.setClipping(false);
+                }
+                painter.setOpacity(mAnimationValue);
+                painter.setTransform(mAnimationParams.worldMatrix);
+                renderImage(painter, mAnimationBuffer, mAnimationParams);
+                painter.setOpacity(oldOpacity);
                 break;
+            }
             case DkSettings::trans_swipe: {
-                const QRectF displayRect = mWorldMatrix.mapRect(mImgViewRect);
+                RenderParams params = getRenderParams(devicePixelRatio(), mWorldMatrix, mImgViewRect);
+                QRectF displayRect = params.displayRect;
                 double total = mNextSwipe ? width() - displayRect.x() //
                                           : -(displayRect.x() + displayRect.width());
                 double dx = total * mAnimationValue;
-                painter.setTransform(mWorldMatrix * QTransform::fromTranslate(dx, 0));
-                break;
-            }
-            case DkSettings::trans_appear:
-            case DkSettings::trans_end:
-                break;
-            }
-        }
+                painter.setTransform(params.worldMatrix * QTransform::fromTranslate(dx, 0));
+                draw(painter, 1.0);
 
-        draw(painter, opacity);
+                displayRect = mAnimationParams.displayRect;
+                total = mNextSwipe ? -(displayRect.x() + displayRect.width()) //
+                                   : width() - displayRect.x();
+                dx = total * (1.0 - mAnimationValue);
 
-        if (!mAnimationBuffer.isNull() && mAnimationValue > 0) {
-            auto oldOp = (float)painter.opacity();
+                // renderImage() does not use painter transform, we must
+                // recalculate render parameters for the new world matrix
+                QTransform worldMatrix = mAnimationParams.worldMatrix * QTransform::fromTranslate(dx, 0);
+                params = getRenderParams(mAnimationParams.devicePixelRatio, worldMatrix, mAnimationParams.imgViewRect);
 
-            switch (transition) {
-            case DkSettings::trans_fade:
-                painter.setOpacity(mAnimationValue);
-                painter.setTransform(mPrevWorldMatrix);
-                break;
-            case DkSettings::trans_swipe: {
-                const QRect displayRect = mPrevWorldMatrix.mapRect(mFadeImgViewRect).toRect();
-                double total = mNextSwipe ? -(displayRect.x() + displayRect.width()) //
-                                          : width() - displayRect.x();
-                double dx = total * (1.0 - mAnimationValue);
-                painter.setTransform(mPrevWorldMatrix * QTransform::fromTranslate(dx, 0));
                 if (DkSettingsManager::param().display().tpPattern && mAnimationBufferHasAlpha) {
-                    drawTransparencyPattern(painter, mFadeImgViewRect);
+                    painter.setTransform(worldMatrix);
+                    drawTransparencyPattern(painter, mAnimationParams.imgViewRect);
                 }
+                renderImage(painter, mAnimationBuffer, params);
                 break;
             }
             case DkSettings::trans_appear:
             case DkSettings::trans_end:
                 break;
             }
-
-            painter.drawImage(mFadeImgViewRect, mAnimationBuffer, mAnimationBuffer.rect());
-            painter.setOpacity(oldOp);
         }
 
         // now disable world matrix for overlay display
@@ -1836,7 +1843,6 @@ void DkViewPort::loadFileFast(int skipIdx)
         return;
 
     mNextSwipe = skipIdx > 0;
-    mPrevWorldMatrix = mWorldMatrix;
 
     QApplication::sendPostedEvents();
 
@@ -2174,10 +2180,9 @@ void DkViewPortFrameless::paintEvent(QPaintEvent *event)
     DkViewPort::paintEvent(event);
 }
 
-void DkViewPortFrameless::draw(QPainter &painter, double opacity)
+void DkViewPortFrameless::draw(QPainter &painter, double opacity, int flags)
 {
-    opacity = 1.0; // slideshow: prevents desktop from showing where the faded images overlap
-    DkViewPort::draw(painter, opacity);
+    DkViewPort::draw(painter, opacity, flags);
 }
 
 void DkViewPortFrameless::eraseBackground(QPainter &painter)
