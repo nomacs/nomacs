@@ -189,12 +189,10 @@ protected:
     QTimer *mAnimationTimer;
     DkTimer mAnimationTime;
     QImage mAnimationBuffer;
+    RenderParams mAnimationParams;
     bool mAnimationBufferHasAlpha = false;
     double mAnimationValue;
-    QTransform mPrevWorldMatrix;
     QString mPrevFilePath;
-    QRectF mFadeImgViewRect;
-    QRectF mFadeImgRect;
     bool mNextSwipe = true;
 
     QImage mImgBg;
@@ -249,7 +247,7 @@ protected:
 
     // functions
     void updateImageMatrix() override;
-    void draw(QPainter &painter, double opacity) override;
+    void draw(QPainter &painter, double opacity, int flags) override;
     void drawFrame(QPainter &painter);
     void eraseBackground(QPainter &painter) override;
     void controlImagePosition(float lb = -1, float ub = -1) override;
