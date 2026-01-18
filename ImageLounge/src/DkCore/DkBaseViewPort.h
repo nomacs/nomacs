@@ -197,7 +197,7 @@ protected:
 
     // flags to draw() call for multi-pass rendering or special cases
     enum RenderFlag {
-        draw_image = 0, // only draw image
+        draw_image = 0, // draw image only (cannot be disabled)
         draw_background = 1, // draw background behind image
         draw_pattern = 2, // draw transparency pattern above background, behind image
         draw_default = draw_background | draw_pattern | draw_image
@@ -217,7 +217,7 @@ protected:
      * @param worldMatrix transformation from imgViewRect to viewport (zoom and pan)
      * @param imgViewRect full image rectangle when scaled to fit widget
      *
-     * @note This is intentionally static for use besides normal drawing
+     * @note This is intentionally static for use outside of normal draw() flow
      */
     static RenderParams getRenderParams(double devicePixelRatio,
                                         const QTransform &worldMatrix,

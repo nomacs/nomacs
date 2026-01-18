@@ -545,11 +545,11 @@ void DkBaseViewPort::renderImage(QPainter &painter, const QImage &img, const Ren
         painter.drawImage(adjusted, img);
     } else {
         // we are not prescaled
-        // use smooth scale if we are downsampling
-        qreal scaleFactor = double(params.imageSize.width())
-            / img.size().width(); // mImgMatrix.m11() * mWorldMatrix.m11();
-        if (scaleFactor < 2.0) // TODO: prefs
+        // use bilinear interpolation for downsampling and moderate upsampling
+        qreal scaleFactor = double(params.imageSize.width()) / img.size().width();
+        if (scaleFactor < 2.0) { // TODO: prefs
             painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+        }
 
         painter.drawImage(params.displayRect, img);
     }
@@ -604,8 +604,9 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
 
     // opacity == 1.0f -> do not show pattern if we crossfade two images
     if (flags & draw_pattern && DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel()
-        && opacity == 1.0)
+        && opacity == 1.0) {
         drawTransparencyPattern(painter, mImgViewRect);
+    }
 
     double oldOp = painter.opacity();
     painter.setOpacity(opacity);
