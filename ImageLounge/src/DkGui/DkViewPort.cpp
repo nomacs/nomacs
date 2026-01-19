@@ -1010,28 +1010,23 @@ void DkViewPort::paintEvent(QPaintEvent *event)
             }
             case DkSettings::trans_swipe: {
                 RenderParams params = getRenderParams(devicePixelRatio(), mWorldMatrix, mImgViewRect);
-                QRectF displayRect = params.displayRect;
-                double total = mNextSwipe ? width() - displayRect.x() //
-                                          : -(displayRect.x() + displayRect.width());
+                QRectF viewRect = params.viewRect;
+                double total = mNextSwipe ? width() - viewRect.x() //
+                                          : -(viewRect.x() + viewRect.width());
                 double dx = total * mAnimationValue;
                 painter.setTransform(params.worldMatrix * QTransform::fromTranslate(dx, 0));
                 draw(painter, 1.0);
 
-                displayRect = mAnimationParams.displayRect;
-                total = mNextSwipe ? -(displayRect.x() + displayRect.width()) //
-                                   : width() - displayRect.x();
+                viewRect = mAnimationParams.viewRect;
+                total = mNextSwipe ? -(viewRect.x() + viewRect.width()) //
+                                   : width() - viewRect.x();
                 dx = total * (1.0 - mAnimationValue);
 
-                // renderImage() does not use painter transform, we must
-                // recalculate render parameters for the new world matrix
-                QTransform worldMatrix = mAnimationParams.worldMatrix * QTransform::fromTranslate(dx, 0);
-                params = getRenderParams(mAnimationParams.devicePixelRatio, worldMatrix, mAnimationParams.imgViewRect);
-
+                painter.setTransform(mAnimationParams.worldMatrix * QTransform::fromTranslate(dx, 0));
                 if (DkSettingsManager::param().display().tpPattern && mAnimationBufferHasAlpha) {
-                    painter.setTransform(worldMatrix);
                     drawTransparencyPattern(painter, mAnimationParams.imgViewRect);
                 }
-                renderImage(painter, mAnimationBuffer, params);
+                renderImage(painter, mAnimationBuffer, mAnimationParams);
                 break;
             }
             case DkSettings::trans_appear:
