@@ -203,19 +203,28 @@ protected:
         draw_default = draw_background | draw_pattern | draw_image
     };
 
+    /**
+     * @brief context needed for drawing images or image overlays/backgrounds
+     *
+     * @note All members should be considered const; use getRenderParams() to modify
+     */
     struct RenderParams {
-        double devicePixelRatio; // scaling of widget coordinates to window server coordinates
-        QRectF imgViewRect; // full image rect scaled to widget
-        QTransform worldMatrix; // transformation from imgViewRect to widget
-        QRectF displayRect; // final rect for drawing the image
-        QSize imageSize; // size of image needed for AA, rounded to pixels
+        // inputs to getRenderParams()
+        double devicePixelRatio; // scale factor from viewPort to screen/device
+        QRectF imgViewRect; // image rect scaled and centered to viewPort, logical coordinates
+        QTransform worldMatrix; // transform applied to imgViewRect (zoom & pan) => viewPort coordinates
+        // outputs
+        QRectF dstRect; // target rect for drawImage() with world matrix
+        QRectF viewRect; // target rect for drawImage() without world matrix
+        QRect deviceRect; // source rect in screen/target coordinates, for read-back from render target
+        QSize imageSize; // size of image needed for AA (rounded to device pixels)
     };
 
     /**
      * @brief get parameters needed to draw image
-     * @param devicePixelRatio pixel ratio of widget we intend to paint on
-     * @param worldMatrix transformation from imgViewRect to viewport (zoom and pan)
-     * @param imgViewRect full image rectangle when scaled to fit widget
+     * @param devicePixelRatio device scaling of viewport/render target
+     * @param worldMatrix world matrix of painter like mWorldMatrix
+     * @param imgViewRect image rect fit to viewport like mImgViewRect
      *
      * @note This is intentionally static for use outside of normal draw() flow
      */
@@ -228,6 +237,8 @@ protected:
      * @param painter target
      * @param img full-size or scaled image
      * @param params from getRenderParams()
+     *
+     * @note painter must have world matrix set correctly (normally params.worldMatrix)
      */
     static void renderImage(QPainter &painter, const QImage &img, const RenderParams &params);
 
