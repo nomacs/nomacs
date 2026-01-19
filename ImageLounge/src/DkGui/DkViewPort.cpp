@@ -286,13 +286,23 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
          || DkUtils::getMainWindow()->isFullScreen() //
          || DkSettingsManager::param().display().alwaysAnimate)) {
         mAnimationParams = getRenderParams(devicePixelRatio(), mWorldMatrix, mImgViewRect);
-        mAnimationBufferHasAlpha = DkImage::alphaChannelUsed(mAnimationBuffer); // TODO: attribute of DkImageStorage
         mAnimationBuffer = mImgStorage.downsampled(mAnimationParams.imageSize,
                                                    this,
                                                    DkImageStorage::process_sync | DkImageStorage::process_fallback);
         mAnimationBufferHasAlpha = mImgStorage.alphaChannelUsed();
         mAnimationBuffer = DkImage::convertToColorSpaceInPlace(this, mAnimationBuffer);
-        mAnimationValue = 1.0f;
+        mAnimationValue = 1.0;
+
+        if (dpy.transition == DkSettings::trans_fade && //
+            mAnimationBufferHasAlpha //
+            && DkSettingsManager::param().display().tpPattern) {
+            // To draw nicely we must fade a composite with image and pattern
+            QImage composite = renderBuffer(DkImage::targetFormat());
+            QPainter offscreen(&composite);
+            renderComposite(offscreen, mAnimationBuffer, mAnimationParams, draw_image | draw_pattern);
+            mAnimationBuffer = composite.copy(mAnimationParams.deviceRect);
+            mAnimationBufferHasAlpha = false;
+        }
     }
 
     mController->updateImage(image);
@@ -990,21 +1000,47 @@ void DkViewPort::paintEvent(QPaintEvent *event)
         } else {
             switch (DkSettingsManager::param().display().transition) {
             case DkSettings::trans_fade: {
-                double oldOpacity = painter.opacity();
-                QRectF clipRect = mImgViewRect.intersected(mAnimationParams.imgViewRect);
                 // To properly cross-fade images we must consider the overlapped part of images
                 // separately from non-overlapped part blended with background.
                 // TODO: blend images in linear colorspace for nicer result
-                if (clipRect == mImgViewRect) {
-                    // Perfect overlap, we do not have to blend bottom image w/background
-                    draw(painter, 1.0, draw_default);
-                } else {
-                    // Mixed overlap, blend bottom image w/background, do not blend overlap
+
+                const RenderParams newParams = getRenderParams(devicePixelRatio(), mWorldMatrix, mImgViewRect);
+                bool newHasAlpha = mImgStorage.alphaChannelUsed();
+                bool oldHasAlpha = mAnimationBufferHasAlpha;
+
+                // Fade-in new image
+                if ((newHasAlpha | oldHasAlpha) && !DkSettingsManager::param().display().tpPattern) {
+                    // Either image already blended with background, old way seems to be best
                     draw(painter, 1.0 - mAnimationValue, draw_default);
+                } else {
+                    // Get the intersection of the two images to separate
+                    // cross-dissolved region from background-blended region
+                    QRectF newRect = newParams.viewRect;
+                    QRectF oldRect = mAnimationParams.viewRect;
+
+                    newRect = newRect.intersected(this->rect()); // viewRects may extend past viewPort
+                    oldRect = oldRect.intersected(this->rect());
+                    QRectF clipRect = newRect.intersected(oldRect);
+
+                    // Draw background-blended region
+                    if (clipRect.toRect() == newRect.toRect()) {
+                        // Images overlap within one pixel, no blend with background needed
+                        // An edge might show from rounding so clip this as well
+                        draw(painter, 1.0, draw_background);
+                    } else {
+                        // Mixed overlap, blend bottom image w/background
+                        draw(painter, 1.0 - mAnimationValue, draw_default);
+                    }
+
+                    // Draw the cross-dissolved region
+                    clipRect = newParams.worldMatrix.inverted().mapRect(clipRect);
                     painter.setClipRect(clipRect);
-                    draw(painter, 1.0, draw_image);
+                    draw(painter, 1.0, draw_image | draw_pattern);
                     painter.setClipping(false);
                 }
+
+                // Fade-out old image
+                double oldOpacity = painter.opacity();
                 painter.setOpacity(mAnimationValue);
                 painter.setTransform(mAnimationParams.worldMatrix);
                 renderImage(painter, mAnimationBuffer, mAnimationParams);
