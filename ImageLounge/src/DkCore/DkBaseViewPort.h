@@ -195,11 +195,11 @@ protected:
     QTimer *mZoomTimer;
     QImage mBackBuffer;
 
-    // flags to draw() call for multi-pass rendering or special cases
+    // flags to draw() call for multi-pass rendering
     enum RenderFlag {
-        draw_image = 0, // draw image only (cannot be disabled)
-        draw_background = 1, // draw background behind image
-        draw_pattern = 2, // draw transparency pattern above background, behind image
+        draw_image = 1, // draw image
+        draw_background = 2, // fill viewport background
+        draw_pattern = 4, // draw transparency pattern behind image
         draw_default = draw_background | draw_pattern | draw_image
     };
 

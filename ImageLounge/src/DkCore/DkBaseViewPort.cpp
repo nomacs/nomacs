@@ -582,43 +582,42 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
         backPainter->setWorldTransform(frontPainter.worldTransform());
     }
 
-    QPainter &painter = backPainter ? *(backPainter.get()) : frontPainter;
-
-    // do not color-manage the viewport background; defer for better locality when swapping
-    if (flags & draw_background && !backPainter) {
-        eraseBackground(frontPainter);
+    if (flags & draw_background) {
+        eraseBackground(frontPainter); // never with opacity (transparent when frameless)
     }
 
-    // opacity == 1.0f -> do not show pattern if we crossfade two images
-    if (flags & draw_pattern && DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel()
-        && opacity == 1.0) {
-        drawTransparencyPattern(painter, mImgViewRect);
+    double oldOpacity = frontPainter.opacity();
+    frontPainter.setOpacity(opacity);
+
+    if ((flags & draw_pattern) && DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel()) {
+        drawTransparencyPattern(frontPainter, mImgViewRect);
     }
 
-    double oldOp = painter.opacity();
-    painter.setOpacity(opacity);
+    if (!(flags & draw_image)) {
+        frontPainter.setOpacity(oldOpacity);
+        return;
+    }
+
+    QPainter &imgPainter = backPainter ? *(backPainter.get()) : frontPainter;
 
     if (mSvg && mSvg->isValid()) {
-        mSvg->render(&painter, mImgViewRect);
+        mSvg->render(&imgPainter, mImgViewRect);
     } else if (mMovie && mMovie->isValid()) {
-        painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
+        imgPainter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
     } else {
-        renderImage(painter, img, params);
+        renderImage(imgPainter, img, params);
     }
-
-    painter.setOpacity(oldOp);
 
     if (backPainter) {
         backPainter->end();
         mBackBuffer.convertToColorSpace(targetColorSpace);
-        if (flags & draw_background) {
-            eraseBackground(frontPainter);
-        }
         frontPainter.setWorldMatrixEnabled(false);
         frontPainter.setRenderHint(QPainter::SmoothPixmapTransform, false);
         frontPainter.drawImage(QPoint{0, 0}, mBackBuffer);
         frontPainter.setWorldMatrixEnabled(true);
     }
+
+    frontPainter.setOpacity(oldOpacity);
 }
 
 void DkBaseViewPort::drawTransparencyPattern(QPainter &painter, const QRectF &imgViewRect) const
