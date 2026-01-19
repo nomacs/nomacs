@@ -552,13 +552,14 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
 
     // draw into an offscreen buffer for display colorspace conversion
     const QColorSpace targetColorSpace = DkImage::targetColorSpace(this);
+
     QColorSpace srcColorSpace;
     if (mSvg && mSvg->isValid()) {
         ; // unsupported, rarely used
     } else if (mMovie && mMovie->isValid()) {
         srcColorSpace = mMovie->currentImage().colorSpace();
     } else {
-        srcColorSpace = mImgStorage.imageConst().colorSpace();
+        srcColorSpace = img.colorSpace();
     }
 
     if (!srcColorSpace.isValid()) {
