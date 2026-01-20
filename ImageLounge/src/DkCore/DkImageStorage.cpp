@@ -1786,6 +1786,15 @@ DkImageStorage::DkImageStorage(const QImage &img)
             Qt::UniqueConnection);
 }
 
+bool DkImageStorage::alphaChannelUsed()
+{
+    if (mAlphaState == alpha_unknown) {
+        mAlphaState = DkImage::alphaChannelUsed(mImg) ? alpha_used : alpha_unused;
+    }
+
+    return mAlphaState == alpha_used;
+}
+
 void DkImageStorage::init()
 {
     mComputeState = l_not_computed;
@@ -1797,6 +1806,7 @@ void DkImageStorage::setImage(const QImage &img)
     mScaledImg = QImage();
     mImg = img;
     mComputeState = l_cancelled;
+    mAlphaState = alpha_unknown;
 }
 
 void DkImageStorage::antiAliasingChanged(bool antiAliasing)

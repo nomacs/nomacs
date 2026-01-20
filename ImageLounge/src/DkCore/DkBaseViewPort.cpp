@@ -589,7 +589,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
     double oldOpacity = frontPainter.opacity();
     frontPainter.setOpacity(opacity);
 
-    if ((flags & draw_pattern) && DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel()) {
+    if ((flags & draw_pattern) && DkSettingsManager::param().display().tpPattern && mImgStorage.alphaChannelUsed()) {
         drawTransparencyPattern(frontPainter, mImgViewRect);
     }
 
