@@ -2300,14 +2300,15 @@ void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event)
 
         for (int idx = 0; idx < mStartActionsRects.size(); idx++) {
             if (mStartActionsRects[idx].contains(pos)) {
+                event->accept();
+                unsetCursor();
+                // setCursor(Qt::OpenHandCursor);
                 mStartActions[idx]->trigger();
-                break;
+                return;
             }
         }
     }
 
-    unsetCursor();
-    // setCursor(Qt::OpenHandCursor);
     DkViewPort::mouseReleaseEvent(event);
 }
 
