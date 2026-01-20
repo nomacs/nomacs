@@ -168,12 +168,15 @@ public:
     bool isEmpty() const
     {
         return mImg.isNull();
-    };
+    }
 
     QSize size() const
     {
         return mImg.size();
-    };
+    }
+
+    // cache DkImage::alphaChannelUsed()
+    bool alphaChannelUsed();
 
     void setImage(const QImage &img);
     QImage imageConst() const;
@@ -194,6 +197,12 @@ protected:
     QFutureWatcher<QImage> mFutureWatcher;
 
     ComputeState mComputeState = l_not_computed;
+
+    enum {
+        alpha_unknown = 0,
+        alpha_unused = 1,
+        alpha_used = 2
+    } mAlphaState = alpha_unknown;
 
     void init();
     void compute(const QSize &size);
