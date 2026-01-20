@@ -244,6 +244,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
     // functions
     void updateImageMatrix() override;
@@ -258,6 +259,7 @@ protected:
     QVector<QIcon> mStartIcons;
     QVector<QRectF> mStartActionsRects;
     QVector<QPixmap> mStartActionsIcons;
+    QRectF mStartBgRect;
 };
 
 class DllCoreExport DkViewPortContrast : public DkViewPort

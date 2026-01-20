@@ -2175,6 +2175,41 @@ void DkViewPortFrameless::paintEvent(QPaintEvent *event)
     DkViewPort::paintEvent(event);
 }
 
+void DkViewPortFrameless::resizeEvent(QResizeEvent *event)
+{
+    DkViewPort::resizeEvent(event);
+
+    mStartActionsRects.clear();
+    mStartActionsIcons.clear();
+
+    QRectF initialRect = rect();
+    QPointF oldCenter = initialRect.center();
+    QTransform cT;
+    cT.scale(400 / initialRect.width(), 400 / initialRect.width());
+    initialRect = cT.mapRect(initialRect);
+    initialRect.moveCenter(oldCenter);
+
+    QSize s = mImgBg.size();
+    QRectF bgRect(QPoint(), s);
+    bgRect.moveCenter(initialRect.center());
+    mStartBgRect = bgRect;
+
+    constexpr float margin = 40;
+    float iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
+    QSize iconSize = QSize(qRound(iconSizeMargin - margin), qRound(iconSizeMargin - margin));
+    QPointF offset = QPointF(bgRect.left() + 50, initialRect.center().y() + iconSizeMargin * 0.25f);
+
+    for (int idx = 0; idx < mStartActions.size(); idx++) {
+        QRectF iconRect = QRectF(offset, iconSize);
+        QPixmap ci = !mStartIcons[idx].isNull() ? mStartIcons[idx].pixmap(iconSize)
+                                                : mStartActions[idx]->icon().pixmap(iconSize);
+        mStartActionsRects.push_back(iconRect);
+        mStartActionsIcons.push_back(ci);
+
+        offset.setX(offset.x() + margin + iconSize.width());
+    }
+}
+
 void DkViewPortFrameless::draw(QPainter &painter, double opacity, int flags)
 {
     DkViewPort::draw(painter, opacity, flags);
@@ -2197,45 +2232,7 @@ void DkViewPortFrameless::eraseBackground(QPainter &painter) const
     painter.setBrush(QColor(127, 144, 144, 200));
     painter.setPen(QColor(100, 100, 100, 255));
 
-    QRectF initialRect = rect();
-    QPointF oldCenter = initialRect.center();
-
-    QTransform cT;
-    cT.scale(400 / initialRect.width(), 400 / initialRect.width());
-    initialRect = cT.mapRect(initialRect);
-    initialRect.moveCenter(oldCenter);
-
-    // fit to mViewport
-    QSize s = mImgBg.size();
-
-    QRectF bgRect(QPoint(), s);
-    bgRect.moveCenter(
-        initialRect
-            .center()); // moveTopLeft(QPointF(size().width(), size().height())*0.5 - initialRect.bottomRight()*0.5);
-
-    // painter.drawRect(initialRect);
-    painter.drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
-
-    if (mStartActions.isEmpty())
-        return;
-
-    // first time?
-    if (mStartActionsRects.isEmpty()) {
-        constexpr float margin = 40;
-        float iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
-        QSize iconSize = QSize(qRound(iconSizeMargin - margin), qRound(iconSizeMargin - margin));
-        QPointF offset = QPointF(bgRect.left() + 50, initialRect.center().y() + iconSizeMargin * 0.25f);
-
-        for (int idx = 0; idx < mStartActions.size(); idx++) {
-            QRectF iconRect = QRectF(offset, iconSize);
-            QPixmap ci = !mStartIcons[idx].isNull() ? mStartIcons[idx].pixmap(iconSize)
-                                                    : mStartActions[idx]->icon().pixmap(iconSize);
-            mStartActionsRects.push_back(iconRect);
-            mStartActionsIcons.push_back(ci);
-
-            offset.setX(offset.x() + margin + iconSize.width());
-        }
-    }
+    painter.drawImage(mStartBgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
 
     // draw start actions
     for (int idx = 0; idx < mStartActions.size(); idx++) {
@@ -2255,7 +2252,10 @@ void DkViewPortFrameless::eraseBackground(QPainter &painter) const
     }
 
     QString infoText = tr("Press F10 to exit Frameless view");
-    QRectF tmpRect(bgRect.left() + 50, bgRect.bottom() - 60, bgRect.width() - 100, 20);
+    QRectF tmpRect = QRectF{mStartBgRect.left() + 50.0,
+                            mStartBgRect.bottom() - 60.0,
+                            mStartBgRect.width() - 100.0,
+                            20.0};
     painter.drawText(tmpRect, infoText);
 }
 
