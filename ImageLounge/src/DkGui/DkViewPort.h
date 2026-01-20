@@ -219,7 +219,7 @@ protected:
 
     void createShortcuts();
     void drawPolygon(QPainter &painter, const QPolygon &polygon);
-    void eraseBackground(QPainter &painter) override;
+    void eraseBackground(QPainter &painter) const override;
     void updateImageMatrix() override;
     void showZoom();
     void getPixelInfo(const QPoint &pos);
@@ -249,7 +249,7 @@ protected:
     void updateImageMatrix() override;
     void draw(QPainter &painter, double opacity, int flags) override;
     void drawFrame(QPainter &painter);
-    void eraseBackground(QPainter &painter) override;
+    void eraseBackground(QPainter &painter) const override;
     void controlImagePosition(float lb = -1, float ub = -1) override;
     void centerImage() override;
 

@@ -1075,7 +1075,7 @@ void DkViewPort::leaveEvent(QEvent *event)
 }
 
 // drawing functions --------------------------------------------------------------------
-void DkViewPort::eraseBackground(QPainter &painter)
+void DkViewPort::eraseBackground(QPainter &painter) const
 {
     DkBaseViewPort::eraseBackground(painter);
 
@@ -2180,7 +2180,7 @@ void DkViewPortFrameless::draw(QPainter &painter, double opacity, int flags)
     DkViewPort::draw(painter, opacity, flags);
 }
 
-void DkViewPortFrameless::eraseBackground(QPainter &painter)
+void DkViewPortFrameless::eraseBackground(QPainter &painter) const
 {
     if (DkUtils::getMainWindow()->isFullScreen()) {
         QColor col = QColor(0, 0, 0);

@@ -636,7 +636,7 @@ void DkBaseViewPort::drawTransparencyPattern(QPainter &painter, const QRectF &im
     painter.restore();
 }
 
-void DkBaseViewPort::eraseBackground(QPainter &painter)
+void DkBaseViewPort::eraseBackground(QPainter &painter) const
 {
     QBrush bgBrush = backgroundBrush();
 
