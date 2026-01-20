@@ -243,11 +243,14 @@ static bool isChannelEqual(const QImage &img, int channel, int numChannels, T va
 
 bool DkImage::alphaChannelUsed(const QImage &img)
 {
-    if (!img.hasAlphaChannel()) {
+    bool hasAlpha = img.hasAlphaChannel();
+    if (!hasAlpha) {
         return false;
     }
 
     switch (img.format()) {
+    case QImage::Format_Indexed8:
+        return hasAlpha; // QImage::hasAlphaChannel already scanned colortable
     case QImage::Format_ARGB32:
     case QImage::Format_ARGB32_Premultiplied:
         return !isMaskedEqual<uint32_t>(img, 0xFF000000, 0xFF000000);
@@ -260,15 +263,6 @@ bool DkImage::alphaChannelUsed(const QImage &img)
     case QImage::Format_RGBA64:
     case QImage::Format_RGBA64_Premultiplied:
         return !isMaskedEqual<uint64_t>(img, 0xFFFF, 0xFFFF);
-    case QImage::Format_Indexed8: {
-        const QList<QRgb> colorTable = img.colorTable();
-        for (auto &rgb : colorTable) {
-            if (qAlpha(rgb) != 0xFF) {
-                return true;
-            }
-        }
-        return false;
-    }
     case QImage::Format_RGBA16FPx4:
     case QImage::Format_RGBA16FPx4_Premultiplied: {
         return !isChannelEqual<uint16_t>(img, 3, 4, 0x3C00);
