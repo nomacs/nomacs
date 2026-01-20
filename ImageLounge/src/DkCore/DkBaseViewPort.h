@@ -249,7 +249,7 @@ protected:
     virtual void drawTransparencyPattern(QPainter &painter, const QRectF &imgViewRect) const;
 
     // fill entire viewport with bg color, image draws on top
-    virtual void eraseBackground(QPainter &painter);
+    virtual void eraseBackground(QPainter &painter) const;
 
     virtual void updateImageMatrix();
     virtual QTransform getScaledImageMatrix() const;
