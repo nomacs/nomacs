@@ -2197,7 +2197,7 @@ void DkViewPortFrameless::resizeEvent(QResizeEvent *event)
     constexpr float margin = 40;
     float iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
     QSize iconSize = QSize(qRound(iconSizeMargin - margin), qRound(iconSizeMargin - margin));
-    QPointF offset = QPointF(bgRect.left() + 50, initialRect.center().y() + iconSizeMargin * 0.25f);
+    QPointF offset = QPointF(bgRect.left() + 49, bgRect.top() + 246 + 15);
 
     for (int idx = 0; idx < mStartActions.size(); idx++) {
         QRectF iconRect = QRectF(offset, iconSize);
@@ -2247,13 +2247,16 @@ void DkViewPortFrameless::eraseBackground(QPainter &painter) const
 
         QRectF tmpRect = mStartActionsRects[idx];
         QString text = mStartActions[idx]->text().remove("&");
+
         tmpRect.moveTop(tmpRect.bottom() + 10);
+        tmpRect.setWidth(tmpRect.width() + 20.0); // more space for text; half of margin
+        tmpRect.setBottom(mStartBgRect.bottom() - 40.0); // do not overlap info text
         painter.drawText(tmpRect, text);
     }
 
     QString infoText = tr("Press F10 to exit Frameless view");
     QRectF tmpRect = QRectF{mStartBgRect.left() + 50.0,
-                            mStartBgRect.bottom() - 60.0,
+                            mStartBgRect.bottom() - 40.0,
                             mStartBgRect.width() - 100.0,
                             20.0};
     painter.drawText(tmpRect, infoText);
