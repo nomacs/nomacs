@@ -633,7 +633,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
         mBackBuffer.convertToColorSpace(targetColorSpace);
         frontPainter.setWorldMatrixEnabled(false);
         frontPainter.setRenderHint(QPainter::SmoothPixmapTransform, false);
-        frontPainter.drawImage(QPoint{0, 0}, mBackBuffer);
+        frontPainter.drawImage(params.viewRect, mBackBuffer, params.deviceRect);
         frontPainter.setWorldMatrixEnabled(true);
     }
 
