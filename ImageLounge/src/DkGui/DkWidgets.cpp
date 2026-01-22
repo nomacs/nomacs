@@ -620,7 +620,7 @@ bool DkOverview::updateThumb()
     if (!storage)
         return false;
 
-    QImage fullImage = storage->imageConst();
+    QImage fullImage = storage->image();
     if (fullImage.isNull())
         return false;
 

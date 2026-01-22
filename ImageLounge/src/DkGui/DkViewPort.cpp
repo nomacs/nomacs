@@ -286,8 +286,10 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
          || DkUtils::getMainWindow()->isFullScreen() //
          || DkSettingsManager::param().display().alwaysAnimate)) {
         mAnimationParams = getRenderParams(devicePixelRatio(), mWorldMatrix, mImgViewRect);
-        mAnimationBuffer = mImgStorage.image(mAnimationParams.imageSize);
         mAnimationBufferHasAlpha = DkImage::alphaChannelUsed(mAnimationBuffer); // TODO: attribute of DkImageStorage
+        mAnimationBuffer = mImgStorage.downsampled(mAnimationParams.imageSize,
+                                                   this,
+                                                   DkImageStorage::process_sync | DkImageStorage::process_fallback);
         mAnimationBuffer.convertToColorSpace(DkImage::targetColorSpace(this));
         mAnimationValue = 1.0f;
     }
@@ -2657,7 +2659,7 @@ void DkViewPortContrast::keyPressEvent(QKeyEvent *event)
 QImage DkViewPortContrast::getImage() const
 {
     if (mDrawFalseColorImg)
-        return mImgStorage.imageConst();
+        return mImgStorage.image();
     else
         return DkViewPort::getImage();
 }

@@ -288,7 +288,7 @@ QImage DkBaseViewPort::getImage() const
             mSvg->render(&p, mImgViewRect);
         }
     } else {
-        img = mImgStorage.imageConst();
+        img = mImgStorage.image();
     }
 
     if (!img.colorSpace().isValid()) {
@@ -568,7 +568,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
     RenderParams params = getRenderParams(dpr, frontPainter.worldTransform(), mImgViewRect);
 
     // this may return the size we want or give the full size image and rescale in the background
-    const QImage img = mImgStorage.image(params.imageSize);
+    const QImage img = mImgStorage.downsampled(params.imageSize, this);
 
     // draw into an offscreen buffer for display colorspace conversion
     const QColorSpace targetColorSpace = DkImage::targetColorSpace(this);

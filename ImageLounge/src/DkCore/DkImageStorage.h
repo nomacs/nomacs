@@ -28,6 +28,7 @@
 #pragma once
 
 #include <QColor>
+#include <QColorSpace>
 #include <QFutureWatcher>
 #include <QImage>
 #include <QObject>
@@ -153,59 +154,103 @@ class DllCoreExport DkImageStorage : public QObject
     Q_OBJECT
 
 public:
-    explicit DkImageStorage(const QImage &img = QImage());
-
-    enum ComputeState {
-        l_not_computed,
-        l_computing,
-        l_computed,
-        l_empty,
-        l_cancelled,
-
-        l_end
-    };
+    DkImageStorage();
+    virtual ~DkImageStorage();
 
     bool isEmpty() const
     {
-        return mImg.isNull();
+        return mOriginal.isNull();
     }
 
     QSize size() const
     {
-        return mImg.size();
+        return mOriginal.size();
     }
 
-    // cache DkImage::alphaChannelUsed()
+    QImage image() const
+    {
+        return mOriginal;
+    }
+
+    // compute and cache DkImage::alphaChannelUsed()
     bool alphaChannelUsed();
 
+    /**
+     * @brief change current image, discard cached result
+     * @param img
+     * @note We cannot simply construct a new DkImageStorage because
+     *       the future watcher will detach from the future and the future
+     *       will not be removed from the thread pool. Which would
+     *       cause threads to pile up.
+     */
     void setImage(const QImage &img);
-    QImage imageConst() const;
-    QImage image(const QSize &size = QSize());
 
-public slots:
-    void antiAliasingChanged(bool antiAliasing);
-    void imageComputed();
+    enum class ScaleFilter {
+        invalid, // uninitialized
+        nearest, // nearest neighbor/QImage::FastTransformation
+        area, // average/CV_AREA/QImage::SmoothTransformation, no samples limit
+        // area_x16, // avarage/CV_AREA but limit samples per pixel to 16 with nearest filter
+        // algo_area_sharp, // area + sharpen a little
+        // lanczos2
+        // lanczos3
+    };
+
+    enum {
+        process_async = 1, // background processing, emit imageUpdated() on completion
+        process_sync = 2, // foreground processing
+        process_fallback = 4, // return fastest possible scaled image instead of original
+    };
+
+    /**
+     * @brief downsample image in background for screen painting
+     * @param size size of the scaled image which must be < image().size()
+     * @param target the intended paint target
+     * @param options change behavior
+     * @note when scaling is completed, emit imageUpdated(), at
+     *       which time downsampled() may be called again to get the result
+     * @return cached result or original image (see ProcessOption)
+     */
+    QImage downsampled(const QSize &size, const QWidget *target, int options = process_async) &;
 
 signals:
+    // emit after image() if result is non-null, call image() again to retrieve it
     void imageUpdated() const;
+
+    // send a message when toggling AA
     void infoSignal(const QString &msg) const;
 
+protected slots:
+    void antiAliasingChanged(bool antiAliasing);
+    void workerFinished();
+
 protected:
-    QImage mImg;
-    QImage mScaledImg;
+    struct ScaledImage {
+        QImage image;
+        ScaleFilter filter = ScaleFilter::invalid;
+        QColorSpace colorSpace; // requested value, may be different from result
+    };
 
-    QFutureWatcher<QImage> mFutureWatcher;
+    static ScaledImage scaleImage(const QImage &src,
+                                  const QSize &size,
+                                  ScaleFilter filter,
+                                  const QColorSpace &colorSpace,
+                                  QImage::Format format);
 
-    ComputeState mComputeState = l_not_computed;
+    void cancelWorker();
+    void startWorker(const QSize &size);
+
+    QImage mOriginal{};
+    ScaledImage mScaled{};
+
+    QFutureWatcher<ScaledImage> mWorker{};
+    bool mDiscardResult = false;
+    bool mWorkerPending = false;
 
     enum {
         alpha_unknown = 0,
         alpha_unused = 1,
         alpha_used = 2
     } mAlphaState = alpha_unknown;
-
-    void init();
-    void compute(const QSize &size);
 };
 
 /**
