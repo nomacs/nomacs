@@ -70,8 +70,6 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent)
     connect(mZoomTimer, &QTimer::timeout, this, &DkBaseViewPort::stopBlockZooming);
     connect(&mImgStorage, &DkImageStorage::imageUpdated, this, QOverload<>::of(&DkBaseViewPort::update));
 
-    mPattern.setTexture(QPixmap(":/nomacs/img/tp-pattern.png"));
-
     if (DkSettingsManager::param().display().defaultBackgroundColor)
         setObjectName("DkBaseViewPortDefaultColor");
     else
@@ -590,7 +588,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
     frontPainter.setOpacity(opacity);
 
     if ((flags & draw_pattern) && DkSettingsManager::param().display().tpPattern && mImgStorage.alphaChannelUsed()) {
-        drawTransparencyPattern(frontPainter, mImgViewRect);
+        renderPattern(frontPainter, params);
     }
 
     if (!(flags & draw_image)) {
@@ -620,19 +618,29 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
     frontPainter.setOpacity(oldOpacity);
 }
 
-void DkBaseViewPort::drawTransparencyPattern(QPainter &painter, const QRectF &imgViewRect) const
+void DkBaseViewPort::renderPattern(QPainter &painter, const RenderParams &params)
 {
-    QBrush pt = mPattern;
+    static const QPixmap pattern(":/nomacs/img/tp-pattern.png");
 
-    // don't scale the pattern...
-    QTransform scaleIv;
-    scaleIv.scale(mWorldMatrix.m11(), mWorldMatrix.m22());
-    pt.setTransform(scaleIv.inverted());
+    QBrush brush(pattern);
+
+    // if there is a transform, apply it (animations, etc)
+    QRectF viewRect = painter.worldTransform().mapRect(params.dstRect);
 
     painter.save();
-    painter.setPen(QPen(Qt::NoPen)); // no border
-    painter.setBrush(pt);
-    painter.drawRect(imgViewRect);
+
+    // don't scale the pattern relative to screen
+    // device scaling will still be applied for HiDPI
+    painter.setWorldMatrixEnabled(false);
+
+    // anchor the pattern/rect so it doesn't "walk" when panning/zooming
+    QPointF topLeft(viewRect.center() - pattern.rect().center());
+    auto brushTransform = QTransform::fromTranslate(topLeft.x(), topLeft.y());
+    brush.setTransform(brushTransform);
+
+    painter.setBrush(brush);
+    painter.setPen(Qt::NoPen); // no border
+    painter.drawRect(viewRect);
     painter.restore();
 }
 
