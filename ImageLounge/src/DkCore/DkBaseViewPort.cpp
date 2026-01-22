@@ -540,6 +540,28 @@ void DkBaseViewPort::renderImage(QPainter &painter, const QImage &img, const Ren
     painter.drawImage(params.dstRect, img);
 }
 
+QImage DkBaseViewPort::renderBuffer() const
+{
+    double dpr = devicePixelRatio();
+    QImage buffer = QImage(size() * dpr, QImage::Format_ARGB32_Premultiplied);
+    buffer.setDevicePixelRatio(dpr);
+    return buffer;
+}
+
+void DkBaseViewPort::renderComposite(QPainter &painter, const QImage &img, const RenderParams &params, int flags) const
+{
+    painter.setWorldTransform(params.worldMatrix);
+    if (flags & draw_background) {
+        eraseBackground(painter);
+    }
+    if (flags & draw_pattern) {
+        renderPattern(painter, params);
+    }
+    if (flags & draw_image) {
+        renderImage(painter, img, params);
+    }
+}
+
 void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
 {
     const qreal dpr = devicePixelRatioF();
