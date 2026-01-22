@@ -250,6 +250,24 @@ protected:
      */
     static void renderPattern(QPainter &painter, const RenderParams &params);
 
+    /**
+     * @brief get offscreen surface suitable for draw() or renderComposite()
+     * @return image of the appropriate size, pixel format, and devicePixelRatio
+     */
+    QImage renderBuffer() const;
+
+    /**
+     * @brief offscreen rendering of viewport
+     * @param painter target (attached to renderBuffer)
+     * @param img source image (already scaled or color converted)
+     * @param params
+     * @param flags
+     */
+    void renderComposite(QPainter &painter,
+                         const QImage &img,
+                         const RenderParams &params,
+                         int flags = draw_default) const;
+
     // draw the entire viewport
     virtual void draw(QPainter &frontPainter, double opacity = 1.0, int flags = draw_default);
 
