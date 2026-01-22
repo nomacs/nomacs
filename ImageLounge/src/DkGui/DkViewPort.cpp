@@ -1024,7 +1024,7 @@ void DkViewPort::paintEvent(QPaintEvent *event)
 
                 painter.setTransform(mAnimationParams.worldMatrix * QTransform::fromTranslate(dx, 0));
                 if (DkSettingsManager::param().display().tpPattern && mAnimationBufferHasAlpha) {
-                    drawTransparencyPattern(painter, mAnimationParams.imgViewRect);
+                    renderPattern(painter, mAnimationParams);
                 }
                 renderImage(painter, mAnimationBuffer, mAnimationParams);
                 break;

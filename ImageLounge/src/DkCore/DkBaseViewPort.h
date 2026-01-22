@@ -171,7 +171,6 @@ protected:
     QSharedPointer<QMovie> mMovie;
     QSharedPointer<QBuffer> mMovieIo;
     QSharedPointer<QSvgRenderer> mSvg;
-    QBrush mPattern;
 
     QTransform mImgMatrix;
     QTransform mWorldMatrix;
@@ -242,11 +241,17 @@ protected:
      */
     static void renderImage(QPainter &painter, const QImage &img, const RenderParams &params);
 
+    /**
+     * @brief draw transparency pattern behind where the image will draw
+     * @param painter target
+     * @param params from getRenderParams()
+     *
+     * @note painter must have world matrix set correctly (normally params.worldMatrix)
+     */
+    static void renderPattern(QPainter &painter, const RenderParams &params);
+
     // draw the entire viewport
     virtual void draw(QPainter &frontPainter, double opacity = 1.0, int flags = draw_default);
-
-    // draw transparency pattern behind where the image will draw
-    virtual void drawTransparencyPattern(QPainter &painter, const QRectF &imgViewRect) const;
 
     // fill entire viewport with bg color, image draws on top
     virtual void eraseBackground(QPainter &painter) const;
