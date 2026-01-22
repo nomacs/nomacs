@@ -1762,160 +1762,181 @@ QImage DkImage::createThumb(const QImage &image, int maxSize)
 }
 
 // DkImageStorage --------------------------------------------------------------------
-DkImageStorage::DkImageStorage(const QImage &img)
+DkImageStorage::DkImageStorage()
 {
-    mImg = img;
+    connect(&mWorker, &QFutureWatcher<QImage>::finished, this, &DkImageStorage::workerFinished);
 
-    init();
-
-    connect(&mFutureWatcher,
-            &QFutureWatcher<QImage>::finished,
-            this,
-            &DkImageStorage::imageComputed,
-            Qt::UniqueConnection);
     connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing),
             &QAction::toggled,
             this,
-            &DkImageStorage::antiAliasingChanged,
-            Qt::UniqueConnection);
+            &DkImageStorage::antiAliasingChanged);
+}
+
+DkImageStorage::~DkImageStorage()
+{
+    // If we destruct while a worker is active, and then immediately construct a new one,
+    // workers may pile up in the thread pool.
+    if (mWorkerPending) {
+        qWarning() << "[ImageStorage] destructing with active worker";
+    }
 }
 
 bool DkImageStorage::alphaChannelUsed()
 {
     if (mAlphaState == alpha_unknown) {
-        mAlphaState = DkImage::alphaChannelUsed(mImg) ? alpha_used : alpha_unused;
+        mAlphaState = DkImage::alphaChannelUsed(mOriginal) ? alpha_used : alpha_unused;
     }
 
     return mAlphaState == alpha_used;
 }
 
-void DkImageStorage::init()
-{
-    mComputeState = l_not_computed;
-    mScaledImg = QImage();
-}
-
 void DkImageStorage::setImage(const QImage &img)
 {
-    mScaledImg = QImage();
-    mImg = img;
-    mComputeState = l_cancelled;
+    mOriginal = img;
+    mScaled = {};
     mAlphaState = alpha_unknown;
+
+    cancelWorker();
 }
 
 void DkImageStorage::antiAliasingChanged(bool antiAliasing)
 {
     DkSettingsManager::param().display().antiAliasing = antiAliasing;
-
-    if (!antiAliasing)
-        init();
+    if (!antiAliasing) {
+        mScaled = {};
+        cancelWorker();
+    }
 
     emit infoSignal((antiAliasing) ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
     emit imageUpdated();
 }
 
-QImage DkImageStorage::imageConst() const
+QImage DkImageStorage::downsampled(const QSize &size, const QWidget *target, int options) &
 {
-    return mImg;
-}
-
-QImage DkImageStorage::image(const QSize &size)
-{
-    if (size.isEmpty() || mImg.isNull() //
-        || !DkSettingsManager::param().display().antiAliasing // if AA is disabled QPainter handles all scaling
-        || mImg.size().width() <= size.width() // scale factor >= 1 always handled by QPainter
+    if (size.isEmpty() //
+        || mOriginal.isNull() //
+        || mOriginal.size().width() <= size.width() // scale factor >= 1 always handled by QPainter
     ) {
-        return mImg;
+        return mOriginal;
     }
 
-    if (mScaledImg.size() == size) {
-        return mScaledImg;
+    bool antialias = DkSettingsManager::param().display().antiAliasing;
+
+    ScaleFilter filter = antialias ? ScaleFilter::area : ScaleFilter::nearest;
+    QColorSpace colorSpace = DkImage::targetColorSpace(target);
+    QImage::Format format = DkImage::targetFormat();
+
+    if (mScaled.image.size() == size && mScaled.filter == filter && mScaled.colorSpace == colorSpace
+        && mScaled.image.format() == format) {
+        return mScaled.image;
     }
 
-    // start downsampling/antialiasing in a thread
-    compute(size);
+    if (options & process_sync) {
+        cancelWorker();
+        if (options & process_fallback) {
+            filter = ScaleFilter::nearest;
+        }
+        mScaled = scaleImage(mOriginal, size, filter, colorSpace, format);
+        return mScaled.image;
+    }
 
-    // downSampling is async, return original image as a placeholder
-    return mImg;
+    if (mWorkerPending) {
+        return mOriginal;
+    }
+
+    mScaled = {};
+    mDiscardResult = false;
+    mWorkerPending = true;
+    mWorker.setFuture(QtConcurrent::run(scaleImage, mOriginal, size, filter, colorSpace, format));
+
+    if (options & process_fallback) {
+        return scaleImage(mOriginal, size, ScaleFilter::nearest, colorSpace, format).image;
+    }
+
+    return mOriginal;
 }
 
-QImage imageStorageScaleToSize(const QImage &src, const QSize &size);
-
-void DkImageStorage::compute(const QSize &size)
+void DkImageStorage::cancelWorker()
 {
-    // don't compute twice
-    if (mComputeState == l_computing) {
+    // QFuture from QtConcurrent::run() cannot be cancelled so set this flag
+    if (mWorkerPending) {
+        mDiscardResult = true;
+    }
+}
+
+void DkImageStorage::workerFinished()
+{
+    Q_ASSERT(mWorkerPending);
+    mWorkerPending = false;
+
+    if (mDiscardResult) {
         return;
     }
 
-    // Reset state
-    mScaledImg = QImage();
-    mComputeState = l_computing;
-
-    mFutureWatcher.setFuture(QtConcurrent::run(imageStorageScaleToSize, mImg, size));
+    mScaled = mWorker.result();
+    if (!mScaled.image.isNull()) {
+        emit imageUpdated();
+    } else {
+        qWarning() << "[ImageStorage] interpolation failed";
+    }
 }
 
-QImage imageStorageScaleToSize(const QImage &src, const QSize &size)
+DkImageStorage::ScaledImage DkImageStorage::scaleImage(const QImage &src,
+                                                       const QSize &size,
+                                                       ScaleFilter filter,
+                                                       const QColorSpace &colorSpace,
+                                                       QImage::Format format)
 {
-    // should not happen
-    if (size.width() >= src.width()) {
-        qWarning() << "imageStorageScaleToSize was called without a need...";
-        return src;
-    }
+    Q_ASSERT(size.width() < src.width()); // we only downsample
 
-    QImage resizedImg = src;
-
-    if (!DkSettingsManager::param().display().highQualityAntiAliasing) {
-        QSize cs = src.size();
-
-        // fast down sampling until the image is twice times full HD
-        while (qMin(cs.width(), cs.height()) > 2 * 4000) {
-            cs *= 0.5;
-        }
-
-        // for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply
-        if (cs != src.size()) {
-            resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
-        }
-    }
-
-    QSize s = size;
-
-    if (s.height() == 0)
-        s.setHeight(1);
-    if (s.width() == 0)
-        s.setWidth(1);
-
+    auto mode = filter == ScaleFilter::area ? Qt::SmoothTransformation : Qt::FastTransformation;
+    QImage scaled;
 #ifdef WITH_OPENCV
-    try {
-        cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
-        cv::Mat tmp;
-        cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
-        resizedImg = DkImage::mat2QImage(tmp, resizedImg);
-    } catch (...) {
-        qWarning() << "imageStorageScaleToSize: OpenCV exception caught while resizing...";
+    if (mode == Qt::SmoothTransformation) {
+        QImage resizedImg = src;
+
+        if (!DkSettingsManager::param().display().highQualityAntiAliasing) {
+            QSize cs = src.size();
+
+            // fast down sampling until the image is twice times full HD
+            while (qMin(cs.width(), cs.height()) > 2 * 4000) {
+                cs *= 0.5;
+            }
+
+            // for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply
+            if (cs != src.size()) {
+                resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
+            }
+        }
+
+        QSize s = size;
+
+        // FIXME: changing size breaks caching
+        if (s.height() == 0)
+            s.setHeight(1);
+        if (s.width() == 0)
+            s.setWidth(1);
+        try {
+            cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
+            cv::Mat tmp;
+            cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
+            scaled = DkImage::mat2QImage(tmp, resizedImg);
+        } catch (...) {
+            qWarning() << "[ImageStorage]: OpenCV exception while resizing";
+        }
+    } else {
+        scaled = src.scaled(size, Qt::IgnoreAspectRatio, mode);
     }
 #else
-    resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    scaled = src.scaled(size, Qt::IgnoreAspectRatio, mode);
 #endif
+    Q_ASSERT(scaled.size() == size);
 
-    return resizedImg;
-}
-
-void DkImageStorage::imageComputed()
-{
-    if (mComputeState == l_cancelled) {
-        mComputeState = l_not_computed;
-        return;
+    if (colorSpace.isValidTarget()) {
+        scaled = DkImage::convertToColorSpaceInPlace(colorSpace, scaled);
+        // Q_ASSERT(scaled.colorSpace() == colorSpace); // FIXME: sometimes fails due to qImage2Mat
     }
-
-    mScaledImg = mFutureWatcher.result();
-
-    mComputeState = (mScaledImg.isNull()) ? l_empty : l_computed;
-
-    if (mComputeState == l_computed)
-        emit imageUpdated();
-    else
-        qWarning() << "could not compute interpolated image...";
+    scaled.convertTo(format);
+    return {scaled, filter, colorSpace};
 }
 }
