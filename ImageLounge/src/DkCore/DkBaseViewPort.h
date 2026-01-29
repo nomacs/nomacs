@@ -252,9 +252,10 @@ protected:
 
     /**
      * @brief get offscreen surface suitable for draw() or renderComposite()
-     * @return image of the appropriate size, pixel format, and devicePixelRatio
+     * @param imageFormat format of image to draw to the buffer
+     * @return image of the appropriate size and devicePixelRatio
      */
-    QImage renderBuffer() const;
+    QImage renderBuffer(QImage::Format format) const;
 
     /**
      * @brief offscreen rendering of viewport

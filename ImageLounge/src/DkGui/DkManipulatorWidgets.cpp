@@ -149,7 +149,7 @@ void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC)
         QImage img = imgC->image();
         QSize newSize = img.size().scaled(mPreview->contentsRect().size(), Qt::KeepAspectRatio);
         img = img.scaledToWidth(newSize.width(), Qt::SmoothTransformation);
-        img.convertToColorSpace(DkImage::targetColorSpace(this));
+        img = DkImage::convertToColorSpaceInPlace(this, img);
         mPreview->setPixmap(QPixmap::fromImage(img));
         mPreview->show();
     } else {

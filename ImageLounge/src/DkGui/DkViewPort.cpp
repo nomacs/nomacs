@@ -290,7 +290,8 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
         mAnimationBuffer = mImgStorage.downsampled(mAnimationParams.imageSize,
                                                    this,
                                                    DkImageStorage::process_sync | DkImageStorage::process_fallback);
-        mAnimationBuffer.convertToColorSpace(DkImage::targetColorSpace(this));
+        mAnimationBufferHasAlpha = mImgStorage.alphaChannelUsed();
+        mAnimationBuffer = DkImage::convertToColorSpaceInPlace(this, mAnimationBuffer);
         mAnimationValue = 1.0f;
     }
 

@@ -1302,6 +1302,102 @@ QVector<std::pair<int, QColorSpace>> DkImage::builtinProfiles()
             {QColorSpace::AdobeRgb, QColorSpace{QColorSpace::AdobeRgb}}};
 }
 
+QImage::Format DkImage::renderFormat(QImage::Format imageFormat)
+{
+    QImage::Format format = imageFormat;
+    switch (imageFormat) {
+    case QImage::Format_RGB32:
+    case QImage::Format_ARGB32:
+    case QImage::Format_RGBX32FPx4:
+    case QImage::Format_RGBA32FPx4:
+    case QImage::Format_RGBX64:
+    case QImage::Format_RGBA64:
+    case QImage::Format_Grayscale8:
+    case QImage::Format_Grayscale16:
+    case QImage::Format_CMYK8888:
+        // native formats for colorspace conversion - see: QImage::colorTransformed
+        // premultiplied formats excluded since it saves some processing when color converting
+        break;
+    case QImage::Format_Mono:
+    case QImage::Format_MonoLSB:
+        format = QImage::Format_Grayscale8;
+        break;
+    case QImage::Format_Indexed8:
+    case QImage::Format_ARGB8565_Premultiplied:
+    case QImage::Format_ARGB6666_Premultiplied:
+    case QImage::Format_ARGB8555_Premultiplied:
+    case QImage::Format_ARGB4444_Premultiplied:
+    case QImage::Format_RGBA8888:
+    case QImage::Format_RGBA8888_Premultiplied:
+    case QImage::Format_RGB16:
+    case QImage::Format_RGB444:
+    case QImage::Format_RGB555:
+    case QImage::Format_RGB666:
+    case QImage::Format_RGB888:
+    case QImage::Format_BGR888:
+    case QImage::Format_RGBX8888:
+    case QImage::Format_Alpha8:
+    case QImage::Format_ARGB32_Premultiplied:
+        format = QImage::Format_ARGB32;
+        break;
+    case QImage::Format_BGR30:
+    case QImage::Format_RGB30:
+        format = QImage::Format_RGBX64;
+        break;
+    case QImage::Format_A2BGR30_Premultiplied:
+    case QImage::Format_A2RGB30_Premultiplied:
+    case QImage::Format_RGBA64_Premultiplied:
+        format = QImage::Format_RGBA64;
+        break;
+    case QImage::Format_RGBX16FPx4:
+    case QImage::Format_RGBA16FPx4:
+    case QImage::Format_RGBA16FPx4_Premultiplied:
+    case QImage::Format_RGBA32FPx4_Premultiplied:
+        format = QImage::Format_RGBA32FPx4;
+        break;
+    case QImage::Format_Invalid:
+    case QImage::NImageFormats:
+        Q_UNREACHABLE();
+        break;
+    }
+    return format;
+}
+
+QImage DkImage::convertToColorSpaceInPlace(const QWidget *target, QImage &img)
+{
+    return convertToColorSpaceInPlace(targetColorSpace(target), img);
+}
+
+QImage DkImage::convertToColorSpaceInPlace(const QColorSpace &target, QImage &img)
+{
+    if (target == QColorSpace{}) {
+        return img; // colorspace conversion is disabled
+    }
+
+    if (!target.isValidTarget()) {
+        qWarning() << "[convertToColorSpace] invalid target" << target;
+        return img;
+    }
+
+    QColorSpace source = img.colorSpace();
+    if (!source.isValid()) {
+        qWarning() << "[convertToColorSpace] invalid source" << source;
+    }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    // The output pixel format must have the same color model,
+    // otherwise grayscale and cmyk will not always be correct
+    if (target.colorModel() == QColorSpace::ColorModel::Rgb //
+        && img.pixelFormat().colorModel() != QPixelFormat::ColorModel::RGB) {
+        return img.convertedToColorSpace(target, targetFormat());
+    }
+#endif
+
+    img.convertToColorSpace(target);
+
+    return img;
+}
+
 QPixmap DkImage::colorizePixmap(const QPixmap &icon, const QColor &col, float opacity)
 {
     if (icon.isNull())

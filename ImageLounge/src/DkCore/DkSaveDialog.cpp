@@ -412,7 +412,7 @@ void DkCompressDialog::drawPreview()
     QImage img = mNewImg.scaled(mPreviewLabel->size() * deviceScale, Qt::KeepAspectRatio, Qt::FastTransformation);
 
     img.setDevicePixelRatio(devicePixelRatioF());
-    img.convertToColorSpace(DkImage::targetColorSpace(this));
+    img = DkImage::convertToColorSpaceInPlace(this, img);
     mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 }
 

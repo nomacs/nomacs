@@ -540,10 +540,10 @@ void DkBaseViewPort::renderImage(QPainter &painter, const QImage &img, const Ren
     painter.drawImage(params.dstRect, img);
 }
 
-QImage DkBaseViewPort::renderBuffer() const
+QImage DkBaseViewPort::renderBuffer(QImage::Format format) const
 {
     double dpr = devicePixelRatio();
-    QImage buffer = QImage(size() * dpr, QImage::Format_ARGB32_Premultiplied);
+    QImage buffer = QImage(size() * dpr, format);
     buffer.setDevicePixelRatio(dpr);
     return buffer;
 }
@@ -591,8 +591,9 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
     std::unique_ptr<QPainter> backPainter;
     if (targetColorSpace.isValid() && srcColorSpace != targetColorSpace) {
         QSize backingSize = this->size() * dpr;
-        if (mBackBuffer.size() != backingSize) {
-            mBackBuffer = QImage(backingSize, QImage::Format_ARGB32_Premultiplied);
+        auto format = DkImage::renderFormat(img.format());
+        if (mBackBuffer.size() != backingSize || mBackBuffer.format() != format) {
+            mBackBuffer = QImage(backingSize, format);
         }
         mBackBuffer.fill(Qt::transparent); // eraseBackground() does not touch all pixels
         mBackBuffer.setDevicePixelRatio(dpr);
@@ -630,10 +631,11 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
 
     if (backPainter) {
         backPainter->end();
-        mBackBuffer.convertToColorSpace(targetColorSpace);
+        // might be in-place or not
+        QImage converted = DkImage::convertToColorSpaceInPlace(this, mBackBuffer);
         frontPainter.setWorldMatrixEnabled(false);
         frontPainter.setRenderHint(QPainter::SmoothPixmapTransform, false);
-        frontPainter.drawImage(params.viewRect, mBackBuffer, params.deviceRect);
+        frontPainter.drawImage(params.viewRect, converted, params.deviceRect);
         frontPainter.setWorldMatrixEnabled(true);
     }
 
