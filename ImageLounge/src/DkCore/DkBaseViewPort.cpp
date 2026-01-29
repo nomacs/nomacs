@@ -532,11 +532,11 @@ DkBaseViewPort::RenderParams DkBaseViewPort::getRenderParams(double devicePixelR
 
 void DkBaseViewPort::renderImage(QPainter &painter, const QImage &img, const RenderParams &params)
 {
-    // use bilinear interpolation for downsampling and moderate upsampling
+    // use bilinear interpolation for upsampling, to a point. QPainter doesn't offer anything else
     qreal scaleFactor = double(params.imageSize.width()) / img.size().width();
-    bool smooth = img.size() != params.imageSize && scaleFactor < 2.0; // TODO: prefs
+    bool bilinear = img.size() != params.imageSize && scaleFactor > 1.0 && scaleFactor < 2.0; // TODO: prefs
 
-    painter.setRenderHint(QPainter::SmoothPixmapTransform, smooth);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, bilinear);
     painter.drawImage(params.dstRect, img);
 }
 
