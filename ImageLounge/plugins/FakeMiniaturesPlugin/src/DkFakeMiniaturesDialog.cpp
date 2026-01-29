@@ -204,7 +204,7 @@ void DkFakeMiniaturesDialog::drawImgPreview()
     painter.setBackgroundMode(Qt::TransparentMode);
     painter.drawImage(previewImgRect, imgPreview);
     painter.end();
-    preview.convertToColorSpace(nmc::DkImage::targetColorSpace(this));
+    preview = nmc::DkImage::convertToColorSpaceInPlace(this, preview);
     previewLabel->setPixmap(QPixmap::fromImage(preview));
 }
 

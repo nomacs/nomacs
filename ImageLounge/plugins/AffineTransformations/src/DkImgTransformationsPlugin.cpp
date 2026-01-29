@@ -458,7 +458,8 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
 
     painter.setWorldTransform(imgMat, true);
 
-    img.convertToColorSpace(nmc::DkImage::targetColorSpace(this));
+    img = nmc::DkImage::convertToColorSpaceInPlace(this, img);
+
     painter.drawImage(imgRect, img);
 
     painter.setPen(QColor(255, 255, 255, 150));

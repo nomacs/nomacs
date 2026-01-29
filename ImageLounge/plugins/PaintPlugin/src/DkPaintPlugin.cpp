@@ -132,7 +132,7 @@ QLineF getShorterLine(QPainterPath line, const int thickness)
 }
 
 // blur selected rectangle region
-void getBlur(const QRectF &selection, QPainter *painter, QImage &img, int radius, const QColorSpace &colorSpace)
+void getBlur(const QRectF &selection, QPainter *painter, QImage &img, int radius, const QWidget *target)
 {
     if (selection.isEmpty())
         return;
@@ -162,7 +162,8 @@ void getBlur(const QRectF &selection, QPainter *painter, QImage &img, int radius
 
     blurPainter.end();
 
-    blurImg.convertToColorSpace(colorSpace);
+    blurImg = nmc::DkImage::convertToColorSpaceInPlace(target, blurImg);
+
     painter->drawImage(selectionScaled, blurImg);
 }
 
@@ -450,7 +451,7 @@ void DkPaintViewPort::drawPaths(QPainter &painter, nmc::DkBaseViewPort *viewport
         } else if (mPathsMode.at(idx) == mode_blur) {
             QImage img = viewport->getImage();
             QRectF rect = mPaths.at(idx).boundingRect();
-            getBlur(rect, &painter, img, mPathsPen.at(idx).width(), nmc::DkImage::targetColorSpace(viewport));
+            getBlur(rect, &painter, img, mPathsPen.at(idx).width(), viewport);
         } else {
             painter.drawPath(mPaths.at(idx));
         }
@@ -489,9 +490,8 @@ QImage DkPaintViewPort::getPaintedImage()
     // we edited in display/target color space, we must render the drawing in that space,
     // or else the result will look different
     const QColorSpace srcColorSpace = img.colorSpace();
-    const QColorSpace targetColorSpace = nmc::DkImage::targetColorSpace(viewport);
 
-    img.convertToColorSpace(targetColorSpace);
+    img = nmc::DkImage::convertToColorSpaceInPlace(this, img);
 
     QPainter painter(&img);
     painter.setRenderHint(QPainter::Antialiasing);

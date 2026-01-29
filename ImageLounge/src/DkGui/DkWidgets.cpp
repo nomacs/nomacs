@@ -637,7 +637,7 @@ bool DkOverview::updateThumb()
                               Qt::FastTransformation);
     mThumb = mThumb.scaled(thumbSize.width(), thumbSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-    mThumb.convertToColorSpace(DkImage::targetColorSpace(this));
+    mThumb = DkImage::convertToColorSpaceInPlace(this, mThumb);
 
     return true;
 }

@@ -147,6 +147,31 @@ public:
     static QColorSpace loadIccProfile(const QString &filePath);
     static QColorSpace profileForId(int id);
     static QVector<std::pair<int, QColorSpace>> builtinProfiles();
+
+    static QImage::Format targetFormat()
+    {
+        // Qt backing store is usually this format, the memory savings of 24-bit are not worthwhile
+        return QImage::Format_ARGB32_Premultiplied;
+    }
+
+    /**
+     * @brief get a target render format suitable for image pixel format
+     * @param imageFormat QImage.format() usually
+     * @note This is for optimizing offscreen rendering and colorspace conversion
+     *       - The returned format can usually be colorspace converted in-place
+     *       - The returned format has sufficient precision
+     * @return
+     */
+    static QImage::Format renderFormat(QImage::Format imageFormat);
+
+    /**
+     * @brief convert image color space while avoiding memory allocations
+     * @param target use this widget's screen's colorspace
+     * @param img input, may be modified, hence non-const
+     * @return converted image
+     */
+    static QImage convertToColorSpaceInPlace(const QWidget *target, QImage &img);
+    static QImage convertToColorSpaceInPlace(const QColorSpace &target, QImage &img);
 };
 
 class DllCoreExport DkImageStorage : public QObject

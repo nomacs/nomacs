@@ -1421,7 +1421,7 @@ void DkResizeDialog::drawPreview()
     // HiDPI: pixmap inherits this; label paintEvent uses it
     img.setDevicePixelRatio(deviceScale);
 
-    img.convertToColorSpace(DkImage::targetColorSpace(this));
+    img = DkImage::convertToColorSpaceInPlace(this, img);
 
     mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 }
