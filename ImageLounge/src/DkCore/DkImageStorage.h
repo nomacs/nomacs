@@ -66,8 +66,17 @@ public:
     };
 
 #ifdef WITH_OPENCV
+
+    /**
+     * @brief deep copy of QImage as cv::Mat
+     */
     static cv::Mat qImage2Mat(const QImage &img);
-    static QImage mat2QImage(cv::Mat img, const QImage &srcImg);
+
+    /**
+     * @brief deep copy of cv::Mat as QImage
+     */
+    static QImage mat2QImage(cv::Mat mat, const QImage &srcImg);
+
     static void mapGammaTable(cv::Mat &img, const QVector<uint16_t> &gammaTable);
     static void gammaToLinear(cv::Mat &img);
     static void linearToGamma(cv::Mat &img);
