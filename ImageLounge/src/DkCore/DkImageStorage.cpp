@@ -1314,7 +1314,9 @@ QImage::Format DkImage::renderFormat(QImage::Format imageFormat)
     case QImage::Format_RGBA64:
     case QImage::Format_Grayscale8:
     case QImage::Format_Grayscale16:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     case QImage::Format_CMYK8888:
+#endif
         // native formats for colorspace conversion - see: QImage::colorTransformed
         // premultiplied formats excluded since it saves some processing when color converting
         break;
@@ -1373,8 +1375,11 @@ QImage DkImage::convertToColorSpaceInPlace(const QColorSpace &target, QImage &im
     if (target == QColorSpace{}) {
         return img; // colorspace conversion is disabled
     }
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+    if (!target.isValid()) {
+#else
     if (!target.isValidTarget()) {
+#endif
         qWarning() << "[convertToColorSpace] invalid target" << target;
         return img;
     }
@@ -2027,8 +2032,11 @@ DkImageStorage::ScaledImage DkImageStorage::scaleImage(const QImage &src,
     scaled = src.scaled(size, Qt::IgnoreAspectRatio, mode);
 #endif
     Q_ASSERT(scaled.size() == size);
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+    if (colorSpace.isValid()) {
+#else
     if (colorSpace.isValidTarget()) {
+#endif
         scaled = DkImage::convertToColorSpaceInPlace(colorSpace, scaled);
         // Q_ASSERT(scaled.colorSpace() == colorSpace); // FIXME: sometimes fails due to qImage2Mat
     }
