@@ -29,6 +29,7 @@
 
 #include "DkActionManager.h"
 #include "DkMath.h"
+#include "DkNativeImage.h"
 #include "DkSettings.h"
 #include "DkThumbs.h"
 #include "DkTimer.h"
@@ -1572,89 +1573,14 @@ QIcon DkImage::loadIcon(const QString &filePath, const QColor &color)
 
 #ifdef WITH_OPENCV
 
-/**
- * Converts a QImage to a Mat
- * @param img formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
- * @return cv::Mat the corresponding Mat
- **/
 cv::Mat DkImage::qImage2Mat(const QImage &img)
 {
-    cv::Mat mat2;
-    QImage cImg; // must be initialized here!	(otherwise the data is lost before clone())
-
-    try {
-        // if (img.format() == QImage::Format_RGB32)
-        //	qDebug() << "we have an RGB32 in memory...";
-
-        if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
-            mat2 = cv::Mat(img.height(), img.width(), CV_8UC4, (uchar *)img.bits(), img.bytesPerLine());
-            // qDebug() << "ARGB32 or RGB32";
-        } else if (img.format() == QImage::Format_RGB888) {
-            mat2 = cv::Mat(img.height(), img.width(), CV_8UC3, (uchar *)img.bits(), img.bytesPerLine());
-            // qDebug() << "RGB888";
-        }
-        //// converting to indexed8 causes bugs in the qpainter
-        //// see: http://qt-project.org/doc/qt-4.8/qimage.html
-        // else if (img.format() == QImage::Format_Indexed8) {
-        //	mat2 = Mat(img.height(), img.width(), CV_8UC1, (uchar*)img.bits(), img.bytesPerLine());
-        //	//qDebug() << "indexed...";
-        // }
-        else {
-            // qDebug() << "image flag: " << img.format();
-            cImg = img.convertToFormat(QImage::Format_ARGB32);
-            mat2 = cv::Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar *)cImg.bits(), cImg.bytesPerLine());
-            // qDebug() << "I need to convert the QImage to ARGB32";
-        }
-
-        mat2 = mat2.clone(); // we need to own the pointer
-    } catch (...) { // something went seriously wrong (e.g. out of memory)
-        // DkNoMacs::dialog(QObject::tr("Sorry, could not convert image."));
-        qDebug() << "[DkImage::qImage2Mat] could not convert image - something is seriously wrong down here...";
-    }
-
-    return mat2;
+    return DkConstNativeImage::fromImage(img, DkNativeImage::map_bgr).mat().clone();
 }
 
-/**
- * Converts a cv::Mat to a QImage.
- * @param img supported formats CV8UC1 | CV_8UC3 | CV_8UC4
- * @return QImage the corresponding QImage
- **/
-QImage DkImage::mat2QImage(cv::Mat img, const QImage &srcImg)
+QImage DkImage::mat2QImage(cv::Mat mat, const QImage &srcImg)
 {
-    QImage qImg;
-
-    // since Mat header is copied, a new buffer should be allocated (check this!)
-    if (img.depth() == CV_32F)
-        img.convertTo(img, CV_8U, 255);
-
-    if (img.type() == CV_8UC1) {
-        qImg = QImage(img.data,
-                      (int)img.cols,
-                      (int)img.rows,
-                      (int)img.step,
-                      QImage::Format_Indexed8); // opencv uses size_t for scaling in x64 applications
-        // Mat tmp;
-        // cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
-        // img = tmp;
-        if (!srcImg.colorTable().isEmpty())
-            qImg.setColorTable(srcImg.colorTable());
-    }
-    if (img.type() == CV_8UC3) {
-        // cv::cvtColor(img, img, CV_RGB2BGR);
-        qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
-    }
-    if (img.type() == CV_8UC4) {
-        // do not add back an empty alpha channel
-        // TODO: if the manipulator adds/removes alpha channel, pass as an argument
-        auto format = !srcImg.hasAlphaChannel() ? QImage::Format_RGB32 : QImage::Format_ARGB32;
-        qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, format);
-    }
-
-    qImg = qImg.copy();
-    qImg.setColorSpace(srcImg.colorSpace());
-
-    return qImg;
+    return DkNativeImage::fromMat(mat, srcImg, DkNativeImage::map_bgr).img().copy();
 }
 
 void DkImage::linearToGamma(cv::Mat &img)
