@@ -1944,10 +1944,10 @@ DkImageStorage::ScaledImage DkImageStorage::scaleImage(const QImage &src,
         if (s.width() == 0)
             s.setWidth(1);
         try {
-            cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
-            cv::Mat tmp;
-            cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
-            scaled = DkImage::mat2QImage(tmp, resizedImg);
+            const auto input = DkConstNativeImage::fromImage(resizedImg);
+            auto output = input.allocateLike(s);
+            cv::resize(input.mat(), output.mat(), cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
+            scaled = output.img();
         } catch (...) {
             qWarning() << "[ImageStorage]: OpenCV exception while resizing";
         }
