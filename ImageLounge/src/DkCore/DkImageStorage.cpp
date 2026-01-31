@@ -1764,49 +1764,41 @@ void DkImage::tinyPlanet(QImage &img, double scaleLog, double angle, QSize s, bo
 
 bool DkImage::gaussianBlur(QImage &img, float sigma)
 {
+    if (sigma <= 0.0f) {
+        return false; // kernel would be 1x1 => no-op
+    }
+
 #ifdef WITH_OPENCV
-    DkTimer dt;
-    cv::Mat imgCv = DkImage::qImage2Mat(img);
-
-    cv::Mat imgG;
-    cv::Mat gx = cv::getGaussianKernel(qRound(4 * sigma + 1), sigma);
-    cv::Mat gy = gx.t();
-    cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
-    img = DkImage::mat2QImage(imgG, img);
-
-    qDebug() << "gaussian blur takes: " << dt;
+    auto native = DkNativeImage::fromImage(img);
+    cv::GaussianBlur(native.mat(), native.mat(), cv::Size{}, sigma);
+    img = native.img();
+    return true;
 #else
     Q_UNUSED(img);
     Q_UNUSED(sigma);
 #endif
-
-    return true;
+    return false;
 }
 
 bool DkImage::unsharpMask(QImage &img, float sigma, float weight)
 {
+    if (sigma <= 0.0f) {
+        return false; // kernel would be 1x1 => no-op
+    }
+
 #ifdef WITH_OPENCV
-    DkTimer dt;
-    // DkImage::gammaToLinear(img);
-    cv::Mat imgCv = DkImage::qImage2Mat(img);
-
-    cv::Mat imgG;
-    cv::Mat gx = cv::getGaussianKernel(qRound(4 * sigma + 1), sigma);
-    cv::Mat gy = gx.t();
-    cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
-    // cv::GaussianBlur(imgCv, imgG, cv::Size(4*sigma+1, 4*sigma+1), sigma);		// this is awesomely slow
-    cv::addWeighted(imgCv, weight, imgG, 1 - weight, 0, imgCv);
-    img = DkImage::mat2QImage(imgCv, img);
-
-    qDebug() << "unsharp mask takes: " << dt;
-    // DkImage::linearToGamma(img);
+    auto native = DkNativeImage::fromImage(img);
+    cv::Mat blurred;
+    cv::GaussianBlur(native.mat(), blurred, cv::Size{}, sigma);
+    cv::addWeighted(native.mat(), weight, blurred, 1.0f - weight, 0.0, native.mat());
+    img = native.img();
+    return true;
 #else
     Q_UNUSED(img);
     Q_UNUSED(sigma);
     Q_UNUSED(weight);
 #endif
-
-    return true;
+    return false;
 }
 
 QImage DkImage::createThumb(const QImage &image, int maxSize)
