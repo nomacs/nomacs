@@ -901,6 +901,31 @@ QPixmap DkImage::merge(const QVector<QImage> &imgs)
     return pm;
 }
 
+// get the best format for adding alpha channel to image
+static QImage::Format alphaFormat(const QImage &img)
+{
+    QImage::Format format = img.format();
+    QPixelFormat pf = img.pixelFormat();
+    if (pf.alphaUsage() == QPixelFormat::UsesAlpha)
+        return format;
+
+    switch (format) {
+    case QImage::Format_RGBX64:
+        format = QImage::Format_RGBA64;
+        break;
+    case QImage::Format_RGBX16FPx4:
+        format = QImage::Format_RGBA16FPx4;
+        break;
+    case QImage::Format_RGBX32FPx4:
+        format = QImage::Format_RGBA32FPx4;
+        break;
+    default:
+        format = QImage::Format_ARGB32;
+    }
+
+    return format;
+}
+
 QImage DkImage::cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor)
 {
     QTransform tForm;
@@ -911,23 +936,54 @@ QImage DkImage::cropToImage(const QImage &src, const DkRotatingRect &rect, const
     if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f)
         return src;
 
-    double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI * 0.5);
-    double minD = qMin(std::abs(angle), std::abs(angle - CV_PI * 0.5));
+    // If the rotation angle is a right angle we disable interpolation.
+    // We can also use QImage::copy() to keep the format identical
 
-    QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
+    // FIXME: getAngle() is imprecise for tiny crops (1x1, 2x2 etc), so we need large epsilon
+    // This works, but requires angle has limited precision (in degrees, 2 decimal places)
+    const double epsilon = 1e-5;
+
+    double radians = rect.getAngle();
+    double rightAngle = radians / (CV_PI * 0.5);
+    double error = std::abs(std::round(rightAngle) - rightAngle);
+    bool rotated = error > epsilon;
+
+    if (!rotated) {
+        QRect cropRect = tForm.inverted().mapRect(QRectF{0.0, 0.0, cImgSize.x(), cImgSize.y()}).toRect();
+        if (src.rect().contains(cropRect)) {
+            return src.copy(cropRect);
+        }
+    }
+
+    // try to keep the pixel format; add alpha channel if fill color is transparent
+    QImage::Format outFormat = src.format();
+    if (fillColor.alpha() < 255) {
+        outFormat = alphaFormat(src);
+    }
+
+    // QPainter segfaults if the target is indexed
+    if (outFormat == QImage::Format_Indexed8) {
+        outFormat = QImage::Format_ARGB32;
+    }
+
+    QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), outFormat);
     img.setColorSpace(src.colorSpace());
-    img.fill(fillColor.rgba());
 
-    // render the image into the new coordinate system
+    if (outFormat == QImage::Format_Mono || outFormat == QImage::Format_MonoLSB) {
+        img.fill(fillColor.lightness() < 127 ? 0 : 1);
+    } else {
+        img.fill(fillColor);
+    }
+
     QPainter painter(&img);
     painter.setWorldTransform(tForm);
 
-    // for rotated rects we want perfect anti-aliasing
-    if (minD > FLT_EPSILON)
-        painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+    if (rotated) {
+        painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    }
 
-    painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
-    painter.end();
+    painter.setCompositionMode(QPainter::CompositionMode_Source); // do not blend with fill color
+    painter.drawImage(QPoint{}, src);
 
     return img;
 }
