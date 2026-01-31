@@ -228,9 +228,11 @@ DkBlurManipulator::DkBlurManipulator(QAction *action)
 
 QImage DkBlurManipulator::apply(const QImage &img) const
 {
-    QImage imgC = img.copy();
-    DkImage::gaussianBlur(imgC, (float)sigma());
-    return imgC;
+    QImage tmp = img;
+    if (DkImage::gaussianBlur(tmp, (float)sigma())) {
+        return tmp;
+    }
+    return {};
 }
 
 QString DkBlurManipulator::errorMessage() const
@@ -261,9 +263,11 @@ DkUnsharpMaskManipulator::DkUnsharpMaskManipulator(QAction *action)
 
 QImage DkUnsharpMaskManipulator::apply(const QImage &img) const
 {
-    QImage imgC = img.copy();
-    DkImage::unsharpMask(imgC, (float)sigma(), 1.0f + amount() / 100.0f);
-    return imgC;
+    QImage tmp = img;
+    if (DkImage::unsharpMask(tmp, (float)sigma(), 1.0f + amount() / 100.0f)) {
+        return tmp;
+    }
+    return {};
 }
 
 QString DkUnsharpMaskManipulator::errorMessage() const
