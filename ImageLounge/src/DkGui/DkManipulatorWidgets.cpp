@@ -295,6 +295,7 @@ void DkBlurWidget::createLayout()
     // post processing sliders
     auto *sigmaSlider = new DkSlider(tr("Sigma"), this);
     sigmaSlider->setValue(manipulator()->sigma());
+    sigmaSlider->setMinimum(1);
     sigmaSlider->setMaximum(50);
     connect(sigmaSlider, &DkSlider::valueChanged, this, &DkBlurWidget::onSigmaSliderValueChanged);
 
@@ -325,6 +326,7 @@ void DkUnsharpMaskWidget::createLayout()
 {
     // post processing sliders
     auto *sigmaSlider = new DkSlider(tr("Sigma"), this);
+    sigmaSlider->setMinimum(1);
     sigmaSlider->setValue(manipulator()->sigma());
     connect(sigmaSlider, &DkSlider::valueChanged, this, &DkUnsharpMaskWidget::onSigmaSliderValueChanged);
 
