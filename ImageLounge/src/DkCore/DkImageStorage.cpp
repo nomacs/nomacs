@@ -202,27 +202,6 @@ QImage DkImage::resizeImage(const QImage &src,
 #endif
 }
 
-// return true if all values masked with mask == value
-// optimal version for packed pixel formats
-template<typename T, typename = std::enable_if_t<std::is_unsigned_v<T>>>
-static bool isMaskedEqual(const QImage &img, T mask, T value)
-{
-    Q_ASSERT(static_cast<size_t>(img.depth()) == sizeof(T) * 8);
-    auto *bits = reinterpret_cast<const T *>(img.constBits());
-    int stride = img.bytesPerLine() / sizeof(T);
-    const int height = img.height();
-    const int width = img.width();
-    for (int h = 0; h < height; ++h) {
-        for (int w = 0; w < width; ++w) {
-            if ((bits[w] & mask) != value) {
-                return false;
-            }
-        }
-        bits += stride;
-    }
-    return true;
-}
-
 // return true if all values in a channel equal value
 template<typename T>
 static bool isChannelEqual(const QImage &img, int channel, int numChannels, T value)
@@ -254,18 +233,18 @@ bool DkImage::alphaChannelUsed(const QImage &img)
     switch (img.format()) {
     case QImage::Format_Indexed8:
         return hasAlpha; // QImage::hasAlphaChannel already scanned colortable
+    case QImage::Format_Alpha8:
+        return !isChannelEqual<uint8_t>(img, 0, 1, 0xFF);
     case QImage::Format_ARGB32:
     case QImage::Format_ARGB32_Premultiplied:
-        return !isMaskedEqual<uint32_t>(img, 0xFF000000, 0xFF000000);
     case QImage::Format_RGBA8888:
     case QImage::Format_RGBA8888_Premultiplied: {
-        constexpr bool littleEndian = Q_BYTE_ORDER != Q_BIG_ENDIAN;
-        constexpr uint32_t mask = littleEndian ? 0xFF : 0xFF000000;
-        return !isMaskedEqual<uint32_t>(img, mask, mask);
+        return !isChannelEqual<uint8_t>(img, 3, 4, 0xFF);
     }
     case QImage::Format_RGBA64:
-    case QImage::Format_RGBA64_Premultiplied:
-        return !isMaskedEqual<uint64_t>(img, 0xFFFF, 0xFFFF);
+    case QImage::Format_RGBA64_Premultiplied: {
+        return !isChannelEqual<uint16_t>(img, 3, 4, 0xFFFF);
+    }
     case QImage::Format_RGBA16FPx4:
     case QImage::Format_RGBA16FPx4_Premultiplied: {
         return !isChannelEqual<uint16_t>(img, 3, 4, 0x3C00);
