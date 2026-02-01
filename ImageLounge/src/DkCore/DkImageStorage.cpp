@@ -1743,21 +1743,17 @@ void DkImage::logPolar(const cv::Mat &src,
     cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, IPL_BORDER_REPLICATE);
 }
 
-void DkImage::tinyPlanet(QImage &img, double scaleLog, double angle, QSize s, bool invert /* = false */)
+QImage DkImage::tinyPlanet(const QImage &img, double scaleLog, double angle, const QSize &size, bool invert)
 {
     QTransform rotationMatrix;
     rotationMatrix.rotate((invert) ? (double)-90 : (double)90);
-    img = img.transformed(rotationMatrix);
+    QImage tmp = img.transformed(rotationMatrix);
 
-    // make square
-    img = img.scaled(s, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    tmp = tmp.scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    cv::Mat mImg = DkImage::qImage2Mat(img);
-
-    qDebug() << "scale log: " << scaleLog << " inverted: " << invert;
-    logPolar(mImg, mImg, cv::Point2d(mImg.cols * 0.5, mImg.rows * 0.5), scaleLog, angle);
-
-    img = DkImage::mat2QImage(mImg, img);
+    auto view = DkNativeImage::fromImage(tmp);
+    logPolar(view.mat(), view.mat(), cv::Point2d(view.mat().cols * 0.5, view.mat().rows * 0.5), scaleLog, angle);
+    return view.img();
 }
 
 #endif

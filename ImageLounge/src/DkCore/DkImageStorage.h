@@ -86,7 +86,7 @@ public:
                          double scaleLog,
                          double angle,
                          double scale = 1.0);
-    static void tinyPlanet(QImage &img, double scaleLog, double angle, QSize s, bool invert = false);
+    static QImage tinyPlanet(const QImage &img, double scaleLog, double angle, const QSize &size, bool invert = false);
 #endif
 
     static QString getBufferSize(const QSize &imgSize, const int depth);
