@@ -183,7 +183,7 @@ class DllCoreExport DkImageStorage : public QObject
 
 public:
     DkImageStorage();
-    virtual ~DkImageStorage();
+    ~DkImageStorage() override;
 
     bool isEmpty() const
     {

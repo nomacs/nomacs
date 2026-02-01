@@ -209,7 +209,7 @@ static bool isChannelEqual(const QImage &img, int channel, int numChannels, T va
     Q_ASSERT(channel >= 0 && channel < numChannels);
     Q_ASSERT(static_cast<size_t>(img.depth()) == sizeof(T) * 8 * numChannels);
     auto *channels = reinterpret_cast<const T *>(img.constBits());
-    int stride = img.bytesPerLine() / sizeof(T);
+    size_t stride = img.bytesPerLine() / sizeof(T);
     const int height = img.height();
     const int width = img.width();
     for (int h = 0; h < height; ++h) {
