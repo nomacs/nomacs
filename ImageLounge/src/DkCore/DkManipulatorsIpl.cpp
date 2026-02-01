@@ -164,9 +164,7 @@ QImage DkTinyPlanetManipulator::apply(const QImage &img) const
     int ms = qMax(img.width(), img.height());
     QSize s(ms, ms);
 
-    QImage imgR = img.copy();
-    DkImage::tinyPlanet(imgR, size(), angle() * DK_DEG2RAD, s, inverted());
-    return imgR;
+    return DkImage::tinyPlanet(img, size(), angle() * DK_DEG2RAD, s, inverted());
 #else
     Q_UNUSED(img);
     return QImage(); // trigger warning
