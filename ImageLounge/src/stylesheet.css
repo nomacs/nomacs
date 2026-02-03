@@ -628,7 +628,15 @@ nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkSaturationSlider::groove:
 }
 
 nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkHueSlider::groove:horizontal {
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff0000, stop:0.167 #ffff00, stop:0.333 #00ff00, stop:0.5 #00ffff, stop:0.666 #0000ff, stop:0.833 #ff00ff, stop:1 #ff0000);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+      /* s,v fixed to 80 */
+      stop:0.000 #28cccc,  /* -180 */
+      stop:0.167 #2828cc,  /* -120 */
+      stop:0.333 #cc28cc,  /*  -60 */
+      stop:0.5   #cc2828,  /*    0 */
+      stop:0.666 #cccc28,  /*  +60 */
+      stop:0.833 #28cc28,  /* +120 */
+      stop:1.000 #28cccc); /* +180 */
 }
 
 nmc--DkBaseManipulatorWidget#darkManipulator QComboBox {
