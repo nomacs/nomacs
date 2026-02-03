@@ -969,68 +969,161 @@ QImage DkImage::cropToImage(const QImage &src, const DkRotatingRect &rect, const
     return img;
 }
 
-QImage DkImage::hueSaturation(const QImage &src, int hue, int sat, int brightness)
-{
-    // nothing to do?
-    if (hue == 0 && sat == 0 && brightness == 0)
-        return src;
-
-    QImage imgR;
-
 #ifdef WITH_OPENCV
 
-    // normalize brightness/saturation
-    int brightnessN = qRound(brightness / 100.0 * 255.0);
-    double satN = sat / 100.0 + 1.0;
+class DkHsvKernel : public DkKernelBase<DkHsvKernel>
+{
+    friend class DkKernelBase<DkHsvKernel>;
 
-    cv::Mat hsvImg = DkImage::qImage2Mat(src);
+public:
+    DkHsvKernel() = delete;
+    Q_DISABLE_COPY(DkHsvKernel)
+    DkHsvKernel(QImage &img, float hue, float saturation, float brightness)
+        : mImg(DkNativeImage::fromImage(img, DkNativeImage::map_anyrgb))
+        , mHue(hue)
+        , mSaturation(saturation)
+        , mBrightness(brightness)
+    {
+    }
+    ~DkHsvKernel() override = default;
 
-    if (hsvImg.channels() > 3)
-        cv::cvtColor(hsvImg, hsvImg, CV_RGBA2BGR);
+protected:
+    DkNativeImage mImg;
+    const float mHue, mSaturation, mBrightness;
 
-    cv::cvtColor(hsvImg, hsvImg, CV_BGR2HSV);
+    // float for hsv->rgb avoids most division and has the precision we need for wide formats
+    // this performs quite well, OpenCVs 8-bit hsv is only about 20% faster and only for
+    // small images.
+    static std::tuple<float, float, float> rgbToHsv(float r, float g, float b)
+    {
+        const float cmax = std::max(r, std::max(g, b));
+        const float cmin = std::min(r, std::min(g, b));
+        const float delta = cmax - cmin;
 
-    // apply hue/saturation changes
-    for (int rIdx = 0; rIdx < hsvImg.rows; rIdx++) {
-        auto *iPtr = hsvImg.ptr<unsigned char>(rIdx);
+        float h, s, v;
+        v = cmax;
 
-        for (int cIdx = 0; cIdx < hsvImg.cols * 3; cIdx += 3) {
-            // adopt hue
-            int h = iPtr[cIdx] + hue;
-            if (h < 0)
-                h += 180;
-            if (h >= 180)
-                h -= 180;
-
-            iPtr[cIdx] = (unsigned char)h;
-
-            // adopt value
-            int v = iPtr[cIdx + 2] + brightnessN;
-            if (v < 0)
-                v = 0;
-            if (v > 255)
-                v = 255;
-            iPtr[cIdx + 2] = (unsigned char)v;
-
-            // adopt saturation
-            int s = qRound(iPtr[cIdx + 1] * satN);
-            if (s < 0)
-                s = 0;
-            if (s > 255)
-                s = 255;
-            iPtr[cIdx + 1] = (unsigned char)s;
+        if (delta > 0.0f) {
+            const float invDelta = 1.0f / delta;
+            if (r >= g && r >= b) {
+                float t = (g - b) * invDelta;
+                if (t < 0.0f) {
+                    t += 6.0f;
+                }
+                h = t;
+            } else if (g >= b) {
+                h = ((b - r) * invDelta + 2.0f);
+            } else {
+                h = ((r - g) * invDelta + 4.0f);
+            }
+            h *= 60.0f;
+            s = delta * (1.0f / cmax); // cmax > 0 here
+        } else {
+            h = 0.0f; // grayscale
+            s = 0.0f;
         }
+        return {h, s, v};
     }
 
-    cv::cvtColor(hsvImg, hsvImg, CV_HSV2BGR);
-    imgR = DkImage::mat2QImage(hsvImg, src);
+    static std::tuple<float, float, float> hsvToRgb(float h, float s, float v)
+    {
+        Q_ASSERT(h >= 0.0f && h <= 360.0f);
+        Q_ASSERT(s >= 0.0f && s <= 1.0f);
+        Q_ASSERT(v >= 0.0f && v <= 1.0f);
 
+        const float invSectorSize = 1.0f / 60.0f;
+        float hh = h * invSectorSize;
+        int sector = (int)hh;
+        float frac = hh - sector;
+
+        float p = v * (1.0f - s);
+        float q = v * (1.0f - s * frac);
+        float t = v * (1.0f - s * (1.0f - frac));
+
+        // clang-format off
+        float r, g, b;
+        switch (sector) {
+        case 0:  r = v, g = t, b = p; break;
+        case 1:  r = q, g = v, b = p; break;
+        case 2:  r = p, g = v, b = t; break;
+        case 3:  r = p, g = q, b = v; break;
+        case 4:  r = t, g = p, b = v; break;
+        default: r = v, g = p, b = q; break;
+        }
+        // clang-format on
+        return {r, g, b};
+    }
+
+    template<typename Format>
+    static bool kernel(DkHsvKernel &self, const DkWorkRange &range)
+    {
+        using ChannelType = typename Format::ChannelType;
+
+        auto &mat = self.mImg.mat();
+        const float hueAdd = self.mHue; // [-180,180]
+        const float satScale = self.mSaturation / 100.0 + 1.0; // [-100,100] => [0,2]
+        const float valAdd = self.mBrightness / 100.0; // [-100,100] => [-1,1]
+
+        forEachPixel<Format>(mat, range, [&](ChannelType *pixel) {
+            auto [r, g, b, /* unused */ _a] = Format::loadFloat(pixel);
+
+            auto [h, s, v] = rgbToHsv(r, g, b); // h:[0,360] s:[0,1] v:[0,1]
+
+            h += hueAdd, s *= satScale, v += valAdd;
+
+            if (h < 0.0f) {
+                h += 360.0f;
+            } else if (h > 360.0f) {
+                h -= 360.0f;
+            }
+            s = qBound(0.0f, s, 1.0f);
+            v = qBound(0.0f, v, 1.0f);
+
+            auto [rr, gg, bb] = hsvToRgb(h, s, v);
+
+            Format::store(pixel, rr, gg, bb);
+        });
+
+        return true;
+    }
+
+    static constexpr int kCaps = cap_gray | cap_bgr | cap_rgb;
+    static constexpr FmtList kFormats = listForKernelCaps(kCaps);
+    static constexpr DispatchTable kTable = makeTable(kFormats);
+
+public:
+    bool run() override
+    {
+        return dispatch(kTable, mImg.img().format(), *this, {0, mImg.img().height()});
+    }
+
+    QImage result() const override
+    {
+        return mImg.img();
+    }
+};
 #endif // WITH_OPENCV
 
-    return imgR;
-}
+bool DkImage::hueSaturation(QImage &img, float hue, float sat, float brightness)
+{
+    if (hue == 0 && sat == 0 && brightness == 0) {
+        return false;
+    }
 
 #ifdef WITH_OPENCV
+    DkHsvKernel kernel{img, hue, sat, brightness};
+    if (kernel.run()) {
+        img = kernel.result();
+        return true;
+    }
+#else
+    Q_UNUSED(img)
+#endif
+    return false;
+}
+
+#if WITH_OPENCV
+
 static cv::Mat exposureLut(double exposure)
 {
     int maxVal = std::numeric_limits<unsigned short>::max();

@@ -136,7 +136,7 @@ public:
     static QPixmap makeSquare(const QPixmap &pm);
     static QPixmap merge(const QVector<QImage> &imgs);
     static QImage cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor = QColor());
-    static QImage hueSaturation(const QImage &src, int hue, int sat, int brightness);
+    static bool hueSaturation(QImage &img, float hue, float sat, float brightness);
     static bool exposure(QImage &img, double exposure, double offset, double gamma);
     static QImage bgColor(const QImage &src, const QColor &col);
     static QByteArray extractImageFromDataStream(const QByteArray &ba,
