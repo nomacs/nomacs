@@ -435,7 +435,11 @@ DkHueManipulator::DkHueManipulator(QAction *action)
 
 QImage DkHueManipulator::apply(const QImage &img) const
 {
-    return DkImage::hueSaturation(img, hue(), saturation(), value());
+    QImage tmp = img;
+    if (DkImage::hueSaturation(tmp, hue(), saturation(), value())) {
+        return tmp;
+    }
+    return img;
 }
 
 QString DkHueManipulator::errorMessage() const
