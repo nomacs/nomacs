@@ -1283,9 +1283,60 @@ bool DkImage::exposure(QImage &img, double exposure, double offset, double gamma
     return false;
 }
 
+// blend two colors with the standard source-over operator
+static QColor compositeOver(const QColor &dst, const QColor &src)
+{
+    float sa = src.alphaF();
+    float da = dst.alphaF();
+    float outA = sa + da * (1.0f - sa);
+    if (outA == 0.0f) {
+        return Qt::transparent;
+    }
+
+    float outR = (src.redF() * sa + dst.redF() * da * (1.0f - sa)) / outA;
+    float outG = (src.greenF() * sa + dst.greenF() * da * (1.0f - sa)) / outA;
+    float outB = (src.blueF() * sa + dst.blueF() * da * (1.0f - sa)) / outA;
+    return QColor::fromRgbF(outR, outG, outB, outA);
+}
+
 QImage DkImage::bgColor(const QImage &src, const QColor &col)
 {
-    QImage dst(src.size(), QImage::Format_RGB32);
+    if (!DkImage::alphaChannelUsed(src)) {
+        qWarning() << "[bgColor] no alpha channel or alpha channel is fully opaque";
+        return src;
+    }
+
+    QImage::Format opaqueFormat = QImage::Format_Invalid;
+
+    switch (src.format()) {
+    case QImage::Format_Indexed8: {
+        QList<QRgb> colorTable = src.colorTable();
+        for (QRgb &rgba : colorTable) {
+            if (qAlpha(rgba) != 255) {
+                rgba = compositeOver(col, QColor::fromRgba(rgba)).rgba();
+            }
+        }
+        QImage dst = src;
+        dst.setColorTable(colorTable);
+        return dst;
+    }
+    case QImage::Format_RGBA64:
+    case QImage::Format_RGBA64_Premultiplied:
+        opaqueFormat = QImage::Format_RGBX64;
+        break;
+    case QImage::Format_RGBA16FPx4:
+    case QImage::Format_RGBA16FPx4_Premultiplied:
+        opaqueFormat = QImage::Format_RGBX16FPx4;
+        break;
+    case QImage::Format_RGBA32FPx4:
+    case QImage::Format_RGBA32FPx4_Premultiplied:
+        opaqueFormat = QImage::Format_RGBX32FPx4;
+        break;
+    default:
+        opaqueFormat = QImage::Format_RGB32;
+    }
+
+    QImage dst(src.size(), opaqueFormat);
     dst.setColorSpace(src.colorSpace());
     dst.fill(col);
 
