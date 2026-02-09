@@ -2554,6 +2554,12 @@ void DkViewPortContrast::setImage(QImage newImg)
         img.reinterpretAsFormat(QImage::Format_Indexed8);
     }
 
+    // picked colors are in screen space and so too should be the image to prevent conversion
+    // note we do not apply any colorspace conversion to the source so we are mapping the raw image values
+    // which may correspond to real-world non-image things like sensor data, spectrograms etc
+    QColorSpace screenColorSpace = DkImage::targetColorSpace(this);
+    img.setColorSpace(screenColorSpace);
+
     if (img.format() == QImage::Format_Indexed8) {
         mImgs = QVector<QImage>(1);
         mImgs[0] = img;
@@ -2566,13 +2572,13 @@ void DkViewPortContrast::setImage(QImage newImg)
         mImgs = QVector<QImage>(4);
         std::vector<cv::Mat> planes;
 
-        cv::Mat imgUC3 = DkImage::qImage2Mat(mImgStorage.image());
+        cv::Mat imgUC3 = DkImage::qImage2Mat(img);
         // int format = imgQt.format();
         // if (format == QImage::Format_RGB888)
         //	imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC3, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
         // else
         //	imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC4, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
-        split(imgUC3, planes);
+        cv::split(imgUC3, planes);
         // Store the 3 channels in a QImage Vector.
         // Be aware that OpenCV 'swaps' the rgb triplet, hence process it in a descending way:
         int idx = 1;
@@ -2580,23 +2586,27 @@ void DkViewPortContrast::setImage(QImage newImg)
             // dirty hack
             if (i >= (int)planes.size())
                 i = 0;
-            mImgs[idx] = QImage((const unsigned char *)planes[i].data,
-                                (int)planes[i].cols,
-                                (int)planes[i].rows,
-                                (int)planes[i].step,
-                                QImage::Format_Indexed8);
-            mImgs[idx] = mImgs[idx].copy();
+            auto planeImg = QImage((const unsigned char *)planes[i].data,
+                                   (int)planes[i].cols,
+                                   (int)planes[i].rows,
+                                   (int)planes[i].step,
+                                   QImage::Format_Indexed8)
+                                .copy();
+            planeImg.setColorSpace(screenColorSpace);
+            mImgs[idx] = planeImg;
             idx++;
         }
         // The first element in the vector contains the gray scale 'average' of the 3 channels:
         cv::Mat grayMat;
         cv::cvtColor(imgUC3, grayMat, CV_BGR2GRAY);
-        mImgs[0] = QImage((const unsigned char *)grayMat.data,
-                          (int)grayMat.cols,
-                          (int)grayMat.rows,
-                          (int)grayMat.step,
-                          QImage::Format_Indexed8);
-        mImgs[0] = mImgs[0].copy();
+        auto grayImg = QImage((const unsigned char *)grayMat.data,
+                              (int)grayMat.cols,
+                              (int)grayMat.rows,
+                              (int)grayMat.step,
+                              QImage::Format_Indexed8)
+                           .copy();
+        grayImg.setColorSpace(screenColorSpace);
+        mImgs[0] = grayImg;
         planes.clear();
     }
 #else
