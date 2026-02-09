@@ -2546,9 +2546,17 @@ void DkViewPortContrast::setImage(QImage newImg)
     if (newImg.isNull())
         return;
 
-    if (mImgStorage.image().format() == QImage::Format_Indexed8) {
+    QImage img = mImgStorage.image();
+
+    // for mono,gray8,gray16, create indexed image w/empty color table; it will be added later
+    if (img.pixelFormat().colorModel() == QPixelFormat::Grayscale) {
+        img = img.convertToFormat(QImage::Format_Grayscale8);
+        img.reinterpretAsFormat(QImage::Format_Indexed8);
+    }
+
+    if (img.format() == QImage::Format_Indexed8) {
         mImgs = QVector<QImage>(1);
-        mImgs[0] = mImgStorage.image();
+        mImgs[0] = img;
         mActiveChannel = 0;
     }
 #ifdef WITH_OPENCV
