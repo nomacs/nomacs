@@ -2442,6 +2442,9 @@ void DkViewPortFrameless::updateImageMatrix()
 
         mWorldMatrix.scale(scaleFactor, scaleFactor);
         mWorldMatrix.translate(dx, dy);
+    } // NOTE: this is not the same as resetView!
+    else if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_fit) {
+        zoomToFit();
     }
 }
 
