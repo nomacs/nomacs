@@ -247,7 +247,6 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
     // functions
-    void updateImageMatrix() override;
     void draw(QPainter &painter, double opacity, int flags) override;
     void drawFrame(QPainter &painter);
     void eraseBackground(QPainter &painter) const override;
@@ -260,6 +259,12 @@ protected:
     QVector<QRectF> mStartActionsRects;
     QVector<QPixmap> mStartActionsIcons;
     QRectF mStartBgRect;
+
+private:
+    [[nodiscard]] qreal imageMatrixPaddingRatio() const override
+    {
+        return 0.1;
+    }
 };
 
 class DllCoreExport DkViewPortContrast : public DkViewPort

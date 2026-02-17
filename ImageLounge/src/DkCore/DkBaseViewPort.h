@@ -97,11 +97,6 @@ public:
         return mImgMatrix;
     }
 
-    virtual QRect getMainGeometry()
-    {
-        return geometry();
-    };
-
     // visible region of the image, unscaled
     QImage getCurrentImageRegion();
 
@@ -276,11 +271,16 @@ protected:
     virtual void eraseBackground(QPainter &painter) const;
 
     virtual void updateImageMatrix();
-    [[nodiscard]] QTransform getScaledImageMatrix(qreal paddingRatio = 0) const;
     virtual void controlImagePosition(float lb = -1, float ub = -1);
     virtual void centerImage();
     virtual void changeCursor();
     void zoomToPoint(double factor, const QPointF &pos, QTransform &matrix) const;
+
+private:
+    [[nodiscard]] virtual qreal imageMatrixPaddingRatio() const
+    {
+        return 0;
+    }
 };
 
 // scaleKeepAspectRatioAndCenter creates a transformation that
