@@ -276,8 +276,7 @@ protected:
     virtual void eraseBackground(QPainter &painter) const;
 
     virtual void updateImageMatrix();
-    virtual QTransform getScaledImageMatrix() const;
-    virtual QTransform getScaledImageMatrix(const QSize &size) const;
+    virtual QTransform getScaledImageMatrix(qreal paddingRatio = 0) const;
     virtual void controlImagePosition(float lb = -1, float ub = -1);
     virtual void centerImage();
     virtual void changeCursor();
