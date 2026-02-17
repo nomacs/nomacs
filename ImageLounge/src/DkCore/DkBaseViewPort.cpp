@@ -737,27 +737,30 @@ QTransform DkBaseViewPort::getScaledImageMatrix() const
     return getScaledImageMatrix(size());
 }
 
-QTransform DkBaseViewPort::getScaledImageMatrix(const QSize &size) const
+QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, qreal paddingRatio)
 {
     // the image resizes as we zoom
-    float ratioImg = (float)mImgRect.width() / (float)mImgRect.height();
-    float ratioWin = (float)size.width() / (float)size.height();
+    float ratioImg = (float)src.width() / (float)src.height();
+    float ratioWin = (float)tgt.width() / (float)tgt.height();
 
     QTransform imgMatrix;
     float s;
-    if (mImgRect.width() == 0 || mImgRect.height() == 0)
+    if (src.width() == 0 || src.height() == 0)
         s = 1.0f;
     else
-        s = (ratioImg > ratioWin) ? (float)size.width() / (float)mImgRect.width()
-                                  : (float)size.height() / (float)mImgRect.height();
+        s = (ratioImg > ratioWin) ? (float)tgt.width() / (float)src.width() : (float)tgt.height() / (float)src.height();
 
     imgMatrix.scale(s, s);
 
-    QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
-    imgMatrix.translate((size.width() - imgViewRect.width()) * 0.5f / s,
-                        (size.height() - imgViewRect.height()) * 0.5f / s);
+    QPointF mapped = imgMatrix.map(QPointF(src.width(), src.height()));
+    imgMatrix.translate((tgt.width() - mapped.x()) * 0.5f / s, (tgt.height() - mapped.y()) * 0.5f / s);
 
     return imgMatrix;
+}
+
+QTransform DkBaseViewPort::getScaledImageMatrix(const QSize &size) const
+{
+    return scaleKeepAspectRatioAndCenter(mImgRect.size(), size);
 }
 
 void DkBaseViewPort::controlImagePosition(float lb, float ub)

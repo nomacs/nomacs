@@ -284,4 +284,10 @@ protected:
     void zoomToPoint(double factor, const QPointF &pos, QTransform &matrix) const;
 };
 
+// scaleKeepAspectRatioAndCenter creates a transformation that
+// maps coordinates in r1 (`QRectF(QPointF(), src)`)
+// to coordinates in r2 (`QRectF(QPointF(), tgt)`)
+// when r1 is scaled to maximum inside r2 while keeping aspect ratio
+// and the scaled rectangle is centered in r2.
+QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, qreal paddingRatio = 0);
 }
