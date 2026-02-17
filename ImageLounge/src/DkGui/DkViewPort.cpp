@@ -2423,9 +2423,7 @@ void DkViewPortFrameless::updateImageMatrix()
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect())) {
-        mImgMatrix = getScaledImageMatrix(size() * 0.9f);
-        QSize shift = size() * 0.1f;
-        mImgMatrix.translate(shift.width(), shift.height());
+        mImgMatrix = getScaledImageMatrix(0.1);
     } else {
         mImgMatrix.translate((float)(getMainGeometry().width() - imgSize.width()) * 0.5f,
                              (float)(getMainGeometry().height() - imgSize.height()) * 0.5f);

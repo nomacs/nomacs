@@ -733,11 +733,6 @@ void DkBaseViewPort::updateImageMatrix()
     }
 }
 
-QTransform DkBaseViewPort::getScaledImageMatrix() const
-{
-    return getScaledImageMatrix(size());
-}
-
 QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, qreal paddingRatio)
 {
     Q_ASSERT(paddingRatio >= 0 && paddingRatio < 1);
@@ -755,9 +750,9 @@ QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, q
     return QTransform().translate(offset.x(), offset.y()).scale(s, s);
 }
 
-QTransform DkBaseViewPort::getScaledImageMatrix(const QSize &size) const
+QTransform DkBaseViewPort::getScaledImageMatrix(qreal paddingRatio) const
 {
-    return scaleKeepAspectRatioAndCenter(mImgRect.size(), size);
+    return scaleKeepAspectRatioAndCenter(mImgRect.size(), size(), paddingRatio);
 }
 
 void DkBaseViewPort::controlImagePosition(float lb, float ub)
