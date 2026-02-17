@@ -603,42 +603,13 @@ void DkViewPort::repeatZoom()
 
 void DkViewPort::updateImageMatrix()
 {
-    if (mImgStorage.isEmpty())
-        return;
+    const bool updateWM = qAbs(mWorldMatrix.m11() - 1.0) > 1e-4;
+    DkBaseViewPort::updateImageMatrix();
 
-    QRectF oldImgRect = mImgViewRect;
-    QTransform oldImgMatrix = mImgMatrix;
-
-    mImgMatrix.reset();
-
-    // getImageSize() is in logical pixels; it will change if dpr changes but image remains the same!
-    QSizeF imgSize = getImageSize();
-    mImgRect = QRectF(QPointF(), imgSize);
-
-    // if the image is smaller or zoom is active: paint the image as is
-    if (!mViewportRect.contains(mImgRect.toRect()))
-        mImgMatrix = getScaledImageMatrix();
-    else {
-        mImgMatrix.translate((float)(getMainGeometry().width() - imgSize.width()) * 0.5f,
-                             (float)(getMainGeometry().height() - imgSize.height()) * 0.5f);
-        mImgMatrix.scale(1.0f, 1.0f);
-    }
-
-    mImgViewRect = mImgMatrix.mapRect(mImgRect);
-
-    // update world matrix?
-    // mWorldMatrix.m11() != 1
-    if (qAbs(mWorldMatrix.m11() - 1.0) > 1e-4) {
-        qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
-        qreal dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
-        qreal dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
-
-        mWorldMatrix.scale(scaleFactor, scaleFactor);
-        mWorldMatrix.translate(dx, dy);
-    }
-    // NOTE: this is not the same as resetView!
-    else if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_fit)
+    if (!updateWM && DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_fit) {
+        // NOTE: this is not the same as resetView!
         zoomToFit();
+    }
 }
 
 void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMatrix, QPointF canvasSize)
@@ -2406,44 +2377,6 @@ void DkViewPortFrameless::controlImagePosition(float, float)
 
 void DkViewPortFrameless::centerImage()
 {
-}
-
-void DkViewPortFrameless::updateImageMatrix()
-{
-    if (mImgStorage.isEmpty())
-        return;
-
-    QRectF oldImgRect = mImgViewRect;
-    QTransform oldImgMatrix = mImgMatrix;
-
-    mImgMatrix.reset();
-
-    QSizeF imgSize = getImageSize();
-    mImgRect = QRectF(QPoint(), imgSize);
-
-    // if the image is smaller or zoom is active: paint the image as is
-    if (!mViewportRect.contains(mImgRect.toRect())) {
-        mImgMatrix = getScaledImageMatrix(0.1);
-    } else {
-        mImgMatrix.translate((float)(getMainGeometry().width() - imgSize.width()) * 0.5f,
-                             (float)(getMainGeometry().height() - imgSize.height()) * 0.5f);
-        mImgMatrix.scale(1.0f, 1.0f);
-    }
-
-    mImgViewRect = mImgMatrix.mapRect(mImgRect);
-
-    // update world matrix
-    if (mWorldMatrix.m11() != 1) {
-        qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
-        qreal dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
-        qreal dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
-
-        mWorldMatrix.scale(scaleFactor, scaleFactor);
-        mWorldMatrix.translate(dx, dy);
-    } // NOTE: this is not the same as resetView!
-    else if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_fit) {
-        zoomToFit();
-    }
 }
 
 // DkViewPortContrast --------------------------------------------------------------------
