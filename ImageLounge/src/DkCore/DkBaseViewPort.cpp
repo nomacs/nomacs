@@ -702,34 +702,37 @@ QPointF DkBaseViewPort::mapToImagePixel(const QPointF &p)
 
 void DkBaseViewPort::updateImageMatrix()
 {
-    if (mImgStorage.isEmpty())
+    if (mImgStorage.isEmpty()) {
         return;
+    }
 
-    QRectF oldImgRect = mImgViewRect;
-    QTransform oldImgMatrix = mImgMatrix;
+    const QRectF oldImgRect = mImgViewRect;
+    const QTransform oldImgMatrix = mImgMatrix;
 
     mImgMatrix.reset();
 
-    QSizeF imgSize = getImageSize();
+    // getImageSize() is in logical pixels; it will change if dpr changes but image remains the same!
+    const QSizeF imgSize = getImageSize();
+    mImgRect = QRectF(QPointF(), imgSize);
 
     // if the image is smaller or zoom is active: paint the image as is
-    if (!mViewportRect.contains(mImgRect))
-        mImgMatrix = getScaledImageMatrix();
-    else {
-        mImgMatrix.translate((float)(width() - imgSize.width()) * 0.5f, (float)(height() - imgSize.height()) * 0.5f);
-        mImgMatrix.scale(1.0f, 1.0f);
+    if (!mViewportRect.contains(mImgRect.toRect())) {
+        mImgMatrix = scaleKeepAspectRatioAndCenter(mImgRect.size(), size(), imageMatrixPaddingRatio());
+    } else {
+        const QSizeF offset = (size() - imgSize) / 2;
+        mImgMatrix.translate(offset.width(), offset.height());
     }
 
     mImgViewRect = mImgMatrix.mapRect(mImgRect);
 
-    // update world matrix
-    if (mWorldMatrix.m11() != 1) {
-        double scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
-        double dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
-        double dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
+    // update world matrix?
+    // mWorldMatrix.m11() != 1
+    if (qAbs(mWorldMatrix.m11() - 1.0) > 1e-4) {
+        const qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
+        const QPointF offset = oldImgRect.topLeft() / scaleFactor - mImgViewRect.topLeft();
 
         mWorldMatrix.scale(scaleFactor, scaleFactor);
-        mWorldMatrix.translate(dx, dy);
+        mWorldMatrix.translate(offset.x(), offset.y());
     }
 }
 
@@ -748,11 +751,6 @@ QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, q
 
     // Scale first, then recenter
     return QTransform().translate(offset.x(), offset.y()).scale(s, s);
-}
-
-QTransform DkBaseViewPort::getScaledImageMatrix(qreal paddingRatio) const
-{
-    return scaleKeepAspectRatioAndCenter(mImgRect.size(), size(), paddingRatio);
 }
 
 void DkBaseViewPort::controlImagePosition(float lb, float ub)
