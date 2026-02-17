@@ -1,6 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore)
 
-add_executable(core_tests DkUtils_test.cpp)
+add_executable(core_tests DkUtils_test.cpp DkBaseViewPort_test.cpp)
 
 target_link_libraries(
     core_tests
