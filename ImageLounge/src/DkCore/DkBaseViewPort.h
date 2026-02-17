@@ -276,7 +276,7 @@ protected:
     virtual void eraseBackground(QPainter &painter) const;
 
     virtual void updateImageMatrix();
-    virtual QTransform getScaledImageMatrix(qreal paddingRatio = 0) const;
+    [[nodiscard]] QTransform getScaledImageMatrix(qreal paddingRatio = 0) const;
     virtual void controlImagePosition(float lb = -1, float ub = -1);
     virtual void centerImage();
     virtual void changeCursor();
@@ -288,5 +288,5 @@ protected:
 // to coordinates in r2 (`QRectF(QPointF(), tgt)`)
 // when r1 is scaled to maximum inside r2 while keeping aspect ratio
 // and the scaled rectangle is centered in r2.
-QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, qreal paddingRatio = 0);
+[[nodiscard]] QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, qreal paddingRatio = 0);
 }
