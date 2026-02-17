@@ -740,9 +740,12 @@ QTransform DkBaseViewPort::getScaledImageMatrix() const
 
 QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, qreal paddingRatio)
 {
+    Q_ASSERT(paddingRatio >= 0 && paddingRatio < 1);
+
     qreal s = 1;
     if (!src.isNull()) {
-        s = std::min(tgt.width() / src.width(), tgt.height() / src.height());
+        const qreal r = 1 - paddingRatio;
+        s = std::min(tgt.width() * r / src.width(), tgt.height() * r / src.height());
     }
 
     const QPointF mapped = QPointF(src.width(), src.height()) * s;
