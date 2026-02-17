@@ -45,6 +45,7 @@
 #include <QTimer>
 #include <QtGlobal>
 
+#include <algorithm>
 #include <cfloat>
 
 namespace nmc
@@ -739,23 +740,16 @@ QTransform DkBaseViewPort::getScaledImageMatrix() const
 
 QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, qreal paddingRatio)
 {
-    // the image resizes as we zoom
-    float ratioImg = (float)src.width() / (float)src.height();
-    float ratioWin = (float)tgt.width() / (float)tgt.height();
+    qreal s = 1;
+    if (!src.isNull()) {
+        s = std::min(tgt.width() / src.width(), tgt.height() / src.height());
+    }
 
-    QTransform imgMatrix;
-    float s;
-    if (src.width() == 0 || src.height() == 0)
-        s = 1.0f;
-    else
-        s = (ratioImg > ratioWin) ? (float)tgt.width() / (float)src.width() : (float)tgt.height() / (float)src.height();
+    const QPointF mapped = QPointF(src.width(), src.height()) * s;
+    const QPointF offset = (QPointF(tgt.width(), tgt.height()) - mapped) / 2;
 
-    imgMatrix.scale(s, s);
-
-    QPointF mapped = imgMatrix.map(QPointF(src.width(), src.height()));
-    imgMatrix.translate((tgt.width() - mapped.x()) * 0.5f / s, (tgt.height() - mapped.y()) * 0.5f / s);
-
-    return imgMatrix;
+    // Scale first, then recenter
+    return QTransform().translate(offset.x(), offset.y()).scale(s, s);
 }
 
 QTransform DkBaseViewPort::getScaledImageMatrix(const QSize &size) const
