@@ -251,7 +251,7 @@ protected:
     virtual void eraseBackground(QPainter &painter) const;
 
     virtual void updateImageMatrix();
-    virtual void controlImagePosition(float lb = -1, float ub = -1);
+    virtual void controlImagePosition();
     virtual void centerImage();
     void changeCursor();
     void zoomToPoint(double factor, const QPointF &pos, QTransform &matrix) const;
