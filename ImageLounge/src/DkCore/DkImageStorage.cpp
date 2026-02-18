@@ -710,210 +710,331 @@ QImage DkImage::grayscaleImage(const QImage &src)
 #endif
 }
 
-bool DkImage::normImage(QImage &img)
+// 3-channel, 256-bin histogram with stats
+// if input has one channel (channel 2,3 are set to default values)
+template<typename T>
+struct Histogram {
+    std::array<std::array<uint32_t, 256>, 3> bins;
+    std::array<T, 3> min, max;
+
+    Histogram()
+    {
+        bins.fill({});
+        min.fill(std::numeric_limits<T>::max());
+        max.fill(std::numeric_limits<T>::min());
+    }
+
+    void add(const Histogram<T> &h)
+    {
+        for (unsigned i = 0; i < h.bins.size(); ++i) {
+            for (unsigned j = 0; j < h.bins[i].size(); ++j)
+                bins[i][j] += h.bins[i][j];
+        }
+        for (unsigned i = 0; i < h.bins.size(); ++i) {
+            min[i] = std::min(min[i], h.min[i]);
+        }
+        for (unsigned i = 0; i < h.bins.size(); ++i) {
+            max[i] = std::max(max[i], h.max[i]);
+        }
+    }
+
+    T globalMin() const
+    {
+        return std::min({min[0], min[1], min[2]});
+    }
+
+    T globalMax() const
+    {
+        return std::max({max[0], max[1], max[2]});
+    }
+
+    // return bin representing at least <fraction> of samples, counting from bin 0
+    // e.g. the quantile at 0.5 contains the median sample
+    int quantile(int channel, float fraction) const
+    {
+        Q_ASSERT(channel >= 0 && channel < 3);
+        Q_ASSERT(fraction >= 0.0f && fraction <= 1.0f);
+
+        const auto &bin = bins[channel];
+        int numBins = static_cast<int>(bin.size());
+
+        int totalSum = 0;
+        for (int i = 0; i < numBins; ++i) {
+            totalSum += bin[i];
+        }
+        int cutoff = totalSum * fraction;
+
+        int partialSum = 0;
+        for (int i = 0; i < numBins; ++i) {
+            partialSum += bin[i];
+            if (partialSum >= cutoff) {
+                return i;
+            }
+        }
+        Q_UNREACHABLE();
+        return numBins - 1;
+    }
+};
+
+#if WITH_OPENCV
+
+// channel 0 may be blue or red; the caller must swap values if needed
+template<typename Format>
+static auto histogram(cv::Mat &mat, const DkWorkRange &range)
 {
-    uchar maxVal = 0;
-    uchar minVal = 255;
+    using ChannelType = typename Format::ChannelType;
 
-    // number of used bytes per line
-    int bpl = (img.width() * img.depth() + 7) / 8;
-    int pad = img.bytesPerLine() - bpl;
-    uchar *mPtr = img.bits();
-    bool hasAlpha = img.hasAlphaChannel() || img.format() == QImage::Format_RGB32;
+    constexpr bool isFloat = std::is_floating_point_v<ChannelType>;
+    static_assert(isFloat || std::numeric_limits<ChannelType>::max() == Format::Scale);
 
-    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-        for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
-            if (hasAlpha && cIdx % 4 == 3)
-                continue;
+    Histogram<ChannelType> h;
 
-            if (*mPtr > maxVal)
-                maxVal = *mPtr;
-            if (*mPtr < minVal)
-                minVal = *mPtr;
+    forEachChannel<Format>(mat, range, [&](const ChannelType &value, int channel) {
+        h.min[channel] = std::min(value, h.min[channel]);
+        h.max[channel] = std::max(value, h.max[channel]);
+        if constexpr (!isFloat) { // float images often go beyond [0,1]
+            int bucket = value * 255 / Format::Scale;
+            Q_ASSERT(unsigned(channel) < h.bins.size());
+            Q_ASSERT(bucket >= 0 && unsigned(bucket) < h.bins[channel].size());
+            h.bins[channel][bucket]++;
         }
+    });
 
-        mPtr += pad;
+    if (!isFloat) {
+        return h;
     }
 
-    if ((minVal == 0 && maxVal == 255) || maxVal - minVal == 0)
-        return false;
+    // float types can exceed [0,1], normalize them before counting
+    // TODO: for HDR we need more buckets on the ends, with log scaling probably
+    auto mn = std::min({h.min[0], h.min[1], h.min[2]});
+    auto mx = std::max({h.max[0], h.max[1], h.max[2]});
 
-    uchar *ptr = img.bits();
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-        for (int cIdx = 0; cIdx < bpl; cIdx++, ptr++) {
-            if (hasAlpha && cIdx % 4 == 3)
-                continue;
-
-            *ptr = (uchar)qRound(255.0f * (*ptr - minVal) / (maxVal - minVal));
-        }
-
-        ptr += pad;
+    if (mx - mn == 0) {
+        return h;
     }
 
-    return true;
+    forEachChannel<Format>(mat, range, [&](const ChannelType &value, int channel) {
+        ChannelType norm = (value - mn) / (mx - mn);
+        int bucket = norm * 255 / Format::Scale;
+        Q_ASSERT(bucket >= 0 && bucket <= 255);
+        h.bins[channel][bucket]++;
+    });
+
+    return h;
 }
+
+template<typename Format>
+static auto histogramThreaded(cv::Mat &mat)
+{
+    using HistType = Histogram<typename Format::ChannelType>;
+
+    auto slices = DkWorkRange{0, mat.rows}.partition();
+
+    // instead of using locking, we can combine partial histograms from each worker
+    QFuture<HistType> f = QtConcurrent::mappedReduced<HistType>(
+        slices,
+        [&](const DkWorkRange &slice) {
+            return histogram<Format>(mat, slice);
+        },
+        [](HistType &r1, const HistType &r2) {
+            r1.add(r2); // combine histograms
+        },
+        HistType{},
+        QtConcurrent::UnorderedReduce);
+    return f.takeResult();
+}
+
+// normalize image with a per-channel min/max (computed from histKernel probably)
+template<typename Format>
+static void normalize(cv::Mat &mat,
+                      const DkWorkRange &range,
+                      const std::array<typename Format::ChannelType, 3> &min,
+                      const std::array<typename Format::ChannelType, 3> &max)
+{
+    using ChannelType = typename Format::ChannelType;
+
+    constexpr bool isFloat = std::is_floating_point_v<ChannelType>;
+
+    forEachChannel<Format>(mat, range, [&](ChannelType &value, int channel) {
+        ChannelType mn = min[channel];
+        ChannelType mx = max[channel];
+
+        Q_ASSERT(isFloat || (mn >= 0 && mx <= Format::Scale));
+        Q_ASSERT(mx - mn > 0); // div by zero
+
+        if (isFloat) {
+            ChannelType norm = (value - mn) / (mx - mn);
+            value = norm;
+        } else {
+            // (value - mn) could underflow, so use signed integer here
+            int norm = Format::Scale * (int(value) - mn) / (mx - mn);
+            // overflow is possible when clipping histogram
+            value = qBound(0, norm, Format::Scale);
+        }
+    });
+}
+
+// normalize to min/max of all channels (global normalization)
+struct DkNormalizeKernel : public DkKernelBase<DkNormalizeKernel> {
+    friend class DkKernelBase<DkNormalizeKernel>;
+
+public:
+    Q_DISABLE_COPY(DkNormalizeKernel)
+    DkNormalizeKernel() = delete;
+    ~DkNormalizeKernel() override = default;
+
+    DkNormalizeKernel(QImage &img)
+        : mImg(DkNativeImage::fromImage(img))
+    {
+    }
+
+protected:
+    DkNativeImage mImg;
+
+    template<typename Format>
+    static bool kernel(DkNormalizeKernel &self, const DkWorkRange &range)
+    {
+        Q_UNUSED(range)
+
+        // use histogram pass to get min/max rather than have another kernel
+        auto &mat = self.mImg.mat();
+        auto hist = histogramThreaded<Format>(mat);
+        auto mn = hist.globalMin();
+        auto mx = hist.globalMax();
+        Q_ASSERT(mx >= mn);
+
+        if (mx - mn == 0 || (mx - mn) == Format::Scale) {
+            qInfo() << "[Normalize] histogram is already normalized";
+            return false;
+        }
+
+        auto slices = range.partition();
+        QtConcurrent::blockingMap(slices, [&](const DkWorkRange &slice) {
+            normalize<Format>(mat, slice, {mn, mn, mn}, {mx, mx, mx});
+        });
+
+        return true;
+    }
+
+    static constexpr int kCaps = cap_gray | cap_rgb_invariant;
+    static constexpr FmtList kFormats = listForKernelCaps(kCaps);
+    static constexpr DispatchTable kTable = makeTable(kFormats);
+
+public:
+    bool run() override
+    {
+        bool serial = true; // we manage threads ourself
+        return dispatch(kTable, mImg.img().format(), *this, {0, mImg.img().height()}, serial);
+    }
+
+    QImage result() const override
+    {
+        return mImg.img();
+    }
+};
+#endif // WITH_OPENCV
+
+bool DkImage::normImage(QImage &src)
+{
+#if WITH_OPENCV
+    DkNormalizeKernel kernel{src};
+    if (kernel.run()) {
+        src = kernel.result();
+        return true;
+    }
+#else
+    Q_UNUSED(src)
+#endif
+    return false;
+}
+
+#if WITH_OPENCV
+
+class DkAutoAdjustKernel : public DkKernelBase<DkAutoAdjustKernel>
+{
+    friend class DkKernelBase<DkAutoAdjustKernel>;
+
+public:
+    Q_DISABLE_COPY(DkAutoAdjustKernel)
+    DkAutoAdjustKernel() = delete;
+    ~DkAutoAdjustKernel() override = default;
+
+    DkAutoAdjustKernel(QImage &img)
+        : mImg(DkNativeImage::fromImage(img))
+    {
+    }
+
+protected:
+    DkNativeImage mImg;
+
+    template<typename Format>
+    static bool kernel(DkAutoAdjustKernel &args, const DkWorkRange &range)
+    {
+        using ChannelType = typename Format::ChannelType;
+
+        auto &mat = args.mImg.mat();
+        auto hist = histogramThreaded<Format>(mat);
+
+        // clip histogram on both ends by 0.5%, for each channel (which causes a color shift)
+        // old nomacs did not cut on the low end for some reason
+        constexpr int numChannels = qMin(3, Format::Channels);
+        std::array<ChannelType, 3> min, max;
+        for (unsigned i = 0; i < numChannels; ++i) {
+            max[i] = hist.quantile(i, 0.995f) * Format::Scale / 255.0;
+            min[i] = hist.quantile(i, 0.005f) * Format::Scale / 255.0;
+        }
+
+        // check if all channels are normalized (cut has no effect)
+        int normalized = 0;
+        for (unsigned i = 0; i < numChannels; ++i) {
+            if ((min[i] >= max[i]) || (max[i] - min[i] == Format::Scale)) {
+                normalized++;
+            }
+        }
+
+        if (normalized == numChannels) {
+            qInfo() << "[AutoAdjust] cannot adjust, histogram is already clipping";
+            return false;
+        }
+
+        auto slices = range.partition();
+        QtConcurrent::blockingMap(slices, [&](const DkWorkRange &slice) {
+            normalize<Format>(mat, slice, min, max);
+        });
+
+        return true;
+    }
+
+    static constexpr int kCaps = cap_gray | cap_rgb_invariant;
+    static constexpr FmtList kFormats = listForKernelCaps(kCaps);
+    static constexpr DispatchTable kTable = makeTable(kFormats);
+
+public:
+    bool run() override
+    {
+        bool serial = true;
+        return dispatch(kTable, mImg.img().format(), *this, {0, mImg.img().height()}, serial);
+    }
+
+    QImage result() const override
+    {
+        return mImg.img();
+    }
+};
+#endif // WITH_OPENCV
 
 bool DkImage::autoAdjustImage(QImage &img)
 {
-    // return DkImage::unsharpMask(img, 30.0f, 1.5f);
-
-    DkTimer dt;
-    qDebug() << "[Auto Adjust] image format: " << img.format();
-
-    // for grayscale image - normalize is the same
-    if (img.format() <= QImage::Format_Indexed8) {
-        qDebug() << "[Auto Adjust] Grayscale - switching to Normalize: " << img.format();
-        return normImage(img);
-    } else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB32
-               && img.format() != QImage::Format_RGB888) {
-        qDebug() << "[Auto Adjust] Format not supported: " << img.format();
-        return false;
+#if WITH_OPENCV
+    DkAutoAdjustKernel kernel{img};
+    if (kernel.run()) {
+        img = kernel.result();
+        return true;
     }
-
-    int channels = (img.hasAlphaChannel() || img.format() == QImage::Format_RGB32) ? 4 : 3;
-
-    uchar maxR = 0, maxG = 0, maxB = 0;
-    uchar minR = 255, minG = 255, minB = 255;
-
-    // number of bytes per line used
-    int bpl = (img.width() * img.depth() + 7) / 8;
-    int pad = img.bytesPerLine() - bpl;
-
-    uchar *mPtr = img.bits();
-    uchar r, g, b;
-
-    int histR[256] = {0};
-    int histG[256] = {0};
-    int histB[256] = {0};
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-        for (int cIdx = 0; cIdx < bpl;) {
-            r = *mPtr;
-            mPtr++;
-            g = *mPtr;
-            mPtr++;
-            b = *mPtr;
-            mPtr++;
-            cIdx += 3;
-
-            if (r > maxR)
-                maxR = r;
-            if (r < minR)
-                minR = r;
-
-            if (g > maxG)
-                maxG = g;
-            if (g < minG)
-                minG = g;
-
-            if (b > maxB)
-                maxB = b;
-            if (b < minB)
-                minB = b;
-
-            histR[r]++;
-            histG[g]++;
-            histB[b]++;
-
-            // ?? strange but I would expect the alpha channel to be the first (big endian?)
-            if (channels == 4) {
-                mPtr++;
-                cIdx++;
-            }
-        }
-        mPtr += pad;
-    }
-
-    bool ignoreR = maxR - minR == 0 || maxR - minR == 255;
-    bool ignoreG = maxR - minR == 0 || maxG - minG == 255;
-    bool ignoreB = maxR - minR == 0 || maxB - minB == 255;
-
-    uchar *ptr = img.bits();
-
-    if (ignoreR) {
-        maxR = findHistPeak(histR);
-        ignoreR = maxR - minR == 0 || maxR - minR == 255;
-    }
-    if (ignoreG) {
-        maxG = findHistPeak(histG);
-        ignoreG = maxG - minG == 0 || maxG - minG == 255;
-    }
-    if (ignoreB) {
-        maxB = findHistPeak(histB);
-        ignoreB = maxB - minB == 0 || maxB - minB == 255;
-    }
-
-    // qDebug() << "red max: " << maxR << " min: " << minR << " ignored: " << ignoreR;
-    // qDebug() << "green max: " << maxG << " min: " << minG << " ignored: " << ignoreG;
-    // qDebug() << "blue max: " << maxB << " min: " << minB << " ignored: " << ignoreB;
-    // qDebug() << "computed in: " << dt;
-
-    if (ignoreR && ignoreG && ignoreB) {
-        qDebug() << "[Auto Adjust] There is no need to adjust the image";
-        return false;
-    }
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-        for (int cIdx = 0; cIdx < bpl;) {
-            // don't check values - speed (but you see under-/overflows anyway)
-            if (!ignoreR && *ptr < maxR)
-                *ptr = (uchar)qRound(255.0f * ((float)*ptr - minR) / (maxR - minR));
-            else if (!ignoreR)
-                *ptr = 255;
-
-            ptr++;
-            cIdx++;
-
-            if (!ignoreG && *ptr < maxG)
-                *ptr = (uchar)qRound(255.0f * ((float)*ptr - minG) / (maxG - minG));
-            else if (!ignoreG)
-                *ptr = 255;
-
-            ptr++;
-            cIdx++;
-
-            if (!ignoreB && *ptr < maxB)
-                *ptr = (uchar)qRound(255.0f * ((float)*ptr - minB) / (maxB - minB));
-            else if (!ignoreB)
-                *ptr = 255;
-            ptr++;
-            cIdx++;
-
-            if (channels == 4) {
-                ptr++;
-                cIdx++;
-            }
-        }
-        ptr += pad;
-    }
-
-    qDebug() << "[Auto Adjust] image adjusted in: " << dt;
-
-    return true;
-}
-
-uchar DkImage::findHistPeak(const int *hist, float quantile)
-{
-    int histArea = 0;
-
-    for (int idx = 0; idx < 256; idx++)
-        histArea += hist[idx];
-
-    int sumBins = 0;
-
-    for (int idx = 255; idx >= 0; idx--) {
-        sumBins += hist[idx];
-
-        if (sumBins / (float)histArea > quantile) {
-            qDebug() << "max bin: " << idx;
-            return (uchar)idx;
-        }
-    }
-
-    qDebug() << "no max bin found... sum: " << sumBins;
-
-    return 255;
+#else
+    Q_UNUSED(img)
+#endif
+    return false;
 }
 
 QPixmap DkImage::makeSquare(const QPixmap &pm)
