@@ -223,6 +223,9 @@ protected:
     void updateImageMatrix() override;
     void showZoom();
     void getPixelInfo(const QPoint &pos);
+
+private:
+    [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
 };
 
 class DllCoreExport DkViewPortFrameless : public DkViewPort
@@ -232,8 +235,6 @@ class DllCoreExport DkViewPortFrameless : public DkViewPort
 public:
     explicit DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPortFrameless() override;
-
-    void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false) override;
 
 public slots:
     void resetView() override;
@@ -265,6 +266,7 @@ private:
     {
         return 0.1;
     }
+    [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
 };
 
 class DllCoreExport DkViewPortContrast : public DkViewPort

@@ -259,12 +259,18 @@ protected:
     void changeCursor();
     void zoomToPoint(double factor, const QPointF &pos, QTransform &matrix) const;
 
+    struct ZoomPos {
+        QPointF pos;
+        bool recenter = false;
+    };
+
 private:
     [[nodiscard]] virtual qreal imageMatrixPaddingRatio() const
     {
         return 0;
     }
     void zoomLeveled(double factor = 0.5, const QPointF &center = QPointF(-1, -1));
+    [[nodiscard]] virtual ZoomPos calcZoomCenter(const QPointF &center, double factor) const;
 
     bool gestureEvent(QGestureEvent *event);
 

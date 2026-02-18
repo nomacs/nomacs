@@ -196,14 +196,16 @@ void DkBaseViewPort::zoomLeveled(double factor, const QPointF &center)
 
 void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
 {
-    if (mImgStorage.isEmpty())
+    if (mImgStorage.isEmpty()) {
         return;
+    }
 
     // limit zoom out ---
     if (mWorldMatrix.m11() * factor < mMinZoom && factor < 1) {
         // clamp to minimum, if we are close do nothing to prevent updates
-        if (qFuzzyCompare(mWorldMatrix.m11(), mMinZoom))
+        if (qFuzzyCompare(mWorldMatrix.m11(), mMinZoom)) {
             return;
+        }
 
         factor = mMinZoom / mWorldMatrix.m11();
     }
@@ -223,21 +225,30 @@ void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
     }
 
     // limit zoom in ---
-    if (mWorldMatrix.m11() * mImgMatrix.m11() > mMaxZoom && factor > 1)
+    if (mWorldMatrix.m11() * mImgMatrix.m11() > mMaxZoom && factor > 1) {
         return;
+    }
 
-    QPointF pos = center;
+    const ZoomPos pos = calcZoomCenter(center, factor);
 
-    // if no center assigned: zoom in at the image center
-    if (pos.x() == -1 || pos.y() == -1)
-        pos = mImgViewRect.center();
-
-    zoomToPoint(factor, pos, mWorldMatrix);
+    zoomToPoint(factor, pos.pos, mWorldMatrix);
 
     controlImagePosition();
+    if (pos.recenter) {
+        centerImage();
+    }
     changeCursor();
 
     update();
+}
+
+DkBaseViewPort::ZoomPos DkBaseViewPort::calcZoomCenter(const QPointF &center, double /* unused */) const
+{
+    // if no center assigned: zoom in at the image center
+    if (center.x() == -1 || center.y() == -1) {
+        return {mImgViewRect.center()};
+    }
+    return {center};
 }
 
 void DkBaseViewPort::zoomToPoint(double factor, const QPointF &pos, QTransform &matrix) const

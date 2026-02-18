@@ -444,89 +444,42 @@ void DkViewPort::setImage(QImage newImg)
 
 void DkViewPort::zoom(double factor, const QPointF &center, bool force)
 {
-    if (mImgStorage.isEmpty() || mBlockZooming)
-        return;
-
-    // factor/=5;//-0.1 <-> 0.1
-    // factor+=1;//0.9 <-> 1.1
-
-    // limit zoom out ---
-    if (mWorldMatrix.m11() * factor < mMinZoom && factor < 1)
-        return;
-
-    // reset view & block if we pass the 'image fit to screen' on zoom out
-    if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11() * factor < 1 && !force) {
-        mBlockZooming = true;
-        mZoomTimer->start(500);
-        resetView();
+    if (mBlockZooming) {
         return;
     }
 
-    // reset view if we pass the 'image fit to screen' on zoom in
-    if (mWorldMatrix.m11() < 1 && mWorldMatrix.m11() * factor > 1 && !force) {
-        resetView();
-        return;
-    }
+    DkBaseViewPort::zoom(factor, center, force);
 
-    // TODO: the reset in mWorldMatrix introduces wrong pans
-    //// reset view & block if we pass the '100%' on zoom out
-    // if (mWorldMatrix.m11()*mImgMatrix.m11()-FLT_EPSILON > 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor < 1) {
-    //
-    //	mBlockZooming = true;
-    //	mZoomTimer->start(500);
-    //	mWorldMatrix.reset();
-    //	factor = 1.0f / (float)mImgMatrix.m11();
-    // }
-
-    //// reset view if we pass the '100%' on zoom in
-    // if (mWorldMatrix.m11()*mImgMatrix.m11()+FLT_EPSILON < 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor > 1) {
-
-    //	mBlockZooming = true;
-    //	mZoomTimer->start(500);
-    //	mWorldMatrix.reset();
-    //	factor = 1.0f / (float)mImgMatrix.m11();
-    //}
-
-    // limit zoom in ---
-    if (mWorldMatrix.m11() * mImgMatrix.m11() > mMaxZoom && factor > 1)
-        return;
-
-    bool blackBorder = false;
-
-    QPointF pos = center;
-
-    // if no center assigned: zoom in at the image center
-    if (pos.x() == -1 || pos.y() == -1)
-        pos = mImgViewRect.center();
-    else {
-        // if black border - do not zoom to the mouse coordinate
-        if (mImgViewRect.width() * (mWorldMatrix.m11() * factor) < width()) {
-            pos.setX(mImgViewRect.center().x());
-            blackBorder = true;
-        }
-        if ((mImgViewRect.height() * mWorldMatrix.m11() * factor) < height()) {
-            pos.setY(mImgViewRect.center().y());
-            blackBorder = true;
-        }
-    }
-
-    zoomToPoint(factor, pos, mWorldMatrix);
-
-    controlImagePosition();
-    if (blackBorder && factor < 1)
-        centerImage(); // TODO: geht auch schöner
     showZoom();
-    changeCursor();
-
     mController->update(); // why do we need to update the mController manually?
-    update();
-
     tcpSynchronize();
 
     emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
     DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11() * mImgMatrix.m11() * 100))
                                                   + "%",
                                               DkStatusBar::status_zoom_info);
+}
+
+DkBaseViewPort::ZoomPos DkViewPort::calcZoomCenter(const QPointF &center, double factor) const
+{
+    // if no center assigned: zoom in at the image center
+    if (center.x() == -1 || center.y() == -1) {
+        return {mImgViewRect.center()};
+    }
+
+    QPointF pos = center;
+    bool recenter = false;
+    // if the image does not fill the view port - do not zoom to the mouse coordinate
+    if (mImgViewRect.width() * (mWorldMatrix.m11() * factor) < width()) {
+        pos.setX(mImgViewRect.center().x());
+        recenter |= factor < 1;
+    }
+    if ((mImgViewRect.height() * mWorldMatrix.m11() * factor) < height()) {
+        pos.setY(mImgViewRect.center().y());
+        recenter |= factor < 1;
+    }
+
+    return {pos, recenter};
 }
 
 void DkViewPort::zoomTo(double zoomLevel)
@@ -2120,51 +2073,28 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
 
 DkViewPortFrameless::~DkViewPortFrameless() = default;
 
-void DkViewPortFrameless::zoom(double factor, const QPointF &center, bool force)
+DkBaseViewPort::ZoomPos DkViewPortFrameless::calcZoomCenter(const QPointF &center, double /* unused */) const
 {
-    if (mImgStorage.isEmpty() || mBlockZooming)
-        return;
-
-    // limit zoom out ---
-    if (mWorldMatrix.m11() * factor <= mMinZoom && factor < 1)
-        return;
-
-    // reset view & block if we pass the 'image fit to screen' on zoom out
-    if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11() * factor < 1 && !force) {
-        mBlockZooming = true;
-        mZoomTimer->start(500);
-    }
-
-    // limit zoom in ---
-    if (mWorldMatrix.m11() * mImgMatrix.m11() > mMaxZoom && factor > 1)
-        return;
-
     QRectF viewRect = mWorldMatrix.mapRect(mImgViewRect);
     QPointF pos = center;
 
     // if no center assigned: zoom in at the image center
-    if (pos.x() == -1 || pos.y() == -1)
+    if (pos.x() == -1 || pos.y() == -1) {
         pos = viewRect.center();
+    }
 
-    if (pos.x() < viewRect.left())
+    if (pos.x() < viewRect.left()) {
         pos.setX(viewRect.left());
-    else if (pos.x() > viewRect.right())
+    } else if (pos.x() > viewRect.right()) {
         pos.setX(viewRect.right());
-    if (pos.y() < viewRect.top())
+    }
+    if (pos.y() < viewRect.top()) {
         pos.setY(viewRect.top());
-    else if (pos.y() > viewRect.bottom())
+    } else if (pos.y() > viewRect.bottom()) {
         pos.setY(viewRect.bottom());
+    }
 
-    zoomToPoint(factor, pos, mWorldMatrix);
-
-    controlImagePosition();
-    showZoom();
-    changeCursor();
-
-    update();
-
-    tcpSynchronize();
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
+    return {pos};
 }
 
 void DkViewPortFrameless::resetView()
