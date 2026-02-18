@@ -165,12 +165,9 @@ protected:
     QTimer *mHideCursorTimer;
 
     QPointF mPosGrab;
-    double mMinZoom = 0.01;
-    double mMaxZoom = 100;
 
     bool mForceFastRendering = false;
     bool mBlockZooming = false;
-    QTimer *mZoomTimer;
 
     // flags to draw() call for multi-pass rendering
     enum RenderFlag {
@@ -287,6 +284,9 @@ private:
     QBrush mPattern;
     QPointF mPanControl; // controls how far we can pan outside an image
     QImage mBackBuffer;
+    QTimer *mZoomTimer;
+    double mMinZoom = 0.01;
+    double mMaxZoom = 100;
 };
 
 // scaleKeepAspectRatioAndCenter creates a transformation that
