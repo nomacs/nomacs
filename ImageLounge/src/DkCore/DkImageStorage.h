@@ -124,7 +124,6 @@ public:
      */
     static QIcon loadIcon(const QString &filePath, const QColor &color = {});
     static QImage createThumb(const QImage &img, int maxSize = -1);
-    static uchar findHistPeak(const int *hist, float quantile = 0.005f);
     static QPixmap makeSquare(const QPixmap &pm);
     static QPixmap merge(const QVector<QImage> &imgs);
     static QImage cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor = QColor());
