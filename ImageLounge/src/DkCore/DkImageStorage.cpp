@@ -97,6 +97,39 @@ float DkImage::getBufferSizeFloat(const QSize &imgSize, const int depth)
     return (float)size / (1024.0f * 1024.0f);
 }
 
+static QImage convertToLinear(const QImage &src)
+{
+    QImage img = src;
+
+    QImage::Format format;
+    if (img.pixelFormat().colorModel() == QPixelFormat::Grayscale) {
+        // If we can't give a format to convertToColorSpace (Qt < 6.8),
+        // it keeps pixel format unchanged, leading to invalid colorspace conversion
+        format = QImage::Format_Grayscale16;
+    } else {
+        format = img.depth() <= 32 ? QImage::Format_RGBA64 : QImage::Format_RGBA32FPx4;
+    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+    img.convertTo(format);
+    img.convertToColorSpace(QColorSpace::SRgbLinear);
+#else
+    img.convertToColorSpace(QColorSpace::SRgbLinear, format);
+#endif
+    return img;
+}
+
+static QImage convertToColorSpace(const QImage &src, QImage::Format dstFormat, const QColorSpace &dstColorSpace)
+{
+    QImage img = src;
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+    img.convertToColorSpace(dstColorSpace);
+    img.convertTo(dstFormat);
+#else
+    img.convertToColorSpace(dstColorSpace, dstFormat);
+#endif
+    return img;
+}
+
 /**
  * This function resizes an image according to the interpolation method specified.
  * @param src the image to resize
@@ -124,82 +157,54 @@ QImage DkImage::resizeImage(const QImage &src,
         return QImage();
     }
 
-    Qt::TransformationMode iplQt = Qt::FastTransformation;
-    switch (interpolation) {
-    case ipl_nearest:
-    case ipl_area:
-        iplQt = Qt::FastTransformation;
-        break;
-    case ipl_linear:
-    case ipl_cubic:
-    case ipl_lanczos:
-        iplQt = Qt::SmoothTransformation;
-        break;
-    }
-#ifdef WITH_OPENCV
+    // FIXME: enlarging large images can easily overrun system memory
 
-    int ipl = CV_INTER_CUBIC;
-    switch (interpolation) {
-    case ipl_nearest:
-        ipl = CV_INTER_NN;
-        break;
-    case ipl_area:
-        ipl = CV_INTER_AREA;
-        break;
-    case ipl_linear:
-        ipl = CV_INTER_LINEAR;
-        break;
-    case ipl_cubic:
-        ipl = CV_INTER_CUBIC;
-        break;
-    case ipl_lanczos:
-        ipl = CV_INTER_LANCZOS4;
-        break;
+    if (correctGamma && !src.colorSpace().isValid()) {
+        correctGamma = false;
+        qWarning() << "[resizeImage] gamma correction disabled, source has no valid colorspace";
     }
 
     try {
-        QImage qImg;
-        cv::Mat resizeImage = DkImage::qImage2Mat(src);
+        QImage inImg = correctGamma ? convertToLinear(src) : src;
 
-        if (correctGamma) {
-            resizeImage.convertTo(resizeImage, CV_16U, USHRT_MAX / 255.0f);
-            DkImage::gammaToLinear(resizeImage);
+#if WITH_OPENCV
+        int ipl = CV_INTER_CUBIC;
+        switch (interpolation) {
+        case ipl_nearest:
+            ipl = CV_INTER_NN;
+            break;
+        case ipl_area:
+            ipl = CV_INTER_AREA;
+            break;
+        case ipl_linear:
+            ipl = CV_INTER_LINEAR;
+            break;
+        case ipl_cubic:
+            ipl = CV_INTER_CUBIC;
+            break;
+        case ipl_lanczos:
+            ipl = CV_INTER_LANCZOS4;
+            break;
         }
 
-        // is the image convertible?
-        if (resizeImage.empty()) {
-            qImg = src.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
-        } else {
-            cv::Mat tmp;
-            cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
-            resizeImage = tmp;
-
-            if (correctGamma) {
-                DkImage::linearToGamma(resizeImage);
-                resizeImage.convertTo(resizeImage, CV_8U, 255.0f / USHRT_MAX);
-            }
-
-            qImg = DkImage::mat2QImage(resizeImage, src);
-        }
-
-        return qImg;
-
-    } catch (...) {
-        return QImage();
-    }
-
+        auto input = DkConstNativeImage::fromImage(inImg);
+        auto output = input.allocateLike(nSize);
+        cv::resize(input.mat(), output.mat(), cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
+        QImage outImg = output.img();
 #else
-    QImage qImg = src.copy();
-
-    if (correctGamma)
-        DkImage::gammaToLinear(qImg);
-
-    qImg = qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
-
-    if (correctGamma)
-        DkImage::linearToGamma(qImg);
-    return qImg;
+        auto ipl = interpolation == ipl_nearest ? Qt::FastTransformation : Qt::SmoothTransformation;
+        QImage outImg = inImg.scaled(nSize, Qt::IgnoreAspectRatio, ipl);
 #endif
+        if (correctGamma) {
+            outImg = convertToColorSpace(outImg, src.format(), src.colorSpace());
+        } else {
+            outImg.convertTo(src.format());
+        }
+        return outImg;
+    } catch (...) {
+        qWarning() << "[resizeImage] resize failed";
+        return src;
+    }
 }
 
 // return true if all values in a channel equal value
@@ -556,79 +561,20 @@ QImage DkImage::grayscaleImage(const QImage &img)
     return imgR;
 }
 
-template<typename numFmt>
-QVector<numFmt> DkImage::getLinear2GammaTable(int maxVal)
 {
-    QVector<numFmt> gammaTable;
-    double a = 0.055;
+    }
 
-    for (int idx = 0; idx <= maxVal; idx++) {
-        double i = idx / (double)maxVal;
-        if (i <= 0.0031308) {
-            gammaTable.append((numFmt)(qRound(i * 12.92 * (double)maxVal)));
+
+
         } else {
-            gammaTable.append((numFmt)(qRound(((1 + a) * pow(i, 1 / 2.4) - a) * (double)maxVal)));
         }
     }
 
-    return gammaTable;
-}
-
-template<typename numFmt>
-QVector<numFmt> DkImage::getGamma2LinearTable(int maxVal)
-{
-    // the formula should be:
-    // i = px/255
-    // i <= 0.04045 -> i/12.92
-    // i > 0.04045 -> (i+0.055)/(1+0.055)^2.4
-    QVector<numFmt> gammaTable;
-    double a = 0.055;
-
-    for (int idx = 0; idx <= maxVal; idx++) {
-        double i = idx / (double)maxVal;
-        if (i <= 0.04045) {
-            gammaTable.append((numFmt)(qRound(i / 12.92 * maxVal)));
-        } else {
-            gammaTable.append(pow((i + a) / (1 + a), 2.4) * maxVal > 0 ? (numFmt)(pow((i + a) / (1 + a), 2.4) * maxVal)
-                                                                       : 0);
-        }
     }
 
-    return gammaTable;
-}
 
-void DkImage::gammaToLinear(QImage &img)
-{
-    QVector<uchar> gt = getGamma2LinearTable<uchar>(255);
-    mapGammaTable(img, gt);
-}
 
-void DkImage::linearToGamma(QImage &img)
-{
-    QVector<uchar> gt = getLinear2GammaTable<uchar>(255);
-    mapGammaTable(img, gt);
-}
 
-void DkImage::mapGammaTable(QImage &img, const QVector<uchar> &gammaTable)
-{
-    if (gammaTable.size() != 1 << 8) {
-        qCritical() << "invalid 8-bit gamma table";
-        return;
-    }
-
-    // number of bytes per line used
-    int bpl = (img.width() * img.depth() + 7) / 8;
-    int pad = img.bytesPerLine() - bpl;
-
-    // int channels = (img.hasAlphaChannel() || img.format() == QImage::Format_RGB32) ? 4 : 3;
-
-    uchar *mPtr = img.bits();
-
-    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-        for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
-            *mPtr = gammaTable[*mPtr];
-        }
-        mPtr += pad;
     }
 }
 
@@ -1809,36 +1755,6 @@ cv::Mat DkImage::qImage2Mat(const QImage &img)
 QImage DkImage::mat2QImage(cv::Mat mat, const QImage &srcImg)
 {
     return DkNativeImage::fromMat(mat, srcImg, DkNativeImage::map_bgr).img().copy();
-}
-
-void DkImage::linearToGamma(cv::Mat &img)
-{
-    auto gammaTable = getLinear2GammaTable<uint16_t>();
-    mapGammaTable(img, gammaTable);
-}
-
-void DkImage::gammaToLinear(cv::Mat &img)
-{
-    auto gammaTable = getGamma2LinearTable<uint16_t>();
-    mapGammaTable(img, gammaTable);
-}
-
-void DkImage::mapGammaTable(cv::Mat &img, const QVector<uint16_t> &gammaTable)
-{
-    if (gammaTable.size() != 1 << 16) {
-        qCritical() << "invalid 16-bit gamma table";
-        return;
-    }
-
-    for (int rIdx = 0; rIdx < img.rows; rIdx++) {
-        auto *mPtr = img.ptr<uint16_t>(rIdx);
-
-        for (int cIdx = 0; cIdx < img.cols; cIdx++) {
-            for (int channelIdx = 0; channelIdx < img.channels(); channelIdx++, mPtr++) {
-                *mPtr = gammaTable[*mPtr];
-            }
-        }
-    }
 }
 
 void DkImage::logPolar(const cv::Mat &src,
