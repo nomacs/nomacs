@@ -504,11 +504,9 @@ void DkViewPort::zoomToFit()
 
 void DkViewPort::resetView()
 {
-    mWorldMatrix.reset();
+    DkBaseViewPort::resetView();
     showZoom();
-    changeCursor();
 
-    update();
     controlImagePosition();
 
     emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
@@ -2095,12 +2093,6 @@ DkBaseViewPort::ZoomPos DkViewPortFrameless::calcZoomCenter(const QPointF &cente
     }
 
     return {pos};
-}
-
-void DkViewPortFrameless::resetView()
-{
-    // maybe we can delete this function...
-    DkViewPort::resetView();
 }
 
 void DkViewPortFrameless::paintEvent(QPaintEvent *event)

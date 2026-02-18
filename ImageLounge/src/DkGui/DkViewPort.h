@@ -237,7 +237,6 @@ public:
     ~DkViewPortFrameless() override;
 
 public slots:
-    void resetView() override;
     void moveView(const QPointF &delta) override;
 
 protected:
