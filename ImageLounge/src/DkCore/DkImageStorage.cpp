@@ -28,6 +28,7 @@
 #include "DkImageStorage.h"
 
 #include "DkActionManager.h"
+#include "DkImageProc.h"
 #include "DkMath.h"
 #include "DkNativeImage.h"
 #include "DkSettings.h"
@@ -40,6 +41,7 @@
 #include <QPixmap>
 #include <QPixmapCache>
 #include <QSvgRenderer>
+#include <QtConcurrentMap>
 #include <QtConcurrentRun>
 #include <qmath.h>
 
@@ -1049,32 +1051,164 @@ QImage DkImage::hueSaturation(const QImage &src, int hue, int sat, int brightnes
     return imgR;
 }
 
-QImage DkImage::exposure(const QImage &src, double exposure, double offset, double gamma)
-{
-    if (exposure == 0.0 && offset == 0.0 && gamma == 1.0)
-        return src;
-
-    QImage imgR;
 #ifdef WITH_OPENCV
+static cv::Mat exposureLut(double exposure)
+{
+    int maxVal = std::numeric_limits<unsigned short>::max();
+    cv::Mat lut(1, maxVal + 1, CV_16UC1);
 
-    cv::Mat rgbImg = DkImage::qImage2Mat(src);
-    rgbImg.convertTo(rgbImg, CV_16U, 256, offset * std::numeric_limits<unsigned short>::max());
+    double smooth = 0.5;
+    double cStops = std::log(exposure) / std::log(2.0);
+    double range = cStops * 2.0;
+    double linRange = std::pow(2.0, range);
+    double x1 = (maxVal + 1.0) / linRange - 1.0;
+    double y1 = x1 * exposure;
+    double y2 = maxVal * (1.0 + (1.0 - smooth) * (exposure - 1.0));
+    double sq3x = std::pow(x1 * x1 * maxVal, 1.0 / 3.0);
+    double B = (y2 - y1 + exposure * (3.0 * x1 - 3.0 * sq3x)) / (maxVal + 2.0 * x1 - 3.0 * sq3x);
+    double A = (exposure - B) * 3.0 * std::pow(x1 * x1, 1.0 / 3.0);
+    double CC = y2 - A * std::pow(maxVal, 1.0 / 3.0) - B * maxVal;
 
-    if (rgbImg.channels() > 3)
-        cv::cvtColor(rgbImg, rgbImg, CV_RGBA2BGR);
+    for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
+        auto *ptrLut = lut.ptr<unsigned short>(rIdx);
 
-    if (exposure != 0.0)
-        rgbImg = exposureMat(rgbImg, exposure);
+        for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
+            double val = cIdx;
+            double valE = 0.0;
 
-    if (gamma != 1.0)
-        rgbImg = gammaMat(rgbImg, gamma);
+            if (exposure < 1.0) {
+                valE = val * std::exp(exposure / 10.0); // /10 - make it slower -> we go down till -20
+            } else if (cIdx < x1) {
+                valE = val * exposure;
+            } else {
+                valE = A * std::pow(val, 1.0 / 3.0) + B * val + CC;
+            }
 
-    rgbImg.convertTo(rgbImg, CV_8U, 1.0 / 256.0);
-    imgR = DkImage::mat2QImage(rgbImg, src);
+            if (valE < 0)
+                ptrLut[cIdx] = 0;
+            else if (valE > maxVal)
+                ptrLut[cIdx] = (unsigned short)maxVal;
+            else
+                ptrLut[cIdx] = (unsigned short)qRound(valE);
+        }
+    }
+    return lut;
+}
 
+static cv::Mat gammaLut(double gamma)
+{
+    int maxVal = std::numeric_limits<unsigned short>::max();
+    cv::Mat lut(1, maxVal + 1, CV_16UC1);
+
+    for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
+        auto *ptrLut = lut.ptr<unsigned short>(rIdx);
+
+        for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
+            double val = std::pow((double)cIdx / maxVal, 1.0 / gamma) * maxVal;
+            ptrLut[cIdx] = (unsigned short)qRound(val);
+        }
+    }
+
+    return lut;
+}
+
+// kernel to apply a 16-bit LUT equally to all channels
+class DkLutKernel : DkKernelBase<DkLutKernel>
+{
+    friend class DkKernelBase<DkLutKernel>; // needs visibility to kernel()
+public:
+    Q_DISABLE_COPY(DkLutKernel)
+    DkLutKernel() = delete;
+    DkLutKernel(QImage &img, cv::Mat &lut, float offset)
+        : mImg(DkNativeImage::fromImage(img, DkNativeImage::map_anyrgb))
+        , mLut{lut}
+        , mOffset(offset)
+    {
+    }
+    ~DkLutKernel() override = default;
+
+protected:
+    DkNativeImage mImg; // input/output
+    const cv::Mat &mLut; // 16-bit lookup table
+    float mOffset; // offset added before lookup [-1,1]
+
+    template<typename Format>
+    static bool kernel(DkLutKernel &self, const DkWorkRange &range)
+    {
+        using ChannelType = typename Format::ChannelType;
+
+        constexpr int U16_Max = std::numeric_limits<uint16_t>::max();
+
+        auto &mat = self.mImg.mat();
+        const auto &lut = self.mLut;
+        const auto offset = self.mOffset;
+
+        Q_ASSERT(lut.rows == 1 && lut.cols >= U16_Max && lut.depth() == CV_16UC1);
+
+        const auto *lutPtr = lut.ptr<uint16_t>();
+
+        // scale factor from src value to 16-bit
+        constexpr int64_t srcScale = U16_Max / Format::Scale;
+
+        forEachChannel<Format>(mat, range, [&](ChannelType &channel, int /* unused */) {
+            int value = channel * srcScale; // int16 too small for U16_Max*2 (offset [-1,1])
+            value = value + (offset * U16_Max);
+            value = qBound(0, value, U16_Max); // TODO: clipping solution for HDR (tonemap to [0,1] before LUT?)
+            value = lutPtr[value];
+            if constexpr (std::is_same_v<ChannelType, float>) {
+                channel = value * (1.0f / srcScale); // fp math required (output [0.0,1.0])
+            } else {
+                channel = value / srcScale;
+            }
+        });
+
+        return true;
+    }
+
+    static constexpr FmtList formats = listForKernelCaps(cap_gray | cap_rgb_invariant);
+    static constexpr DispatchTable table = makeTable(formats);
+
+public:
+    bool run() override
+    {
+        return dispatch(table, mImg.img().format(), *this, {0, mImg.img().height()});
+    }
+
+    QImage result() const override
+    {
+        return mImg.img();
+    }
+};
 #endif // WITH_OPENCV
 
-    return imgR;
+bool DkImage::exposure(QImage &img, double exposure, double offset, double gamma)
+{
+    if (exposure == 0.0 && offset == 0.0 && gamma == 1.0) {
+        return false;
+    }
+
+#ifdef WITH_OPENCV
+    cv::Mat expTable = exposureLut(exposure);
+    cv::Mat gammaTable = gammaLut(gamma);
+    const auto *expPtr = expTable.ptr<unsigned short>();
+    const auto *gammaPtr = gammaTable.ptr<unsigned short>();
+
+    cv::Mat combined = expTable;
+    auto *ptr = combined.ptr<unsigned short>();
+    for (int i = 0; i < combined.cols; ++i) {
+        ptr[i] = gammaPtr[expPtr[i]];
+    }
+
+    DkLutKernel lutKernel{img, combined, (float)offset};
+    if (lutKernel.run()) {
+        img = lutKernel.result();
+        return true;
+    }
+#else
+    Q_UNUSED(img)
+#endif // WITH_OPENCV
+
+    return false;
 }
 
 QImage DkImage::bgColor(const QImage &src, const QColor &col)
@@ -1194,91 +1328,6 @@ int DkImage::intFromByteArray(const QByteArray &ba, int pos)
 
     return *val;
 }
-
-#ifdef WITH_OPENCV
-cv::Mat DkImage::exposureMat(const cv::Mat &src, double exposure)
-{
-    int maxVal = std::numeric_limits<unsigned short>::max();
-    cv::Mat lut(1, maxVal + 1, CV_16UC1);
-
-    double smooth = 0.5;
-    double cStops = std::log(exposure) / std::log(2.0);
-    double range = cStops * 2.0;
-    double linRange = std::pow(2.0, range);
-    double x1 = (maxVal + 1.0) / linRange - 1.0;
-    double y1 = x1 * exposure;
-    double y2 = maxVal * (1.0 + (1.0 - smooth) * (exposure - 1.0));
-    double sq3x = std::pow(x1 * x1 * maxVal, 1.0 / 3.0);
-    double B = (y2 - y1 + exposure * (3.0 * x1 - 3.0 * sq3x)) / (maxVal + 2.0 * x1 - 3.0 * sq3x);
-    double A = (exposure - B) * 3.0 * std::pow(x1 * x1, 1.0 / 3.0);
-    double CC = y2 - A * std::pow(maxVal, 1.0 / 3.0) - B * maxVal;
-
-    for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
-        auto *ptrLut = lut.ptr<unsigned short>(rIdx);
-
-        for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
-            double val = cIdx;
-            double valE = 0.0;
-
-            if (exposure < 1.0) {
-                valE = val * std::exp(exposure / 10.0); // /10 - make it slower -> we go down till -20
-            } else if (cIdx < x1) {
-                valE = val * exposure;
-            } else {
-                valE = A * std::pow(val, 1.0 / 3.0) + B * val + CC;
-            }
-
-            if (valE < 0)
-                ptrLut[cIdx] = 0;
-            else if (valE > maxVal)
-                ptrLut[cIdx] = (unsigned short)maxVal;
-            else
-                ptrLut[cIdx] = (unsigned short)qRound(valE);
-        }
-    }
-
-    return applyLUT(src, lut);
-}
-
-cv::Mat DkImage::gammaMat(const cv::Mat &src, double gamma)
-{
-    int maxVal = std::numeric_limits<unsigned short>::max();
-    cv::Mat lut(1, maxVal + 1, CV_16UC1);
-
-    for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
-        auto *ptrLut = lut.ptr<unsigned short>(rIdx);
-
-        for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
-            double val = std::pow((double)cIdx / maxVal, 1.0 / gamma) * maxVal;
-            ptrLut[cIdx] = (unsigned short)qRound(val);
-        }
-    }
-
-    return applyLUT(src, lut);
-}
-
-cv::Mat DkImage::applyLUT(const cv::Mat &src, const cv::Mat &lut)
-{
-    if (src.depth() != lut.depth()) {
-        qCritical() << "cannot apply LUT!";
-        return cv::Mat();
-    }
-
-    cv::Mat dst = src.clone();
-    const auto *lutPtr = lut.ptr<unsigned short>();
-
-    for (int rIdx = 0; rIdx < src.rows; rIdx++) {
-        auto *dPtr = dst.ptr<unsigned short>(rIdx);
-
-        for (int cIdx = 0; cIdx < src.cols * src.channels(); cIdx++) {
-            assert(dPtr[cIdx] >= 0 && dPtr[cIdx] < lut.cols);
-            dPtr[cIdx] = lutPtr[dPtr[cIdx]];
-        }
-    }
-
-    return dst;
-}
-#endif // WITH_OPENCV
 
 QColorSpace DkImage::targetColorSpace(const QWidget *widget)
 {

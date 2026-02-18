@@ -137,7 +137,7 @@ public:
     static QPixmap merge(const QVector<QImage> &imgs);
     static QImage cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor = QColor());
     static QImage hueSaturation(const QImage &src, int hue, int sat, int brightness);
-    static QImage exposure(const QImage &src, double exposure, double offset, double gamma);
+    static bool exposure(QImage &img, double exposure, double offset, double gamma);
     static QImage bgColor(const QImage &src, const QColor &col);
     static QByteArray extractImageFromDataStream(const QByteArray &ba,
                                                  const QByteArray &beginSignature = "‰PNG",
@@ -145,12 +145,6 @@ public:
                                                  bool debugOutput = false);
     static bool fixSamsungPanorama(QByteArray &ba);
     static int intFromByteArray(const QByteArray &ba, int pos);
-
-#ifdef WITH_OPENCV
-    static cv::Mat exposureMat(const cv::Mat &src, double exposure);
-    static cv::Mat gammaMat(const cv::Mat &src, double gmma);
-    static cv::Mat applyLUT(const cv::Mat &src, const cv::Mat &lut);
-#endif // WITH_OPENCV
 
     static QColorSpace targetColorSpace(const QWidget *widget);
     static QColorSpace loadIccProfile(const QString &filePath);

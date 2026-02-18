@@ -492,7 +492,11 @@ DkExposureManipulator::DkExposureManipulator(QAction *action)
 
 QImage DkExposureManipulator::apply(const QImage &img) const
 {
-    return DkImage::exposure(img, exposure(), offset(), gamma());
+    QImage tmp = img;
+    if (DkImage::exposure(tmp, exposure(), offset(), gamma())) {
+        return tmp;
+    }
+    return {};
 }
 
 QString DkExposureManipulator::errorMessage() const
