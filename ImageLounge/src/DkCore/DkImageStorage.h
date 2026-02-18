@@ -96,14 +96,6 @@ public:
                               double factor = 1.0,
                               int interpolation = ipl_cubic,
                               bool correctGamma = true);
-
-    template<typename numFmt>
-    static QVector<numFmt> getGamma2LinearTable(int maxVal = USHRT_MAX);
-    template<typename numFmt>
-    static QVector<numFmt> getLinear2GammaTable(int maxVal = USHRT_MAX);
-    static void gammaToLinear(QImage &img);
-    static void linearToGamma(QImage &img);
-    static void mapGammaTable(QImage &img, const QVector<uchar> &gammaTable);
     static bool normImage(QImage &img);
     static bool autoAdjustImage(QImage &img);
     static bool gaussianBlur(QImage &img, float sigma = 20.0f);
