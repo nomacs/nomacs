@@ -529,53 +529,185 @@ QImage rotateImageFast(const QImage &img, double angle)
     return rotateImage(img, angle);
 }
 
-QImage DkImage::grayscaleImage(const QImage &img)
+#if WITH_OPENCV
+
+// rgb->grayscale conversion in linear light
+class DkGrayScaleKernel : public DkKernelBase<DkGrayScaleKernel>
 {
-    QImage imgR;
+    friend class DkKernelBase<DkGrayScaleKernel>;
 
-#ifdef WITH_OPENCV
+public:
+    Q_DISABLE_COPY(DkGrayScaleKernel)
+    DkGrayScaleKernel() = delete;
+    ~DkGrayScaleKernel() override = default;
 
-    cv::Mat cvImg = DkImage::qImage2Mat(img);
-    cv::cvtColor(cvImg, cvImg, CV_RGB2Lab);
-
-    std::vector<cv::Mat> imgs;
-    cv::split(cvImg, imgs);
-
-    // get the luminance channel
-    if (!imgs.empty())
-        cvImg = imgs[0];
-
-    // convert it back for the painter
-    cv::cvtColor(cvImg, cvImg, CV_GRAY2RGB);
-
-    imgR = DkImage::mat2QImage(cvImg, img);
-#else
-
-    QVector<QRgb> table(256);
-    for (int i = 0; i < 256; ++i)
-        table[i] = qRgb(i, i, i);
-
-    imgR = img.convertToFormat(QImage::Format_Indexed8, table);
-#endif
-
-    return imgR;
-}
-
-{
+    DkGrayScaleKernel(const QImage &img)
+        : mSrc{DkConstNativeImage::fromImage(img)}
+    {
     }
 
+protected:
+    const DkConstNativeImage mSrc;
+    DkNativeImage mDst{};
+    QColorTransform mSrcToLinear{};
 
+    template<typename SrcFmt, typename DstFmt>
+    static bool kernel(DkGrayScaleKernel &self, const DkWorkRange &range)
+    {
+        using SrcType = typename SrcFmt::ChannelType;
+        using DstType = typename DstFmt::ChannelType;
 
-        } else {
+        const auto &src = self.mSrc.mat();
+        auto &dst = self.mDst.mat();
+        auto &srcToLinear = self.mSrcToLinear;
+
+        Q_ASSERT(SrcFmt::Channels > 1); // input rgb or argb
+        Q_ASSERT(DstFmt::Channels == 1 || DstFmt::Channels == 4); // output gray or argb
+
+        Q_ASSERT(SrcFmt::isCompatibleWith(src));
+        Q_ASSERT(DstFmt::isCompatibleWith(dst));
+        Q_ASSERT(src.size == dst.size);
+        Q_ASSERT(range.isWithin(0, src.rows));
+
+        const int srcChannelsPerRow = src.cols * SrcFmt::Channels;
+
+        // Qt color conversion is very slow per-pixel so load up a row and convert it all at once
+        // TODO: optimize this so buffer fits in L1 or L2 cache (no read/write to main memory!)
+        QImage scratchBuf(src.cols, 1, QImage::Format_RGBA32FPx4);
+        auto *scratchPtr = reinterpret_cast<float *>(scratchBuf.bits());
+
+        for (int row = range.begin; row < range.end; ++row) {
+            const auto *srcPtr = src.ptr<SrcType>(row);
+
+            // get normalized input values [0,1] for this entire row
+            float *normPtr = scratchPtr;
+            for (int col = 0; col < srcChannelsPerRow; col += SrcFmt::Channels, normPtr += 4) {
+                const SrcType *pixel = srcPtr + col;
+                auto [r, g, b, a] = SrcFmt::loadFloat(pixel);
+                normPtr[0] = r, normPtr[1] = g, normPtr[2] = b, normPtr[3] = a;
+            }
+
+            // transform source colorspace to srgb linear; might reallocate image (not in new versions)
+            // Qt prior to 6.4.2 steps on the alpha channel of float images, but that is barely in use anymore
+            scratchBuf.applyColorTransform(srcToLinear);
+            scratchPtr = reinterpret_cast<float *>(scratchBuf.bits());
+
+            const float *linPtr = scratchPtr;
+            auto *dstPtr = dst.ptr<DstType>(row);
+            for (int col = 0; col < src.cols; col++, linPtr += 4, dstPtr += DstFmt::Channels) {
+                float r = linPtr[0], g = linPtr[1], b = linPtr[2], a = linPtr[3];
+
+                // D65 srgb linear to XYZ. We only care about the luminance (Y) for grayscale conversion
+                // there is no normalization step as Y=1.0 is reference white
+                float y = 0.2126729f * r + 0.7151522f * g + 0.0721750f * b;
+
+                // Let's convert to srgb-ish gamma 2.2, close enough for this and OK without a color profile
+                // for float formats we are expected to output linear values (and colorspace)
+                float ys;
+                if constexpr (std::is_same_v<DstType, float>) {
+                    ys = y;
+                } else {
+                    y = qBound(0.0, y, 1.0f);
+                    ys = std::pow(y, 1.0f / 2.2f);
+                }
+
+                DstFmt::store(dstPtr, ys, ys, ys, a);
+            }
         }
+        return true;
     }
 
+    static constexpr FmtMap kMapOpaque = {{{ImgFmt::BGR888, ImgFmt::Gray16}, // output to wide Grayscale
+                                           {ImgFmt::RGB888, ImgFmt::Gray16},
+                                           {ImgFmt::ARGB32, ImgFmt::Gray16},
+                                           {ImgFmt::RGBA8888, ImgFmt::Gray16},
+                                           {ImgFmt::RGBA64, ImgFmt::Gray16},
+                                           {ImgFmt::RGBAFP32, ImgFmt::Gray16}}};
+
+    static constexpr FmtMap kMapAlpha = {{{ImgFmt::ARGB32, ImgFmt::RGBA64}, // output to wider RGBA type
+                                          {ImgFmt::RGBA8888, ImgFmt::RGBA64},
+                                          {ImgFmt::RGBA64, ImgFmt::RGBAFP32},
+                                          {ImgFmt::RGBAFP32, ImgFmt::RGBAFP32}}};
+
+    static constexpr DispatchTable kTableOpaque = makeTable(kMapOpaque);
+    static constexpr DispatchTable kTableAlpha = makeTable(kMapAlpha);
+
+public:
+    bool run() override
+    {
+        QColorSpace srcColorSpace = mSrc.img().colorSpace();
+        if (!srcColorSpace.isValid()) {
+            srcColorSpace = QColorSpace{QColorSpace::SRgb}; // FIXME: DkImage::defaultColorSpace(img)
+        }
+
+        mSrcToLinear = srcColorSpace.transformationToColorSpace(QColorSpace::SRgbLinear);
+
+        bool usesAlpha = DkImage::alphaChannelUsed(mSrc.img());
+
+        auto map = usesAlpha ? kMapAlpha : kMapOpaque;
+        auto table = usesAlpha ? kTableAlpha : kTableOpaque;
+
+        auto srcFormat = qtImageFormatToNative(mSrc.img().format());
+        auto dstFormat = findFormat(map, srcFormat);
+        if (dstFormat == ImgFmt::Invalid) {
+            return false;
+        }
+
+        auto qtFormat = nativeFormatToQtFormat(dstFormat);
+        QImage dst{mSrc.img().size(), qtFormat};
+
+        QColorSpace dstColorSpace;
+        if (usesAlpha) {
+            if (qtFormat == QImage::Format_RGBA32FPx4) {
+                dstColorSpace = QColorSpace{QColorSpace::Primaries::SRgb, QColorSpace::TransferFunction::Linear};
+                dstColorSpace.setDescription("sRGB Linear");
+            } else {
+                dstColorSpace = QColorSpace{QColorSpace::Primaries::SRgb, QColorSpace::TransferFunction::Gamma, 2.2f};
+                dstColorSpace.setDescription("sRGB Gamma 2.2");
+            }
+        } else {
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+            // Qt < 6.8 does not support gray colorspaces, best we can do is not assign one, which gives us ~sRGB
+            dstColorSpace = {};
+#else
+            dstColorSpace = QColorSpace{QPointF{0.3127, 0.3290}, QColorSpace::TransferFunction::Gamma, 2.2f};
+            dstColorSpace.setDescription("D65 Gamma 2.2 Grayscale");
+#endif
+        }
+        dst.setColorSpace(dstColorSpace);
+
+        mDst = DkNativeImage::fromImage(dst);
+
+        return dispatch(table, mSrc.img().format(), *this, {0, mSrc.img().height()});
     }
 
-
-
-
+    QImage result() const override
+    {
+        return mDst.img();
     }
+};
+
+#endif // WITH_OPENCV
+
+QImage DkImage::grayscaleImage(const QImage &src)
+{
+#if WITH_OPENCV
+    DkGrayScaleKernel kernel{src};
+    return kernel.run() ? kernel.result() : QImage{};
+#else
+    if (src.pixelFormat().colorModel() == QPixelFormat::ColorModel::Grayscale) {
+        return src;
+    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+    // Qt <6.8 does not support gray colorspaces.
+    return src.convertedTo(QImage::Format_Grayscale16);
+#else
+    // This works similarly but we can't preserve alpha channel
+    QColorSpace dstColorSpace{QPointF{0.3127, 0.3290}, QColorSpace::TransferFunction::Gamma, 2.2};
+    dstColorSpace.setDescription("D65 Gamma 2.2 Grayscale");
+    return src.convertedToColorSpace(dstColorSpace);
+#endif
+#endif
 }
 
 bool DkImage::normImage(QImage &img)
