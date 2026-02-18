@@ -2292,7 +2292,7 @@ void DkViewPortFrameless::moveView(const QPointF &delta)
     update();
 }
 
-void DkViewPortFrameless::controlImagePosition(float, float)
+void DkViewPortFrameless::controlImagePosition()
 {
     // dummy method
 }

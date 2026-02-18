@@ -250,7 +250,7 @@ protected:
     void draw(QPainter &painter, double opacity, int flags) override;
     void drawFrame(QPainter &painter);
     void eraseBackground(QPainter &painter) const override;
-    void controlImagePosition(float lb = -1, float ub = -1) override;
+    void controlImagePosition() override;
     void centerImage() override;
 
     // variables
