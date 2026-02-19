@@ -283,7 +283,7 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
         && dpy.transition != DkSettings::trans_appear //
         && dpy.animationDuration > 0.0 && //
         (mController->getPlayer()->isPlaying() //
-         || DkUtils::getMainWindow()->isFullScreen() //
+         || window()->isFullScreen() //
          || DkSettingsManager::param().display().alwaysAnimate)) {
         mAnimationParams = getRenderParams(devicePixelRatio(), mWorldMatrix, mImgViewRect);
         mAnimationBuffer = mImgStorage.downsampled(mAnimationParams.imageSize,
@@ -391,7 +391,7 @@ void DkViewPort::setImage(QImage newImg)
     // init fading
     if (isNewFile && wasImageLoaded && DkSettingsManager::param().display().animationDuration
         && DkSettingsManager::param().display().transition != DkSettingsManager::param().trans_appear
-        && (mController->getPlayer()->isPlaying() || DkUtils::getMainWindow()->isFullScreen()
+        && (mController->getPlayer()->isPlaying() || window()->isFullScreen()
             || DkSettingsManager::param().display().alwaysAnimate)) {
         mAnimationTimer->start();
         mAnimationTime.start();
@@ -578,7 +578,7 @@ void DkViewPort::fullView()
 void DkViewPort::showZoom()
 {
     // don't show zoom if we are in fullscreen mode
-    if (isFullScreen() || DkSettingsManager::param().app().hideAllPanels)
+    if (window()->isFullScreen() || DkSettingsManager::param().app().hideAllPanels)
         return;
 
     QString zoomStr = QString::asprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
@@ -2204,7 +2204,7 @@ void DkViewPortFrameless::resetView()
 
 void DkViewPortFrameless::paintEvent(QPaintEvent *event)
 {
-    if (!DkUtils::getMainWindow()->isFullScreen()) {
+    if (!window()->isFullScreen()) {
         QPainter painter(viewport());
         painter.setWorldTransform(mWorldMatrix);
         drawFrame(painter);
@@ -2256,7 +2256,7 @@ void DkViewPortFrameless::draw(QPainter &painter, double opacity, int flags)
 
 void DkViewPortFrameless::eraseBackground(QPainter &painter) const
 {
-    if (DkUtils::getMainWindow()->isFullScreen()) {
+    if (window()->isFullScreen()) {
         QColor col = QColor(0, 0, 0);
         col.setAlpha(150);
         painter.setWorldMatrixEnabled(false);

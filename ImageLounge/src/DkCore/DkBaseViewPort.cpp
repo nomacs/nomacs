@@ -270,7 +270,7 @@ void DkBaseViewPort::setImage(QImage newImg)
 
 void DkBaseViewPort::hideCursor()
 {
-    if (isFullScreen())
+    if (window()->isFullScreen())
         setCursor(Qt::BlankCursor);
 }
 
@@ -482,7 +482,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event)
                 unsetCursor();
         }
 
-        if (isFullScreen())
+        if (window()->isFullScreen())
             mHideCursorTimer->start(3000);
     }
 
@@ -672,7 +672,7 @@ void DkBaseViewPort::eraseBackground(QPainter &painter) const
 {
     QBrush bgBrush = backgroundBrush();
 
-    if (DkUtils::getMainWindow()->isFullScreen())
+    if (window()->isFullScreen())
         bgBrush = DkSettingsManager::param().slideShow().backgroundColor;
 
     if (bgBrush != Qt::NoBrush) {
