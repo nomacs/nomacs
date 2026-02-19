@@ -227,9 +227,7 @@ void DkCompressDialog::createLayout()
     newLabel->setAlignment(Qt::AlignHCenter);
 
     // shows the original image
-    mOrigView = new DkBaseViewPort(this);
-    mOrigView->setForceFastRendering(true);
-    mOrigView->setPanControl(QPointF(0.0f, 0.0f));
+    mOrigView = new DkBaseViewPort(true, this);
     connect(mOrigView, &DkBaseViewPort::imageUpdated, this, &DkCompressDialog::drawPreview);
 
     //// maybe we should report this:
