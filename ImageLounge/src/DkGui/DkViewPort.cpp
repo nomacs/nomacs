@@ -366,7 +366,7 @@ void DkViewPort::setImage(QImage newImg)
     if (wasImageLoaded ^ isImageLoaded)
         mController->imagePresenceChanged(isImageLoaded);
 
-    double oldZoom = mWorldMatrix.m11(); // *mImgMatrix.m11();
+    double oldZoom = zoomLevel();
 
     if (!(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect == mImgRect))
         mWorldMatrix.reset();
@@ -380,7 +380,7 @@ void DkViewPort::setImage(QImage newImg)
     }
 
     if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_keep) {
-        zoomToPoint(oldZoom, mImgViewRect.center().toPoint(), mWorldMatrix);
+        zoomToPoint(oldZoom / zoomLevel(), mImgViewRect.center().toPoint(), mWorldMatrix);
     }
 
     mController->getPlayer()->startTimer();
