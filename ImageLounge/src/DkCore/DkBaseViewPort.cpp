@@ -840,11 +840,6 @@ void DkBaseViewPort::changeCursor()
         unsetCursor();
 }
 
-void DkBaseViewPort::setBackgroundBrush(const QBrush &brush)
-{
-    QGraphicsView::setBackgroundBrush(brush);
-}
-
 void DkBaseViewPort::scrollHorizontally(int val)
 {
     moveView(QPointF(-val / mWorldMatrix.m11(), 0.0f));
@@ -854,12 +849,4 @@ void DkBaseViewPort::scrollVertically(int val)
 {
     moveView(QPointF(0.0f, -val / mWorldMatrix.m11()));
 }
-
-// Anna's first text:
-// gcfbxxxxxxxxxxxbxbbbcx
-// tggbeeeeeeeeeeecddddeebljlljl�
-//
-//
-// rr45�[, mgd     7re � 8n484welkmsclsdmvcdsm wr., bpodsa0][gb b c
-
 }

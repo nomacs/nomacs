@@ -123,7 +123,6 @@ signals:
 public slots:
     virtual void moveView(const QPointF &);
     virtual void fullView();
-    void setBackgroundBrush(const QBrush &brush);
 
     virtual void setImage(QImage newImg);
 
