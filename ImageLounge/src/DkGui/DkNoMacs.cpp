@@ -1056,14 +1056,9 @@ void DkNoMacs::showEditDock(bool show, bool saveSettings)
         mEditDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_edit_image));
         mEditDock->setDisplaySettings(&DkSettingsManager::param().app().showEditDock);
         addDockWidget(mEditDock->getDockLocationSettings(Qt::RightDockWidgetArea), mEditDock);
-
-        connect(getTabWidget(), &DkCentralWidget::imageUpdatedSignal, mEditDock, &DkEditDock::setImage);
     }
 
     mEditDock->setVisible(show, saveSettings);
-
-    if (getTabWidget()->getCurrentImage())
-        mEditDock->setImage(getTabWidget()->getCurrentImage());
 }
 
 void DkNoMacs::showHistoryDock(bool show, bool saveSettings)
