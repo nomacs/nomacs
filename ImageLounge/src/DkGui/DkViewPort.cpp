@@ -509,7 +509,7 @@ void DkViewPort::resetView()
 void DkViewPort::fullView()
 {
     QPointF p = mViewportRect.center();
-    zoom(1.0 / (mImgMatrix.m11() * mWorldMatrix.m11()), p.toPoint(), true);
+    zoom(1.0 / zoomLevel(), p.toPoint(), true);
 }
 
 void DkViewPort::showZoom()
@@ -518,7 +518,7 @@ void DkViewPort::showZoom()
     if (isFullScreen() || DkSettingsManager::param().app().hideAllPanels)
         return;
 
-    QString zoomStr = QString::asprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
+    QString zoomStr = QString::asprintf("%.1f%%", zoomLevel() * 100);
 
     if (!mController->getZoomWidget()->isVisible())
         mController->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
@@ -895,11 +895,10 @@ void DkViewPort::paintEvent(QPaintEvent *event)
 
         painter.setWorldTransform(mWorldMatrix);
 
+        const qreal zl = zoomLevel();
         // interpolate between 100% and max interpolate level
-        if (!mForceFastRendering && // force?
-            mImgMatrix.m11() * mWorldMatrix.m11() - DBL_EPSILON > 1.0 && // @100% ?
-            mImgMatrix.m11() * mWorldMatrix.m11()
-                <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) { // > max zoom level
+        if (!mForceFastRendering && zl - DBL_EPSILON > 1.0
+            && zl <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) { // > max zoom level
             painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
         }
 
@@ -2039,7 +2038,7 @@ void DkViewPort::cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool
 
 void DkViewPort::emitZoomSignal()
 {
-    qreal zoomPercentage = mWorldMatrix.m11() * mImgMatrix.m11() * 100;
+    qreal zoomPercentage = zoomLevel() * 100;
     emit zoomSignal(zoomPercentage);
     DkStatusBarManager::instance().setMessage(QString::number(qRound(zoomPercentage)) + "%",
                                               DkStatusBar::status_zoom_info);
