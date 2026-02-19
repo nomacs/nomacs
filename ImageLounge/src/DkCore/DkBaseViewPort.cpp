@@ -51,8 +51,10 @@
 namespace nmc
 {
 // DkBaseViewport --------------------------------------------------------------------
-DkBaseViewPort::DkBaseViewPort(QWidget *parent)
+DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent)
     : QGraphicsView(parent)
+    , mForceFastRendering{inDialog}
+    , mZeroPanControl{inDialog}
 {
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
@@ -60,8 +62,6 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent)
     setAttribute(Qt::WA_AcceptTouchEvents);
 
     mViewportRect = QRect(0, 0, width(), height());
-
-    mPanControl = QPointF(-1.0f, -1.0f);
 
     mAltMod = DkSettingsManager::param().global().altMod;
     mCtrlMod = DkSettingsManager::param().global().ctrlMod;
@@ -768,10 +768,7 @@ void DkBaseViewPort::controlImagePosition()
 {
     qreal lb;
     qreal ub;
-    if (mPanControl.x() != -1 && mPanControl.y() != -1) {
-        lb = mPanControl.x();
-        ub = mPanControl.y();
-    } else if (DkSettingsManager::instance().param().display().showScrollBars) {
+    if (mZeroPanControl || DkSettingsManager::param().display().showScrollBars) {
         // we must not pan further if scrollbars are visible
         lb = 0;
         ub = 0;

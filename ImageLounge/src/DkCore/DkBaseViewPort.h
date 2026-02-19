@@ -57,7 +57,7 @@ public:
         swipes_end
     };
 
-    explicit DkBaseViewPort(QWidget *parent = nullptr);
+    explicit DkBaseViewPort(bool inDialog, QWidget *parent = nullptr);
     ~DkBaseViewPort() override;
 
     void zoomConstraints(double minZoom = 0.01, double maxZoom = 100.0);
@@ -76,11 +76,6 @@ public:
     {
         updateImageMatrix();
         return 1.0f / (float)mImgMatrix.m11();
-    };
-
-    void setPanControl(QPointF panControl)
-    {
-        mPanControl = panControl;
     };
 
     // world to viewport/widget transform
@@ -281,11 +276,13 @@ private:
     void hideCursor();
 
     QBrush mPattern;
-    QPointF mPanControl; // controls how far we can pan outside an image
     QImage mBackBuffer;
     QTimer *mZoomTimer;
     double mMinZoom = 0.01;
     double mMaxZoom = 100;
+
+    // controls whether we cannot pan outside an image
+    bool mZeroPanControl = false;
 };
 
 // scaleKeepAspectRatioAndCenter creates a transformation that

@@ -71,7 +71,7 @@ namespace nmc
 {
 // DkViewPort --------------------------------------------------------------------
 DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
-    : DkBaseViewPort(parent)
+    : DkBaseViewPort(false, parent)
 {
     mRepeatZoomTimer = new QTimer(this);
     mAnimationTimer = new QTimer(this);

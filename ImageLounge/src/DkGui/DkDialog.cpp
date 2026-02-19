@@ -284,9 +284,7 @@ void DkTrainDialog::createLayout()
     mFeedbackLabel->setObjectName("DkDecentInfo");
 
     // shows the image if it could be loaded
-    mViewport = new DkBaseViewPort(this);
-    mViewport->setForceFastRendering(true);
-    mViewport->setPanControl(QPointF(0.0f, 0.0f));
+    mViewport = new DkBaseViewPort(true, this);
 
     // mButtons
     mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -894,9 +892,7 @@ void DkResizeDialog::createLayout()
     newLabel->setAlignment(Qt::AlignHCenter);
 
     // shows the original image
-    mOrigView = new DkBaseViewPort(this);
-    mOrigView->setForceFastRendering(true);
-    mOrigView->setPanControl(QPointF(0.0f, 0.0f));
+    mOrigView = new DkBaseViewPort(true, this);
     connect(mOrigView, &DkBaseViewPort::imageUpdated, this, &DkResizeDialog::drawPreview);
 
     //// maybe we should report this:
@@ -2536,9 +2532,7 @@ void DkExportTiffDialog::createLayout()
     controlLayout->setColumnStretch(5, 1);
 
     // shows the image if it could be loaded
-    mViewport = new DkBaseViewPort(this);
-    mViewport->setForceFastRendering(true);
-    mViewport->setPanControl(QPointF(0.0f, 0.0f));
+    mViewport = new DkBaseViewPort(true, this);
 
     // Buttons
     mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -2920,13 +2914,9 @@ void DkMosaicDialog::createLayout()
     controlLayout->setColumnStretch(5, 1);
 
     // shows the image if it could be loaded
-    mViewport = new DkBaseViewPort(this);
-    mViewport->setForceFastRendering(true);
-    mViewport->setPanControl(QPointF(0.0f, 0.0f));
+    mViewport = new DkBaseViewPort(true, this);
 
-    mPreview = new DkBaseViewPort(this);
-    mPreview->setForceFastRendering(true);
-    mPreview->setPanControl(QPointF(0.0f, 0.0f));
+    mPreview = new DkBaseViewPort(true, this);
     mPreview->hide();
 
     auto *viewports = new QWidget(this);
