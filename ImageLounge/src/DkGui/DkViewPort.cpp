@@ -520,10 +520,6 @@ void DkViewPort::fullView()
 {
     QPointF p = mViewportRect.center();
     zoom(1.0 / (mImgMatrix.m11() * mWorldMatrix.m11()), p.toPoint(), true);
-
-    emitZoomSignal();
-    changeCursor();
-    update();
 }
 
 void DkViewPort::showZoom()
