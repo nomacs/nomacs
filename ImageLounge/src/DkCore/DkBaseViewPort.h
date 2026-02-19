@@ -249,6 +249,7 @@ protected:
     virtual void centerImage();
     void changeCursor();
     void zoomToPoint(double factor, const QPointF &pos, QTransform &matrix) const;
+    [[nodiscard]] qreal zoomLevel() const;
 
     struct ZoomPos {
         QPointF pos;
