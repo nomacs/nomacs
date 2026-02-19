@@ -303,51 +303,6 @@ QImage DkImage::flipImage(const QImage &image, Qt::Orientations flags)
 #endif
 }
 
-QImage DkImage::rotateImage(const QImage &img, double angle)
-{
-    return rotateImageFast(img, angle);
-}
-
-QImage rotateImage(const QImage &img, double angle)
-{
-    // compute new image size
-    DkVector nSl((float)img.width(), (float)img.height());
-    DkVector nSr = nSl;
-    double angleRad = angle * DK_DEG2RAD;
-
-    // size left
-    nSl.rotate(angleRad);
-    nSl.abs();
-
-    // size right
-    nSr.swap();
-    nSr.rotate(angleRad);
-    nSr.abs();
-    nSr.swap();
-
-    DkVector ns = nSl.maxVec(nSr);
-    QSize newSize((int)ns.width, (int)ns.height);
-
-    // create image
-    QImage imgR(newSize, QImage::Format_RGBA8888);
-    imgR.setColorSpace(img.colorSpace());
-    imgR.fill(Qt::transparent);
-
-    // create transformation
-    QTransform trans;
-    trans.translate(imgR.width() / 2, imgR.height() / 2);
-    trans.rotate(angle);
-    trans.translate(-img.width() / 2, -img.height() / 2);
-
-    // render
-    QPainter p(&imgR);
-    p.setRenderHint(QPainter::SmoothPixmapTransform);
-    p.setTransform(trans);
-    p.drawImage(QPoint(), img);
-
-    return imgR;
-}
-
 template<typename T>
 QImage transposeImage(const QImage &imgIn)
 {
@@ -424,7 +379,7 @@ QImage rotateImageCVMat(const QImage &imgIn, cv::RotateFlags rot, int type)
 }
 #endif
 
-QImage rotateImageFast(const QImage &img, double angle)
+QImage DkImage::rotateImage(const QImage &img, double angle)
 {
     angle = std::fmod(angle, 360);
     if (angle < 0) {
@@ -526,7 +481,16 @@ QImage rotateImageFast(const QImage &img, double angle)
 #endif
     }
 
-    return rotateImage(img, angle);
+    // we need this or else we get RGBA image with gray colorspace (Qt bug??)
+    QImage tmp = img;
+    if (tmp.pixelFormat().colorModel() == QPixelFormat::Grayscale && tmp.colorSpace().isValid()) {
+        tmp.convertToColorSpace(QColorSpace::SRgb);
+    }
+
+    QTransform tx;
+    tx.rotate(angle);
+
+    return tmp.transformed(tx, Qt::SmoothTransformation);
 }
 
 #if WITH_OPENCV
