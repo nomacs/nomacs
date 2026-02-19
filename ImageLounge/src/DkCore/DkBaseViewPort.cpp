@@ -190,7 +190,7 @@ void DkBaseViewPort::zoomOut()
 
 void DkBaseViewPort::zoomLeveled(double factor, const QPointF &center)
 {
-    factor = DkZoomConfig::instance().nextFactor(mWorldMatrix.m11() * mImgMatrix.m11(), factor);
+    factor = DkZoomConfig::instance().nextFactor(zoomLevel(), factor);
     zoom(factor, center);
 }
 
@@ -225,7 +225,7 @@ void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
     }
 
     // limit zoom in ---
-    if (mWorldMatrix.m11() * mImgMatrix.m11() > mMaxZoom && factor > 1) {
+    if (zoomLevel() > mMaxZoom && factor > 1) {
         return;
     }
 
@@ -355,10 +355,9 @@ void DkBaseViewPort::paintEvent(QPaintEvent *event)
 
         // don't interpolate - we have a sophisticated anti-aliasing methods
         //// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
-        if (!mForceFastRendering && // force?
-            mImgMatrix.m11() * mWorldMatrix.m11() - DBL_EPSILON > 1.0 && // @100% ?
-            mImgMatrix.m11() * mWorldMatrix.m11()
-                <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) { // > max zoom level
+        const qreal zl = zoomLevel();
+        if (!mForceFastRendering && zl - DBL_EPSILON > 1.0
+            && zl <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) { // > max zoom level
             painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
         }
 
@@ -845,5 +844,10 @@ void DkBaseViewPort::scrollHorizontally(int val)
 void DkBaseViewPort::scrollVertically(int val)
 {
     moveView(QPointF(0.0f, -val / mWorldMatrix.m11()));
+}
+
+qreal DkBaseViewPort::zoomLevel() const
+{
+    return mWorldMatrix.m11() * mImgMatrix.m11();
 }
 }
