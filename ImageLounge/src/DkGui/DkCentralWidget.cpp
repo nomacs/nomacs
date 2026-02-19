@@ -345,7 +345,6 @@ void DkCentralWidget::createLayout()
     vbLayout->setContentsMargins(0, 0, 0, 0);
     vbLayout->setSpacing(0);
     vbLayout->addWidget(mTabbar);
-    vbLayout->addWidget(mProgressBar);
     vbLayout->addWidget(viewWidget);
 
     // connections
@@ -517,6 +516,12 @@ void DkCentralWidget::paintEvent(QPaintEvent *)
     opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+void DkCentralWidget::resizeEvent(QResizeEvent *event)
+{
+    Q_UNUSED(event)
+    mProgressBar->setGeometry(QRect{0, 0, this->width(), mProgressBar->sizeHint().height()});
 }
 
 DkPreferenceWidget *DkCentralWidget::createPreferences()
@@ -1038,6 +1043,7 @@ void DkCentralWidget::restart() const
 void DkCentralWidget::showProgress(bool show, int time)
 {
     mProgressBar->setVisibleTimed(show, time);
+    mProgressBar->raise();
 }
 
 void DkCentralWidget::startSlideshow(bool start) const

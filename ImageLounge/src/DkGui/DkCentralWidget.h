@@ -184,6 +184,7 @@ protected:
     void dropEvent(QDropEvent *event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
     void paintEvent(QPaintEvent *ev) override;
+    void resizeEvent(QResizeEvent *event) override;
 
     void createLayout();
     void updateTabIdx();
