@@ -410,7 +410,7 @@ void DkViewPort::setImage(QImage newImg)
     if (mController->getHistogram())
         mController->getHistogram()->drawHistogram(newImg);
 
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
+    emitZoomSignal();
 
     // status info
     if (!newImg.isNull()) {
@@ -454,7 +454,7 @@ void DkViewPort::zoom(double factor, const QPointF &center, bool force)
     mController->update(); // why do we need to update the mController manually?
     tcpSynchronize();
 
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
+    emitZoomSignal();
     DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11() * mImgMatrix.m11() * 100))
                                                   + "%",
                                               DkStatusBar::status_zoom_info);
@@ -509,7 +509,7 @@ void DkViewPort::resetView()
 
     controlImagePosition();
 
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
+    emitZoomSignal();
     DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11() * mImgMatrix.m11() * 100))
                                                   + "%",
                                               DkStatusBar::status_zoom_info);
@@ -521,7 +521,7 @@ void DkViewPort::fullView()
     QPointF p = mViewportRect.center();
     zoom(1.0 / (mImgMatrix.m11() * mWorldMatrix.m11()), p.toPoint(), true);
 
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
+    emitZoomSignal();
     changeCursor();
     update();
 }
@@ -2049,6 +2049,11 @@ void DkViewPort::cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool
 
     imgC->cropImage(rect, bgCol, cropToMetaData);
     setEditedImage(imgC);
+}
+
+void DkViewPort::emitZoomSignal()
+{
+    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------

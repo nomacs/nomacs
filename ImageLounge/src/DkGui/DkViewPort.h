@@ -226,6 +226,7 @@ protected:
 
 private:
     [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
+    void emitZoomSignal();
 };
 
 class DllCoreExport DkViewPortFrameless : public DkViewPort
