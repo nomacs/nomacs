@@ -226,7 +226,6 @@ private:
 
     QVector<DkBaseManipulatorWidget *> mWidgets;
 
-    QLabel *mPreview = nullptr;
     QLabel *mTitleLabel = nullptr;
 };
 
@@ -236,9 +235,6 @@ class DkEditDock : public DkDockWidget
 
 public:
     explicit DkEditDock(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-
-public slots:
-    void setImage(QSharedPointer<DkImageContainerT> imgC);
 
 protected:
     void createLayout();
