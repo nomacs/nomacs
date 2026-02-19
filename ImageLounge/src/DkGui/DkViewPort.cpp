@@ -422,10 +422,6 @@ void DkViewPort::setImage(QImage newImg)
                 colorSpaceDesc = tr("Custom"); // Unrecognized but valid color profile
         }
 
-        DkStatusBarManager::instance().setMessage(QString::number(
-                                                      qRound((float)(mWorldMatrix.m11() * mImgMatrix.m11() * 100)))
-                                                      + "%",
-                                                  DkStatusBar::status_zoom_info);
         DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()) + u'|' + colorSpaceDesc,
                                                   DkStatusBar::status_format_info);
         DkStatusBarManager::instance().setMessage(QString::number(newImg.width()) + " x "
@@ -455,9 +451,6 @@ void DkViewPort::zoom(double factor, const QPointF &center, bool force)
     tcpSynchronize();
 
     emitZoomSignal();
-    DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11() * mImgMatrix.m11() * 100))
-                                                  + "%",
-                                              DkStatusBar::status_zoom_info);
 }
 
 DkBaseViewPort::ZoomPos DkViewPort::calcZoomCenter(const QPointF &center, double factor) const
@@ -510,9 +503,6 @@ void DkViewPort::resetView()
     controlImagePosition();
 
     emitZoomSignal();
-    DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11() * mImgMatrix.m11() * 100))
-                                                  + "%",
-                                              DkStatusBar::status_zoom_info);
     tcpSynchronize();
 }
 
@@ -2049,7 +2039,10 @@ void DkViewPort::cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool
 
 void DkViewPort::emitZoomSignal()
 {
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
+    qreal zoomPercentage = mWorldMatrix.m11() * mImgMatrix.m11() * 100;
+    emit zoomSignal(zoomPercentage);
+    DkStatusBarManager::instance().setMessage(QString::number(qRound(zoomPercentage)) + "%",
+                                              DkStatusBar::status_zoom_info);
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------
