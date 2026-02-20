@@ -373,7 +373,7 @@ void DkViewPort::setImage(QImage newImg)
     updateImageMatrix();
 
     // if image is not inside, we'll align it at the top left border
-    if (!mViewportRect.intersects(mWorldMatrix.mapRect(mImgViewRect))) {
+    if (!mViewportRect.intersects(getImageViewRect())) {
         mWorldMatrix.translate(-mWorldMatrix.dx(), -mWorldMatrix.dy());
         centerImage();
     }
@@ -459,12 +459,13 @@ DkBaseViewPort::ZoomPos DkViewPort::calcZoomCenter(const QPointF &center, double
 
     QPointF pos = center;
     bool recenter = false;
+    const QSizeF scaledSize = imageViewSize() * factor;
     // if the image does not fill the view port - do not zoom to the mouse coordinate
-    if (mImgViewRect.width() * (mWorldMatrix.m11() * factor) < width()) {
+    if (scaledSize.width() < width()) {
         pos.setX(mImgViewRect.center().x());
         recenter |= factor < 1;
     }
-    if ((mImgViewRect.height() * mWorldMatrix.m11() * factor) < height()) {
+    if (scaledSize.height() < height()) {
         pos.setY(mImgViewRect.center().y());
         recenter |= factor < 1;
     }
@@ -2052,7 +2053,7 @@ DkViewPortFrameless::~DkViewPortFrameless() = default;
 
 DkBaseViewPort::ZoomPos DkViewPortFrameless::calcZoomCenter(const QPointF &center, double /* unused */) const
 {
-    QRectF viewRect = mWorldMatrix.mapRect(mImgViewRect);
+    QRectF viewRect = getImageViewRect();
     QPointF pos = center;
 
     // if no center assigned: zoom in at the image center
