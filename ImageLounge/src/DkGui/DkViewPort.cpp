@@ -309,13 +309,6 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     mController->updateImage(image);
 }
 
-void DkViewPort::setImageUpdated()
-{
-    if (!mLoader)
-        return;
-    mLoader->setImageUpdated();
-}
-
 void DkViewPort::loadImage(const QImage &newImg)
 {
     // delete current information
@@ -1665,16 +1658,6 @@ void DkViewPort::rotate180()
 }
 
 // file handling --------------------------------------------------------------------
-
-void DkViewPort::settingsChanged()
-{
-    reloadFile();
-
-    mAltMod = DkSettingsManager::param().global().altMod;
-    mCtrlMod = DkSettingsManager::param().global().ctrlMod;
-
-    mController->settingsChanged();
-}
 
 void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img)
 {
