@@ -586,7 +586,7 @@ public:
     explicit DkHistogram(QWidget *parent);
     ~DkHistogram() override;
 
-    void drawHistogram(QImage img);
+    void drawHistogram(const QImage &img);
     void clearHistogram();
 
 private slots:
