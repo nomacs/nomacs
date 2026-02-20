@@ -598,7 +598,7 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix, bool force)
         QPointF size = QPointF(geometry().width() / 2.0f, geometry().height() / 2.0f);
         size = mWorldMatrix.inverted().map(size);
         size = mImgMatrix.inverted().map(size);
-        size = QPointF(size.x() / (float)getImageSize().width(), size.y() / (float)getImageSize().height());
+        size = QPointF(size.x() / getImageSize().width(), size.y() / getImageSize().height());
 
         emit sendTransformSignal(mWorldMatrix, mImgMatrix, size);
     }
@@ -650,7 +650,7 @@ void DkViewPort::resizeImage()
     if (imgC) {
         metaData = imgC->getMetaData();
         QVector2D res = metaData->getResolution();
-        mResizeDialog->setExifDpi((float)res.x());
+        mResizeDialog->setExifDpi(static_cast<float>(res.x()));
     }
 
     if (!imgC) {
@@ -1030,7 +1030,7 @@ void DkViewPort::eraseBackground(QPainter &painter) const
     qreal dpr = devicePixelRatioF();
     QSizeF s = mImgBg.size() / dpr;
 
-    if (s.width() > (float)(size().width() * 0.5))
+    if (s.width() > size().width() * 0.5)
         s = s * ((size().width() * 0.5) / s.width());
 
     if (s.height() > size().height() * 0.6)
@@ -1389,7 +1389,7 @@ void DkViewPort::wheelEvent(QWheelEvent *event)
 
 int DkViewPort::swipeRecognition(QPoint start, QPoint end)
 {
-    DkVector vec((float)(start.x() - end.x()), (float)(start.y() - end.y()));
+    DkVector vec(static_cast<float>(start.x() - end.x()), static_cast<float>(start.y() - end.y()));
 
     if (fabs(vec.norm()) < 100)
         return no_swipe;
@@ -2105,8 +2105,8 @@ void DkViewPortFrameless::resizeEvent(QResizeEvent *event)
     bgRect.moveCenter(initialRect.center());
     mStartBgRect = bgRect;
 
-    constexpr float margin = 40;
-    float iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
+    constexpr qreal margin = 40;
+    qreal iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
     QSize iconSize = QSize(qRound(iconSizeMargin - margin), qRound(iconSizeMargin - margin));
     QPointF offset = QPointF(bgRect.left() + 49, bgRect.top() + 246 + 15);
 
@@ -2185,7 +2185,7 @@ void DkViewPortFrameless::drawFrame(QPainter &painter)
 
     QRectF frameRect;
 
-    float fs = qMin((float)mImgViewRect.width(), (float)mImgViewRect.height()) * 0.1f;
+    qreal fs = qMin(mImgViewRect.width(), mImgViewRect.height()) * 0.1;
 
     // looks pretty bad if the frame is too small
     if (fs < 4)
