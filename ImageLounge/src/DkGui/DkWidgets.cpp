@@ -2153,7 +2153,7 @@ void DkHistogram::loadSettings()
  * Goes through the image and counts pixels values. They are used to create the image histogram.
  * @param currently displayed image
  **/
-void DkHistogram::drawHistogram(QImage imgQt)
+void DkHistogram::drawHistogram(const QImage &imgQt)
 {
     if (!isVisible() || imgQt.isNull()) {
         setPainted(false);
