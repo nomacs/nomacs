@@ -57,6 +57,7 @@
 #include <QSvgRenderer>
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
+#include <cstdlib>
 
 #ifdef WITH_OPENCV
 #include "opencv2/imgproc/imgproc.hpp"
@@ -359,6 +360,7 @@ void DkViewPort::setImage(QImage newImg)
     if (mLoader->hasSvg() && !mLoader->isEdited())
         loadSvg();
 
+    const QSizeF oldSize = mImgRect.size();
     mImgRect = QRectF(QPointF(), getImageSize());
 
     DkActionManager::instance().enableImageActions(!newImg.isNull());
@@ -368,8 +370,12 @@ void DkViewPort::setImage(QImage newImg)
 
     double oldZoom = zoomLevel();
 
-    if (!(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect == mImgRect))
+    constexpr qreal sizeTol = 1e-6;
+    const bool isSameSize = std::abs(oldSize.width() - mImgRect.width()) < sizeTol
+        && std::abs(oldSize.height() - mImgRect.height()) < sizeTol;
+    if (!(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && isSameSize)) {
         mWorldMatrix.reset();
+    }
 
     updateImageMatrix();
 
@@ -385,8 +391,6 @@ void DkViewPort::setImage(QImage newImg)
 
     mController->getPlayer()->startTimer();
     mController->getOverview()->imageUpdated();
-
-    mOldImgRect = mImgRect;
 
     // init fading
     if (isNewFile && wasImageLoaded && DkSettingsManager::param().display().animationDuration
