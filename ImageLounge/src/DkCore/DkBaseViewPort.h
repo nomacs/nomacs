@@ -103,6 +103,8 @@ public:
     // image size in logical pixels (actual size divided by device pixel ratio)
     QSizeF getImageSize() const;
 
+    // getImageViewRect returns the rectangle that contains the image in the
+    // coordinates of this widget.
     QRectF getImageViewRect() const;
 
     // map point in this widget's local coordinates to image logical (device-normalized) coordinates
@@ -142,6 +144,10 @@ protected:
     void zoomIn();
     void zoomOut();
     virtual void resetView();
+
+    // imageViewSize returns the size of the rectangle that contains the image in the
+    // coordinates of this widget.
+    [[nodiscard]] QSizeF imageViewSize() const;
 
     Qt::KeyboardModifier mAltMod; // it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
     Qt::KeyboardModifier mCtrlMod;

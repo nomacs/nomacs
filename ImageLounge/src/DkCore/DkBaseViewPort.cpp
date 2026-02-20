@@ -167,7 +167,7 @@ void DkBaseViewPort::panDown()
 void DkBaseViewPort::moveView(const QPointF &delta)
 {
     QPointF lDelta = delta;
-    QRectF imgWorldRect = mWorldMatrix.mapRect(mImgViewRect);
+    const QSizeF imgWorldRect = imageViewSize();
     if (imgWorldRect.width() < width())
         lDelta.setX(0);
     if (imgWorldRect.height() < height())
@@ -331,6 +331,11 @@ QSizeF DkBaseViewPort::getImageSize() const
 QRectF DkBaseViewPort::getImageViewRect() const
 {
     return mWorldMatrix.mapRect(mImgViewRect);
+}
+
+QSizeF DkBaseViewPort::imageViewSize() const
+{
+    return mWorldMatrix.m11() * mImgViewRect.size();
 }
 
 QImage DkBaseViewPort::getCurrentImageRegion()
@@ -695,9 +700,7 @@ void DkBaseViewPort::eraseBackground(QPainter &painter) const
 
 bool DkBaseViewPort::imageInside() const
 {
-    QRect viewRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
-
-    return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(viewRect);
+    return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(getImageViewRect());
 }
 
 QPointF DkBaseViewPort::mapToImage(const QPointF &p)
@@ -777,7 +780,7 @@ void DkBaseViewPort::controlImagePosition()
         ub = mViewportRect.height() / 2;
     }
 
-    QRectF imgRectWorld = mWorldMatrix.mapRect(mImgViewRect);
+    const QRectF imgRectWorld = getImageViewRect();
     if (imgRectWorld.left() > lb && imgRectWorld.width() > width()) {
         mWorldMatrix.translate((lb - imgRectWorld.left()) / mWorldMatrix.m11(), 0);
     }
@@ -804,7 +807,7 @@ void DkBaseViewPort::controlImagePosition()
 
 void DkBaseViewPort::centerImage()
 {
-    QRectF imgWorldRect = mWorldMatrix.mapRect(mImgViewRect);
+    const QRectF imgWorldRect = getImageViewRect();
 
     // if black border - center the image
     if (imgWorldRect.width() < width()) {
