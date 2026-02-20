@@ -2070,7 +2070,7 @@ void DkHistogram::paintEvent(QPaintEvent *)
     int binBottom = height() - margin - textHeight;
 
     // draw Histogram
-    if (mIsPainted && mMaxValue > 0) {
+    if (mIsValid && mMaxValue > 0) {
         for (int x = 0; x < 256; x++) {
             // get bounded values
             int rLineHeight = qMax(qMin(qRound((float)mHist[0][x] * binHeight * mScaleFactor / mMaxValue), binHeight),
@@ -2157,7 +2157,7 @@ void DkHistogram::loadSettings()
 void DkHistogram::drawHistogram(const QImage &imgQt)
 {
     if (!isVisible() || imgQt.isNull()) {
-        setPainted(false);
+        setValid(false);
         return;
     }
 
@@ -2262,7 +2262,7 @@ void DkHistogram::drawHistogram(const QImage &imgQt)
         }
     }
 
-    setPainted(true);
+    setValid(true);
     qDebug() << "drawing the histogram took me: " << dt;
     update();
 }
@@ -2272,19 +2272,19 @@ void DkHistogram::drawHistogram(const QImage &imgQt)
  **/
 void DkHistogram::clearHistogram()
 {
-    setPainted(false);
+    setValid(false);
     update();
 }
 
-void DkHistogram::setPainted(bool isPainted)
+void DkHistogram::setValid(bool isValid)
 {
-    this->mIsPainted = isPainted;
+    this->mIsValid = isValid;
 }
 
 void DkHistogram::setMaxHistogramValue(int maxValue)
 {
     if (maxValue == 0)
-        setPainted(false);
+        setValid(false);
 
     this->mMaxValue = maxValue;
 }
