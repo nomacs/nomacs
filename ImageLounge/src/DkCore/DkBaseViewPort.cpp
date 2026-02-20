@@ -553,7 +553,7 @@ DkBaseViewPort::RenderParams DkBaseViewPort::getRenderParams(double devicePixelR
     QRect deviceRect = tx.mapRect(viewRect).toRect();
 
     // Rect to draw image, with world matrix disabled
-    viewRect = tx.inverted().mapRect(deviceRect);
+    viewRect = tx.inverted().mapRect(QRectF{deviceRect});
 
     // Rect to draw image, with world matrix enabled
     QRectF dstRect = worldMatrix.inverted().mapRect(viewRect);
