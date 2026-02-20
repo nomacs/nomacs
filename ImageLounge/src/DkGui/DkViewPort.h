@@ -218,7 +218,6 @@ private:
     QFutureWatcher<QImage> mManipulatorWatcher;
     QSharedPointer<DkBaseManipulator> mActiveManipulator;
 
-    bool mTestLoaded = false;
     bool mGestureStarted = false;
     bool mDisabledBackground = false; // disables drawBackground() (frameless dialog)
 
