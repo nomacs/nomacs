@@ -181,8 +181,6 @@ protected:
     bool mGestureStarted = false;
     bool mDisabledBackground = false; // disables drawBackground() (frameless dialog)
 
-    QRectF mOldImgRect;
-
     QTimer *mRepeatZoomTimer;
 
     // fading stuff
