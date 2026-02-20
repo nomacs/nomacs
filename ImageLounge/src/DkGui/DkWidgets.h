@@ -588,14 +588,15 @@ public:
 
     void drawHistogram(QImage img);
     void clearHistogram();
+
+private slots:
+    void onToggleStatsTriggered(bool show);
+
+private:
     void setMaxHistogramValue(int maxValue);
     void updateHistogramValues(int histValues[][256]);
     void setPainted(bool isPainted);
 
-public slots:
-    void onToggleStatsTriggered(bool show);
-
-protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -604,7 +605,6 @@ protected:
 
     void loadSettings();
 
-private:
     int mHist[3][256]; /// 3 channels 256 bin. channels duplicated when gray
     int mNumPixels = 0; /// image pixel count
     int mNumDistinctValues = 0; /// number of distinct values
