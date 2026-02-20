@@ -595,7 +595,7 @@ private slots:
 private:
     void setMaxHistogramValue(int maxValue);
     void updateHistogramValues(int histValues[][256]);
-    void setPainted(bool isPainted);
+    void setValid(bool isValid);
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -614,7 +614,7 @@ private:
     int mMinBinValue = 256; /// (gray-only) minimum intensity value
     int mMaxBinValue = -1; /// (gray-only) maximum intensity value
     int mMaxValue = 20; /// maximum count over all bins
-    bool mIsPainted = false;
+    bool mIsValid = false; /// if true a histogram and stats are computed
     float mScaleFactor = 1;
     DisplayMode mDisplayMode = DisplayMode::histogram_mode_simple; /// determins shown histogram type
 
