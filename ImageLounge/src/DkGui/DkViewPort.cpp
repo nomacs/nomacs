@@ -1710,7 +1710,6 @@ void DkViewPort::loadFile(const QString &filePath)
     if (!unloadImage())
         return;
 
-    mTestLoaded = false;
     if (!mLoader)
         return;
 
@@ -1809,7 +1808,7 @@ void DkViewPort::loadFirst()
     if (!unloadImage())
         return;
 
-    if (mLoader && !mTestLoaded)
+    if (mLoader)
         mLoader->firstFile();
 
     if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
@@ -1822,7 +1821,7 @@ void DkViewPort::loadLast()
     if (!unloadImage())
         return;
 
-    if (mLoader && !mTestLoaded)
+    if (mLoader)
         mLoader->lastFile();
 
     if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
