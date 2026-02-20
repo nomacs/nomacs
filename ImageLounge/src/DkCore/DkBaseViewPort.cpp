@@ -142,25 +142,25 @@ void DkBaseViewPort::togglePattern(bool show)
 
 void DkBaseViewPort::panLeft()
 {
-    float delta = -2 * width() / (100.0f * (float)mWorldMatrix.m11());
+    qreal delta = -2 * width() / (100 * mWorldMatrix.m11());
     moveView(QPointF(delta, 0));
 }
 
 void DkBaseViewPort::panRight()
 {
-    float delta = 2 * width() / (100.0f * (float)mWorldMatrix.m11());
+    qreal delta = 2 * width() / (100 * mWorldMatrix.m11());
     moveView(QPointF(delta, 0));
 }
 
 void DkBaseViewPort::panUp()
 {
-    float delta = -2 * height() / (100.0f * (float)mWorldMatrix.m11());
+    qreal delta = -2 * height() / (100 * mWorldMatrix.m11());
     moveView(QPointF(0, delta));
 }
 
 void DkBaseViewPort::panDown()
 {
-    float delta = 2 * height() / (100.0f * (float)mWorldMatrix.m11());
+    qreal delta = 2 * height() / (100 * mWorldMatrix.m11());
     moveView(QPointF(0, delta));
 }
 
@@ -805,12 +805,11 @@ void DkBaseViewPort::controlImagePosition()
 void DkBaseViewPort::centerImage()
 {
     QRectF imgWorldRect = mWorldMatrix.mapRect(mImgViewRect);
-    float dx, dy;
 
     // if black border - center the image
-    if (imgWorldRect.width() < (float)width()) {
-        dx = (float)((width() - imgWorldRect.width()) * 0.5f - mImgViewRect.x() * mWorldMatrix.m11());
-        dx = (dx - (float)mWorldMatrix.dx()) / (float)mWorldMatrix.m11();
+    if (imgWorldRect.width() < width()) {
+        qreal dx = (width() - imgWorldRect.width()) * 0.5f - mImgViewRect.x() * mWorldMatrix.m11();
+        dx = (dx - mWorldMatrix.dx()) / mWorldMatrix.m11();
         mWorldMatrix.translate(dx, 0);
     } else if (imgWorldRect.left() > 0)
         mWorldMatrix.translate(-imgWorldRect.left() / mWorldMatrix.m11(), 0);
@@ -818,8 +817,8 @@ void DkBaseViewPort::centerImage()
         mWorldMatrix.translate((width() - imgWorldRect.right()) / mWorldMatrix.m11(), 0);
 
     if (imgWorldRect.height() < height()) {
-        dy = (float)((height() - imgWorldRect.height()) * 0.5f - mImgViewRect.y() * mWorldMatrix.m22());
-        dy = (float)((dy - mWorldMatrix.dy()) / mWorldMatrix.m22());
+        qreal dy = (height() - imgWorldRect.height()) * 0.5f - mImgViewRect.y() * mWorldMatrix.m22();
+        dy = (dy - mWorldMatrix.dy()) / mWorldMatrix.m22();
         mWorldMatrix.translate(0, dy);
     } else if (imgWorldRect.top() > 0) {
         mWorldMatrix.translate(0, -imgWorldRect.top() / mWorldMatrix.m22());
