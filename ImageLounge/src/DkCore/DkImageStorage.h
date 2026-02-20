@@ -66,8 +66,17 @@ public:
     };
 
 #ifdef WITH_OPENCV
+
+    /**
+     * @brief deep copy of QImage as cv::Mat
+     */
     static cv::Mat qImage2Mat(const QImage &img);
-    static QImage mat2QImage(cv::Mat img, const QImage &srcImg);
+
+    /**
+     * @brief deep copy of cv::Mat as QImage
+     */
+    static QImage mat2QImage(cv::Mat mat, const QImage &srcImg);
+
     static void mapGammaTable(cv::Mat &img, const QVector<uint16_t> &gammaTable);
     static void gammaToLinear(cv::Mat &img);
     static void linearToGamma(cv::Mat &img);
@@ -77,7 +86,7 @@ public:
                          double scaleLog,
                          double angle,
                          double scale = 1.0);
-    static void tinyPlanet(QImage &img, double scaleLog, double angle, QSize s, bool invert = false);
+    static QImage tinyPlanet(const QImage &img, double scaleLog, double angle, const QSize &size, bool invert = false);
 #endif
 
     static QString getBufferSize(const QSize &imgSize, const int depth);
@@ -87,14 +96,6 @@ public:
                               double factor = 1.0,
                               int interpolation = ipl_cubic,
                               bool correctGamma = true);
-
-    template<typename numFmt>
-    static QVector<numFmt> getGamma2LinearTable(int maxVal = USHRT_MAX);
-    template<typename numFmt>
-    static QVector<numFmt> getLinear2GammaTable(int maxVal = USHRT_MAX);
-    static void gammaToLinear(QImage &img);
-    static void linearToGamma(QImage &img);
-    static void mapGammaTable(QImage &img, const QVector<uchar> &gammaTable);
     static bool normImage(QImage &img);
     static bool autoAdjustImage(QImage &img);
     static bool gaussianBlur(QImage &img, float sigma = 20.0f);
@@ -123,12 +124,11 @@ public:
      */
     static QIcon loadIcon(const QString &filePath, const QColor &color = {});
     static QImage createThumb(const QImage &img, int maxSize = -1);
-    static uchar findHistPeak(const int *hist, float quantile = 0.005f);
     static QPixmap makeSquare(const QPixmap &pm);
     static QPixmap merge(const QVector<QImage> &imgs);
     static QImage cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor = QColor());
-    static QImage hueSaturation(const QImage &src, int hue, int sat, int brightness);
-    static QImage exposure(const QImage &src, double exposure, double offset, double gamma);
+    static bool hueSaturation(QImage &img, float hue, float sat, float brightness);
+    static bool exposure(QImage &img, double exposure, double offset, double gamma);
     static QImage bgColor(const QImage &src, const QColor &col);
     static QByteArray extractImageFromDataStream(const QByteArray &ba,
                                                  const QByteArray &beginSignature = "‰PNG",
@@ -136,12 +136,6 @@ public:
                                                  bool debugOutput = false);
     static bool fixSamsungPanorama(QByteArray &ba);
     static int intFromByteArray(const QByteArray &ba, int pos);
-
-#ifdef WITH_OPENCV
-    static cv::Mat exposureMat(const cv::Mat &src, double exposure);
-    static cv::Mat gammaMat(const cv::Mat &src, double gmma);
-    static cv::Mat applyLUT(const cv::Mat &src, const cv::Mat &lut);
-#endif // WITH_OPENCV
 
     static QColorSpace targetColorSpace(const QWidget *widget);
     static QColorSpace loadIccProfile(const QString &filePath);
@@ -180,7 +174,7 @@ class DllCoreExport DkImageStorage : public QObject
 
 public:
     DkImageStorage();
-    virtual ~DkImageStorage();
+    ~DkImageStorage() override;
 
     bool isEmpty() const
     {

@@ -164,9 +164,7 @@ QImage DkTinyPlanetManipulator::apply(const QImage &img) const
     int ms = qMax(img.width(), img.height());
     QSize s(ms, ms);
 
-    QImage imgR = img.copy();
-    DkImage::tinyPlanet(imgR, size(), angle() * DK_DEG2RAD, s, inverted());
-    return imgR;
+    return DkImage::tinyPlanet(img, size(), angle() * DK_DEG2RAD, s, inverted());
 #else
     Q_UNUSED(img);
     return QImage(); // trigger warning
@@ -228,9 +226,11 @@ DkBlurManipulator::DkBlurManipulator(QAction *action)
 
 QImage DkBlurManipulator::apply(const QImage &img) const
 {
-    QImage imgC = img.copy();
-    DkImage::gaussianBlur(imgC, (float)sigma());
-    return imgC;
+    QImage tmp = img;
+    if (DkImage::gaussianBlur(tmp, (float)sigma())) {
+        return tmp;
+    }
+    return {};
 }
 
 QString DkBlurManipulator::errorMessage() const
@@ -261,9 +261,11 @@ DkUnsharpMaskManipulator::DkUnsharpMaskManipulator(QAction *action)
 
 QImage DkUnsharpMaskManipulator::apply(const QImage &img) const
 {
-    QImage imgC = img.copy();
-    DkImage::unsharpMask(imgC, (float)sigma(), 1.0f + amount() / 100.0f);
-    return imgC;
+    QImage tmp = img;
+    if (DkImage::unsharpMask(tmp, (float)sigma(), 1.0f + amount() / 100.0f)) {
+        return tmp;
+    }
+    return {};
 }
 
 QString DkUnsharpMaskManipulator::errorMessage() const
@@ -433,7 +435,11 @@ DkHueManipulator::DkHueManipulator(QAction *action)
 
 QImage DkHueManipulator::apply(const QImage &img) const
 {
-    return DkImage::hueSaturation(img, hue(), saturation(), value());
+    QImage tmp = img;
+    if (DkImage::hueSaturation(tmp, hue(), saturation(), value())) {
+        return tmp;
+    }
+    return img;
 }
 
 QString DkHueManipulator::errorMessage() const
@@ -490,7 +496,11 @@ DkExposureManipulator::DkExposureManipulator(QAction *action)
 
 QImage DkExposureManipulator::apply(const QImage &img) const
 {
-    return DkImage::exposure(img, exposure(), offset(), gamma());
+    QImage tmp = img;
+    if (DkImage::exposure(tmp, exposure(), offset(), gamma())) {
+        return tmp;
+    }
+    return {};
 }
 
 QString DkExposureManipulator::errorMessage() const

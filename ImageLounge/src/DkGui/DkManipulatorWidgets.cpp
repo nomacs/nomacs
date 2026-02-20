@@ -118,10 +118,6 @@ void DkManipulatorWidget::createLayout()
     // preview
     mTitleLabel = new QLabel(this);
     mTitleLabel->setObjectName("DkManipulatorSettingsTitle");
-    mPreview = new QLabel(this);
-    mPreview->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    mPreview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mPreview->setContentsMargins(8, 8, 8, 8);
 
     auto *mplWidget = new QWidget(this);
     auto *mplLayout = new QVBoxLayout(mplWidget);
@@ -129,8 +125,9 @@ void DkManipulatorWidget::createLayout()
     mplLayout->addWidget(mTitleLabel);
     for (auto w : mWidgets)
         mplLayout->addWidget(w);
-    mplLayout->addWidget(mPreview);
-    mplWidget->setMinimumHeight(350);
+    mplWidget->setMinimumHeight(200);
+    // TODO: use this, drop title, and display inline with the big buttons
+    // mplWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
 
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -141,20 +138,6 @@ void DkManipulatorWidget::createLayout()
     // I couldn't find the focus widget so just get them all
     for (QWidget *w : this->findChildren<QWidget *>())
         w->setFocusPolicy(Qt::ClickFocus);
-}
-
-void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC)
-{
-    if (imgC) {
-        QImage img = imgC->image();
-        QSize newSize = img.size().scaled(mPreview->contentsRect().size(), Qt::KeepAspectRatio);
-        img = img.scaledToWidth(newSize.width(), Qt::SmoothTransformation);
-        img = DkImage::convertToColorSpaceInPlace(this, img);
-        mPreview->setPixmap(QPixmap::fromImage(img));
-        mPreview->show();
-    } else {
-        mPreview->hide();
-    }
 }
 
 void DkManipulatorWidget::selectManipulator()
@@ -207,11 +190,6 @@ void DkEditDock::createLayout()
 {
     mMplWidget = new DkManipulatorWidget(this);
     setWidget(mMplWidget);
-}
-
-void DkEditDock::setImage(QSharedPointer<DkImageContainerT> imgC)
-{
-    mMplWidget->setImage(imgC);
 }
 
 // DkManipulatorWidget --------------------------------------------------------------------
@@ -295,6 +273,7 @@ void DkBlurWidget::createLayout()
     // post processing sliders
     auto *sigmaSlider = new DkSlider(tr("Sigma"), this);
     sigmaSlider->setValue(manipulator()->sigma());
+    sigmaSlider->setMinimum(1);
     sigmaSlider->setMaximum(50);
     connect(sigmaSlider, &DkSlider::valueChanged, this, &DkBlurWidget::onSigmaSliderValueChanged);
 
@@ -325,6 +304,7 @@ void DkUnsharpMaskWidget::createLayout()
 {
     // post processing sliders
     auto *sigmaSlider = new DkSlider(tr("Sigma"), this);
+    sigmaSlider->setMinimum(1);
     sigmaSlider->setValue(manipulator()->sigma());
     connect(sigmaSlider, &DkSlider::valueChanged, this, &DkUnsharpMaskWidget::onSigmaSliderValueChanged);
 

@@ -262,8 +262,8 @@ void DkRotatingRect::setCenter(const QPointF &center)
 double DkRotatingRect::getAngle() const
 {
     // default upper left corner is 0
-    DkVector xV = mRect[1] - mRect[0];
-    return xV.angle();
+    QPointF vec = mRect[1] - mRect[0];
+    return atan2(vec.y(), vec.x());
 }
 
 float DkRotatingRect::getAngleDeg() const

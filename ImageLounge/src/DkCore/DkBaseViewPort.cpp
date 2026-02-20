@@ -270,7 +270,7 @@ void DkBaseViewPort::setImage(QImage newImg)
 
 void DkBaseViewPort::hideCursor()
 {
-    if (isFullScreen())
+    if (window()->isFullScreen())
         setCursor(Qt::BlankCursor);
 }
 
@@ -482,7 +482,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event)
                 unsetCursor();
         }
 
-        if (isFullScreen())
+        if (window()->isFullScreen())
             mHideCursorTimer->start(3000);
     }
 
@@ -522,7 +522,7 @@ DkBaseViewPort::RenderParams DkBaseViewPort::getRenderParams(double devicePixelR
     QRect deviceRect = tx.mapRect(viewRect).toRect();
 
     // Rect to draw image, with world matrix disabled
-    viewRect = tx.inverted().mapRect(deviceRect.toRectF());
+    viewRect = tx.inverted().mapRect(QRectF{deviceRect});
 
     // Rect to draw image, with world matrix enabled
     QRectF dstRect = worldMatrix.inverted().mapRect(viewRect);
@@ -672,7 +672,7 @@ void DkBaseViewPort::eraseBackground(QPainter &painter) const
 {
     QBrush bgBrush = backgroundBrush();
 
-    if (DkUtils::getMainWindow()->isFullScreen())
+    if (window()->isFullScreen())
         bgBrush = DkSettingsManager::param().slideShow().backgroundColor;
 
     if (bgBrush != Qt::NoBrush) {

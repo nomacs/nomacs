@@ -345,7 +345,6 @@ void DkCentralWidget::createLayout()
     vbLayout->setContentsMargins(0, 0, 0, 0);
     vbLayout->setSpacing(0);
     vbLayout->addWidget(mTabbar);
-    vbLayout->addWidget(mProgressBar);
     vbLayout->addWidget(viewWidget);
 
     // connections
@@ -1038,6 +1037,8 @@ void DkCentralWidget::restart() const
 void DkCentralWidget::showProgress(bool show, int time)
 {
     mProgressBar->setVisibleTimed(show, time);
+    mProgressBar->setGeometry(QRect{0, 0, this->width(), mProgressBar->sizeHint().height()});
+    mProgressBar->raise();
 }
 
 void DkCentralWidget::startSlideshow(bool start) const
