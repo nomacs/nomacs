@@ -2040,7 +2040,7 @@ DkHistogram::DkHistogram(QWidget *parent)
     showStats->setChecked(mDisplayMode == DisplayMode::histogram_mode_extended);
     connect(showStats, &QAction::triggered, this, &DkHistogram::onToggleStatsTriggered);
 
-    mContextMenu = new QMenu(tr("Histogram Settings"));
+    mContextMenu = new QMenu;
     mContextMenu->addAction(showStats);
 }
 
