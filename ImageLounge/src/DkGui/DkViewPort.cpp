@@ -1173,17 +1173,9 @@ void DkViewPort::drawPolygon(QPainter &painter, const QPolygon &polygon)
 // event listeners --------------------------------------------------------------------
 void DkViewPort::resizeEvent(QResizeEvent *event)
 {
-    mViewportRect = QRect(0, 0, width(), height());
-
-    // >DIR: diem - bug if zoom factor is large and window becomes small
-    updateImageMatrix();
-    centerImage();
-    changeCursor();
-
-    // mController->getOverview()->setViewPortRect(geometry());
-    mController->resize(width(), height());
-
-    return QGraphicsView::resizeEvent(event);
+    DkBaseViewPort::resizeEvent(event);
+    const QSize s = event->size();
+    mController->resize(s.width(), s.height());
 }
 
 // mouse events --------------------------------------------------------------------

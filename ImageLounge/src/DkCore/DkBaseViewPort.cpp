@@ -403,7 +403,7 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event)
     centerImage();
     changeCursor();
 
-    return QGraphicsView::resizeEvent(event);
+    QGraphicsView::resizeEvent(event);
 }
 
 bool DkBaseViewPort::event(QEvent *event)
