@@ -118,7 +118,8 @@ signals:
     void imageUpdated() const; // triggers on zoom/pan
 
 public slots:
-    virtual void moveView(const QPointF &);
+    void moveViewInImageCoords(const QPointF &delta);
+    virtual void moveViewInWidgetCoords(const QPointF &delta);
     virtual void fullView();
 
     virtual void setImage(QImage newImg);
@@ -144,6 +145,7 @@ protected:
     void zoomIn();
     void zoomOut();
     virtual void resetView();
+    void translateViewInWidgetCoords(qreal x, qreal y);
 
     // imageViewSize returns the size of the rectangle that contains the image in the
     // coordinates of this widget.

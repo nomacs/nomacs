@@ -142,29 +142,35 @@ void DkBaseViewPort::togglePattern(bool show)
 
 void DkBaseViewPort::panLeft()
 {
-    qreal delta = -2 * width() / (100 * mWorldMatrix.m11());
-    moveView(QPointF(delta, 0));
+    qreal delta = -2 * width() / 100;
+    moveViewInWidgetCoords(QPointF(delta, 0));
 }
 
 void DkBaseViewPort::panRight()
 {
-    qreal delta = 2 * width() / (100 * mWorldMatrix.m11());
-    moveView(QPointF(delta, 0));
+    qreal delta = 2 * width() / 100;
+    moveViewInWidgetCoords(QPointF(delta, 0));
 }
 
 void DkBaseViewPort::panUp()
 {
-    qreal delta = -2 * height() / (100 * mWorldMatrix.m11());
-    moveView(QPointF(0, delta));
+    qreal delta = -2 * height() / 100;
+    moveViewInWidgetCoords(QPointF(0, delta));
 }
 
 void DkBaseViewPort::panDown()
 {
-    qreal delta = 2 * height() / (100 * mWorldMatrix.m11());
-    moveView(QPointF(0, delta));
+    qreal delta = 2 * height() / 100;
+    moveViewInWidgetCoords(QPointF(0, delta));
 }
 
-void DkBaseViewPort::moveView(const QPointF &delta)
+void DkBaseViewPort::moveViewInImageCoords(const QPointF &delta)
+{
+    // Reuse the logic
+    moveViewInWidgetCoords(delta * zoomLevel());
+}
+
+void DkBaseViewPort::moveViewInWidgetCoords(const QPointF &delta)
 {
     QPointF lDelta = delta;
     const QSizeF imgWorldRect = imageViewSize();
@@ -173,9 +179,14 @@ void DkBaseViewPort::moveView(const QPointF &delta)
     if (imgWorldRect.height() < height())
         lDelta.setY(0);
 
-    mWorldMatrix.translate(lDelta.x(), lDelta.y());
+    translateViewInWidgetCoords(lDelta.x(), lDelta.y());
     controlImagePosition();
     update();
+}
+
+void DkBaseViewPort::translateViewInWidgetCoords(qreal x, qreal y)
+{
+    mWorldMatrix.translate(x / mWorldMatrix.m11(), y / mWorldMatrix.m22());
 }
 
 void DkBaseViewPort::zoomIn()
@@ -482,7 +493,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event)
         QPointF cPos = event->pos();
         QPointF dxy = (cPos - mPosGrab);
         mPosGrab = cPos;
-        moveView(dxy / mWorldMatrix.m11());
+        moveViewInWidgetCoords(dxy);
     }
     if (event->buttons() != Qt::LeftButton && event->buttons() != Qt::RightButton) {
         if (event->modifiers() == mCtrlMod && event->modifiers() != mAltMod) {
@@ -781,21 +792,25 @@ void DkBaseViewPort::controlImagePosition()
     }
 
     const QRectF imgRectWorld = getImageViewRect();
+
+    qreal tX = 0;
+    qreal tY = 0;
     if (imgRectWorld.left() > lb && imgRectWorld.width() > width()) {
-        mWorldMatrix.translate((lb - imgRectWorld.left()) / mWorldMatrix.m11(), 0);
+        tX = lb - imgRectWorld.left();
     }
 
     if (imgRectWorld.top() > ub && imgRectWorld.height() > height()) {
-        mWorldMatrix.translate(0, (ub - imgRectWorld.top()) / mWorldMatrix.m11());
+        tY = ub - imgRectWorld.top();
     }
 
     if (imgRectWorld.right() < width() - lb && imgRectWorld.width() > width()) {
-        mWorldMatrix.translate(((width() - lb) - imgRectWorld.right()) / mWorldMatrix.m11(), 0);
+        tX = width() - lb - imgRectWorld.right();
     }
 
     if (imgRectWorld.bottom() < height() - ub && imgRectWorld.height() > height()) {
-        mWorldMatrix.translate(0, ((height() - ub) - imgRectWorld.bottom()) / mWorldMatrix.m11());
+        tY = height() - ub - imgRectWorld.bottom();
     }
+    translateViewInWidgetCoords(tX, tY);
 
     // update scene size (this is needed to make the scroll area work)
     if (DkSettingsManager::instance().param().display().showScrollBars) {
@@ -814,22 +829,25 @@ void DkBaseViewPort::centerImage()
     // - If the size is smaller than the viewport, translate so that the image is center.
     // - Otherwise (the size is larger), and somehow the viewport is not fully filled,
     //   translate to fill the viewport.
+    qreal tX = 0;
+    qreal tY = 0;
     if (imgWorldRect.width() < width()) {
-        const qreal dx = (width() - imgWorldRect.width()) * 0.5f - imgWorldRect.x();
-        mWorldMatrix.translate(dx / mWorldMatrix.m11(), 0);
-    } else if (imgWorldRect.left() > 0)
-        mWorldMatrix.translate(-imgWorldRect.left() / mWorldMatrix.m11(), 0);
-    else if (imgWorldRect.right() < width())
-        mWorldMatrix.translate((width() - imgWorldRect.right()) / mWorldMatrix.m11(), 0);
+        tX = (width() - imgWorldRect.width()) * 0.5f - imgWorldRect.x();
+    } else if (imgWorldRect.left() > 0) {
+        tX = -imgWorldRect.left();
+    } else if (imgWorldRect.right() < width()) {
+        tX = (width() - imgWorldRect.right());
+    }
 
     if (imgWorldRect.height() < height()) {
-        const qreal dy = (height() - imgWorldRect.height()) * 0.5f - imgWorldRect.y();
-        mWorldMatrix.translate(0, dy / mWorldMatrix.m22());
+        tY = (height() - imgWorldRect.height()) * 0.5f - imgWorldRect.y();
     } else if (imgWorldRect.top() > 0) {
-        mWorldMatrix.translate(0, -imgWorldRect.top() / mWorldMatrix.m22());
+        tY = -imgWorldRect.top();
     } else if (imgWorldRect.bottom() < height()) {
-        mWorldMatrix.translate(0, (height() - imgWorldRect.bottom()) / mWorldMatrix.m22());
+        tY = (height() - imgWorldRect.bottom());
     }
+
+    translateViewInWidgetCoords(tX, tY);
 }
 
 void DkBaseViewPort::changeCursor()
@@ -842,12 +860,12 @@ void DkBaseViewPort::changeCursor()
 
 void DkBaseViewPort::scrollHorizontally(int val)
 {
-    moveView(QPointF(-val / mWorldMatrix.m11(), 0.0f));
+    moveViewInWidgetCoords(QPointF(-val, 0.0f));
 }
 
 void DkBaseViewPort::scrollVertically(int val)
 {
-    moveView(QPointF(0.0f, -val / mWorldMatrix.m11()));
+    moveViewInWidgetCoords(QPointF(0.0f, -val));
 }
 
 qreal DkBaseViewPort::zoomLevel() const
