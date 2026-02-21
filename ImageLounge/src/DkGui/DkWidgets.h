@@ -572,7 +572,7 @@ protected:
 };
 
 // Image histogram display
-class DkHistogram : public DkFadeWidget
+class DkHistogramWidget : public DkFadeWidget
 {
     Q_OBJECT
 
@@ -583,8 +583,8 @@ public:
         histogram_mode_end = 2,
     };
 
-    explicit DkHistogram(QWidget *parent);
-    ~DkHistogram() override;
+    explicit DkHistogramWidget(QWidget *parent);
+    ~DkHistogramWidget() override;
 
     void drawHistogram(const QImage &img);
     void clearHistogram();
