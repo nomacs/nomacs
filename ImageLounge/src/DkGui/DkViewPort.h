@@ -246,7 +246,6 @@ protected:
     void draw(QPainter &painter, double opacity, int flags) override;
     void drawFrame(QPainter &painter);
     void eraseBackground(QPainter &painter) const override;
-    void controlImagePosition() override;
     void centerImage() override;
 
     // variables
@@ -262,6 +261,7 @@ private:
         return 0.1;
     }
     [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
+    void controlImagePosition() override;
 };
 
 class DllCoreExport DkViewPortContrast : public DkViewPort

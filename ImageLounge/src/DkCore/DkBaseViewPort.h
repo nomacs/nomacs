@@ -241,7 +241,6 @@ protected:
     virtual void eraseBackground(QPainter &painter) const;
 
     void updateImageMatrix(std::optional<DkSettings::keepZoom> keepZoom = std::nullopt);
-    virtual void controlImagePosition();
     virtual void centerImage();
     void changeCursor();
     void zoomToPoint(double factor, const QPointF &pos);
@@ -261,6 +260,8 @@ private:
     [[nodiscard]] virtual ZoomPos calcZoomCenter(const QPointF &center, double factor) const;
 
     bool gestureEvent(QGestureEvent *event);
+
+    virtual void controlImagePosition();
 
     // Slots
     void panLeft();
