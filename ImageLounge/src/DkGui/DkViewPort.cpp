@@ -363,7 +363,7 @@ void DkViewPort::setImage(const QImage &newImg)
     updateImageMatrix(static_cast<DkSettings::keepZoom>(DkSettingsManager::param().display().keepZoom));
 
     mController->getPlayer()->startTimer();
-    mController->getOverview()->imageUpdated();
+    emit viewImageChanged();
 
     // init fading
     if (isNewFile && wasImageLoaded && DkSettingsManager::param().display().animationDuration
@@ -2411,7 +2411,7 @@ void DkViewPortContrast::updateImage(bool enable)
         pickColor(false);
     }
 
-    mController->getOverview()->imageUpdated();
+    emit viewImageChanged();
 
     // the histogram normally redraws from imageContainer, we want it to use the grayscale image
     if (mController->getHistogram() && mController->getHistogram()->isVisible()) {

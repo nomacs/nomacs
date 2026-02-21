@@ -276,6 +276,7 @@ void DkControlWidget::connectWidgets()
         const auto zr = mViewport->zoomLevelRange();
         mZoomWidget->setZoomLevelRange(zr.mMin, zr.mMax);
     });
+    connect(mViewport, &DkViewPort::viewImageChanged, mZoomWidget->getOverview(), &DkOverview::imageUpdated);
 
     // waiting
     connect(mDelayedInfo, &DkDelayedMessage::infoSignal, this, [this](const QString &msg, int time) {
