@@ -379,7 +379,7 @@ void DkViewPort::setImage(QImage newImg)
     }
 
     if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_keep) {
-        zoomToPoint(oldZoom / zoomLevel(), mImgViewRect.center().toPoint(), mWorldMatrix);
+        zoomToPoint(oldZoom / zoomLevel(), mImgViewRect.center().toPoint());
     }
 
     mController->getPlayer()->startTimer();

@@ -242,7 +242,7 @@ void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
 
     const ZoomPos pos = calcZoomCenter(center, factor);
 
-    zoomToPoint(factor, pos.pos, mWorldMatrix);
+    zoomToPoint(factor, pos.pos);
 
     controlImagePosition();
     if (pos.recenter) {
@@ -262,7 +262,9 @@ DkBaseViewPort::ZoomPos DkBaseViewPort::calcZoomCenter(const QPointF &center, do
     return {center};
 }
 
-void DkBaseViewPort::zoomToPoint(double factor, const QPointF &pos, QTransform &matrix) const
+namespace
+{
+void applyZoomAroundPos(double factor, const QPointF &pos, QTransform &matrix)
 {
     // inverse the transform
     double a, b;
@@ -270,6 +272,12 @@ void DkBaseViewPort::zoomToPoint(double factor, const QPointF &pos, QTransform &
 
     matrix.translate(a - factor * a, b - factor * b);
     matrix.scale(factor, factor);
+}
+}
+
+void DkBaseViewPort::zoomToPoint(double factor, const QPointF &pos)
+{
+    applyZoomAroundPos(factor, pos, mWorldMatrix);
 }
 
 void DkBaseViewPort::stopBlockZooming()
