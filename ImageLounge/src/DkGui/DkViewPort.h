@@ -83,8 +83,6 @@ signals:
 public:
     void fullView() override;
 
-    void zoomTo(double zoomLevel);
-
     // tcp actions
     void tcpSynchronize(QTransform relativeMatrix = QTransform(), bool force = false);
 
@@ -111,7 +109,6 @@ protected:
     void resetView() override;
     void togglePattern(bool show) override;
     void eraseBackground(QPainter &painter) const override;
-    void updateImageMatrix() override;
     void getPixelInfo(const QPoint &pos);
 
     // events
@@ -141,7 +138,6 @@ private:
     void rotate180();
     void resizeImage();
     void deleteImage();
-    void zoomToFit();
 
     // tcp actions
     void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
