@@ -286,7 +286,7 @@ void DkBaseViewPort::stopBlockZooming()
 }
 
 // set image --------------------------------------------------------------------
-void DkBaseViewPort::setImage(QImage newImg)
+void DkBaseViewPort::setImage(const QImage &newImg)
 {
     mImgStorage.setImage(newImg);
     QRectF oldImgRect = mImgRect;

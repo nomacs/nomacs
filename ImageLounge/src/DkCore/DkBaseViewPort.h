@@ -107,7 +107,7 @@ public slots:
     virtual void moveViewInWidgetCoords(const QPointF &delta);
     virtual void fullView();
 
-    virtual void setImage(QImage newImg);
+    virtual void setImage(const QImage &newImg);
 
 protected:
     bool event(QEvent *event) override;
