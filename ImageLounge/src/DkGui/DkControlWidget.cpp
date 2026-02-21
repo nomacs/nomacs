@@ -272,6 +272,10 @@ void DkControlWidget::connectWidgets()
     // zoom widget
     connect(mZoomWidget, &DkZoomWidget::zoomSignal, mViewport, &DkViewPort::zoomTo);
     connect(mViewport, &DkViewPort::zoomSignal, mZoomWidget, &DkZoomWidget::updateZoom);
+    connect(mViewport, &DkViewPort::zoomLevelRangeChanged, this, [this]() {
+        const auto zr = mViewport->zoomLevelRange();
+        mZoomWidget->setZoomLevelRange(zr.mMin, zr.mMax);
+    });
 
     // waiting
     connect(mDelayedInfo, &DkDelayedMessage::infoSignal, this, [this](const QString &msg, int time) {

@@ -114,6 +114,7 @@ void DkBaseViewPort::setMinZoomLevelTo1()
 {
     updateImageMatrix();
     mMinZoom = 1 / mImgMatrix.m11();
+    emit zoomLevelRangeChanged();
 }
 
 // zoom - pan --------------------------------------------------------------------
@@ -746,6 +747,7 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
     }
 
     mImgViewRect = mImgMatrix.mapRect(mImgRect);
+    emit zoomLevelRangeChanged();
 
     if (!keepZoom) {
         // Maintain zoom level for calls that are not from setImage()
@@ -925,5 +927,10 @@ void DkBaseViewPort::zoomToFit()
     } else if (zoomLevel < 1 || (zoomLevel == 1 && mSvg)) {
         resetView();
     }
+}
+
+DkBaseViewPort::ZoomLevelRange DkBaseViewPort::zoomLevelRange() const
+{
+    return {mMinZoom * mImgMatrix.m11(), sMaxZoomLevel};
 }
 }

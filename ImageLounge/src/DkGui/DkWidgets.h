@@ -388,6 +388,8 @@ public:
 
     DkOverview *getOverview() const;
 
+    void setZoomLevelRange(double min, double max);
+
 signals:
     void zoomSignal(double zoomLevel);
 
@@ -396,12 +398,17 @@ public slots:
     void onSbZoomValueChanged(double zoomLevel);
     void onSlZoomValueChanged(int zoomLevel);
 
-protected:
+private:
     void createLayout();
 
     DkOverview *mOverview = nullptr;
     QSlider *mSlZoom = nullptr;
     QDoubleSpinBox *mSbZoom = nullptr;
+    double mSliderMin = 0;
+    double mSliderMax = 0;
+
+    // The slider has sSliderMax + 1 levels
+    static constexpr int sSliderMax = 100;
 };
 
 class DkTransformRect : public DkWidget
