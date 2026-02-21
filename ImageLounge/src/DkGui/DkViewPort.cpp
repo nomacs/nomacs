@@ -551,7 +551,7 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
 {
     // ok relative transform
     if (canvasSize.isNull()) {
-        moveView(QPointF(newWorldMatrix.dx(), newWorldMatrix.dy()) / mWorldMatrix.m11());
+        moveViewInWidgetCoords(QPointF(newWorldMatrix.dx(), newWorldMatrix.dy()));
     } else {
         mWorldMatrix = newWorldMatrix;
         mImgMatrix = newImgMatrix;
@@ -568,9 +568,7 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
         // compute difference to current mViewport center - in world coordinates
         imgPos = QPointF(width() * 0.5f, height() * 0.5f) - imgPos;
 
-        // back to screen coordinates
-        qreal s = mWorldMatrix.m11();
-        mWorldMatrix.translate(imgPos.x() / s, imgPos.y() / s);
+        translateViewInWidgetCoords(imgPos.x(), imgPos.y());
     }
 
     update();
@@ -1324,7 +1322,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
         QPointF cPos = event->pos();
         QPointF dxy = (cPos - mPosGrab);
         mPosGrab = cPos;
-        moveView(dxy / mWorldMatrix.m11());
+        moveViewInWidgetCoords(dxy);
 
         // with shift also a hotkey for fast switching...
         if ((DkSettingsManager::param().sync().syncAbsoluteTransform
@@ -2252,13 +2250,13 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event)
         QPointF cPos = event->pos();
         QPointF dxy = (cPos - mPosGrab);
         mPosGrab = cPos;
-        moveView(dxy / mWorldMatrix.m11());
+        moveViewInWidgetCoords(dxy);
     }
 
     QGraphicsView::mouseMoveEvent(event);
 }
 
-void DkViewPortFrameless::moveView(const QPointF &delta)
+void DkViewPortFrameless::moveViewInWidgetCoords(const QPointF &delta)
 {
     // if no zoom is present -> the translation is like a move window
     if (mWorldMatrix.m11() == 1.0) {

@@ -235,7 +235,7 @@ public:
     ~DkViewPortFrameless() override;
 
 public slots:
-    void moveView(const QPointF &delta) override;
+    void moveViewInWidgetCoords(const QPointF &delta) override;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
