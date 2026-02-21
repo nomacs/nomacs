@@ -48,7 +48,7 @@ class DkPlayer;
 class DkFolderScrollBar;
 class DkDelayedMessage;
 class DkFileInfoLabel;
-class DkHistogram;
+class DkHistogramWidget;
 class DkLabelBg;
 class DkPluginViewPort;
 class DkOverview;
@@ -110,7 +110,7 @@ public:
     DkZoomWidget *getZoomWidget() const;
     DkPlayer *getPlayer() const;
     DkFileInfoLabel *getFileInfoLabel() const;
-    DkHistogram *getHistogram() const;
+    DkHistogramWidget *getHistogram() const;
     DkCropWidget *getCropWidget() const;
 
     void showWidgetsSettings();
@@ -186,7 +186,7 @@ protected:
     DkCommentWidget *mCommentWidget;
     DkZoomWidget *mZoomWidget;
     DkPlayer *mPlayer;
-    DkHistogram *mHistogram;
+    DkHistogramWidget *mHistogram;
 
     DkFolderScrollBar *mFolderScroll;
     DkFileInfoLabel *mFileInfoLabel;

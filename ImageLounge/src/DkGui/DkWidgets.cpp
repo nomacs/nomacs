@@ -2025,7 +2025,7 @@ void DkCropWidget::setVisible(bool visible)
 }
 
 // Image histogram  -------------------------------------------------------------------
-DkHistogram::DkHistogram(QWidget *parent)
+DkHistogramWidget::DkHistogramWidget(QWidget *parent)
     : DkFadeWidget(parent)
 {
     setObjectName("DkHistogram");
@@ -2038,18 +2038,18 @@ DkHistogram::DkHistogram(QWidget *parent)
     auto *showStats = new QAction(tr("Show Statistics"), this);
     showStats->setCheckable(true);
     showStats->setChecked(mDisplayMode == DisplayMode::histogram_mode_extended);
-    connect(showStats, &QAction::triggered, this, &DkHistogram::onToggleStatsTriggered);
+    connect(showStats, &QAction::triggered, this, &DkHistogramWidget::onToggleStatsTriggered);
 
     mContextMenu = new QMenu;
     mContextMenu->addAction(showStats);
 }
 
-DkHistogram::~DkHistogram() = default;
+DkHistogramWidget::~DkHistogramWidget() = default;
 
 /**
  * Paints the image histogram
  **/
-void DkHistogram::paintEvent(QPaintEvent *)
+void DkHistogramWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     painter.fillRect(1, 1, width(), height(), DkSettingsManager::param().display().hudBgColor);
@@ -2123,7 +2123,7 @@ void DkHistogram::paintEvent(QPaintEvent *)
     }
 }
 
-void DkHistogram::contextMenuEvent(QContextMenuEvent *event)
+void DkHistogramWidget::contextMenuEvent(QContextMenuEvent *event)
 {
     mContextMenu->exec(event->globalPos());
     event->accept();
@@ -2132,14 +2132,14 @@ void DkHistogram::contextMenuEvent(QContextMenuEvent *event)
     // DkFadeWidget::contextMenuEvent(event);
 }
 
-void DkHistogram::onToggleStatsTriggered(bool show)
+void DkHistogramWidget::onToggleStatsTriggered(bool show)
 {
     mDisplayMode = (show) ? DisplayMode::histogram_mode_extended : DisplayMode::histogram_mode_simple;
     DkSettingsManager::param().display().histogramStyle = (int)mDisplayMode;
     update();
 }
 
-void DkHistogram::loadSettings()
+void DkHistogramWidget::loadSettings()
 {
     int styleSetting = DkSettingsManager::param().display().histogramStyle;
     auto maybeMode = static_cast<DisplayMode>(styleSetting);
@@ -2154,7 +2154,7 @@ void DkHistogram::loadSettings()
  * Goes through the image and counts pixels values. They are used to create the image histogram.
  * @param currently displayed image
  **/
-void DkHistogram::drawHistogram(const QImage &imgQt)
+void DkHistogramWidget::drawHistogram(const QImage &imgQt)
 {
     if (!isVisible() || imgQt.isNull()) {
         setValid(false);
@@ -2270,18 +2270,18 @@ void DkHistogram::drawHistogram(const QImage &imgQt)
 /**
  * Clears the histogram panel
  **/
-void DkHistogram::clearHistogram()
+void DkHistogramWidget::clearHistogram()
 {
     setValid(false);
     update();
 }
 
-void DkHistogram::setValid(bool isValid)
+void DkHistogramWidget::setValid(bool isValid)
 {
     this->mIsValid = isValid;
 }
 
-void DkHistogram::setMaxHistogramValue(int maxValue)
+void DkHistogramWidget::setMaxHistogramValue(int maxValue)
 {
     if (maxValue == 0)
         setValid(false);
@@ -2293,7 +2293,7 @@ void DkHistogram::setMaxHistogramValue(int maxValue)
  * Updates histogram values.
  * @param values to be copied
  **/
-void DkHistogram::updateHistogramValues(int histValues[][256])
+void DkHistogramWidget::updateHistogramValues(int histValues[][256])
 {
     for (int i = 0; i < 256; i++) {
         this->mHist[0][i] = histValues[0][i];
@@ -2305,14 +2305,14 @@ void DkHistogram::updateHistogramValues(int histValues[][256])
 /**
  * Mouse events for scaling the histogram - enlarge the histogram between the bottom axis and the cursor position
  **/
-void DkHistogram::mousePressEvent(QMouseEvent *event)
+void DkHistogramWidget::mousePressEvent(QMouseEvent *event)
 {
     // always propagate mouse events
     if (event->buttons() != Qt::LeftButton)
         DkFadeWidget::mousePressEvent(event);
 }
 
-void DkHistogram::mouseMoveEvent(QMouseEvent *event)
+void DkHistogramWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
         float cp = (float)(height() - event->pos().y());
@@ -2325,7 +2325,7 @@ void DkHistogram::mouseMoveEvent(QMouseEvent *event)
         DkFadeWidget::mouseMoveEvent(event);
 }
 
-void DkHistogram::mouseReleaseEvent(QMouseEvent *event)
+void DkHistogramWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     mScaleFactor = 1;
     update();
