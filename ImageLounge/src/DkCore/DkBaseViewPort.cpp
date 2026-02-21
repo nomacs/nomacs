@@ -289,13 +289,9 @@ void DkBaseViewPort::stopBlockZooming()
 void DkBaseViewPort::setImage(const QImage &newImg)
 {
     mImgStorage.setImage(newImg);
-    QRectF oldImgRect = mImgRect;
     mImgRect = QRectF(QPointF(), getImageSize());
-
-    if (!DkSettingsManager::param().display().keepZoom || mImgRect != oldImgRect)
-        mWorldMatrix.reset();
-
-    updateImageMatrix();
+    const bool kz = DkSettingsManager::param().display().keepZoom;
+    updateImageMatrix(kz ? DkSettings::zoom_keep_same_size : DkSettings::zoom_never_keep);
     update();
 }
 
@@ -724,14 +720,16 @@ QPointF DkBaseViewPort::mapToImagePixel(const QPointF &p)
     return (mWorldMatrix.inverted() * mImgMatrix.inverted() * devicePixelRatioF()).map(p);
 }
 
-void DkBaseViewPort::updateImageMatrix()
+void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZoom)
 {
     if (mImgStorage.isEmpty()) {
         return;
     }
 
+    const QSizeF oldSize = mImgViewRect.size() / mImgMatrix.m11();
     const QRectF oldImgRect = mImgViewRect;
     const QTransform oldImgMatrix = mImgMatrix;
+    const qreal oldZoom = zoomLevel();
 
     mImgMatrix.reset();
 
@@ -749,14 +747,48 @@ void DkBaseViewPort::updateImageMatrix()
 
     mImgViewRect = mImgMatrix.mapRect(mImgRect);
 
-    // update world matrix?
-    // mWorldMatrix.m11() != 1
-    if (qAbs(mWorldMatrix.m11() - 1.0) > 1e-4) {
-        const qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
-        const QPointF offset = oldImgRect.topLeft() / scaleFactor - mImgViewRect.topLeft();
+    if (!keepZoom) {
+        // Maintain zoom level for calls that are not from setImage()
+        if (qAbs(mWorldMatrix.m11() - 1.0) > 1e-4) {
+            const qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
+            const QPointF offset = oldImgRect.topLeft() / scaleFactor - mImgViewRect.topLeft();
 
-        mWorldMatrix.scale(scaleFactor, scaleFactor);
-        mWorldMatrix.translate(offset.x(), offset.y());
+            mWorldMatrix.scale(scaleFactor, scaleFactor);
+            mWorldMatrix.translate(offset.x(), offset.y());
+        }
+        return;
+    }
+
+    // Update mWorldMatrix according to keepZoom rules.
+    switch (keepZoom.value()) {
+    case DkSettings::zoom_always_keep:
+        mWorldMatrix.reset();
+        zoomToPoint(oldZoom / zoomLevel(), mImgViewRect.center().toPoint());
+        break;
+    case DkSettings::zoom_keep_same_size: {
+        constexpr qreal sizeTol = 1e-6;
+        const bool isSameSize = std::abs(oldSize.width() - mImgRect.width()) < sizeTol
+            && std::abs(oldSize.height() - mImgRect.height()) < sizeTol;
+        if (!isSameSize) {
+            mWorldMatrix.reset();
+        }
+        break;
+    }
+    case DkSettings::zoom_never_keep:
+        mWorldMatrix.reset();
+        break;
+    case DkSettings::zoom_always_fit:
+        zoomToFit();
+        break;
+
+    default:
+        Q_UNREACHABLE();
+    }
+
+    // if image is not inside, we'll align it at the top left border
+    if (!mViewportRect.intersects(getImageViewRect())) {
+        mWorldMatrix.translate(-mWorldMatrix.dx(), -mWorldMatrix.dy());
+        centerImage();
     }
 }
 
@@ -871,5 +903,24 @@ void DkBaseViewPort::scrollVertically(int val)
 qreal DkBaseViewPort::zoomLevel() const
 {
     return mWorldMatrix.m11() * mImgMatrix.m11();
+}
+
+void DkBaseViewPort::zoomTo(double zoomLevel)
+{
+    mWorldMatrix.reset();
+    zoom(zoomLevel / mImgMatrix.m11());
+}
+
+void DkBaseViewPort::zoomToFit()
+{
+    const QSizeF imgSize = getImageSize();
+    const QSizeF winSize = size();
+    const double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
+
+    if (zoomLevel > 1) {
+        zoomTo(zoomLevel);
+    } else if (zoomLevel < 1 || (zoomLevel == 1 && mSvg)) {
+        resetView();
+    }
 }
 }

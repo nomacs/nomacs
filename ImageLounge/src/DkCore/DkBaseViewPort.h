@@ -31,6 +31,7 @@
 #include <QGraphicsView>
 
 #include "DkImageStorage.h"
+#include "DkSettings.h"
 
 #include "nmc_config.h"
 
@@ -99,6 +100,8 @@ public:
     // map point in this widget's local coordinates to image pixel
     QPointF mapToImagePixel(const QPointF &p);
 
+    void zoomTo(double zoomLevel);
+
 signals:
     void imageUpdated() const; // triggers on zoom/pan
 
@@ -131,6 +134,8 @@ protected:
     void zoomOut();
     virtual void resetView();
     void translateViewInWidgetCoords(qreal x, qreal y);
+
+    void zoomToFit();
 
     // imageViewSize returns the size of the rectangle that contains the image in the
     // coordinates of this widget.
@@ -235,7 +240,7 @@ protected:
     // fill entire viewport with bg color, image draws on top
     virtual void eraseBackground(QPainter &painter) const;
 
-    virtual void updateImageMatrix();
+    void updateImageMatrix(std::optional<DkSettings::keepZoom> keepZoom = std::nullopt);
     virtual void controlImagePosition();
     virtual void centerImage();
     void changeCursor();

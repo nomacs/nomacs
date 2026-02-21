@@ -353,7 +353,6 @@ void DkViewPort::setImage(const QImage &newImg)
     if (mLoader->hasSvg() && !mLoader->isEdited())
         loadSvg();
 
-    const QSizeF oldSize = mImgRect.size();
     mImgRect = QRectF(QPointF(), getImageSize());
 
     DkActionManager::instance().enableImageActions(!newImg.isNull());
@@ -361,26 +360,7 @@ void DkViewPort::setImage(const QImage &newImg)
     if (wasImageLoaded ^ isImageLoaded)
         mController->imagePresenceChanged(isImageLoaded);
 
-    double oldZoom = zoomLevel();
-
-    constexpr qreal sizeTol = 1e-6;
-    const bool isSameSize = std::abs(oldSize.width() - mImgRect.width()) < sizeTol
-        && std::abs(oldSize.height() - mImgRect.height()) < sizeTol;
-    if (!(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && isSameSize)) {
-        mWorldMatrix.reset();
-    }
-
-    updateImageMatrix();
-
-    // if image is not inside, we'll align it at the top left border
-    if (!mViewportRect.intersects(getImageViewRect())) {
-        mWorldMatrix.translate(-mWorldMatrix.dx(), -mWorldMatrix.dy());
-        centerImage();
-    }
-
-    if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_keep) {
-        zoomToPoint(oldZoom / zoomLevel(), mImgViewRect.center().toPoint());
-    }
+    updateImageMatrix(static_cast<DkSettings::keepZoom>(DkSettingsManager::param().display().keepZoom));
 
     mController->getPlayer()->startTimer();
     mController->getOverview()->imageUpdated();
@@ -473,26 +453,6 @@ DkBaseViewPort::ZoomPos DkViewPort::calcZoomCenter(const QPointF &center, double
     return {pos, recenter};
 }
 
-void DkViewPort::zoomTo(double zoomLevel)
-{
-    mWorldMatrix.reset();
-    zoom(zoomLevel / mImgMatrix.m11());
-}
-
-void DkViewPort::zoomToFit()
-{
-    QSizeF imgSize = getImageSize();
-    QSizeF winSize = size();
-    double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
-
-    if (zoomLevel > 1)
-        zoomTo(zoomLevel);
-    else if (zoomLevel < 1)
-        resetView();
-    else if (zoomLevel == 1 && mLoader && mLoader->hasSvg())
-        resetView();
-}
-
 void DkViewPort::resetView()
 {
     DkBaseViewPort::resetView();
@@ -533,17 +493,6 @@ void DkViewPort::repeatZoom()
         zoom(0.9f);
     } else {
         mRepeatZoomTimer->stop(); // safety if we don't catch the release
-    }
-}
-
-void DkViewPort::updateImageMatrix()
-{
-    const bool updateWM = qAbs(mWorldMatrix.m11() - 1.0) > 1e-4;
-    DkBaseViewPort::updateImageMatrix();
-
-    if (!updateWM && DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_fit) {
-        // NOTE: this is not the same as resetView!
-        zoomToFit();
     }
 }
 
