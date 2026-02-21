@@ -797,19 +797,19 @@ void DkZoomWidget::createLayout()
     mSlZoom = new QSlider(Qt::Horizontal, this);
     mSlZoom->setObjectName("slZoom");
     mSlZoom->setCursor(Qt::ArrowCursor);
-    mSlZoom->setMinimum(0); // add a mapping here
-    mSlZoom->setMaximum(100);
+    mSlZoom->setMinimum(0);
+    mSlZoom->setMaximum(sSliderMax);
     connect(mSlZoom, &QSlider::valueChanged, this, &DkZoomWidget::onSlZoomValueChanged);
 
     mSbZoom = new QDoubleSpinBox(this);
     mSbZoom->setObjectName("sbZoom");
     mSbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
     mSbZoom->setSuffix("%");
-    mSbZoom->setDecimals(0);
+    mSbZoom->setDecimals(1);
     mSbZoom->setValue(100);
-    mSbZoom->setMinimum(0.2);
-    mSbZoom->setMaximum(6000);
     connect(mSbZoom, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkZoomWidget::onSbZoomValueChanged);
+
+    setZoomLevelRange(0.2, 6000);
 
     auto *sliderWidget = new QLabel(this);
     sliderWidget->setObjectName("DkOverviewSliderWidget");
@@ -828,17 +828,14 @@ void DkZoomWidget::createLayout()
 
 void DkZoomWidget::onSbZoomValueChanged(double zoomLevel)
 {
-    updateZoom((float)zoomLevel);
     emit zoomSignal(zoomLevel / 100.0);
 }
 
 void DkZoomWidget::onSlZoomValueChanged(int zoomLevel)
 {
-    double level = (zoomLevel > 50) ? (zoomLevel - 50.0) / 50.0 * mSbZoom->maximum() + 200.0 : zoomLevel * 4.0;
-    if (level < 0.2)
-        level = 0.2;
-    updateZoom(level);
-    emit zoomSignal(level / 100.0);
+    double level = std::exp(static_cast<double>(zoomLevel) / static_cast<double>(sSliderMax) * (mSliderMax - mSliderMin)
+                            + mSliderMin);
+    emit zoomSignal(level);
 }
 
 void DkZoomWidget::updateZoom(double zoomLevel)
@@ -846,11 +843,20 @@ void DkZoomWidget::updateZoom(double zoomLevel)
     mSlZoom->blockSignals(true);
     mSbZoom->blockSignals(true);
 
-    int slVal = (zoomLevel > 200.0) ? qRound(zoomLevel / mSbZoom->maximum() * 50.0 + 50.0) : qRound(zoomLevel * 0.25);
+    int slVal = qRound((std::log(zoomLevel / 100) - mSliderMin) / (mSliderMax - mSliderMin)
+                       * static_cast<double>(sSliderMax));
     mSlZoom->setValue(slVal);
     mSbZoom->setValue(zoomLevel);
     mSlZoom->blockSignals(false);
     mSbZoom->blockSignals(false);
+}
+
+void DkZoomWidget::setZoomLevelRange(double min, double max)
+{
+    mSliderMin = std::log(min);
+    mSliderMax = std::log(max);
+    mSbZoom->setMinimum(min * 100);
+    mSbZoom->setMaximum(max * 100);
 }
 
 DkOverview *DkZoomWidget::getOverview() const

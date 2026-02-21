@@ -102,8 +102,15 @@ public:
 
     void zoomTo(double zoomLevel);
 
+    struct ZoomLevelRange {
+        qreal mMin;
+        qreal mMax;
+    };
+    [[nodiscard]] ZoomLevelRange zoomLevelRange() const;
+
 signals:
     void imageUpdated() const; // triggers on zoom/pan
+    void zoomLevelRangeChanged() const;
 
 public slots:
     void moveViewInImageCoords(const QPointF &delta);
@@ -278,7 +285,8 @@ private:
     QImage mBackBuffer;
     QTimer *mZoomTimer;
 
-    // mMinZoom is the constraint on zoomLevel/zoomLevel when fit to view.
+    // mMinZoom is the constraint on zoomLevel relative to the default state
+    // (when fit to view for image larger than the viewport or 100% for image smaller)
     double mMinZoom = 0.01;
     static constexpr double sMaxZoomLevel = 100;
 
