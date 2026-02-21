@@ -809,20 +809,22 @@ void DkBaseViewPort::centerImage()
 {
     const QRectF imgWorldRect = getImageViewRect();
 
-    // if black border - center the image
+    // This is not exactly centering the image.
+    // In each coordinates:
+    // - If the size is smaller than the viewport, translate so that the image is center.
+    // - Otherwise (the size is larger), and somehow the viewport is not fully filled,
+    //   translate to fill the viewport.
     if (imgWorldRect.width() < width()) {
-        qreal dx = (width() - imgWorldRect.width()) * 0.5f - mImgViewRect.x() * mWorldMatrix.m11();
-        dx = (dx - mWorldMatrix.dx()) / mWorldMatrix.m11();
-        mWorldMatrix.translate(dx, 0);
+        const qreal dx = (width() - imgWorldRect.width()) * 0.5f - imgWorldRect.x();
+        mWorldMatrix.translate(dx / mWorldMatrix.m11(), 0);
     } else if (imgWorldRect.left() > 0)
         mWorldMatrix.translate(-imgWorldRect.left() / mWorldMatrix.m11(), 0);
     else if (imgWorldRect.right() < width())
         mWorldMatrix.translate((width() - imgWorldRect.right()) / mWorldMatrix.m11(), 0);
 
     if (imgWorldRect.height() < height()) {
-        qreal dy = (height() - imgWorldRect.height()) * 0.5f - mImgViewRect.y() * mWorldMatrix.m22();
-        dy = (dy - mWorldMatrix.dy()) / mWorldMatrix.m22();
-        mWorldMatrix.translate(0, dy);
+        const qreal dy = (height() - imgWorldRect.height()) * 0.5f - imgWorldRect.y();
+        mWorldMatrix.translate(0, dy / mWorldMatrix.m22());
     } else if (imgWorldRect.top() > 0) {
         mWorldMatrix.translate(0, -imgWorldRect.top() / mWorldMatrix.m22());
     } else if (imgWorldRect.bottom() < height()) {
