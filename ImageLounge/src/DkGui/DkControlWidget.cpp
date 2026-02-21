@@ -88,7 +88,7 @@ DkControlWidget::DkControlWidget(DkThumbLoader *thumbLoader, DkViewPort *parent,
     mWheelButton->hide();
 
     // image histogram
-    mHistogram = new DkHistogram(this);
+    mHistogram = new DkHistogramWidget(this);
 
     init();
     connectWidgets();
@@ -823,7 +823,7 @@ DkFileInfoLabel *DkControlWidget::getFileInfoLabel() const
     return mFileInfoLabel;
 }
 
-DkHistogram *DkControlWidget::getHistogram() const
+DkHistogramWidget *DkControlWidget::getHistogram() const
 {
     return mHistogram;
 }
