@@ -110,10 +110,10 @@ DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent)
 
 DkBaseViewPort::~DkBaseViewPort() = default;
 
-void DkBaseViewPort::zoomConstraints(double minZoom, double maxZoom)
+void DkBaseViewPort::setMinZoomLevelTo1()
 {
-    mMinZoom = minZoom;
-    mMaxZoom = maxZoom;
+    updateImageMatrix();
+    mMinZoom = 1 / mImgMatrix.m11();
 }
 
 // zoom - pan --------------------------------------------------------------------
@@ -236,7 +236,7 @@ void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
     }
 
     // limit zoom in ---
-    if (zoomLevel() > mMaxZoom && factor > 1) {
+    if (zoomLevel() > sMaxZoomLevel && factor > 1) {
         return;
     }
 

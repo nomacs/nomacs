@@ -1395,7 +1395,7 @@ void DkResizeDialog::updateSnippets()
 
     mOrigView->setImage(mImg);
     mOrigView->fullView();
-    mOrigView->zoomConstraints(mOrigView->get100Factor());
+    mOrigView->setMinZoomLevelTo1();
 }
 
 void DkResizeDialog::drawPreview()
@@ -1485,7 +1485,7 @@ void DkResizeDialog::setVisible(bool visible)
 
 void DkResizeDialog::resizeEvent(QResizeEvent *re)
 {
-    mOrigView->zoomConstraints(mOrigView->get100Factor());
+    mOrigView->setMinZoomLevelTo1();
     drawPreview();
     QDialog::resizeEvent(re);
 }

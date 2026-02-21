@@ -60,22 +60,11 @@ public:
     explicit DkBaseViewPort(bool inDialog, QWidget *parent = nullptr);
     ~DkBaseViewPort() override;
 
-    void zoomConstraints(double minZoom = 0.01, double maxZoom = 100.0);
+    void setMinZoomLevelTo1();
 
     void setForceFastRendering(bool fastRendering = true)
     {
         mForceFastRendering = fastRendering;
-    };
-
-    /**
-     * Returns the scale factor for 100%.
-     * Note this factor is only valid for the current image.
-     * @return float
-     **/
-    float get100Factor()
-    {
-        updateImageMatrix();
-        return 1.0f / (float)mImgMatrix.m11();
     };
 
     // world to viewport/widget transform
@@ -282,8 +271,10 @@ private:
     QBrush mPattern;
     QImage mBackBuffer;
     QTimer *mZoomTimer;
+
+    // mMinZoom is the constraint on zoomLevel/zoomLevel when fit to view.
     double mMinZoom = 0.01;
-    double mMaxZoom = 100;
+    static constexpr double sMaxZoomLevel = 100;
 
     // controls whether we cannot pan outside an image
     bool mZeroPanControl = false;

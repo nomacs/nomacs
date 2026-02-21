@@ -152,7 +152,7 @@ void DkCompressDialog::loadSettings()
 
 void DkCompressDialog::resizeEvent(QResizeEvent *ev)
 {
-    mOrigView->zoomConstraints(mOrigView->get100Factor());
+    mOrigView->setMinZoomLevelTo1();
     drawPreview();
     QDialog::resizeEvent(ev);
 }
@@ -313,7 +313,7 @@ void DkCompressDialog::updateSnippets()
 
     mOrigView->setImage(mImg);
     mOrigView->fullView();
-    mOrigView->zoomConstraints(mOrigView->get100Factor());
+    mOrigView->setMinZoomLevelTo1();
 }
 
 void DkCompressDialog::drawPreview()
@@ -502,7 +502,7 @@ void DkCompressDialog::setVisible(bool visible)
     if (visible) {
         updateSnippets();
         drawPreview();
-        mOrigView->zoomConstraints(mOrigView->get100Factor());
+        mOrigView->setMinZoomLevelTo1();
     }
 }
 
