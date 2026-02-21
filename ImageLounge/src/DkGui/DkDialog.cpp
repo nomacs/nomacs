@@ -2430,7 +2430,7 @@ DkExportTiffDialog::DkExportTiffDialog(QWidget *parent /* = 0 */, Qt::WindowFlag
     createLayout();
     setAcceptDrops(true);
 
-    connect(this, &DkExportTiffDialog::updateImage, mViewport, QOverload<QImage>::of(&DkBaseViewPort::setImage));
+    connect(this, &DkExportTiffDialog::updateImage, mViewport, &DkBaseViewPort::setImage);
     connect(&mWatcher, &QFutureWatcherBase::finished, this, &DkExportTiffDialog::processingFinished);
     connect(this, &DkExportTiffDialog::infoMessage, mMsgLabel, &QLabel::setText);
     connect(this, &DkExportTiffDialog::updateProgress, mProgress, &QProgressBar::setValue);
@@ -2740,7 +2740,7 @@ DkMosaicDialog::DkMosaicDialog(QWidget *parent /* = 0 */, Qt::WindowFlags f /* =
     createLayout();
     setAcceptDrops(true);
 
-    connect(this, &DkMosaicDialog::updateImage, mPreview, QOverload<QImage>::of(&DkBaseViewPort::setImage));
+    connect(this, &DkMosaicDialog::updateImage, mPreview, &DkBaseViewPort::setImage);
     connect(&mMosaicWatcher, &QFutureWatcherBase::finished, this, &DkMosaicDialog::mosaicFinished);
     connect(&mPostProcessWatcher, &QFutureWatcherBase::finished, this, &DkMosaicDialog::postProcessFinished);
     connect(&mPostProcessWatcher, &QFutureWatcherBase::canceled, this, &DkMosaicDialog::postProcessFinished);

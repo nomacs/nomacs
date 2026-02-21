@@ -324,7 +324,7 @@ void DkViewPort::loadImage(const QImage &newImg)
     }
 }
 
-void DkViewPort::setImage(QImage newImg)
+void DkViewPort::setImage(const QImage &newImg)
 {
     mDisabledBackground = false;
 
@@ -2375,7 +2375,7 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops)
         updateImage(true);
 }
 
-void DkViewPortContrast::setImage(QImage newImg)
+void DkViewPortContrast::setImage(const QImage &newImg)
 {
     DkViewPort::setImage(newImg);
 

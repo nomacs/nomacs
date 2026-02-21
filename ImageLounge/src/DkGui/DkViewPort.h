@@ -105,7 +105,7 @@ public:
     void updateLoadedImage();
     void loadImage(const QImage &newImg);
     void setEditedImage(QSharedPointer<DkImageContainerT> img);
-    void setImage(QImage newImg) override;
+    void setImage(const QImage &newImg) override;
 
 protected:
     void resetView() override;
@@ -289,7 +289,7 @@ public slots:
 
 protected:
     QImage getImage() const override;
-    void setImage(QImage newImg) override;
+    void setImage(const QImage &newImg) override;
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
