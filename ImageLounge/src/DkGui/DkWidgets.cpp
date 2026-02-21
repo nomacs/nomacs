@@ -679,14 +679,12 @@ void DkOverview::paintEvent(QPaintEvent *event)
 
 void DkOverview::moveImage(const QPointF &p1, const QPointF &p2)
 {
-    // DkViewPort::moveView() requires world coordinates
-    // divide by devicePixelRatioF() since mImageToLocal is in physical pixels and imageToWorld is in logical pixels
-    QTransform imageToWorld = mViewPort->getImageMatrix();
-    QTransform localToWorld = imageToWorld * mImageToLocal.inverted() * (1.0 / devicePixelRatioF());
-    QPointF w1 = localToWorld.map(p1);
-    QPointF w2 = localToWorld.map(p2);
+    // divide by devicePixelRatioF() since mImageToLocal is in physical pixels and imageCoords is in logical pixels
+    QTransform localToImage = mImageToLocal.inverted() * (1.0 / devicePixelRatioF());
+    QPointF w1 = localToImage.map(p1);
+    QPointF w2 = localToImage.map(p2);
 
-    mViewPort->moveView(w1 - w2);
+    mViewPort->moveViewInImageCoords(w1 - w2);
 }
 
 void DkOverview::mousePressEvent(QMouseEvent *event)
