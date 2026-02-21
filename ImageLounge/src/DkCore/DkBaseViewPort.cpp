@@ -451,16 +451,6 @@ void DkBaseViewPort::keyPressEvent(QKeyEvent *event)
     QWidget::keyPressEvent(event);
 }
 
-void DkBaseViewPort::keyReleaseEvent(QKeyEvent *event)
-{
-#ifdef DK_CORE_DLL_EXPORT
-    if (!event->isAutoRepeat())
-        emit keyReleaseSignal(event); // make key presses available
-#endif
-
-    QWidget::keyReleaseEvent(event);
-}
-
 // mouse events --------------------------------------------------------------------
 void DkBaseViewPort::mousePressEvent(QMouseEvent *event)
 {
@@ -712,11 +702,6 @@ void DkBaseViewPort::eraseBackground(QPainter &painter) const
 bool DkBaseViewPort::imageInside() const
 {
     return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(getImageViewRect());
-}
-
-QPointF DkBaseViewPort::mapToImage(const QPointF &p)
-{
-    return (mWorldMatrix.inverted() * mImgMatrix.inverted()).map(p);
 }
 
 QPointF DkBaseViewPort::mapToImagePixel(const QPointF &p)

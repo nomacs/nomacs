@@ -218,6 +218,8 @@ private:
     QFutureWatcher<QImage> mManipulatorWatcher;
     QSharedPointer<DkBaseManipulator> mActiveManipulator;
 
+    QSharedPointer<QBuffer> mMovieIo;
+
     bool mGestureStarted = false;
     bool mDisabledBackground = false; // disables drawBackground() (frameless dialog)
 

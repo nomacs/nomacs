@@ -107,14 +107,10 @@ public:
     // coordinates of this widget.
     QRectF getImageViewRect() const;
 
-    // map point in this widget's local coordinates to image logical (device-normalized) coordinates
-    QPointF mapToImage(const QPointF &p);
-
     // map point in this widget's local coordinates to image pixel
     QPointF mapToImagePixel(const QPointF &p);
 
 signals:
-    void keyReleaseSignal(QKeyEvent *event) const; // make key presses available
     void imageUpdated() const; // triggers on zoom/pan
 
 public slots:
@@ -127,7 +123,6 @@ public slots:
 protected:
     bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
-    void keyReleaseEvent(QKeyEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -152,11 +147,9 @@ protected:
     [[nodiscard]] QSizeF imageViewSize() const;
 
     Qt::KeyboardModifier mAltMod; // it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
-    Qt::KeyboardModifier mCtrlMod;
 
     DkImageStorage mImgStorage;
     QSharedPointer<QMovie> mMovie;
-    QSharedPointer<QBuffer> mMovieIo;
     QSharedPointer<QSvgRenderer> mSvg;
 
     QTransform mImgMatrix;
@@ -284,6 +277,7 @@ private:
     void scrollHorizontally(int val);
     void hideCursor();
 
+    Qt::KeyboardModifier mCtrlMod;
     QBrush mPattern;
     QImage mBackBuffer;
     QTimer *mZoomTimer;
