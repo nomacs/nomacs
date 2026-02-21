@@ -759,16 +759,19 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
         return;
     }
 
+    constexpr qreal sizeTol = 1e-6;
+    const bool isSameSize = std::abs(oldSize.width() - mImgRect.width()) < sizeTol
+        && std::abs(oldSize.height() - mImgRect.height()) < sizeTol;
+
     // Update mWorldMatrix according to keepZoom rules.
     switch (keepZoom.value()) {
     case DkSettings::zoom_always_keep:
-        mWorldMatrix.reset();
-        zoomToPoint(oldZoom / zoomLevel(), mImgViewRect.center().toPoint());
+        if (!isSameSize) {
+            mWorldMatrix.reset();
+            zoomToPoint(oldZoom / zoomLevel(), mImgViewRect.center().toPoint());
+        }
         break;
     case DkSettings::zoom_keep_same_size: {
-        constexpr qreal sizeTol = 1e-6;
-        const bool isSameSize = std::abs(oldSize.width() - mImgRect.width()) < sizeTol
-            && std::abs(oldSize.height() - mImgRect.height()) < sizeTol;
         if (!isSameSize) {
             mWorldMatrix.reset();
         }
