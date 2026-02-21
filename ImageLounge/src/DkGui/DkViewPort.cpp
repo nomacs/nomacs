@@ -457,9 +457,6 @@ void DkViewPort::resetView()
 {
     DkBaseViewPort::resetView();
     showZoom();
-
-    controlImagePosition();
-
     emitZoomSignal();
     tcpSynchronize();
 }
