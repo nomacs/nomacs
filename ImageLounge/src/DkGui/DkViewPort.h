@@ -58,16 +58,6 @@ public:
 
     void setFullScreen(bool fullScreen);
 
-    QTransform *getWorldMatrixPtr()
-    {
-        return &mWorldMatrix;
-    };
-
-    QTransform *getImageMatrixPtr()
-    {
-        return &mImgMatrix;
-    };
-
     void setPaintWidget(QWidget *widget, bool removeWidget);
 
     // getter
@@ -75,12 +65,10 @@ public:
     void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
     DkControlWidget *getController();
 
-    QString getCurrentPixelHexValue();
-
     // map window location (cursor position) to image pixel location, return {-1,-1} if out of bounds
+    // TODO: this shadows a similar method in DkBaseViewPort, need to investigate
+    // whether this should be an override later.
     QPoint mapToImage(const QPoint &windowPos) const;
-
-    void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
 signals:
     void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
@@ -92,9 +80,61 @@ signals:
     void mouseClickSignal(QMouseEvent *event, QPoint imgPos) const;
     void showProgress(bool show, int time = -1) const;
 
-public slots:
+public:
     void fullView() override;
+
+    void zoomTo(double zoomLevel);
+
+    // tcp actions
+    void tcpSynchronize(QTransform relativeMatrix = QTransform(), bool force = false);
+
+    // file actions
+    void loadFile(const QString &filePath);
+    void loadNextFileFast();
+    void loadPrevFileFast();
+    void loadFileFast(int skipIdx);
+    // void loadFile(int skipIdx);
+    bool unloadImage();
+    void deactivate();
+    void cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool cropToMetaData);
+
+    // image saving
+    bool isEdited() const;
+    QImage getImage() const override;
+
+    void updateLoadedImage();
+    void loadImage(const QImage &newImg);
+    void setEditedImage(QSharedPointer<DkImageContainerT> img);
+    void setImage(QImage newImg) override;
+
+protected:
     void resetView() override;
+    void togglePattern(bool show) override;
+    void eraseBackground(QPainter &painter) const override;
+    void updateImageMatrix() override;
+    void getPixelInfo(const QPoint &pos);
+
+    // events
+    void dragLeaveEvent(QDragLeaveEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    bool event(QEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void leaveEvent(QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
+
+    QImage mImgBg;
+
+    DkControlWidget *mController = nullptr;
+
+private:
+    [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
+    void emitZoomSignal();
+    QString getCurrentPixelHexValue();
+    void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
     void rotateCW();
     void rotateCCW();
@@ -102,37 +142,24 @@ public slots:
     void resizeImage();
     void deleteImage();
     void zoomToFit();
-    void resizeEvent(QResizeEvent *event) override;
-    void zoomTo(double zoomLevel);
 
     // tcp actions
     void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
     void tcpSetWindowRect(QRect rect);
     void tcpForceSynchronize();
-    void tcpSynchronize(QTransform relativeMatrix = QTransform(), bool force = false);
     void tcpLoadFile(qint16 idx, QString filename);
 
     // file actions
-    void loadFile(const QString &filePath);
     void reloadFile();
-    void loadNextFileFast();
-    void loadPrevFileFast();
-    void loadFileFast(int skipIdx);
-    // void loadFile(int skipIdx);
     void loadFirst();
     void loadLast();
     void loadSkipNext10();
     void loadSkipPrev10();
-    bool unloadImage();
-    void deactivate();
-    void cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool cropToMetaData);
     void repeatZoom();
 
     void applyPlugin(DkPluginContainer *plugin, const QString &key);
 
-    // image saving
-    bool isEdited() const;
-    QImage getImage() const override;
+    // File saving
     void saveFile();
     void saveFileAs(bool silent = false);
     void saveFileWeb();
@@ -145,60 +172,38 @@ public slots:
     QMimeData *createMimeForDrag() const;
 
     // image manipulators
-    virtual void applyManipulator();
+    void applyManipulator();
     void manipulatorApplied();
 
-    void updateLoadedImage();
-    void onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loaded = true);
-    virtual void setImageUpdated();
-    virtual void loadImage(const QImage &newImg);
-    virtual void setEditedImage(QSharedPointer<DkImageContainerT> img);
-    void setImage(QImage newImg) override;
-
-    void settingsChanged();
     void pauseMovie(bool paused);
     void stopMovie();
-    virtual void loadMovie();
-    virtual void loadSvg();
+    void loadMovie();
+    void loadSvg();
     void nextMovieFrame();
     void previousMovieFrame();
     void animateFade();
-    void togglePattern(bool show) override;
 
-protected:
-    // events
-    void dragLeaveEvent(QDragLeaveEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void mouseDoubleClickEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void wheelEvent(QWheelEvent *event) override;
-    bool event(QEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
-    void leaveEvent(QEvent *event) override;
+    void onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 
-    bool mTestLoaded = false;
-    bool mGestureStarted = false;
-    bool mDisabledBackground = false; // disables drawBackground() (frameless dialog)
+    // functions
+    int swipeRecognition(QPoint start, QPoint end);
+    void swipeAction(int swipeGesture);
 
-    QRectF mOldImgRect;
+    void createShortcuts();
+    void drawPolygon(QPainter &painter, const QPolygon &polygon);
+    void showZoom();
 
-    QTimer *mRepeatZoomTimer;
+    QTimer *mRepeatZoomTimer = nullptr;
 
     // fading stuff
-    QTimer *mAnimationTimer;
+    QTimer *mAnimationTimer = nullptr;
     DkTimer mAnimationTime;
     QImage mAnimationBuffer;
     RenderParams mAnimationParams;
-    bool mAnimationBufferHasAlpha = false;
-    double mAnimationValue;
+    double mAnimationValue = 0;
     QString mPrevFilePath;
-    bool mNextSwipe = true;
-
-    QImage mImgBg;
 
     QVBoxLayout *mPaintLayout = nullptr;
-    DkControlWidget *mController = nullptr;
     QSharedPointer<DkImageLoader> mLoader = QSharedPointer<DkImageLoader>();
     DkResizeDialog *mResizeDialog = nullptr;
 
@@ -213,16 +218,14 @@ protected:
     QFutureWatcher<QImage> mManipulatorWatcher;
     QSharedPointer<DkBaseManipulator> mActiveManipulator;
 
-    // functions
-    virtual int swipeRecognition(QPoint start, QPoint end);
-    virtual void swipeAction(int swipeGesture);
+    QSharedPointer<QBuffer> mMovieIo;
 
-    void createShortcuts();
-    void drawPolygon(QPainter &painter, const QPolygon &polygon);
-    void eraseBackground(QPainter &painter) const override;
-    void updateImageMatrix() override;
-    void showZoom();
-    void getPixelInfo(const QPoint &pos);
+    bool mGestureStarted = false;
+    bool mDisabledBackground = false; // disables drawBackground() (frameless dialog)
+
+    // Fading stuff
+    bool mAnimationBufferHasAlpha = false;
+    bool mNextSwipe = true;
 };
 
 class DllCoreExport DkViewPortFrameless : public DkViewPort
@@ -233,11 +236,8 @@ public:
     explicit DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPortFrameless() override;
 
-    void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false) override;
-
 public slots:
-    void resetView() override;
-    void moveView(const QPointF &delta) override;
+    void moveViewInWidgetCoords(const QPointF &delta) override;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -247,11 +247,10 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
     // functions
-    void updateImageMatrix() override;
     void draw(QPainter &painter, double opacity, int flags) override;
     void drawFrame(QPainter &painter);
     void eraseBackground(QPainter &painter) const override;
-    void controlImagePosition(float lb = -1, float ub = -1) override;
+    void controlImagePosition() override;
     void centerImage() override;
 
     // variables
@@ -260,6 +259,13 @@ protected:
     QVector<QRectF> mStartActionsRects;
     QVector<QPixmap> mStartActionsIcons;
     QRectF mStartBgRect;
+
+private:
+    [[nodiscard]] qreal imageMatrixPaddingRatio() const override
+    {
+        return 0.1;
+    }
+    [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
 };
 
 class DllCoreExport DkViewPortContrast : public DkViewPort

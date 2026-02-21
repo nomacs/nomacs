@@ -57,6 +57,7 @@
 #include <QSvgRenderer>
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
+#include <cstdlib>
 
 #ifdef WITH_OPENCV
 #include "opencv2/imgproc/imgproc.hpp"
@@ -71,7 +72,7 @@ namespace nmc
 {
 // DkViewPort --------------------------------------------------------------------
 DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
-    : DkBaseViewPort(parent)
+    : DkBaseViewPort(false, parent)
 {
     mRepeatZoomTimer = new QTimer(this);
     mAnimationTimer = new QTimer(this);
@@ -308,13 +309,6 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     mController->updateImage(image);
 }
 
-void DkViewPort::setImageUpdated()
-{
-    if (!mLoader)
-        return;
-    mLoader->setImageUpdated();
-}
-
 void DkViewPort::loadImage(const QImage &newImg)
 {
     // delete current information
@@ -359,6 +353,7 @@ void DkViewPort::setImage(QImage newImg)
     if (mLoader->hasSvg() && !mLoader->isEdited())
         loadSvg();
 
+    const QSizeF oldSize = mImgRect.size();
     mImgRect = QRectF(QPointF(), getImageSize());
 
     DkActionManager::instance().enableImageActions(!newImg.isNull());
@@ -366,27 +361,29 @@ void DkViewPort::setImage(QImage newImg)
     if (wasImageLoaded ^ isImageLoaded)
         mController->imagePresenceChanged(isImageLoaded);
 
-    double oldZoom = mWorldMatrix.m11(); // *mImgMatrix.m11();
+    double oldZoom = zoomLevel();
 
-    if (!(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect == mImgRect))
+    constexpr qreal sizeTol = 1e-6;
+    const bool isSameSize = std::abs(oldSize.width() - mImgRect.width()) < sizeTol
+        && std::abs(oldSize.height() - mImgRect.height()) < sizeTol;
+    if (!(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && isSameSize)) {
         mWorldMatrix.reset();
+    }
 
     updateImageMatrix();
 
     // if image is not inside, we'll align it at the top left border
-    if (!mViewportRect.intersects(mWorldMatrix.mapRect(mImgViewRect))) {
+    if (!mViewportRect.intersects(getImageViewRect())) {
         mWorldMatrix.translate(-mWorldMatrix.dx(), -mWorldMatrix.dy());
         centerImage();
     }
 
     if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_keep) {
-        zoomToPoint(oldZoom, mImgViewRect.center().toPoint(), mWorldMatrix);
+        zoomToPoint(oldZoom / zoomLevel(), mImgViewRect.center().toPoint(), mWorldMatrix);
     }
 
     mController->getPlayer()->startTimer();
     mController->getOverview()->imageUpdated();
-
-    mOldImgRect = mImgRect;
 
     // init fading
     if (isNewFile && wasImageLoaded && DkSettingsManager::param().display().animationDuration
@@ -410,7 +407,7 @@ void DkViewPort::setImage(QImage newImg)
     if (mController->getHistogram())
         mController->getHistogram()->drawHistogram(newImg);
 
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
+    emitZoomSignal();
 
     // status info
     if (!newImg.isNull()) {
@@ -422,10 +419,6 @@ void DkViewPort::setImage(QImage newImg)
                 colorSpaceDesc = tr("Custom"); // Unrecognized but valid color profile
         }
 
-        DkStatusBarManager::instance().setMessage(QString::number(
-                                                      qRound((float)(mWorldMatrix.m11() * mImgMatrix.m11() * 100)))
-                                                      + "%",
-                                                  DkStatusBar::status_zoom_info);
         DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()) + u'|' + colorSpaceDesc,
                                                   DkStatusBar::status_format_info);
         DkStatusBarManager::instance().setMessage(QString::number(newImg.width()) + " x "
@@ -444,89 +437,40 @@ void DkViewPort::setImage(QImage newImg)
 
 void DkViewPort::zoom(double factor, const QPointF &center, bool force)
 {
-    if (mImgStorage.isEmpty() || mBlockZooming)
-        return;
-
-    // factor/=5;//-0.1 <-> 0.1
-    // factor+=1;//0.9 <-> 1.1
-
-    // limit zoom out ---
-    if (mWorldMatrix.m11() * factor < mMinZoom && factor < 1)
-        return;
-
-    // reset view & block if we pass the 'image fit to screen' on zoom out
-    if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11() * factor < 1 && !force) {
-        mBlockZooming = true;
-        mZoomTimer->start(500);
-        resetView();
+    if (mBlockZooming) {
         return;
     }
 
-    // reset view if we pass the 'image fit to screen' on zoom in
-    if (mWorldMatrix.m11() < 1 && mWorldMatrix.m11() * factor > 1 && !force) {
-        resetView();
-        return;
-    }
+    DkBaseViewPort::zoom(factor, center, force);
 
-    // TODO: the reset in mWorldMatrix introduces wrong pans
-    //// reset view & block if we pass the '100%' on zoom out
-    // if (mWorldMatrix.m11()*mImgMatrix.m11()-FLT_EPSILON > 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor < 1) {
-    //
-    //	mBlockZooming = true;
-    //	mZoomTimer->start(500);
-    //	mWorldMatrix.reset();
-    //	factor = 1.0f / (float)mImgMatrix.m11();
-    // }
-
-    //// reset view if we pass the '100%' on zoom in
-    // if (mWorldMatrix.m11()*mImgMatrix.m11()+FLT_EPSILON < 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor > 1) {
-
-    //	mBlockZooming = true;
-    //	mZoomTimer->start(500);
-    //	mWorldMatrix.reset();
-    //	factor = 1.0f / (float)mImgMatrix.m11();
-    //}
-
-    // limit zoom in ---
-    if (mWorldMatrix.m11() * mImgMatrix.m11() > mMaxZoom && factor > 1)
-        return;
-
-    bool blackBorder = false;
-
-    QPointF pos = center;
-
-    // if no center assigned: zoom in at the image center
-    if (pos.x() == -1 || pos.y() == -1)
-        pos = mImgViewRect.center();
-    else {
-        // if black border - do not zoom to the mouse coordinate
-        if (mImgViewRect.width() * (mWorldMatrix.m11() * factor) < width()) {
-            pos.setX(mImgViewRect.center().x());
-            blackBorder = true;
-        }
-        if ((mImgViewRect.height() * mWorldMatrix.m11() * factor) < height()) {
-            pos.setY(mImgViewRect.center().y());
-            blackBorder = true;
-        }
-    }
-
-    zoomToPoint(factor, pos, mWorldMatrix);
-
-    controlImagePosition();
-    if (blackBorder && factor < 1)
-        centerImage(); // TODO: geht auch schöner
     showZoom();
-    changeCursor();
-
     mController->update(); // why do we need to update the mController manually?
-    update();
-
     tcpSynchronize();
 
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
-    DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11() * mImgMatrix.m11() * 100))
-                                                  + "%",
-                                              DkStatusBar::status_zoom_info);
+    emitZoomSignal();
+}
+
+DkBaseViewPort::ZoomPos DkViewPort::calcZoomCenter(const QPointF &center, double factor) const
+{
+    // if no center assigned: zoom in at the image center
+    if (center.x() == -1 || center.y() == -1) {
+        return {mImgViewRect.center()};
+    }
+
+    QPointF pos = center;
+    bool recenter = false;
+    const QSizeF scaledSize = imageViewSize() * factor;
+    // if the image does not fill the view port - do not zoom to the mouse coordinate
+    if (scaledSize.width() < width()) {
+        pos.setX(mImgViewRect.center().x());
+        recenter |= factor < 1;
+    }
+    if (scaledSize.height() < height()) {
+        pos.setY(mImgViewRect.center().y());
+        recenter |= factor < 1;
+    }
+
+    return {pos, recenter};
 }
 
 void DkViewPort::zoomTo(double zoomLevel)
@@ -551,28 +495,19 @@ void DkViewPort::zoomToFit()
 
 void DkViewPort::resetView()
 {
-    mWorldMatrix.reset();
+    DkBaseViewPort::resetView();
     showZoom();
-    changeCursor();
 
-    update();
     controlImagePosition();
 
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
-    DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11() * mImgMatrix.m11() * 100))
-                                                  + "%",
-                                              DkStatusBar::status_zoom_info);
+    emitZoomSignal();
     tcpSynchronize();
 }
 
 void DkViewPort::fullView()
 {
     QPointF p = mViewportRect.center();
-    zoom(1.0 / (mImgMatrix.m11() * mWorldMatrix.m11()), p.toPoint(), true);
-
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
-    changeCursor();
-    update();
+    zoom(1.0 / zoomLevel(), p.toPoint(), true);
 }
 
 void DkViewPort::showZoom()
@@ -581,7 +516,7 @@ void DkViewPort::showZoom()
     if (isFullScreen() || DkSettingsManager::param().app().hideAllPanels)
         return;
 
-    QString zoomStr = QString::asprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
+    QString zoomStr = QString::asprintf("%.1f%%", zoomLevel() * 100);
 
     if (!mController->getZoomWidget()->isVisible())
         mController->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
@@ -603,49 +538,20 @@ void DkViewPort::repeatZoom()
 
 void DkViewPort::updateImageMatrix()
 {
-    if (mImgStorage.isEmpty())
-        return;
+    const bool updateWM = qAbs(mWorldMatrix.m11() - 1.0) > 1e-4;
+    DkBaseViewPort::updateImageMatrix();
 
-    QRectF oldImgRect = mImgViewRect;
-    QTransform oldImgMatrix = mImgMatrix;
-
-    mImgMatrix.reset();
-
-    // getImageSize() is in logical pixels; it will change if dpr changes but image remains the same!
-    QSizeF imgSize = getImageSize();
-    mImgRect = QRectF(QPointF(), imgSize);
-
-    // if the image is smaller or zoom is active: paint the image as is
-    if (!mViewportRect.contains(mImgRect.toRect()))
-        mImgMatrix = getScaledImageMatrix();
-    else {
-        mImgMatrix.translate((float)(getMainGeometry().width() - imgSize.width()) * 0.5f,
-                             (float)(getMainGeometry().height() - imgSize.height()) * 0.5f);
-        mImgMatrix.scale(1.0f, 1.0f);
-    }
-
-    mImgViewRect = mImgMatrix.mapRect(mImgRect);
-
-    // update world matrix?
-    // mWorldMatrix.m11() != 1
-    if (qAbs(mWorldMatrix.m11() - 1.0) > 1e-4) {
-        qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
-        qreal dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
-        qreal dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
-
-        mWorldMatrix.scale(scaleFactor, scaleFactor);
-        mWorldMatrix.translate(dx, dy);
-    }
-    // NOTE: this is not the same as resetView!
-    else if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_fit)
+    if (!updateWM && DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_fit) {
+        // NOTE: this is not the same as resetView!
         zoomToFit();
+    }
 }
 
 void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMatrix, QPointF canvasSize)
 {
     // ok relative transform
     if (canvasSize.isNull()) {
-        moveView(QPointF(newWorldMatrix.dx(), newWorldMatrix.dy()) / mWorldMatrix.m11());
+        moveViewInWidgetCoords(QPointF(newWorldMatrix.dx(), newWorldMatrix.dy()));
     } else {
         mWorldMatrix = newWorldMatrix;
         mImgMatrix = newImgMatrix;
@@ -662,9 +568,7 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
         // compute difference to current mViewport center - in world coordinates
         imgPos = QPointF(width() * 0.5f, height() * 0.5f) - imgPos;
 
-        // back to screen coordinates
-        qreal s = mWorldMatrix.m11();
-        mWorldMatrix.translate(imgPos.x() / s, imgPos.y() / s);
+        translateViewInWidgetCoords(imgPos.x(), imgPos.y());
     }
 
     update();
@@ -693,7 +597,7 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix, bool force)
         QPointF size = QPointF(geometry().width() / 2.0f, geometry().height() / 2.0f);
         size = mWorldMatrix.inverted().map(size);
         size = mImgMatrix.inverted().map(size);
-        size = QPointF(size.x() / (float)getImageSize().width(), size.y() / (float)getImageSize().height());
+        size = QPointF(size.x() / getImageSize().width(), size.y() / getImageSize().height());
 
         emit sendTransformSignal(mWorldMatrix, mImgMatrix, size);
     }
@@ -745,7 +649,7 @@ void DkViewPort::resizeImage()
     if (imgC) {
         metaData = imgC->getMetaData();
         QVector2D res = metaData->getResolution();
-        mResizeDialog->setExifDpi((float)res.x());
+        mResizeDialog->setExifDpi(static_cast<float>(res.x()));
     }
 
     if (!imgC) {
@@ -987,11 +891,10 @@ void DkViewPort::paintEvent(QPaintEvent *event)
 
         painter.setWorldTransform(mWorldMatrix);
 
+        const qreal zl = zoomLevel();
         // interpolate between 100% and max interpolate level
-        if (!mForceFastRendering && // force?
-            mImgMatrix.m11() * mWorldMatrix.m11() - DBL_EPSILON > 1.0 && // @100% ?
-            mImgMatrix.m11() * mWorldMatrix.m11()
-                <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) { // > max zoom level
+        if (!mForceFastRendering && zl - DBL_EPSILON > 1.0
+            && zl <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) { // > max zoom level
             painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
         }
 
@@ -1126,7 +1029,7 @@ void DkViewPort::eraseBackground(QPainter &painter) const
     qreal dpr = devicePixelRatioF();
     QSizeF s = mImgBg.size() / dpr;
 
-    if (s.width() > (float)(size().width() * 0.5))
+    if (s.width() > size().width() * 0.5)
         s = s * ((size().width() * 0.5) / s.width());
 
     if (s.height() > size().height() * 0.6)
@@ -1419,7 +1322,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
         QPointF cPos = event->pos();
         QPointF dxy = (cPos - mPosGrab);
         mPosGrab = cPos;
-        moveView(dxy / mWorldMatrix.m11());
+        moveViewInWidgetCoords(dxy);
 
         // with shift also a hotkey for fast switching...
         if ((DkSettingsManager::param().sync().syncAbsoluteTransform
@@ -1485,7 +1388,7 @@ void DkViewPort::wheelEvent(QWheelEvent *event)
 
 int DkViewPort::swipeRecognition(QPoint start, QPoint end)
 {
-    DkVector vec((float)(start.x() - end.x()), (float)(start.y() - end.y()));
+    DkVector vec(static_cast<float>(start.x() - end.x()), static_cast<float>(start.y() - end.y()));
 
     if (fabs(vec.norm()) < 100)
         return no_swipe;
@@ -1755,16 +1658,6 @@ void DkViewPort::rotate180()
 
 // file handling --------------------------------------------------------------------
 
-void DkViewPort::settingsChanged()
-{
-    reloadFile();
-
-    mAltMod = DkSettingsManager::param().global().altMod;
-    mCtrlMod = DkSettingsManager::param().global().ctrlMod;
-
-    mController->settingsChanged();
-}
-
 void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img)
 {
     if (!img) {
@@ -1816,7 +1709,6 @@ void DkViewPort::loadFile(const QString &filePath)
     if (!unloadImage())
         return;
 
-    mTestLoaded = false;
     if (!mLoader)
         return;
 
@@ -1915,7 +1807,7 @@ void DkViewPort::loadFirst()
     if (!unloadImage())
         return;
 
-    if (mLoader && !mTestLoaded)
+    if (mLoader)
         mLoader->firstFile();
 
     if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
@@ -1928,7 +1820,7 @@ void DkViewPort::loadLast()
     if (!unloadImage())
         return;
 
-    if (mLoader && !mTestLoaded)
+    if (mLoader)
         mLoader->lastFile();
 
     if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
@@ -2129,6 +2021,14 @@ void DkViewPort::cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool
     setEditedImage(imgC);
 }
 
+void DkViewPort::emitZoomSignal()
+{
+    qreal zoomPercentage = zoomLevel() * 100;
+    emit zoomSignal(zoomPercentage);
+    DkStatusBarManager::instance().setMessage(QString::number(qRound(zoomPercentage)) + "%",
+                                              DkStatusBar::status_zoom_info);
+}
+
 // DkViewPortFrameless --------------------------------------------------------------------
 DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent)
     : DkViewPort(thumbLoader, parent)
@@ -2149,57 +2049,28 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
 
 DkViewPortFrameless::~DkViewPortFrameless() = default;
 
-void DkViewPortFrameless::zoom(double factor, const QPointF &center, bool force)
+DkBaseViewPort::ZoomPos DkViewPortFrameless::calcZoomCenter(const QPointF &center, double /* unused */) const
 {
-    if (mImgStorage.isEmpty() || mBlockZooming)
-        return;
-
-    // limit zoom out ---
-    if (mWorldMatrix.m11() * factor <= mMinZoom && factor < 1)
-        return;
-
-    // reset view & block if we pass the 'image fit to screen' on zoom out
-    if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11() * factor < 1 && !force) {
-        mBlockZooming = true;
-        mZoomTimer->start(500);
-    }
-
-    // limit zoom in ---
-    if (mWorldMatrix.m11() * mImgMatrix.m11() > mMaxZoom && factor > 1)
-        return;
-
-    QRectF viewRect = mWorldMatrix.mapRect(mImgViewRect);
+    QRectF viewRect = getImageViewRect();
     QPointF pos = center;
 
     // if no center assigned: zoom in at the image center
-    if (pos.x() == -1 || pos.y() == -1)
+    if (pos.x() == -1 || pos.y() == -1) {
         pos = viewRect.center();
+    }
 
-    if (pos.x() < viewRect.left())
+    if (pos.x() < viewRect.left()) {
         pos.setX(viewRect.left());
-    else if (pos.x() > viewRect.right())
+    } else if (pos.x() > viewRect.right()) {
         pos.setX(viewRect.right());
-    if (pos.y() < viewRect.top())
+    }
+    if (pos.y() < viewRect.top()) {
         pos.setY(viewRect.top());
-    else if (pos.y() > viewRect.bottom())
+    } else if (pos.y() > viewRect.bottom()) {
         pos.setY(viewRect.bottom());
+    }
 
-    zoomToPoint(factor, pos, mWorldMatrix);
-
-    controlImagePosition();
-    showZoom();
-    changeCursor();
-
-    update();
-
-    tcpSynchronize();
-    emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
-}
-
-void DkViewPortFrameless::resetView()
-{
-    // maybe we can delete this function...
-    DkViewPort::resetView();
+    return {pos};
 }
 
 void DkViewPortFrameless::paintEvent(QPaintEvent *event)
@@ -2233,8 +2104,8 @@ void DkViewPortFrameless::resizeEvent(QResizeEvent *event)
     bgRect.moveCenter(initialRect.center());
     mStartBgRect = bgRect;
 
-    constexpr float margin = 40;
-    float iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
+    constexpr qreal margin = 40;
+    qreal iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
     QSize iconSize = QSize(qRound(iconSizeMargin - margin), qRound(iconSizeMargin - margin));
     QPointF offset = QPointF(bgRect.left() + 49, bgRect.top() + 246 + 15);
 
@@ -2313,7 +2184,7 @@ void DkViewPortFrameless::drawFrame(QPainter &painter)
 
     QRectF frameRect;
 
-    float fs = qMin((float)mImgViewRect.width(), (float)mImgViewRect.height()) * 0.1f;
+    qreal fs = qMin(mImgViewRect.width(), mImgViewRect.height()) * 0.1;
 
     // looks pretty bad if the frame is too small
     if (fs < 4)
@@ -2379,13 +2250,13 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event)
         QPointF cPos = event->pos();
         QPointF dxy = (cPos - mPosGrab);
         mPosGrab = cPos;
-        moveView(dxy / mWorldMatrix.m11());
+        moveViewInWidgetCoords(dxy);
     }
 
     QGraphicsView::mouseMoveEvent(event);
 }
 
-void DkViewPortFrameless::moveView(const QPointF &delta)
+void DkViewPortFrameless::moveViewInWidgetCoords(const QPointF &delta)
 {
     // if no zoom is present -> the translation is like a move window
     if (mWorldMatrix.m11() == 1.0) {
@@ -2399,50 +2270,13 @@ void DkViewPortFrameless::moveView(const QPointF &delta)
     update();
 }
 
-void DkViewPortFrameless::controlImagePosition(float, float)
+void DkViewPortFrameless::controlImagePosition()
 {
     // dummy method
 }
 
 void DkViewPortFrameless::centerImage()
 {
-}
-
-void DkViewPortFrameless::updateImageMatrix()
-{
-    if (mImgStorage.isEmpty())
-        return;
-
-    QRectF oldImgRect = mImgViewRect;
-    QTransform oldImgMatrix = mImgMatrix;
-
-    mImgMatrix.reset();
-
-    QSizeF imgSize = getImageSize();
-    mImgRect = QRectF(QPoint(), imgSize);
-
-    // if the image is smaller or zoom is active: paint the image as is
-    if (!mViewportRect.contains(mImgRect.toRect())) {
-        mImgMatrix = getScaledImageMatrix(size() * 0.9f);
-        QSize shift = size() * 0.1f;
-        mImgMatrix.translate(shift.width(), shift.height());
-    } else {
-        mImgMatrix.translate((float)(getMainGeometry().width() - imgSize.width()) * 0.5f,
-                             (float)(getMainGeometry().height() - imgSize.height()) * 0.5f);
-        mImgMatrix.scale(1.0f, 1.0f);
-    }
-
-    mImgViewRect = mImgMatrix.mapRect(mImgRect);
-
-    // update world matrix
-    if (mWorldMatrix.m11() != 1) {
-        qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
-        qreal dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
-        qreal dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
-
-        mWorldMatrix.scale(scaleFactor, scaleFactor);
-        mWorldMatrix.translate(dx, dy);
-    }
 }
 
 // DkViewPortContrast --------------------------------------------------------------------

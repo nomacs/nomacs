@@ -352,10 +352,9 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event)
     const QPointF pos = event->position();
 
     if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || mPanningToolActive) {
-        QPointF p1 = viewport->mapToImage(pos);
-        QPointF p0 = viewport->mapToImage(mLastMousePos);
+        const QPointF offset = pos - mLastMousePos;
         mLastMousePos = pos;
-        viewport->moveView(p1 - p0);
+        viewport->moveViewInWidgetCoords(offset);
         return;
     }
 
