@@ -191,6 +191,7 @@ private:
     void showZoom();
 
     QTimer *mRepeatZoomTimer = nullptr;
+    QPoint mRepeatZoomCenter;
 
     // fading stuff
     QTimer *mAnimationTimer = nullptr;
