@@ -496,9 +496,9 @@ QImage DkImage::rotateImage(const QImage &img, double angle)
 #if WITH_OPENCV
 
 // rgb->grayscale conversion in linear light
-class DkGrayScaleKernel : public DkKernelBase<DkGrayScaleKernel>
+class DkGrayScaleKernel : public DkKernelBase
 {
-    friend class DkKernelBase<DkGrayScaleKernel>;
+    friend class DkKernelBase;
 
 public:
     Q_DISABLE_COPY(DkGrayScaleKernel)
@@ -516,11 +516,12 @@ protected:
     QColorTransform mSrcToLinear{};
 
     template<typename SrcFmt, typename DstFmt>
-    static bool kernel(DkGrayScaleKernel &self, const DkWorkRange &range)
+    static bool kernel(const std::any &arg, const DkWorkRange &range)
     {
         using SrcType = typename SrcFmt::ChannelType;
         using DstType = typename DstFmt::ChannelType;
 
+        auto &self = *(std::any_cast<DkGrayScaleKernel *>(arg));
         const auto &src = self.mSrc.mat();
         auto &dst = self.mDst.mat();
         auto &srcToLinear = self.mSrcToLinear;
@@ -593,8 +594,8 @@ protected:
                                           {ImgFmt::RGBA64, ImgFmt::RGBAFP32},
                                           {ImgFmt::RGBAFP32, ImgFmt::RGBAFP32}}};
 
-    static constexpr DispatchTable kTableOpaque = makeTable(kMapOpaque);
-    static constexpr DispatchTable kTableAlpha = makeTable(kMapAlpha);
+    static constexpr DispatchTable kTableOpaque = makeTable<DkGrayScaleKernel>(kMapOpaque);
+    static constexpr DispatchTable kTableAlpha = makeTable<DkGrayScaleKernel>(kMapAlpha);
 
 public:
     bool run() override
@@ -642,7 +643,7 @@ public:
 
         mDst = DkNativeImage::fromImage(dst);
 
-        return dispatch(table, mSrc.img().format(), *this, {0, mSrc.img().height()});
+        return dispatch(table, mSrc.img().format(), this, {0, mSrc.img().height()});
     }
 
     QImage result() const override
@@ -839,8 +840,8 @@ static void normalize(cv::Mat &mat,
 }
 
 // normalize to min/max of all channels (global normalization)
-struct DkNormalizeKernel : public DkKernelBase<DkNormalizeKernel> {
-    friend class DkKernelBase<DkNormalizeKernel>;
+struct DkNormalizeKernel : public DkKernelBase {
+    friend class DkKernelBase;
 
 public:
     Q_DISABLE_COPY(DkNormalizeKernel)
@@ -856,11 +857,12 @@ protected:
     DkNativeImage mImg;
 
     template<typename Format>
-    static bool kernel(DkNormalizeKernel &self, const DkWorkRange &range)
+    static bool kernel(const std::any &arg, const DkWorkRange &range)
     {
         Q_UNUSED(range)
 
         // use histogram pass to get min/max rather than have another kernel
+        auto &self = *(std::any_cast<DkNormalizeKernel *>(arg));
         auto &mat = self.mImg.mat();
         auto hist = histogramThreaded<Format>(mat);
         auto mn = hist.globalMin();
@@ -882,13 +884,13 @@ protected:
 
     static constexpr int kCaps = cap_gray | cap_rgb_invariant;
     static constexpr FmtList kFormats = listForKernelCaps(kCaps);
-    static constexpr DispatchTable kTable = makeTable(kFormats);
+    static constexpr DispatchTable kTable = makeTable<DkNormalizeKernel>(kFormats);
 
 public:
     bool run() override
     {
         bool serial = true; // we manage threads ourself
-        return dispatch(kTable, mImg.img().format(), *this, {0, mImg.img().height()}, serial);
+        return dispatch(kTable, mImg.img().format(), this, {0, mImg.img().height()}, serial);
     }
 
     QImage result() const override
@@ -914,9 +916,9 @@ bool DkImage::normImage(QImage &src)
 
 #if WITH_OPENCV
 
-class DkAutoAdjustKernel : public DkKernelBase<DkAutoAdjustKernel>
+class DkAutoAdjustKernel : public DkKernelBase
 {
-    friend class DkKernelBase<DkAutoAdjustKernel>;
+    friend class DkKernelBase;
 
 public:
     Q_DISABLE_COPY(DkAutoAdjustKernel)
@@ -932,11 +934,13 @@ protected:
     DkNativeImage mImg;
 
     template<typename Format>
-    static bool kernel(DkAutoAdjustKernel &args, const DkWorkRange &range)
+    static bool kernel(const std::any &arg, const DkWorkRange &range)
     {
         using ChannelType = typename Format::ChannelType;
 
-        auto &mat = args.mImg.mat();
+        auto &self = *(std::any_cast<DkAutoAdjustKernel *>(arg));
+        auto &mat = self.mImg.mat();
+
         auto hist = histogramThreaded<Format>(mat);
 
         // clip histogram on both ends by 0.5%, for each channel (which causes a color shift)
@@ -971,13 +975,13 @@ protected:
 
     static constexpr int kCaps = cap_gray | cap_rgb_invariant;
     static constexpr FmtList kFormats = listForKernelCaps(kCaps);
-    static constexpr DispatchTable kTable = makeTable(kFormats);
+    static constexpr DispatchTable kTable = makeTable<DkAutoAdjustKernel>(kFormats);
 
 public:
     bool run() override
     {
         bool serial = true;
-        return dispatch(kTable, mImg.img().format(), *this, {0, mImg.img().height()}, serial);
+        return dispatch(kTable, mImg.img().format(), this, {0, mImg.img().height()}, serial);
     }
 
     QImage result() const override
@@ -1134,9 +1138,9 @@ QImage DkImage::cropToImage(const QImage &src, const DkRotatingRect &rect, const
 
 #ifdef WITH_OPENCV
 
-class DkHsvKernel : public DkKernelBase<DkHsvKernel>
+class DkHsvKernel : public DkKernelBase
 {
-    friend class DkKernelBase<DkHsvKernel>;
+    friend class DkKernelBase;
 
 public:
     DkHsvKernel() = delete;
@@ -1218,10 +1222,11 @@ protected:
     }
 
     template<typename Format>
-    static bool kernel(DkHsvKernel &self, const DkWorkRange &range)
+    static bool kernel(const std::any &arg, const DkWorkRange &range)
     {
         using ChannelType = typename Format::ChannelType;
 
+        auto &self = *(std::any_cast<DkHsvKernel *>(arg));
         auto &mat = self.mImg.mat();
         const float hueAdd = self.mHue; // [-180,180]
         const float satScale = self.mSaturation / 100.0 + 1.0; // [-100,100] => [0,2]
@@ -1252,12 +1257,12 @@ protected:
 
     static constexpr int kCaps = cap_gray | cap_bgr | cap_rgb;
     static constexpr FmtList kFormats = listForKernelCaps(kCaps);
-    static constexpr DispatchTable kTable = makeTable(kFormats);
+    static constexpr DispatchTable kTable = makeTable<DkHsvKernel>(kFormats);
 
 public:
     bool run() override
     {
-        return dispatch(kTable, mImg.img().format(), *this, {0, mImg.img().height()});
+        return dispatch(kTable, mImg.img().format(), this, {0, mImg.img().height()});
     }
 
     QImage result() const override
@@ -1372,9 +1377,9 @@ static cv::Mat combineLuts(const cv::Mat &a, const cv::Mat &b)
 }
 
 // kernel to apply a 16-bit LUT equally to all channels
-class DkLutKernel : DkKernelBase<DkLutKernel>
+class DkLutKernel : DkKernelBase
 {
-    friend class DkKernelBase<DkLutKernel>; // needs visibility to kernel()
+    friend class DkKernelBase; // needs visibility to kernel()
 public:
     Q_DISABLE_COPY(DkLutKernel)
     DkLutKernel() = delete;
@@ -1390,12 +1395,13 @@ protected:
     const cv::Mat &mLut; // 16-bit lookup table
 
     template<typename Format>
-    static bool kernel(DkLutKernel &self, const DkWorkRange &range)
+    static bool kernel(const std::any &arg, const DkWorkRange &range)
     {
         using ChannelType = typename Format::ChannelType;
 
         constexpr int U16_Max = std::numeric_limits<uint16_t>::max();
 
+        auto &self = *(std::any_cast<DkLutKernel *>(arg));
         auto &mat = self.mImg.mat();
         const auto &lut = self.mLut;
 
@@ -1421,12 +1427,12 @@ protected:
     }
 
     static constexpr FmtList formats = listForKernelCaps(cap_gray | cap_rgb_invariant);
-    static constexpr DispatchTable table = makeTable(formats);
+    static constexpr DispatchTable table = makeTable<DkLutKernel>(formats);
 
 public:
     bool run() override
     {
-        return dispatch(table, mImg.img().format(), *this, {0, mImg.img().height()});
+        return dispatch(table, mImg.img().format(), this, {0, mImg.img().height()});
     }
 
     QImage result() const override
