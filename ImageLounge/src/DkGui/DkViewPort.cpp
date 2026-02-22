@@ -489,9 +489,9 @@ void DkViewPort::repeatZoom()
     }
 
     if (DkSettingsManager::param().display().invertZoom ^ (btn == Qt::XButton1)) {
-        zoom(0.9);
+        zoom(0.9, mRepeatZoomCenter);
     } else {
-        zoom(1.1);
+        zoom(1.1, mRepeatZoomCenter);
     }
 }
 
@@ -1167,6 +1167,7 @@ void DkViewPort::mousePressEvent(QMouseEvent *event)
         else if (event->buttons() == Qt::XButton2)
             loadNextFileFast();
     } else if (event->buttons() == Qt::XButton1 || event->buttons() == Qt::XButton2) {
+        mRepeatZoomCenter = event->pos();
         repeatZoom();
         mRepeatZoomTimer->start();
     }
