@@ -481,15 +481,17 @@ void DkViewPort::showZoom()
 
 void DkViewPort::repeatZoom()
 {
-    qDebug() << "repeating...";
-    if ((DkSettingsManager::param().display().invertZoom && QApplication::mouseButtons() == Qt::XButton1)
-        || (!DkSettingsManager::param().display().invertZoom && QApplication::mouseButtons() == Qt::XButton2)) {
-        zoom(1.1f);
-    } else if ((!DkSettingsManager::param().display().invertZoom && QApplication::mouseButtons() == Qt::XButton1)
-               || (DkSettingsManager::param().display().invertZoom && QApplication::mouseButtons() == Qt::XButton2)) {
-        zoom(0.9f);
+    const auto btn = QApplication::mouseButtons();
+
+    if (btn != Qt::XButton1 && btn != Qt::XButton2) {
+        mRepeatZoomTimer->stop(); // safety if we did not catch the button release
+        return;
+    }
+
+    if (DkSettingsManager::param().display().invertZoom ^ (btn == Qt::XButton1)) {
+        zoom(0.9);
     } else {
-        mRepeatZoomTimer->stop(); // safety if we don't catch the release
+        zoom(1.1);
     }
 }
 
