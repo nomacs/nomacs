@@ -468,6 +468,9 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     if (!loader.isNull()) {
+        // premultiplied formats can't be used by opencv (antialiasing) or manipulators
+        DkImage::unpremultiply(img);
+
         QColorSpace colorSpace = img.colorSpace();
         if (!colorSpace.isValid()) {
             colorSpace = QColorSpace{QColorSpace::SRgb};

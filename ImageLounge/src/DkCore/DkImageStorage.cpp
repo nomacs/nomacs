@@ -36,6 +36,7 @@
 #include "DkTimer.h"
 
 #include <QColorSpace>
+#include <QFloat16>
 #include <QIconEngine>
 #include <QPainter>
 #include <QPixmap>
@@ -490,7 +491,9 @@ QImage DkImage::rotateImage(const QImage &img, double angle)
     QTransform tx;
     tx.rotate(angle);
 
-    return tmp.transformed(tx, Qt::SmoothTransformation);
+    tmp = tmp.transformed(tx, Qt::SmoothTransformation);
+    unpremultiply(tmp);
+    return tmp;
 }
 
 #if WITH_OPENCV
@@ -2169,6 +2172,91 @@ QImage DkImage::createThumb(const QImage &image, int maxSize)
     // qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
 
     return thumb;
+}
+
+template<typename ChannelType>
+static void unpremultiplyKernel(const DkWorkRange &range, uchar *bits, int w, size_t bytesPerLine)
+{
+    for (int row = range.begin; row < range.end; ++row) {
+        auto *pixel = reinterpret_cast<ChannelType *>(bits + row * bytesPerLine);
+        for (int col = 0; col < w; col++, pixel += 4) {
+            if constexpr (std::is_same_v<uint8_t, ChannelType>) {
+                static_assert(sizeof(QRgb) == 4);
+                auto *rgb = reinterpret_cast<QRgb *>(pixel);
+                *rgb = qUnpremultiply(*rgb);
+            } else if constexpr (std::is_same_v<uint16_t, ChannelType>) {
+                static_assert(sizeof(QRgba64) == 8);
+                auto *rgb = reinterpret_cast<QRgba64 *>(pixel);
+                *rgb = qUnpremultiply(*rgb);
+            } else if constexpr (std::is_same_v<qfloat16, ChannelType>) {
+                static_assert(sizeof(qfloat16) == 2);
+                float r = pixel[0], g = pixel[1], b = pixel[2], a = pixel[3];
+                if (a == 1.0f) {
+                    continue;
+                } else if (a == 0) {
+                    r = 0, g = 0, b = 0;
+                } else {
+                    float invAlpha = 1.0f / a;
+                    r *= invAlpha, g *= invAlpha, b *= invAlpha;
+                }
+                pixel[0] = qfloat16(r), pixel[1] = qfloat16(g), pixel[2] = qfloat16(b);
+            } else if constexpr (std::is_same_v<float, ChannelType>) {
+                ChannelType r = pixel[0], g = pixel[1], b = pixel[2], a = pixel[3];
+                if (a == 1.0f) {
+                    continue;
+                } else if (a == 0) {
+                    r = 0, g = 0, b = 0;
+                } else {
+                    float invAlpha = 1.0f / a;
+                    r *= invAlpha, g *= invAlpha, b *= invAlpha;
+                }
+                pixel[0] = r, pixel[1] = g, pixel[2] = b;
+            } else {
+                throw "unsupported type";
+            }
+        }
+    }
+}
+
+void DkImage::unpremultiply(QImage &img)
+{
+    void (*kernel)(const DkWorkRange &, uchar *, int, size_t) = nullptr;
+
+    QImage::Format newFormat;
+    switch (img.format()) {
+    case QImage::Format_ARGB32_Premultiplied:
+        kernel = &unpremultiplyKernel<uint8_t>;
+        newFormat = QImage::Format_ARGB32;
+        break;
+    case QImage::Format_RGBA8888_Premultiplied:
+        kernel = &unpremultiplyKernel<uint8_t>;
+        newFormat = QImage::Format_RGBA8888;
+        break;
+    case QImage::Format::Format_RGBA64_Premultiplied:
+        kernel = &unpremultiplyKernel<uint16_t>;
+        newFormat = QImage::Format_RGBA64;
+        break;
+    case QImage::Format::Format_RGBA16FPx4_Premultiplied:
+        kernel = &unpremultiplyKernel<qfloat16>;
+        newFormat = QImage::Format_RGBA16FPx4;
+        break;
+    case QImage::Format_RGBA32FPx4_Premultiplied:
+        kernel = &unpremultiplyKernel<float>;
+        newFormat = QImage::Format_RGBA32FPx4;
+        break;
+    default:
+        return;
+    }
+
+    Q_ASSERT(kernel);
+
+    uchar *bits = img.bits();
+    auto slices = DkWorkRange{0, img.height()}.partition();
+    QtConcurrent::blockingMap(slices, [&](const DkWorkRange &slice) {
+        kernel(slice, bits, img.width(), img.bytesPerLine());
+    });
+
+    img.reinterpretAsFormat(newFormat);
 }
 
 // DkImageStorage --------------------------------------------------------------------
