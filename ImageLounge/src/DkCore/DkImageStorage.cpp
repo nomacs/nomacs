@@ -749,7 +749,7 @@ static auto histogram(cv::Mat &mat, const DkWorkRange &range)
 {
     using ChannelType = typename Format::ChannelType;
 
-    constexpr bool isFloat = std::is_floating_point_v<ChannelType>;
+    static constexpr bool isFloat = std::is_floating_point_v<ChannelType>;
     static_assert(isFloat || std::numeric_limits<ChannelType>::max() == Format::Scale);
 
     Histogram<ChannelType> h;
@@ -818,7 +818,9 @@ static void normalize(cv::Mat &mat,
 {
     using ChannelType = typename Format::ChannelType;
 
-    constexpr bool isFloat = std::is_floating_point_v<ChannelType>;
+    static constexpr bool isFloat = std::is_floating_point_v<ChannelType>;
+    static constexpr bool isByte = std::is_same_v<ChannelType, uint8_t>;
+    static constexpr bool isShort = std::is_same_v<ChannelType, uint16_t>;
 
     forEachChannel<Format>(mat, range, [&](ChannelType &value, int channel) {
         ChannelType mn = min[channel];
@@ -827,14 +829,22 @@ static void normalize(cv::Mat &mat,
         Q_ASSERT(isFloat || (mn >= 0 && mx <= Format::Scale));
         Q_ASSERT(mx - mn > 0); // div by zero
 
-        if (isFloat) {
+        if constexpr (isFloat) {
             ChannelType norm = (value - mn) / (mx - mn);
             value = norm;
+        } else if constexpr (isByte) {
+            // breaking this out to get slightly more optimal version for each
+            // if clipping histogram we could have value-mn < 0 => 0,
+            // likewise the multiply could overflow if not unsigned
+            uint8_t d = value > mn ? value - mn : 0u;
+            uint16_t norm = uint16_t(Format::Scale) * d / uint8_t(mx - mn);
+            value = qMin(norm, uint16_t(Format::Scale));
+        } else if constexpr (isShort) {
+            uint16_t d = value > mn ? value - mn : 0u;
+            uint32_t norm = uint32_t(Format::Scale) * d / uint16_t(mx - mn);
+            value = qMin(norm, uint32_t(Format::Scale));
         } else {
-            // (value - mn) could underflow, so use signed integer here
-            int norm = Format::Scale * (int(value) - mn) / (mx - mn);
-            // overflow is possible when clipping histogram
-            value = qBound(0, norm, Format::Scale);
+            throw "unsupported type";
         }
     });
 }
