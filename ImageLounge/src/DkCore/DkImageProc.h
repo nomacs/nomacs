@@ -323,6 +323,7 @@ protected:
         cap_rgb = 0x2, // kernel supports r-g-b-(a) byte order
         cap_gray = 0x4, // kernel supports grayscale images
         cap_rgb_invariant = 0x8, // kernel doesn't depend on rgb channel order
+        cap_serial = 0x10, // dispatch() should not create threads
     };
 
     // build array of ImgFmt based on kernel caps
@@ -447,21 +448,33 @@ protected:
 
     // invoke kernel from dispatch table
     static bool dispatch(const DispatchTable &table,
+                         int caps,
                          QImage::Format qtFormat,
                          std::any kernel,
-                         const DkWorkRange &range,
-                         bool serial = false)
+                         const DkWorkRange &range)
     {
         auto fmt = qtImageFormatToNative(qtFormat);
 
+        if (caps & cap_rgb_invariant) { // kernel doesn't care about rgb order; pick bgr (see listForKernelCaps)
+            switch (fmt) {
+            case ImgFmt::RGB888:
+                fmt = ImgFmt::BGR888;
+                break;
+            case ImgFmt::RGBA8888:
+                fmt = ImgFmt::ARGB32;
+                break;
+            default:;
+            }
+        }
+
         EntryPoint fn = table[(int)fmt];
         if (!fn) {
-            qWarning() << "[Kernel Dispatch] unsupported format" << qtFormat << (int)fmt;
+            qWarning() << "[Kernel Dispatch] unsupported format" << qtFormat << (int)fmt << kernel.type().name();
             return false;
         }
 
         bool ok;
-        if (serial) {
+        if (caps & cap_serial) {
             ok = fn(kernel, range);
         } else {
             auto slices = range.partition();
