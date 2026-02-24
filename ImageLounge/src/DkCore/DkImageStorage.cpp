@@ -597,6 +597,7 @@ protected:
                                           {ImgFmt::RGBA64, ImgFmt::RGBAFP32},
                                           {ImgFmt::RGBAFP32, ImgFmt::RGBAFP32}}};
 
+    static constexpr int kCaps = cap_bgr | cap_rgb;
     static constexpr DispatchTable kTableOpaque = makeTable<DkGrayScaleKernel>(kMapOpaque);
     static constexpr DispatchTable kTableAlpha = makeTable<DkGrayScaleKernel>(kMapAlpha);
 
@@ -646,7 +647,7 @@ public:
 
         mDst = DkNativeImage::fromImage(dst);
 
-        return dispatch(table, mSrc.img().format(), this, {0, mSrc.img().height()});
+        return dispatch(table, kCaps, mSrc.img().format(), this, {0, mSrc.img().height()});
     }
 
     QImage result() const override
@@ -895,15 +896,14 @@ protected:
         return true;
     }
 
-    static constexpr int kCaps = cap_gray | cap_rgb_invariant;
+    static constexpr int kCaps = cap_gray | cap_rgb_invariant | cap_serial;
     static constexpr FmtList kFormats = listForKernelCaps(kCaps);
     static constexpr DispatchTable kTable = makeTable<DkNormalizeKernel>(kFormats);
 
 public:
     bool run() override
     {
-        bool serial = true; // we manage threads ourself
-        return dispatch(kTable, mImg.img().format(), this, {0, mImg.img().height()}, serial);
+        return dispatch(kTable, kCaps, mImg.img().format(), this, {0, mImg.img().height()});
     }
 
     QImage result() const override
@@ -986,15 +986,14 @@ protected:
         return true;
     }
 
-    static constexpr int kCaps = cap_gray | cap_rgb_invariant;
+    static constexpr int kCaps = cap_gray | cap_rgb_invariant | cap_serial;
     static constexpr FmtList kFormats = listForKernelCaps(kCaps);
     static constexpr DispatchTable kTable = makeTable<DkAutoAdjustKernel>(kFormats);
 
 public:
     bool run() override
     {
-        bool serial = true;
-        return dispatch(kTable, mImg.img().format(), this, {0, mImg.img().height()}, serial);
+        return dispatch(kTable, kCaps, mImg.img().format(), this, {0, mImg.img().height()});
     }
 
     QImage result() const override
@@ -1275,7 +1274,7 @@ protected:
 public:
     bool run() override
     {
-        return dispatch(kTable, mImg.img().format(), this, {0, mImg.img().height()});
+        return dispatch(kTable, kCaps, mImg.img().format(), this, {0, mImg.img().height()});
     }
 
     QImage result() const override
@@ -1439,13 +1438,14 @@ protected:
         return true;
     }
 
-    static constexpr FmtList formats = listForKernelCaps(cap_gray | cap_rgb_invariant);
-    static constexpr DispatchTable table = makeTable<DkLutKernel>(formats);
+    static constexpr int kCaps = cap_gray | cap_rgb_invariant;
+    static constexpr FmtList kFormats = listForKernelCaps(kCaps);
+    static constexpr DispatchTable kTable = makeTable<DkLutKernel>(kFormats);
 
 public:
     bool run() override
     {
-        return dispatch(table, mImg.img().format(), this, {0, mImg.img().height()});
+        return dispatch(kTable, kCaps, mImg.img().format(), this, {0, mImg.img().height()});
     }
 
     QImage result() const override
