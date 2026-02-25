@@ -692,14 +692,16 @@ QImage DkImage::grayscaleImage(const QImage &src)
 // if input has one channel (channel 2,3 are set to default values)
 template<typename T>
 struct Histogram {
-    std::array<std::array<uint32_t, 256>, 3> bins;
-    std::array<T, 3> min, max;
+    std::array<std::array<uint32_t, kNumBins>, kNumChannels> bins;
+    std::array<T, kNumChannels> min, max;
+    int numPixels, numBlack, numWhite; // pixel counts
 
     Histogram()
     {
         bins.fill({});
         min.fill(std::numeric_limits<T>::max());
         max.fill(std::numeric_limits<T>::min());
+        numPixels = numBlack = numWhite = 0;
     }
 
     void add(const Histogram<T> &h)
@@ -714,13 +716,18 @@ struct Histogram {
         for (unsigned i = 0; i < h.bins.size(); ++i) {
             max[i] = std::max(max[i], h.max[i]);
         }
+        numPixels += h.numPixels;
+        numBlack += h.numBlack;
+        numWhite += h.numWhite;
     }
 
+    // minimum sample
     T globalMin() const
     {
         return std::min({min[0], min[1], min[2]});
     }
 
+    // maximum sample
     T globalMax() const
     {
         return std::max({max[0], max[1], max[2]});
@@ -758,23 +765,55 @@ struct Histogram {
 
 // channel 0 may be blue or red; the caller must swap values if needed
 template<typename Format>
-static auto histogram(cv::Mat &mat, const DkWorkRange &range)
+static auto histogram(const cv::Mat &mat, const DkWorkRange &range)
 {
     using ChannelType = typename Format::ChannelType;
 
     static constexpr bool isFloat = std::is_floating_point_v<ChannelType>;
     static_assert(isFloat || std::numeric_limits<ChannelType>::max() == Format::Scale);
 
+    static constexpr int numChannels = qMin(3, Format::Channels);
+
     Histogram<ChannelType> h;
 
-    forEachChannel<Format>(mat, range, [&](const ChannelType &value, int channel) {
-        h.min[channel] = std::min(value, h.min[channel]);
-        h.max[channel] = std::max(value, h.max[channel]);
-        if constexpr (!isFloat) { // float images often go beyond [0,1]
-            int bucket = value * 255 / Format::Scale;
-            Q_ASSERT(unsigned(channel) < h.bins.size());
-            Q_ASSERT(bucket >= 0 && unsigned(bucket) < h.bins[channel].size());
-            h.bins[channel][bucket]++;
+    forEachPixel<Format>(mat, range, [&](const ChannelType *pixel) {
+        if constexpr (Format::Channels == 4) {
+            if (pixel[3] == 0) { // don't count transparent pixels
+                return;
+            }
+        }
+
+        for (int channel = 0; channel < numChannels; ++channel) {
+            ChannelType value = pixel[channel];
+
+            h.min[channel] = std::min(value, h.min[channel]);
+            h.max[channel] = std::max(value, h.max[channel]);
+
+            if constexpr (!isFloat) { // float images often go beyond [0,1]
+                int bucket = value * 255 / Format::Scale;
+                Q_ASSERT(unsigned(channel) < h.bins.size());
+                Q_ASSERT(bucket >= 0 && unsigned(bucket) < h.bins[channel].size());
+                h.bins[channel][bucket]++;
+            }
+        }
+
+        h.numPixels++;
+
+        if constexpr (numChannels == 1) {
+            if (pixel[0] == 0) {
+                h.numBlack++;
+            } else if (pixel[0] == Format::Scale) {
+                h.numWhite++;
+            }
+        }
+
+        if constexpr (numChannels == 3) {
+            // the <= because HDR can be beyond [0,1]
+            if (pixel[0] <= 0 && pixel[1] <= 0 && pixel[2] <= 0) {
+                h.numBlack++;
+            } else if (pixel[0] >= Format::Scale && pixel[1] >= Format::Scale && pixel[2] >= Format::Scale) {
+                h.numWhite++;
+            }
         }
     });
 
@@ -784,25 +823,33 @@ static auto histogram(cv::Mat &mat, const DkWorkRange &range)
 
     // float types can exceed [0,1], normalize them before counting
     // TODO: for HDR we need more buckets on the ends, with log scaling probably
-    auto mn = std::min({h.min[0], h.min[1], h.min[2]});
-    auto mx = std::max({h.max[0], h.max[1], h.max[2]});
+    auto mn = h.globalMin();
+    auto mx = h.globalMax();
 
     if (mx - mn == 0) {
         return h;
     }
 
-    forEachChannel<Format>(mat, range, [&](const ChannelType &value, int channel) {
-        ChannelType norm = (value - mn) / (mx - mn);
-        int bucket = norm * 255 / Format::Scale;
-        Q_ASSERT(bucket >= 0 && bucket <= 255);
-        h.bins[channel][bucket]++;
+    forEachPixel<Format>(mat, range, [&](const ChannelType *pixel) {
+        if constexpr (Format::Channels == 4) {
+            if (pixel[3] == 0) {
+                return;
+            }
+        }
+
+        for (int channel = 0; channel < numChannels; ++channel) {
+            ChannelType norm = (pixel[channel] - mn) / (mx - mn);
+            int bucket = norm * 255 / Format::Scale;
+            Q_ASSERT(bucket >= 0 && bucket <= 255);
+            h.bins[channel][bucket]++;
+        }
     });
 
     return h;
 }
 
 template<typename Format>
-static auto histogramThreaded(cv::Mat &mat)
+static auto histogramThreaded(const cv::Mat &mat)
 {
     using HistType = Histogram<typename Format::ChannelType>;
 
