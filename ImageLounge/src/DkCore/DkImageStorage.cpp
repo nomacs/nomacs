@@ -692,6 +692,8 @@ QImage DkImage::grayscaleImage(const QImage &src)
 // if input has one channel (channel 2,3 are set to default values)
 template<typename T>
 struct Histogram {
+    static constexpr int kNumChannels = 3;
+    static constexpr int kNumBins = 256;
     std::array<std::array<uint32_t, kNumBins>, kNumChannels> bins;
     std::array<T, kNumChannels> min, max;
     int numPixels, numBlack, numWhite; // pixel counts
@@ -758,6 +760,44 @@ struct Histogram {
         }
         Q_UNREACHABLE();
         return numBins - 1;
+    }
+
+    // empty bins coincident across channels == missing brightness level
+    int numEmptyLevels() const
+    {
+        int empty = 0;
+        for (int bin = 0; bin < kNumBins; ++bin) {
+            int sum = 0;
+            for (int channel = 0; channel < kNumChannels; ++channel) {
+                sum += bins[channel][bin];
+            }
+            if (sum == 0) {
+                empty++;
+            }
+        }
+        return empty;
+    }
+
+    // bin with the most samples
+    int maxBin(int channel) const
+    {
+        Q_ASSERT(channel >= 0 && channel < kNumChannels);
+        const auto &ch = bins[channel];
+        auto maxIt = std::max_element(ch.begin(), ch.end());
+        return std::distance(ch.begin(), maxIt);
+    }
+
+    // count of max bin from all channels
+    int maxCount() const
+    {
+        int maxCount = 0;
+        for (int channel = 0; channel < kNumChannels; ++channel) {
+            int count = bins[channel][maxBin(channel)];
+            if (count > maxCount) {
+                maxCount = count;
+            }
+        }
+        return maxCount;
     }
 };
 
