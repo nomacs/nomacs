@@ -511,8 +511,8 @@ protected:
 #ifdef WITH_OPENCV
 
 // helper for per-channel processing
-template<typename Format, typename Lambda>
-static void forEachChannel(cv::Mat &mat, const DkWorkRange &range, Lambda func)
+template<typename Format, typename CvMat, typename Lambda>
+static void forEachChannel(CvMat &mat, const DkWorkRange &range, Lambda func)
 {
     Q_ASSERT(Format::isCompatibleWith(mat));
     Q_ASSERT(range.isWithin(0, mat.rows));
@@ -522,7 +522,7 @@ static void forEachChannel(cv::Mat &mat, const DkWorkRange &range, Lambda func)
     constexpr int numChannels = qMin(3, Format::Channels); // skip alpha channel (use per-pixel mode for that)
 
     for (int row = range.begin; row < range.end; ++row) {
-        auto *rowPtr = mat.ptr<ChannelType>(row);
+        auto *rowPtr = mat.template ptr<ChannelType>(row);
         auto *const endPtr = rowPtr + channelsPerRow;
         for (; rowPtr < endPtr; rowPtr += Format::Channels) {
             for (int channel = 0; channel < numChannels; ++channel) {
@@ -533,8 +533,8 @@ static void forEachChannel(cv::Mat &mat, const DkWorkRange &range, Lambda func)
 }
 
 // helper for per-pixel processing
-template<typename Format, typename Lambda>
-static void forEachPixel(cv::Mat &mat, const DkWorkRange &range, Lambda func)
+template<typename Format, typename CvMat, typename Lambda>
+static void forEachPixel(CvMat &mat, const DkWorkRange &range, Lambda func)
 {
     Q_ASSERT(Format::isCompatibleWith(mat));
     Q_ASSERT(range.isWithin(0, mat.rows));
@@ -543,7 +543,7 @@ static void forEachPixel(cv::Mat &mat, const DkWorkRange &range, Lambda func)
     const int channelsPerRow = mat.cols * Format::Channels;
 
     for (int row = range.begin; row < range.end; ++row) {
-        auto *rowPtr = mat.ptr<ChannelType>(row);
+        auto *rowPtr = mat.template ptr<ChannelType>(row);
         auto *const endPtr = rowPtr + channelsPerRow;
         for (; rowPtr < endPtr; rowPtr += Format::Channels) {
             func(rowPtr);
