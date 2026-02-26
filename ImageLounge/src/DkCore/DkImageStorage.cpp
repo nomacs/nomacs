@@ -37,11 +37,13 @@
 
 #include <QColorSpace>
 #include <QFloat16>
+#include <QFontDatabase>
 #include <QIconEngine>
 #include <QPainter>
 #include <QPixmap>
 #include <QPixmapCache>
 #include <QSvgRenderer>
+#include <QTextDocument>
 #include <QtConcurrentMap>
 #include <QtConcurrentRun>
 #include <qmath.h>
@@ -2351,6 +2353,268 @@ void DkImage::unpremultiply(QImage &img)
     });
 
     img.reinterpretAsFormat(newFormat);
+}
+
+#ifdef WITH_OPENCV
+
+class DkHistogramKernel : public DkKernelBase
+{
+    friend class DkKernelBase;
+
+public:
+    DkHistogramKernel() = delete;
+    ~DkHistogramKernel() override = default;
+
+    DkHistogramKernel(const QImage &img)
+        : mImg(DkConstNativeImage::fromImage(img))
+    {
+    }
+
+protected:
+    DkConstNativeImage mImg;
+    std::any mHistogram;
+
+    template<typename Format>
+    static bool kernel(const std::any &arg, const DkWorkRange &range)
+    {
+        Q_UNUSED(range)
+        auto &self = *(std::any_cast<DkHistogramKernel *>(arg));
+        self.mHistogram = histogramThreaded<Format>(self.mImg.mat());
+        return true;
+    }
+
+    static constexpr int kCaps = cap_gray | cap_rgb_invariant | cap_serial;
+    static constexpr FmtList kFmts = listForKernelCaps(kCaps);
+    static constexpr DispatchTable kTable = makeTable<DkHistogramKernel>(kFmts);
+
+public:
+    bool run() override
+    {
+        return dispatch(kTable, kCaps, mImg.img().format(), this, {0, mImg.img().height()});
+    }
+
+    QImage result() const override
+    {
+        return {};
+    }
+
+    std::any histogram() const
+    {
+        return mHistogram;
+    }
+
+    QImage::Format nativeFormat() const // format after native image conversion
+    {
+        return mImg.img().format();
+    }
+};
+
+class DkHistogramRender : public DkKernelBase
+{
+    friend class DkKernelBase;
+
+public:
+    DkHistogramRender() = delete;
+    ~DkHistogramRender() override = default;
+
+    DkHistogramRender(const DkHistogramEngine &hist, QImage &img, float zoom, bool showStats)
+        : mHist(hist)
+        , mImg(img)
+        , mZoom(zoom)
+        , mShowStats(showStats)
+    {
+    }
+
+protected:
+    const DkHistogramEngine &mHist;
+    QImage &mImg;
+    const float mZoom;
+    const bool mShowStats;
+
+    // use R,G,B colors that are easier on the eyes and also
+    // produce better C,M,Y colors with good contrast
+    static constexpr std::array<QRgb, 3> kChannelColors = {
+        qRgb(255, 82, 82), // red softened for dark mode
+        qRgb(102, 187, 106), // emerald/light green
+        qRgb(122, 139, 255) // purple-ish blue
+    };
+
+    static constexpr std::array<int, 3> kBgrOrder{2, 1, 0};
+
+    template<typename ChannelType>
+    static bool render(DkHistogramRender &self, ImgType imgType, int imgChannels)
+    {
+        const Histogram<ChannelType> &h = std::any_cast<Histogram<ChannelType>>(self.mHist.mData);
+        if (h.numPixels <= 0) {
+            return false; // possible; all pixels could be fully transparent
+        }
+
+        QImage &img = self.mImg;
+
+        const bool showStats = self.mShowStats;
+        const float zoom = self.mZoom;
+
+        const float dpr = img.devicePixelRatio();
+        const int imgHeight = img.height();
+
+        const float margin = 5;
+        const int statsHeight = 0.25 * imgHeight / dpr;
+        const int histHeight = showStats ? imgHeight / dpr - statsHeight : imgHeight / dpr - margin / 2;
+
+        const float y0 = histHeight; // bottom of bars
+        const float yScale = float(histHeight) / h.maxCount() * zoom;
+
+        const int numChannels = qMin(3, imgChannels);
+        const int numBins = h.kNumBins;
+
+        QPainter painter(&img);
+
+        if (imgType != ImgType::gray) {
+            painter.setCompositionMode(QPainter::CompositionMode_Screen);
+        }
+
+        QList<QLineF> lines;
+        lines.reserve(numBins);
+
+        for (int i = 0; i < numChannels; ++i) {
+            int channel = i;
+            if (imgType == ImgType::bgr) { // swap rgb=>bgr
+                channel = kBgrOrder[channel];
+            }
+
+            if (imgType == ImgType::gray) {
+                painter.setPen(qRgb(240, 240, 240));
+            } else {
+                painter.setPen(kChannelColors[i]);
+            }
+
+            lines.clear();
+            for (int bin = 0; bin < numBins; ++bin) {
+                float x0 = bin + margin;
+                int count = h.bins[channel][bin];
+                if (count == 0) {
+                    continue;
+                }
+                float y1 = y0 - (count * yScale);
+                lines.append(QLineF{x0, y0, x0, y1});
+            }
+            painter.drawLines(lines);
+        }
+
+        if (showStats) {
+            int numSamples = h.numPixels; // total samples, transparent pixels are not counted
+            int empty = h.numEmptyLevels(); // black bands/gaps in the histogram (including wings)
+
+            int numPixels = numSamples / numChannels;
+            //  double megaPixels = numPixels * 10.0e-7;
+
+            double blackPct = h.numBlack * 100.0 / numPixels;
+            double whitePct = h.numWhite * 100.0 / numPixels;
+            double goodPct = (numSamples - h.numBlack - h.numWhite) * 100.0 / numSamples;
+
+            // relative number of brightness levels (bins with any non-zero channel value)
+            double levelPct = (numBins - empty) * 100.0 / numBins;
+
+            static constexpr QStringView styleSheet =
+                uR"(table,dt,dr { border-collapse: collapse; }
+                    td { font-size: %1px; margin:0px; padding:0px; font-family:"%2"; color:"%3"; })";
+
+            static constexpr QStringView html =
+                uR"(<table width="100%">
+                <tr>
+                    <td>Min:</td> <td>%1</td>
+                    <td>Blk:</td> <td>%3%</td>
+                    <td>OK:</td>  <td>%5%</td>
+                </tr>
+                <tr>
+                    <td>Max:</td> <td>%2</td>
+                    <td>Wht:</td> <td>%4%</td>
+                    <td>Lvl:</td> <td>%6%</td>
+                </tr>
+                </table>)";
+
+            QString text = html.toString()
+                               .arg(h.globalMin())
+                               .arg(h.globalMax())
+                               .arg(blackPct, 0, 'f', 2, ' ')
+                               .arg(whitePct, 0, 'f', 2, ' ')
+                               .arg(goodPct, 0, 'f', 1, ' ')
+                               .arg(levelPct, 0, 'f', 1, ' ');
+
+            QTextDocument doc;
+            doc.setTextWidth(img.width() / dpr);
+            doc.setDocumentMargin(0);
+
+            // monospace font to reduce jitter
+            QString systemMono = QFontDatabase::systemFont(QFontDatabase::FixedFont).family();
+            QString fontColor = DkSettingsManager::param().display().hudFgdColor.name(QColor::HexArgb);
+
+            QString style = styleSheet.toString().arg(13).arg(systemMono).arg(fontColor);
+            doc.setDefaultStyleSheet(style);
+
+            doc.setHtml(text);
+
+            painter.translate(margin, y0 + margin / 2.0);
+            doc.drawContents(&painter);
+        }
+
+        painter.end();
+
+        return true;
+    }
+
+    template<typename Format>
+    static bool kernel(const std::any &arg, const DkWorkRange &range)
+    {
+        Q_UNUSED(range)
+        using ChannelType = typename Format::ChannelType;
+
+        auto &self = *(std::any_cast<DkHistogramRender *>(arg));
+        return render<ChannelType>(self, Format::Type, Format::Channels);
+    }
+
+    static constexpr int kCaps = cap_gray | cap_rgb_invariant | cap_serial;
+    static constexpr FmtList kFmts = listForKernelCaps(kCaps);
+    static constexpr DispatchTable kTable = makeTable<DkHistogramRender>(kFmts);
+
+public:
+    bool run() override
+    {
+        return dispatch(kTable, kCaps, mHist.mFormat, this, {});
+    }
+
+    QImage result() const override
+    {
+        return {}; // unused
+    }
+};
+
+#endif // WITH_OPENCV
+
+bool DkHistogramEngine::compute(const QImage &image)
+{
+#ifdef WITH_OPENCV
+    mFormat = {};
+    mData.reset();
+
+    DkHistogramKernel kernel{image};
+    if (kernel.run()) {
+        mFormat = kernel.nativeFormat();
+        mData = kernel.histogram();
+        return true;
+    }
+#endif
+    return false;
+}
+
+void nmc::DkHistogramEngine::render(QImage &img, float zoom, bool showStats)
+{
+#ifdef WITH_OPENCV
+    Q_ASSERT(mData.has_value());
+
+    DkHistogramRender kernel{*this, img, zoom, showStats};
+    (void)kernel.run();
+#endif
 }
 
 // DkImageStorage --------------------------------------------------------------------
