@@ -54,6 +54,7 @@ namespace nmc
 {
 class DkCropToolBar;
 class DkViewPort;
+class DkHistogramEngine;
 
 class DkButton : public QPushButton
 {
@@ -593,8 +594,6 @@ private slots:
     void onToggleStatsTriggered(bool show);
 
 private:
-    void setMaxHistogramValue(int maxValue);
-    void updateHistogramValues(int histValues[][256]);
     void setValid(bool isValid);
 
     void mousePressEvent(QMouseEvent *event) override;
@@ -605,16 +604,11 @@ private:
 
     void loadSettings();
 
-    int mHist[3][256]; /// 3 channels 256 bin. channels duplicated when gray
-    int mNumPixels = 0; /// image pixel count
-    int mNumDistinctValues = 0; /// number of distinct values
-    int mNumZeroPixels = 0; /// pixels with zero value
-    int mNumSaturatedPixels = 0; /// pixels saturating RGB 8bit
-    int mNumValues = 0; /// number of distinct histogram values
-    int mMinBinValue = 256; /// (gray-only) minimum intensity value
-    int mMaxBinValue = -1; /// (gray-only) maximum intensity value
-    int mMaxValue = 20; /// maximum count over all bins
+    std::unique_ptr<DkHistogramEngine> mHistogram;
+    QImage mHistImage;
+
     bool mIsValid = false; /// if true a histogram and stats are computed
+    bool mIsDirty = false; // if true histogram needs to be re-rendered
     float mScaleFactor = 1;
     DisplayMode mDisplayMode = DisplayMode::histogram_mode_simple; /// determins shown histogram type
 
