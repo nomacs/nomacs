@@ -46,14 +46,14 @@ jobs:
         config:
           # this is extremely slow (~15 minutes) due to opencv
           - type: quazip
-            packages: quazip libraw
-            flags: "-DENABLE_QUAZIP=ON"
+            packages: libraw
+            flags: "-DENABLE_QUAZIP=ON -DUSE_SYSTEM_QUAZIP=OFF"
             kimageformats: true # compile kimageformat-plugins
             opencv: true # compile a minimal opencv
             portable: true # use the new portable bundle script
             bundle: false # build portable bundle using macdeployqt
             artifacts: true # upload artifacts
-            release: true # TODO: publish release
+            release: false # TODO: publish release
 
           - type: minimum
             packages:
@@ -99,6 +99,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           git submodule update --init --depth 1 3rd-party/imageformats
+          git submodule update --init --depth 1 3rd-party/quazip
 
       - name: Cache opencv
         id: cache_opencv
