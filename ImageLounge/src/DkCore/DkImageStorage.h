@@ -32,6 +32,7 @@
 #include <QFutureWatcher>
 #include <QImage>
 #include <QObject>
+#include <any>
 
 #ifdef WITH_OPENCV
 #include "opencv2/core/core.hpp"
@@ -165,6 +166,20 @@ public:
      */
     static QImage convertToColorSpaceInPlace(const QWidget *target, QImage &img);
     static QImage convertToColorSpaceInPlace(const QColorSpace &target, QImage &img);
+};
+
+/**
+ * @brief High-level histogram interface
+ */
+struct DkHistogramEngine {
+    QImage::Format mFormat; // pixel format used in compute() - may differ from image input
+    std::any mData; // format-specific histogram
+
+    // count pixels and collect stats
+    bool compute(const QImage &image);
+
+    // draw histogram bargraph and stats text
+    void render(QImage &img, float zoom, bool showStats);
 };
 
 class DllCoreExport DkImageStorage : public QObject
