@@ -2044,8 +2044,18 @@ DkHistogramWidget::DkHistogramWidget(QWidget *parent)
         update();
     });
 
-    mContextMenu = new QMenu;
+    auto *logScale = new QAction(tr("Log Scale"), this);
+    logScale->setCheckable(true);
+    connect(logScale, &QAction::triggered, this, [&](bool checked) {
+        // DkSettingsManager::param().display().histogramLogScale=checked;
+        mLogScale = checked;
+        mIsDirty = true;
+        update();
+    });
+
+    mContextMenu = new QMenu(this);
     mContextMenu->addAction(showStats);
+    mContextMenu->addAction(logScale);
 }
 
 DkHistogramWidget::~DkHistogramWidget() = default;
@@ -2069,7 +2079,7 @@ void DkHistogramWidget::paintEvent(QPaintEvent *)
 
         if (mIsDirty) {
             mHistImage.fill(Qt::transparent);
-            mHistogram->render(mHistImage, mScaleFactor, mDisplayMode == DisplayMode::mode_extended);
+            mHistogram->render(mHistImage, mScaleFactor, mDisplayMode == DisplayMode::mode_extended, mLogScale);
             mIsDirty = false;
         }
 

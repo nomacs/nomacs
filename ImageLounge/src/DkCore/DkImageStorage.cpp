@@ -2417,11 +2417,12 @@ public:
     DkHistogramRender() = delete;
     ~DkHistogramRender() override = default;
 
-    DkHistogramRender(const DkHistogramEngine &hist, QImage &img, float zoom, bool showStats)
+    DkHistogramRender(const DkHistogramEngine &hist, QImage &img, float zoom, bool showStats, bool logScale)
         : mHist(hist)
         , mImg(img)
         , mZoom(zoom)
         , mShowStats(showStats)
+        , mLogScale(logScale)
     {
     }
 
@@ -2430,6 +2431,7 @@ protected:
     QImage &mImg;
     const float mZoom;
     const bool mShowStats;
+    const bool mLogScale;
 
     // use R,G,B colors that are easier on the eyes and also
     // produce better C,M,Y colors with good contrast
@@ -2449,10 +2451,13 @@ protected:
             return false; // possible; all pixels could be fully transparent
         }
 
-        QImage &img = self.mImg;
+        const int maxCount = h.maxCount();
+        Q_ASSERT(maxCount > 0); // must be true if numPixels > 0
 
+        QImage &img = self.mImg;
         const bool showStats = self.mShowStats;
         const float zoom = self.mZoom;
+        const bool logScale = self.mLogScale;
 
         const float dpr = img.devicePixelRatio();
         const int imgHeight = img.height();
@@ -2462,7 +2467,8 @@ protected:
         const int histHeight = showStats ? imgHeight / dpr - statsHeight : imgHeight / dpr - margin / 2;
 
         const float y0 = histHeight; // bottom of bars
-        const float yScale = float(histHeight) / h.maxCount() * zoom;
+        const float yScale = logScale ? float(histHeight) / std::log(static_cast<float>(maxCount)) * zoom
+                                      : float(histHeight) / maxCount * zoom;
 
         const int numChannels = qMin(3, imgChannels);
         const int numBins = h.kNumBins;
@@ -2495,7 +2501,12 @@ protected:
                 if (count == 0) {
                     continue;
                 }
-                float y1 = y0 - (count * yScale);
+                float y1;
+                if (logScale) {
+                    y1 = y0 - (std::log(static_cast<float>(count)) * yScale);
+                } else {
+                    y1 = y0 - (count * yScale);
+                }
                 lines.append(QLineF{x0, y0, x0, y1});
             }
             painter.drawLines(lines);
@@ -2607,12 +2618,12 @@ bool DkHistogramEngine::compute(const QImage &image)
     return false;
 }
 
-void nmc::DkHistogramEngine::render(QImage &img, float zoom, bool showStats)
+void nmc::DkHistogramEngine::render(QImage &img, float zoom, bool showStats, bool logScale) const
 {
 #ifdef WITH_OPENCV
     Q_ASSERT(mData.has_value());
 
-    DkHistogramRender kernel{*this, img, zoom, showStats};
+    DkHistogramRender kernel{*this, img, zoom, showStats, logScale};
     (void)kernel.run();
 #endif
 }

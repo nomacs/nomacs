@@ -609,6 +609,7 @@ private:
 
     float mScaleFactor = 1;
     DisplayMode mDisplayMode = DisplayMode::mode_simple;
+    bool mLogScale = false;
 
     QMenu *mContextMenu = nullptr;
 };
