@@ -2036,7 +2036,7 @@ DkHistogramWidget::DkHistogramWidget(QWidget *parent)
     // create context menu
     auto *showStats = new QAction(tr("Show Statistics"), this);
     showStats->setCheckable(true);
-    showStats->setChecked(mDisplayMode == DisplayMode::histogram_mode_extended);
+    showStats->setChecked(mDisplayMode == DisplayMode::mode_extended);
     connect(showStats, &QAction::triggered, this, &DkHistogramWidget::onToggleStatsTriggered);
 
     mContextMenu = new QMenu;
@@ -2064,7 +2064,7 @@ void DkHistogramWidget::paintEvent(QPaintEvent *)
 
         if (mIsDirty) {
             mHistImage.fill(Qt::transparent);
-            mHistogram->render(mHistImage, mScaleFactor, mDisplayMode == DisplayMode::histogram_mode_extended);
+            mHistogram->render(mHistImage, mScaleFactor, mDisplayMode == DisplayMode::mode_extended);
             mIsDirty = false;
         }
 
@@ -2083,7 +2083,7 @@ void DkHistogramWidget::contextMenuEvent(QContextMenuEvent *event)
 
 void DkHistogramWidget::onToggleStatsTriggered(bool show)
 {
-    mDisplayMode = (show) ? DisplayMode::histogram_mode_extended : DisplayMode::histogram_mode_simple;
+    mDisplayMode = (show) ? DisplayMode::mode_extended : DisplayMode::mode_simple;
     DkSettingsManager::param().display().histogramStyle = (int)mDisplayMode;
     mIsDirty = true;
     update();
@@ -2091,12 +2091,11 @@ void DkHistogramWidget::onToggleStatsTriggered(bool show)
 
 void DkHistogramWidget::loadSettings()
 {
-    int styleSetting = DkSettingsManager::param().display().histogramStyle;
-    auto maybeMode = static_cast<DisplayMode>(styleSetting);
-    if (maybeMode == DisplayMode::histogram_mode_simple || maybeMode == DisplayMode::histogram_mode_extended) {
-        mDisplayMode = maybeMode;
+    int mode = DkSettingsManager::param().display().histogramStyle;
+    if (mode >= 0 && mode < mode_end) {
+        mDisplayMode = static_cast<DisplayMode>(mode);
     } else {
-        mDisplayMode = DisplayMode::histogram_mode_simple;
+        mDisplayMode = mode_simple;
     }
 }
 
