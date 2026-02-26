@@ -578,10 +578,10 @@ class DkHistogramWidget : public DkFadeWidget
     Q_OBJECT
 
 public:
-    enum class DisplayMode {
-        histogram_mode_simple = 0, /// shows just the histogram
-        histogram_mode_extended = 1, /// shows histogram and data
-        histogram_mode_end = 2,
+    enum DisplayMode {
+        mode_simple = 0, // shows just the histogram
+        mode_extended = 1, // shows histogram and data
+        mode_end = 2,
     };
 
     explicit DkHistogramWidget(QWidget *parent);
@@ -607,10 +607,11 @@ private:
     std::unique_ptr<DkHistogramEngine> mHistogram;
     QImage mHistImage;
 
-    bool mIsValid = false; /// if true a histogram and stats are computed
+    bool mIsValid = false; // if true a histogram and stats are computed
     bool mIsDirty = false; // if true histogram needs to be re-rendered
+
     float mScaleFactor = 1;
-    DisplayMode mDisplayMode = DisplayMode::histogram_mode_simple; /// determins shown histogram type
+    DisplayMode mDisplayMode = DisplayMode::mode_simple;
 
     QMenu *mContextMenu = nullptr;
 };
