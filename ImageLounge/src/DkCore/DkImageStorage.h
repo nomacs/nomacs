@@ -179,7 +179,7 @@ struct DkHistogramEngine {
     bool compute(const QImage &image);
 
     // draw histogram bargraph and stats text
-    void render(QImage &img, float zoom, bool showStats);
+    void render(QImage &img, float zoom, bool showStats, bool logScale) const;
 };
 
 class DllCoreExport DkImageStorage : public QObject
