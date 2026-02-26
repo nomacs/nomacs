@@ -2038,7 +2038,12 @@ DkHistogramWidget::DkHistogramWidget(QWidget *parent)
     auto *showStats = new QAction(tr("Show Statistics"), this);
     showStats->setCheckable(true);
     showStats->setChecked(mDisplayMode == DisplayMode::mode_extended);
-    connect(showStats, &QAction::triggered, this, &DkHistogramWidget::onToggleStatsTriggered);
+    connect(showStats, &QAction::triggered, this, [&](bool checked) {
+        mDisplayMode = checked ? DisplayMode::mode_extended : DisplayMode::mode_simple;
+        DkSettingsManager::param().display().histogramStyle = static_cast<int>(mDisplayMode);
+        mIsDirty = true;
+        update();
+    });
 
     mContextMenu = new QMenu;
     mContextMenu->addAction(showStats);
@@ -2080,14 +2085,6 @@ void DkHistogramWidget::contextMenuEvent(QContextMenuEvent *event)
 
     // do not pass it on
     // DkFadeWidget::contextMenuEvent(event);
-}
-
-void DkHistogramWidget::onToggleStatsTriggered(bool show)
-{
-    mDisplayMode = (show) ? DisplayMode::mode_extended : DisplayMode::mode_simple;
-    DkSettingsManager::param().display().histogramStyle = (int)mDisplayMode;
-    mIsDirty = true;
-    update();
 }
 
 void DkHistogramWidget::loadSettings()

@@ -590,9 +590,6 @@ public:
     void drawHistogram(const QImage &img);
     void clearHistogram();
 
-private slots:
-    void onToggleStatsTriggered(bool show);
-
 private:
     void setValid(bool isValid);
 
