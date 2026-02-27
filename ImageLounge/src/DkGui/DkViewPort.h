@@ -257,10 +257,6 @@ protected:
     QRectF mStartBgRect;
 
 private:
-    [[nodiscard]] qreal imageMatrixPaddingRatio() const override
-    {
-        return 0.1;
-    }
     [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
     void controlImagePosition() override;
     void centerImage() override;
