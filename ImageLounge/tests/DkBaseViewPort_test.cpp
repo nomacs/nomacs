@@ -5,13 +5,12 @@
 struct ScaleKeepAspectRatioAndCenterTestCase {
     QSizeF src;
     QSizeF tgt;
-    qreal paddingRatio = 0;
 };
 
 void PrintTo(const ScaleKeepAspectRatioAndCenterTestCase &tc, std::ostream *os)
 {
     QString s;
-    QDebug(&s) << "src:" << tc.src << ", tgt:" << tc.tgt << ", paddingRatio:" << tc.paddingRatio;
+    QDebug(&s) << "src:" << tc.src << ", tgt:" << tc.tgt;
     *os << s.toStdString();
 }
 
@@ -22,13 +21,12 @@ class ScaleKeepAspectRatioAndCenterTest : public testing::TestWithParam<ScaleKee
 TEST_P(ScaleKeepAspectRatioAndCenterTest, Test)
 {
     const ScaleKeepAspectRatioAndCenterTestCase params = GetParam();
-    const QTransform t = nmc::scaleKeepAspectRatioAndCenter(params.src, params.tgt, params.paddingRatio);
+    const QTransform t = nmc::scaleKeepAspectRatioAndCenter(params.src, params.tgt);
 
     const QRectF srcRect = QRectF(QPointF(), params.src);
     const QRectF mappedRect = t.mapRect(srcRect);
 
-    QRectF scaledRect = QRectF(QPointF(),
-                               params.src.scaled(params.tgt * (1 - params.paddingRatio), Qt::KeepAspectRatio));
+    QRectF scaledRect = QRectF(QPointF(), params.src.scaled(params.tgt, Qt::KeepAspectRatio));
     scaledRect.moveCenter(QPointF(params.tgt.width(), params.tgt.height()) / 2);
 
     EXPECT_NEAR(mappedRect.x(), scaledRect.x(), 1e-5);
@@ -47,11 +45,4 @@ INSTANTIATE_TEST_SUITE_P(Test,
                              {QSizeF(400, 300), QSizeF(700, 600)},
                              {QSizeF(400, 300), QSizeF(800, 700)},
                              {QSizeF(1024, 2048), QSizeF(553, 339)},
-                             {QSizeF(400, 300), QSizeF(200, 150), 0.1},
-                             {QSizeF(400, 300), QSizeF(200, 100), 0.1},
-                             {QSizeF(400, 300), QSizeF(200, 200), 0.1},
-                             {QSizeF(400, 300), QSizeF(800, 600), 0.1},
-                             {QSizeF(400, 300), QSizeF(700, 600), 0.1},
-                             {QSizeF(400, 300), QSizeF(800, 700), 0.1},
-                             {QSizeF(1024, 2048), QSizeF(553, 339), 0.1},
                          }));

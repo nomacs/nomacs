@@ -740,7 +740,7 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
 
     // if the image is smaller or zoom is active: paint the image as is
     if (!mViewportRect.contains(mImgRect.toRect())) {
-        mImgMatrix = scaleKeepAspectRatioAndCenter(mImgRect.size(), size(), imageMatrixPaddingRatio());
+        mImgMatrix = scaleKeepAspectRatioAndCenter(mImgRect.size(), size());
     } else {
         const QSizeF offset = (size() - imgSize) / 2;
         mImgMatrix.translate(offset.width(), offset.height());
@@ -797,14 +797,11 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
     }
 }
 
-QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt, qreal paddingRatio)
+QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt)
 {
-    Q_ASSERT(paddingRatio >= 0 && paddingRatio < 1);
-
     qreal s = 1;
     if (src.isValid()) {
-        const qreal r = 1 - paddingRatio;
-        s = std::min(tgt.width() * r / src.width(), tgt.height() * r / src.height());
+        s = std::min(tgt.width() / src.width(), tgt.height() / src.height());
     }
 
     const QPointF mapped = QPointF(src.width(), src.height()) * s;
