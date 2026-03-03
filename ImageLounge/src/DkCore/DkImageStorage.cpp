@@ -579,7 +579,7 @@ protected:
                     ys = std::pow(y, 1.0f / 2.2f);
                 }
 
-                DstFmt::store(dstPtr, ys, ys, ys, a);
+                DstFmt::store(dstPtr, RgbaFloat{ys, ys, ys, a});
             }
         }
         return true;
@@ -1173,8 +1173,9 @@ protected:
     // float for hsv->rgb avoids most division and has the precision we need for wide formats
     // this performs quite well, OpenCVs 8-bit hsv is only about 20% faster and only for
     // small images.
-    static std::tuple<float, float, float> rgbToHsv(float r, float g, float b)
+    static RgbFloat rgbToHsv(const RgbFloat &rgb)
     {
+        auto [r, g, b] = rgb;
         const float cmax = std::max(r, std::max(g, b));
         const float cmin = std::min(r, std::min(g, b));
         const float delta = cmax - cmin;
@@ -1204,8 +1205,9 @@ protected:
         return {h, s, v};
     }
 
-    static std::tuple<float, float, float> hsvToRgb(float h, float s, float v)
+    static RgbFloat hsvToRgb(const HsvFloat &hsv)
     {
+        auto [h, s, v] = hsv;
         Q_ASSERT(h >= 0.0f && h <= 360.0f);
         Q_ASSERT(s >= 0.0f && s <= 1.0f);
         Q_ASSERT(v >= 0.0f && v <= 1.0f);
@@ -1247,7 +1249,7 @@ protected:
         forEachPixel<Format>(mat, range, [&](ChannelType *pixel) {
             auto [r, g, b, /* unused */ _a] = Format::loadFloat(pixel);
 
-            auto [h, s, v] = rgbToHsv(r, g, b); // h:[0,360] s:[0,1] v:[0,1]
+            auto [h, s, v] = rgbToHsv(RgbFloat{r, g, b}); // h:[0,360] s:[0,1] v:[0,1]
 
             h += hueAdd, s *= satScale, v += valAdd;
 
@@ -1259,9 +1261,9 @@ protected:
             s = qBound(0.0f, s, 1.0f);
             v = qBound(0.0f, v, 1.0f);
 
-            auto [rr, gg, bb] = hsvToRgb(h, s, v);
+            auto rgb = hsvToRgb(HsvFloat{h, s, v});
 
-            Format::store(pixel, rr, gg, bb);
+            Format::store(pixel, rgb);
         });
 
         return true;

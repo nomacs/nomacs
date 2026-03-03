@@ -44,6 +44,18 @@ namespace nmc
  */
 static_assert(Q_BYTE_ORDER == Q_LITTLE_ENDIAN, "unsupported architecture");
 
+struct RgbaFloat {
+    float r, g, b, a;
+};
+
+struct RgbFloat {
+    float r, g, b;
+};
+
+struct HsvFloat {
+    float h, s, v;
+};
+
 /**
  *
  * @brief Pixel formats we can directly map between QImage and cv::Mat
@@ -112,7 +124,7 @@ struct PixFormat {
 
     // load pixel to float {r,g,b,a} [0,1]
     // HDR (fp32) images may have values outside of [0,1]
-    static std::tuple<float, float, float, float> loadFloat(const T *rgba)
+    static RgbaFloat loadFloat(const T *rgba)
     {
         T sb, sr, sg;
         if constexpr (Type == ImgType::gray) {
@@ -133,8 +145,9 @@ struct PixFormat {
     }
 
     // store float [0,1] to pixel
-    static void store(T *pixel, float r, float g, float b, float a)
+    static void store(T *pixel, const RgbaFloat &rgba)
     {
+        auto [r, g, b, a] = rgba;
         float scaleF = Scale;
 
         if constexpr (Type == ImgType::gray) {
@@ -152,8 +165,9 @@ struct PixFormat {
     }
 
     // store float [0,1] to pixel, ignore alpha channel
-    static void store(T *pixel, float r, float g, float b)
+    static void store(T *pixel, const RgbFloat &rgb)
     {
+        auto [r, g, b] = rgb;
         float scaleF = Scale;
 
         if constexpr (Type == ImgType::gray) {
