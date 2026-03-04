@@ -2193,12 +2193,12 @@ QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint co
 #ifdef WITH_OPENCV
     if (DkSettingsManager::param().display().highQualityThumbs) {
         try {
-            cv::Mat rImgCv = DkImage::qImage2Mat(image);
-            cv::Mat tmp;
-            cv::resize(rImgCv, tmp, cv::Size(imgW, imgH), 0, 0, CV_INTER_AREA);
-            thumb = DkImage::mat2QImage(tmp, image);
+            const auto srcImg = DkNativeImage::fromConstImage(image);
+            auto dstImg = srcImg.allocateLike(QSize{imgW, imgH});
+            cv::resize(srcImg.constMat(), dstImg.mat(), cv::Size(imgW, imgH), 0, 0, CV_INTER_AREA);
+            thumb = dstImg.img();
         } catch (...) {
-            qWarning() << "imageStorageScaleToSize: OpenCV exception caught while resizing...";
+            qWarning() << "[createThumb] exception while resizing";
         }
     }
 #endif
