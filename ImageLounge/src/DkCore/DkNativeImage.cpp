@@ -235,8 +235,14 @@ DkConstNativeImage DkConstNativeImage::fromImage(const QImage &img, int options)
 DkNativeImage DkNativeImage::allocateLike(const QSize &size) const
 {
     QImage tmp(size.isEmpty() ? mImg.size() : size, mImg.format());
+
+    Q_ASSERT(mImg.colorTable().isEmpty());
     tmp.setColorSpace(mImg.colorSpace());
-    return fromImage(tmp, map_anyrgb);
+    tmp.setDevicePixelRatio(mImg.devicePixelRatio());
+    tmp.setDotsPerMeterX(mImg.dotsPerMeterX());
+    tmp.setDotsPerMeterY(mImg.dotsPerMeterY());
+
+    return fromImage(std::move(tmp), map_anyrgb);
 }
 
 #endif // WITH_OPENCV
