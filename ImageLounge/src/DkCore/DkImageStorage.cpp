@@ -2297,8 +2297,8 @@ QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint co
 
     if (thumb.isNull()) {
         // fast downscaling
-        thumb = image.scaled(QSize(imgW * 2, imgH * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
-        thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        thumb = image.scaled(QSize{imgW * 2, imgH * 2}, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+        thumb = thumb.scaled(QSize{imgW, imgH}, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
     thumb.convertToColorSpace(QColorSpace{QColorSpace::SRgb});
