@@ -28,13 +28,12 @@
 #include "DkThumbs.h"
 
 #include "DkBasicLoader.h"
+#include "DkCachedThumb.h"
 #include "DkFileInfo.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
 
-#include <QColorSpace>
-#include <QStringBuilder>
 #include <QtConcurrentRun>
 
 namespace nmc
@@ -97,45 +96,63 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
         return std::nullopt;
     }
 
-    if (fileInfo.isFromZip()) {
-        std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
-        if (io)
-            ba.reset(new QByteArray(io->readAll()));
-    }
-
     const QString thumbPath = fileInfo.path(); // resolved path (shortcuts/aliases)
 
-    // read the thumbnail from the exif data
-    try {
-        if (!ba || ba->isEmpty()) {
-            metaData->readMetaData(thumbPath);
-        } else {
-            metaData->readMetaData(thumbPath, ba);
-        }
-    } catch (...) {
-        // this should never happen since we handle exceptions in metaData
-        qWarning() << "[Thumbnail] unexpected exception when reading exif thumbnail";
-    }
-
     std::optional<ThumbnailFromMetadata> exifThumb{};
-    if (request.option != LoadThumbnailOption::force_full) {
-        exifThumb = loadThumbnailFromMetadata(*metaData);
-    }
-
     std::optional<QImage> fullThumb{};
-    bool loadFull = request.option != LoadThumbnailOption::force_exif && !exifThumb;
-    loadFull |= request.option == LoadThumbnailOption::force_size && exifThumb
-        && qMax(exifThumb->thumb.height(), exifThumb->thumb.width()) < request.size;
-    if (loadFull) {
-        exifThumb = {};
-        fullThumb = loadThumbnailFromFullImage(thumbPath, ba);
+    std::unique_ptr<DkCachedThumb> cachedThumb{};
+
+    if (request.option != LoadThumbnailOption::force_full) {
+        cachedThumb = std::make_unique<DkCachedThumb>(fileInfo, request.size, request.constraint);
+        QImage thumb = cachedThumb->load();
+        if (!thumb.isNull()) {
+            fullThumb = thumb;
+        }
     }
 
-    if (!fullThumb && !exifThumb) {
-        return std::nullopt;
+    if (!fullThumb) {
+        if (fileInfo.isFromZip()) {
+            std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
+            if (io)
+                ba.reset(new QByteArray(io->readAll()));
+        }
+
+        // read the thumbnail from the exif data
+        try {
+            if (!ba || ba->isEmpty()) {
+                metaData->readMetaData(thumbPath);
+            } else {
+                metaData->readMetaData(thumbPath, ba);
+            }
+        } catch (...) {
+            // this should never happen since we handle exceptions in metaData
+            qWarning() << "[Thumbnail] unexpected exception when reading exif thumbnail";
+        }
+
+        if (request.option != LoadThumbnailOption::force_full) {
+            exifThumb = loadThumbnailFromMetadata(*metaData);
+        }
+
+        bool loadFull = request.option != LoadThumbnailOption::force_exif && !exifThumb;
+        loadFull |= request.option == LoadThumbnailOption::force_size && exifThumb
+            && qMax(exifThumb->thumb.height(), exifThumb->thumb.width()) < request.size;
+        if (loadFull) {
+            exifThumb = {};
+            fullThumb = loadThumbnailFromFullImage(thumbPath, ba);
+        }
+
+        if (!fullThumb && !exifThumb) {
+            return std::nullopt;
+        }
     }
 
     QImage thumb = exifThumb ? exifThumb.value().thumb : fullThumb.value();
+
+    if (!thumb.isNull() && cachedThumb) {
+        if (dt.elapsed() >= 10) { // skip save if it loaded quickly
+            cachedThumb->save(thumb);
+        }
+    }
 
     LoadThumbnailResult res = {
         thumb,
@@ -145,9 +162,10 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
         exifThumb && exifThumb->transformed,
     };
 
-    QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 %8ms")
-                       .arg(thumbPath)
+    QString info = QString("[Thumbnail] %1 exif=%2 req=%3 size=%4x%5 %6ms")
+                       .arg(fileInfo.fileName())
                        .arg(exifThumb ? "yes" : "no")
+                       .arg(request.size)
                        .arg(res.thumb.width())
                        .arg(res.thumb.height())
                        .arg(dt.elapsed());

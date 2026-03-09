@@ -45,6 +45,7 @@
 #include <QThread>
 #include <QTranslator>
 
+#include "DkCachedThumb.h"
 #include "DkCentralWidget.h"
 #include "DkNoMacs.h"
 #include "DkPluginManager.h"
@@ -90,6 +91,8 @@ int main(int argc, char *argv[])
     nmc::DkSettingsManager::instance().init();
     nmc::DkMetaDataHelper::initialize(); // this line makes the XmpParser thread-save - so don't delete it even if you
                                          // seem to know what you do
+
+    nmc::DkCachedThumb::cleanup();
 
     // uncomment this for the single instance feature...
     //// check for single instance
