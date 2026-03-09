@@ -188,9 +188,9 @@ QImage DkImage::resizeImage(const QImage &src,
             break;
         }
 
-        auto input = DkConstNativeImage::fromImage(inImg);
+        auto input = DkNativeImage::fromConstImage(inImg);
         auto output = input.allocateLike(nSize);
-        cv::resize(input.mat(), output.mat(), cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
+        cv::resize(input.constMat(), output.mat(), cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
         QImage outImg = output.img();
 #else
         auto ipl = interpolation == ipl_nearest ? Qt::FastTransformation : Qt::SmoothTransformation;
@@ -509,12 +509,12 @@ public:
     ~DkGrayScaleKernel() override = default;
 
     DkGrayScaleKernel(const QImage &img)
-        : mSrc{DkConstNativeImage::fromImage(img)}
+        : mSrc{DkNativeImage::fromConstImage(img)}
     {
     }
 
 protected:
-    const DkConstNativeImage mSrc;
+    const DkNativeImage mSrc;
     DkNativeImage mDst{};
     QColorTransform mSrcToLinear{};
 
@@ -525,7 +525,7 @@ protected:
         using DstType = typename DstFmt::ChannelType;
 
         auto &self = *(std::any_cast<DkGrayScaleKernel *>(arg));
-        const auto &src = self.mSrc.mat();
+        const auto &src = self.mSrc.constMat();
         auto &dst = self.mDst.mat();
         auto &srcToLinear = self.mSrcToLinear;
 
@@ -645,7 +645,7 @@ public:
         }
         dst.setColorSpace(dstColorSpace);
 
-        mDst = DkNativeImage::fromImage(dst);
+        mDst = DkNativeImage::fromImage(std::move(dst));
 
         return dispatch(table, kCaps, mSrc.img().format(), this, {0, mSrc.img().height()});
     }
@@ -862,8 +862,8 @@ public:
     DkNormalizeKernel() = delete;
     ~DkNormalizeKernel() override = default;
 
-    DkNormalizeKernel(QImage &img)
-        : mImg(DkNativeImage::fromImage(img))
+    DkNormalizeKernel(QImage &&img)
+        : mImg(DkNativeImage::fromImage(std::move(img)))
     {
     }
 
@@ -913,18 +913,17 @@ public:
 };
 #endif // WITH_OPENCV
 
-bool DkImage::normImage(QImage &src)
+std::optional<QImage> DkImage::normImage(QImage &&src)
 {
 #if WITH_OPENCV
-    DkNormalizeKernel kernel{src};
+    DkNormalizeKernel kernel{std::move(src)};
     if (kernel.run()) {
-        src = kernel.result();
-        return true;
+        return kernel.result();
     }
 #else
     Q_UNUSED(src)
 #endif
-    return false;
+    return std::nullopt;
 }
 
 #if WITH_OPENCV
@@ -938,8 +937,8 @@ public:
     DkAutoAdjustKernel() = delete;
     ~DkAutoAdjustKernel() override = default;
 
-    DkAutoAdjustKernel(QImage &img)
-        : mImg(DkNativeImage::fromImage(img))
+    DkAutoAdjustKernel(QImage &&img)
+        : mImg(DkNativeImage::fromImage(std::move(img)))
     {
     }
 
@@ -1003,18 +1002,17 @@ public:
 };
 #endif // WITH_OPENCV
 
-bool DkImage::autoAdjustImage(QImage &img)
+std::optional<QImage> DkImage::autoAdjustImage(QImage &&img)
 {
 #if WITH_OPENCV
-    DkAutoAdjustKernel kernel{img};
+    DkAutoAdjustKernel kernel{std::move(img)};
     if (kernel.run()) {
-        img = kernel.result();
-        return true;
+        return kernel.result();
     }
 #else
     Q_UNUSED(img)
 #endif
-    return false;
+    return std::nullopt;
 }
 
 QPixmap DkImage::makeSquare(const QPixmap &pm)
@@ -1157,8 +1155,8 @@ class DkHsvKernel : public DkKernelBase
 public:
     DkHsvKernel() = delete;
     Q_DISABLE_COPY(DkHsvKernel)
-    DkHsvKernel(QImage &img, float hue, float saturation, float brightness)
-        : mImg(DkNativeImage::fromImage(img, DkNativeImage::map_anyrgb))
+    DkHsvKernel(QImage &&img, float hue, float saturation, float brightness)
+        : mImg(DkNativeImage::fromImage(std::move(img), DkNativeImage::map_anyrgb))
         , mHue(hue)
         , mSaturation(saturation)
         , mBrightness(brightness)
@@ -1286,22 +1284,21 @@ public:
 };
 #endif // WITH_OPENCV
 
-bool DkImage::hueSaturation(QImage &img, float hue, float sat, float brightness)
+std::optional<QImage> DkImage::hueSaturation(QImage &&img, float hue, float sat, float brightness)
 {
     if (hue == 0 && sat == 0 && brightness == 0) {
-        return false;
+        return std::nullopt;
     }
 
 #ifdef WITH_OPENCV
-    DkHsvKernel kernel{img, hue, sat, brightness};
+    DkHsvKernel kernel{std::move(img), hue, sat, brightness};
     if (kernel.run()) {
-        img = kernel.result();
-        return true;
+        return kernel.result();
     }
 #else
     Q_UNUSED(img)
 #endif
-    return false;
+    return std::nullopt;
 }
 
 #if WITH_OPENCV
@@ -1397,8 +1394,8 @@ class DkLutKernel : DkKernelBase
 public:
     Q_DISABLE_COPY(DkLutKernel)
     DkLutKernel() = delete;
-    DkLutKernel(QImage &img, cv::Mat &lut)
-        : mImg(DkNativeImage::fromImage(img, DkNativeImage::map_anyrgb))
+    DkLutKernel(QImage &&img, cv::Mat &lut)
+        : mImg(DkNativeImage::fromImage(std::move(img), DkNativeImage::map_anyrgb))
         , mLut{lut}
     {
     }
@@ -1457,10 +1454,10 @@ public:
 };
 #endif // WITH_OPENCV
 
-bool DkImage::exposure(QImage &img, double exposure, double offset, double gamma)
+std::optional<QImage> DkImage::exposure(QImage &&img, double exposure, double offset, double gamma)
 {
     if (exposure == 0.0 && offset == 0.0 && gamma == 1.0) {
-        return false;
+        return std::nullopt;
     }
 
 #ifdef WITH_OPENCV
@@ -1473,16 +1470,15 @@ bool DkImage::exposure(QImage &img, double exposure, double offset, double gamma
         lut = combineLuts(lut, exposureLut(exposure));
     }
 
-    DkLutKernel lutKernel{img, lut};
+    DkLutKernel lutKernel{std::move(img), lut};
     if (lutKernel.run()) {
-        img = lutKernel.result();
-        return true;
+        return lutKernel.result();
     }
 #else
     Q_UNUSED(img)
 #endif // WITH_OPENCV
 
-    return false;
+    return std::nullopt;
 }
 
 // blend two colors with the standard source-over operator
@@ -2005,7 +2001,7 @@ QIcon DkImage::loadIcon(const QString &filePath, const QColor &color)
 
 cv::Mat DkImage::qImage2Mat(const QImage &img)
 {
-    return DkConstNativeImage::fromImage(img, DkNativeImage::map_bgr).mat().clone();
+    return DkNativeImage::fromConstImage(img, DkNativeImage::map_bgr).constMat().clone();
 }
 
 QImage DkImage::mat2QImage(cv::Mat mat, const QImage &srcImg)
@@ -2095,50 +2091,50 @@ QImage DkImage::tinyPlanet(const QImage &img, double scaleLog, double angle, con
 
     tmp = tmp.scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    auto view = DkNativeImage::fromImage(tmp);
-    logPolar(view.mat(), view.mat(), cv::Point2d(view.mat().cols * 0.5, view.mat().rows * 0.5), scaleLog, angle);
-    return view.img();
+    auto native = DkNativeImage::fromImage(std::move(tmp));
+    auto &input = native.constMat();
+    auto &output = native.mat();
+    logPolar(input, output, cv::Point2d{input.cols * 0.5, input.rows * 0.5}, scaleLog, angle);
+    return native.img();
 }
 
 #endif
 
-bool DkImage::gaussianBlur(QImage &img, float sigma)
+std::optional<QImage> DkImage::gaussianBlur(QImage &&img, float sigma)
 {
     if (sigma <= 0.0f) {
-        return false; // kernel would be 1x1 => no-op
+        return std::nullopt; // kernel would be 1x1 => no-op
     }
 
 #ifdef WITH_OPENCV
-    auto native = DkNativeImage::fromImage(img);
-    cv::GaussianBlur(native.mat(), native.mat(), cv::Size{}, sigma);
-    img = native.img();
-    return true;
+    auto native = DkNativeImage::fromImage(std::move(img));
+    cv::GaussianBlur(native.constMat(), native.mat(), cv::Size{}, sigma);
+    return native.img();
 #else
     Q_UNUSED(img);
     Q_UNUSED(sigma);
 #endif
-    return false;
+    return std::nullopt;
 }
 
-bool DkImage::unsharpMask(QImage &img, float sigma, float weight)
+std::optional<QImage> DkImage::unsharpMask(QImage &&img, float sigma, float weight)
 {
     if (sigma <= 0.0f) {
-        return false; // kernel would be 1x1 => no-op
+        return std::nullopt; // kernel would be 1x1 => no-op
     }
 
 #ifdef WITH_OPENCV
-    auto native = DkNativeImage::fromImage(img);
+    auto native = DkNativeImage::fromImage(std::move(img));
     cv::Mat blurred;
-    cv::GaussianBlur(native.mat(), blurred, cv::Size{}, sigma);
-    cv::addWeighted(native.mat(), weight, blurred, 1.0f - weight, 0.0, native.mat());
-    img = native.img();
-    return true;
+    cv::GaussianBlur(native.constMat(), blurred, cv::Size{}, sigma);
+    cv::addWeighted(native.constMat(), weight, blurred, 1.0f - weight, 0.0, native.mat());
+    return native.img();
 #else
     Q_UNUSED(img);
     Q_UNUSED(sigma);
     Q_UNUSED(weight);
 #endif
-    return false;
+    return std::nullopt;
 }
 
 QImage DkImage::createThumb(const QImage &image, int maxSize)
@@ -2417,9 +2413,9 @@ DkImageStorage::ScaledImage DkImageStorage::scaleImage(const QImage &src,
         if (s.width() == 0)
             s.setWidth(1);
         try {
-            const auto input = DkConstNativeImage::fromImage(resizedImg);
+            const auto input = DkNativeImage::fromConstImage(resizedImg);
             auto output = input.allocateLike(s);
-            cv::resize(input.mat(), output.mat(), cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
+            cv::resize(input.constMat(), output.mat(), cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
             scaled = output.img();
         } catch (...) {
             qWarning() << "[ImageStorage]: OpenCV exception while resizing";

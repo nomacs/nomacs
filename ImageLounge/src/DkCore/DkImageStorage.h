@@ -95,10 +95,10 @@ public:
                               double factor = 1.0,
                               int interpolation = ipl_cubic,
                               bool correctGamma = true);
-    static bool normImage(QImage &img);
-    static bool autoAdjustImage(QImage &img);
-    static bool gaussianBlur(QImage &img, float sigma = 20.0f);
-    static bool unsharpMask(QImage &img, float sigma = 20.0f, float weight = 1.5f);
+    static std::optional<QImage> normImage(QImage &&img);
+    static std::optional<QImage> autoAdjustImage(QImage &&img);
+    static std::optional<QImage> gaussianBlur(QImage &&img, float sigma = 20.0f);
+    static std::optional<QImage> unsharpMask(QImage &&img, float sigma = 20.0f, float weight = 1.5f);
     static bool alphaChannelUsed(const QImage &img);
     static QImage thresholdImage(const QImage &img, double thr, bool color = false);
     static QImage flipImage(const QImage &image, Qt::Orientations flags);
@@ -126,8 +126,8 @@ public:
     static QPixmap makeSquare(const QPixmap &pm);
     static QPixmap merge(const QVector<QImage> &imgs);
     static QImage cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor = QColor());
-    static bool hueSaturation(QImage &img, float hue, float sat, float brightness);
-    static bool exposure(QImage &img, double exposure, double offset, double gamma);
+    static std::optional<QImage> hueSaturation(QImage &&img, float hue, float sat, float brightness);
+    static std::optional<QImage> exposure(QImage &&img, double exposure, double offset, double gamma);
     static QImage bgColor(const QImage &src, const QColor &col);
     static QByteArray extractImageFromDataStream(const QByteArray &ba,
                                                  const QByteArray &beginSignature = "‰PNG",
