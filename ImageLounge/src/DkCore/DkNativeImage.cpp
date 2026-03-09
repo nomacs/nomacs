@@ -69,8 +69,9 @@ int DkNativeImage::compatibleCvFormat(QImage::Format qtFormat, int options)
     return -1;
 }
 
-DkNativeImage DkNativeImage::fromImage(QImage &img, int options)
+DkNativeImage DkNativeImage::fromImageInner(QImage &&imgIn, int options, bool readOnly)
 {
+    QImage img(std::move(imgIn));
     Q_ASSERT(options & (map_bgr | map_rgb)); // choose one; if both, prefer bgr
 
     if (img.isNull()) {
@@ -148,19 +149,31 @@ DkNativeImage DkNativeImage::fromImage(QImage &img, int options)
         }
     }
 
+    // If we convert, it is safe to mutate.
+    readOnly = readOnly && converted.isNull();
+
     try {
         QImage &useImg = converted.isNull() ? img : converted; // careful not to refcount img: forces a deep copy
-        uchar *bits = options & map_readonly
-            ? const_cast<uchar *>(useImg.constBits()) // never deep copy, unsafe for writable views
-            : static_cast<uchar *>(useImg.bits()); // deep copy if img is a shallow copy
+        uchar *bits = readOnly ? const_cast<uchar *>(useImg.constBits()) // never deep copy, unsafe for writable views
+                               : static_cast<uchar *>(useImg.bits()); // deep copy if img is a shallow copy
         auto stride = static_cast<size_t>(useImg.bytesPerLine());
         cv::Mat mat{useImg.height(), useImg.width(), cvFormat, bits, stride};
-        return {useImg, mat};
+        return {std::move(useImg), std::move(mat), readOnly};
     } catch (...) {
         qWarning() << "[NativeImage] could not allocate cv::Mat";
     }
 
     return {};
+}
+
+DkNativeImage DkNativeImage::fromImage(QImage &&imgIn, int options)
+{
+    return fromImageInner(std::move(imgIn), options, false);
+}
+
+DkNativeImage DkNativeImage::fromConstImage(const QImage &imgIn, int options)
+{
+    return fromImageInner(QImage(imgIn), options, true);
 }
 
 DkNativeImage DkNativeImage::fromMat(cv::Mat &mat, const QImage &srcImg, int options)
@@ -222,14 +235,7 @@ DkNativeImage DkNativeImage::fromMat(cv::Mat &mat, const QImage &srcImg, int opt
     QImage qImg(mat.data, mat.cols, mat.rows, mat.step, qtFormat);
     qImg.setColorSpace(srcImg.colorSpace());
 
-    return {qImg, mat};
-}
-
-DkConstNativeImage DkConstNativeImage::fromImage(const QImage &img, int options)
-{
-    auto &nonConst = const_cast<QImage &>(img);
-    auto view = DkNativeImage::fromImage(nonConst, options | map_readonly);
-    return DkConstNativeImage{std::move(view)};
+    return {std::move(qImg), cv::Mat(mat), false};
 }
 
 DkNativeImage DkNativeImage::allocateLike(const QSize &size) const

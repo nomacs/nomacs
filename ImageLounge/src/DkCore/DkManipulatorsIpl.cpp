@@ -61,9 +61,10 @@ DkAutoAdjustManipulator::DkAutoAdjustManipulator(QAction *action)
 
 QImage DkAutoAdjustManipulator::apply(const QImage &img) const
 {
-    QImage imgR = img;
-    if (DkImage::autoAdjustImage(imgR))
-        return imgR;
+    std::optional<QImage> res = DkImage::autoAdjustImage(QImage(img));
+    if (res) {
+        return res.value();
+    }
 
     return QImage();
 }
@@ -81,9 +82,9 @@ DkNormalizeManipulator::DkNormalizeManipulator(QAction *action)
 
 QImage DkNormalizeManipulator::apply(const QImage &img) const
 {
-    QImage imgR = img;
-    if (DkImage::normImage(imgR)) {
-        return imgR;
+    std::optional<QImage> res = DkImage::normImage(QImage(img));
+    if (res) {
+        return res.value();
     }
 
     return QImage();
@@ -226,9 +227,9 @@ DkBlurManipulator::DkBlurManipulator(QAction *action)
 
 QImage DkBlurManipulator::apply(const QImage &img) const
 {
-    QImage tmp = img;
-    if (DkImage::gaussianBlur(tmp, (float)sigma())) {
-        return tmp;
+    std::optional<QImage> res = DkImage::gaussianBlur(QImage(img), (float)sigma());
+    if (res) {
+        return res.value();
     }
     return {};
 }
@@ -261,9 +262,9 @@ DkUnsharpMaskManipulator::DkUnsharpMaskManipulator(QAction *action)
 
 QImage DkUnsharpMaskManipulator::apply(const QImage &img) const
 {
-    QImage tmp = img;
-    if (DkImage::unsharpMask(tmp, (float)sigma(), 1.0f + amount() / 100.0f)) {
-        return tmp;
+    std::optional<QImage> res = DkImage::unsharpMask(QImage(img), (float)sigma(), 1.0f + amount() / 100.0f);
+    if (res) {
+        return res.value();
     }
     return {};
 }
@@ -435,9 +436,9 @@ DkHueManipulator::DkHueManipulator(QAction *action)
 
 QImage DkHueManipulator::apply(const QImage &img) const
 {
-    QImage tmp = img;
-    if (DkImage::hueSaturation(tmp, hue(), saturation(), value())) {
-        return tmp;
+    std::optional<QImage> res = DkImage::hueSaturation(QImage(img), hue(), saturation(), value());
+    if (res) {
+        return res.value();
     }
     return img;
 }
@@ -496,9 +497,9 @@ DkExposureManipulator::DkExposureManipulator(QAction *action)
 
 QImage DkExposureManipulator::apply(const QImage &img) const
 {
-    QImage tmp = img;
-    if (DkImage::exposure(tmp, exposure(), offset(), gamma())) {
-        return tmp;
+    std::optional<QImage> res = DkImage::exposure(QImage(img), exposure(), offset(), gamma());
+    if (res) {
+        return res.value();
     }
     return img;
 }
