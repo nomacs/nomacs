@@ -2247,8 +2247,11 @@ QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint co
     int imgW = image.width();
     int imgH = image.height();
 
-    if (imgW <= maxSize && imgH <= maxSize)
-        return image;
+    if (imgW <= maxSize && imgH <= maxSize) {
+        QImage thumb = image;
+        thumb.convertToColorSpace(QColorSpace{QColorSpace::SRgb}); // FIXME: DkImage::defaultColorSpace
+        return thumb;
+    }
 
     int heightForMaxWidth = maxSize * imgH / imgW; // height if imgW == maxSize
     int widthForMaxHeight = maxSize * imgW / imgH; // width if imgH == maxSize
@@ -2301,7 +2304,7 @@ QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint co
         thumb = thumb.scaled(QSize{imgW, imgH}, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
-    thumb.convertToColorSpace(QColorSpace{QColorSpace::SRgb});
+    thumb.convertToColorSpace(QColorSpace{QColorSpace::SRgb}); // FIXME: DkImage::defaultColorSpace
 
     return thumb;
 }
