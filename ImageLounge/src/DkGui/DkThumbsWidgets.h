@@ -173,6 +173,7 @@ private:
 
     QHash<QString, Thumb> mThumbs;
     DkThumbLoader *mThumbLoader;
+    QHash<ThumbnailId, QString> mThumbRequests;
 
     void init();
     void initOrientations();
@@ -214,8 +215,8 @@ private:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
     void updateTooltip(const QImage &thumb, bool fromExif);
     void generatePixmap(const QImage &thumb);
-    void onThumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
-    void onThumbnailLoadFailed(const QString &filePath);
+    void onThumbnailLoaded(ThumbnailId id, const QString &filePath, const QImage &thumb, bool fromExif);
+    void onThumbnailLoadFailed(ThumbnailId id, const QString &filePath);
     std::optional<QPixmap> pixmap() const;
 
     QGraphicsTextItem mText;
@@ -460,7 +461,7 @@ signals:
     void loadFileSignal(const QString &filePath, bool newTab);
 
 public slots:
-    void thumbLoaded(const QString &filePath, const QImage &img);
+    void thumbLoaded(ThumbnailId id, const QString &filePath, const QImage &img);
 
 protected:
     void mousePressEvent(QMouseEvent *ev) override;
@@ -468,6 +469,7 @@ protected:
     int mThumbSize = 100;
     DkThumbLoader *mLoader{};
     QString mFilePath;
+    ThumbnailId mThumbId{};
 };
 
 class DllCoreExport DkRecentDirWidget : public DkWidget

@@ -277,11 +277,11 @@ void DkThumbLoader::requestThumbnail(const LoadThumbnailRequest &request)
     const auto *cached = mThumbnailCache.object(request.id);
     if (cached) {
         if (!cached->valid) {
-            emit thumbnailLoadFailed(cached->request.filePath);
+            emit thumbnailLoadFailed(cached->request.id, cached->request.filePath);
             return;
         }
 
-        emit thumbnailLoaded(cached->request.filePath, cached->thumb, cached->fromExif);
+        emit thumbnailLoaded(cached->request.id, cached->request.filePath, cached->thumb, cached->fromExif);
         return;
     }
 
@@ -333,12 +333,12 @@ void DkThumbLoader::onThumbnailLoadFinished()
     handleFinishedWatcher(w);
 
     if (!res->valid) { // NOLINT(clang-analyzer-core.uninitialized.Branch) -- false positive
-        emit thumbnailLoadFailed(res->request.filePath);
+        emit thumbnailLoadFailed(res->request.id, res->request.filePath);
         mThumbnailCache.insert(res->request.id, res, resSize);
         return;
     }
 
-    emit thumbnailLoaded(res->request.filePath, res->thumb, res->fromExif);
+    emit thumbnailLoaded(res->request.id, res->request.filePath, res->thumb, res->fromExif);
 
     // Add cache after finished using res because the cache takes ownership.
     mThumbnailCache.insert(res->request.id, res, resSize);
