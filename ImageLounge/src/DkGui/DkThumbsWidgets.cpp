@@ -1329,6 +1329,8 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
         selectedIdx = qMax(0, qMin(selectedIdx, mThumbs.size() - 1));
         selectThumb(selectedIdx);
     }
+
+    update();
 }
 
 void DkThumbScene::updateThumbLabels()
