@@ -880,8 +880,11 @@ void DkCentralWidget::showViewPort(bool show /* = true */)
         switchWidget(mWidgets[viewport_widget]);
         if (getCurrentImage())
             getViewPort()->setImage(getCurrentImage()->image());
-    } else if (hasViewPort())
+        getViewPort()->show();
+    } else if (hasViewPort()) {
         getViewPort()->deactivate();
+        getViewPort()->hide();
+    }
 }
 
 void DkCentralWidget::showRecentFiles(bool show)
