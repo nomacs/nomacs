@@ -145,9 +145,8 @@ public:
     void dispatchFullImage(const LoadThumbnailRequest &request, const QImage &img);
 
 signals:
-    // TODO: signals should return request object or id
-    void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
-    void thumbnailLoadFailed(const QString &filePath);
+    void thumbnailLoaded(ThumbnailId id, const QString &filePath, const QImage &thumb, bool fromExif);
+    void thumbnailLoadFailed(ThumbnailId id, const QString &filePath);
 
 private:
     void onThumbnailLoadFinished();

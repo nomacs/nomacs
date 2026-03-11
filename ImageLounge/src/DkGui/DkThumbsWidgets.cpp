@@ -89,25 +89,40 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
     connect(mThumbLoader,
             &DkThumbLoader::thumbnailLoaded,
             this,
-            [this](const QString &filePath, const QImage &thumb, const bool fromExif) {
-                auto it = mThumbs.find(filePath);
-                if (it == mThumbs.end()) {
+            [this](ThumbnailId id, const QString &filePath, const QImage &img, const bool fromExif) {
+                auto req = mThumbRequests.find(id);
+                if (req == mThumbRequests.end()) { // request from another widget
                     return;
                 }
-                Thumb &th = *it;
-                th.request = {};
-                th.image = thumb;
+                Q_ASSERT(req.value() == filePath);
+                mThumbRequests.remove(id);
+
+                auto thumb = mThumbs.find(filePath);
+                if (thumb == mThumbs.end()) { // may have been removed
+                    return;
+                }
+
+                Thumb &th = *thumb;
+                th.image = img;
                 th.fromExif = fromExif;
                 th.loading = false;
                 update();
             });
 
-    connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &filePath) {
-        auto it = mThumbs.find(filePath);
-        if (it == mThumbs.end()) {
+    connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](ThumbnailId id, const QString &filePath) {
+        auto req = mThumbRequests.find(id);
+        if (req == mThumbRequests.end()) {
             return;
         }
-        Thumb &th = *it;
+        Q_ASSERT(req.value() == filePath);
+        mThumbRequests.remove(id);
+
+        auto thumb = mThumbs.find(filePath);
+        if (thumb == mThumbs.end()) {
+            return;
+        }
+
+        Thumb &th = *thumb;
         th.notExist = true;
         th.loading = false;
         update();
@@ -370,8 +385,10 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         if (oobStart || oobEnd) {
             if (existsInTable && thumb->loading) {
-                mThumbLoader->cancelThumbnailRequest(thumb->request);
-                mThumbs.remove(filePath);
+                auto req = thumb->request;
+                mThumbs.remove(req.filePath);
+                mThumbRequests.remove(req.id);
+                mThumbLoader->cancelThumbnailRequest(req);
             }
 
             if (oobEnd && !scrollToCurrentImage) {
@@ -392,10 +409,14 @@ void DkFilePreview::drawThumbs(QPainter *painter)
             }
 
             Thumb newThumb;
-            newThumb.loading = true;
             newThumb.request = LoadThumbnailRequest{filePath, option, size, constraint};
+            newThumb.loading = true;
+
+            Q_ASSERT(!mThumbRequests.contains(newThumb.request.id));
+            Q_ASSERT(!mThumbs.contains(filePath));
 
             mThumbs.insert(filePath, newThumb);
+            mThumbRequests.insert(newThumb.request.id, filePath);
             mThumbLoader->requestThumbnail(newThumb.request);
         }
 
@@ -935,11 +956,12 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader,
     setFileInfo(fileInfo);
 }
 
-void DkThumbLabel::onThumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif)
+void DkThumbLabel::onThumbnailLoaded(ThumbnailId id, const QString &filePath, const QImage &thumb, bool fromExif)
 {
-    if (filePath != mFilePath) {
+    if (id != mThumbRequest.id) {
         return;
     }
+    Q_ASSERT(mFilePath == filePath);
 
     mFetchingThumb = false;
     mThumbRequest = {};
@@ -954,11 +976,13 @@ void DkThumbLabel::onThumbnailLoaded(const QString &filePath, const QImage &thum
     update();
 }
 
-void DkThumbLabel::onThumbnailLoadFailed(const QString &filePath)
+void DkThumbLabel::onThumbnailLoadFailed(ThumbnailId id, const QString &filePath)
 {
-    if (filePath != mFilePath) {
+    if (id != mThumbRequest.id) {
         return;
     }
+    Q_ASSERT(mFilePath == filePath);
+
     mThumbNotExist = true;
     mFetchingThumb = false;
     mThumbRequest = {};
@@ -2416,10 +2440,13 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
 
 {
     connect(mLoader, &DkThumbLoader::thumbnailLoaded, this, &DkThumbPreviewLabel::thumbLoaded);
-    connect(mLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](const QString &path) {
-        if (path != mFilePath) {
+    connect(mLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](ThumbnailId id, const QString &path) {
+        if (id != mThumbId) {
             return;
         }
+        Q_ASSERT(path == mFilePath);
+        mThumbId = {};
+
         setProperty("empty", true); // apply empty style
         style()->unpolish(this);
         style()->polish(this);
@@ -2433,14 +2460,18 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
     QFileInfo fInfo(filePath);
     setToolTip(fInfo.fileName());
 
-    mLoader->requestThumbnail(LoadThumbnailRequest{filePath});
+    LoadThumbnailRequest request{filePath};
+    mThumbId = request.id;
+    mLoader->requestThumbnail(request);
 }
 
-void DkThumbPreviewLabel::thumbLoaded(const QString &filePath, const QImage &img)
+void DkThumbPreviewLabel::thumbLoaded(ThumbnailId id, const QString &filePath, const QImage &img)
 {
-    if (filePath != mFilePath) {
+    if (mThumbId != id) {
         return;
     }
+    mThumbId = {};
+    Q_ASSERT(filePath == mFilePath);
 
     QPixmap pm = QPixmap::fromImage(img);
     pm = DkImage::makeSquare(pm);
