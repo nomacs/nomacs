@@ -288,6 +288,7 @@ private:
     void keyPressEvent(QKeyEvent *event) override;
     QString currentDir() const;
     int selectedThumbIndex(bool first = true);
+    QGraphicsView *getView() const;
 
     int mXOffset = 0;
     int mNumRows = 0;
