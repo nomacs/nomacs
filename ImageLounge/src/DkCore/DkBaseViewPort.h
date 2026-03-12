@@ -165,6 +165,7 @@ protected:
 
     bool mForceFastRendering = false;
     bool mBlockZooming = false;
+    bool mResetWhenZoomPastFit = true;
 
     // flags to draw() call for multi-pass rendering
     enum RenderFlag {

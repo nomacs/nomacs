@@ -226,12 +226,14 @@ void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
     if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11() * factor < 1 && !force) {
         mBlockZooming = true;
         mZoomTimer->start(500);
-        resetView();
-        return;
+        if (mResetWhenZoomPastFit) {
+            resetView();
+            return;
+        }
     }
 
     // reset view if we pass the 'image fit to screen' on zoom in
-    if (mWorldMatrix.m11() < 1 && mWorldMatrix.m11() * factor > 1 && !force) {
+    if (mResetWhenZoomPastFit && mWorldMatrix.m11() < 1 && mWorldMatrix.m11() * factor > 1 && !force) {
         resetView();
         return;
     }

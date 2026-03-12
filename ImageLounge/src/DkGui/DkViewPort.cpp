@@ -1986,6 +1986,7 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
 
     mStartIcons.append(am.icon(DkActionManager::icon_file_open_large));
     mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
+    mResetWhenZoomPastFit = false;
 }
 
 DkViewPortFrameless::~DkViewPortFrameless() = default;
