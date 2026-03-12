@@ -10,11 +10,33 @@
 #include <QStorageInfo>
 #include <QtConcurrentRun>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 namespace nmc
 {
 
 static bool sXdgCompliant = true; // TODO: settings
 static int sMaxSize = 1024; // TODO: settings
+
+#ifdef Q_OS_WIN
+static void disableContentIndexing(const QString &path)
+{
+    std::wstring standardPath = path.toStdWString();
+    DWORD attributes = GetFileAttributesW(standardPath.c_str());
+
+    if (attributes == INVALID_FILE_ATTRIBUTES) {
+        return;
+    }
+    (void)SetFileAttributesW(standardPath.c_str(), attributes | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED);
+}
+#else
+static void disableContentIndexing(const QString &path)
+{
+    Q_UNUSED(path)
+}
+#endif
 
 void DkCachedThumb::cleanupSync()
 {
@@ -287,6 +309,7 @@ void DkCachedThumb::save(const QImage &img, int loadedBinSize)
                 qWarning() << "[CachedThumb] cache disabled, failed to create cache dir" << cacheDirPath;
                 return;
             } else {
+                disableContentIndexing(cacheDirPath);
                 qInfo() << "[CachedThumb] cache directory created at" << cacheDirPath;
             }
         }
