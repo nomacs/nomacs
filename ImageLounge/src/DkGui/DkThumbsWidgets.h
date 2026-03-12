@@ -204,6 +204,8 @@ public:
     void setFillSquare(bool value);
     void setFileInfo(const DkFileInfo &info);
 
+    void fetchThumb(float devicePixelRatio);
+
 signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;
     void showFileSignal(const QString &filePath = QString()) const;

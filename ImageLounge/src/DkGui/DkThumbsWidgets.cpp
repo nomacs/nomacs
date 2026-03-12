@@ -1111,13 +1111,12 @@ std::optional<QPixmap> DkThumbLabel::pixmap() const
     return pm;
 }
 
-void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void DkThumbLabel::fetchThumb(float devicePixelRatio)
 {
     std::optional<QPixmap> pm = pixmap();
-
+    mDevicePixelRatio = devicePixelRatio;
     mThumbOption = DkSettingsManager::param().display().highQualityThumbs ? LoadThumbnailOption::force_size
                                                                           : LoadThumbnailOption::none;
-    mDevicePixelRatio = painter->device()->devicePixelRatio();
     const QSize pixmapSize = (boundingRect().size() * mDevicePixelRatio).toSize();
 
     if (!mFetchingThumb && (!pm || pm->size() != pixmapSize) && !mThumbNotExist) {
@@ -1129,10 +1128,13 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
                                                                                     : ScaleConstraint::longest_side;
         mThumbRequest = LoadThumbnailRequest{mFilePath, mThumbOption, maxSize, constraint};
         mThumbLoader->requestThumbnail(mThumbRequest);
-
-        // It is possible we have pixmap now (from cache), check again.
-        pm = pixmap();
     }
+}
+
+void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    fetchThumb(painter->device()->devicePixelRatio());
+    std::optional<QPixmap> pm = pixmap();
 
     if (mThumbNotExist) {
         painter->setPen(sNoImagePen);
