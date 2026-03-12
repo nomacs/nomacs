@@ -311,6 +311,8 @@ signals:
     void updateDirSignal(const QString &dir) const;
 
 protected:
+    DkThumbScene *thumbsScene() const;
+
     void wheelEvent(QWheelEvent *event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
@@ -319,7 +321,6 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-    DkThumbScene *mThumbScene = nullptr;
     QPointF mMouseDownPos;
     int mLastShiftIdx = -1; // item index clicked while shift key down
 };
