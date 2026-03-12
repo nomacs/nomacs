@@ -1871,6 +1871,22 @@ bool DkThumbScene::allThumbsSelected() const
     return true;
 }
 
+void DkThumbScene::viewportChanged(const QRectF &portRect)
+{
+    // Cancel anything that is no longer visible
+    for (const auto item : items()) {
+        auto it = dynamic_cast<DkThumbLabel *>(item);
+        if (it == nullptr) {
+            continue;
+        }
+
+        const bool intersects = portRect.intersects(it->sceneBoundingRect());
+        if (!intersects) {
+            it->cancelLoading();
+        }
+    }
+}
+
 // DkThumbView --------------------------------------------------------------------
 DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
     : QGraphicsView(scene, parent)
@@ -1881,8 +1897,10 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
     setResizeAnchor(QGraphicsView::AnchorUnderMouse);
     setAcceptDrops(true);
 
-    connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
-    connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &DkThumbsView::onScroll);
+    connect(verticalScrollBar(), &QScrollBar::valueChanged, this, [&] {
+        const QRectF portRect = mapToScene(viewport()->rect()).boundingRect();
+        mThumbScene->viewportChanged(portRect);
+    });
 
     auto *scrollOnePageUpAction = new QAction(this);
     scrollOnePageUpAction->setShortcuts({QKeySequence::MoveToPreviousPage, QKeySequence(Qt::SHIFT | Qt::Key_Space)});
@@ -1922,23 +1940,6 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
     actionFilter->addAction(scrollToTopAction);
     actionFilter->addAction(scrollToEndAction);
     this->installEventFilter(actionFilter);
-}
-
-void DkThumbsView::onScroll()
-{
-    const QRectF portRect = mapToScene(viewport()->rect()).boundingRect();
-
-    for (const auto item : items()) {
-        auto it = dynamic_cast<DkThumbLabel *>(item);
-        if (it == nullptr) {
-            continue;
-        }
-
-        const bool intesects = portRect.intersects(it->sceneBoundingRect());
-        if (!intesects) {
-            it->cancelLoading();
-        }
-    }
 }
 
 void DkThumbsView::wheelEvent(QWheelEvent *event)
