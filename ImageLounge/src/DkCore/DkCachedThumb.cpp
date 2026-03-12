@@ -4,6 +4,7 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
+#include <QBuffer>
 #include <QCryptographicHash>
 #include <QDir>
 #include <QSaveFile>
@@ -357,26 +358,29 @@ void DkCachedThumb::save(const QImage &img, int loadedBinSize)
     Q_ASSERT(!thumb.colorSpace().isValid() || thumb.colorSpace() == QColorSpace{QColorSpace::SRgb});
     thumb.setColorSpace({}); // prevent libpng "warning: iCCP: known incorrect sRGB profile"
 
-    // Write to a temporary and atomic swap to prevent thumb corruption (other processes or cleanup function)
-    QSaveFile f(cacheFilePath);
-    if (f.open(QFile::WriteOnly | QFile::Truncate)) {
-        const char *format = "png";
-        int quality = 50;
-        if (!sXdgCompliant && !DkImage::alphaChannelUsed(thumb)) {
-            // On Windows/macOS we don't need XDG compliance and can use JPEG thumbs
-            // Linux users also have this option if they don't care about sharing thumbs
-            format = "jpg";
-            quality = 90;
-        }
-        if (thumb.save(&f, format, quality)) {
-            if (f.commit()) {
+    const char *format = "png";
+    int quality = 50;
+    if (!sXdgCompliant && !DkImage::alphaChannelUsed(thumb)) {
+        // On Windows/macOS we don't need XDG compliance and can use JPEG thumbs
+        // Linux users also have this option if they don't care about sharing thumbs
+        format = "jpg";
+        quality = 90;
+    }
+
+    // We have many threads writing; compress to buffer for less disk fragmentation/syscalls
+    QByteArray data;
+    QBuffer buffer(&data);
+    if (thumb.save(&buffer, format, quality)) {
+        // Write to a temporary and atomic swap to prevent thumb corruption (other processes or cleanup function)
+        QSaveFile f(cacheFilePath);
+        if (f.open(QFile::WriteOnly | QFile::Truncate)) {
+            if (f.write(data) == data.length() && f.commit()) {
                 // qInfo() << "[CachedThumb] SAVED" << mFileInfo.fileName() << img.size() << "to" << thumb.size() << dt;
             }
         }
-    }
-
-    if (f.error() != QFile::NoError) {
-        qWarning() << "[CacheThumb] write failed:" << f.error() << f.errorString() << cacheFilePath;
+        if (f.error() != QFile::NoError) {
+            qWarning() << "[CacheThumb] write failed:" << f.error() << f.errorString() << cacheFilePath;
+        }
     }
 }
 
