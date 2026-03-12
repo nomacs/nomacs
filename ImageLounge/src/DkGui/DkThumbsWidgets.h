@@ -257,6 +257,7 @@ public:
     int findThumb(DkThumbLabel *thumb) const;
     bool allThumbsSelected() const;
     void ensureVisible(const QString &path) const;
+    void viewportChanged(const QRectF &portRect);
 
 public slots:
     void updateThumbLabels();
@@ -319,9 +320,6 @@ protected:
     DkThumbScene *mThumbScene = nullptr;
     QPointF mMouseDownPos;
     int mLastShiftIdx = -1; // item index clicked while shift key down
-
-private:
-    void onScroll();
 };
 
 class DllCoreExport DkThumbScrollWidget : public DkWidget
