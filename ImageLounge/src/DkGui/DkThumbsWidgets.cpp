@@ -1262,10 +1262,12 @@ void DkThumbScene::updateLayout()
     if (mThumbs.empty())
         return;
 
-    QSize pSize;
+    QGraphicsView *view = getView();
+    if (!view) {
+        return;
+    }
 
-    if (!views().empty())
-        pSize = QSize(views().first()->viewport()->size());
+    QSize pSize = QSize(view->viewport()->size());
 
     int psz = DkSettingsManager::param().effectiveThumbPreviewSize();
     mXOffset = 2; // qCeil(psz*0.1f);
@@ -1309,23 +1311,19 @@ void DkThumbScene::updateLayout()
     // The pixmap cache must be large enough for all thumbnails that need to be painted
     // If the cache is too small, the paint event will loop back to itself:
     // paintEvent()->(cache miss)->fetchThumbnail()->update()->paintEvent()
-    const auto gfxViews = views();
-    if (!gfxViews.empty()) {
-        int cacheKb = 9 * 1024; // +1 below puts us at 10MB, the Qt default
-        const QGraphicsView *view = gfxViews.first();
-        const QList<QGraphicsItem *> visibleItems = view->items(view->rect());
-        if (visibleItems.count() > 0) {
-            QSize sz = (visibleItems.first()->boundingRect().size() * view->devicePixelRatio()).toSize();
-            const int bytesPerPixel = 4;
-            const int extraRows = 2;
-            cacheKb += sz.width() * sz.height() * bytesPerPixel * //
-                (visibleItems.count() + extraRows * mNumCols) / 1024;
-        }
-
-        cacheKb = (cacheKb / 1024 + 1) * 1024; // to nearest MB
-
-        QPixmapCache::setCacheLimit(cacheKb);
+    int cacheKb = 9 * 1024; // +1 below puts us at 10MB, the Qt default
+    const QList<QGraphicsItem *> visibleItems = view->items(view->rect());
+    if (visibleItems.count() > 0) {
+        QSize sz = (visibleItems.first()->boundingRect().size() * view->devicePixelRatio()).toSize();
+        const int bytesPerPixel = 4;
+        const int extraRows = 2;
+        cacheKb += sz.width() * sz.height() * bytesPerPixel * //
+            (visibleItems.count() + extraRows * mNumCols) / 1024;
     }
+
+    cacheKb = (cacheKb / 1024 + 1) * 1024; // to nearest MB
+    QPixmapCache::setCacheLimit(cacheKb);
+
 }
 
 void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
@@ -1493,17 +1491,18 @@ void DkThumbScene::ensureVisible(const QString &path) const
         return;
     }
 
+    QGraphicsView *view = getView();
+    if (!view) {
+        return;
+    }
+
     for (DkThumbLabel *label : std::as_const(mThumbLabels)) {
         if (label->filePath() == path) {
             int xMargin = 50, yMargin = 50;
 
-            const QList<QGraphicsView *> viewList = this->views();
-            if (!viewList.isEmpty()) {
-                QGraphicsView *view = viewList.at(0);
-                QRectF br = label->boundingRect();
-                xMargin = (view->width() - br.width()) / 2;
-                yMargin = (view->height() - br.height()) / 2;
-            }
+            QRectF br = label->boundingRect();
+            xMargin = (view->width() - br.width()) / 2;
+            yMargin = (view->height() - br.height()) / 2;
 
             label->ensureVisible(QRect(), xMargin, yMargin);
             break;
@@ -1535,6 +1534,12 @@ int DkThumbScene::selectedThumbIndex(bool first)
     }
 
     return selIdx;
+}
+
+QGraphicsView *DkThumbScene::getView() const
+{
+    QList<QGraphicsView *> list = views();
+    return list.value(0);
 }
 
 void DkThumbScene::toggleThumbLabels(bool show)
@@ -1835,9 +1840,8 @@ DkThumbLabel *DkThumbScene::getCenterThumb() const
 {
     DkThumbLabel *centerThumb = nullptr;
 
-    auto viewList = views();
-    if (!viewList.empty()) {
-        QGraphicsView *view = viewList.at(0);
+    QGraphicsView *view = getView();
+    if (view) {
         // we can't test a point since we might hit the space between items
         QRect centerRect = QRect{view->rect().center(), QSize{1, 1}}.adjusted(-8, -8, 8, 8);
         QList<QGraphicsItem *> centerItems = view->items(centerRect, Qt::IntersectsItemBoundingRect);
