@@ -102,7 +102,8 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
     std::optional<QImage> fullThumb{};
     std::unique_ptr<DkCachedThumb> cachedThumb{};
 
-    if (request.option != LoadThumbnailOption::force_full) {
+    if (request.option != LoadThumbnailOption::force_full
+        && DkSettingsManager::param().resources().thumbDiskSpace > 0) {
         cachedThumb = std::make_unique<DkCachedThumb>(fileInfo, request.size, request.constraint);
         QImage thumb = cachedThumb->load();
         if (!thumb.isNull()) {
@@ -224,8 +225,10 @@ void removeBlackBorder(QImage &img)
 // DkThumbsThreadPool --------------------------------------------------------------------
 DkThumbsThreadPool::DkThumbsThreadPool()
 {
+    const auto &res = DkSettingsManager::param().resources();
+    int numThreads = qBound(1, res.thumbThreads, QThread::idealThreadCount() - 2);
     mPool = new QThreadPool();
-    mPool->setMaxThreadCount(qMax(mPool->maxThreadCount() - 2, 1));
+    mPool->setMaxThreadCount(numThreads);
 }
 
 DkThumbsThreadPool &DkThumbsThreadPool::instance()
@@ -245,9 +248,16 @@ void DkThumbsThreadPool::clear()
 }
 
 DkThumbLoader::DkThumbLoader()
-    : mWatchers(qMax(QThread::idealThreadCount() - 2, 1))
 {
-    mIdleWatchers.reserve(mWatchers.size());
+    unsigned numThreads = DkThumbsThreadPool::pool()->maxThreadCount();
+
+    const auto &res = DkSettingsManager::param().resources();
+    auto maxBytes = qsizetype(res.thumbCacheMemory) * 1024 * 1024;
+
+    mThumbnailCache.setMaxCost(maxBytes);
+    mWatchers = decltype(mWatchers){numThreads};
+
+    mIdleWatchers.reserve(numThreads);
     for (auto &ele : mWatchers) {
         mIdleWatchers.push_back(&ele);
         connect(&ele,
