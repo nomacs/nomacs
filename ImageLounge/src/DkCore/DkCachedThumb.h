@@ -22,6 +22,12 @@ public:
     static void DllCoreExport cleanup();
 
     /**
+     * @brief Return true if shared cache enabled on XDG-capable system
+     * @return
+     */
+    static bool isXdgCompliant();
+
+    /**
      * @brief setup for loading or saving thumb from/to cache
      * @param fileInfo original file
      * @param size minimum thumbnail size wrt constraint

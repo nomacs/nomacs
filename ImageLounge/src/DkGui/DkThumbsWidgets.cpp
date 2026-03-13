@@ -1936,6 +1936,7 @@ void DkThumbScene::viewportChanged(const QRectF &portRect)
     }
 
     // Cancel offscreen thumbnails, prefetch if they are likely to be needed soon
+    const bool preloadThumbs = DkSettingsManager::param().resources().preloadThumbs;
     QList<DkThumbLabel *> prefetch;
     int numRows = lastRow - firstRow + 1;
     for (DkThumbLabel *thumb : std::as_const(offscreen)) {
@@ -1943,7 +1944,7 @@ void DkThumbScene::viewportChanged(const QRectF &portRect)
         bool prevPage = scrollUp && row >= firstRow - numRows && row < firstRow;
         bool nextPage = scrollDown && row <= lastRow + numRows && row > lastRow;
 
-        if (view && (prevPage || nextPage)) {
+        if (view && preloadThumbs && (prevPage || nextPage)) {
             prefetch.append(thumb);
         } else {
             thumb->cancelLoading();

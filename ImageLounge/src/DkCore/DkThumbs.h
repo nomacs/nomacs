@@ -128,7 +128,7 @@ class DkThumbLoader : public QObject
         }
     };
 
-    QCache<ThumbnailId, LoadThumbnailResultLocal> mThumbnailCache{100000000}; // 100 MB
+    QCache<ThumbnailId, LoadThumbnailResultLocal> mThumbnailCache{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal>> mWatchers{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal> *> mIdleWatchers{};
     std::queue<LoadThumbnailRequest> mQueue{};
