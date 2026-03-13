@@ -1291,6 +1291,7 @@ void DkThumbScene::updateLayout()
 
             DkThumbLabel *cLabel = mThumbLabels.at(tIdx);
             cLabel->setPos(cXOffset, cYOffset);
+            cLabel->setRow(rIdx);
             cXOffset += psz + mXOffset;
         }
 
