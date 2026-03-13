@@ -17,10 +17,6 @@
 
 namespace nmc
 {
-
-static bool sXdgCompliant = true; // TODO: settings
-static int sMaxSize = 1024; // TODO: settings
-
 #ifdef Q_OS_WIN
 static void disableContentIndexing(const QString &path)
 {
@@ -41,7 +37,11 @@ static void disableContentIndexing(const QString &path)
 
 void DkCachedThumb::cleanupSync()
 {
-    const int maxUsedBytes = 1024 * 1024 * 1024; // TODO: settings
+    const auto maxUsedBytes = static_cast<qint64>(DkSettingsManager::param().resources().thumbDiskSpace) * 1024 * 1024;
+    if (maxUsedBytes <= 0 && isXdgCompliant()) {
+        return; // Don't clear a shared thumb directory
+    }
+
     DkTimer dt{};
     bool haveAtimeCheck = false;
     bool haveAtime = false;
@@ -130,8 +130,19 @@ DkCachedThumb::DkCachedThumb(DkFileInfo &fileInfo, int size, ScaleConstraint con
     //
     mUri = QUrl::fromLocalFile(fileInfo.path()).toEncoded();
     QByteArray hash = QCryptographicHash::hash(mUri, QCryptographicHash::Md5).toHex();
-    const char *suffix = sXdgCompliant ? ".png" : ".dat";
+    const char *suffix = isXdgCompliant() ? ".png" : ".dat";
     mCacheFileName = hash + suffix;
+}
+
+bool DkCachedThumb::isXdgCompliant()
+{
+    // Always use non-compliance mode on Windows and macOS as there are no
+    // other programs to share thumbnails with
+#if !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
+    return DkSettingsManager::param().resources().sharedThumbs;
+#else
+    return false;
+#endif
 }
 
 QImage DkCachedThumb::load()
@@ -142,6 +153,7 @@ QImage DkCachedThumb::load()
     // use it and also save the smaller size for later.
     XdgBin bin{};
     QImageReader reader{};
+    const int maxSize = DkSettingsManager::param().resources().maxThumbSize;
 
     for (auto &xdgBin : kXdgBins) {
         QString cacheFilePath = cacheHome() + u'/' + xdgBin.name + u'/' + mCacheFileName;
@@ -161,7 +173,7 @@ QImage DkCachedThumb::load()
             continue;
         }
 
-        if (xdgBin.size == sMaxSize || isLargeEnough(sz)) {
+        if (xdgBin.size >= maxSize || isLargeEnough(sz)) {
             // qInfo() << "[CachedThumb] FOUND" << mFileInfo.fileName() << sz << "for" << mSize << (int)mConstraint <<
             // dt;
             bin = xdgBin;
@@ -234,6 +246,7 @@ void DkCachedThumb::save(const QImage &img, int loadedBinSize)
     // Find the first xdg bin large enough for scale constraint
     XdgBin bin{};
     QString cacheDirPath{}, cacheFilePath{};
+    const int maxSize = DkSettingsManager::param().resources().maxThumbSize;
 
     for (auto &xdgBin : kXdgBins) {
         bin = xdgBin;
@@ -251,12 +264,10 @@ void DkCachedThumb::save(const QImage &img, int loadedBinSize)
         }
 
         QSize sz{xdgW, xdgH};
-        if (bin.size == sMaxSize || isLargeEnough(sz)) {
+        if (bin.size >= maxSize || isLargeEnough(sz)) {
             break;
         }
     }
-
-    Q_ASSERT(bin.size <= sMaxSize);
 
     // The image itself may be smaller than this bin, no need to cache it
     int imgDim = qMax(imgSize.width(), imgSize.height());
@@ -360,7 +371,7 @@ void DkCachedThumb::save(const QImage &img, int loadedBinSize)
 
     const char *format = "png";
     int quality = 50;
-    if (!sXdgCompliant && !DkImage::alphaChannelUsed(thumb)) {
+    if (!isXdgCompliant() && !DkImage::alphaChannelUsed(thumb)) {
         // On Windows/macOS we don't need XDG compliance and can use JPEG thumbs
         // Linux users also have this option if they don't care about sharing thumbs
         format = "jpg";
@@ -396,7 +407,7 @@ QString DkCachedThumb::cacheHome()
     if (path.isEmpty()) {
         path = QDir::homePath() + "/.cache";
     }
-    path += sXdgCompliant ? "/thumbnails" : "/nomacs/thumbnails";
+    path += isXdgCompliant() ? "/thumbnails" : "/nomacs/thumbnails";
 #endif
     return path;
 }
