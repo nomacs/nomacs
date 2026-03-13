@@ -558,6 +558,13 @@ void DkSettings::load(QSettings &settings, bool defaults)
     resources_p.gammaCorrection = settings.value("gammaCorrection", resources_p.gammaCorrection).toBool();
     resources_p.loadSavedImage = settings.value("loadSavedImage", resources_p.loadSavedImage).toInt();
 
+    resources_p.maxThumbSize = settings.value("maxThumbSize", resources_p.maxThumbSize).toInt();
+    resources_p.thumbThreads = settings.value("thumbThreads", resources_p.thumbThreads).toInt();
+    resources_p.thumbCacheMemory = settings.value("thumbCacheMemory", resources_p.thumbCacheMemory).toInt();
+    resources_p.thumbDiskSpace = settings.value("thumbDiskSpace", resources_p.thumbDiskSpace).toInt();
+    resources_p.preloadThumbs = settings.value("preloadThumbs", resources_p.preloadThumbs).toBool();
+    resources_p.sharedThumbs = settings.value("sharedThumbs", resources_p.sharedThumbs).toBool();
+
     if (sync_p.switchModifier) {
         global_p.altMod = Qt::ControlModifier;
         global_p.ctrlMod = Qt::AltModifier;
@@ -867,6 +874,19 @@ void DkSettings::save(QSettings &settings, bool force)
     if (force || resources_p.loadSavedImage != resources_d.loadSavedImage)
         settings.setValue("loadSavedImage", resources_p.loadSavedImage);
 
+    if (force || resources_p.maxThumbSize != resources_d.maxThumbSize)
+        settings.setValue("maxThumbSize", resources_p.maxThumbSize);
+    if (force || resources_p.thumbThreads != resources_d.thumbThreads)
+        settings.setValue("thumbThreads", resources_p.thumbThreads);
+    if (force || resources_p.thumbCacheMemory != resources_d.thumbCacheMemory)
+        settings.setValue("thumbCacheMemory", resources_p.thumbCacheMemory);
+    if (force || resources_p.thumbDiskSpace != resources_d.thumbDiskSpace)
+        settings.setValue("thumbDiskSpace", resources_p.thumbDiskSpace);
+    if (force || resources_p.preloadThumbs != resources_d.preloadThumbs)
+        settings.setValue("preloadThumbs", resources_p.preloadThumbs);
+    if (force || resources_p.sharedThumbs != resources_d.sharedThumbs)
+        settings.setValue("sharedThumbs", resources_p.sharedThumbs);
+
     settings.endGroup();
 
     // keep loaded settings in mind
@@ -1044,6 +1064,13 @@ void DkSettings::setToDefaultSettings()
     resources_p.gammaCorrection = true;
     resources_p.loadSavedImage = ls_load_to_tab;
     resources_p.waitForLastImg = true;
+
+    resources_p.maxThumbSize = 256;
+    resources_p.thumbThreads = qMax(1, QThread::idealThreadCount() - 2);
+    resources_p.thumbCacheMemory = 128;
+    resources_p.thumbDiskSpace = 0;
+    resources_p.preloadThumbs = false;
+    resources_p.sharedThumbs = true;
 
     qDebug() << "ok... default settings are set";
 }
