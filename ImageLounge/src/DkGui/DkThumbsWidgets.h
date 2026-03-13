@@ -310,6 +310,7 @@ private:
     QSharedPointer<DkImageLoader> mLoader;
     QVector<DkFileInfo> mThumbs;
     DkThumbLoader *mThumbLoader;
+    QRectF mLastViewPortRect{};
 };
 
 class DkThumbsView : public QGraphicsView

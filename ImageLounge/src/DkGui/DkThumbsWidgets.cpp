@@ -966,6 +966,18 @@ void DkThumbLabel::onThumbnailLoaded(ThumbnailId id, const QString &filePath, co
     mFetchingThumb = false;
     mThumbRequest = {};
 
+    // If we are not visible to the view (prefetching or straggler), do not generate
+    // a pixmap as it may kick a visible item out of the cache, forcing a refetch
+    QGraphicsView *view = scene()->views().value(0);
+    if (!view) {
+        return;
+    }
+
+    QRectF viewRect = view->mapToScene(view->viewport()->rect()).boundingRect();
+    if (!sceneBoundingRect().intersects(viewRect)) {
+        return;
+    }
+
     // update label
     mText.setPos(0, DkSettingsManager::param().effectiveThumbPreviewSize());
 
@@ -1325,6 +1337,7 @@ void DkThumbScene::updateLayout()
     cacheKb = (cacheKb / 1024 + 1) * 1024; // to nearest MB
     QPixmapCache::setCacheLimit(cacheKb);
 
+    mLastViewPortRect = {};
 }
 
 void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
@@ -1879,17 +1892,70 @@ bool DkThumbScene::allThumbsSelected() const
 
 void DkThumbScene::viewportChanged(const QRectF &portRect)
 {
-    // Cancel anything that is no longer visible
-    for (const auto item : items()) {
-        auto it = dynamic_cast<DkThumbLabel *>(item);
-        if (it == nullptr) {
-            continue;
-        }
+    // Detect the scroll direction for prefetching
+    // NOTE: It will take >1 scroll to be sure user is scrolling and it wasn't a layout change
+    bool scrollUp = false, scrollDown = false;
 
-        const bool intersects = portRect.intersects(it->sceneBoundingRect());
-        if (!intersects) {
-            it->cancelLoading();
+    if (mLastViewPortRect.isNull()) {
+        mLastViewPortRect = portRect;
+    } else {
+        float dx = portRect.x() - mLastViewPortRect.x();
+        float dy = portRect.y() - mLastViewPortRect.y();
+        mLastViewPortRect = portRect;
+        if (dx == 0) {
+            if (dy < 0) {
+                scrollUp = true;
+            } else if (dy > 0) {
+                scrollDown = true;
+            }
         }
+    }
+
+    auto *view = getView();
+    Q_ASSERT(view);
+
+    // First/last visible row and prioritize visible thumbs
+    QList<DkThumbLabel *> offscreen;
+    offscreen.reserve(mThumbLabels.size());
+
+    int firstRow = -1, lastRow = -1;
+    for (DkThumbLabel *thumb : std::as_const(mThumbLabels)) {
+        const int row = thumb->row();
+        const bool intersects = portRect.intersects(thumb->sceneBoundingRect());
+
+        if (intersects) {
+            thumb->fetchThumb(view->devicePixelRatio());
+            lastRow = row;
+            if (firstRow < 0) {
+                firstRow = row;
+            }
+        } else {
+            offscreen.append(thumb);
+        }
+    }
+
+    // Cancel offscreen thumbnails, prefetch if they are likely to be needed soon
+    QList<DkThumbLabel *> prefetch;
+    int numRows = lastRow - firstRow + 1;
+    for (DkThumbLabel *thumb : std::as_const(offscreen)) {
+        const int row = thumb->row();
+        bool prevPage = scrollUp && row >= firstRow - numRows && row < firstRow;
+        bool nextPage = scrollDown && row <= lastRow + numRows && row > lastRow;
+
+        if (view && (prevPage || nextPage)) {
+            prefetch.append(thumb);
+        } else {
+            thumb->cancelLoading();
+        }
+    }
+
+    // Prioritize the first thumbs that will scroll into view
+    if (scrollUp) {
+        std::reverse(prefetch.begin(), prefetch.end());
+    }
+
+    for (auto *thumb : std::as_const(prefetch)) {
+        thumb->fetchThumb(view->devicePixelRatio());
     }
 }
 
@@ -1903,8 +1969,11 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
     setAcceptDrops(true);
 
     connect(verticalScrollBar(), &QScrollBar::valueChanged, this, [&] {
-        const QRectF portRect = mapToScene(viewport()->rect()).boundingRect();
-        mThumbScene->viewportChanged(portRect);
+        DkThumbScene *sc = thumbsScene();
+        if (sc) { // valueChanged() may fire when scene is destructed
+            const QRectF portRect = mapToScene(viewport()->rect()).boundingRect();
+            sc->viewportChanged(portRect);
+        }
     });
 
     auto *scrollOnePageUpAction = new QAction(this);
