@@ -204,6 +204,16 @@ public:
     void setFillSquare(bool value);
     void setFileInfo(const DkFileInfo &info);
 
+    int row() const
+    {
+        return mRow;
+    }
+
+    void setRow(int row)
+    {
+        mRow = row;
+    }
+
     void fetchThumb(float devicePixelRatio);
 
 signals:
@@ -235,6 +245,7 @@ private:
     LoadThumbnailOption mThumbOption = LoadThumbnailOption::none;
     bool mIsHovered = false;
     bool mFillSquare = false;
+    int mRow{};
 
     static constexpr QColor sNoImagePen = QColor(150, 150, 150);
     static constexpr QColor sNoImageBrush = QColor(100, 100, 100, 50);
