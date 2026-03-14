@@ -144,7 +144,7 @@ private:
     void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
     void tcpSetWindowRect(QRect rect);
     void tcpForceSynchronize();
-    void tcpLoadFile(qint16 idx, QString filename);
+    void tcpLoadFile(qint16 idx, const QString &filename);
 
     // file actions
     void reloadFile();
@@ -277,7 +277,7 @@ signals:
 
 public slots:
     void changeChannel(int channel);
-    void changeColorTable(QGradientStops stops);
+    void changeColorTable(const QGradientStops &stops);
     void pickColor(bool enable);
     void updateImage(bool enable);
 

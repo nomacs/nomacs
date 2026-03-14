@@ -289,6 +289,8 @@ private:
 
     // controls whether we cannot pan outside an image
     bool mZeroPanControl = false;
+
+    static constexpr qreal sPanFraction = 0.02;
 };
 
 // scaleKeepAspectRatioAndCenter creates a transformation that
