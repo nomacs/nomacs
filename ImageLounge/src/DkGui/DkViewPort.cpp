@@ -57,7 +57,7 @@
 #include <QSvgRenderer>
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
-#include <cstdlib>
+#include <cmath>
 
 #ifdef WITH_OPENCV
 #include "opencv2/imgproc/imgproc.hpp"
@@ -366,7 +366,7 @@ void DkViewPort::setImage(const QImage &newImg)
     emit viewImageChanged();
 
     // init fading
-    if (isNewFile && wasImageLoaded && DkSettingsManager::param().display().animationDuration
+    if (isNewFile && wasImageLoaded && DkSettingsManager::param().display().animationDuration != 0
         && DkSettingsManager::param().display().transition != DkSettingsManager::param().trans_appear
         && (mController->getPlayer()->isPlaying() || DkUtils::getMainWindow()->isFullScreen()
             || DkSettingsManager::param().display().alwaysAnimate)) {
@@ -514,7 +514,7 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
         imgPos = mWorldMatrix.map(imgPos);
 
         // compute difference to current mViewport center - in world coordinates
-        imgPos = QPointF(width() * 0.5f, height() * 0.5f) - imgPos;
+        imgPos = QPointF(width() * 0.5, height() * 0.5) - imgPos;
 
         translateViewInWidgetCoords(imgPos.x(), imgPos.y());
     }
@@ -542,7 +542,7 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix, bool force)
     // check if we need a synchronization
     if ((force || qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
         && (hasFocus() || mController->hasFocus())) {
-        QPointF size = QPointF(geometry().width() / 2.0f, geometry().height() / 2.0f);
+        QPointF size = QPointF(width(), height()) / 2;
         size = mWorldMatrix.inverted().map(size);
         size = mImgMatrix.inverted().map(size);
         size = QPointF(size.x() / getImageSize().width(), size.y() / getImageSize().height());
@@ -1331,7 +1331,7 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end)
 {
     DkVector vec(static_cast<float>(start.x() - end.x()), static_cast<float>(start.y() - end.y()));
 
-    if (fabs(vec.norm()) < 100)
+    if (std::fabs(vec.norm()) < 100)
         return no_swipe;
 
     double angle = DkMath::normAngleRad(vec.angle(DkVector(0, 1)), 0.0, CV_PI);
@@ -1355,7 +1355,7 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end)
 
     }
     // upper part of the canvas is thumbs
-    else if (!horizontal && startPos.y() < height() * 0.5f) {
+    else if (!horizontal && startPos.y() < height() * 0.5) {
         // downward gesture is opening
         if (vec.y > 0)
             return open_thumbs;
@@ -1363,7 +1363,7 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end)
             return close_thumbs;
     }
     // lower part of the canvas is thumbs
-    else if (!horizontal && startPos.y() > height() * 0.5f) {
+    else if (!horizontal && startPos.y() > height() * 0.5) {
         // upward gesture is opening
         if (vec.y < 0)
             return open_metadata;
@@ -1422,7 +1422,7 @@ QPoint DkViewPort::mapToImage(const QPoint &windowPos) const
     QSize sz = mImgStorage.size();
 
     if (p.x() < 0 || p.y() < 0 || p.x() >= sz.width() || p.y() >= sz.height()) {
-        return QPoint(-1, -1);
+        return {-1, -1};
     }
 
     return p;
@@ -1459,11 +1459,11 @@ void DkViewPort::getPixelInfo(const QPoint &pos)
 QString DkViewPort::getCurrentPixelHexValue()
 {
     if (mImgStorage.isEmpty() || mCurrentPixelPos.isNull())
-        return QString();
+        return {};
 
     QPoint xy = mapToImage(mCurrentPixelPos);
     if (xy.x() < 0)
-        return QString();
+        return {};
 
     const QImage img = getImage();
     return DkUtils::colorToCssHex(img.pixelColor(xy), img.hasAlphaChannel()).remove(0, 1);
@@ -1795,7 +1795,7 @@ void DkViewPort::loadSkipNext10()
         emit sendNewFileSignal((qint16)DkSettingsManager::param().global().skipImgs);
 }
 
-void DkViewPort::tcpLoadFile(qint16 idx, QString filename)
+void DkViewPort::tcpLoadFile(qint16 idx, const QString &filename)
 {
     qDebug() << "I got a file request??";
 
@@ -1834,7 +1834,7 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename)
 QSharedPointer<DkImageContainerT> DkViewPort::imageContainer() const
 {
     if (!mLoader)
-        return QSharedPointer<DkImageContainerT>();
+        return {};
 
     return mLoader->getCurrentImage();
 }
@@ -2047,7 +2047,7 @@ void DkViewPortFrameless::resizeEvent(QResizeEvent *event)
     mStartBgRect = bgRect;
 
     constexpr qreal margin = 40;
-    qreal iconSizeMargin = (initialRect.width() - 3 * margin) / mStartActions.size();
+    qreal iconSizeMargin = (initialRect.width() - 3 * margin) / static_cast<qreal>(mStartActions.size());
     QSize iconSize = QSize(qRound(iconSizeMargin - margin), qRound(iconSizeMargin - margin));
     QPointF offset = QPointF(bgRect.left() + 49, bgRect.top() + 246 + 15);
 
@@ -2255,7 +2255,7 @@ void DkViewPortContrast::changeChannel(int channel)
         updateImage(true);
 }
 
-void DkViewPortContrast::changeColorTable(QGradientStops stops)
+void DkViewPortContrast::changeColorTable(const QGradientStops &stops)
 {
     qreal fac;
 
@@ -2272,8 +2272,8 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops)
 
     // If just one stop is set, we can speed things up:
     if (stops.size() == 1) {
-        for (int i = 0; i < mColorTable.size(); i++)
-            mColorTable[i] = qRgb(rLeft, gLeft, bLeft);
+        for (QRgb &i : mColorTable)
+            i = qRgb(rLeft, gLeft, bLeft);
     }
     // Otherwise interpolate:
     else {
@@ -2283,7 +2283,7 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops)
         rightStop = stops.at(rightStopIdx).first;
 
         for (int i = 0; i < mColorTable.size(); i++) {
-            actPos = (qreal)i / mColorTable.size();
+            actPos = static_cast<qreal>(i) / static_cast<qreal>(mColorTable.size());
 
             if (actPos > rightStop) {
                 leftStop = rightStop;

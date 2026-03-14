@@ -143,25 +143,25 @@ void DkBaseViewPort::togglePattern(bool show)
 
 void DkBaseViewPort::panLeft()
 {
-    qreal delta = -2 * width() / 100;
+    const qreal delta = -sPanFraction * static_cast<qreal>(width());
     moveViewInWidgetCoords(QPointF(delta, 0));
 }
 
 void DkBaseViewPort::panRight()
 {
-    qreal delta = 2 * width() / 100;
+    const qreal delta = sPanFraction * static_cast<qreal>(width());
     moveViewInWidgetCoords(QPointF(delta, 0));
 }
 
 void DkBaseViewPort::panUp()
 {
-    qreal delta = -2 * height() / 100;
+    const qreal delta = -sPanFraction * static_cast<qreal>(height());
     moveViewInWidgetCoords(QPointF(0, delta));
 }
 
 void DkBaseViewPort::panDown()
 {
-    qreal delta = 2 * height() / 100;
+    const qreal delta = sPanFraction * static_cast<qreal>(height());
     moveViewInWidgetCoords(QPointF(0, delta));
 }
 
