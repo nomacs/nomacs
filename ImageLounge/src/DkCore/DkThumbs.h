@@ -42,8 +42,6 @@ class QThreadPool;
 namespace nmc
 {
 
-#define max_thumb_size 400
-
 class DkThumbsThreadPool
 {
 public:
@@ -86,7 +84,7 @@ struct LoadThumbnailRequest {
 
     explicit LoadThumbnailRequest(const QString &filePath_,
                                   LoadThumbnailOption option_ = {},
-                                  int size_ = max_thumb_size,
+                                  int size_ = -1,
                                   ScaleConstraint constraint_ = {});
 
     size_t sizeInBytes() const

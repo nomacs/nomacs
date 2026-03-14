@@ -192,7 +192,7 @@ void DkFilePreview::initOrientations()
         orientation = Qt::Vertical;
 
     if (windowPosition == pos_dock_ver || windowPosition == pos_dock_hor)
-        minHeight = max_thumb_size;
+        minHeight = DkSettingsManager::param().resources().maxThumbSize / devicePixelRatio();
     else
         minHeight = DkSettingsManager::param().effectiveThumbSize(this);
 
@@ -399,7 +399,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         // only fetch thumbs if we are not moving too fast...
         if (!existsInTable) {
-            int size = max_thumb_size;
+            int size = DkSettingsManager::param().resources().maxThumbSize;
             ScaleConstraint constraint = orientation == Qt::Horizontal ? ScaleConstraint::height
                                                                        : ScaleConstraint::width;
             LoadThumbnailOption option = LoadThumbnailOption::none;
@@ -733,14 +733,14 @@ void DkFilePreview::wheelEvent(QWheelEvent *event)
         int newSize = DkSettingsManager::param().display().thumbSize;
         newSize += qRound(delta * 0.05f);
 
+        // divide by dpr since larger would blur the thumbnail
+        const int maxSize = DkSettingsManager::param().resources().maxThumbSize / devicePixelRatio();
+
+        newSize = qBound(8, newSize, maxSize);
+
         // make sure it is even
         if (qRound(newSize * 0.5f) != newSize * 0.5f)
             newSize++;
-
-        if (newSize < 8)
-            newSize = 8;
-        else if (newSize > max_thumb_size)
-            newSize = max_thumb_size;
 
         if (newSize != DkSettingsManager::param().display().thumbSize) {
             DkSettingsManager::param().display().thumbSize = newSize;
@@ -1134,8 +1134,9 @@ void DkThumbLabel::fetchThumb(float devicePixelRatio)
     if (!mFetchingThumb && (!pm || pm->size() != pixmapSize) && !mThumbNotExist) {
         // setting fetching flag first, because requestThumbnail might return thumbnail immediately
         // This avoids stucking infinitely in fetching thumb state
+        const int maxThumbSize = DkSettingsManager::param().resources().maxThumbSize;
         mFetchingThumb = true;
-        int maxSize = mThumbOption == LoadThumbnailOption::force_size ? pixmapSize.height() : max_thumb_size;
+        int maxSize = mThumbOption == LoadThumbnailOption::force_size ? pixmapSize.height() : maxThumbSize;
         auto constraint = DkSettingsManager::param().display().displaySquaredThumbs ? ScaleConstraint::shortest_side
                                                                                     : ScaleConstraint::longest_side;
         mThumbRequest = LoadThumbnailRequest{mFilePath, mThumbOption, maxSize, constraint};
@@ -1589,23 +1590,23 @@ void DkThumbScene::resizeThumbs(float dx)
         dx += 2.0f;
 
     int newSize = qRound(DkSettingsManager::param().display().thumbPreviewSize * dx);
+    int maxSize = DkSettingsManager::param().resources().maxThumbSize / getView()->devicePixelRatio();
 
-    if (newSize > 6 && newSize <= max_thumb_size) {
-        DkSettingsManager::param().display().thumbPreviewSize = newSize;
+    newSize = qBound(6, newSize, maxSize);
+    DkSettingsManager::param().display().thumbPreviewSize = newSize;
 
-        QString centerPath{};
-        DkThumbLabel *centerThumb = getCenterThumb();
-        if (centerThumb) {
-            centerPath = centerThumb->filePath();
-            centerThumb = nullptr; // potentially invalidated by updateLayout()
-        }
+    QString centerPath{};
+    DkThumbLabel *centerThumb = getCenterThumb();
+    if (centerThumb) {
+        centerPath = centerThumb->filePath();
+        centerThumb = nullptr; // potentially invalidated by updateLayout()
+    }
 
-        updateLayout();
-        // TODO: cancel anything no longer visible
+    updateLayout();
+    // TODO: cancel anything no longer visible
 
-        if (selectedItems().empty() && !centerPath.isEmpty()) {
-            ensureVisible(centerPath);
-        }
+    if (selectedItems().empty() && !centerPath.isEmpty()) {
+        ensureVisible(centerPath);
     }
 }
 
