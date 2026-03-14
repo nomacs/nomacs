@@ -2243,7 +2243,7 @@ QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint co
     if (image.isNull())
         return image;
 
-    maxSize = maxSize == -1 ? max_thumb_size * DkSettingsManager::param().dpiScaleFactor() : maxSize;
+    maxSize = maxSize == -1 ? DkSettingsManager::param().resources().maxThumbSize : maxSize;
     int imgW = image.width();
     int imgH = image.height();
 
