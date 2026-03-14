@@ -374,8 +374,9 @@ void DkCachedThumb::save(const QImage &img, int loadedBinSize)
     if (!isXdgCompliant() && !DkImage::alphaChannelUsed(thumb)) {
         // On Windows/macOS we don't need XDG compliance and can use JPEG thumbs
         // Linux users also have this option if they don't care about sharing thumbs
+        // Use highest quality since these will be resampled
         format = "jpg";
-        quality = 90;
+        quality = 100;
     }
 
     // We have many threads writing; compress to buffer for less disk fragmentation/syscalls
