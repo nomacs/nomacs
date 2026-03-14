@@ -2164,6 +2164,7 @@ void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event)
         }
     }
 
+    unsetCursor();
     DkViewPort::mouseReleaseEvent(event);
 }
 
