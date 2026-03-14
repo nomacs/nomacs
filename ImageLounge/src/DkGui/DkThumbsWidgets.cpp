@@ -412,12 +412,12 @@ void DkFilePreview::drawThumbs(QPainter *painter)
             newThumb.request = LoadThumbnailRequest{filePath, option, size, constraint};
             newThumb.loading = true;
 
-            Q_ASSERT(!mThumbRequests.contains(newThumb.request.id));
-            Q_ASSERT(!mThumbs.contains(filePath));
-
-            mThumbs.insert(filePath, newThumb);
-            mThumbRequests.insert(newThumb.request.id, filePath);
-            mThumbLoader->requestThumbnail(newThumb.request);
+            if (!mThumbRequests.contains(newThumb.request.id)) {
+                Q_ASSERT(!mThumbs.contains(filePath));
+                mThumbs.insert(filePath, newThumb);
+                mThumbRequests.insert(newThumb.request.id, filePath);
+                mThumbLoader->requestThumbnail(newThumb.request);
+            }
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0
