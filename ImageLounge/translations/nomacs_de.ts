@@ -860,7 +860,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>if checked images are smoother</source>
-        <translation>Wenn diese Option eingeschaltet ist, werden Bilder glatter dargestellt</translation>
+        <translation>Wenn ausgewählt, werden Bilder glatter dargestellt</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -870,7 +870,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>if checked, a pattern will be displayed for transparent objects</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird ein Transparenzmuster angezeigt</translation>
+        <translation>Wenn ausgewählt, wird ein Transparenzmuster angezeigt</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -2776,7 +2776,7 @@ Dies kann nicht rückgängig gemacht werden.
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, a noise filter is applied which reduced color noise</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird ein Rauschfilter zum Reduzieren von Farbrauschen angewendet</translation>
+        <translation>Wenn ausgewählt, wird ein Rauschfilter zum Reduzieren von Farbrauschen angewendet</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2791,7 +2791,7 @@ Dies kann nicht rückgängig gemacht werden.
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-        <translation>Wenn diese Option eingeschaltet ist, fragt nomacs, ob Dateien, die von anderen Anwendungen gelöscht wurden, gespeichert werden sollen</translation>
+        <translation>Wenn ausgewählt, fragt nomacs, ob Dateien, die von anderen Anwendungen gelöscht wurden, gespeichert werden sollen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2801,7 +2801,7 @@ Dies kann nicht rückgängig gemacht werden.
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-        <translation>Wenn diese Option eingeschaltet ist, werden Bilder nicht im Bezug auf deren Exif-Orientierung gedreht</translation>
+        <translation>Wenn ausgewählt, werden Bilder nicht im Bezug auf deren Exif-Orientierung gedreht</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2812,7 +2812,7 @@ Dies kann nicht rückgängig gemacht werden.
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-        <translation>Wenn diese Option eingeschaltet ist, wird die Orientierung in Exif geschrieben anstatt die Bildmatrix zu drehen
+        <translation>Wenn ausgewählt, wird die Orientierung in Exif geschrieben anstatt die Bildmatrix zu drehen
 </translation>
     </message>
     <message>
@@ -2843,7 +2843,7 @@ Dies kann nicht rückgängig gemacht werden.
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, native system dialogs are used for opening/saving files.</source>
-        <translation>Wenn aktiviert, werden system-eigene Datei öffnen/speichern Dialoge verwendet.</translation>
+        <translation>Wenn ausgewählt, werden system-eigene Datei öffnen/speichern Dialoge verwendet.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2858,7 +2858,7 @@ Dies kann nicht rückgängig gemacht werden.
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, a log file will be created.</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird eine Logdatei erstellt.</translation>
+        <translation>Wenn ausgewählt, wird eine Logdatei erstellt.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -3155,7 +3155,7 @@ Dies kann nicht rückgängig gemacht werden.
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
-        <translation>Wenn diese Option eingeschaltet ist, werden bereits existierende Dateien überschrieben.
+        <translation>Wenn ausgewählt, werden bereits existierende Dateien überschrieben.
 Diese Option zerstört möglicherweise Ihre Bilder - Seien Sie vorsichtig!</translation>
     </message>
     <message>
@@ -3167,7 +3167,8 @@ Diese Option zerstört möglicherweise Ihre Bilder - Seien Sie vorsichtig!</tran
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
-        <translation>Erzeugte Bilder werden nicht gespeichert - Diese Option ist nur sinnvoll, wenn Erweiterungen selbständig Dateien speichern!</translation>
+<translation>Wenn ausgewählt, werden erzeugte Bilder nicht gespeichert.
+Diese Option ist nur sinnvoll, wenn Erweiterungen selbständig Dateien speichern!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3177,7 +3178,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>If checked, the batch is applied to the input folder - so be careful!</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird die gewählte Stapelverarbeitung auf den gesamten Eingabe-Ordner angewendet - Seien Sie vorsichtig!</translation>
+        <translation>Wenn ausgewählt, wird die gewählte Stapelverarbeitung auf den gesamten Eingabe-Ordner angewendet - Seien Sie vorsichtig!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3188,7 +3189,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird nach erfolgreicher Konvertierung die Originaldatei gelöscht.
+        <translation>Wenn ausgewählt, wird nach erfolgreicher Konvertierung die Originaldatei gelöscht.
  Seien Sie vorsichtig!</translation>
     </message>
     <message>
@@ -4079,7 +4080,7 @@ Möchten Sie sie ersetzen?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird das Mausradverhalten während dem Zoomen umgekehrt.</translation>
+        <translation>Wenn ausgewählt, wird das Mausradverhalten während dem Zoomen umgekehrt.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4089,7 +4090,7 @@ Möchten Sie sie ersetzen?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-        <translation>Hinweis: nomacs zoomt möglicherweise bei dieser Auswahl langsamer.</translation>
+        <translation>Hinweis: Wenn ausgewählt, zoomt nomacs möglicherweise langsam.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4099,7 +4100,7 @@ Möchten Sie sie ersetzen?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-        <translation>Ermöglicht das Scrollen mit der Maus.</translation>
+        <translation>Wenn ausgewählt, ermöglichen Bildlaufleisten das Scrollen mit der Maus.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4119,7 +4120,7 @@ Möchten Sie sie ersetzen?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, predefined zoom levels are used when zooming.</source>
-        <translation>Benutzung von fest vorgegebenen Zoomstufen.</translation>
+        <translation>Wenn ausgewählt, werden beim Zoomen vorgegebenen Stufen verwendet.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4144,7 +4145,7 @@ Möchten Sie sie ersetzen?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird der Zoom nur dann beibehalten, wenn zwei aufeinanderfolgende Bilder die gleiche Größe haben.</translation>
+        <translation>Wenn ausgewählt, wird der Zoom nur dann beibehalten, wenn zwei aufeinanderfolgende Bilder die gleiche Größe haben.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4199,7 +4200,7 @@ Möchten Sie sie ersetzen?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, navigation arrows will be displayed on top of the image</source>
-        <translation>Wenn aktiviert, werden Navigationspfeile über dem Bild eingeblendet</translation>
+        <translation>Wenn ausgewählt, werden Navigationspfeile über dem Bild eingeblendet</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4244,7 +4245,7 @@ Möchten Sie sie ersetzen?</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If unchecked, loading is only animated if nomacs is fullscreen</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird das Laden nur im Vollbildmodus animiert</translation>
+        <translation>Wenn nicht ausgewählt, wird das Laden nur im Vollbildmodus animiert</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4814,7 +4815,7 @@ Achtung: Dadurch werden die Dateien geändert.</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, recent files will be saved.</source>
-        <translation>Wenn diese Option eingeschaltet ist, werden zuletzt aufgerufene Dateien gespeichert.</translation>
+        <translation>Wenn ausgewählt, werden zuletzt aufgerufene Dateien gespeichert.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4864,7 +4865,7 @@ Achtung: Dadurch werden die Dateien geändert.</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, the mouse wheel zooms - otherwise it is used to switch between images.</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird das Mausrad zum Zoomen verwendet - anderenfalls wird es zum Wechseln zwischen Bildern verwendet.</translation>
+        <translation>Wenn ausgewählt, wird das Mausrad zum Zoomen verwendet - anderenfalls wird es zum Wechseln zwischen Bildern verwendet.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4874,7 +4875,7 @@ Achtung: Dadurch werden die Dateien geändert.</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, horizontal wheel events load the next/previous images.</source>
-        <translation>Ermöglicht Bildwechsel durch horizontale Mausradbewegung (kippen des Mausrads)</translation>
+        <translation>Wenn ausgewählt, wechseln horizontale Mausradbewegungen (kippen des Mausrads) das Bild</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4884,7 +4885,7 @@ Achtung: Dadurch werden die Dateien geändert.</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, a double click on the canvas opens the fullscreen mode.</source>
-        <translation>Wenn diese Option eingeschaltet ist, öffnet ein Doppelklick auf die Arbeitsfläche den Vollbildmodus.</translation>
+        <translation>Wenn ausgewählt, öffnet ein Doppelklick auf die Arbeitsfläche den Vollbildmodus.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4894,7 +4895,7 @@ Achtung: Dadurch werden die Dateien geändert.</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, the nomacs logo is shown in the bottom right corner.</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird das nomacs-Logo in der rechten unteren Ecke angezeigt.</translation>
+        <translation>Wenn ausgewählt, wird das nomacs-Logo in der rechten unteren Ecke angezeigt.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4904,7 +4905,7 @@ Achtung: Dadurch werden die Dateien geändert.</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, enable animations on user interface components.</source>
-        <translation>Wenn diese Option eingeschaltet ist, werden Komponenten der Benutzeroberfläche animiert.</translation>
+        <translation>Wenn ausgewählt, werden Komponenten der Benutzeroberfläche animiert.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4914,7 +4915,7 @@ Achtung: Dadurch werden die Dateien geändert.</translation>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, CTRL + Mouse is switched with ALT + Mouse.</source>
-        <translation>Wenn diese Option eingeschaltet ist, wird STRG + Maus mit ALT + Maus ausgetauscht.</translation>
+        <translation>Wenn ausgewählt, wird STRG + Maus mit ALT + Maus ausgetauscht.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
