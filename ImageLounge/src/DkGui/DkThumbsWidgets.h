@@ -123,6 +123,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
     void loadSettings();
     void saveSettings();
+    void resetThumbs();
 
 private:
     QTransform worldMatrix;
