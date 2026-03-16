@@ -37,7 +37,6 @@
 #include "DkMessageBox.h"
 #include "DkPreferenceWidgets.h"
 #include "DkSettings.h"
-#include "DkThumbs.h"
 #include "DkThumbsWidgets.h"
 #include "DkUtils.h"
 #include "DkViewPort.h"
@@ -799,10 +798,6 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
 
         updateTab(tabInfo);
         switchWidget(tabInfo->getMode());
-    }
-
-    if (img && !img->isEdited() && !DkSettingsManager::param().display().highQualityThumbs) {
-        mThumbLoader.dispatchFullImage(LoadThumbnailRequest{img->filePath()}, img->pixmap());
     }
 }
 
