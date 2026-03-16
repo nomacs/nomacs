@@ -276,12 +276,6 @@ DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const 
     return {request, DkImage::createThumb(res->thumb, request.size, request.constraint), true, res->fromExif};
 }
 
-DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const LoadThumbnailRequest &request,
-                                                                          const QImage &img)
-{
-    return {request, DkImage::createThumb(img, request.size, request.constraint), true, false};
-}
-
 void DkThumbLoader::requestThumbnail(const LoadThumbnailRequest &request)
 {
     const LoadThumbnailResultLocal *cached = mThumbnailCache.object(request.id);
@@ -326,20 +320,6 @@ void DkThumbLoader::cancelThumbnailRequest(const LoadThumbnailRequest &request)
     }
 }
 
-void DkThumbLoader::dispatchFullImage(const LoadThumbnailRequest &request, const QImage &img)
-{
-    if (mIdleWatchers.size() == 0) {
-        // Full image takes priority, so we can skip the pending requests
-        mCounts.remove(request.id);
-        mFullImageQueue.push({request, img, true, false});
-        return;
-    }
-
-    auto *w = mIdleWatchers.back();
-    mIdleWatchers.pop_back();
-    w->setFuture(QtConcurrent::run(scaleFullThumbnail, request, img));
-}
-
 void DkThumbLoader::onThumbnailLoadFinished()
 {
     const auto w = dynamic_cast<QFutureWatcher<LoadThumbnailResultLocal> *>(sender());
@@ -370,13 +350,6 @@ void DkThumbLoader::onThumbnailLoadFinished()
 
 void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w)
 {
-    if (mFullImageQueue.size() > 0) {
-        const LoadThumbnailResultLocal &item = mFullImageQueue.front();
-        w->setFuture(QtConcurrent::run(scaleFullThumbnail, item.request, item.thumb));
-        mFullImageQueue.pop();
-        return;
-    }
-
     while (!mQueue.empty()) {
         // Remove next request from the queue; if it has no refcount, all requests were cancelled
         const LoadThumbnailRequest request = std::move(mQueue.front());
