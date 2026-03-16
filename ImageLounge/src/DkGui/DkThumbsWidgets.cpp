@@ -129,6 +129,18 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
     });
 }
 
+void DkFilePreview::resetThumbs()
+{
+    // drop our thumbnail cache
+    for (auto &thumb : std::as_const(mThumbs)) {
+        if (thumb.loading) {
+            mThumbLoader->cancelThumbnailRequest(thumb.request);
+        }
+    }
+    mThumbs.clear();
+    mThumbRequests.clear();
+}
+
 void DkFilePreview::init()
 {
     setObjectName("DkFilePreview");
@@ -412,12 +424,12 @@ void DkFilePreview::drawThumbs(QPainter *painter)
             newThumb.request = LoadThumbnailRequest{filePath, option, size, constraint};
             newThumb.loading = true;
 
-            if (!mThumbRequests.contains(newThumb.request.id)) {
-                Q_ASSERT(!mThumbs.contains(filePath));
-                mThumbs.insert(filePath, newThumb);
-                mThumbRequests.insert(newThumb.request.id, filePath);
-                mThumbLoader->requestThumbnail(newThumb.request);
-            }
+            Q_ASSERT(!mThumbs.contains(filePath));
+            mThumbs.insert(filePath, newThumb);
+
+            Q_ASSERT(!mThumbRequests.contains(newThumb.request.id));
+            mThumbRequests.insert(newThumb.request.id, filePath);
+            mThumbLoader->requestThumbnail(newThumb.request);
         }
 
         bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0
@@ -563,11 +575,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event)
     if (DkSettingsManager::param().display().highQualityThumbs
         && ((orientation == Qt::Horizontal && event->size().height() != event->oldSize().height())
             || (orientation == Qt::Vertical && event->size().width() != event->oldSize().width()))) {
-        for (auto &thumb : mThumbs) {
-            if (thumb.loading)
-                mThumbLoader->cancelThumbnailRequest(thumb.request);
-        }
-        mThumbs.clear();
+        resetThumbs();
     }
 
     // now update...
@@ -901,7 +909,8 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
 
 void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> images)
 {
-    mThumbs.clear();
+    resetThumbs();
+
     mFiles.resize(images.size());
     for (int idx = 0; idx < images.size(); idx++) {
         const auto &imgC = images[idx];
