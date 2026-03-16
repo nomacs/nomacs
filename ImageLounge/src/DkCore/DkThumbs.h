@@ -130,7 +130,6 @@ class DkThumbLoader : public QObject
     std::vector<QFutureWatcher<LoadThumbnailResultLocal>> mWatchers{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal> *> mIdleWatchers{};
     std::queue<LoadThumbnailRequest> mQueue{};
-    std::queue<LoadThumbnailResultLocal> mFullImageQueue{};
     QHash<ThumbnailId, int> mCounts{};
 
 public:
@@ -146,10 +145,6 @@ public:
     // or multiple requests are made to the same thumb, signals will still be sent.
     void cancelThumbnailRequest(const LoadThumbnailRequest &request);
 
-    // When we have full image loaded in the viewport,
-    // create a side effect to update the thumbnail.
-    void dispatchFullImage(const LoadThumbnailRequest &request, const QImage &img);
-
 signals:
     // Always send one of these signals on completion. Cancellation does not guarantee these won't be sent
     void thumbnailLoaded(ThumbnailId id, const QString &filePath, const QImage &thumb, bool fromExif);
@@ -158,7 +153,6 @@ signals:
 private:
     void onThumbnailLoadFinished();
     static LoadThumbnailResultLocal loadThumbnailLocal(const LoadThumbnailRequest &request);
-    static LoadThumbnailResultLocal scaleFullThumbnail(const LoadThumbnailRequest &request, const QImage &img);
     void handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w);
 };
 }
