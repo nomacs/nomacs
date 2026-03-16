@@ -135,7 +135,15 @@ class DkThumbLoader : public QObject
 
 public:
     DkThumbLoader();
+
+    // Increase refcount on this request, signal sent on completion or failure.
+    // If request is cached, send signal immediately
+    // No signal is sent if request is cancelled while waiting, but once
+    // it hits the thread pool no cancellation is possible.
     void requestThumbnail(const LoadThumbnailRequest &request);
+
+    // Decrease the refcount on this request. If the request is in the thread pool
+    // or multiple requests are made to the same thumb, signals will still be sent.
     void cancelThumbnailRequest(const LoadThumbnailRequest &request);
 
     // When we have full image loaded in the viewport,
@@ -143,6 +151,7 @@ public:
     void dispatchFullImage(const LoadThumbnailRequest &request, const QImage &img);
 
 signals:
+    // Always send one of these signals on completion. Cancellation does not guarantee these won't be sent
     void thumbnailLoaded(ThumbnailId id, const QString &filePath, const QImage &thumb, bool fromExif);
     void thumbnailLoadFailed(ThumbnailId id, const QString &filePath);
 

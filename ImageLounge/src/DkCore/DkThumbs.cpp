@@ -284,23 +284,27 @@ DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const 
 
 void DkThumbLoader::requestThumbnail(const LoadThumbnailRequest &request)
 {
-    const auto *cached = mThumbnailCache.object(request.id);
+    const LoadThumbnailResultLocal *cached = mThumbnailCache.object(request.id);
     if (cached) {
         if (!cached->valid) {
             emit thumbnailLoadFailed(cached->request.id, cached->request.filePath);
-            return;
+        } else {
+            emit thumbnailLoaded(cached->request.id, cached->request.filePath, cached->thumb, cached->fromExif);
         }
-
-        emit thumbnailLoaded(cached->request.id, cached->request.filePath, cached->thumb, cached->fromExif);
         return;
     }
 
     if (mIdleWatchers.size() == 0) {
-        const int count = mCounts.value(request.id, 0);
-        if (count == 0) {
+        // We may have multiple widgets requesting the same thumbnail. With cancellation, we
+        // must ensure if only one cancels the others will not; and so we count the requests.
+        auto it = mCounts.find(request.id);
+        if (it == mCounts.end()) {
             mQueue.push(request);
+            mCounts.insert(request.id, 1);
+        } else {
+            it.value() += 1;
+            Q_ASSERT(it.value() > 0);
         }
-        mCounts.insert(request.id, count + 1);
         return;
     }
 
@@ -316,6 +320,10 @@ void DkThumbLoader::cancelThumbnailRequest(const LoadThumbnailRequest &request)
         return;
     }
     it.value() -= 1;
+    Q_ASSERT(it.value() >= 0);
+    if (it.value() == 0) {
+        mCounts.remove(it.key());
+    }
 }
 
 void DkThumbLoader::dispatchFullImage(const LoadThumbnailRequest &request, const QImage &img)
@@ -340,6 +348,12 @@ void DkThumbLoader::onThumbnailLoadFinished()
     auto *res = new LoadThumbnailResultLocal{w->result()};
     const size_t resSize = sizeof(*res) + res->sizeInBytes();
 
+    auto it = mCounts.find(res->request.id);
+    if (it != mCounts.end()) {
+        // We have finished the request, the count might be gone due to cancellations
+        mCounts.remove(it.key());
+    }
+
     handleFinishedWatcher(w);
 
     if (!res->valid) { // NOLINT(clang-analyzer-core.uninitialized.Branch) -- false positive
@@ -363,11 +377,13 @@ void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLoca
         return;
     }
 
-    while (mQueue.size() > 0) {
-        const auto request = mQueue.front();
+    while (!mQueue.empty()) {
+        // Remove next request from the queue; if it has no refcount, all requests were cancelled
+        const LoadThumbnailRequest request = std::move(mQueue.front());
         mQueue.pop();
-        if (mCounts.value(request.id, 0) > 0) {
-            mCounts.remove(request.id);
+        auto it = mCounts.find(request.id);
+        if (it != mCounts.end()) {
+            // Do not drop refcount here, we need to keep count while the request is processed
             w->setFuture(QtConcurrent::run(loadThumbnailLocal, request));
             return;
         }
