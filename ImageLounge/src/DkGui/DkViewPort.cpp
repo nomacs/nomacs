@@ -2201,16 +2201,7 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event)
 
 void DkViewPortFrameless::moveViewInWidgetCoords(const QPointF &delta)
 {
-    // if no zoom is present -> the translation is like a move window
-    if (mWorldMatrix.m11() == 1.0) {
-        // TODO: why does this needs to be different
-        qreal s = mImgMatrix.m11() * mWorldMatrix.m11();
-        mImgMatrix.translate(delta.x() / s, delta.y() / s);
-        mImgViewRect = mImgMatrix.mapRect(mImgRect);
-    } else {
-        translateViewInWidgetCoords(delta.x(), delta.y());
-    }
-
+    translateViewInWidgetCoords(delta.x(), delta.y());
     controlImagePosition();
     update();
 }
