@@ -133,8 +133,8 @@ private:
     Qt::Orientation orientation;
     QTimer *moveImageTimer;
 
-    QRectF bufferDim;
-    QVector<QRectF> thumbRects;
+    QRectF bufferDim; // dimensions of virtual film strip
+    QVector<QRectF> thumbRects; // thumb rects within bufferDim
 
     QLinearGradient leftGradient;
     QLinearGradient rightGradient;

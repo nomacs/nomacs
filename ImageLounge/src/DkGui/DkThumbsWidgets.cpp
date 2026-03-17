@@ -90,8 +90,8 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
             &DkThumbLoader::thumbnailLoaded,
             this,
             [this](ThumbnailId id, const QString &filePath, const QImage &img, const bool fromExif) {
-                auto req = mThumbRequests.find(id);
-                if (req == mThumbRequests.end()) { // request from another widget
+                auto req = mThumbRequests.constFind(id);
+                if (req == mThumbRequests.constEnd()) { // request from another widget
                     return;
                 }
                 Q_ASSERT(req.value() == filePath);
@@ -110,8 +110,8 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
             });
 
     connect(mThumbLoader, &DkThumbLoader::thumbnailLoadFailed, this, [this](ThumbnailId id, const QString &filePath) {
-        auto req = mThumbRequests.find(id);
-        if (req == mThumbRequests.end()) {
+        auto req = mThumbRequests.constFind(id);
+        if (req == mThumbRequests.constEnd()) {
             return;
         }
         Q_ASSERT(req.value() == filePath);
@@ -326,41 +326,40 @@ void DkFilePreview::paintEvent(QPaintEvent *)
 
 void DkFilePreview::drawThumbs(QPainter *painter)
 {
-    // qDebug() << "drawing thumbs: " << worldMatrix.dx();
-
+    // Recalculate geometry and hit boxes for mouse events.
+    // TODO: extract this to updateLayout() or redesign as it is invariant to repaint events
     bufferDim = (orientation == Qt::Horizontal) ? QRectF(QPointF(0, yOffset / 2), QSize(xOffset, 0))
                                                 : QRectF(QPointF(yOffset / 2, 0), QSize(0, xOffset));
     thumbRects.clear();
 
-    DkTimer dt;
+    const QPoint mousePos = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos())); // for hover effect
+    const int thumbSize = DkSettingsManager::param().effectiveThumbSize(this); // size when we don't have img yet
 
-    // mouse over effect
-    QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
+    const auto &files = mFiles;
+    const int numFiles = files.size();
+    for (int idx = 0; idx < numFiles; idx++) {
+        const QString &filePath = files[idx].path();
 
-    for (int idx = 0; static_cast<unsigned int>(idx) < mFiles.size(); idx++) {
-        const QString &filePath = mFiles[idx].path();
+        const auto thumbsIter = mThumbs.constFind(filePath);
+        std::optional<Thumb> thumb = std::nullopt;
+        if (thumbsIter != mThumbs.constEnd()) {
+            thumb = *thumbsIter;
+        }
 
-        const auto thumb = mThumbs.constFind(filePath);
-        bool existsInTable = thumb != mThumbs.constEnd();
-
-        if (existsInTable && thumb->notExist) {
+        // If the thumbnail failed to load, don't draw anything
+        if (thumb && thumb->notExist) {
             thumbRects.push_back(QRectF());
             continue;
         }
 
         QImage img;
-        if (existsInTable && !thumb->image.isNull()) {
+        if (thumb) {
             img = thumb->image;
         }
 
-        // if (img.width() > max_thumb_size * DkSettingsManager::param().dpiScaleFactor())
-        //	qDebug() << thumb->getFilePath() << "size:" << img.size();
-
-        QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
+        const QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
         QRectF r = !img.isNull() ? QRectF(anchor, img.size() / devicePixelRatio())
-                                 : QRectF(anchor,
-                                          QSize(DkSettingsManager::param().effectiveThumbSize(this),
-                                                DkSettingsManager::param().effectiveThumbSize(this)));
+                                 : QRectF(anchor, QSize{thumbSize, thumbSize});
         if (orientation == Qt::Horizontal && height() - yOffset < r.height() * 2)
             r.setSize(QSizeF(qFloor(r.width() * (float)(height() - yOffset) / r.height()), height() - yOffset));
         else if (orientation == Qt::Vertical && width() - yOffset < r.width() * 2)
@@ -376,12 +375,13 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         else
             r.moveCenter(QPoint(width() / 2, qFloor(r.center().y())));
 
+        thumbRects.push_back(r);
+
         // update the buffer dim
         if (orientation == Qt::Horizontal)
             bufferDim.setRight(qFloor(bufferDim.right() + r.width()) + qCeil(xOffset / 2.0f));
         else
             bufferDim.setBottom(qFloor(bufferDim.bottom() + r.height()) + qCeil(xOffset / 2.0f));
-        thumbRects.push_back(r);
 
         QRectF imgWorldRect = worldMatrix.mapRect(r);
 
@@ -395,22 +395,24 @@ void DkFilePreview::drawThumbs(QPainter *painter)
         const bool oobEnd = (orientation == Qt::Horizontal && imgWorldRect.left() > width())
             || (orientation == Qt::Vertical && imgWorldRect.top() > height());
 
+        // cancel and skip hidden thumbs
         if (oobStart || oobEnd) {
-            if (existsInTable && thumb->loading) {
+            if (thumb && thumb->loading) {
                 auto req = thumb->request;
                 mThumbs.remove(req.filePath);
                 mThumbRequests.remove(req.id);
                 mThumbLoader->cancelThumbnailRequest(req);
             }
 
+            // abort processing further items?
             if (oobEnd && !scrollToCurrentImage) {
                 break;
             }
             continue;
         }
 
-        // only fetch thumbs if we are not moving too fast...
-        if (!existsInTable) {
+        // we have a visible thumb, fetch it
+        if (!thumb) {
             int size = DkSettingsManager::param().resources().maxThumbSize;
             ScaleConstraint constraint = orientation == Qt::Horizontal ? ScaleConstraint::height
                                                                        : ScaleConstraint::width;
@@ -459,10 +461,8 @@ void DkFilePreview::drawThumbs(QPainter *painter)
 
         if (idx == currentFileIdx)
             drawCurrentImgEffect(painter, r);
-        else if (idx == selected && r.contains(p))
+        else if (idx == selected && r.contains(mousePos))
             drawSelectedEffect(painter, r);
-
-        // painter->fillRect(QRect(0,0,200, 110), leftGradient);
     }
 }
 
@@ -572,6 +572,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event)
         moveImageTimer->start();
     }
 
+    // refetch thumbs if sizes changed
     if (DkSettingsManager::param().display().highQualityThumbs
         && ((orientation == Qt::Horizontal && event->size().height() != event->oldSize().height())
             || (orientation == Qt::Vertical && event->size().width() != event->oldSize().width()))) {
