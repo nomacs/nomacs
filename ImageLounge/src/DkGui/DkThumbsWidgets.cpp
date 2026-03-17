@@ -2553,7 +2553,16 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString &filePath,
     QFileInfo fInfo(filePath);
     setToolTip(fInfo.fileName());
 
-    LoadThumbnailRequest request{filePath};
+    LoadThumbnailRequest request{};
+    if (DkSettingsManager::param().display().highQualityThumbs) {
+        int imgSize = mThumbSize * devicePixelRatio();
+        request = LoadThumbnailRequest{filePath,
+                                       LoadThumbnailOption::force_size,
+                                       imgSize,
+                                       ScaleConstraint::shortest_side};
+    } else {
+        request = LoadThumbnailRequest{filePath};
+    }
     mThumbId = request.id;
     mLoader->requestThumbnail(request);
 }
@@ -2566,12 +2575,12 @@ void DkThumbPreviewLabel::thumbLoaded(ThumbnailId id, const QString &filePath, c
     mThumbId = {};
     Q_ASSERT(filePath == mFilePath);
 
-    QPixmap pm = QPixmap::fromImage(img);
-    pm = DkImage::makeSquare(pm);
-
-    if (pm.width() > width())
-        pm = pm.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
+    QPixmap pm = DkImage::makeSquare(QPixmap::fromImage(img));
+    if (DkSettingsManager::param().display().highQualityThumbs) {
+        pm.setDevicePixelRatio(devicePixelRatio());
+    } else {
+        pm = pm.scaledToWidth(width(), Qt::SmoothTransformation);
+    }
     setPixmap(pm);
 }
 
