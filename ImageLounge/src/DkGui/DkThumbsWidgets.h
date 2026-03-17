@@ -100,6 +100,8 @@ public:
         return windowPosition;
     };
 
+    void cancelLoading();
+
 public slots:
     void moveImages();
     void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> images);

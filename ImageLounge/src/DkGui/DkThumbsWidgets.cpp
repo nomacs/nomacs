@@ -129,16 +129,26 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
     });
 }
 
+void DkFilePreview::cancelLoading()
+{
+    for (auto thumb = mThumbs.begin(); thumb != mThumbs.end();) {
+        if (!thumb->loading) {
+            ++thumb;
+            continue;
+        }
+
+        auto req = std::move(thumb->request);
+        thumb = mThumbs.erase(thumb);
+        mThumbLoader->cancelThumbnailRequest(req);
+        mThumbRequests.remove(req.id);
+    }
+}
+
 void DkFilePreview::resetThumbs()
 {
     // drop our thumbnail cache
-    for (auto &thumb : std::as_const(mThumbs)) {
-        if (thumb.loading) {
-            mThumbLoader->cancelThumbnailRequest(thumb.request);
-        }
-    }
+    cancelLoading();
     mThumbs.clear();
-    mThumbRequests.clear();
 }
 
 void DkFilePreview::init()
@@ -927,9 +937,13 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> imag
 void DkFilePreview::setVisible(bool visible, bool saveSettings)
 {
     DkFadeWidget::setVisible(visible, saveSettings);
-    if (mSetWidgetVisible)
+    if (mSetWidgetVisible) {
+        if (!visible) {
+            // note: must wait until actual hide or else we only restart jobs
+            cancelLoading();
+        }
         return; // prevent recursion via fade()
-
+    }
     emit showThumbsDockSignal(visible);
 }
 

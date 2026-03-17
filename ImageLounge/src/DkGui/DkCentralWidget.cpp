@@ -877,6 +877,7 @@ void DkCentralWidget::showViewPort(bool show /* = true */)
             getViewPort()->setImage(getCurrentImage()->image());
         getViewPort()->show();
     } else if (hasViewPort()) {
+        getViewPort()->getController()->getFilePreview()->cancelLoading();
         getViewPort()->deactivate();
         getViewPort()->hide();
     }
