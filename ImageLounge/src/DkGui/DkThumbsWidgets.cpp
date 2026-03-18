@@ -78,8 +78,6 @@ DkFilePreview::DkFilePreview(DkThumbLoader *loader, QWidget *parent, Qt::WindowF
     windowPosition = pos_north;
 
     init();
-    // setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" +
-    // DkUtils::colorToString(mBgCol) + ";}");
 
     loadSettings();
     initOrientations();
@@ -156,8 +154,6 @@ void DkFilePreview::init()
     setObjectName("DkFilePreview");
     setMouseTracking(true); // receive mouse event everytime
 
-    // thumbsLoader = 0;
-
     xOffset = qRound(DkSettingsManager::param().effectiveThumbSize(this) * 0.1f);
     yOffset = qRound(DkSettingsManager::param().effectiveThumbSize(this) * 0.1f);
 
@@ -189,11 +185,10 @@ void DkFilePreview::init()
     rightGradient.setColorAt(0, Qt::white);
 
     minHeight = DkSettingsManager::param().effectiveThumbSize(this) + yOffset;
-    // resize(parent->width(), minHeight);
 
     selected = -1;
 
-    // wheel label
+    // icon for drag-to-scroll mode
     QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.svg");
     wheelButton = new QLabel(this);
     wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -450,6 +445,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
                 && imgWorldRect.top() < leftGradient.finalStop().y());
         bool isRightGradient = (orientation == Qt::Horizontal && imgWorldRect.right() > rightGradient.start().x())
             || (orientation == Qt::Vertical && imgWorldRect.bottom() > rightGradient.start().y());
+
         // show that there are more images...
         if (isLeftGradient && !img.isNull())
             img = applyFadeOut(leftGradient, imgWorldRect, img);
@@ -670,13 +666,8 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
             if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
                 selected = idx;
 
+                // update tooltip
                 if (selected >= 0 && static_cast<unsigned int>(selected) < mFiles.size()) {
-                    // selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()),
-                    // DkSettingsManager::param().display().highlightColor, 0.3f);
-
-                    // important: setText shows the label - if you then hide it here again you'll get a stack overflow
-                    // if (fileLabel->height() < height())
-                    //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
                     const DkFileInfo &fileInfo = mFiles[selected];
                     auto thumb = mThumbs.constFind(fileInfo.path());
 
@@ -698,8 +689,6 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
 
         if (selected != -1 || selected != oldSelection)
             update();
-        // else if (selected == -1)
-        //	fileLabel->hide();
     } else
         selected = -1;
 
@@ -707,21 +696,18 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
         setToolTip(tr("CTRL+Zoom resizes the thumbnails"));
 
     lastMousePos = event->pos();
-
-    // QWidget::mouseMoveEvent(event);
 }
 
 void DkFilePreview::mousePressEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
+        // TODO: change image on mouse down, not mouse up
         mouseTrace = 0;
     } else if (event->buttons() == Qt::MiddleButton) {
+        // start drag-to-scroll mode and show indicator icon
         enterPos = event->pos();
-        qDebug() << "stop scrolling (middle button)";
         scrollToCurrentImage = false;
         moveImageTimer->start();
-
-        // show icon
         wheelButton->move(event->pos().x() - 16, event->pos().y() - 16);
         wheelButton->show();
     }
@@ -790,10 +776,8 @@ void DkFilePreview::leaveEvent(QEvent *)
 
 void DkFilePreview::contextMenuEvent(QContextMenuEvent *event)
 {
-    contextMenu->exec(event->globalPos());
     event->accept();
-
-    DkFadeWidget::contextMenuEvent(event);
+    contextMenu->exec(event->globalPos());
 }
 
 void DkFilePreview::newPosition()
@@ -889,12 +873,11 @@ void DkFilePreview::moveImages()
              && translation + currentDx <= -(bufferPos - limit * 0.5 + xOffset) && currentDx < 0)
         currentDx = -(bufferPos - limit * 0.5f + xOffset + (float)worldMatrix.dx());
 
-    // qDebug() << "currentDx: " << currentDx;
     if (orientation == Qt::Horizontal)
         worldMatrix.translate(currentDx, 0);
     else
         worldMatrix.translate(0, currentDx);
-    // qDebug() << "dx: " << worldMatrix.dx();
+
     update();
 }
 
@@ -1090,10 +1073,6 @@ void DkThumbLabel::generatePixmap(const QImage &thumb)
         qreal dx = srcRect.width() * scaleDiff / 2.0;
         qreal dy = srcRect.height() * scaleDiff / 2.0;
         srcRect = srcRect.adjusted(-dx, -dy, dx, dy);
-
-        // qreal adjFactorH = mDevicePixelRatio - (srcRect.height() / targetRect.height());
-        // qreal adjFactorW = mDevicePixelRatio - (srcRect.width() / targetRect.width());
-        // qDebug() << "SF" << scaleDiff << adjFactorH << adjFactorW;
     }
 
     const QSize pixmapSize = (br.size() * mDevicePixelRatio).toSize();
@@ -1246,8 +1225,8 @@ void DkThumbLabel::setFillSquare(bool value)
 {
     mFillSquare = value;
     // Instead of requesting thumbnail right away,
-    // we reset the pixmap and call update,
-    // so only the visible ones get loaded.
+    // we reset the pixmap and let it be refetched
+    // again when needed.
     if (mPixmapKey) {
         QPixmapCache::remove(mPixmapKey.value());
     }
@@ -1260,7 +1239,7 @@ void DkThumbLabel::setFileInfo(const DkFileInfo &fileInfo)
     mText.setPlainText(fileInfo.fileName());
     mThumbNotExist = false;
 
-    // TODO: we can keep pixmap if file did not change
+    // TODO: we can keep pixmap if file did not change (store fileInfo as member)
     if (mPixmapKey)
         QPixmapCache::remove(mPixmapKey.value());
     mPixmapKey = std::nullopt;
@@ -1338,7 +1317,7 @@ void DkThumbScene::updateLayout()
 
     DkThumbLabel *lastSelected = nullptr;
     for (DkThumbLabel *thumb : std::as_const(mThumbLabels)) {
-        thumb->cancelLoading(); // visibility and/or size may have changed
+        thumb->cancelLoading(); // visibility and/or required thumb size may have changed
         if (thumb->isSelected())
             lastSelected = thumb;
     }
@@ -1347,8 +1326,8 @@ void DkThumbScene::updateLayout()
         ensureVisible(lastSelected->filePath());
 
     // The pixmap cache must be large enough for all thumbnails that need to be painted
-    // If the cache is too small, the paint event will loop back to itself:
-    // paintEvent()->(cache miss)->fetchThumbnail()->update()->paintEvent()
+    // If the cache is too small, some of the paint events always cache miss and creates
+    // an endless cycle: paintEvent()->(cache miss)->fetchThumbnail()->update()->paintEvent()
     int cacheKb = 9 * 1024; // +1 below puts us at 10MB, the Qt default
     const QList<QGraphicsItem *> visibleItems = view->items(view->rect());
     if (visibleItems.count() > 0) {
@@ -1675,7 +1654,7 @@ void DkThumbScene::selectThumb(int idx, bool select)
         return;
 
     if (idx < 0 || idx >= mThumbs.size()) {
-        qWarning() << "index out of bounds in selectThumbs()" << idx;
+        qWarning() << "[ThumbScene] index out of bounds in selectThumbs()" << idx;
         return;
     }
 
@@ -1892,6 +1871,7 @@ DkThumbLabel *DkThumbScene::getCenterThumb() const
     return centerThumb;
 }
 
+// TODO: use QVector::indexOf() or map
 int DkThumbScene::findThumb(DkThumbLabel *thumb) const
 {
     int thumbIdx = -1;
@@ -2056,8 +2036,6 @@ void DkThumbsView::wheelEvent(QWheelEvent *event)
             verticalScrollBar()->setValue(verticalScrollBar()->value() - event->angleDelta().y());
         }
     }
-
-    // QWidget::wheelEvent(event);
 }
 
 void DkThumbsView::mousePressEvent(QMouseEvent *event)
@@ -2141,8 +2119,6 @@ void DkThumbsView::dragEnterEvent(QDragEnterEvent *event)
 {
     QGraphicsView::dragEnterEvent(event);
 
-    qDebug() << event->source() << " I am: " << this;
-
     if (event->source() == this)
         event->accept();
     else if (event->mimeData()->hasUrls()) {
@@ -2209,12 +2185,10 @@ DkThumbScrollWidget::DkThumbScrollWidget(DkThumbLoader *thumbLoader,
                                          Qt::WindowFlags flags /* = 0 */)
     : DkWidget(parent, flags)
 {
-    // TODO: is this name required elsewhere?
     setObjectName("DkThumbScrollWidget");
     setContentsMargins(0, 0, 0, 0);
 
     mThumbsScene = new DkThumbScene(thumbLoader, this);
-    // thumbsView->setContentsMargins(0,0,0,0);
 
     mView = new DkThumbsView(mThumbsScene, this);
     mView->setFocusPolicy(Qt::StrongFocus);
@@ -2299,7 +2273,6 @@ void DkThumbScrollWidget::createActions()
     }
 
     DkActionManager &am = DkActionManager::instance();
-    // addActions(am.allActions().toList());
     addActions(am.previewActions().toList());
 
     // add a shortcut to open the selected image
@@ -2659,7 +2632,7 @@ void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
             tls << tpl;
         }
     } else {
-        qInfo() << firstFile.path() << "does not exist - according to a fast check";
+        qInfo() << "[RecentDirs]" << firstFile.path() << "does not exist or timed out";
     }
 
     auto *pathLabel = new QLabel(mRecentDir.dirPath(), this);
@@ -2784,7 +2757,8 @@ void DkRecentFilesWidget::updateList()
         l->addWidget(rf);
     }
 
-    qInfo() << "list updated in" << dt; // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) false positive on layout
+    qInfo() << "[RecentDirs] list updated in"
+            << dt; // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) false positive on layout
 
     mScrollArea->setWidget(dummy);
 }
