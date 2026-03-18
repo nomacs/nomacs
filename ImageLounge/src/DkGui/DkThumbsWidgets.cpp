@@ -1598,8 +1598,13 @@ void DkThumbScene::resizeThumbs(float dx)
     newSize = qBound(6, newSize, maxSize);
     DkSettingsManager::param().display().thumbPreviewSize = newSize;
 
+    // keep the selection or center thumb visible when zooming
+    DkThumbLabel *centerThumb = getSelectedThumbs().value(0);
+    if (!centerThumb) {
+        centerThumb = getCenterThumb();
+    }
+
     QString centerPath{};
-    DkThumbLabel *centerThumb = getCenterThumb();
     if (centerThumb) {
         centerPath = centerThumb->filePath();
         centerThumb = nullptr; // potentially invalidated by updateLayout()
@@ -1608,7 +1613,7 @@ void DkThumbScene::resizeThumbs(float dx)
     updateLayout();
     // TODO: cancel anything no longer visible
 
-    if (selectedItems().empty() && !centerPath.isEmpty()) {
+    if (!centerPath.isEmpty()) {
         ensureVisible(centerPath);
     }
 }
