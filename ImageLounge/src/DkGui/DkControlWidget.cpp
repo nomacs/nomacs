@@ -78,15 +78,6 @@ DkControlWidget::DkControlWidget(DkThumbLoader *thumbLoader, DkViewPort *parent,
     mBottomLabel = new DkLabelBg("", this);
     mBottomLeftLabel = new DkLabelBg("", this);
 
-    // wheel label
-    QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.svg");
-
-    mWheelButton = new QLabel(this);
-    mWheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
-    mWheelButton->setPixmap(wp);
-    mWheelButton->adjustSize();
-    mWheelButton->hide();
-
     // image histogram
     mHistogram = new DkHistogram(this);
 
@@ -846,17 +837,6 @@ DkFolderScrollBar *DkControlWidget::getScroller() const
 // DkControlWidget - Events --------------------------------------------------------------------
 void DkControlWidget::mousePressEvent(QMouseEvent *event)
 {
-    mEnterPos = event->pos();
-
-    if (mFilePreview && mFilePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
-        QTimer *mImgTimer = mFilePreview->getMoveImageTimer();
-        mImgTimer->start(1);
-
-        // show icon
-        mWheelButton->move(event->pos().x() - 16, event->pos().y() - 16);
-        mWheelButton->show();
-    }
-
     if (mPluginViewport)
         QCoreApplication::sendEvent(mPluginViewport, event);
     else
@@ -865,13 +845,6 @@ void DkControlWidget::mousePressEvent(QMouseEvent *event)
 
 void DkControlWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (mFilePreview && mFilePreview->isVisible()) {
-        mFilePreview->setCurrentDx(0);
-        QTimer *mImgTimer = mFilePreview->getMoveImageTimer();
-        mImgTimer->stop();
-        mWheelButton->hide();
-    }
-
     if (mPluginViewport)
         QCoreApplication::sendEvent(mPluginViewport, event);
     else
@@ -880,16 +853,6 @@ void DkControlWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void DkControlWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    // scroll thumbs preview
-    if (mFilePreview && mFilePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
-        float dx = (float)std::fabs(mEnterPos.x() - event->pos().x()) * 0.015f;
-        dx = std::exp(dx);
-        if (mEnterPos.x() - event->pos().x() < 0)
-            dx = -dx;
-
-        mFilePreview->setCurrentDx(dx); // update dx
-    }
-
     if (mPluginViewport)
         QCoreApplication::sendEvent(mPluginViewport, event);
     else
