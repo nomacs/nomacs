@@ -74,18 +74,7 @@ public:
     ~DkFilePreview() override
     {
         saveSettings();
-    };
-
-    void setCurrentDx(float dx)
-    {
-        scrollToCurrentImage = false; // external move events
-        currentDx = dx;
-    };
-
-    QTimer *getMoveImageTimer()
-    {
-        return moveImageTimer;
-    };
+    }
 
     void setVisible(bool visible, bool saveSettings = true) override;
 
@@ -93,12 +82,12 @@ public:
     {
         windowPosition = position;
         initOrientations();
-    };
+    }
 
     int getWindowPosition()
     {
         return windowPosition;
-    };
+    }
 
     void cancelLoading();
 
