@@ -1616,6 +1616,8 @@ void DkThumbScene::resizeThumbs(float dx)
     if (!centerPath.isEmpty()) {
         ensureVisible(centerPath);
     }
+
+    update();
 }
 
 void DkThumbScene::cancelLoading()
