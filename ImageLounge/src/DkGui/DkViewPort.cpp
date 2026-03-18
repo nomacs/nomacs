@@ -1989,8 +1989,6 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
     mResetWhenZoomPastFit = false;
 }
 
-DkViewPortFrameless::~DkViewPortFrameless() = default;
-
 DkBaseViewPort::ZoomPos DkViewPortFrameless::calcZoomCenter(const QPointF &center, double /* unused */) const
 {
     QRectF viewRect = getImageViewRect();
@@ -2060,11 +2058,6 @@ void DkViewPortFrameless::resizeEvent(QResizeEvent *event)
 
         offset.setX(offset.x() + margin + iconSize.width());
     }
-}
-
-void DkViewPortFrameless::draw(QPainter &painter, double opacity, int flags)
-{
-    DkViewPort::draw(painter, opacity, flags);
 }
 
 void DkViewPortFrameless::eraseBackground(QPainter &painter) const

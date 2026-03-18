@@ -232,7 +232,7 @@ class DllCoreExport DkViewPortFrameless : public DkViewPort
 
 public:
     explicit DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
-    ~DkViewPortFrameless() override;
+    ~DkViewPortFrameless() override = default;
 
 public slots:
     void moveViewInWidgetCoords(const QPointF &delta) override;
@@ -245,18 +245,16 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
     // functions
-    void draw(QPainter &painter, double opacity, int flags) override;
     void drawFrame(QPainter &painter);
     void eraseBackground(QPainter &painter) const override;
 
-    // variables
+private:
     QVector<QAction *> mStartActions;
     QVector<QIcon> mStartIcons;
     QVector<QRectF> mStartActionsRects;
     QVector<QPixmap> mStartActionsIcons;
     QRectF mStartBgRect;
 
-private:
     [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
     void controlImagePosition() override;
     void centerImage() override;
