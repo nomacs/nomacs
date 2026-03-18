@@ -49,8 +49,13 @@ void DkCachedThumb::cleanupSync()
     QFileInfoList allFiles;
     qint64 usedBytes = 0;
 
-    // TODO: ignore non-xdg folders and "fail" folder
-    const QFileInfoList dirs = QDir(cacheHome()).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    // Ignore non-xdg folders and "fail" folder
+    QStringList dirNameFilters;
+    for (auto xdgBin : kXdgBins) {
+        dirNameFilters += xdgBin.name;
+    }
+
+    const QFileInfoList dirs = QDir(cacheHome()).entryInfoList(dirNameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
     for (auto &d : dirs) {
         const QFileInfoList files = QDir(d.absoluteFilePath()).entryInfoList(QDir::Files);
         for (QFileInfo f : files) {
