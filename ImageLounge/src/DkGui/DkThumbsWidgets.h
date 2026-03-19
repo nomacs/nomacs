@@ -196,14 +196,26 @@ public:
     void setFillSquare(bool value);
     void setFileInfo(const DkFileInfo &info);
 
+    int index() const
+    {
+        return mIndex;
+    }
+
     int row() const
     {
         return mRow;
     }
 
-    void setRow(int row)
+    int col() const
     {
+        return mCol;
+    }
+
+    void setGridPos(int index, int row, int col)
+    {
+        mIndex = index;
         mRow = row;
+        mCol = col;
     }
 
     void fetchThumb(float devicePixelRatio);
@@ -237,7 +249,7 @@ private:
     LoadThumbnailOption mThumbOption = LoadThumbnailOption::none;
     bool mIsHovered = false;
     bool mFillSquare = false;
-    int mRow{};
+    int mIndex{}, mRow{}, mCol{};
 
     static constexpr QColor sNoImagePen = QColor(150, 150, 150);
     static constexpr QColor sNoImageBrush = QColor(100, 100, 100, 50);
