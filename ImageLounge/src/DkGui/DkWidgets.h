@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include "DkQt5Compat.h"
 
 #include <QFileSystemModel>
@@ -475,17 +477,17 @@ public:
 
     void reset();
 
-    void setWorldTransform(QTransform *worldTform)
+    void setWorldTransform(const QTransform &worldTform)
     {
         mWorldTform = worldTform;
     };
 
-    void setImageTransform(QTransform *imgTform)
+    void setImageTransform(const QTransform &imgTform)
     {
         mImgTform = imgTform;
     };
 
-    void setImageRect(QRectF *imgRect)
+    void setImageRect(const QRectF &imgRect)
     {
         mImgRect = imgRect;
     };
@@ -528,8 +530,8 @@ protected:
     QPointF map(const QPointF &pos);
 
     int mState = do_nothing;
-    QTransform *mImgTform = nullptr;
-    QTransform *mWorldTform = nullptr;
+    std::optional<QTransform> mImgTform;
+    std::optional<QTransform> mWorldTform;
     QTransform mTtform;
     QTransform mRtform;
     QPointF mPosGrab;
@@ -542,7 +544,7 @@ protected:
     QBrush mBrush;
     QVector<DkTransformRect *> mCtrlPoints;
     QCursor mRotatingCursor;
-    QRectF *mImgRect = nullptr;
+    std::optional<QRectF> mImgRect;
     bool mPanning = false;
     int mPaintMode = rule_of_thirds;
     bool mShowInfo = false;
