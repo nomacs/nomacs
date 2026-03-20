@@ -2081,14 +2081,10 @@ void DkViewPortFrameless::eraseBackground(QPainter &painter) const
 
     // draw start actions
     for (int idx = 0; idx < mStartActions.size(); idx++) {
-        if (!mStartIcons[idx].isNull())
-            painter.drawPixmap(mStartActionsRects[idx],
-                               mStartActionsIcons[idx],
-                               QRect(QPoint(), mStartActionsIcons[idx].size()));
-        else
-            painter.drawPixmap(mStartActionsRects[idx],
-                               mStartActionsIcons[idx],
-                               QRect(QPoint(), mStartActionsIcons[idx].size()));
+        // TODO: what if the start icon is null?
+        painter.drawPixmap(mStartActionsRects[idx],
+                           mStartActionsIcons[idx],
+                           QRect(QPoint(), mStartActionsIcons[idx].size()));
 
         QRectF tmpRect = mStartActionsRects[idx];
         QString text = mStartActions[idx]->text().remove("&");
