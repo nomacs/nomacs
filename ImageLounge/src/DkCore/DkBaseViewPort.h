@@ -32,6 +32,7 @@
 
 #include "DkImageStorage.h"
 #include "DkSettings.h"
+#include "DkViewPortTransformViewModel.h"
 
 #include "nmc_config.h"
 
@@ -58,7 +59,7 @@ public:
         swipes_end
     };
 
-    explicit DkBaseViewPort(bool inDialog, QWidget *parent = nullptr);
+    explicit DkBaseViewPort(bool inDialog, QWidget *parent = nullptr, bool resetWhenZoomPastFit = true);
     ~DkBaseViewPort() override;
 
     void setMinZoomLevelTo1();
@@ -71,13 +72,13 @@ public:
     // world to viewport/widget transform
     QTransform getWorldMatrix() const
     {
-        return mWorldMatrix;
+        return mTransformVM->worldMatrix();
     }
 
     // image(device-normalized) to world transform
     QTransform getImageMatrix() const
     {
-        return mImgMatrix;
+        return mTransformVM->imgMatrix();
     }
 
     // visible region of the image, unscaled
@@ -102,11 +103,7 @@ public:
 
     void zoomTo(double zoomLevel);
 
-    struct ZoomLevelRange {
-        qreal mMin;
-        qreal mMax;
-    };
-    [[nodiscard]] ZoomLevelRange zoomLevelRange() const;
+    [[nodiscard]] DkViewPortTransformViewModel::ZoomLevelRange zoomLevelRange() const;
 
 signals:
     void imageUpdated() const; // triggers on zoom/pan
@@ -114,7 +111,7 @@ signals:
 
 public slots:
     void moveViewInImageCoords(const QPointF &delta);
-    virtual void moveViewInWidgetCoords(const QPointF &delta);
+    void moveViewInWidgetCoords(const QPointF &delta);
     virtual void fullView();
 
     virtual void setImage(const QImage &newImg);
@@ -132,21 +129,11 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 
-    virtual void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false);
+    void zoom(double factor, const QPointF &center = QPointF(-1, -1), bool force = false);
     bool imageInside() const;
 
     // slots
     virtual void togglePattern(bool show);
-    void zoomIn();
-    void zoomOut();
-    virtual void resetView();
-    void translateViewInWidgetCoords(qreal x, qreal y);
-
-    void zoomToFit();
-
-    // imageViewSize returns the size of the rectangle that contains the image in the
-    // coordinates of this widget.
-    [[nodiscard]] QSizeF imageViewSize() const;
 
     Qt::KeyboardModifier mAltMod; // it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
 
@@ -154,18 +141,11 @@ protected:
     QSharedPointer<QMovie> mMovie;
     QSharedPointer<QSvgRenderer> mSvg;
 
-    QTransform mImgMatrix;
-    QTransform mWorldMatrix;
-    QRectF mImgViewRect;
-    QRectF mViewportRect;
-    QRectF mImgRect;
     QTimer *mHideCursorTimer;
 
     QPointF mPosGrab;
 
     bool mForceFastRendering = false;
-    bool mBlockZooming = false;
-    bool mResetWhenZoomPastFit = true;
 
     // flags to draw() call for multi-pass rendering
     enum RenderFlag {
@@ -248,31 +228,20 @@ protected:
     // fill entire viewport with bg color, image draws on top
     virtual void eraseBackground(QPainter &painter) const;
 
-    void updateImageMatrix(std::optional<DkSettings::keepZoom> keepZoom = std::nullopt);
     [[nodiscard]] qreal zoomLevel() const;
 
-    struct ZoomPos {
-        QPointF pos;
-        bool recenter = false;
-    };
+    // The returned view model is owned by DkBaseViewPort
+    DkViewPortTransformViewModel *transformVM() const
+    {
+        return mTransformVM.get();
+    }
 
 private:
-    void zoomLeveled(double factor = 0.5, const QPointF &center = QPointF(-1, -1));
-    [[nodiscard]] virtual ZoomPos calcZoomCenter(const QPointF &center, double factor) const;
-
     bool gestureEvent(QGestureEvent *event);
 
-    virtual void controlImagePosition();
-    virtual void centerImage();
     void changeCursor();
-    void zoomToPoint(double factor, const QPointF &pos);
 
     // Slots
-    void panLeft();
-    void panRight();
-    void panUp();
-    void panDown();
-    void stopBlockZooming();
     void scrollVertically(int val);
     void scrollHorizontally(int val);
     void hideCursor();
@@ -280,23 +249,8 @@ private:
     Qt::KeyboardModifier mCtrlMod;
     QBrush mPattern;
     QImage mBackBuffer;
-    QTimer *mZoomTimer;
 
-    // mMinZoom is the constraint on zoomLevel relative to the default state
-    // (when fit to view for image larger than the viewport or 100% for image smaller)
-    double mMinZoom = 0.01;
-    static constexpr double sMaxZoomLevel = 100;
-
-    // controls whether we cannot pan outside an image
-    bool mZeroPanControl = false;
-
-    static constexpr qreal sPanFraction = 0.02;
+    std::unique_ptr<DkViewPortTransformViewModel> mTransformVM = nullptr;
 };
 
-// scaleKeepAspectRatioAndCenter creates a transformation that
-// maps coordinates in r1 (`QRectF(QPointF(), src)`)
-// to coordinates in r2 (`QRectF(QPointF(), tgt)`)
-// when r1 is scaled to maximum inside r2 while keeping aspect ratio
-// and the scaled rectangle is centered in r2.
-[[nodiscard]] QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt);
 }
