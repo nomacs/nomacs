@@ -51,10 +51,8 @@ class DllCoreExport DkViewPort : public DkBaseViewPort
     Q_OBJECT
 
 public:
-    explicit DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
+    explicit DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent = nullptr, bool resetWhenZoomPastFit = true);
     ~DkViewPort() override;
-
-    void zoom(double factor = 0.5, const QPointF &center = QPointF(-1, -1), bool force = false) override;
 
     void setFullScreen(bool fullScreen);
 
@@ -107,7 +105,6 @@ public:
     void setImage(const QImage &newImg) override;
 
 protected:
-    void resetView() override;
     void togglePattern(bool show) override;
     void eraseBackground(QPainter &painter) const override;
     void getPixelInfo(const QPoint &pos);
@@ -129,7 +126,6 @@ protected:
     DkControlWidget *mController = nullptr;
 
 private:
-    [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
     void emitZoomSignal();
     QString getCurrentPixelHexValue();
     void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
@@ -141,7 +137,6 @@ private:
     void deleteImage();
 
     // tcp actions
-    void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
     void tcpSetWindowRect(QRect rect);
     void tcpForceSynchronize();
     void tcpLoadFile(qint16 idx, const QString &filename);
@@ -217,6 +212,7 @@ private:
     QSharedPointer<DkBaseManipulator> mActiveManipulator;
 
     QSharedPointer<QBuffer> mMovieIo;
+    qreal mZoomLevel = 1;
 
     bool mGestureStarted = false;
     bool mDisabledBackground = false; // disables drawBackground() (frameless dialog)
@@ -233,9 +229,6 @@ class DllCoreExport DkViewPortFrameless : public DkViewPort
 public:
     explicit DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPortFrameless() override = default;
-
-public slots:
-    void moveViewInWidgetCoords(const QPointF &delta) override;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -254,10 +247,6 @@ private:
     QVector<QRectF> mStartActionsRects;
     QVector<QPixmap> mStartActionsIcons;
     QRectF mStartBgRect;
-
-    [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
-    void controlImagePosition() override;
-    void centerImage() override;
 };
 
 class DllCoreExport DkViewPortContrast : public DkViewPort
