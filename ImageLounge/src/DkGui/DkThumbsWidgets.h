@@ -285,8 +285,6 @@ public slots:
     void toggleThumbLabels(bool show);
     void resizeThumbs(float dx);
     void showFile(const QString &filePath = QString());
-    void selectThumbs(bool select = true, int from = 0, int to = -1);
-    void selectThumb(int idx, bool select = true);
     void selectAllThumbs(bool select = true);
     void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs);
     void deleteSelected();
@@ -299,6 +297,7 @@ signals:
     void thumbLoadedSignal() const;
 
 private:
+    void selectThumbs(bool select, int from, int to, bool extend);
     void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
     void keyPressEvent(QKeyEvent *event) override;
     QString currentDir() const;
