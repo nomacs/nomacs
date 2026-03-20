@@ -1367,9 +1367,10 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
     }
     updateThumbLabels();
 
-    if (selectedIdx >= 0) {
-        selectedIdx = qMax(0, qMin(selectedIdx, mThumbs.size() - 1));
-        selectThumb(selectedIdx);
+    if (selectedIdx >= 0 && !mThumbs.empty()) {
+        selectedIdx = qBound(0, selectedIdx, mThumbs.size() - 1);
+        selectThumbs(true, selectedIdx, selectedIdx + 1, false);
+        // ensureVisible(selectedIdx); // TODO:
     }
 
     update();
@@ -1629,51 +1630,32 @@ void DkThumbScene::cancelLoading()
 
 void DkThumbScene::selectAllThumbs(bool selected)
 {
-    selectThumbs(selected);
+    selectThumbs(selected, 0, mThumbs.size(), false);
 }
 
-void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, int to /* = -1 */)
+void DkThumbScene::selectThumbs(bool selected, int from, int to, bool extend)
 {
-    if (mThumbs.empty())
-        return;
-
-    if (to == -1)
-        to = mThumbs.size() - 1;
-
-    if (from > to) {
-        int tmp = to;
-        to = from;
-        from = tmp;
-    }
-
-    blockSignals(true);
-    for (int idx = from; idx <= to && idx < mThumbs.size(); idx++) {
-        mThumbLabels.at(idx)->setSelected(selected);
-    }
-    blockSignals(false);
-    emit selectionChanged();
-    showFile(); // update selection label
-}
-
-void DkThumbScene::selectThumb(int idx, bool select)
-{
-    if (mThumbs.empty())
-        return;
-
-    if (idx < 0 || idx >= mThumbs.size()) {
-        qWarning() << "[ThumbScene] index out of bounds in selectThumbs()" << idx;
+    if (mThumbs.empty()) {
         return;
     }
 
-    blockSignals(true);
-    mThumbLabels[idx]->setSelected(select);
-    blockSignals(false);
+    Q_ASSERT(from >= 0 && from < mThumbs.size());
+    Q_ASSERT(to >= from && to <= mThumbs.size());
+
+    {
+        QSignalBlocker blocker(this); // prevent selectionChanged()
+
+        if (!extend) {
+            clearSelection();
+        }
+
+        for (int idx = from; idx < to; idx++) {
+            mThumbLabels.at(idx)->setSelected(selected);
+        }
+    }
 
     emit selectionChanged();
-    showFile(); // update selection label
-
-    Q_ASSERT(mThumbs.size() > idx && mThumbLabels[idx]);
-    mThumbLabels[idx]->ensureVisible();
+    showFile(); // update status bar
 }
 
 void DkThumbScene::copySelected() const
