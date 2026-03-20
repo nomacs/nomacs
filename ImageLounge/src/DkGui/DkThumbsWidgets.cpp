@@ -1832,6 +1832,46 @@ QStringList DkThumbScene::getSelectedFiles() const
     return fileList;
 }
 
+void DkThumbScene::thumbClicked(DkThumbLabel *thumb, QMouseEvent *event)
+{
+    // Sparse selections using anchor+range model:
+    // - normal click or ctrl-click sets the anchor
+    // - shift click selects range from anchor
+    // - ctrl+shift click deselects from anchor
+    int to = thumb->index(), from = to;
+    bool select = true, extend = false;
+
+    if (event->modifiers() & Qt::ShiftModifier) {
+        // range selection, selection extends from anchor
+        DkThumbLabel *anchor = mThumbLabels.value(mSelectionAnchor);
+        if (anchor) {
+            from = anchor->index();
+            extend = true;
+            select = !(event->modifiers() & Qt::ControlModifier);
+            if (!select) {
+                // do not include anchor in the deselect
+                from = from > to ? from - 1 : from + 1;
+            }
+            if (from > to) {
+                int tmp = from;
+                from = to;
+                to = tmp;
+            }
+        }
+    } else if (event->modifiers() & Qt::ControlModifier) {
+        // toggle single item
+        mSelectionAnchor = thumb->index();
+        to = thumb->index();
+        from = to;
+        extend = true;
+        select = !thumb->isSelected();
+    } else {
+        mSelectionAnchor = thumb->index();
+    }
+
+    selectThumbs(select, from, to + 1, extend);
+}
+
 QVector<DkThumbLabel *> DkThumbScene::getSelectedThumbs() const
 {
     QVector<DkThumbLabel *> selected;
@@ -2035,18 +2075,21 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
     }
 
     DkThumbScene *sc = thumbsScene();
-
     DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(sc->itemAt(mapToScene(event->pos()), QTransform()));
 
-    // this is a bit of a hack
-    // what we want to achieve: if the user is selecting with e.g. shift or ctrl
-    // and he clicks (unintentionally) into the background - the selection would be lost
-    // otherwise so we just don't propagate this event
-    if (itemClicked || event->modifiers() == Qt::NoModifier)
-        QGraphicsView::mousePressEvent(event);
-
+    // If no item do nothing; this will prevent misclick clearing the selection
     if (!itemClicked) {
-        sc->showFile("");
+        return;
+    }
+
+    // We do this before forwarding so it won't emit selectionChanged() twice
+    sc->thumbClicked(itemClicked, event);
+
+    // We have to forward mouse event for double-click event to fire.
+    // But this also does single-selection and clears the selection, so
+    // we cannot allow it when doing extended selections (shift+click etc)
+    if (event->modifiers() == Qt::NoModifier) {
+        QGraphicsView::mousePressEvent(event);
     }
 }
 
@@ -2088,21 +2131,6 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
     }
 
     QGraphicsView::mouseMoveEvent(event);
-}
-
-void DkThumbsView::mouseReleaseEvent(QMouseEvent *event)
-{
-    QGraphicsView::mouseReleaseEvent(event);
-
-    DkThumbScene *sc = thumbsScene();
-    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(sc->itemAt(mapToScene(event->pos()), QTransform()));
-
-    if (mLastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != nullptr) {
-        sc->selectThumbs(true, mLastShiftIdx, sc->findThumb(itemClicked));
-    } else if (itemClicked != nullptr) {
-        mLastShiftIdx = sc->findThumb(itemClicked);
-    } else
-        mLastShiftIdx = -1;
 }
 
 void DkThumbsView::dragEnterEvent(QDragEnterEvent *event)
