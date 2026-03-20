@@ -267,6 +267,7 @@ public:
     QVector<DkThumbLabel *> getSelectedThumbs() const;
 
     /// return thumb in the middle of the (visible) view
+    void thumbClicked(DkThumbLabel *thumb, QMouseEvent *event);
     DkThumbLabel *getCenterThumb() const;
 
     void setImageLoader(QSharedPointer<DkImageLoader> loader);
@@ -307,6 +308,7 @@ private:
     int mXOffset = 0;
     int mNumRows = 0;
     int mNumCols = 0;
+    int mSelectionAnchor = -1; // where to extend selection from (shift+click)
     int mLastSelectedIdx = -1; // last selected item to restore on updateThumbs()
 
     QVector<DkThumbLabel *> mThumbLabels;
@@ -335,10 +337,8 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
 
     QPointF mMouseDownPos;
-    int mLastShiftIdx = -1; // item index clicked while shift key down
 };
 
 class DllCoreExport DkThumbScrollWidget : public DkWidget
