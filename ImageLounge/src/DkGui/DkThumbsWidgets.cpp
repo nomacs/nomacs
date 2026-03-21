@@ -953,8 +953,7 @@ DkThumbLabel::DkThumbLabel(DkThumbLoader *thumbLoader,
     mText.setDefaultTextColor(QColor(255, 255, 255));
     mText.hide();
 
-    // Not loaded -> disable selection
-    setFlag(ItemIsSelectable, false);
+    setFlag(ItemIsSelectable, true);
 
     setAcceptHoverEvents(true);
     connect(mThumbLoader, &DkThumbLoader::thumbnailLoaded, this, &DkThumbLabel::onThumbnailLoaded);
@@ -991,7 +990,6 @@ void DkThumbLabel::onThumbnailLoaded(ThumbnailId id, const QString &filePath, co
     prepareGeometryChange();
     generatePixmap(thumb);
     updateTooltip(thumb, fromExif);
-    setFlag(ItemIsSelectable, true);
     update();
 }
 
