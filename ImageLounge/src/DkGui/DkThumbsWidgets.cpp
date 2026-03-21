@@ -1889,6 +1889,10 @@ QStringList DkThumbScene::getSelectedFiles() const
 
 void DkThumbScene::thumbClicked(DkThumbLabel *thumb, QMouseEvent *event)
 {
+    if (event->buttons() != Qt::LeftButton) {
+        return;
+    }
+
     // Sparse selections using anchor+range model:
     // - normal click or ctrl-click sets the anchor
     // - shift click selects range from anchor
@@ -2143,8 +2147,9 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
 
     // We have to forward mouse event for double-click event to fire.
     // But this also does single-selection and clears the selection, so
-    // we cannot allow it when doing extended selections (shift+click etc)
-    if (event->modifiers() == Qt::NoModifier) {
+    // we cannot allow it when doing extended selections (shift+click etc),
+    // or when right-clicking for context menu
+    if (event->buttons() != Qt::RightButton && event->modifiers() == Qt::NoModifier) {
         QGraphicsView::mousePressEvent(event);
     }
 }
