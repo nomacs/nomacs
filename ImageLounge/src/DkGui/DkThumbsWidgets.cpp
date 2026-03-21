@@ -2093,6 +2093,19 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void DkThumbsView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    DkThumbScene *sc = thumbsScene();
+    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(sc->itemAt(mapToScene(event->pos()), QTransform()));
+
+    // Prevent fullscreen switch when mouse is in the space between thumbnails
+    if (!itemClicked) {
+        return;
+    }
+
+    QGraphicsView::mouseDoubleClickEvent(event);
+}
+
 void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
