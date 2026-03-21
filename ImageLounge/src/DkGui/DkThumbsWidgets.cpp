@@ -1270,6 +1270,14 @@ DkThumbScene::DkThumbScene(DkThumbLoader *thumbLoader, QWidget *parent /* = 0 */
                                            Qt::SHIFT | Qt::Key_Down,
                                            Qt::SHIFT | Qt::Key_Left,
                                            Qt::SHIFT | Qt::Key_Right,
+                                           Qt::CTRL | Qt::Key_Up,
+                                           Qt::CTRL | Qt::Key_Down,
+                                           Qt::CTRL | Qt::Key_Left,
+                                           Qt::CTRL | Qt::Key_Right,
+                                           Qt::CTRL | Qt::SHIFT | Qt::Key_Up,
+                                           Qt::CTRL | Qt::SHIFT | Qt::Key_Down,
+                                           Qt::CTRL | Qt::SHIFT | Qt::Key_Left,
+                                           Qt::CTRL | Qt::SHIFT | Qt::Key_Right,
                                        });
 }
 
@@ -1435,34 +1443,96 @@ void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool conn
 
 void DkThumbScene::keyPressEvent(QKeyEvent *event)
 {
-    int idx = selectedThumbIndex((event->key() != Qt::Key_Right && event->key() != Qt::Key_Down));
+    unsigned mods = event->modifiers();
+    mods &= ~Qt::KeypadModifier; // arrow from numpad
 
-    if (idx == -1)
+    // range mode: extend selection from anchor to current
+    bool range = mods == Qt::ShiftModifier;
+
+    // follow mode: extend selection from last to current; current becomes anchor
+    bool follow = mods == (Qt::ShiftModifier | Qt::ControlModifier);
+
+    // teleport mode: move to another location, deselect previous, current becomes anchor
+    bool teleport = mods == Qt::ControlModifier;
+
+    auto thumb = mThumbLabels.value(mSelectionCursor);
+    if (!thumb) {
         return;
+    }
 
-    if (event->modifiers() != Qt::ShiftModifier
-        && (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right || event->key() == Qt::Key_Up
-            || event->key() == Qt::Key_Down))
-        selectThumbs(false);
+    int from = thumb->index();
+    int to;
 
     switch (event->key()) {
     case Qt::Key_Left: {
-        selectThumb(qMax(idx - 1, 0));
+        to = from - 1;
         break;
     }
     case Qt::Key_Right: {
-        selectThumb(qMin(idx + 1, mThumbs.size() - 1));
+        to = from + 1;
         break;
     }
     case Qt::Key_Up: {
-        selectThumb(qMax(idx - mNumCols, 0));
+        to = from - mNumCols;
         break;
     }
     case Qt::Key_Down: {
-        selectThumb(qMin(idx + mNumCols, mThumbs.size() - 1));
+        to = from + mNumCols;
         break;
     }
+    default:
+        return;
     }
+
+    to = qBound(0, to, mThumbs.size() - 1);
+    bool extend = false;
+
+    if (range) {
+        // select block from anchor to current
+        from = mSelectionAnchor;
+        extend = true;
+
+        // deselect block from last cursor to current cursor
+        QSignalBlocker blocker(this); // prevent selectionChanged()
+        int begin = mSelectionCursor;
+        int end = to;
+        if (end < begin) {
+            int tmp = begin;
+            begin = end;
+            end = tmp;
+        }
+
+        selectThumbs(false, begin, end + 1, extend);
+
+    } else if (follow) {
+        from = to;
+        extend = true;
+        mSelectionAnchor = to;
+    } else if (teleport) {
+        from = to;
+        extend = true;
+        mSelectionAnchor = to;
+
+        // deselect previous cursor
+        QSignalBlocker blocker(this);
+        selectThumbs(false, mSelectionCursor, mSelectionCursor + 1, extend);
+    } else {
+        from = to;
+        mSelectionAnchor = to;
+    }
+
+    mSelectionCursor = to;
+
+    if (from > to) {
+        int tmp = from;
+        from = to;
+        to = tmp;
+    }
+
+    selectThumbs(true, from, to + 1, extend);
+
+    thumb = mThumbLabels.value(mSelectionCursor);
+    thumb->ensureVisible(QRectF{}, 5, 5);
 }
 
 void displayFileInfoInStatusbar(const QString &filePath)
@@ -1540,19 +1610,6 @@ QString DkThumbScene::currentDir() const
     }
 
     return mThumbs[0].dirPath();
-}
-
-int DkThumbScene::selectedThumbIndex(bool first)
-{
-    int selIdx = -1;
-    for (int idx = 0; idx < mThumbs.size(); idx++) {
-        if (first && mThumbLabels[idx]->isSelected())
-            return idx;
-        else if (mThumbLabels[idx]->isSelected())
-            selIdx = idx;
-    }
-
-    return selIdx;
 }
 
 QGraphicsView *DkThumbScene::getView() const
@@ -1839,6 +1896,7 @@ void DkThumbScene::thumbClicked(DkThumbLabel *thumb, QMouseEvent *event)
     // - ctrl+shift click deselects from anchor
     int to = thumb->index(), from = to;
     bool select = true, extend = false;
+    mSelectionCursor = to;
 
     if (event->modifiers() & Qt::ShiftModifier) {
         // range selection, selection extends from anchor

@@ -302,13 +302,13 @@ private:
     void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
     void keyPressEvent(QKeyEvent *event) override;
     QString currentDir() const;
-    int selectedThumbIndex(bool first = true);
     QGraphicsView *getView() const;
 
     int mXOffset = 0;
     int mNumRows = 0;
     int mNumCols = 0;
-    int mSelectionAnchor = -1; // where to extend selection from (shift+click)
+    int mSelectionAnchor = -1; // where to start range selection from (shift+click, shift+keypress)
+    int mSelectionCursor = -1; // last visited item with keyboard or mouse click
     int mLastSelectedIdx = -1; // last selected item to restore on updateThumbs()
 
     QVector<DkThumbLabel *> mThumbLabels;
