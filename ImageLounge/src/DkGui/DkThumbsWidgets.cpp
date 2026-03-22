@@ -1985,21 +1985,6 @@ DkThumbLabel *DkThumbScene::getCenterThumb() const
     return centerThumb;
 }
 
-// TODO: use QVector::indexOf() or map
-int DkThumbScene::findThumb(DkThumbLabel *thumb) const
-{
-    int thumbIdx = -1;
-
-    for (int idx = 0; idx < mThumbLabels.size(); idx++) {
-        if (thumb == mThumbLabels.at(idx)) {
-            thumbIdx = idx;
-            break;
-        }
-    }
-
-    return thumbIdx;
-}
-
 bool DkThumbScene::allThumbsSelected() const
 {
     for (DkThumbLabel *label : mThumbLabels)

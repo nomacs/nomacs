@@ -272,7 +272,6 @@ public:
 
     void setImageLoader(QSharedPointer<DkImageLoader> loader);
     void copyImages(const QMimeData *mimeData, const Qt::DropAction &da = Qt::CopyAction) const;
-    int findThumb(DkThumbLabel *thumb) const;
     bool allThumbsSelected() const;
     void ensureVisible(const QString &path) const;
     void viewportChanged(const QRectF &portRect);
@@ -295,7 +294,6 @@ public slots:
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;
-    void thumbLoadedSignal() const;
 
 private:
     void selectThumbs(bool select, int from, int to, bool extend);
