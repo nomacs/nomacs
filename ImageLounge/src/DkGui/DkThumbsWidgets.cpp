@@ -1899,19 +1899,6 @@ void DkThumbScene::renameSelected() const
     }
 }
 
-QStringList DkThumbScene::getSelectedFiles() const
-{
-    QStringList fileList;
-
-    for (int idx = 0; idx < mThumbs.size(); idx++) {
-        if (mThumbLabels.at(idx) && mThumbLabels.at(idx)->isSelected()) {
-            fileList.append(mThumbLabels.at(idx)->filePath());
-        }
-    }
-
-    return fileList;
-}
-
 void DkThumbScene::thumbClicked(DkThumbLabel *thumb, QMouseEvent *event)
 {
     if (event->buttons() != Qt::LeftButton) {
@@ -1959,14 +1946,32 @@ void DkThumbScene::thumbClicked(DkThumbLabel *thumb, QMouseEvent *event)
 
 QVector<DkThumbLabel *> DkThumbScene::getSelectedThumbs() const
 {
+    const QVector<QGraphicsItem *> items = selectedItems();
     QVector<DkThumbLabel *> selected;
+    selected.reserve(items.count());
 
-    for (DkThumbLabel *label : mThumbLabels) {
-        if (label->isSelected())
-            selected << label;
+    for (auto *item : items) {
+        selected += static_cast<DkThumbLabel *>(item);
     }
 
+    std::sort(selected.begin(), selected.end(), [](const DkThumbLabel *a, const DkThumbLabel *b) {
+        return a->index() < b->index();
+    });
+
     return selected;
+}
+
+QStringList DkThumbScene::getSelectedFiles() const
+{
+    const auto selected = getSelectedThumbs();
+    QStringList fileList;
+    fileList.reserve(selected.count());
+
+    for (DkThumbLabel *thumb : selected) {
+        fileList += thumb->filePath();
+    }
+
+    return fileList;
 }
 
 DkThumbLabel *DkThumbScene::getCenterThumb() const
@@ -1988,11 +1993,7 @@ DkThumbLabel *DkThumbScene::getCenterThumb() const
 
 bool DkThumbScene::allThumbsSelected() const
 {
-    for (DkThumbLabel *label : mThumbLabels)
-        if (label->isVisible() && label->flags() & QGraphicsItem::ItemIsSelectable && !label->isSelected())
-            return false;
-
-    return true;
+    return getSelectedThumbs().count() == mThumbs.count();
 }
 
 void DkThumbScene::viewportChanged(const QRectF &portRect)
