@@ -265,11 +265,7 @@ public:
     void updateLayout();
     QStringList getSelectedFiles() const;
     QVector<DkThumbLabel *> getSelectedThumbs() const;
-
-    /// return thumb in the middle of the (visible) view
     void thumbClicked(DkThumbLabel *thumb, QMouseEvent *event);
-    DkThumbLabel *getCenterThumb() const;
-
     void setImageLoader(QSharedPointer<DkImageLoader> loader);
     void copyImages(const QMimeData *mimeData, const Qt::DropAction &da = Qt::CopyAction) const;
     bool allThumbsSelected() const;
@@ -296,6 +292,9 @@ signals:
     void loadFileSignal(const QString &filePath, bool newTab) const;
 
 private:
+    // return thumb in the middle of the (visible) view
+    DkThumbLabel *getCenterThumb() const;
+
     void selectThumbs(bool select, int from, int to, bool extend);
     void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
     void keyPressEvent(QKeyEvent *event) override;
