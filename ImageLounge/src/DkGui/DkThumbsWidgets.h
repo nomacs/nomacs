@@ -309,7 +309,6 @@ private:
     int mNumCols = 0;
     int mSelectionAnchor = -1; // where to start range selection from (shift+click, shift+keypress)
     int mSelectionCursor = -1; // last visited item with keyboard or mouse click
-    int mLastSelectedIdx = -1; // last selected item to restore on updateThumbs()
 
     QVector<DkThumbLabel *> mThumbLabels;
     QSharedPointer<DkImageLoader> mLoader;

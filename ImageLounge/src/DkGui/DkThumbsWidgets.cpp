@@ -1352,19 +1352,24 @@ void DkThumbScene::updateLayout()
 
 void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumbs)
 {
-    int selectedIdx = mLastSelectedIdx;
-    mLastSelectedIdx = -1;
+    const DkThumbLabel *anchor = mThumbLabels.value(mSelectionAnchor);
+    const DkThumbLabel *cursor = mThumbLabels.value(mSelectionCursor);
+    const QString anchorPath = anchor ? anchor->filePath() : QString{};
+    const QString cursorPath = cursor ? cursor->filePath() : QString{};
+    mSelectionAnchor = -1;
+    mSelectionCursor = -1;
 
-    Q_ASSERT(mThumbLabels.size() >= mThumbs.size());
-
-    if (selectedIdx < 0) {
-        for (int idx = 0; idx < mThumbs.size(); idx++) {
-            if (mThumbLabels.at(idx)->isSelected()) {
-                selectedIdx = idx;
-                break;
-            }
-        }
+    // use a map as we could have 10,000 thumbs or more
+    const QStringList selectedFiles = getSelectedFiles();
+    QSet<QString> selected;
+    selected.reserve(selectedFiles.count());
+    for (auto &path : selectedFiles) {
+        selected.insert(path);
     }
+
+    QSignalBlocker blocker(this);
+    clearSelection();
+    blocker.unblock();
 
     mThumbs.clear();
     mThumbs.reserve(thumbs.size());
@@ -1373,10 +1378,31 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> thumb
     }
     updateThumbLabels();
 
-    if (selectedIdx >= 0 && !mThumbs.empty()) {
-        selectedIdx = qBound(0, selectedIdx, mThumbs.size() - 1);
-        selectThumbs(true, selectedIdx, selectedIdx + 1, false);
-        // ensureVisible(selectedIdx); // TODO:
+    blocker.reblock();
+
+    for (auto &thumb : mThumbLabels) {
+        const QString path = thumb->filePath();
+        bool select = selected.contains(path);
+        thumb->setSelected(select);
+        if (select) {
+            if (path == anchorPath) {
+                mSelectionAnchor = thumb->index();
+            }
+            if (path == cursorPath) {
+                mSelectionCursor = thumb->index();
+            }
+        }
+    }
+
+    blocker.unblock();
+
+    emit selectionChanged();
+
+    showFile();
+
+    if (mSelectionCursor >= 0) {
+        DkThumbLabel *thumb = mThumbLabels.value(mSelectionCursor);
+        thumb->ensureVisible();
     }
 
     update();
@@ -1410,7 +1436,6 @@ void DkThumbScene::updateThumbLabels()
         thumb->setVisible(false);
     }
 
-    showFile();
     updateLayout();
 }
 
@@ -1655,7 +1680,7 @@ void DkThumbScene::resizeThumbs(float dx)
     DkSettingsManager::param().display().thumbPreviewSize = newSize;
 
     // keep the selection or center thumb visible when zooming
-    DkThumbLabel *centerThumb = getSelectedThumbs().value(0);
+    DkThumbLabel *centerThumb = mThumbLabels.value(mSelectionCursor);
     if (!centerThumb) {
         centerThumb = getCenterThumb();
     }
