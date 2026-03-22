@@ -208,6 +208,7 @@ public:
         menu_view_anti_aliasing,
         menu_view_tp_pattern,
         menu_view_frameless,
+        menu_view_toggle_zoom_fit,
 
         menu_view_new_tab,
         menu_view_close_tab,
@@ -404,6 +405,7 @@ public:
     static constexpr QKeyCombination shortcut_reset_view = Qt::CTRL | Qt::Key_0;
     static constexpr QKeyCombination shortcut_zoom_full = Qt::CTRL | Qt::Key_1;
     static constexpr QKeyCombination shortcut_fit_frame = Qt::CTRL | Qt::Key_2;
+    static constexpr QKeyCombination shortcut_toggle_zoom_fit = Qt::Key_Return;
     static constexpr QKeyCombination shortcut_show_overview = Qt::Key_O;
     static constexpr QKeyCombination shortcut_show_explorer = Qt::Key_E;
     static constexpr QKeyCombination shortcut_show_metadata_dock = Qt::ALT | Qt::Key_M;

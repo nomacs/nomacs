@@ -480,6 +480,7 @@ QMenu *DkActionManager::createViewMenu(QWidget *parent /* = 0 */)
 
     mViewMenu->addAction(mViewActions[menu_view_reset]);
     mViewMenu->addAction(mViewActions[menu_view_100]);
+    mViewMenu->addAction(mViewActions[menu_view_toggle_zoom_fit]);
     mViewMenu->addAction(mViewActions[menu_view_fit_frame]);
     mViewMenu->addAction(mViewActions[menu_view_zoom_in]);
     mViewMenu->addAction(mViewActions[menu_view_zoom_out]);
@@ -687,6 +688,7 @@ QMenu *DkActionManager::createContextMenu(QWidget *parent)
     viewContextMenu->addAction(mViewActions[menu_view_fullscreen]);
     viewContextMenu->addAction(mViewActions[menu_view_reset]);
     viewContextMenu->addAction(mViewActions[menu_view_100]);
+    viewContextMenu->addAction(mViewActions[menu_view_toggle_zoom_fit]);
     viewContextMenu->addAction(mViewActions[menu_view_fit_frame]);
 
     QMenu *editContextMenu = mContextMenu->addMenu(QObject::tr("&Edit"));
@@ -1376,6 +1378,10 @@ void DkActionManager::createActions(QWidget *parent)
     mViewActions[menu_view_100]->setShortcut(QKeySequence(shortcut_zoom_full));
     mViewActions[menu_view_100]->setStatusTip(QObject::tr("Shows the image at 100%"));
 
+    mViewActions[menu_view_toggle_zoom_fit] = new QAction(QObject::tr("Toggle 100% / Fit to window"), parent);
+    mViewActions[menu_view_toggle_zoom_fit]->setShortcut(QKeySequence(shortcut_toggle_zoom_fit));
+    mViewActions[menu_view_toggle_zoom_fit]->setStatusTip(QObject::tr("Toggle between 100% zoom and fit to window"));
+
     mViewActions[menu_view_zoom_in] = new QAction(mViewIcons[icon_view_zoom_in], QObject::tr("Zoom &In"), parent);
     mViewActions[menu_view_zoom_in]->setShortcut(QKeySequence::ZoomIn);
     mViewActions[menu_view_zoom_in]->setStatusTip(QObject::tr("zoom in"));
@@ -1809,6 +1815,7 @@ void DkActionManager::enableImageActions(bool enable) const
     action(DkActionManager::menu_view_fullscreen)->setEnabled(enable);
     action(DkActionManager::menu_view_reset)->setEnabled(enable);
     action(DkActionManager::menu_view_100)->setEnabled(enable);
+    action(DkActionManager::menu_view_toggle_zoom_fit)->setEnabled(enable);
     action(DkActionManager::menu_view_fit_frame)->setEnabled(enable);
     action(DkActionManager::menu_view_zoom_in)->setEnabled(enable);
     action(DkActionManager::menu_view_zoom_out)->setEnabled(enable);

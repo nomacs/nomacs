@@ -102,6 +102,7 @@ public slots:
     void resizeImage();
     void deleteImage();
     void zoomToFit();
+    void toggleZoomFit();
     void resizeEvent(QResizeEvent *event) override;
     void zoomTo(double zoomLevel);
 

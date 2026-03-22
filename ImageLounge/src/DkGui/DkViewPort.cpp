@@ -173,6 +173,10 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
             &DkViewPort::copyPixelColorValue);
 
     connect(am.action(DkActionManager::menu_view_reset), &QAction::triggered, this, &DkViewPort::zoomToFit);
+    connect(am.action(DkActionManager::menu_view_toggle_zoom_fit),
+            &QAction::triggered,
+            this,
+            &DkViewPort::toggleZoomFit);
     connect(am.action(DkActionManager::menu_view_100), &QAction::triggered, this, &DkViewPort::fullView);
     connect(am.action(DkActionManager::menu_view_zoom_in), &QAction::triggered, this, &DkViewPort::zoomIn);
     connect(am.action(DkActionManager::menu_view_zoom_out), &QAction::triggered, this, &DkViewPort::zoomOut);
@@ -547,6 +551,16 @@ void DkViewPort::zoomToFit()
         resetView();
     else if (zoomLevel == 1 && mLoader && mLoader->hasSvg())
         resetView();
+}
+
+void DkViewPort::toggleZoomFit()
+{
+    double currentZoom = mWorldMatrix.m11() * mImgMatrix.m11();
+    if (qAbs(currentZoom - 1.0) < std::numeric_limits<double>::epsilon()) {
+        zoomToFit();
+    } else {
+        fullView();
+    }
 }
 
 void DkViewPort::resetView()
