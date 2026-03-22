@@ -1900,7 +1900,7 @@ void DkThumbScene::renameSelected() const
 
 void DkThumbScene::thumbClicked(DkThumbLabel *thumb, QMouseEvent *event)
 {
-    if (event->buttons() != Qt::LeftButton) {
+    if (event->button() != Qt::LeftButton) {
         return;
     }
 
@@ -2144,6 +2144,12 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
         mMouseDownPos = event->pos();
     }
 
+    // No forwarding as we must ignore default item selection model
+}
+
+void DkThumbsView::mouseReleaseEvent(QMouseEvent *event)
+{
+    // Selection happens on mouse release so click to select works and drag can work without modifier key
     DkThumbScene *sc = thumbsScene();
     DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(sc->itemAt(mapToScene(event->pos()), QTransform()));
 
@@ -2152,20 +2158,15 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
         return;
     }
 
-    // We do this before forwarding so it won't emit selectionChanged() twice
     sc->thumbClicked(itemClicked, event);
-
-    // We have to forward mouse event for double-click event to fire.
-    // But this also does single-selection and clears the selection, so
-    // we cannot allow it when doing extended selections (shift+click etc),
-    // or when right-clicking for context menu
-    if (event->buttons() != Qt::RightButton && event->modifiers() == Qt::NoModifier) {
-        QGraphicsView::mousePressEvent(event);
-    }
 }
 
 void DkThumbsView::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    if (event->button() != Qt::LeftButton) {
+        return;
+    }
+
     DkThumbScene *sc = thumbsScene();
     DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(sc->itemAt(mapToScene(event->pos()), QTransform()));
 
