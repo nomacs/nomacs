@@ -234,10 +234,10 @@ public:
         bool defaultBackgroundColor;
         bool defaultIconColor;
 
-        int thumbSize;
+        int thumbSize; // ribbon thumbnail size
         int iconSize;
         int thumbPreviewSize;
-        bool highQualityThumbs;
+        bool highQualityThumbs; // grid thumbnail size
 
         // bool saveThumb;
         int interpolateZoomLevel;

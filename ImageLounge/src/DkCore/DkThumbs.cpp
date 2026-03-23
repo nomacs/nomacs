@@ -346,6 +346,7 @@ void DkThumbLoader::onThumbnailLoadFinished()
     emit thumbnailLoaded(res->request.id, res->request.filePath, res->thumb, res->fromExif);
 
     // Add cache after finished using res because the cache takes ownership.
+    // FIXME: what happens if signal handler requests the same thing again?
     mThumbnailCache.insert(res->request.id, res, resSize);
 }
 

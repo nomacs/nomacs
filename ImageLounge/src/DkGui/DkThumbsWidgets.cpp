@@ -1162,6 +1162,20 @@ void DkThumbLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         painter->drawPixmap(boundingRect(), pm.value(), pm->rect());
     }
 
+    if (false) {
+        static QHash<QString, int> counts;
+        int count = ++counts[mFilePath];
+        QRect br = boundingRect().toRect();
+        int sz = br.width();
+        QRect r(br.x(), br.y(), sz, 16);
+        painter->fillRect(r, Qt::white);
+        painter->setPen(Qt::black);
+        QFont font = painter->font();
+        font.setPointSize(9);
+        painter->setFont(font);
+        painter->drawText(r, QString{}.asprintf("%d|%d|%.1f", count, sz, sz * mDevicePixelRatio));
+    }
+
     // draw text
     if (boundingRect().width() > 50 && DkSettingsManager::param().display().showThumbLabel) {
         // this is the Qt idea of how to fix the dashed border:
@@ -1684,7 +1698,7 @@ void DkThumbScene::resizeThumbs(float dx)
     QString centerPath{};
     if (centerThumb) {
         centerPath = centerThumb->filePath();
-        centerThumb = nullptr; // potentially invalidated by updateLayout()
+        centerThumb = nullptr;
     }
 
     updateLayout();
