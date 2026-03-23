@@ -1685,7 +1685,7 @@ void DkThumbScene::resizeThumbs(float dx)
     QString centerPath{};
     if (centerThumb) {
         centerPath = centerThumb->filePath();
-        centerThumb = nullptr; // potentially invalidated by updateLayout()
+        centerThumb = nullptr;
     }
 
     updateLayout();
