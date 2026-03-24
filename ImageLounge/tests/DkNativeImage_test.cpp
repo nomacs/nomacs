@@ -131,6 +131,7 @@ TEST(ImageToMat, Default)
     for (int flags : options) {
         SCOPED_TRACE("flags: " + QString::number(flags).toStdString());
         auto native = DkNativeImage::fromImage(std::move(nullImg), flags);
+        nullImg = {}; // use-after-move in next section
         EXPECT_TRUE(native.img().isNull());
         EXPECT_TRUE(native.mat().empty());
     }

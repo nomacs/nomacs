@@ -42,6 +42,7 @@ Checks: "\
 bugprone-chained-comparison,\
 bugprone-empty-catch,\
 bugprone-forward-declaration-namespace,\
+bugprone-use-after-move,\
 cert-*,\
 -cert-err33-c,\
 concurrency-mt-unsafe,\
