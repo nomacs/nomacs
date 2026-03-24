@@ -623,7 +623,11 @@ public:
         }
 
         auto qtFormat = nativeFormatToQtFormat(dstFormat);
-        QImage dst{mSrc.img().size(), qtFormat};
+        auto &src = mSrc.img();
+        QImage dst{src.size(), qtFormat};
+        dst.setDevicePixelRatio(src.devicePixelRatio());
+        dst.setDotsPerMeterX(src.dotsPerMeterX());
+        dst.setDotsPerMeterY(src.dotsPerMeterY());
 
         QColorSpace dstColorSpace;
         if (usesAlpha) {
