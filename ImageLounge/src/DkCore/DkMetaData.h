@@ -125,7 +125,7 @@ public:
     bool setDescription(const QString &description);
     bool setExifValue(QString key, QString taginfo);
     bool updateImageMetaData(const QImage &img, bool reset_orientation = true);
-    void setThumbnail(QImage thumb);
+    void setThumbnail(const QImage &thumb);
     void setQtValues(const QImage &cImg);
     static QString exiv2ToQString(std::string exifString);
     void setUseSidecar(bool useSideCar = false);
