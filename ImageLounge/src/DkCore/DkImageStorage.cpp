@@ -98,6 +98,21 @@ float DkImage::getBufferSizeFloat(const QSize &imgSize, const int depth)
     return (float)size / (1024.0f * 1024.0f);
 }
 
+static QImage convertToColorSpace(const QImage &src, QImage::Format dstFormat, const QColorSpace &dstColorSpace)
+{
+    QImage img = src;
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+    img.convertToColorSpace(dstColorSpace);
+    img.convertTo(dstFormat);
+#else
+    if (src.pixelFormat().colorModel() == QPixelFormat::Indexed) {
+        img.convertTo(dstFormat);
+    }
+    img.convertToColorSpace(dstColorSpace, dstFormat);
+#endif
+    return img;
+}
+
 static QImage convertToLinear(const QImage &src)
 {
     QImage img = src;
@@ -110,25 +125,8 @@ static QImage convertToLinear(const QImage &src)
     } else {
         format = img.depth() <= 32 ? QImage::Format_RGBA64 : QImage::Format_RGBA32FPx4;
     }
-#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
-    img.convertTo(format);
-    img.convertToColorSpace(QColorSpace::SRgbLinear);
-#else
-    img.convertToColorSpace(QColorSpace::SRgbLinear, format);
-#endif
-    return img;
-}
 
-static QImage convertToColorSpace(const QImage &src, QImage::Format dstFormat, const QColorSpace &dstColorSpace)
-{
-    QImage img = src;
-#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
-    img.convertToColorSpace(dstColorSpace);
-    img.convertTo(dstFormat);
-#else
-    img.convertToColorSpace(dstColorSpace, dstFormat);
-#endif
-    return img;
+    return convertToColorSpace(src, format, QColorSpace::SRgbLinear);
 }
 
 /**
