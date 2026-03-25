@@ -959,9 +959,12 @@ void DkBasicLoader::setEditImage(const QImage &img, const QString &editName)
         historySize += e.size();
     }
 
-    // reset exif orientation after image edit
-    if (!mImages.isEmpty())
+    // reset exif orientation and thumbnail and after image edit
+    if (!mImages.isEmpty()) {
         mMetaData->clearOrientation();
+        mMetaData->setThumbnail(QImage{});
+    }
+
     // new history item with new pixmap (and old or original metadata)
     DkEditImage newImg(DkEditImage::EditType::data, img, mMetaData->copy(), editName);
 

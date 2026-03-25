@@ -1032,7 +1032,7 @@ QStringList DkMetaDataT::getQtValues() const
     return mQtValues;
 }
 
-void DkMetaDataT::setThumbnail(QImage thumb)
+void DkMetaDataT::setThumbnail(const QImage &thumb)
 {
     if (mExifState == not_loaded || mExifState == no_data)
         return;
@@ -1043,32 +1043,34 @@ void DkMetaDataT::setThumbnail(QImage thumb)
         if (exifData.empty())
             exifData = Exiv2::ExifData();
 
-        // ok, let's try to save the thumbnail...
         Exiv2::ExifThumb eThumb(exifData);
 
-        QByteArray ba;
-        QBuffer buffer(&ba);
-        buffer.open(QIODevice::WriteOnly);
-        thumb.save(&buffer, "JPEG"); // here we destroy the alpha channel of thumbnails
-
-        try {
-            // whipe all exif data of the thumbnail
-            auto exifImgThumb = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba.constData()), ba.size());
-
-            if (exifImgThumb.get() != nullptr && exifImgThumb->good())
-                exifImgThumb->clearExifData();
-        } catch (...) {
-            qDebug() << "could not clear the thumbnail exif info";
-        }
-
         eThumb.erase(); // erase all thumbnails
-        eThumb.setJpegThumbnail((Exiv2::byte *)ba.data(), ba.size());
+        if (!thumb.isNull()) {
+            QByteArray ba;
+            QBuffer buffer(&ba);
+            buffer.open(QIODevice::WriteOnly);
+            thumb.save(&buffer, "JPEG"); // here we destroy the alpha channel of thumbnails
+
+            try {
+                // wipe all exif data of the thumbnail
+                auto exifImgThumb = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba.constData()),
+                                                              ba.size());
+
+                if (exifImgThumb.get() != nullptr && exifImgThumb->good())
+                    exifImgThumb->clearExifData();
+            } catch (...) {
+                qWarning() << "[Exiv2] could not clear the thumbnail's exif data";
+            }
+
+            eThumb.setJpegThumbnail((Exiv2::byte *)ba.data(), ba.size());
+        }
 
         mExifImg->setExifData(exifData);
         mExifState = dirty;
 
     } catch (...) {
-        qDebug() << "I could not save the thumbnail...";
+        qWarning() << "[Exiv2] could not save the thumbnail";
     }
 }
 
