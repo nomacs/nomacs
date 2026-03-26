@@ -223,7 +223,7 @@ protected:
                          int flags = draw_default) const;
 
     // draw the entire viewport
-    virtual void draw(QPainter &frontPainter, double opacity = 1.0, int flags = draw_default);
+    void draw(QPainter &frontPainter, double opacity = 1.0, int flags = draw_default);
 
     // fill entire viewport with bg color, image draws on top
     virtual void eraseBackground(QPainter &painter) const;
