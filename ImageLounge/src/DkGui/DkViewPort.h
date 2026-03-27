@@ -98,6 +98,7 @@ public:
     // image saving
     bool isEdited() const;
     QImage getImage() const override;
+    QImage getDrawImage() const;
 
     void updateLoadedImage();
     void loadImage(const QImage &newImg);
@@ -211,7 +212,6 @@ private:
     QFutureWatcher<QImage> mManipulatorWatcher;
     QSharedPointer<DkBaseManipulator> mActiveManipulator;
 
-    QSharedPointer<QBuffer> mMovieIo;
     qreal mZoomLevel = 1;
 
     bool mGestureStarted = false;

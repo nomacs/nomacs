@@ -41,6 +41,7 @@
 #include "DkThumbsWidgets.h" // needed in the connects -> shall we move them to mController?
 #include "DkToolbars.h"
 #include "DkUtils.h"
+#include "DkViewPortImageViewModel.h"
 #include "DkViewPortTransformViewModel.h"
 #include "DkWidgets.h"
 
@@ -149,7 +150,9 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent, bool resetWh
     addActions(am.hiddenActions().toList());
     addActions(am.openWithActions().toList());
 
-    connect(&mImgStorage, &DkImageStorage::infoSignal, this, &DkViewPort::infoSignal);
+    connect(imageVM(), &DkViewPortImageViewModel::antiAliasingChanged, this, [this](bool antiAliasing) {
+        emit infoSignal(antiAliasing ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
+    });
 
     if (am.pluginActionManager())
         connect(am.pluginActionManager(),
@@ -310,17 +313,18 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     // retain the previous image for animation, release when animation ends
     // we don't do this on unloadImage() because we might be on the last image in the slideshow
     const auto &dpy = DkSettingsManager::param().display();
-    if (!mImgStorage.isEmpty() //
+    if (!imageVM()->isEmpty() //
         && dpy.transition != DkSettings::trans_appear //
         && dpy.animationDuration > 0.0 && //
         (mController->getPlayer()->isPlaying() //
          || window()->isFullScreen() //
          || DkSettingsManager::param().display().alwaysAnimate)) {
         mAnimationParams = getRenderParams(devicePixelRatio(), getWorldMatrix(), transformVM()->imgViewRect());
-        mAnimationBuffer = mImgStorage.downsampled(mAnimationParams.imageSize,
-                                                   this,
-                                                   DkImageStorage::process_sync | DkImageStorage::process_fallback);
-        mAnimationBufferHasAlpha = mImgStorage.alphaChannelUsed();
+        mAnimationBuffer = imageVM()->downsampled(mAnimationParams.imageSize,
+                                                  DkImage::targetColorSpace(this),
+                                                  DkImage::targetFormat(),
+                                                  DkImageStorage::process_sync | DkImageStorage::process_fallback);
+        mAnimationBufferHasAlpha = imageVM()->alphaChannelUsed();
         mAnimationBuffer = DkImage::convertToColorSpaceInPlace(this, mAnimationBuffer);
         mAnimationValue = 1.0;
 
@@ -374,14 +378,16 @@ void DkViewPort::setImage(const QImage &newImg)
     bool isNewFile = mPrevFilePath != mLoader->filePath();
     mPrevFilePath = mLoader->filePath();
 
-    bool wasImageLoaded = !mImgStorage.isEmpty();
+    bool wasImageLoaded = !imageVM()->isEmpty();
     bool isImageLoaded = !newImg.isNull();
-    mImgStorage.setImage(newImg);
 
-    if (mLoader->hasMovie() && !mLoader->isEdited())
+    imageVM()->setRasterImage(newImg);
+    if (mLoader->hasMovie() && !mLoader->isEdited()) {
         loadMovie();
-    if (mLoader->hasSvg() && !mLoader->isEdited())
-        loadSvg();
+    }
+    if (mLoader->hasSvg() && !mLoader->isEdited()) {
+        imageVM()->setSVG(*mLoader->getCurrentImage()->getFileBuffer());
+    }
 
     transformVM()->setImgSize(getImageSize(),
                               static_cast<DkSettings::keepZoom>(DkSettingsManager::param().display().keepZoom));
@@ -540,6 +546,11 @@ QImage DkViewPort::getImage() const
         return imageContainer()->image();
 
     return DkBaseViewPort::getImage();
+}
+
+QImage DkViewPort::getDrawImage() const
+{
+    return imageVM()->image();
 }
 
 void DkViewPort::resizeImage()
@@ -787,7 +798,7 @@ void DkViewPort::paintEvent(QPaintEvent *event)
 {
     QPainter painter(viewport());
 
-    if (!mImgStorage.isEmpty()) {
+    if (!imageVM()->isEmpty()) {
         // usually the QGraphicsView should do this - but we have seen issues(e.g. #706)
         painter.setPen(Qt::NoPen);
         painter.setBrush(backgroundBrush());
@@ -814,7 +825,7 @@ void DkViewPort::paintEvent(QPaintEvent *event)
                 const RenderParams newParams = getRenderParams(devicePixelRatio(),
                                                                getWorldMatrix(),
                                                                transformVM()->imgViewRect());
-                bool newHasAlpha = mImgStorage.alphaChannelUsed();
+                bool newHasAlpha = imageVM()->alphaChannelUsed();
                 bool oldHasAlpha = mAnimationBufferHasAlpha;
 
                 // Fade-in new image
@@ -968,32 +979,9 @@ void DkViewPort::loadMovie()
     if (!io)
         return;
 
-    // read file to buffer, uses more memory, but:
-    // - devices that can't seek also can't loop (zip, network)
-    // - QMovie has a bug, fails to loop when constructed with a QFile
-    // - we don't keep the file handle open (on windows can be a problem with delete, rename etc)
-    // - animation won't hitch at the start
-    mMovieIo.reset(new QBuffer);
-    mMovieIo->setData(io->readAll());
-
     QByteArray format = fileInfo.suffix().toLower().toLatin1();
 
-    // QIODevice pointer is not owned by QMovie
-    QSharedPointer<QMovie> m(new QMovie(mMovieIo.get(), format));
-
-    // check if it truely a movie (we need this for we don't know if webp is actually animated)
-    if (!m->isValid() || m->frameCount() == 1) {
-        qWarning() << "[movie]" << fileInfo.fileName() << "invalid format or not an animation";
-        return;
-    }
-
-    mMovie = m;
-    qInfo() << "[movie] loaded animation:" << fileInfo.fileName();
-
-    connect(mMovie.data(), &QMovie::frameChanged, this, QOverload<>::of(&DkViewPort::update));
-    mMovie->start();
-
-    emit movieLoadedSignal(true);
+    imageVM()->setMovie(io->readAll(), format, fileInfo.fileName());
 }
 
 void DkViewPort::loadSvg()
@@ -1009,8 +997,6 @@ void DkViewPort::loadSvg()
         mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(mLoader->filePath()));
     }
     qInfo() << "[svg] loaded svg:" << cc->fileName();
-
-    connect(mSvg.data(), &QSvgRenderer::repaintNeeded, this, QOverload<>::of(&DkViewPort::update));
 }
 
 void DkViewPort::pauseMovie(bool pause)
@@ -1251,7 +1237,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
 
         QPixmap pm;
         if (!getImage().isNull())
-            pm = QPixmap::fromImage(mImgStorage.image().scaledToHeight(73, Qt::SmoothTransformation));
+            pm = QPixmap::fromImage(imageVM()->image().scaledToHeight(73, Qt::SmoothTransformation));
         if (pm.width() > 130)
             pm = pm.scaledToWidth(100, Qt::SmoothTransformation);
 
@@ -1379,7 +1365,7 @@ QPoint DkViewPort::mapToImage(const QPoint &windowPos) const
     imgPos = (getImageMatrix().inverted() * devicePixelRatioF()).map(imgPos);
 
     QPoint p(qFloor(imgPos.x()), qFloor(imgPos.y()));
-    QSize sz = mImgStorage.size();
+    QSize sz = imageVM()->image().size();
 
     if (p.x() < 0 || p.y() < 0 || p.x() >= sz.width() || p.y() >= sz.height()) {
         return {-1, -1};
@@ -1390,7 +1376,7 @@ QPoint DkViewPort::mapToImage(const QPoint &windowPos) const
 
 void DkViewPort::getPixelInfo(const QPoint &pos)
 {
-    if (mImgStorage.isEmpty())
+    if (imageVM()->isEmpty())
         return;
 
     QPoint xy = mapToImage(pos);
@@ -1418,7 +1404,7 @@ void DkViewPort::getPixelInfo(const QPoint &pos)
 
 QString DkViewPort::getCurrentPixelHexValue()
 {
-    if (mImgStorage.isEmpty() || mCurrentPixelPos.isNull())
+    if (imageVM()->isEmpty() || mCurrentPixelPos.isNull())
         return {};
 
     QPoint xy = mapToImage(mCurrentPixelPos);
@@ -2008,7 +1994,7 @@ void DkViewPortFrameless::eraseBackground(QPainter &painter) const
         painter.setWorldMatrixEnabled(true);
     }
 
-    if (!mImgStorage.isEmpty())
+    if (!imageVM()->isEmpty())
         return;
 
     painter.setWorldTransform(getImageMatrix());
@@ -2044,7 +2030,7 @@ void DkViewPortFrameless::eraseBackground(QPainter &painter) const
 void DkViewPortFrameless::drawFrame(QPainter &painter)
 {
     // TODO: replace hasAlphaChannel with has alphaBorder
-    if ((!mImgStorage.isEmpty() && mImgStorage.image().hasAlphaChannel())
+    if ((!imageVM()->isEmpty() && imageVM()->image().hasAlphaChannel())
         || !DkSettingsManager::param().display().showBorder) // braces
         return;
 
@@ -2078,7 +2064,7 @@ void DkViewPortFrameless::mousePressEvent(QMouseEvent *event)
 
 void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (mImgStorage.isEmpty()) {
+    if (imageVM()->isEmpty()) {
         QPointF pos = getImageMatrix().inverted().map(event->pos());
 
         for (int idx = 0; idx < mStartActionsRects.size(); idx++) {
@@ -2098,7 +2084,7 @@ void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event)
 
 void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event)
 {
-    if (mImgStorage.isEmpty()) {
+    if (imageVM()->isEmpty()) {
         QPointF pos = getImageMatrix().inverted().map(event->pos());
 
         int idx;
@@ -2228,7 +2214,7 @@ void DkViewPortContrast::setImage(const QImage &newImg)
     if (newImg.isNull())
         return;
 
-    QImage img = mImgStorage.image();
+    QImage img = imageVM()->image();
 
     // for mono,gray8,gray16, create indexed image w/empty color table; it will be added later
     if (img.pixelFormat().colorModel() == QPixelFormat::Grayscale) {
@@ -2331,9 +2317,9 @@ void DkViewPortContrast::updateImage(bool enable)
     if (enable) {
         QImage falseColorImg = mImgs[mActiveChannel];
         falseColorImg.setColorTable(mColorTable);
-        mImgStorage.setImage(falseColorImg);
+        imageVM()->setImageOnly(falseColorImg);
     } else if (imageContainer()) {
-        mImgStorage.setImage(imageContainer()->image());
+        imageVM()->setImageOnly(imageContainer()->image());
         pickColor(false);
     }
 
@@ -2396,7 +2382,7 @@ void DkViewPortContrast::keyPressEvent(QKeyEvent *event)
 QImage DkViewPortContrast::getImage() const
 {
     if (mDrawFalseColorImg)
-        return mImgStorage.image();
+        return imageVM()->image();
     else
         return DkViewPort::getImage();
 }

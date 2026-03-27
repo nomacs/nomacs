@@ -32,8 +32,8 @@
 #include "DkShortcuts.h"
 #include "DkStatusBar.h"
 #include "DkUtils.h"
-
-#include <QColorSpace>
+#include "DkViewPortImageViewModel.h"
+#include "DkViewPortTransformViewModel.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMainWindow>
@@ -47,6 +47,11 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <memory>
+#include <qobject.h>
+#include <qsvgrenderer.h>
+#include <type_traits>
+#include <variant>
 
 namespace nmc
 {
@@ -55,6 +60,7 @@ DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent, bool resetWhenZoo
     : QGraphicsView(parent)
     , mForceFastRendering{inDialog}
     , mTransformVM{std::make_unique<DkViewPortTransformViewModel>(devicePixelRatioF(), inDialog, resetWhenZoomPastFit)}
+    , mImageVM{std::make_unique<DkViewPortImageViewModel>()}
 {
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
@@ -72,7 +78,7 @@ DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent, bool resetWhenZoo
     mAltMod = DkSettingsManager::param().global().altMod;
     mCtrlMod = DkSettingsManager::param().global().ctrlMod;
 
-    connect(&mImgStorage, &DkImageStorage::imageUpdated, this, QOverload<>::of(&DkBaseViewPort::update));
+    connect(mImageVM.get(), &DkViewPortImageViewModel::imageUpdated, this, QOverload<>::of(&DkBaseViewPort::update));
 
     if (DkSettingsManager::param().display().defaultBackgroundColor)
         setObjectName("DkBaseViewPortDefaultColor");
@@ -137,6 +143,8 @@ DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent, bool resetWhenZoo
             &DkViewPortTransformViewModel::zoomLevelRangeChanged,
             this,
             &DkBaseViewPort::zoomLevelRangeChanged);
+
+    connect(mImageVM.get(), &DkViewPortImageViewModel::contentStateChanged, this, &DkBaseViewPort::updateRenderer);
 }
 
 DkBaseViewPort::~DkBaseViewPort() = default;
@@ -172,7 +180,7 @@ void DkBaseViewPort::moveViewInWidgetCoords(const QPointF &delta)
 
 void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
 {
-    if (mImgStorage.isEmpty()) {
+    if (mImageVM->isEmpty()) {
         return;
     }
 
@@ -182,7 +190,7 @@ void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
 // set image --------------------------------------------------------------------
 void DkBaseViewPort::setImage(const QImage &newImg)
 {
-    mImgStorage.setImage(newImg);
+    mImageVM->setRasterImage(newImg);
     const bool kz = DkSettingsManager::param().display().keepZoom;
     mTransformVM->setImgSize(getImageSize(), kz ? DkSettings::zoom_keep_same_size : DkSettings::zoom_never_keep);
     update();
@@ -209,7 +217,7 @@ QImage DkBaseViewPort::getImage() const
             mSvg->render(&p, imgViewRect);
         }
     } else {
-        img = mImgStorage.image();
+        img = mImageVM->image();
     }
 
     if (!img.colorSpace().isValid()) {
@@ -234,7 +242,7 @@ QSizeF DkBaseViewPort::getImageSize() const
     // - this must be reversed only when reaching into the image pixels (extract subimage, eyedropper tool, etc)
     // - we must take care to avoid rounding as this creates a fraction
 
-    return QSizeF(mImgStorage.size()) / devicePixelRatioF();
+    return QSizeF(mImageVM->image().size()) / devicePixelRatioF();
 }
 
 QRectF DkBaseViewPort::getImageViewRect() const
@@ -251,7 +259,7 @@ QImage DkBaseViewPort::getCurrentImageRegion()
 
     // Rect is now in image coordinates so just copy it.
     // If there is any oob condition it gets default fill
-    return mImgStorage.image().copy(viewRect.toRect());
+    return mImageVM->image().copy(viewRect.toRect());
 }
 
 // events --------------------------------------------------------------------
@@ -259,7 +267,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent *event)
 {
     QPainter painter(viewport());
 
-    if (!mImgStorage.isEmpty()) {
+    if (!mImageVM->isEmpty()) {
         painter.setWorldTransform(mTransformVM->worldMatrix());
 
         // don't interpolate - we have a sophisticated anti-aliasing methods
@@ -482,7 +490,9 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
     RenderParams params = getRenderParams(dpr, frontPainter.worldTransform(), imgViewRect);
 
     // this may return the size we want or give the full size image and rescale in the background
-    const QImage img = mImgStorage.downsampled(params.imageSize, this);
+    const QImage img = mImageVM->downsampled(params.imageSize,
+                                             DkImage::targetColorSpace(this),
+                                             DkImage::targetFormat());
 
     // draw into an offscreen buffer for display colorspace conversion
     const QColorSpace targetColorSpace = DkImage::targetColorSpace(this);
@@ -524,7 +534,7 @@ void DkBaseViewPort::draw(QPainter &frontPainter, double opacity, int flags)
     double oldOpacity = frontPainter.opacity();
     frontPainter.setOpacity(opacity);
 
-    if ((flags & draw_pattern) && DkSettingsManager::param().display().tpPattern && mImgStorage.alphaChannelUsed()) {
+    if ((flags & draw_pattern) && DkSettingsManager::param().display().tpPattern && mImageVM->alphaChannelUsed()) {
         renderPattern(frontPainter, params);
     }
 
@@ -637,5 +647,53 @@ void DkBaseViewPort::zoomTo(double zoomLevel)
 DkViewPortTransformViewModel::ZoomLevelRange DkBaseViewPort::zoomLevelRange() const
 {
     return mTransformVM->zoomLevelRange();
+}
+
+void DkBaseViewPort::updateRenderer()
+{
+    if (mMovie) {
+        mMovie->stop();
+        mMovie.reset();
+    }
+    mSvg.reset();
+    mMovieIo.reset();
+    DkActionManager::instance().enableMovieActions(false);
+
+    std::visit(
+        [this](const auto &arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, DkViewPortImageViewModel::RasterImage>) {
+            } else if constexpr (std::is_same_v<T, DkViewPortImageViewModel::SVG>) {
+                mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(arg.data));
+                connect(mSvg.data(), &QSvgRenderer::repaintNeeded, this, QOverload<>::of(&DkBaseViewPort::update));
+            } else if constexpr (std::is_same_v<T, DkViewPortImageViewModel::Movie>) {
+                // read file to buffer, uses more memory, but:
+                // - devices that can't seek also can't loop (zip, network)
+                // - QMovie has a bug, fails to loop when constructed with a QFile
+                // - we don't keep the file handle open (on windows can be a problem with delete, rename etc)
+                // - animation won't hitch at the start
+                mMovieIo.reset(new QBuffer);
+                mMovieIo->setData(arg.data);
+
+                // QIODevice pointer is not owned by QMovie
+                QSharedPointer<QMovie> m(new QMovie(mMovieIo.get(), arg.format));
+
+                // check if it truely a movie (we need this for we don't know if webp is actually animated)
+                if (!m->isValid() || m->frameCount() == 1) {
+                    qWarning() << "[movie]" << arg.fileName << "invalid format or not an animation";
+                    return;
+                }
+
+                mMovie = m;
+                qInfo() << "[movie] loaded animation:" << arg.fileName;
+
+                connect(mMovie.data(), &QMovie::frameChanged, this, QOverload<>::of(&DkBaseViewPort::update));
+                mMovie->start();
+                DkActionManager::instance().enableMovieActions(true);
+            } else {
+                static_assert(sizeof(T) == 0, "non-exhaustive");
+            }
+        },
+        mImageVM->contentState());
 }
 }

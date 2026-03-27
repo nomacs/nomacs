@@ -29,9 +29,11 @@
 
 #include <QBuffer>
 #include <QGraphicsView>
+#include <memory>
 
 #include "DkImageStorage.h"
 #include "DkSettings.h"
+#include "DkViewPortImageViewModel.h"
 #include "DkViewPortTransformViewModel.h"
 
 #include "nmc_config.h"
@@ -84,11 +86,6 @@ public:
     // visible region of the image, unscaled
     QImage getCurrentImageRegion();
 
-    DkImageStorage *getImageStorage()
-    {
-        return &mImgStorage;
-    };
-
     virtual QImage getImage() const;
 
     // image size in logical pixels (actual size divided by device pixel ratio)
@@ -137,8 +134,8 @@ protected:
 
     Qt::KeyboardModifier mAltMod; // it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
 
-    DkImageStorage mImgStorage;
     QSharedPointer<QMovie> mMovie;
+    QSharedPointer<QBuffer> mMovieIo;
     QSharedPointer<QSvgRenderer> mSvg;
 
     QTimer *mHideCursorTimer;
@@ -236,6 +233,11 @@ protected:
         return mTransformVM.get();
     }
 
+    [[nodiscard]] DkViewPortImageViewModel *imageVM() const
+    {
+        return mImageVM.get();
+    }
+
 private:
     bool gestureEvent(QGestureEvent *event);
 
@@ -246,11 +248,14 @@ private:
     void scrollHorizontally(int val);
     void hideCursor();
 
+    void updateRenderer();
+
     Qt::KeyboardModifier mCtrlMod;
     QBrush mPattern;
     QImage mBackBuffer;
 
     std::unique_ptr<DkViewPortTransformViewModel> mTransformVM = nullptr;
+    std::unique_ptr<DkViewPortImageViewModel> mImageVM = nullptr;
 };
 
 }
