@@ -222,23 +222,26 @@ public:
     /**
      * @brief downsample image in background for screen painting
      * @param size size of the scaled image which must be < image().size()
-     * @param target the intended paint target
+     * @param colorSpace target color space
+     * @param format target format
      * @param options change behavior
      * @note when scaling is completed, emit imageUpdated(), at
      *       which time downsampled() may be called again to get the result
      * @return cached result or original image (see ProcessOption)
      */
-    QImage downsampled(const QSize &size, const QWidget *target, int options = process_async) &;
+    QImage downsampled(const QSize &size,
+                       const QColorSpace &colorSpace,
+                       QImage::Format format,
+                       int options = process_async) &;
 
 signals:
     // emit after image() if result is non-null, call image() again to retrieve it
     void imageUpdated() const;
 
-    // send a message when toggling AA
-    void infoSignal(const QString &msg) const;
+    void antiAliasingChanged(bool enabled);
 
 protected slots:
-    void antiAliasingChanged(bool antiAliasing);
+    void changeAntiAliasing(bool antiAliasing);
     void workerFinished();
 
 protected:

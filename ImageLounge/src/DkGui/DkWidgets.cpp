@@ -616,11 +616,7 @@ DkOverview::DkOverview(QWidget *parent)
 bool DkOverview::updateThumb()
 {
     // get the image used in DkViewPort::draw() or else we may desync with view (manipulators, etc)
-    auto storage = mViewPort->getImageStorage();
-    if (!storage)
-        return false;
-
-    QImage fullImage = storage->image();
+    QImage fullImage = mViewPort->getDrawImage();
     if (fullImage.isNull())
         return false;
 
