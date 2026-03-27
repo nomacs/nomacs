@@ -2705,7 +2705,7 @@ DkImageStorage::DkImageStorage()
     connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing),
             &QAction::toggled,
             this,
-            &DkImageStorage::antiAliasingChanged);
+            &DkImageStorage::changeAntiAliasing);
 }
 
 DkImageStorage::~DkImageStorage()
@@ -2735,7 +2735,7 @@ void DkImageStorage::setImage(const QImage &img)
     cancelWorker();
 }
 
-void DkImageStorage::antiAliasingChanged(bool antiAliasing)
+void DkImageStorage::changeAntiAliasing(bool antiAliasing)
 {
     DkSettingsManager::param().display().antiAliasing = antiAliasing;
     if (!antiAliasing) {
@@ -2743,11 +2743,15 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing)
         cancelWorker();
     }
 
-    emit infoSignal((antiAliasing) ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
+    emit antiAliasingChanged(antiAliasing);
+
     emit imageUpdated();
 }
 
-QImage DkImageStorage::downsampled(const QSize &size, const QWidget *target, int options) &
+QImage DkImageStorage::downsampled(const QSize &size,
+                                   const QColorSpace &colorSpace,
+                                   QImage::Format format,
+                                   int options) &
 {
     if (size.isEmpty() //
         || mOriginal.isNull() //
@@ -2759,8 +2763,6 @@ QImage DkImageStorage::downsampled(const QSize &size, const QWidget *target, int
     bool antialias = DkSettingsManager::param().display().antiAliasing;
 
     ScaleFilter filter = antialias ? ScaleFilter::area : ScaleFilter::nearest;
-    QColorSpace colorSpace = DkImage::targetColorSpace(target);
-    QImage::Format format = DkImage::targetFormat();
 
     if (mScaled.image.size() == size && mScaled.filter == filter && mScaled.colorSpace == colorSpace
         && mScaled.image.format() == format) {
