@@ -194,10 +194,17 @@ QImage DkImage::resizeImage(const QImage &src,
         auto ipl = interpolation == ipl_nearest ? Qt::FastTransformation : Qt::SmoothTransformation;
         QImage outImg = inImg.scaled(nSize, Qt::IgnoreAspectRatio, ipl);
 #endif
+        // Output indexed to ARGB32 for consistency with other manipulators.
+        // Also we have no dither options so it looks bad, usually.
+        QImage::Format outFormat = src.format();
+        if (outFormat == QImage::Format_Indexed8) {
+            outFormat = DkImage::alphaChannelUsed(src) ? QImage::Format_ARGB32 : QImage::Format_BGR888;
+        }
+
         if (correctGamma) {
-            outImg = convertToColorSpace(outImg, src.format(), src.colorSpace());
+            outImg = convertToColorSpace(outImg, outFormat, src.colorSpace());
         } else {
-            outImg.convertTo(src.format());
+            outImg.convertTo(outFormat);
         }
         return outImg;
     } catch (...) {
