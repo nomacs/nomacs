@@ -31,6 +31,8 @@
 #include "DkImageContainer.h"
 #include "DkMath.h"
 #include "DkTimer.h"
+#include "DkViewPortFSViewModel.h"
+#include <memory>
 
 class QVBoxLayout;
 class QMimeData;
@@ -129,7 +131,7 @@ protected:
 private:
     void emitZoomSignal();
     QString getCurrentPixelHexValue();
-    void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
+    void connectLoader();
 
     void rotateCW();
     void rotateCCW();
@@ -171,7 +173,6 @@ private:
     void pauseMovie(bool paused);
     void stopMovie();
     void loadMovie();
-    void loadSvg();
     void nextMovieFrame();
     void previousMovieFrame();
     void animateFade();
@@ -195,10 +196,8 @@ private:
     QImage mAnimationBuffer;
     RenderParams mAnimationParams;
     double mAnimationValue = 0;
-    QString mPrevFilePath;
 
     QVBoxLayout *mPaintLayout = nullptr;
-    QSharedPointer<DkImageLoader> mLoader = QSharedPointer<DkImageLoader>();
     DkResizeDialog *mResizeDialog = nullptr;
 
     QPoint mCurrentPixelPos;
@@ -211,6 +210,8 @@ private:
     // image manipulators
     QFutureWatcher<QImage> mManipulatorWatcher;
     QSharedPointer<DkBaseManipulator> mActiveManipulator;
+
+    std::unique_ptr<DkViewPortFSViewModel> mFSVM = nullptr;
 
     qreal mZoomLevel = 1;
 
