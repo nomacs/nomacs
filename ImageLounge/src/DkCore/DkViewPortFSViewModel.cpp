@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "DkViewPortFSViewModel.h"
+#include "DkBasicLoader.h"
 #include "DkImageLoader.h"
+#include "DkManipulators.h"
+#include <qassert.h>
 #include <qcontainerfwd.h>
 #include <qimage.h>
 #include <qobject.h>
+#include <qtconcurrentrun.h>
 
 #ifdef Q_OS_WIN
 #include <QSettings>
@@ -18,6 +22,16 @@ DkViewPortFSViewModel::DkViewPortFSViewModel()
     : mLoader{QSharedPointer<DkImageLoader>(new DkImageLoader())}
 {
     connectLoader();
+    connect(&mManipulatorWatcher, &QFutureWatcher<QImage>::finished, this, &DkViewPortFSViewModel::finishManipulator);
+}
+
+DkViewPortFSViewModel::~DkViewPortFSViewModel()
+{
+    // TODO: verify that these actually works and is needed.
+    // cancel() is likely a no-op because we use QtConcurrent::run().
+    // Signals should be disconnected automatically.
+    mManipulatorWatcher.cancel();
+    mManipulatorWatcher.blockSignals(true);
 }
 
 void DkViewPortFSViewModel::loadFirst()
@@ -165,5 +179,99 @@ void DkViewPortFSViewModel::connectLoader()
 void DkViewPortFSViewModel::loadFileAt(int idx)
 {
     mLoader->loadFileAt(idx);
+}
+
+void DkViewPortFSViewModel::finishManipulator()
+{
+    if (mManipulatorWatcher.isCanceled() || !mActiveManipulator) {
+        qDebug() << "manipulator applied - but it's canceled";
+        return;
+    }
+
+    // trigger again if it's dirty
+    QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mActiveManipulator);
+
+    // set the edited image
+    QImage img = mManipulatorWatcher.result();
+
+    if (!img.isNull()) {
+        const QSharedPointer<DkImageContainerT> currImg = currentImage();
+        if (currImg) {
+            currImg->setImage(img, mActiveManipulator->name());
+        }
+        emit manipulatorSucceeded(currImg);
+    } else {
+        emit manipulatorErrored(mActiveManipulator->errorMessage());
+    }
+
+    if (mplExt && mplExt->isDirty()) {
+        mplExt->setDirty(false);
+        mplExt->action()->trigger();
+        qDebug() << "triggering manipulator - it's dirty";
+    }
+}
+
+void DkViewPortFSViewModel::applyManipulator(QSharedPointer<DkBaseManipulator> manipulator,
+                                             const RenderedImageProvider &imp)
+{
+    Q_ASSERT(imp);
+
+    // try to cast up
+    QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(manipulator);
+
+    // mark dirty
+    if (mManipulatorWatcher.isRunning() && mplExt && mActiveManipulator == manipulator) {
+        mplExt->setDirty(true);
+        return;
+    }
+
+    if (mManipulatorWatcher.isRunning()) {
+        emit manipulatorBusyAborted();
+        return;
+    }
+
+    // undo last if it is an extended manipulator
+    QImage img;
+    const QSharedPointer<DkImageContainerT> currImg = currentImage();
+    if (mplExt && currImg) {
+        auto l = currImg->getLoader();
+        l->setMinHistorySize(3); // increase the min history size to 3 for correctly popping back
+        if (!l->history()->isEmpty() && l->lastEdit().editName() == mplExt->name()) {
+            // This undo is only to merge the operations and is not meant to
+            // update the view.
+            // Directly call undo on the loader instead of the container
+            // so the imageUpdated signal does not fire.
+            l->undo();
+
+            // TODO: The design of the undo here is weird.
+            // This merges the two same operations, which might be beneficial for things like rotation.
+            // However, the next undo will be wrong.
+        }
+
+        img = currImg->image();
+    } else if (imp) {
+        img = imp();
+    }
+
+    mManipulatorWatcher.setFuture(QtConcurrent::run([manipulator, img] {
+        return manipulator.data()->apply(img);
+    }));
+
+    mActiveManipulator = manipulator;
+    emit manipulatorStarted(!mplExt.isNull());
+}
+
+void DkViewPortFSViewModel::cancelManipulator()
+{
+    // TODO: verify that these actually works and is needed.
+    // cancel() is likely a no-op because we use QtConcurrent::run().
+    if (mManipulatorWatcher.isRunning()) {
+        mManipulatorWatcher.cancel();
+    }
+}
+
+void DkViewPortFSViewModel::rotateImage(double angle)
+{
+    mLoader->rotateImage(angle);
 }
 }
