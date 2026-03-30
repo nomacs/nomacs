@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "DkImageLoader.h"
+#include "DkManipulators.h"
 #include "nmc_config.h"
 
 namespace nmc
@@ -19,6 +20,7 @@ class DllCoreExport DkViewPortFSViewModel : public QObject
 
 public:
     explicit DkViewPortFSViewModel();
+    ~DkViewPortFSViewModel() override;
 
     [[nodiscard]] QSharedPointer<DkImageLoader> loader() const
     {
@@ -55,6 +57,14 @@ public:
     void saveFileWeb(const QImage &img);
     bool setCurrentFileAsWallpaper();
     void loadFileAt(int idx);
+
+    using RenderedImageProvider = std::function<QImage()>;
+
+    void applyManipulator(QSharedPointer<DkBaseManipulator> manipulator, const RenderedImageProvider &imp);
+    void cancelManipulator();
+    [[nodiscard]] bool isManipulatorRunning();
+
+    void rotateImage(double angle);
 signals:
     // TODO: remove the loaded flag
     void currentImageLoaded(QSharedPointer<DkImageContainerT> img, bool loaded);
@@ -70,10 +80,19 @@ signals:
     // TODO: this probably also not belong here
     void playStateChanged(bool play);
 
+    void manipulatorStarted(bool isExtended);
+    void manipulatorBusyAborted();
+    void manipulatorSucceeded(QSharedPointer<DkImageContainerT> img);
+    void manipulatorErrored(const QString &msg);
+
 private:
     QString mPrevFilePath;
     QSharedPointer<DkImageLoader> mLoader;
+    // image manipulators
+    QFutureWatcher<QImage> mManipulatorWatcher;
+    QSharedPointer<DkBaseManipulator> mActiveManipulator;
 
     void connectLoader();
+    void finishManipulator();
 };
 }

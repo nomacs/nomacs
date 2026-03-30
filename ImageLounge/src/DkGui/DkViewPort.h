@@ -168,7 +168,6 @@ private:
 
     // image manipulators
     void applyManipulator();
-    void manipulatorApplied();
 
     void pauseMovie(bool paused);
     void stopMovie();
@@ -206,10 +205,6 @@ private:
 
     DkFadeButton *mNextButton = nullptr;
     DkFadeButton *mPrevButton = nullptr;
-
-    // image manipulators
-    QFutureWatcher<QImage> mManipulatorWatcher;
-    QSharedPointer<DkBaseManipulator> mActiveManipulator;
 
     std::unique_ptr<DkViewPortFSViewModel> mFSVM = nullptr;
 

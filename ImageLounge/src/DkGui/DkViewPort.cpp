@@ -228,8 +228,6 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent, bool resetWh
     for (auto action : am.manipulatorActions())
         connect(action, &QAction::triggered, this, &DkViewPort::applyManipulator);
 
-    connect(&mManipulatorWatcher, &QFutureWatcher<QImage>::finished, this, &DkViewPort::manipulatorApplied);
-
     // TODO:
     // one could blur the canvas if a transparent GUI is present
     // what we would need: QGraphicsBlurEffect...
@@ -258,9 +256,6 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent, bool resetWh
 DkViewPort::~DkViewPort()
 {
     mController->closePlugin(false, true);
-
-    mManipulatorWatcher.cancel();
-    mManipulatorWatcher.blockSignals(true);
 }
 
 void DkViewPort::createShortcuts()
@@ -366,8 +361,7 @@ void DkViewPort::setImage(const QImage &newImg)
     stopMovie(); // just to be sure
     mSvg = {};
 
-    if (mManipulatorWatcher.isRunning())
-        mManipulatorWatcher.cancel();
+    mFSVM->cancelManipulator();
 
     bool isNewFile = mFSVM->prevFilePath() != mFSVM->currentFilePath();
     mFSVM->setPrevFilePath(mFSVM->currentFilePath());
@@ -686,85 +680,9 @@ void DkViewPort::applyManipulator()
         return;
     }
 
-    // try to cast up
-    QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
-
-    // mark dirty
-    if (mManipulatorWatcher.isRunning() && mplExt && mActiveManipulator == mpl) {
-        mplExt->setDirty(true);
-        return;
-    }
-
-    if (mManipulatorWatcher.isRunning()) {
-        mController->setInfo(tr("Busy"));
-        return;
-    }
-
-    // show the dock (in case it's not shown yet)
-    if (mplExt) {
-        am.action(DkActionManager::menu_edit_image)->setChecked(true);
-    }
-
-    // undo last if it is an extended manipulator
-    QImage img;
-    if (mplExt && imageContainer()) {
-        auto l = imageContainer()->getLoader();
-        l->setMinHistorySize(3); // increase the min history size to 3 for correctly popping back
-        if (!l->history()->isEmpty() && l->lastEdit().editName() == mplExt->name()) {
-            // This undo is only to merge the operations and is not meant to
-            // update the view.
-            // Directly call undo on the loader instead of the container
-            // so the imageUpdated signal does not fire.
-            l->undo();
-
-            // TODO: The design of the undo here is weird.
-            // This merges the two same operations, which might be beneficial for things like rotation.
-            // However, the next undo will be wrong.
-        }
-
-        img = imageContainer()->image();
-    } else
-        img = getImage();
-
-    mManipulatorWatcher.setFuture(QtConcurrent::run([mpl, img] {
-        return mpl.data()->apply(img);
-    }));
-
-    mActiveManipulator = mpl;
-
-    emit showProgress(true, 500);
-}
-
-void DkViewPort::manipulatorApplied()
-{
-    if (mManipulatorWatcher.isCanceled() || !mActiveManipulator) {
-        qDebug() << "manipulator applied - but it's canceled";
-        return;
-    }
-
-    // trigger again if it's dirty
-    QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mActiveManipulator);
-
-    // set the edited image
-    QImage img = mManipulatorWatcher.result();
-
-    if (!img.isNull()) {
-        const QSharedPointer<DkImageContainerT> currImg = mFSVM->currentImage();
-        if (currImg) {
-            currImg->setImage(img, mActiveManipulator->name());
-            setEditedImage(currImg);
-        }
-    } else {
-        mController->setInfo(mActiveManipulator->errorMessage());
-    }
-
-    if (mplExt && mplExt->isDirty()) {
-        mplExt->setDirty(false);
-        mplExt->action()->trigger();
-        qDebug() << "triggering manipulator - it's dirty";
-    }
-
-    emit showProgress(false);
+    mFSVM->applyManipulator(mpl, [this]() {
+        return getImage();
+    });
 }
 
 void DkViewPort::paintEvent(QPaintEvent *event)
@@ -1467,7 +1385,7 @@ void DkViewPort::rotateCW()
     if (!mController->applyPluginChanges(true))
         return;
 
-    mFSVM->loader()->rotateImage(90);
+    mFSVM->rotateImage(90);
 }
 
 void DkViewPort::rotateCCW()
@@ -1475,7 +1393,7 @@ void DkViewPort::rotateCCW()
     if (!mController->applyPluginChanges(true))
         return;
 
-    mFSVM->loader()->rotateImage(-90);
+    mFSVM->rotateImage(-90);
 }
 
 void DkViewPort::rotate180()
@@ -1483,7 +1401,7 @@ void DkViewPort::rotate180()
     if (!mController->applyPluginChanges(true))
         return;
 
-    mFSVM->loader()->rotateImage(180);
+    mFSVM->rotateImage(180);
 }
 
 // file handling --------------------------------------------------------------------
@@ -1499,9 +1417,7 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img)
         return;
     }
 
-    if (mManipulatorWatcher.isRunning()) {
-        mManipulatorWatcher.cancel();
-    }
+    mFSVM->cancelManipulator();
 
     mFSVM->loader()->setImage(img);
 }
@@ -1704,6 +1620,27 @@ void DkViewPort::connectLoader()
     connect(vm, &DkViewPortFSViewModel::directoryChanged, mController->getScroller(), &DkFolderScrollBar::updateDir);
     connect(vm, &DkViewPortFSViewModel::imageIndexChanged, mController->getScroller(), &DkFolderScrollBar::updateFile);
     connect(mController->getScroller(), &DkFolderScrollBar::valueChanged, vm, &DkViewPortFSViewModel::loadFileAt);
+
+    connect(vm, &DkViewPortFSViewModel::manipulatorStarted, this, [this](bool isExtended) {
+        // show the dock (in case it's not shown yet)
+        if (isExtended) {
+            DkActionManager::instance().action(DkActionManager::menu_edit_image)->setChecked(true);
+        }
+        emit showProgress(true, 500);
+    });
+    connect(vm, &DkViewPortFSViewModel::manipulatorBusyAborted, this, [this]() {
+        mController->setInfo(tr("Busy"));
+    });
+    connect(vm, &DkViewPortFSViewModel::manipulatorSucceeded, this, [this](QSharedPointer<DkImageContainerT> img) {
+        if (img) {
+            setEditedImage(img);
+        }
+        emit showProgress(false);
+    });
+    connect(vm, &DkViewPortFSViewModel::manipulatorErrored, this, [this](const QString &msg) {
+        mController->setInfo(msg);
+        emit showProgress(false);
+    });
 }
 
 DkControlWidget *DkViewPort::getController()
