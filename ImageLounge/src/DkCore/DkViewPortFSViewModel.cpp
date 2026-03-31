@@ -2,8 +2,10 @@
 
 #include "DkViewPortFSViewModel.h"
 #include "DkBasicLoader.h"
+#include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
+#include <optional>
 #include <qassert.h>
 #include <qcontainerfwd.h>
 #include <qimage.h>
@@ -157,6 +159,11 @@ void DkViewPortFSViewModel::setLoader(QSharedPointer<DkImageLoader> v)
     disconnect(mLoader.get(), nullptr, this, nullptr);
     mLoader = std::move(v);
     connectLoader();
+
+    // The image loader can have a previous directory,
+    // so need to get the states from it.
+    emit directoryChanged(mLoader->getImages());
+    mLoader->activate();
 }
 
 void DkViewPortFSViewModel::connectLoader()
@@ -273,5 +280,47 @@ void DkViewPortFSViewModel::cancelManipulator()
 void DkViewPortFSViewModel::rotateImage(double angle)
 {
     mLoader->rotateImage(angle);
+}
+
+std::optional<QByteArray> DkViewPortFSViewModel::uneditedSVGData() const
+{
+    if (!mLoader->hasSvg() || isCurrentFileEdited()) {
+        return std::nullopt;
+    }
+    return *currentImage()->getFileBuffer();
+}
+
+std::optional<DkViewPortFSViewModel::MovieData> DkViewPortFSViewModel::uneditedMovieData() const
+{
+    if (!mLoader->hasMovie() || isCurrentFileEdited()) {
+        return std::nullopt;
+    }
+
+    DkFileInfo fileInfo = currentImage()->fileInfo();
+    if (fileInfo.isSymLink() && !fileInfo.resolveSymLink()) {
+        return std::nullopt;
+    }
+
+    std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
+    if (!io) {
+        return std::nullopt;
+    }
+
+    const QByteArray format = fileInfo.suffix().toLower().toLatin1();
+
+    return {{io->readAll(), format, fileInfo.fileName()}};
+}
+
+void DkViewPortFSViewModel::setEditedImage(QSharedPointer<DkImageContainerT> img)
+{
+    cancelManipulator();
+    mLoader->setImage(std::move(img));
+}
+
+void DkViewPortFSViewModel::loadImage(const QImage &img)
+{
+    mLoader->setImage(img, tr("Original Image"));
+    // save to temp folder
+    mLoader->saveTempFile(img);
 }
 }
