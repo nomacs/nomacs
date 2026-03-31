@@ -102,7 +102,7 @@ public:
     QImage getImage() const override;
     QImage getDrawImage() const;
 
-    void updateLoadedImage();
+    void updateLoadedImage(const QSharedPointer<DkImageContainerT> &img);
     void loadImage(const QImage &newImg);
     void setEditedImage(QSharedPointer<DkImageContainerT> img);
     void setImage(const QImage &newImg) override;
@@ -171,7 +171,6 @@ private:
 
     void pauseMovie(bool paused);
     void stopMovie();
-    void loadMovie();
     void nextMovieFrame();
     void previousMovieFrame();
     void animateFade();

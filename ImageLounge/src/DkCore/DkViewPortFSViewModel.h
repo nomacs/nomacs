@@ -3,6 +3,7 @@
 #pragma once
 
 #include <QObject>
+#include <optional>
 #include <qcontainerfwd.h>
 #include <qimage.h>
 #include <qobject.h>
@@ -65,6 +66,17 @@ public:
     [[nodiscard]] bool isManipulatorRunning();
 
     void rotateImage(double angle);
+
+    std::optional<QByteArray> uneditedSVGData() const;
+
+    struct MovieData {
+        QByteArray data;
+        QByteArray format;
+        QString filename;
+    };
+    std::optional<MovieData> uneditedMovieData() const;
+    void setEditedImage(QSharedPointer<DkImageContainerT> img);
+    void loadImage(const QImage &img);
 signals:
     // TODO: remove the loaded flag
     void currentImageLoaded(QSharedPointer<DkImageContainerT> img, bool loaded);
