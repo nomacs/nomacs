@@ -2051,10 +2051,11 @@ DkHistogramWidget::DkHistogramWidget(QWidget *parent)
 
     auto *logScale = new QAction(tr("Log Scale"), this);
     logScale->setCheckable(true);
+    logScale->setChecked(mLogScale);
     connect(logScale, &QAction::triggered, this, [&](bool checked) {
-        // DkSettingsManager::param().display().histogramLogScale=checked;
         mLogScale = checked;
         mIsDirty = true;
+        DkSettingsManager::param().display().histogramScale = mLogScale ? scale_log : scale_linear;
         update();
     });
 
@@ -2109,6 +2110,8 @@ void DkHistogramWidget::loadSettings()
     } else {
         mDisplayMode = mode_simple;
     }
+
+    mLogScale = DkSettingsManager::param().display().histogramScale == scale_log;
 }
 
 /**

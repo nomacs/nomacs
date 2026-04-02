@@ -583,6 +583,10 @@ public:
         mode_extended = 1, // shows histogram and data
         mode_end = 2,
     };
+    enum ScaleMode {
+        scale_linear = 0,
+        scale_log = 1
+    };
 
     explicit DkHistogramWidget(QWidget *parent);
     ~DkHistogramWidget() override;
