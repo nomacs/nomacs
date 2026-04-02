@@ -842,15 +842,15 @@ static auto histogram(const cv::Mat &mat, const DkWorkRange &range)
         h.numPixels++;
 
         if constexpr (numChannels == 1) {
-            if (pixel[0] == 0) {
+            // the <= because HDR can be beyond [0,1]
+            if (pixel[0] <= 0) {
                 h.numBlack++;
-            } else if (pixel[0] == Format::Scale) {
+            } else if (pixel[0] >= Format::Scale) {
                 h.numWhite++;
             }
         }
 
         if constexpr (numChannels == 3) {
-            // the <= because HDR can be beyond [0,1]
             if (pixel[0] <= 0 && pixel[1] <= 0 && pixel[2] <= 0) {
                 h.numBlack++;
             } else if (pixel[0] >= Format::Scale && pixel[1] >= Format::Scale && pixel[2] >= Format::Scale) {
