@@ -2513,18 +2513,12 @@ protected:
         }
 
         if (showStats) {
-            int numSamples = h.numPixels; // total samples, transparent pixels are not counted
-            int empty = h.numEmptyLevels(); // black bands/gaps in the histogram (including wings)
+            double blackPct = h.numBlack * 100.0 / h.numPixels;
+            double whitePct = h.numWhite * 100.0 / h.numPixels;
+            double goodPct = (h.numPixels - h.numBlack - h.numWhite) * 100.0 / h.numPixels;
 
-            int numPixels = numSamples / numChannels;
-            //  double megaPixels = numPixels * 10.0e-7;
-
-            double blackPct = h.numBlack * 100.0 / numPixels;
-            double whitePct = h.numWhite * 100.0 / numPixels;
-            double goodPct = (numSamples - h.numBlack - h.numWhite) * 100.0 / numSamples;
-
-            // relative number of brightness levels (bins with any non-zero channel value)
-            double levelPct = (numBins - empty) * 100.0 / numBins;
+            // percent of bins with zero sample count (across channels) == bands/gaps in histogram
+            double levelPct = (numBins - h.numEmptyLevels()) * 100.0 / numBins;
 
             static constexpr QStringView styleSheet =
                 uR"(table,dt,dr { border-collapse: collapse; }
