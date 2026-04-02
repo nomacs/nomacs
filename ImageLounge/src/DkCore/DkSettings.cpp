@@ -482,6 +482,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
                                             .toBool();
     display_p.showCrop = settings.value("showCrop", display_p.showCrop).toBool();
     display_p.histogramStyle = settings.value("histogramStyle", display_p.histogramStyle).toInt();
+    display_p.histogramScale = settings.value("histogramScale", display_p.histogramScale).toInt();
     display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
     display_p.showNavigation = settings.value("showNavigation", display_p.showNavigation).toBool();
     display_p.themeName = settings.value("themeName312", display_p.themeName).toString();
@@ -748,6 +749,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("showCrop", display_p.showCrop);
     if (force || display_p.histogramStyle != display_d.histogramStyle)
         settings.setValue("histogramStyle", display_p.histogramStyle);
+    if (force || display_p.histogramScale != display_d.histogramScale)
+        settings.setValue("histogramScale", display_p.histogramScale);
     if (force || display_p.tpPattern != display_d.tpPattern)
         settings.setValue("tpPattern", display_p.tpPattern);
     if (force || display_p.showNavigation != display_d.showNavigation)
@@ -982,7 +985,8 @@ void DkSettings::setToDefaultSettings()
     display_p.antiAliasing = true;
     display_p.highQualityAntiAliasing = false;
     display_p.showCrop = false;
-    display_p.histogramStyle = 0; // DkHistogram::DisplayMode::histogram_mode_simple
+    display_p.histogramStyle = 0; // DkHistogramWidget::mode_simple
+    display_p.histogramScale = 0; // DkHistogramWidget::scale_linear
     display_p.tpPattern = false;
     display_p.showNavigation = true;
     display_p.themeName = "Light-Theme.css";
