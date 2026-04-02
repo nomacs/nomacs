@@ -171,10 +171,14 @@ public:
 /**
  * @brief High-level histogram interface
  */
-struct DkHistogramEngine {
+class DkHistogramEngine
+{
+    friend class DkHistogramRender;
+
     QImage::Format mFormat; // pixel format used in compute() - may differ from image input
     std::any mData; // format-specific histogram
 
+public:
     // count pixels and collect stats
     bool compute(const QImage &image);
 
