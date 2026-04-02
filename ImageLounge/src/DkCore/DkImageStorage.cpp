@@ -2366,12 +2366,12 @@ public:
     ~DkHistogramKernel() override = default;
 
     DkHistogramKernel(const QImage &img)
-        : mImg(DkConstNativeImage::fromImage(img))
+        : mImg(DkNativeImage::fromConstImage(img))
     {
     }
 
 protected:
-    DkConstNativeImage mImg;
+    const DkNativeImage mImg;
     std::any mHistogram;
 
     template<typename Format>
@@ -2379,7 +2379,7 @@ protected:
     {
         Q_UNUSED(range)
         auto &self = *(std::any_cast<DkHistogramKernel *>(arg));
-        self.mHistogram = histogramThreaded<Format>(self.mImg.mat());
+        self.mHistogram = histogramThreaded<Format>(self.mImg.constMat());
         return true;
     }
 
