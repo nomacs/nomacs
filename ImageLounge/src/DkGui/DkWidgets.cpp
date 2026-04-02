@@ -2004,7 +2004,12 @@ void DkCropWidget::crop(bool cropToMetadata)
         QPolygonF poly = mat.map(mRect.getPoly());
         DkRotatingRect rect;
         rect.setPoly(poly);
-        emit cropImageSignal(rect, cropToolbar->getColor(), cropToMetadata);
+        // Viewport may not refresh panels that are currently hidden due
+        // to crop widget being active. Send after crop widget is hidden and
+        // presumably the viewport is shown.
+        QTimer::singleShot(0, [rect, cropToMetadata, this] {
+            emit cropImageSignal(rect, cropToolbar->getColor(), cropToMetadata);
+        });
     }
 
     setVisible(false);
