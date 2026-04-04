@@ -51,6 +51,7 @@ public:
     void setRasterImage(const QImage &img);
     void setSVG(const QByteArray &data);
     void setMovie(const QByteArray &data, const QByteArray &format, const QString &fileName);
+    void fallBackToRaster();
 
     // TODO: this is temporary to preserve some behavior without exposing the image storage.
     // Should be removed in the future.
