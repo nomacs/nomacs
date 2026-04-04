@@ -176,7 +176,6 @@ private:
     void applyManipulator();
 
     void pauseMovie(bool paused);
-    void stopMovie();
     void nextMovieFrame();
     void previousMovieFrame();
     void animateFade();

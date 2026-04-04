@@ -346,8 +346,6 @@ void DkViewPort::setImage(const QImage &newImg)
     // FIXME: would update() be better or is this still needed?
     show();
 
-    DkTimer dt;
-
     mFSVM->cancelManipulator();
 
     bool isNewFile = mFSVM->prevFilePath() != mFSVM->currentFilePath();
@@ -888,15 +886,6 @@ void DkViewPort::previousMovieFrame()
     update();
 }
 
-void DkViewPort::stopMovie()
-{
-    if (!mMovie)
-        return;
-
-    mMovie = {};
-    mMovieIo = {};
-}
-
 void DkViewPort::drawPolygon(QPainter &painter, const QPolygon &polygon)
 {
     QPoint lastPoint;
@@ -1377,12 +1366,7 @@ bool DkViewPort::unloadImage()
     // notify controller
     mController->updateImage({}, false);
 
-    stopMovie();
-
-    if (mSvg) {
-        mSvg = {};
-    }
-
+    imageVM()->fallBackToRaster();
     return true;
 }
 

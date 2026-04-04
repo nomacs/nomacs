@@ -24,6 +24,13 @@ void DkViewPortImageViewModel::setMovie(const QByteArray &data, const QByteArray
     emit contentStateChanged();
 }
 
+void DkViewPortImageViewModel::fallBackToRaster()
+{
+    // Clears SVG or movie and fall back to raster image.
+    mContentState = RasterImage{};
+    emit contentStateChanged();
+}
+
 bool DkViewPortImageViewModel::isEmpty() const
 {
     return mImgStorage.isEmpty();
