@@ -209,11 +209,6 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent, bool resetWh
     connect(mPrevButton, &QPushButton::pressed, this, &DkViewPort::loadPrevFileFast);
     connect(mNextButton, &QPushButton::pressed, this, &DkViewPort::loadNextFileFast);
 
-    // trivial connects
-    connect(this, &DkViewPort::movieLoadedSignal, [](bool movie) {
-        DkActionManager::instance().enableMovieActions(movie);
-    });
-
     // connect sync
     auto cm = DkSyncManager::inst().client();
 
@@ -352,10 +347,6 @@ void DkViewPort::setImage(const QImage &newImg)
     show();
 
     DkTimer dt;
-
-    emit movieLoadedSignal(false);
-    stopMovie(); // just to be sure
-    mSvg = {};
 
     mFSVM->cancelManipulator();
 
