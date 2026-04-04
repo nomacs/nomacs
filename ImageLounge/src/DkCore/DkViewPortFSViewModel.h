@@ -2,14 +2,11 @@
 
 #pragma once
 
+#include <QImage>
 #include <QMimeData>
 #include <QObject>
 #include <memory>
 #include <optional>
-#include <qcontainerfwd.h>
-#include <qimage.h>
-#include <qobject.h>
-#include <utility>
 
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
@@ -24,11 +21,6 @@ class DllCoreExport DkViewPortFSViewModel : public QObject
 public:
     explicit DkViewPortFSViewModel();
     ~DkViewPortFSViewModel() override;
-
-    [[nodiscard]] QSharedPointer<DkImageLoader> loader() const
-    {
-        return mLoader;
-    }
 
     void setLoader(QSharedPointer<DkImageLoader> v);
 

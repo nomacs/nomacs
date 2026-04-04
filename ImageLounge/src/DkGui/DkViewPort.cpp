@@ -61,10 +61,9 @@
 #include <QSvgRenderer>
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
+#include <QtGlobal>
 #include <cmath>
 #include <memory>
-#include <qassert.h>
-#include <qobject.h>
 #include <utility>
 
 #ifdef WITH_OPENCV
