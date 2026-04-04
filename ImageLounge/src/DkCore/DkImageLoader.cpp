@@ -609,53 +609,6 @@ void DkImageLoader::lastFile()
     loadFileAt(-1);
 }
 
-bool DkImageLoader::promptSaveBeforeUnload()
-{
-    if (!mCurrentImage || !mCurrentImage->isEdited()) {
-        return true;
-    }
-
-    auto *msgBox = new DkMessageBox(QMessageBox::Question,
-                                    tr("Save Image"),
-                                    tr("Do you want to save changes to:\n%1")
-                                        .arg(QFileInfo(mCurrentImage->filePath()).fileName()),
-                                    (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                    DkUtils::getMainWindow());
-
-    msgBox->setDefaultButton(QMessageBox::No);
-    msgBox->setObjectName("saveEditDialog");
-
-    const int answer = msgBox->exec();
-
-    if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
-        // Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
-        const bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
-        const bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
-
-        if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
-            if (imgEdited)
-                mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
-            else if (metaEdited)
-                mCurrentImage->saveMetaData();
-        } else {
-            saveUserFile(mCurrentImage->image(), false); // we loose all metadata here - right?
-        }
-
-        // Clear the image container to force reload so we get correct state.
-        mCurrentImage->clear();
-        return true;
-    }
-
-    if (answer == QMessageBox::No) {
-        // Clear the image container to discard all edited changes.
-        mCurrentImage->clear();
-        return true;
-    }
-
-    // Cancel is pressed
-    return false;
-}
-
 /**
  * Activates or deactivates the loader.
  * If activated, the directory is indexed & the current image is loaded.

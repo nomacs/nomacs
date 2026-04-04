@@ -1407,7 +1407,7 @@ bool DkViewPort::unloadImage()
     if (!mController->applyPluginChanges(true)) // user wants to apply changes first
         return false;
 
-    bool success = mFSVM->loader()->promptSaveBeforeUnload(); // returns false if the user cancels
+    bool success = promptSaveBeforeUnload(); // returns false if the user cancels
     if (!success) {
         return false;
     }
@@ -1422,6 +1422,37 @@ bool DkViewPort::unloadImage()
     }
 
     return true;
+}
+
+bool DkViewPort::promptSaveBeforeUnload()
+{
+    if (!mFSVM->isCurrentFileEdited()) {
+        return true;
+    }
+
+    auto *msgBox = new DkMessageBox(QMessageBox::Question,
+                                    tr("Save Image"),
+                                    tr("Do you want to save changes to:\n%1")
+                                        .arg(QFileInfo(mFSVM->currentFilePath()).fileName()),
+                                    (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                    DkUtils::getMainWindow());
+    msgBox->setDefaultButton(QMessageBox::No);
+    msgBox->setObjectName("saveEditDialog");
+
+    const int answer = msgBox->exec();
+
+    if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
+        mFSVM->saveCurrentEdits();
+        return true;
+    }
+
+    if (answer == QMessageBox::No) {
+        mFSVM->discardCurrentEdits();
+        return true;
+    }
+
+    // Cancel is pressed
+    return false;
 }
 
 void DkViewPort::deactivate()

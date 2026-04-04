@@ -5,6 +5,7 @@
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
+#include "DkUtils.h"
 #include <optional>
 #include <qassert.h>
 #include <qcontainerfwd.h>
@@ -322,5 +323,41 @@ void DkViewPortFSViewModel::loadImage(const QImage &img)
     mLoader->setImage(img, tr("Original Image"));
     // save to temp folder
     mLoader->saveTempFile(img);
+}
+
+void DkViewPortFSViewModel::saveCurrentEdits()
+{
+    QSharedPointer<DkImageContainerT> img = currentImage();
+    if (!img) {
+        return;
+    }
+
+    // Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
+    const bool imgEdited = img->getLoader()->isImageEdited();
+    const bool metaEdited = img->getLoader()->isMetaDataEdited();
+
+    if (DkUtils::isSavable(img->fileInfo().fileName())) {
+        if (imgEdited) {
+            img->saveImageThreaded(img->filePath());
+        } else if (metaEdited) {
+            img->saveMetaData();
+        }
+    } else {
+        saveUserFile(img->image(), false); // we loose all metadata here - right?
+    }
+
+    // Clear the image container to force reload so we get correct state.
+    img->clear();
+}
+
+void DkViewPortFSViewModel::discardCurrentEdits()
+{
+    QSharedPointer<DkImageContainerT> img = currentImage();
+    if (!img) {
+        return;
+    }
+
+    // Clear the image container to discard all edited changes.
+    img->clear();
 }
 }

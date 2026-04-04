@@ -94,6 +94,14 @@ public:
     void loadFileFast(int skipIdx);
     // void loadFile(int skipIdx);
     bool unloadImage();
+
+    /**
+     * promptSaveBeforeUnload checks whether the image has been edited,
+     * and asks whether the user want to save or discard the changes.
+     * Returns true if succeeded.
+     * Returns false if the user canceled the operation.
+     * */
+    bool promptSaveBeforeUnload();
     void deactivate();
     void cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool cropToMetaData);
 
