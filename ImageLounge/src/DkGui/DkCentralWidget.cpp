@@ -59,6 +59,7 @@
 #include <QStackedLayout>
 #include <QStandardPaths>
 #include <QTabBar>
+#include <QtAssert>
 
 #ifdef Q_OS_WIN
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
@@ -1150,9 +1151,16 @@ void DkCentralWidget::load(const QString &path)
     QSharedPointer<DkTabInfo> tab = mTabInfos[mTabbar->currentIndex()];
     QSharedPointer<DkImageLoader> loader = tab->getImageLoader();
 
+    DkViewPort *vp = getViewPort();
+    Q_ASSERT(vp);
+
     // if we have changes to the image, always ask to save them
-    if (!loader->promptSaveBeforeUnload())
+    // Centralize the check to the viewport.
+    // TODO: I think this flow is weird to be here.
+    // Maybe this whole thing belongs to the viewport for better encapsulation.
+    if (!vp->unloadImage()) {
         return;
+    }
 
     DkFileInfo fileInfo(path);
     if (fileInfo.isDir()) {
