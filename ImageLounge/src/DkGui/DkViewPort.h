@@ -95,13 +95,6 @@ public:
     // void loadFile(int skipIdx);
     bool unloadImage();
 
-    /**
-     * promptSaveBeforeUnload checks whether the image has been edited,
-     * and asks whether the user want to save or discard the changes.
-     * Returns true if succeeded.
-     * Returns false if the user canceled the operation.
-     * */
-    bool promptSaveBeforeUnload();
     void deactivate();
     void cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool cropToMetaData);
 
@@ -110,7 +103,6 @@ public:
     QImage getImage() const override;
     QImage getDrawImage() const;
 
-    void updateLoadedImage(const QSharedPointer<DkImageContainerT> &img);
     void loadImage(const QImage &newImg);
     void setEditedImage(QSharedPointer<DkImageContainerT> img);
     void setImage(const QImage &newImg) override;
@@ -173,6 +165,14 @@ private:
     void copyImageBuffer();
     void copyImagePath();
 
+    /**
+     * promptSaveBeforeUnload checks whether the image has been edited,
+     * and asks whether the user want to save or discard the changes.
+     * Returns true if succeeded.
+     * Returns false if the user canceled the operation.
+     * */
+    bool promptSaveBeforeUnload();
+
     // image manipulators
     void applyManipulator();
 
@@ -191,6 +191,8 @@ private:
     void createShortcuts();
     void drawPolygon(QPainter &painter, const QPolygon &polygon);
     void showZoom();
+
+    void updateLoadedImage(const QSharedPointer<DkImageContainerT> &img);
 
     QTimer *mRepeatZoomTimer = nullptr;
     QPoint mRepeatZoomCenter;

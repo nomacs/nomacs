@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+#include <QImage>
+#include <QtConcurrentRun>
+#include <QtGlobal>
+#include <memory>
+#include <optional>
 
-#include "DkViewPortFSViewModel.h"
 #include "DkBasicLoader.h"
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
 #include "DkUtils.h"
-#include <memory>
-#include <optional>
-#include <qassert.h>
-#include <qcontainerfwd.h>
-#include <qimage.h>
-#include <qobject.h>
-#include <qtconcurrentrun.h>
+#include "DkViewPortFSViewModel.h"
 
 #ifdef Q_OS_WIN
 #include <QSettings>
