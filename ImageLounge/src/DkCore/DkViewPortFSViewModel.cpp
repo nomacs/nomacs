@@ -6,6 +6,7 @@
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
 #include "DkUtils.h"
+#include <memory>
 #include <optional>
 #include <qassert.h>
 #include <qcontainerfwd.h>
@@ -359,5 +360,27 @@ void DkViewPortFSViewModel::discardCurrentEdits()
 
     // Clear the image container to discard all edited changes.
     img->clear();
+}
+
+std::unique_ptr<QMimeData> DkViewPortFSViewModel::createMimeData(std::optional<QImage> renderedImg) const
+{
+    auto mimeData = std::make_unique<QMimeData>();
+
+    const QString filePath = currentFilePath();
+
+    if (renderedImg) {
+        // Provide image buffer if file edited or cannot be opened by receiver
+        const DkFileInfo fileInfo(filePath);
+        const QImage &img = renderedImg.value();
+        if (!img.isNull() && (isCurrentFileEdited() || !fileInfo.exists() || fileInfo.isFromZip())) {
+            mimeData->setImageData(img);
+            return mimeData;
+        }
+    }
+
+    const QUrl fileUrl = QUrl::fromLocalFile(filePath);
+    mimeData->setUrls({fileUrl});
+    mimeData->setText(fileUrl.toLocalFile());
+    return mimeData;
 }
 }

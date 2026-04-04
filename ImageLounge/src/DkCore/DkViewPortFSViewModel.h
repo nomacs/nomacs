@@ -2,7 +2,9 @@
 
 #pragma once
 
+#include <QMimeData>
 #include <QObject>
+#include <memory>
 #include <optional>
 #include <qcontainerfwd.h>
 #include <qimage.h>
@@ -79,6 +81,7 @@ public:
     void loadImage(const QImage &img);
     void saveCurrentEdits();
     void discardCurrentEdits();
+    std::unique_ptr<QMimeData> createMimeData(std::optional<QImage> renderedImg = std::nullopt) const;
 signals:
     // TODO: remove the loaded flag
     void currentImageLoaded(QSharedPointer<DkImageContainerT> img, bool loaded);

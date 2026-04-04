@@ -172,7 +172,6 @@ private:
     void copyPixelColorValue();
     void copyImageBuffer();
     void copyImagePath();
-    QMimeData *createMimeForDrag() const;
 
     // image manipulators
     void applyManipulator();

@@ -1082,21 +1082,18 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
 
     int dist = QPoint(event->pos() - mPosGrab.toPoint()).manhattanLength();
 
+    const QImage img = getImage();
     // drag & drop action
-    if (event->buttons() == Qt::LeftButton && dist > QApplication::startDragDistance() && imageInside()
-        && !getImage().isNull()
+    if (event->buttons() == Qt::LeftButton && dist > QApplication::startDragDistance() && imageInside() && !img.isNull()
         && !QApplication::widgetAt(event->globalPosition().toPoint())) { // is NULL if the mouse leaves the window
 
-        QMimeData *mimeData = createMimeForDrag();
-
-        QPixmap pm;
-        if (!getImage().isNull())
-            pm = QPixmap::fromImage(imageVM()->image().scaledToHeight(73, Qt::SmoothTransformation));
-        if (pm.width() > 130)
+        QPixmap pm = QPixmap::fromImage(imageVM()->image().scaledToHeight(73, Qt::SmoothTransformation));
+        if (pm.width() > 130) {
             pm = pm.scaledToWidth(100, Qt::SmoothTransformation);
+        }
 
         auto *drag = new QDrag(this);
-        drag->setMimeData(mimeData);
+        drag->setMimeData(mFSVM->createMimeData(img).release());
         drag->setPixmap(pm);
         drag->exec(Qt::CopyAction);
     }
@@ -1282,33 +1279,8 @@ void DkViewPort::copyPixelColorValue()
 
 void DkViewPort::copyImagePath()
 {
-    auto *mimeData = new QMimeData;
-
-    // NOTE: if we simply prepend "file://", we will get into problems with mounted drives (e.g. //hermes...)
-    QUrl fileUrl = QUrl::fromLocalFile(mFSVM->currentFilePath());
-    mimeData->setUrls({fileUrl});
-    mimeData->setText(fileUrl.toLocalFile());
-    QApplication::clipboard()->setMimeData(mimeData);
-}
-
-QMimeData *DkViewPort::createMimeForDrag() const
-{
-    auto *mimeData = new QMimeData;
-
-    QImage img = getImage();
-    QString filePath = mFSVM->currentFilePath();
-    DkFileInfo fileInfo(filePath);
-
-    // Provide image buffer if file edited or cannot be opened by receiver
-    if (!img.isNull() && (mFSVM->isCurrentFileEdited() || !fileInfo.exists() || fileInfo.isFromZip())) {
-        mimeData->setImageData(img);
-    } else {
-        QUrl fileUrl = QUrl::fromLocalFile(filePath);
-        mimeData->setUrls({fileUrl});
-        mimeData->setText(fileUrl.toLocalFile());
-    }
-
-    return mimeData;
+    std::unique_ptr<QMimeData> d = mFSVM->createMimeData();
+    QApplication::clipboard()->setMimeData(d.release());
 }
 
 void DkViewPort::copyImageBuffer()
