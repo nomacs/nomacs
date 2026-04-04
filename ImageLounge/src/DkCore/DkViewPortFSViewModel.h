@@ -77,6 +77,8 @@ public:
     std::optional<MovieData> uneditedMovieData() const;
     void setEditedImage(QSharedPointer<DkImageContainerT> img);
     void loadImage(const QImage &img);
+    void saveCurrentEdits();
+    void discardCurrentEdits();
 signals:
     // TODO: remove the loaded flag
     void currentImageLoaded(QSharedPointer<DkImageContainerT> img, bool loaded);
