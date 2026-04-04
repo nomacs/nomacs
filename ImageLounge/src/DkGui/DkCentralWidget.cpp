@@ -59,7 +59,7 @@
 #include <QStackedLayout>
 #include <QStandardPaths>
 #include <QTabBar>
-#include <QtAssert>
+#include <QtGlobal>
 
 #ifdef Q_OS_WIN
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
