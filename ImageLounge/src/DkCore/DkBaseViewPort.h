@@ -257,5 +257,4 @@ private:
     std::unique_ptr<DkViewPortTransformViewModel> mTransformVM = nullptr;
     std::unique_ptr<DkViewPortImageViewModel> mImageVM = nullptr;
 };
-
 }
