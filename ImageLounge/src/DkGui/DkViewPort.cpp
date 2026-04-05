@@ -292,12 +292,10 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image)
     // retain the previous image for animation, release when animation ends
     // we don't do this on unloadImage() because we might be on the last image in the slideshow
     const auto &dpy = DkSettingsManager::param().display();
-    if (!imageVM()->isEmpty() //
-        && dpy.transition != DkSettings::trans_appear //
-        && dpy.animationDuration > 0.0 && //
-        (mController->getPlayer()->isPlaying() //
-         || window()->isFullScreen() //
-         || DkSettingsManager::param().display().alwaysAnimate)) {
+    const bool wasImageLoaded = !imageVM()->isEmpty();
+    const bool doFade = wasImageLoaded && dpy.transition != DkSettings::trans_appear && dpy.animationDuration > 0.0
+        && (mController->getPlayer()->isPlaying() || window()->isFullScreen() || dpy.alwaysAnimate);
+    if (doFade) {
         mAnimationParams = getRenderParams(devicePixelRatio(), getWorldMatrix(), transformVM()->imgViewRect());
         mAnimationBuffer = imageVM()->downsampled(mAnimationParams.imageSize,
                                                   DkImage::targetColorSpace(this),
@@ -305,7 +303,6 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image)
                                                   DkImageStorage::process_sync | DkImageStorage::process_fallback);
         mAnimationBufferHasAlpha = imageVM()->alphaChannelUsed();
         mAnimationBuffer = DkImage::convertToColorSpaceInPlace(this, mAnimationBuffer);
-        mAnimationValue = 1.0;
 
         if (dpy.transition == DkSettings::trans_fade && //
             mAnimationBufferHasAlpha //
@@ -320,7 +317,17 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image)
     }
 
     mController->updateImage(image);
+
     updateLoadedImage(image);
+
+    // init fading
+    if (doFade) {
+        mAnimationValue = 1.0;
+        mAnimationTimer->start();
+        mAnimationTime.start();
+    } else {
+        mAnimationValue = 0.0;
+    }
 }
 
 void DkViewPort::loadImage(const QImage &newImg)
@@ -334,6 +341,11 @@ void DkViewPort::loadImage(const QImage &newImg)
 
 void DkViewPort::setImage(const QImage &newImg)
 {
+    // Received update during animation, e.g. press 'R' immediately after load.
+    // Follow the original logic and cancel the animation.
+    mAnimationTimer->stop();
+    mAnimationValue = 0;
+
     mDisabledBackground = false;
 
     // calling show here fixes issues with the HUD
@@ -341,9 +353,6 @@ void DkViewPort::setImage(const QImage &newImg)
     show();
 
     mFSVM->cancelManipulator();
-
-    bool isNewFile = mFSVM->prevFilePath() != mFSVM->currentFilePath();
-    mFSVM->setPrevFilePath(mFSVM->currentFilePath());
 
     bool wasImageLoaded = !imageVM()->isEmpty();
     bool isImageLoaded = !newImg.isNull();
@@ -369,16 +378,6 @@ void DkViewPort::setImage(const QImage &newImg)
 
     mController->getPlayer()->startTimer();
     emit viewImageChanged();
-
-    // init fading
-    if (isNewFile && wasImageLoaded && DkSettingsManager::param().display().animationDuration != 0
-        && DkSettingsManager::param().display().transition != DkSettingsManager::param().trans_appear
-        && (mController->getPlayer()->isPlaying() || window()->isFullScreen()
-            || DkSettingsManager::param().display().alwaysAnimate)) {
-        mAnimationTimer->start();
-        mAnimationTime.start();
-    } else
-        mAnimationValue = 0.0f;
 
     // set/clear crop rect
     const QSharedPointer<DkImageContainerT> currImg = mFSVM->currentImage();
