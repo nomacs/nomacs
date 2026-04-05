@@ -320,6 +320,7 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image)
     }
 
     mController->updateImage(image);
+    updateLoadedImage(image);
 }
 
 void DkViewPort::loadImage(const QImage &newImg)

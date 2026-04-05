@@ -469,17 +469,9 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
         if (l != loader)
             mTabInfos.at(tIdx)->deactivate();
 
-        disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-                   this,
-                   &DkCentralWidget::imageLoaded);
-        disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-                   this,
-                   &DkCentralWidget::imageUpdatedSignal);
-        disconnect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal);
-        disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress);
-        disconnect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab);
+        // TODO: Investigate whether this should be changed.
+        // Maybe the intention was to disconnect non-active tab?
+        disconnect(loader.get(), nullptr, this, nullptr);
     }
 
     if (!loader)
@@ -493,11 +485,7 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
             this,
             &DkCentralWidget::imageLoaded,
             Qt::UniqueConnection);
-    connect(loader.data(),
-            QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-            this,
-            &DkCentralWidget::imageUpdatedSignal,
-            Qt::UniqueConnection);
+    connect(loader.data(), &DkImageLoader::imageLoaded, this, &DkCentralWidget::imageLoaded, Qt::UniqueConnection);
     connect(loader.data(),
             &DkImageLoader::imageHasGPSSignal,
             this,
@@ -804,6 +792,7 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
     if (img && !img->isEdited()) {
         mThumbLoader.dispatchFullImage(img->filePath(), img->pixmap());
     }
+    emit imageUpdatedSignal(img);
 }
 
 QVector<QSharedPointer<DkTabInfo>> DkCentralWidget::getTabs() const

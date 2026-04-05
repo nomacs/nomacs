@@ -757,7 +757,6 @@ void DkImageLoader::handleImageLoadResult(bool loaded /* = false */)
     }
 
     emit imageLoaded(mCurrentImage);
-    emit imageUpdatedSignal(mCurrentImage);
 
     if (mCurrentImage) {
         // this signal is needed by the folder scrollbar
@@ -1005,7 +1004,6 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
         setCurrentImage(mCurrentImage);
         mCurrentImage->setEdited(false);
         emit imageLoaded(mCurrentImage);
-        emit imageUpdatedSignal(mCurrentImage);
 
         // Skip the rest which is only relevant when re-encoding/saving the image
         return;
@@ -1194,7 +1192,6 @@ void DkImageLoader::imageSaved(const QString &filePath, bool saved, bool loadToT
         emit loadImageToTab(filePath);
     } else if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load) {
         emit imageLoaded(mCurrentImage);
-        emit imageUpdatedSignal(mCurrentImage);
         qDebug() << "image updated: " << mCurrentImage->fileName();
     } else {
         mFolderUpdated = true;
