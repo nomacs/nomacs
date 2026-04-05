@@ -24,16 +24,6 @@ public:
 
     void setLoader(QSharedPointer<DkImageLoader> v);
 
-    [[nodiscard]] QString prevFilePath() const
-    {
-        return mPrevFilePath;
-    }
-
-    void setPrevFilePath(const QString &v)
-    {
-        mPrevFilePath = v;
-    }
-
     void loadFirst();
     void loadLast();
 
@@ -95,7 +85,6 @@ signals:
     void manipulatorErrored(const QString &msg);
 
 private:
-    QString mPrevFilePath;
     QSharedPointer<DkImageLoader> mLoader;
     // image manipulators
     QFutureWatcher<QImage> mManipulatorWatcher;
