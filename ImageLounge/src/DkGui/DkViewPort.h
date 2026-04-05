@@ -180,7 +180,7 @@ private:
     void previousMovieFrame();
     void animateFade();
 
-    void onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loaded = true);
+    void onImageLoaded(QSharedPointer<DkImageContainerT> image);
 
     // functions
     int swipeRecognition(QPoint start, QPoint end);
