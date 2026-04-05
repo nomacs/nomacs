@@ -75,8 +75,8 @@ public:
     void discardCurrentEdits();
     std::unique_ptr<QMimeData> createMimeData(std::optional<QImage> renderedImg = std::nullopt) const;
 signals:
-    // TODO: remove the loaded flag
-    void currentImageLoaded(QSharedPointer<DkImageContainerT> img, bool loaded);
+    void imageLoaded(QSharedPointer<DkImageContainerT> img);
+    void imageLoadFailed();
     void currentImageUpdated(QSharedPointer<DkImageContainerT> img);
     void imageIndexChanged(int idx);
 
