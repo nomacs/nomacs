@@ -532,9 +532,14 @@ DkFileInfoList DkFileInfo::readDirectory(const QString &dirPath, const QString &
 
     // seems better to use a hashtable here; ~50 extensions are possible without kimageformats
     const QStringList &fileFilters = DkSettingsManager::param().app().browseFilters;
+    const QStringList &containerFilters = DkSettingsManager::param().app().containerRawFilters.split(u' ');
     QSet<QString> suffixes;
-    for (const QString &filter : fileFilters)
+    for (const QString &filter : fileFilters) {
+        if (containerFilters.contains(filter)) {
+            continue;
+        }
         suffixes.insert(QString(filter).replace("*.", ""));
+    }
 
     DkFileInfoList filtered;
 
