@@ -169,7 +169,8 @@ void DkViewPortFSViewModel::setLoader(QSharedPointer<DkImageLoader> v)
 void DkViewPortFSViewModel::connectLoader()
 {
     auto *loader = mLoader.get();
-    connect(loader, &DkImageLoader::imageLoadedSignal, this, &DkViewPortFSViewModel::currentImageLoaded);
+    connect(loader, &DkImageLoader::imageLoaded, this, &DkViewPortFSViewModel::imageLoaded);
+    connect(loader, &DkImageLoader::imageLoadFailed, this, &DkViewPortFSViewModel::imageLoadFailed);
     connect(loader,
             QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
             this,

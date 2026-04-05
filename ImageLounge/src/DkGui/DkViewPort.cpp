@@ -287,15 +287,8 @@ void DkViewPort::updateLoadedImage(const QSharedPointer<DkImageContainerT> &img)
     }
 }
 
-void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loaded)
+void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image)
 {
-    // things todo if a file was not loaded...
-    if (!loaded) {
-        mController->getPlayer()->startTimer();
-        mController->updateImage(nullptr);
-        return;
-    }
-
     // retain the previous image for animation, release when animation ends
     // we don't do this on unloadImage() because we might be on the last image in the slideshow
     const auto &dpy = DkSettingsManager::param().display();
@@ -1549,7 +1542,11 @@ void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader)
 void DkViewPort::connectLoader()
 {
     auto *vm = mFSVM.get();
-    connect(vm, &DkViewPortFSViewModel::currentImageLoaded, this, &DkViewPort::onImageLoaded);
+    connect(vm, &DkViewPortFSViewModel::imageLoaded, this, &DkViewPort::onImageLoaded);
+    connect(vm, &DkViewPortFSViewModel::imageLoadFailed, this, [this]() {
+        mController->getPlayer()->startTimer();
+        mController->updateImage(nullptr);
+    });
     connect(vm, &DkViewPortFSViewModel::currentImageUpdated, this, &DkViewPort::updateLoadedImage);
     connect(vm, &DkViewPortFSViewModel::directoryChanged, mController->getFilePreview(), &DkFilePreview::updateThumbs);
     connect(vm,
