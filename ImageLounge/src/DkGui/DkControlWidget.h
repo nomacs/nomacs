@@ -54,6 +54,7 @@ class DkPluginViewPort;
 class DkOverview;
 class DkViewPortInterface;
 class DkThumbLoader;
+class DkViewPortFSViewModel;
 
 class DllCoreExport DkControlWidget : public DkWidget
 {
@@ -82,7 +83,6 @@ public:
     void setFullScreen(bool fullscreen);
 
     DkFilePreview *getFilePreview() const;
-    DkFolderScrollBar *getScroller() const;
     DkZoomWidget *getZoomWidget() const;
     DkPlayer *getPlayer() const;
     DkFileInfoLabel *getFileInfoLabel() const;
@@ -104,6 +104,8 @@ public:
     void imagePresenceChanged(bool imagePresent);
 
     void update();
+
+    void setFSVM(DkViewPortFSViewModel *fsVM);
 
 protected:
     // events

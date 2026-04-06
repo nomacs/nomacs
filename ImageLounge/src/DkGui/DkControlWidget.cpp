@@ -28,6 +28,7 @@
 #include "DkControlWidget.h"
 
 #include "DkActionManager.h"
+#include "DkImageContainer.h"
 #include "DkMessageBox.h"
 #include "DkMetaData.h"
 #include "DkMetaDataWidgets.h"
@@ -36,6 +37,7 @@
 #include "DkThumbsWidgets.h"
 #include "DkToolbars.h"
 #include "DkViewPort.h"
+#include "DkViewPortFSViewModel.h"
 #include "DkWidgets.h"
 
 #include <QGridLayout>
@@ -818,11 +820,6 @@ DkFilePreview *DkControlWidget::getFilePreview() const
     return mFilePreview;
 }
 
-DkFolderScrollBar *DkControlWidget::getScroller() const
-{
-    return mFolderScroll;
-}
-
 // DkControlWidget - Events --------------------------------------------------------------------
 void DkControlWidget::mousePressEvent(QMouseEvent *event)
 {
@@ -876,5 +873,32 @@ void DkControlWidget::onImageContainerInternalUpdated()
     QString dateString = metaData->getExifValue("DateTimeOriginal");
     mFileInfoLabel->updateInfo(mImgC->filePath(), dateString, metaData->getRating(), mImgC->isEdited());
     mCommentWidget->setText(metaData->getDescription()); // reset
+}
+
+void DkControlWidget::setFSVM(DkViewPortFSViewModel *vm)
+{
+    Q_ASSERT(vm);
+    connect(vm, &DkViewPortFSViewModel::imageLoadFailed, this, [this]() {
+        mPlayer->startTimer();
+        updateImage(nullptr);
+    });
+    connect(vm, &DkViewPortFSViewModel::directoryChanged, mFilePreview, &DkFilePreview::updateThumbs);
+    connect(vm, &DkViewPortFSViewModel::currentImageUpdated, mFilePreview, &DkFilePreview::setFileInfo);
+    connect(vm, &DkViewPortFSViewModel::showInfoRequested, this, &DkControlWidget::setInfo);
+    connect(vm, &DkViewPortFSViewModel::playStateChanged, mPlayer, &DkPlayer::play);
+    connect(vm, &DkViewPortFSViewModel::directoryChanged, mFolderScroll, &DkFolderScrollBar::updateDir);
+    connect(vm, &DkViewPortFSViewModel::imageIndexChanged, mFolderScroll, &DkFolderScrollBar::updateFile);
+    connect(mFolderScroll, &DkFolderScrollBar::valueChanged, vm, &DkViewPortFSViewModel::loadFileAt);
+
+    connect(vm, &DkViewPortFSViewModel::manipulatorBusyAborted, this, [this]() {
+        setInfo(tr("Busy"));
+    });
+
+    connect(vm, &DkViewPortFSViewModel::manipulatorErrored, this, [this](const QString &msg) {
+        setInfo(msg);
+    });
+    connect(vm, &DkViewPortFSViewModel::imageLoaded, this, [this](const QSharedPointer<DkImageContainerT> &img) {
+        updateImage(img);
+    });
 }
 }

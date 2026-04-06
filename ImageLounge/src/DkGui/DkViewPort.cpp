@@ -106,6 +106,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent, bool resetWh
     createShortcuts();
 
     mController = new DkControlWidget(thumbLoader, this);
+    mController->setFSVM(mFSVM.get());
 
     connectLoader();
 
@@ -346,8 +347,6 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image)
             mAnimationBufferHasAlpha = false;
         }
     }
-
-    mController->updateImage(image);
 
     updateLoadedImage(image);
 
@@ -1554,21 +1553,7 @@ void DkViewPort::connectLoader()
 {
     auto *vm = mFSVM.get();
     connect(vm, &DkViewPortFSViewModel::imageLoaded, this, &DkViewPort::onImageLoaded);
-    connect(vm, &DkViewPortFSViewModel::imageLoadFailed, this, [this]() {
-        mController->getPlayer()->startTimer();
-        mController->updateImage(nullptr);
-    });
     connect(vm, &DkViewPortFSViewModel::currentImageUpdated, this, &DkViewPort::updateLoadedImage);
-    connect(vm, &DkViewPortFSViewModel::directoryChanged, mController->getFilePreview(), &DkFilePreview::updateThumbs);
-    connect(vm,
-            &DkViewPortFSViewModel::currentImageUpdated,
-            mController->getFilePreview(),
-            &DkFilePreview::setFileInfo);
-    connect(vm, &DkViewPortFSViewModel::showInfoRequested, mController, &DkControlWidget::setInfo);
-    connect(vm, &DkViewPortFSViewModel::playStateChanged, mController->getPlayer(), &DkPlayer::play);
-    connect(vm, &DkViewPortFSViewModel::directoryChanged, mController->getScroller(), &DkFolderScrollBar::updateDir);
-    connect(vm, &DkViewPortFSViewModel::imageIndexChanged, mController->getScroller(), &DkFolderScrollBar::updateFile);
-    connect(mController->getScroller(), &DkFolderScrollBar::valueChanged, vm, &DkViewPortFSViewModel::loadFileAt);
 
     connect(vm, &DkViewPortFSViewModel::manipulatorStarted, this, [this](bool isExtended) {
         // show the dock (in case it's not shown yet)
@@ -1577,17 +1562,13 @@ void DkViewPort::connectLoader()
         }
         emit showProgress(true, 500);
     });
-    connect(vm, &DkViewPortFSViewModel::manipulatorBusyAborted, this, [this]() {
-        mController->setInfo(tr("Busy"));
-    });
     connect(vm, &DkViewPortFSViewModel::manipulatorSucceeded, this, [this](QSharedPointer<DkImageContainerT> img) {
         if (img) {
             setEditedImage(img);
         }
         emit showProgress(false);
     });
-    connect(vm, &DkViewPortFSViewModel::manipulatorErrored, this, [this](const QString &msg) {
-        mController->setInfo(msg);
+    connect(vm, &DkViewPortFSViewModel::manipulatorErrored, this, [this]() {
         emit showProgress(false);
     });
 }
