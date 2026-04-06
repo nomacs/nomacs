@@ -83,7 +83,6 @@ public:
 
     DkFilePreview *getFilePreview() const;
     DkFolderScrollBar *getScroller() const;
-    DkOverview *getOverview() const;
     DkZoomWidget *getZoomWidget() const;
     DkPlayer *getPlayer() const;
     DkFileInfoLabel *getFileInfoLabel() const;
