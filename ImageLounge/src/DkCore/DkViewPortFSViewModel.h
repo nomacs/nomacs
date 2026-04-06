@@ -64,11 +64,19 @@ public:
     void saveCurrentEdits();
     void discardCurrentEdits();
     std::unique_ptr<QMimeData> createMimeData(std::optional<QImage> renderedImg = std::nullopt) const;
+
+    enum class NavigationOp : std::uint8_t {
+        First,
+        Last,
+        Offset,
+    };
 signals:
     void imageLoaded(QSharedPointer<DkImageContainerT> img);
     void imageLoadFailed();
     void currentImageUpdated(QSharedPointer<DkImageContainerT> img);
     void imageIndexChanged(int idx);
+
+    void fileNavigationRequested(NavigationOp op, int offset = 0);
 
     // TODO: can we make this a pure signal?
     void directoryChanged(const QVector<QSharedPointer<DkImageContainerT>> &imgs);

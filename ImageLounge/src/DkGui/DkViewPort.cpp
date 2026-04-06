@@ -62,6 +62,7 @@
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
 #include <QtGlobal>
+#include <climits>
 #include <cmath>
 #include <memory>
 #include <utility>
@@ -246,6 +247,37 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent, bool resetWh
             emitZoomSignal();
         }
     });
+
+    connect(mFSVM.get(),
+            &DkViewPortFSViewModel::fileNavigationRequested,
+            this,
+            [this](DkViewPortFSViewModel::NavigationOp op, int offset) {
+                const bool sync = (qApp->keyboardModifiers() == mAltMod
+                                   || DkSettingsManager::param().sync().syncActions)
+                    && (hasFocus() || mController->hasFocus());
+
+                if (!sync) {
+                    return;
+                }
+
+                qint16 msg = 0;
+                switch (op) {
+                    using Op = DkViewPortFSViewModel::NavigationOp;
+                case Op::First:
+                    msg = SHRT_MIN;
+                    break;
+                case Op::Last:
+                    msg = SHRT_MAX;
+                    break;
+                case Op::Offset:
+                    msg = static_cast<qint16>(offset);
+                    break;
+                }
+                emit sendNewFileSignal(msg);
+
+                // TODO: can we remove this hack?
+                QCoreApplication::sendPostedEvents();
+            });
 }
 
 DkViewPort::~DkViewPort()
@@ -1446,12 +1478,6 @@ void DkViewPort::loadFileFast(int skipIdx)
     QApplication::sendPostedEvents();
 
     mFSVM->loadOffsetFromCurrentFile(skipIdx);
-
-    if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
-        && (hasFocus() || mController->hasFocus())) {
-        emit sendNewFileSignal((qint16)skipIdx);
-        QCoreApplication::sendPostedEvents();
-    }
 }
 
 void DkViewPort::loadFirst()
@@ -1460,10 +1486,6 @@ void DkViewPort::loadFirst()
         return;
 
     mFSVM->loadFirst();
-
-    if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
-        && (hasFocus() || mController->hasFocus()))
-        emit sendNewFileSignal(SHRT_MIN);
 }
 
 void DkViewPort::loadLast()
@@ -1472,26 +1494,16 @@ void DkViewPort::loadLast()
         return;
 
     mFSVM->loadLast();
-
-    if ((qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
-        && (hasFocus() || mController->hasFocus()))
-        emit sendNewFileSignal(SHRT_MAX);
 }
 
 void DkViewPort::loadSkipPrev10()
 {
     loadFileFast(-DkSettingsManager::param().global().skipImgs);
-
-    if (qApp->keyboardModifiers() == mAltMod && (hasFocus() || mController->hasFocus()))
-        emit sendNewFileSignal((qint16)-DkSettingsManager::param().global().skipImgs);
 }
 
 void DkViewPort::loadSkipNext10()
 {
     loadFileFast(DkSettingsManager::param().global().skipImgs);
-
-    if (qApp->keyboardModifiers() == mAltMod && (hasFocus() || mController->hasFocus()))
-        emit sendNewFileSignal((qint16)DkSettingsManager::param().global().skipImgs);
 }
 
 void DkViewPort::tcpLoadFile(qint16 idx, const QString &filename)
