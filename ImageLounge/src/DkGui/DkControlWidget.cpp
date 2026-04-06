@@ -765,14 +765,6 @@ void DkControlWidget::changeThumbNailPosition(int pos)
         mFilePreview->hide();
 }
 
-void DkControlWidget::settingsChanged()
-{
-    if (mFileInfoLabel && mFileInfoLabel->isVisible()) {
-        showFileInfo(false); // just a hack but all states are preserved this way
-        showFileInfo(true);
-    }
-}
-
 void DkControlWidget::updateRating(int rating)
 {
     if (!mImgC) {

@@ -60,29 +60,6 @@ class DllCoreExport DkControlWidget : public DkWidget
     Q_OBJECT
 
 public:
-    enum VerPos {
-        top_scroll = 0,
-        top_thumbs,
-        top_metadata,
-        top_info,
-        ver_center,
-        bottom_info,
-        bottom,
-        bottom_metadata,
-        bottom_thumbs,
-        ver_pos_end
-    };
-    enum HorPos {
-        left_thumbs = 0,
-        left_metadata,
-        left,
-        hor_center,
-        right,
-        right_metadata,
-        right_thumbs,
-        hor_pos_end
-    };
-
     enum InfoPos {
         bottom_left_label,
         bottom_right_label,
@@ -113,28 +90,10 @@ public:
     DkHistogram *getHistogram() const;
     DkCropWidget *getCropWidget() const;
 
-    void showWidgetsSettings();
-    void setWidgetsVisible(bool visible, bool saveSettings = false);
-
-    void settingsChanged();
-
-public slots:
-    void toggleHUD(bool hide);
+    // slots
     void showPreview(bool visible);
     void showMetaData(bool visible);
-    void showFileInfo(bool visible);
-    void showPlayer(bool visible);
     void startSlideshow(bool start = true);
-    void hideCrop(bool hide = true);
-    void showCrop(bool visible);
-    void showOverview(bool visible);
-    void showHistogram(bool visible);
-    void showCommentWidget(bool visible);
-    void switchWidget(QWidget *widget = nullptr);
-    void changeMetaDataPosition(int pos);
-    void changeThumbNailPosition(int pos);
-    void showScroller(bool visible);
-    void setPluginWidget(DkViewPortInterface *pluginWidget, bool removeWidget);
 
     bool closePlugin(bool askForSaving, bool force = false);
     bool applyPluginChanges(bool askForSaving);
@@ -142,23 +101,10 @@ public slots:
     void updateImage(QSharedPointer<DkImageContainerT> imgC, bool updateMetadataIfNull = true);
 
     void setInfo(const QString &msg, int time = 3000, int location = bottom_left_label);
-    void updateRating(int rating);
 
     void imagePresenceChanged(bool imagePresent);
 
     void update();
-
-private:
-    void onImageContainerInternalUpdated();
-
-protected slots:
-    void setCommentSaved(const QString &comment);
-
-    // signals from viewport plugins
-    void pluginClosed(bool askForSaving);
-    void pluginMessage(const QString &msg);
-    void pluginLoadFile(const QString &path);
-    void pluginLoadImage(const QImage &img);
 
 protected:
     // events
@@ -169,9 +115,62 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
 
+private:
+    enum VerPos {
+        top_scroll = 0,
+        top_thumbs,
+        top_metadata,
+        top_info,
+        ver_center,
+        bottom_info,
+        bottom,
+        bottom_metadata,
+        bottom_thumbs,
+        ver_pos_end
+    };
+    enum HorPos {
+        left_thumbs = 0,
+        left_metadata,
+        left,
+        hor_center,
+        right,
+        right_metadata,
+        right_thumbs,
+        hor_pos_end
+    };
+
     // functions
     void init();
     void connectWidgets();
+
+    void showWidgetsSettings();
+    void setWidgetsVisible(bool visible, bool saveSettings = false);
+
+    // Slots
+    void toggleHUD(bool hide);
+
+    void showFileInfo(bool visible);
+    void showPlayer(bool visible);
+    void hideCrop(bool hide = true);
+    void showCrop(bool visible);
+    void showOverview(bool visible);
+    void showHistogram(bool visible);
+    void showCommentWidget(bool visible);
+    void switchWidget(QWidget *widget = nullptr);
+    void changeMetaDataPosition(int pos);
+    void changeThumbNailPosition(int pos);
+    void showScroller(bool visible);
+    void setPluginWidget(DkViewPortInterface *pluginWidget, bool removeWidget);
+    void updateRating(int rating);
+    void onImageContainerInternalUpdated();
+
+    void setCommentSaved(const QString &comment);
+
+    // signals from viewport plugins
+    void pluginClosed(bool askForSaving);
+    void pluginMessage(const QString &msg);
+    void pluginLoadFile(const QString &path);
+    void pluginLoadImage(const QImage &img);
 
     // layout (switching of HUD contexts)
     QVector<QWidget *> mWidgets;
