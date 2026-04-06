@@ -39,11 +39,13 @@ DkViewPortFSViewModel::~DkViewPortFSViewModel()
 void DkViewPortFSViewModel::loadFirst()
 {
     mLoader->firstFile();
+    emit fileNavigationRequested(NavigationOp::First);
 }
 
 void DkViewPortFSViewModel::loadLast()
 {
     mLoader->lastFile();
+    emit fileNavigationRequested(NavigationOp::Last);
 }
 
 void DkViewPortFSViewModel::loadOffsetFromCurrentFile(int offset)
@@ -73,6 +75,7 @@ void DkViewPortFSViewModel::loadOffsetFromCurrentFile(int offset)
 
         lastImg = imgC;
     }
+    emit fileNavigationRequested(NavigationOp::Offset, offset);
 }
 
 void DkViewPortFSViewModel::reloadFile()
