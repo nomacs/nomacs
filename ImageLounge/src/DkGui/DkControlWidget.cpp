@@ -60,6 +60,8 @@ DkControlWidget::DkControlWidget(DkThumbLoader *thumbLoader, DkViewPort *parent,
     mFilePreview = new DkFilePreview(thumbLoader, this, flags);
     mMetaDataInfo = new DkMetaDataHUD(this);
     mZoomWidget = new DkZoomWidget(this);
+    mZoomWidget->getOverview()->setViewPort(parent);
+
     mPlayer = new DkPlayer(this);
     mPlayer->setMaximumHeight(90);
 
@@ -784,11 +786,6 @@ void DkControlWidget::setFullScreen(bool fullscreen)
     if (DkSettingsManager::param().slideShow().showPlayer && fullscreen && !mPlayer->getCurrentDisplaySetting()
         && !mPlayer->isPlaying())
         mPlayer->showTemporarily();
-}
-
-DkOverview *DkControlWidget::getOverview() const
-{
-    return mZoomWidget->getOverview();
 }
 
 DkZoomWidget *DkControlWidget::getZoomWidget() const

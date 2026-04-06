@@ -114,7 +114,6 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent, bool resetWh
         setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     }
 
-    mController->getOverview()->setViewPort(this);
     connect(transformVM(), &DkViewPortTransformViewModel::transformChanged, this, [this]() {
         const auto vm = transformVM();
         auto cw = mController->getCropWidget();
