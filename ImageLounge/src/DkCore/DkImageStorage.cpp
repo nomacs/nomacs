@@ -2462,7 +2462,7 @@ protected:
         const float dpr = img.devicePixelRatio();
         const int imgHeight = img.height();
 
-        const float margin = 5;
+        const float margin = 4; // even number required
         const int statsHeight = 0.25 * imgHeight / dpr;
         const int histHeight = showStats ? imgHeight / dpr - statsHeight : imgHeight / dpr - margin / 2;
 
@@ -2522,7 +2522,7 @@ protected:
 
             static constexpr QStringView styleSheet =
                 uR"(table,dt,dr { border-collapse: collapse; }
-                    td { font-size: %1px; margin:0px; padding:0px; font-family:"%2"; color:"%3"; })";
+                    td { margin:%1px; padding:0px; font-size: %2px; font-family:"%3"; color:"%4"; })";
 
             static constexpr QStringView html =
                 uR"(<table width="100%">
@@ -2554,7 +2554,11 @@ protected:
             QString systemMono = QFontDatabase::systemFont(QFontDatabase::FixedFont).family();
             QString fontColor = DkSettingsManager::param().display().hudFgdColor.name(QColor::HexArgb);
 
-            QString style = styleSheet.toString().arg(13).arg(systemMono).arg(fontColor);
+            QString style = styleSheet.toString()
+                                .arg(static_cast<int>(margin / 2.0)) // <table> margin
+                                .arg(13) // font pixel size
+                                .arg(systemMono)
+                                .arg(fontColor);
             doc.setDefaultStyleSheet(style);
 
             doc.setHtml(text);
