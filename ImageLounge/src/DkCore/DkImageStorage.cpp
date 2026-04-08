@@ -2461,6 +2461,7 @@ protected:
 
         const float dpr = img.devicePixelRatio();
         const int imgHeight = img.height();
+        const int imgWidth = img.width();
 
         const float margin = 4; // even number required
         const int statsHeight = 0.25 * imgHeight / dpr;
@@ -2472,8 +2473,29 @@ protected:
 
         const int numChannels = qMin(3, imgChannels);
         const int numBins = h.kNumBins;
+        const int numTicks = 4;
 
         QPainter painter(&img);
+
+        QList<QLineF> tickMarks;
+        tickMarks.reserve(numTicks);
+        for (int i = 0; i < numTicks; ++i) {
+            int count = (maxCount * (i + 1)) / (numTicks + 1);
+            float y1;
+            if (logScale) {
+                y1 = y0 - (std::log(static_cast<float>(count)) * yScale);
+            } else {
+                y1 = y0 - (count * yScale);
+            }
+            tickMarks.append(QLineF{1.0, y1, imgWidth - 1.0, y1});
+        }
+
+        QPen tickPen(DkSettingsManager::param().display().hudFgdColor);
+        tickPen.setWidthF(1.0 / dpr);
+        painter.setPen(tickPen);
+        painter.setOpacity(0.20);
+        painter.drawLines(tickMarks);
+        painter.setOpacity(1.0);
 
         if (imgType != ImgType::gray) {
             painter.setCompositionMode(QPainter::CompositionMode_Screen);
