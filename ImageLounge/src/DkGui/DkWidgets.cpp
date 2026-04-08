@@ -2043,7 +2043,7 @@ DkHistogramWidget::DkHistogramWidget(QWidget *parent)
     auto *showStats = new QAction(tr("Show Statistics"), this);
     showStats->setCheckable(true);
     showStats->setChecked(mDisplayMode == DisplayMode::mode_extended);
-    connect(showStats, &QAction::triggered, this, [&](bool checked) {
+    connect(showStats, &QAction::triggered, this, [this](bool checked) {
         mDisplayMode = checked ? DisplayMode::mode_extended : DisplayMode::mode_simple;
         DkSettingsManager::param().display().histogramStyle = static_cast<int>(mDisplayMode);
         mIsDirty = true;
@@ -2053,7 +2053,7 @@ DkHistogramWidget::DkHistogramWidget(QWidget *parent)
     auto *logScale = new QAction(tr("Log Scale"), this);
     logScale->setCheckable(true);
     logScale->setChecked(mLogScale);
-    connect(logScale, &QAction::triggered, this, [&](bool checked) {
+    connect(logScale, &QAction::triggered, this, [this](bool checked) {
         mLogScale = checked;
         mIsDirty = true;
         DkSettingsManager::param().display().histogramScale = mLogScale ? scale_log : scale_linear;
