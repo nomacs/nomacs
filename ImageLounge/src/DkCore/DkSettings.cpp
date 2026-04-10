@@ -563,6 +563,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     resources_p.thumbDiskSpace = settings.value("thumbDiskSpace", resources_p.thumbDiskSpace).toInt();
     resources_p.preloadThumbs = settings.value("preloadThumbs", resources_p.preloadThumbs).toBool();
     resources_p.sharedThumbs = settings.value("sharedThumbs", resources_p.sharedThumbs).toBool();
+    resources_p.thumbDiskCache = settings.value("thumbDiskCache", resources_p.thumbDiskCache).toBool();
+    resources_p.cleanupThumbCache = settings.value("cleanupDiskCache", resources_p.cleanupThumbCache).toBool();
 
     if (sync_p.switchModifier) {
         global_p.altMod = Qt::ControlModifier;
@@ -883,6 +885,10 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("preloadThumbs", resources_p.preloadThumbs);
     if (force || resources_p.sharedThumbs != resources_d.sharedThumbs)
         settings.setValue("sharedThumbs", resources_p.sharedThumbs);
+    if (force || resources_p.thumbDiskCache != resources_d.thumbDiskCache)
+        settings.setValue("thumbDiskCache", resources_p.thumbDiskCache);
+    if (force || resources_p.cleanupThumbCache != resources_d.cleanupThumbCache)
+        settings.setValue("cleanupDiskCache", resources_p.cleanupThumbCache);
 
     settings.endGroup();
 
@@ -1067,6 +1073,8 @@ void DkSettings::setToDefaultSettings()
     resources_p.thumbDiskSpace = 0;
     resources_p.preloadThumbs = false;
     resources_p.sharedThumbs = true;
+    resources_p.thumbDiskCache = false;
+    resources_p.cleanupThumbCache = false;
 
     qDebug() << "ok... default settings are set";
 }

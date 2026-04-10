@@ -337,9 +337,11 @@ public:
         int maxThumbSize; // max thumbnail size to load (scaled above this size is blurring)
         int thumbThreads; // number of thumbnail loading threads
         int thumbCacheMemory; // MiB, 0=disable, thumb memory cache (not including QPixmap cache)
-        int thumbDiskSpace; // MiB, 0=disable, max cache on disk after trimming
+        int thumbDiskSpace; // MiB, max cache on disk after trimming
         bool preloadThumbs; // preload thumbs before they need to be painted
         bool sharedThumbs; // if true, thumbs are shared with the system thumbnailer
+        bool thumbDiskCache; // if true, thumbs are saved to disk cache
+        bool cleanupThumbCache; // if true, cleanup disk cache at startup
     };
 
     enum DisplayItems {
