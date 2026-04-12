@@ -2463,19 +2463,84 @@ protected:
         const int imgHeight = img.height();
         const int imgWidth = img.width();
 
-        const float margin = 4; // even number required
-        const int statsHeight = 0.25 * imgHeight / dpr;
-        const int histHeight = showStats ? imgHeight / dpr - statsHeight : imgHeight / dpr - margin / 2;
-
-        const float y0 = histHeight; // bottom of bars
-        const float yScale = logScale ? float(histHeight) / std::log(static_cast<float>(maxCount)) * zoom
-                                      : float(histHeight) / maxCount * zoom;
-
         const int numChannels = qMin(3, imgChannels);
         const int numBins = h.kNumBins;
         const int numTicks = 4;
 
+        // the left/right/bottom margin is the offset to center bargraph horizontally
+        // there is no top margin so peak is easier to see
+        const float margin = (imgWidth / dpr - numBins) / 2.0;
+
         QPainter painter(&img);
+
+        int statsHeight = 0; // computed from text document
+        if (showStats) {
+            double blackPct = h.numBlack * 100.0 / h.numPixels;
+            double whitePct = h.numWhite * 100.0 / h.numPixels;
+            double goodPct = (h.numPixels - h.numBlack - h.numWhite) * 100.0 / h.numPixels;
+
+            // percent of bins with zero sample count (across channels) == bands/gaps in histogram
+            double levelPct = (numBins - h.numEmptyLevels()) * 100.0 / numBins;
+
+            static constexpr QStringView styleSheet =
+                uR"(table,td,tr { border-collapse: collapse; }
+                    table { margin:0px; padding:0px; }
+                    td { margin:1px; padding:0px; font-size: %1px; font-family:"%2"; color:"%3"; })";
+
+            QString html = QStringLiteral(
+                R"(<table width="100%">
+                <tr>
+                    <td>Min:</td> <td>%1</td>
+                    <td>Blk:</td> <td>%3%</td>
+                    <td>OK:</td>  <td>%5%</td>
+                </tr>
+                <tr>
+                    <td>Max:</td> <td>%2</td>
+                    <td>Wht:</td> <td>%4%</td>
+                    <td>Lvl:</td> <td>%6%</td>
+                </tr>
+                </table>)");
+
+            if constexpr (std::is_floating_point_v<ChannelType>) {
+                html = html.arg(h.globalMin(), 0, 'f', 2, ' ') //
+                           .arg(h.globalMax(), 0, 'f', 2, ' ');
+            } else {
+                html = html.arg(h.globalMin()) //
+                           .arg(h.globalMax());
+            }
+
+            html = html.arg(blackPct, 0, 'f', 2, ' ')
+                       .arg(whitePct, 0, 'f', 2, ' ')
+                       .arg(goodPct, 0, 'f', 1, ' ')
+                       .arg(levelPct, 0, 'f', 1, ' ');
+
+            QTextDocument doc;
+            doc.setTextWidth(img.width() / dpr);
+            doc.setDocumentMargin(0);
+
+            // monospace font to reduce jitter
+            QString systemMono = QFontDatabase::systemFont(QFontDatabase::FixedFont).family();
+            QString fontColor = DkSettingsManager::param().display().hudFgdColor.name(QColor::HexArgb);
+
+            QString style = styleSheet.toString()
+                                .arg(13) // font pixel size
+                                .arg(systemMono)
+                                .arg(fontColor);
+            doc.setDefaultStyleSheet(style);
+
+            doc.setHtml(html);
+            statsHeight = doc.size().height() + margin;
+
+            painter.save();
+            painter.translate(margin, imgHeight / dpr - statsHeight + margin / 2);
+            doc.drawContents(&painter);
+            painter.restore();
+        }
+
+        const int histHeight = showStats ? imgHeight / dpr - statsHeight : imgHeight / dpr - margin;
+        const float y0 = histHeight; // bottom of bars
+        const float yScale = logScale ? float(histHeight) / std::log(static_cast<float>(maxCount)) * zoom
+                                      : float(histHeight) / maxCount * zoom;
 
         QList<QLineF> tickMarks;
         tickMarks.reserve(numTicks);
@@ -2518,7 +2583,7 @@ protected:
 
             lines.clear();
             for (int bin = 0; bin < numBins; ++bin) {
-                float x0 = bin + margin;
+                float x0 = margin + bin;
                 int count = h.bins[channel][bin];
                 if (count == 0) {
                     continue;
@@ -2532,61 +2597,6 @@ protected:
                 lines.append(QLineF{x0, y0, x0, y1});
             }
             painter.drawLines(lines);
-        }
-
-        if (showStats) {
-            double blackPct = h.numBlack * 100.0 / h.numPixels;
-            double whitePct = h.numWhite * 100.0 / h.numPixels;
-            double goodPct = (h.numPixels - h.numBlack - h.numWhite) * 100.0 / h.numPixels;
-
-            // percent of bins with zero sample count (across channels) == bands/gaps in histogram
-            double levelPct = (numBins - h.numEmptyLevels()) * 100.0 / numBins;
-
-            static constexpr QStringView styleSheet =
-                uR"(table,dt,dr { border-collapse: collapse; }
-                    td { margin:%1px; padding:0px; font-size: %2px; font-family:"%3"; color:"%4"; })";
-
-            static constexpr QStringView html =
-                uR"(<table width="100%">
-                <tr>
-                    <td>Min:</td> <td>%1</td>
-                    <td>Blk:</td> <td>%3%</td>
-                    <td>OK:</td>  <td>%5%</td>
-                </tr>
-                <tr>
-                    <td>Max:</td> <td>%2</td>
-                    <td>Wht:</td> <td>%4%</td>
-                    <td>Lvl:</td> <td>%6%</td>
-                </tr>
-                </table>)";
-
-            QString text = html.toString()
-                               .arg(h.globalMin())
-                               .arg(h.globalMax())
-                               .arg(blackPct, 0, 'f', 2, ' ')
-                               .arg(whitePct, 0, 'f', 2, ' ')
-                               .arg(goodPct, 0, 'f', 1, ' ')
-                               .arg(levelPct, 0, 'f', 1, ' ');
-
-            QTextDocument doc;
-            doc.setTextWidth(img.width() / dpr);
-            doc.setDocumentMargin(0);
-
-            // monospace font to reduce jitter
-            QString systemMono = QFontDatabase::systemFont(QFontDatabase::FixedFont).family();
-            QString fontColor = DkSettingsManager::param().display().hudFgdColor.name(QColor::HexArgb);
-
-            QString style = styleSheet.toString()
-                                .arg(static_cast<int>(margin / 2.0)) // <table> margin
-                                .arg(13) // font pixel size
-                                .arg(systemMono)
-                                .arg(fontColor);
-            doc.setDefaultStyleSheet(style);
-
-            doc.setHtml(text);
-
-            painter.translate(margin, y0 + margin / 2.0);
-            doc.drawContents(&painter);
         }
 
         painter.end();
