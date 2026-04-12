@@ -927,7 +927,6 @@ void DkImageContainerT::setEdited(bool edited /* = true */)
 void DkImageContainerT::setRating(int rating)
 {
     QSharedPointer<DkMetaDataT> metaDataInfo = getMetaData();
-    // TODO: right now we do not handle non-existing EXIF data well.
     bool succeeded = metaDataInfo->setRating(rating);
     if (!succeeded) {
         return;
