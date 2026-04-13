@@ -868,7 +868,7 @@ static auto histogram(const cv::Mat &mat, const DkWorkRange &range)
     auto mn = h.globalMin();
     auto mx = h.globalMax();
 
-    if (mx - mn == 0) {
+    if (mx - mn <= 0) {
         return h;
     }
 
@@ -882,6 +882,9 @@ static auto histogram(const cv::Mat &mat, const DkWorkRange &range)
         for (int channel = 0; channel < numChannels; ++channel) {
             ChannelType norm = (pixel[channel] - mn) / (mx - mn);
             int bucket = norm * 255 / Format::Scale;
+            if constexpr (isFloat) {
+                bucket = qBound(0, bucket, 255);
+            }
             Q_ASSERT(bucket >= 0 && bucket <= 255);
             h.bins[channel][bucket]++;
         }
