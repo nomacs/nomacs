@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkPreferenceWidgets.h"
 
 #include "DkBasicWidgets.h"
+#include "DkCachedThumb.h"
 #include "DkDialog.h"
 #include "DkImageStorage.h"
 #include "DkSettings.h"
@@ -42,6 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QColorSpace>
 #include <QComboBox>
 #include <QFileDialog>
+#include <QGroupBox>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QPainter>
@@ -810,16 +812,6 @@ void DkDisplayPreference::createLayout()
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
 
-    auto *enableHqThumbs = new QCheckBox(tr("Enable High Quality Thumbnails"));
-    enableHqThumbs->setChecked(DkSettingsManager::param().display().highQualityThumbs);
-    enableHqThumbs->setToolTip(tr("If checked, use the full-resolution image if EXIF thumbnail is too small."));
-    connect(enableHqThumbs, &QCheckBox::toggled, this, [](bool checked) {
-        DkSettingsManager::param().display().highQualityThumbs = checked;
-    });
-
-    auto *thumbsGroup = new DkGroupWidget(tr("Thumbnails"), this);
-    thumbsGroup->addWidget(enableHqThumbs);
-
     mColorProfiles = new QComboBox(this);
     mColorProfiles->setToolTip(tr("Choose the color profile of the monitor"));
     connect(mColorProfiles, &QComboBox::activated, this, &DkDisplayPreference::onColorProfileActivated);
@@ -948,7 +940,6 @@ void DkDisplayPreference::createLayout()
     l->setAlignment(Qt::AlignTop);
     l->addWidget(zoomGroup);
     l->addWidget(keepZoomGroup);
-    l->addWidget(thumbsGroup);
     l->addWidget(colorGroup);
     l->addWidget(iconGroup);
     l->addWidget(navigationGroup);
@@ -1162,6 +1153,129 @@ void DkFilePreference::createLayout()
     historyGroup->addWidget(historyBox);
     historyGroup->addWidget(hLabel);
 
+    // thumbnails
+    auto &res = DkSettingsManager::param().resources();
+
+    auto *enableHqThumbs = new QCheckBox(tr("Use high-quality thumbnails"));
+    enableHqThumbs->setToolTip(tr("Use antialiasing and avoid upsampling."));
+    enableHqThumbs->setChecked(DkSettingsManager::param().display().highQualityThumbs);
+    connect(enableHqThumbs, &QCheckBox::toggled, this, [](bool checked) {
+        DkSettingsManager::param().display().highQualityThumbs = checked;
+    });
+
+    auto *preloadBox = new QCheckBox(tr("Preload thumbnails"), this);
+    preloadBox->setToolTip(
+        tr("Compute a limited number of thumbnails before they are needed. Reduces delays but uses more memory."));
+    preloadBox->setChecked(res.preloadThumbs);
+    connect(preloadBox, &QCheckBox::toggled, this, [](bool checked) {
+        DkSettingsManager::param().resources().preloadThumbs = checked;
+    });
+
+    auto *sizesBox = new QComboBox(this);
+    sizesBox->setToolTip(
+        tr("Limit the size of thumbnails to conserve resources. Zooming above this size will be disabled or will lose "
+           "sharpness."));
+    sizesBox->setMaximumWidth(200);
+    for (int px = 128; px <= 1024; px *= 2) {
+        sizesBox->addItem(QString("%1 px").arg(px), px);
+    }
+    sizesBox->setCurrentIndex(sizesBox->findData(res.maxThumbSize));
+    connect(sizesBox, &QComboBox::currentIndexChanged, this, [sizesBox](int) {
+        DkSettingsManager::param().resources().maxThumbSize = sizesBox->currentData().toInt();
+    });
+
+    auto *thumbThreads = new DkSlider(tr("Thumbnail threads"), this);
+    thumbThreads->setToolTip(tr("Limit temporary memory and CPU used to generate thumbnails."));
+    thumbThreads->setMaximumWidth(500);
+    thumbThreads->setRange(1, QThread::idealThreadCount() - 2);
+    thumbThreads->setValue(res.thumbThreads);
+    connect(thumbThreads, &DkSlider::valueChanged, this, [this](int value) {
+        DkSettingsManager::param().resources().thumbThreads = value;
+        showRestartLabel();
+    });
+
+    auto *thumbMemory = new DkSlider(tr("Thumbnail memory cache limit"), this);
+    thumbMemory->setToolTip(tr("Keeps recent thumbnails in memory. Use 0 to disable."));
+    thumbMemory->setValueSuffix(QStringLiteral(" MB"));
+    thumbMemory->setMaximumWidth(500);
+    thumbMemory->setRange(0, 1024);
+    thumbMemory->setValue(res.thumbCacheMemory);
+    connect(thumbMemory, &DkSlider::valueChanged, this, [this](int value) {
+        DkSettingsManager::param().resources().thumbCacheMemory = value;
+        showRestartLabel();
+    });
+
+    auto *diskSlider = new DkSlider(tr("Disk cache limit"), this);
+    diskSlider->setToolTip(tr("When deletion is enabled, trim disk cache to this size."));
+    diskSlider->setValueSuffix(tr(" MB"));
+    diskSlider->setMaximumWidth(500);
+    diskSlider->setRange(0, 1024 * 10);
+    diskSlider->setValue(res.thumbDiskSpace);
+    connect(diskSlider, &DkSlider::valueChanged, this, [this](int value) {
+        DkSettingsManager::param().resources().thumbDiskSpace = value;
+        showRestartLabel();
+    });
+
+    auto *sharedBox = new QCheckBox(tr("Share thumbnails with other programs"), this);
+    sharedBox->setToolTip(tr("Thumbnails created by other software will be used by nomacs, and vice versa."));
+    sharedBox->setChecked(res.sharedThumbs);
+#ifndef Q_OS_UNIX
+    sharedBox->setEnabled(false);
+#endif
+    connect(sharedBox, &QCheckBox::toggled, this, [this, &res](bool checked) {
+        // if sharing is disabled, offer to cleanup the non-shared area
+        const QString cachePath = DkCachedThumb::cacheHome();
+        if (checked && !res.sharedThumbs && QFile::exists(cachePath)) {
+            int result = QMessageBox::question(this,
+                                               tr("Cleanup thumbnails?"),
+                                               tr("There are thumbnails saved in:\n\n\"%1\"\n\n"
+                                                  "When sharing thumbnails, these will no longer be used.\n\n"
+                                                  "Delete them now?")
+                                                   .arg(cachePath),
+                                               QMessageBox::No | QMessageBox::Yes);
+            if (result == QMessageBox::Yes) {
+                DkCachedThumb::cleanupSync(true);
+            }
+        }
+        res.sharedThumbs = checked;
+        showRestartLabel();
+    });
+
+    auto *cleanupBox = new QCheckBox(tr("Delete old thumbnails on startup"), this);
+    cleanupBox->setToolTip(
+        tr("When cache limit is exceeded, delete least-recently-used thumbnails in the background."));
+    cleanupBox->setChecked(res.cleanupThumbCache);
+    diskSlider->setEnabled(res.cleanupThumbCache);
+    connect(cleanupBox, &QCheckBox::toggled, this, [this, &res, diskSlider](bool checked) {
+        res.cleanupThumbCache = checked;
+        diskSlider->setEnabled(checked);
+        showRestartLabel();
+    });
+
+    auto *thumbCacheGroup = new QGroupBox(tr("Enable disk cache"), this);
+    thumbCacheGroup->setToolTip(tr("Save generated thumbnails to disk for future use."));
+    thumbCacheGroup->setCheckable(true);
+    thumbCacheGroup->setChecked(res.thumbDiskCache);
+    connect(thumbCacheGroup, &QGroupBox::clicked, [&](bool checked) {
+        res.thumbDiskCache = checked;
+        showRestartLabel();
+    });
+
+    auto *thumbCacheLayout = new QVBoxLayout;
+    thumbCacheGroup->setLayout(thumbCacheLayout);
+    thumbCacheLayout->addWidget(sharedBox);
+    thumbCacheLayout->addWidget(cleanupBox);
+    thumbCacheLayout->addWidget(diskSlider);
+
+    auto *thumbGroup = new DkGroupWidget(tr("Thumbnails"), this);
+    thumbGroup->addWidget(enableHqThumbs);
+    thumbGroup->addWidget(preloadBox);
+    thumbGroup->addWidget(new QLabel(tr("Maximum thumbnail size"), this));
+    thumbGroup->addWidget(sizesBox);
+    thumbGroup->addWidget(thumbThreads);
+    thumbGroup->addWidget(thumbMemory);
+    thumbGroup->addWidget(thumbCacheGroup);
+
     // loading policy
     QVector<QRadioButton *> loadButtons;
     loadButtons.append(new QRadioButton(tr("Skip Images"), this));
@@ -1221,6 +1335,7 @@ void DkFilePreference::createLayout()
     l->addWidget(tempFolderGroup);
     l->addWidget(cacheGroup);
     l->addWidget(historyGroup);
+    l->addWidget(thumbGroup);
     l->addWidget(loadGroup);
     l->addWidget(saveGroup);
     l->addWidget(skipGroup);
@@ -1246,6 +1361,11 @@ void DkFilePreference::onSaveGroupButtonClicked(int buttonId) const
 {
     if (DkSettingsManager::param().resources().loadSavedImage != buttonId)
         DkSettingsManager::param().resources().loadSavedImage = buttonId;
+}
+
+void DkFilePreference::showRestartLabel() const
+{
+    emit infoSignal(tr("Please Restart nomacs to apply changes"));
 }
 
 void DkFilePreference::onSkipBoxValueChanged(int value) const
