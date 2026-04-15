@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
                                          // seem to know what you do
 
     if (nmc::DkSettingsManager::param().resources().cleanupThumbCache) {
-        nmc::DkCachedThumb::cleanup();
+        nmc::DkCachedThumb::cleanupAsync();
     }
 
     // uncomment this for the single instance feature...
