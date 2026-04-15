@@ -35,9 +35,11 @@ static void disableContentIndexing(const QString &path)
 }
 #endif
 
-void DkCachedThumb::cleanupSync()
+void DkCachedThumb::cleanup(bool deleteAll)
 {
-    const auto maxUsedBytes = static_cast<qint64>(DkSettingsManager::param().resources().thumbDiskSpace) * 1024 * 1024;
+    const auto maxUsedBytes = deleteAll
+        ? 0
+        : static_cast<qint64>(DkSettingsManager::param().resources().thumbDiskSpace) * 1024 * 1024;
     if (maxUsedBytes <= 0 && isXdgCompliant()) {
         return; // Don't clear a shared thumb directory
     }
@@ -96,20 +98,41 @@ void DkCachedThumb::cleanupSync()
         }
     }
 
-    qInfo().noquote() << "[DkCachedThumb] cache cleanup:" << DkUtils::readableByte(usedBytes) << "used"
+    // cleanup empty directories
+    const QFileInfoList emptyDirs = QDir(cacheHome()).entryInfoList(dirNameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
+    for (auto &d : dirs) {
+        QDir().rmdir(d.absoluteFilePath());
+    }
+    QDir().rmdir(cacheHome());
+
+    qInfo().noquote() << "[DkCachedThumb] cache cleanup:" << cacheHome() << DkUtils::readableByte(usedBytes) << "used"
                       << DkUtils::readableByte(freedBytes) << "reclaimed" << dt;
 }
 
-void DkCachedThumb::cleanup()
+QFuture<void> &DkCachedThumb::cleanupJob()
 {
     static QFuture<void> future{};
+    return future;
+}
 
-    if (future.isRunning()) {
+void DkCachedThumb::cleanupAsync()
+{
+    if (cleanupJob().isRunning()) {
         qWarning() << "[CachedThumb] cleanup in progress, try again later";
         return;
     }
 
-    future = QtConcurrent::run(&DkCachedThumb::cleanupSync);
+    cleanupJob() = QtConcurrent::run(&DkCachedThumb::cleanup, false);
+}
+
+void DkCachedThumb::cleanupSync(bool deleteAll)
+{
+    while (cleanupJob().isRunning()) {
+        qInfo() << "[CachedThumb] waiting for previous cleanup to finish...";
+        QThread::msleep(1000);
+    }
+
+    cleanup(deleteAll);
 }
 
 DkCachedThumb::DkCachedThumb(DkFileInfo &fileInfo, int size, ScaleConstraint constraint)

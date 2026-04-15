@@ -17,9 +17,16 @@ class DkCachedThumb
 {
 public:
     /**
-     * @brief Async cleanup of the cache
+     * @brief Background cleanup of the cache
+     * @note do nothing if cleanup is already running
      */
-    static void DllCoreExport cleanup();
+    static void DllCoreExport cleanupAsync();
+
+    /**
+     * @brief Foreground cleanup of the cache
+     * @note wait if cleanup is already running, then wait for completion
+     */
+    static void cleanupSync(bool deleteAll);
 
     /**
      * @brief Return true if shared cache enabled on XDG-capable system
@@ -49,12 +56,12 @@ public:
      */
     void save(const QImage &img, int loadedBinSize = 0);
 
-private:
-    // Delete old cache files
-    static void cleanupSync();
-
     // Top-level cache directory ($HOME/.cache/thumbnails)
     static QString cacheHome();
+
+private:
+    static QFuture<void> &cleanupJob();
+    static void cleanup(bool deleteAll);
 
     // Return true if image size(sz) is large enough to meet size/constraint
     bool isLargeEnough(const QSize &sz) const;
