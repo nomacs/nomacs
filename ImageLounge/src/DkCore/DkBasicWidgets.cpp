@@ -130,6 +130,12 @@ void DkSlider::setMaximum(int maxValue)
     maxValLabel->setText(QString::number(maxValue));
 }
 
+void DkSlider::setRange(int min, int max)
+{
+    setMinimum(min);
+    setMaximum(max);
+}
+
 void DkSlider::setTickInterval(int ticValue)
 {
     slider->setTickInterval(ticValue);
@@ -138,6 +144,11 @@ void DkSlider::setTickInterval(int ticValue)
 int DkSlider::value() const
 {
     return slider->value();
+}
+
+void DkSlider::setValueSuffix(const QString &format)
+{
+    sliderBox->setSuffix(format);
 }
 
 void DkSlider::setFocus(Qt::FocusReason reason)
