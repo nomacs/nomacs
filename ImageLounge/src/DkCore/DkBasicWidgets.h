@@ -56,10 +56,11 @@ public:
     QSlider *getSlider() const;
     void setMinimum(int minValue);
     void setMaximum(int maxValue);
+    void setRange(int min, int max);
     void setTickInterval(int ticValue);
     int value() const;
+    void setValueSuffix(const QString &format);
     void setFocus(Qt::FocusReason reason);
-
 public slots:
     void setValue(int value);
 
