@@ -1289,7 +1289,7 @@ void DkThumbScene::updateLayout()
         return;
     }
 
-    QSize pSize = QSize(view->viewport()->size());
+    QSize pSize = view->viewport()->size();
 
     int psz = DkSettingsManager::param().effectiveThumbPreviewSize();
     mXOffset = 2; // qCeil(psz*0.1f);
@@ -1572,17 +1572,18 @@ void displayFileInfoInStatusbar(const QString &filePath)
 
 void DkThumbScene::showFile(const QString &filePath)
 {
-    int sf = getSelectedFiles().size();
+    const QStringList selectedFiles = getSelectedFiles();
+    int numSelected = selectedFiles.size();
     DkStatusBar *bar = DkStatusBarManager::instance().statusbar();
     if (filePath == QDir::currentPath() || filePath.isEmpty()) { // i.e. user is NO LONGER hovering over a file
-        if (sf == 0) {
+        if (numSelected == 0) {
             QString info = QString::number(mThumbs.size()) + tr(" images");
             bar->setMessage(tr("%1 | %2").arg(info, currentDir()));
             bar->setMessage("", DkStatusBar::status_filesize_info);
-        } else if (sf == 1) {
-            displayFileInfoInStatusbar(getSelectedFiles()[0]);
+        } else if (numSelected == 1) {
+            displayFileInfoInStatusbar(selectedFiles.at(0));
         } else {
-            QString info = QString::number(sf) + tr(" selected");
+            QString info = QString::number(numSelected) + tr(" selected");
             bar->setMessage(tr("%1 | %2").arg(info, currentDir()));
             bar->setMessage("", DkStatusBar::status_filesize_info);
         }
@@ -1652,7 +1653,7 @@ void DkThumbScene::toggleSquaredThumbs(bool squares)
 {
     DkSettingsManager::param().display().displaySquaredThumbs = squares;
 
-    for (const auto t : mThumbLabels) {
+    for (auto *t : std::as_const(mThumbLabels)) {
         t->setFillSquare(squares);
     }
     update();
@@ -1705,7 +1706,7 @@ void DkThumbScene::cancelLoading()
 {
     DkThumbsThreadPool::clear();
 
-    for (auto t : mThumbLabels)
+    for (auto *t : std::as_const(mThumbLabels))
         t->cancelLoading();
 }
 
@@ -1741,13 +1742,15 @@ void DkThumbScene::selectThumbs(bool selected, int from, int to, bool extend)
 
 void DkThumbScene::copySelected() const
 {
-    QStringList fileList = getSelectedFiles();
-    if (fileList.empty())
+    const QStringList fileList = getSelectedFiles();
+    if (fileList.empty()) {
         return;
+    }
 
     QList<QUrl> urls;
-    for (QString cStr : fileList)
-        urls.append(QUrl::fromLocalFile(cStr));
+    for (const auto &filePath : fileList) {
+        urls.append(QUrl::fromLocalFile(filePath));
+    }
 
     auto *mimeData = new QMimeData();
     mimeData->setUrls(urls);
@@ -1782,14 +1785,15 @@ void DkThumbScene::copyImages(const QMimeData *mimeData, const Qt::DropAction &d
 
     QDir dir = dirInfo.path();
 
-    for (QUrl url : mimeData->urls()) {
+    for (const QUrl &url : mimeData->urls()) {
         QFileInfo fileInfo = DkUtils::urlToLocalFile(url);
         QFile file(fileInfo.absoluteFilePath());
         QString newFilePath = QFileInfo(dir, fileInfo.fileName()).absoluteFilePath();
 
         // ignore existing silently
-        if (QFileInfo(newFilePath).exists())
+        if (QFile::exists(newFilePath)) {
             continue;
+        }
 
         auto askUser = [&](const QString &aMsg) {
             int answer = QMessageBox::critical(DkUtils::getMainWindow(),
@@ -1860,8 +1864,7 @@ void DkThumbScene::deleteSelected()
 
 void DkThumbScene::renameSelected() const
 {
-    QStringList fileList = getSelectedFiles();
-
+    const QStringList fileList = getSelectedFiles();
     if (fileList.empty())
         return;
 
@@ -1967,7 +1970,7 @@ QStringList DkThumbScene::getSelectedFiles() const
     QStringList fileList;
     fileList.reserve(selected.count());
 
-    for (DkThumbLabel *thumb : selected) {
+    for (auto *thumb : selected) {
         fileList += thumb->filePath();
     }
 
@@ -2186,12 +2189,13 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event)
         int dist = qRound(QPointF(event->pos() - mMouseDownPos).manhattanLength());
 
         if (dist > QApplication::startDragDistance()) {
-            QStringList fileList = sc->getSelectedFiles();
+            const QStringList fileList = sc->getSelectedFiles();
 
             if (!fileList.empty()) {
                 QList<QUrl> urls;
-                for (QString fStr : fileList)
-                    urls.append(QUrl::fromLocalFile(fStr));
+                for (const auto &filePath : fileList) {
+                    urls.append(QUrl::fromLocalFile(filePath));
+                }
 
                 auto *mimeData = new QMimeData;
                 mimeData->setUrls(urls);
@@ -2395,13 +2399,11 @@ void DkThumbScrollWidget::batchProcessFiles() const
 
 void DkThumbScrollWidget::batchPrint() const
 {
-    QStringList fileList = mThumbsScene->getSelectedFiles();
-
     QVector<QImage> imgs;
     DkBasicLoader bl;
 
-    for (const QString &f : fileList) {
-        bl.loadGeneral(f);
+    for (const auto &filePath : mThumbsScene->getSelectedFiles()) {
+        bl.loadGeneral(filePath);
 
         if (!bl.image().isNull())
             imgs << bl.image();
@@ -2409,8 +2411,9 @@ void DkThumbScrollWidget::batchPrint() const
 
     auto *printPreviewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
 
-    for (const QImage &img : imgs)
+    for (const auto &img : std::as_const(imgs)) {
         printPreviewDialog->addImage(img);
+    }
 
     printPreviewDialog->exec();
     printPreviewDialog->deleteLater();
@@ -2796,16 +2799,18 @@ void DkRecentDirWidget::mousePressEvent(QMouseEvent *event)
 
 void DkRecentDirWidget::enterEvent(DkEnterEvent *event)
 {
-    for (auto b : mButtons)
+    for (auto b : std::as_const(mButtons)) {
         b->show();
+    }
 
     DkWidget::enterEvent(event);
 }
 
 void DkRecentDirWidget::leaveEvent(QEvent *event)
 {
-    for (auto b : mButtons)
+    for (auto b : std::as_const(mButtons)) {
         b->hide();
+    }
 
     DkWidget::leaveEvent(event);
 }
@@ -2853,7 +2858,7 @@ void DkRecentFilesWidget::updateList()
     auto *dummy = new QWidget(this);
     auto *l = new QVBoxLayout(dummy);
 
-    for (auto rd : fm.recentDirs()) {
+    for (const auto &rd : fm.recentDirs()) {
         auto *rf = new DkRecentDirWidget(rd, mThumbLoader, dummy);
         rf->setMaximumWidth(500);
         connect(rf, &DkRecentDirWidget::loadFileSignal, this, &DkRecentFilesWidget::loadFileSignal);
@@ -2960,7 +2965,7 @@ DkRecentDirManager::DkRecentDirManager()
     QList<DkRecentDir> recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);
 
     // merge pinned dirs with recent dirs
-    for (const DkRecentDir &recentDir : recentDirs) {
+    for (const auto &recentDir : std::as_const(recentDirs)) {
         int idx = mDirs.indexOf(recentDir);
         if (idx < 0)
             mDirs.append(recentDir);
