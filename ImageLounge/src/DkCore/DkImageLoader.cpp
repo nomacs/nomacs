@@ -609,53 +609,6 @@ void DkImageLoader::lastFile()
     loadFileAt(-1);
 }
 
-bool DkImageLoader::promptSaveBeforeUnload()
-{
-    if (!mCurrentImage || !mCurrentImage->isEdited()) {
-        return true;
-    }
-
-    auto *msgBox = new DkMessageBox(QMessageBox::Question,
-                                    tr("Save Image"),
-                                    tr("Do you want to save changes to:\n%1")
-                                        .arg(QFileInfo(mCurrentImage->filePath()).fileName()),
-                                    (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                    DkUtils::getMainWindow());
-
-    msgBox->setDefaultButton(QMessageBox::No);
-    msgBox->setObjectName("saveEditDialog");
-
-    const int answer = msgBox->exec();
-
-    if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
-        // Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
-        const bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
-        const bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
-
-        if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
-            if (imgEdited)
-                mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
-            else if (metaEdited)
-                mCurrentImage->saveMetaData();
-        } else {
-            saveUserFile(mCurrentImage->image(), false); // we loose all metadata here - right?
-        }
-
-        // Clear the image container to force reload so we get correct state.
-        mCurrentImage->clear();
-        return true;
-    }
-
-    if (answer == QMessageBox::No) {
-        // Clear the image container to discard all edited changes.
-        mCurrentImage->clear();
-        return true;
-    }
-
-    // Cancel is pressed
-    return false;
-}
-
 /**
  * Activates or deactivates the loader.
  * If activated, the directory is indexed & the current image is loaded.
@@ -790,7 +743,7 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
     // if loaded is false, we definitively know that the file does not exist -> early exception here?
 }
 
-void DkImageLoader::imageLoaded(bool loaded /* = false */)
+void DkImageLoader::handleImageLoadResult(bool loaded /* = false */)
 {
     emit updateSpinnerSignalDelayed(false);
 
@@ -798,12 +751,12 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */)
         return;
     }
 
-    emit imageLoadedSignal(mCurrentImage, loaded);
-
-    if (!loaded)
+    if (!loaded) {
+        emit imageLoadFailed();
         return;
+    }
 
-    emit imageUpdatedSignal(mCurrentImage);
+    emit imageLoaded(mCurrentImage);
 
     if (mCurrentImage) {
         // this signal is needed by the folder scrollbar
@@ -1050,8 +1003,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
         // Notify listeners about saved image
         setCurrentImage(mCurrentImage);
         mCurrentImage->setEdited(false);
-        emit imageLoadedSignal(mCurrentImage, true);
-        emit imageUpdatedSignal(mCurrentImage);
+        emit imageLoaded(mCurrentImage);
 
         // Skip the rest which is only relevant when re-encoding/saving the image
         return;
@@ -1239,8 +1191,7 @@ void DkImageLoader::imageSaved(const QString &filePath, bool saved, bool loadToT
     if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load_to_tab && loadToTab) {
         emit loadImageToTab(filePath);
     } else if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load) {
-        emit imageLoadedSignal(mCurrentImage, true);
-        emit imageUpdatedSignal(mCurrentImage);
+        emit imageLoaded(mCurrentImage);
         qDebug() << "image updated: " << mCurrentImage->fileName();
     } else {
         mFolderUpdated = true;
@@ -1878,7 +1829,7 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
         connect(currImage,
                 &DkImageContainerT::fileLoadedSignal,
                 this,
-                &DkImageLoader::imageLoaded,
+                &DkImageLoader::handleImageLoadResult,
                 Qt::UniqueConnection);
         connect(currImage,
                 &DkImageContainerT::showInfoSignal,
@@ -1898,7 +1849,7 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
                 Qt::UniqueConnection);
     } else if (!connectSignals) {
         disconnect(currImage, &DkImageContainerT::errorDialogSignal, this, &DkImageLoader::errorDialog);
-        disconnect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::imageLoaded);
+        disconnect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::handleImageLoadResult);
         disconnect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal);
         disconnect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved);
         disconnect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated);
