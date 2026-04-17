@@ -54,6 +54,7 @@ namespace nmc
 {
 class DkCropToolBar;
 class DkViewPort;
+class DkHistogramEngine;
 
 class DkButton : public QPushButton
 {
@@ -572,30 +573,30 @@ protected:
 };
 
 // Image histogram display
-class DkHistogram : public DkFadeWidget
+class DkHistogramWidget : public DkFadeWidget
 {
     Q_OBJECT
 
 public:
-    enum class DisplayMode {
-        histogram_mode_simple = 0, /// shows just the histogram
-        histogram_mode_extended = 1, /// shows histogram and data
-        histogram_mode_end = 2,
+    enum DisplayMode {
+        mode_simple = 0, // shows just the histogram
+        mode_extended = 1, // shows histogram and data
+        mode_end = 2,
+    };
+    enum ScaleMode {
+        scale_linear = 0,
+        scale_log = 1
     };
 
-    explicit DkHistogram(QWidget *parent);
-    ~DkHistogram() override;
+    explicit DkHistogramWidget(QWidget *parent);
+    ~DkHistogramWidget() override;
 
-    void drawHistogram(QImage img);
+    void drawHistogram(const QImage &img);
     void clearHistogram();
-    void setMaxHistogramValue(int maxValue);
-    void updateHistogramValues(int histValues[][256]);
-    void setPainted(bool isPainted);
 
-public slots:
-    void onToggleStatsTriggered(bool show);
+private:
+    void setValid(bool isValid);
 
-protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -604,19 +605,15 @@ protected:
 
     void loadSettings();
 
-private:
-    int mHist[3][256]; /// 3 channels 256 bin. channels duplicated when gray
-    int mNumPixels = 0; /// image pixel count
-    int mNumDistinctValues = 0; /// number of distinct values
-    int mNumZeroPixels = 0; /// pixels with zero value
-    int mNumSaturatedPixels = 0; /// pixels saturating RGB 8bit
-    int mNumValues = 0; /// number of distinct histogram values
-    int mMinBinValue = 256; /// (gray-only) minimum intensity value
-    int mMaxBinValue = -1; /// (gray-only) maximum intensity value
-    int mMaxValue = 20; /// maximum count over all bins
-    bool mIsPainted = false;
+    std::unique_ptr<DkHistogramEngine> mHistogram;
+    QImage mHistImage;
+
+    bool mIsValid = false; // if true a histogram and stats are computed
+    bool mIsDirty = false; // if true histogram needs to be re-rendered
+
     float mScaleFactor = 1;
-    DisplayMode mDisplayMode = DisplayMode::histogram_mode_simple; /// determins shown histogram type
+    DisplayMode mDisplayMode = DisplayMode::mode_simple;
+    bool mLogScale = false;
 
     QMenu *mContextMenu = nullptr;
 };

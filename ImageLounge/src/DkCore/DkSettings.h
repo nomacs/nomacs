@@ -252,6 +252,7 @@ public:
         float animationDuration;
 
         int histogramStyle;
+        int histogramScale;
         bool animateWidgets; // animate hide/show of widgets/panels/etc
 
         int targetColorSpace; // -1==auto, 0==disable, 1-49==NamedColorSpace, 50-99==custom, 100-999==user icc profile

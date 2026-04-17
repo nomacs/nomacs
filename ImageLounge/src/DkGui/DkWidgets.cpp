@@ -2003,7 +2003,12 @@ void DkCropWidget::crop(bool cropToMetadata)
         QPolygonF poly = mat.map(mRect.getPoly());
         DkRotatingRect rect;
         rect.setPoly(poly);
-        emit cropImageSignal(rect, cropToolbar->getColor(), cropToMetadata);
+        // Viewport may not refresh panels that are currently hidden due
+        // to crop widget being active. Send after crop widget is hidden and
+        // presumably the viewport is shown.
+        QTimer::singleShot(0, [rect, cropToMetadata, this] {
+            emit cropImageSignal(rect, cropToolbar->getColor(), cropToMetadata);
+        });
     }
 
     setVisible(false);
@@ -2024,7 +2029,7 @@ void DkCropWidget::setVisible(bool visible)
 }
 
 // Image histogram  -------------------------------------------------------------------
-DkHistogram::DkHistogram(QWidget *parent)
+DkHistogramWidget::DkHistogramWidget(QWidget *parent)
     : DkFadeWidget(parent)
 {
     setObjectName("DkHistogram");
@@ -2036,93 +2041,59 @@ DkHistogram::DkHistogram(QWidget *parent)
     // create context menu
     auto *showStats = new QAction(tr("Show Statistics"), this);
     showStats->setCheckable(true);
-    showStats->setChecked(mDisplayMode == DisplayMode::histogram_mode_extended);
-    connect(showStats, &QAction::triggered, this, &DkHistogram::onToggleStatsTriggered);
+    showStats->setChecked(mDisplayMode == DisplayMode::mode_extended);
+    connect(showStats, &QAction::triggered, this, [this](bool checked) {
+        mDisplayMode = checked ? DisplayMode::mode_extended : DisplayMode::mode_simple;
+        DkSettingsManager::param().display().histogramStyle = static_cast<int>(mDisplayMode);
+        mIsDirty = true;
+        update();
+    });
 
-    mContextMenu = new QMenu(tr("Histogram Settings"));
+    auto *logScale = new QAction(tr("Log Scale"), this);
+    logScale->setCheckable(true);
+    logScale->setChecked(mLogScale);
+    connect(logScale, &QAction::triggered, this, [this](bool checked) {
+        mLogScale = checked;
+        mIsDirty = true;
+        DkSettingsManager::param().display().histogramScale = mLogScale ? scale_log : scale_linear;
+        update();
+    });
+
+    mContextMenu = new QMenu(this);
     mContextMenu->addAction(showStats);
+    mContextMenu->addAction(logScale);
 }
 
-DkHistogram::~DkHistogram() = default;
+DkHistogramWidget::~DkHistogramWidget() = default;
 
 /**
  * Paints the image histogram
  **/
-void DkHistogram::paintEvent(QPaintEvent *)
+void DkHistogramWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.fillRect(1, 1, width(), height(), DkSettingsManager::param().display().hudBgColor);
+    painter.fillRect(rect(), DkSettingsManager::param().display().hudBgColor);
 
-    int numTextLines;
-    if (mDisplayMode == DisplayMode::histogram_mode_simple) {
-        numTextLines = 0;
-    } else {
-        // histogram_mode_extended has 2 lines of text
-        numTextLines = 2;
-    }
+    if (mIsValid) {
+        const float dpr = devicePixelRatio();
+        QSize sz = size() * dpr;
 
-    const int margin = 5;
-    const int TEXT_SIZE = 12 + 1; // FIXME just guessed
-    const int textHeight = numTextLines * TEXT_SIZE + margin;
-
-    int binHeight = height() - margin * 2 - textHeight;
-    int binBottom = height() - margin - textHeight;
-
-    // draw Histogram
-    if (mIsPainted && mMaxValue > 0) {
-        for (int x = 0; x < 256; x++) {
-            // get bounded values
-            int rLineHeight = qMax(qMin(qRound((float)mHist[0][x] * binHeight * mScaleFactor / mMaxValue), binHeight),
-                                   0);
-            int gLineHeight = qMax(qMin(qRound((float)mHist[1][x] * binHeight * mScaleFactor / mMaxValue), binHeight),
-                                   0);
-            int bLineHeight = qMax(qMin(qRound((float)mHist[2][x] * binHeight * mScaleFactor / mMaxValue), binHeight),
-                                   0);
-            int maxLineHeight = qMax(qMax(rLineHeight, gLineHeight), bLineHeight);
-
-            painter.setCompositionMode(QPainter::CompositionMode_Clear);
-            painter.setPen(Qt::black);
-            painter.drawLine(QPoint(x + margin, binBottom), QPoint(x + margin, binBottom - maxLineHeight));
-
-            painter.setCompositionMode(QPainter::CompositionMode_Screen);
-            painter.setPen(Qt::red);
-            painter.drawLine(QPoint(x + margin, binBottom), QPoint(x + margin, binBottom - rLineHeight));
-            painter.setPen(Qt::green);
-            painter.drawLine(QPoint(x + margin, binBottom), QPoint(x + margin, binBottom - gLineHeight));
-            painter.setPen(Qt::blue);
-            painter.drawLine(QPoint(x + margin, binBottom), QPoint(x + margin, binBottom - bLineHeight));
+        if (mHistImage.size() != sz) {
+            mHistImage = QImage(sz, DkImage::targetFormat());
+            mHistImage.setDevicePixelRatio(dpr);
         }
-    }
 
-    if (mDisplayMode == DisplayMode::histogram_mode_extended) {
-        // draw histogram text
-        double megaPixels = (double)mNumPixels * 10.0e-7;
-        painter.setPen(QColor(255, 255, 255, 200));
-
-        QString histText1("Pixels: %1\tMPix: %2");
-        painter.drawText(QPoint(margin, height() - 2 * TEXT_SIZE + margin),
-                         histText1.arg(mNumPixels, 10, 10).arg(megaPixels, 10, 'f', 2));
-
-        if (mMinBinValue < 256) {
-            // gray image statistics
-            QString histText2("Min: %1\tMax: %2\tValue Count: %3");
-            painter
-                .drawText(QPoint(margin, height() - 1 * TEXT_SIZE + margin),
-                          histText2.arg(mMinBinValue, 5, 10).arg(mMaxBinValue, 5, 10).arg(mNumDistinctValues, 5, 10));
-        } else {
-            // color image statistics
-            double blackPct = 100.0 * (double)mNumZeroPixels / (double)mNumPixels;
-            double whitePct = 100.0 * (double)mNumSaturatedPixels / (double)mNumPixels;
-            double goodPct = 100.0 * (double)(mNumPixels - mNumZeroPixels - mNumSaturatedPixels) / (double)mNumPixels;
-
-            QString histText2("Black:  %1\tGood: %3\tWhite: %2");
-            painter.drawText(QPoint(margin, height() - 1 * TEXT_SIZE + margin),
-                             histText2.arg(blackPct, 5, 'f', 1).arg(whitePct, 5, 'f', 1).arg(goodPct, 5, 'f', 1));
+        if (mIsDirty) {
+            mHistImage.fill(Qt::transparent);
+            mHistogram->render(mHistImage, mScaleFactor, mDisplayMode == DisplayMode::mode_extended, mLogScale);
+            mIsDirty = false;
         }
+
+        painter.drawImage(QPointF{}, mHistImage);
     }
 }
 
-void DkHistogram::contextMenuEvent(QContextMenuEvent *event)
+void DkHistogramWidget::contextMenuEvent(QContextMenuEvent *event)
 {
     mContextMenu->exec(event->globalPos());
     event->accept();
@@ -2131,202 +2102,78 @@ void DkHistogram::contextMenuEvent(QContextMenuEvent *event)
     // DkFadeWidget::contextMenuEvent(event);
 }
 
-void DkHistogram::onToggleStatsTriggered(bool show)
+void DkHistogramWidget::loadSettings()
 {
-    mDisplayMode = (show) ? DisplayMode::histogram_mode_extended : DisplayMode::histogram_mode_simple;
-    DkSettingsManager::param().display().histogramStyle = (int)mDisplayMode;
-    update();
-}
-
-void DkHistogram::loadSettings()
-{
-    int styleSetting = DkSettingsManager::param().display().histogramStyle;
-    auto maybeMode = static_cast<DisplayMode>(styleSetting);
-    if (maybeMode == DisplayMode::histogram_mode_simple || maybeMode == DisplayMode::histogram_mode_extended) {
-        mDisplayMode = maybeMode;
+    int mode = DkSettingsManager::param().display().histogramStyle;
+    if (mode >= 0 && mode < mode_end) {
+        mDisplayMode = static_cast<DisplayMode>(mode);
     } else {
-        mDisplayMode = DisplayMode::histogram_mode_simple;
+        mDisplayMode = mode_simple;
     }
+
+    mLogScale = DkSettingsManager::param().display().histogramScale == scale_log;
 }
 
 /**
  * Goes through the image and counts pixels values. They are used to create the image histogram.
  * @param currently displayed image
  **/
-void DkHistogram::drawHistogram(QImage imgQt)
+void DkHistogramWidget::drawHistogram(const QImage &imgQt)
 {
     if (!isVisible() || imgQt.isNull()) {
-        setPainted(false);
+        setValid(false);
         return;
     }
-
-    DkTimer dt;
-
-    // clear histogram values
-    mNumZeroPixels = 0;
-    mNumSaturatedPixels = 0;
-    mMaxBinValue = -1;
-    mMinBinValue = 256;
-    mMaxValue = 0;
-    mNumPixels = imgQt.width() * imgQt.height();
-
-    for (int idx = 0; idx < 256; idx++) {
-        mHist[0][idx] = 0;
-        mHist[1][idx] = 0;
-        mHist[2][idx] = 0;
+    if (!mHistogram) {
+        mHistogram = std::make_unique<DkHistogramEngine>();
     }
-
-    // count pixel- and total values, for
-    // 8 bit images
-    if (imgQt.depth() == 8) {
-        qDebug() << "8 bit histogram -------------------";
-
-        for (int rIdx = 0; rIdx < imgQt.height(); rIdx++) {
-            const unsigned char *pixel = imgQt.constScanLine(rIdx);
-
-            for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
-                mHist[0][*pixel]++;
-                mHist[1][*pixel]++;
-                mHist[2][*pixel]++;
-
-                if (*pixel == 255)
-                    mNumSaturatedPixels++;
-                if (*pixel < mMinBinValue)
-                    mMinBinValue = *pixel;
-                if (*pixel > mMaxBinValue)
-                    mMaxBinValue = *pixel;
-            }
-        }
-    }
-    // 24 bit images
-    else if (imgQt.depth() == 24) {
-        for (int rIdx = 0; rIdx < imgQt.height(); rIdx++) {
-            const unsigned char *pixel = imgQt.constScanLine(rIdx);
-            for (int cIdx = 0; cIdx < imgQt.width(); cIdx++) {
-                // If I understood the api correctly, the first bits are 0 if we have 24bpp & < 8 bits per channel
-                unsigned char pixR = *pixel;
-                mHist[0][*pixel]++;
-                pixel++;
-                unsigned char pixG = *pixel;
-                mHist[1][*pixel]++;
-                pixel++;
-                unsigned char pixB = *pixel;
-                mHist[2][*pixel]++;
-                pixel++;
-
-                if (pixR == 0 && pixG == 0 && pixB == 0) {
-                    mNumZeroPixels++;
-                } else if (pixR == 255 && pixG == 255 && pixB == 255) {
-                    mNumSaturatedPixels++;
-                }
-            }
-        }
-    }
-    // 32 bit images
-    else if (imgQt.depth() == 32) {
-        for (int rIdx = 0; rIdx < imgQt.height(); rIdx++) {
-            const QRgb *pixel = (QRgb *)(imgQt.constScanLine(rIdx));
-
-            for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
-                auto pixR = static_cast<size_t>(qRed(*pixel));
-                auto pixG = static_cast<size_t>(qGreen(*pixel));
-                auto pixB = static_cast<size_t>(qBlue(*pixel));
-
-                mHist[0][pixR]++;
-                mHist[1][pixG]++;
-                mHist[2][pixB]++;
-
-                if (pixR == 0 && pixG == 0 && pixB == 0) {
-                    mNumZeroPixels++;
-                } else if (pixR == 255 && pixG == 255 && pixB == 255) {
-                    mNumSaturatedPixels++;
-                }
-            }
-        }
-    }
-
-    // determine extreme values from the histogram
-    mNumDistinctValues = 0;
-
-    for (int idx = 0; idx < 256; idx++) {
-        if (mHist[0][idx] > mMaxValue)
-            mMaxValue = mHist[0][idx];
-        if (mHist[1][idx] > mMaxValue)
-            mMaxValue = mHist[1][idx];
-        if (mHist[2][idx] > mMaxValue)
-            mMaxValue = mHist[2][idx];
-
-        if (mHist[0][idx] || mHist[1][idx] || mHist[2][idx]) {
-            mNumDistinctValues++;
-        }
-    }
-
-    setPainted(true);
-    qDebug() << "drawing the histogram took me: " << dt;
+    mIsDirty = mHistogram->compute(imgQt);
+    setValid(mIsDirty);
     update();
 }
 
 /**
  * Clears the histogram panel
  **/
-void DkHistogram::clearHistogram()
+void DkHistogramWidget::clearHistogram()
 {
-    setPainted(false);
+    setValid(false);
     update();
 }
 
-void DkHistogram::setPainted(bool isPainted)
+void DkHistogramWidget::setValid(bool isValid)
 {
-    this->mIsPainted = isPainted;
-}
-
-void DkHistogram::setMaxHistogramValue(int maxValue)
-{
-    if (maxValue == 0)
-        setPainted(false);
-
-    this->mMaxValue = maxValue;
-}
-
-/**
- * Updates histogram values.
- * @param values to be copied
- **/
-void DkHistogram::updateHistogramValues(int histValues[][256])
-{
-    for (int i = 0; i < 256; i++) {
-        this->mHist[0][i] = histValues[0][i];
-        this->mHist[1][i] = histValues[1][i];
-        this->mHist[2][i] = histValues[2][i];
-    }
+    mIsValid = isValid;
 }
 
 /**
  * Mouse events for scaling the histogram - enlarge the histogram between the bottom axis and the cursor position
  **/
-void DkHistogram::mousePressEvent(QMouseEvent *event)
+void DkHistogramWidget::mousePressEvent(QMouseEvent *event)
 {
     // always propagate mouse events
     if (event->buttons() != Qt::LeftButton)
         DkFadeWidget::mousePressEvent(event);
 }
 
-void DkHistogram::mouseMoveEvent(QMouseEvent *event)
+void DkHistogramWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
         float cp = (float)(height() - event->pos().y());
 
         if (cp > 0) {
             mScaleFactor = height() / cp;
+            mIsDirty = true;
             update();
         }
     } else
         DkFadeWidget::mouseMoveEvent(event);
 }
 
-void DkHistogram::mouseReleaseEvent(QMouseEvent *event)
+void DkHistogramWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     mScaleFactor = 1;
+    mIsDirty = true;
     update();
 
     if (event->buttons() != Qt::LeftButton)
