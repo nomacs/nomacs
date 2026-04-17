@@ -1231,8 +1231,22 @@ bool DkMetaDataT::setDescription(const QString &description)
 
 bool DkMetaDataT::setRating(int r)
 {
-    if (mExifState == not_loaded || mExifState == no_data || getRating() == r)
+    if (mExifState == not_loaded || !mExifImg) {
         return false;
+    }
+
+    const int currentRating = (mExifState == no_data) ? -1 : getRating();
+    if (currentRating == r) {
+        return false;
+    }
+
+    if (r < 0 || r > 5) {
+        return false;
+    }
+
+    if (currentRating < 0 && r == 0) {
+        return false;
+    }
 
     int16_t ratingPercent = 0;
     switch (r) {
@@ -1251,8 +1265,6 @@ bool DkMetaDataT::setRating(int r)
     case 5:
         ratingPercent = 99;
         break;
-    default:
-        r = 0;
     }
 
     Exiv2::ExifData &exifData = mExifImg->exifData(); // Exif.Image.Rating  - short
