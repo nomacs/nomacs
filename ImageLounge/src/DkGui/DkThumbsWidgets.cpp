@@ -28,11 +28,8 @@
 #include "DkThumbsWidgets.h"
 
 #include "DkActionManager.h"
-#include "DkBasicLoader.h"
 #include "DkDialog.h"
-#include "DkImageContainer.h"
 #include "DkImageLoader.h"
-#include "DkImageStorage.h"
 #include "DkMessageBox.h"
 #include "DkNoMacs.h"
 #include "DkSettings.h"
@@ -42,20 +39,19 @@
 #include "DkTimer.h"
 #include "DkUtils.h"
 
-#include <qpixmap.h>
-#include <qpixmapcache.h>
-
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
 #include <QDrag>
 #include <QGraphicsSceneMouseEvent>
-#include <QHBoxLayout>
 #include <QInputDialog>
+#include <QLayout>
 #include <QLineEdit>
 #include <QMenu>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QPixmap>
+#include <QPixmapCache>
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScrollBar>
