@@ -34,14 +34,13 @@
 #include <optional>
 #include <queue>
 
+#include "DkImageStorage.h"
 #include "DkMetaData.h"
 
 class QThreadPool;
 
 namespace nmc
 {
-
-#define max_thumb_size 400
 
 class DkThumbsThreadPool
 {
@@ -58,6 +57,42 @@ private:
     QThreadPool *mPool;
 };
 
+enum class LoadThumbnailOption {
+    // Try to load EXIF thumbnail first, and fall back to full image if not exist.
+    none,
+
+    // Only load EXIF thumbnail.
+    force_exif,
+
+    // Return requested size if smaller than full image
+    force_size,
+
+    // Only load full image.
+    force_full,
+};
+
+using ThumbnailId = size_t;
+
+struct LoadThumbnailRequest {
+    ThumbnailId id{};
+    QString filePath{};
+    LoadThumbnailOption option{};
+    int size{};
+    ScaleConstraint constraint{};
+
+    LoadThumbnailRequest() = default;
+
+    explicit LoadThumbnailRequest(const QString &filePath_,
+                                  LoadThumbnailOption option_ = {},
+                                  int size_ = -1,
+                                  ScaleConstraint constraint_ = {});
+
+    size_t sizeInBytes() const
+    {
+        return filePath.length() * 2;
+    }
+};
+
 struct LoadThumbnailResult {
     QImage thumb{};
     QString filePath{};
@@ -66,18 +101,7 @@ struct LoadThumbnailResult {
     bool transformed{};
 };
 
-enum class LoadThumbnailOption {
-    // Try to load EXIF thumbnail first, and fall back to full image if not exist.
-    none,
-
-    // Only load EXIF thumbnail.
-    force_exif,
-
-    // Only load full image.
-    force_full,
-};
-
-std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt);
+std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request);
 
 struct ThumbnailFromMetadata {
     QImage thumb{};
@@ -91,37 +115,44 @@ class DkThumbLoader : public QObject
     Q_OBJECT
 
     struct LoadThumbnailResultLocal {
+        LoadThumbnailRequest request;
         QImage thumb{};
-        QString filePath{};
         bool valid{};
         bool fromExif{};
+
+        size_t sizeInBytes() const
+        {
+            return request.sizeInBytes() + thumb.sizeInBytes();
+        }
     };
 
-    QCache<QString, LoadThumbnailResultLocal> mThumbnailCache{100000000}; // 100 MB
+    QCache<ThumbnailId, LoadThumbnailResultLocal> mThumbnailCache{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal>> mWatchers{};
     std::vector<QFutureWatcher<LoadThumbnailResultLocal> *> mIdleWatchers{};
-    std::queue<QString> mQueue{};
-    std::queue<LoadThumbnailResultLocal> mFullImageQueue{};
-    QHash<QString, int> mCounts{};
+    std::queue<LoadThumbnailRequest> mQueue{};
+    QHash<ThumbnailId, int> mCounts{};
 
 public:
     DkThumbLoader();
-    void requestThumbnail(const QString &filePath);
-    void cancelThumbnailRequest(const QString &filePath);
 
-    // When we have full image loaded in the viewport,
-    // create a side effect to update the thumbnail.
-    void dispatchFullImage(const QString &filePath, const QImage &img);
+    // Increase refcount on this request, signal sent on completion or failure.
+    // If request is cached, send signal immediately
+    // No signal is sent if request is cancelled while waiting, but once
+    // it hits the thread pool no cancellation is possible.
+    void requestThumbnail(const LoadThumbnailRequest &request);
+
+    // Decrease the refcount on this request. If the request is in the thread pool
+    // or multiple requests are made to the same thumb, signals will still be sent.
+    void cancelThumbnailRequest(const LoadThumbnailRequest &request);
 
 signals:
-    void thumbnailLoaded(const QString &filePath, const QImage &thumb, bool fromExif);
-    void thumbnailLoadFailed(const QString &filePath);
-    void thumbnailRequested(const QString &filePath, LoadThumbnailOption opt = LoadThumbnailOption::force_exif);
+    // Always send one of these signals on completion. Cancellation does not guarantee these won't be sent
+    void thumbnailLoaded(ThumbnailId id, const QString &filePath, const QImage &thumb, bool fromExif);
+    void thumbnailLoadFailed(ThumbnailId id, const QString &filePath);
 
 private:
     void onThumbnailLoadFinished();
-    static LoadThumbnailResultLocal loadThumbnailLocal(const QString &filePath);
-    static LoadThumbnailResultLocal scaleFullThumbnail(const QString &filePath, const QImage &img);
+    static LoadThumbnailResultLocal loadThumbnailLocal(const LoadThumbnailRequest &request);
     void handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w);
 };
 }

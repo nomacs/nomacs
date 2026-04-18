@@ -199,9 +199,5 @@ protected:
     DkPluginViewPort *mPluginViewport = nullptr;
 
     QSharedPointer<DkImageContainerT> mImgC;
-
-    QLabel *mWheelButton;
-
-    QPointF mEnterPos;
 };
 }

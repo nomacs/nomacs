@@ -37,7 +37,6 @@
 #include "DkMessageBox.h"
 #include "DkPreferenceWidgets.h"
 #include "DkSettings.h"
-#include "DkThumbs.h"
 #include "DkThumbsWidgets.h"
 #include "DkUtils.h"
 #include "DkViewPort.h"
@@ -167,7 +166,8 @@ void DkTabInfo::deactivate()
 
 void DkTabInfo::activate(bool isActive)
 {
-    if (mImageLoader)
+    // on thumb preview causes duplicate updates which are very slow for large directories
+    if (mImageLoader && mTabMode != tab_thumb_preview)
         mImageLoader->activate(isActive);
 }
 
@@ -799,10 +799,6 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
         updateTab(tabInfo);
         switchWidget(tabInfo->getMode());
     }
-
-    if (img && !img->isEdited()) {
-        mThumbLoader.dispatchFullImage(img->filePath(), img->pixmap());
-    }
 }
 
 QVector<QSharedPointer<DkTabInfo>> DkCentralWidget::getTabs() const
@@ -829,26 +825,32 @@ void DkCentralWidget::showThumbView(bool show)
         switchWidget(thumbs_widget);
         tabInfo->activate();
 
-        // should be definitely true
-        if (auto tw = getThumbScrollWidget()) {
-            tw->updateThumbs(tabInfo->getImageLoader()->getImages());
-            tw->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
+        auto tw = getThumbScrollWidget();
+        Q_ASSERT(tw);
 
-            if (tabInfo->getImage())
-                tw->getThumbWidget()->ensureVisible(tabInfo->getImage()->filePath());
+        auto imageLoader = tabInfo->getImageLoader();
 
-            connect(tw,
-                    &DkThumbScrollWidget::updateDirSignal,
-                    tabInfo->getImageLoader().data(),
-                    &DkImageLoader::loadDirRecursive,
-                    Qt::UniqueConnection);
-            connect(tw,
-                    &DkThumbScrollWidget::filterChangedSignal,
-                    tabInfo->getImageLoader().data(),
-                    &DkImageLoader::setFolderFilter,
-                    Qt::UniqueConnection);
-            emit thumbViewLoadedSignal(tabInfo->getImageLoader().data()->getDirPath());
+        tw->getThumbWidget()->setImageLoader(imageLoader);
+
+        if (imageLoader) {
+            tw->updateThumbs(imageLoader->getImages());
+
+            auto image = imageLoader->getCurrentImage();
+            if (image)
+                tw->getThumbWidget()->ensureVisible(image->filePath());
         }
+
+        connect(tw,
+                &DkThumbScrollWidget::updateDirSignal,
+                tabInfo->getImageLoader().data(),
+                &DkImageLoader::loadDirRecursive,
+                Qt::UniqueConnection);
+        connect(tw,
+                &DkThumbScrollWidget::filterChangedSignal,
+                tabInfo->getImageLoader().data(),
+                &DkImageLoader::setFolderFilter,
+                Qt::UniqueConnection);
+        emit thumbViewLoadedSignal(tabInfo->getImageLoader().data()->getDirPath());
 
     } else {
         if (auto tw = getThumbScrollWidget()) {
@@ -873,8 +875,12 @@ void DkCentralWidget::showViewPort(bool show /* = true */)
         switchWidget(mWidgets[viewport_widget]);
         if (getCurrentImage())
             getViewPort()->setImage(getCurrentImage()->image());
-    } else if (hasViewPort())
+        getViewPort()->show();
+    } else if (hasViewPort()) {
+        getViewPort()->getController()->getFilePreview()->cancelLoading();
         getViewPort()->deactivate();
+        getViewPort()->hide();
+    }
 }
 
 void DkCentralWidget::showRecentFiles(bool show)

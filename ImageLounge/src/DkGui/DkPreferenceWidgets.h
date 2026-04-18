@@ -214,6 +214,7 @@ signals:
     void infoSignal(const QString &msg) const;
 
 protected:
+    void showRestartLabel() const;
     void createLayout();
     void paintEvent(QPaintEvent *ev) override;
 };

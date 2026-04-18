@@ -28,14 +28,12 @@
 #include "DkThumbs.h"
 
 #include "DkBasicLoader.h"
+#include "DkCachedThumb.h"
 #include "DkFileInfo.h"
-#include "DkImageStorage.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
 
-#include <QColorSpace>
-#include <QStringBuilder>
 #include <QtConcurrentRun>
 
 namespace nmc
@@ -85,54 +83,78 @@ std::optional<QImage> loadThumbnailFromFullImage(const QString &filePath, QShare
     }
 }
 
-std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadThumbnailOption opt)
+std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request)
 {
     DkTimer dt{};
 
     auto metaData = std::make_unique<DkMetaDataT>();
     QSharedPointer<QByteArray> ba{};
-    DkFileInfo fileInfo(filePath);
+    DkFileInfo fileInfo(request.filePath);
 
     if (fileInfo.isSymLink() && !fileInfo.resolveSymLink()) {
-        qWarning() << "[Thumbnail] broken link:" << filePath;
+        qWarning() << "[Thumbnail] broken link:" << request.filePath;
         return std::nullopt;
-    }
-
-    if (fileInfo.isFromZip()) {
-        std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
-        if (io)
-            ba.reset(new QByteArray(io->readAll()));
     }
 
     const QString thumbPath = fileInfo.path(); // resolved path (shortcuts/aliases)
 
-    // read the thumbnail from the exif data
-    try {
-        if (!ba || ba->isEmpty()) {
-            metaData->readMetaData(thumbPath);
-        } else {
-            metaData->readMetaData(thumbPath, ba);
-        }
-    } catch (...) {
-        // this should never happen since we handle exceptions in metaData
-        qWarning() << "[Thumbnail] unexpected exception when reading exif thumbnail";
-    }
-
     std::optional<ThumbnailFromMetadata> exifThumb{};
-    if (opt != LoadThumbnailOption::force_full) {
-        exifThumb = loadThumbnailFromMetadata(*metaData);
-    }
-
     std::optional<QImage> fullThumb{};
-    if (opt != LoadThumbnailOption::force_exif && !exifThumb) {
-        fullThumb = loadThumbnailFromFullImage(thumbPath, ba);
+    std::unique_ptr<DkCachedThumb> cachedThumb{};
+
+    if (request.option != LoadThumbnailOption::force_full //
+        && DkSettingsManager::param().resources().thumbDiskCache
+        && DkSettingsManager::param().resources().thumbDiskSpace > 0) {
+        cachedThumb = std::make_unique<DkCachedThumb>(fileInfo, request.size, request.constraint);
+        QImage thumb = cachedThumb->load();
+        if (!thumb.isNull()) {
+            fullThumb = thumb;
+        }
     }
 
-    if (!fullThumb && !exifThumb) {
-        return std::nullopt;
+    if (!fullThumb) {
+        if (fileInfo.isFromZip()) {
+            std::unique_ptr<QIODevice> io = fileInfo.getIODevice();
+            if (io)
+                ba.reset(new QByteArray(io->readAll()));
+        }
+
+        // read the thumbnail from the exif data
+        try {
+            if (!ba || ba->isEmpty()) {
+                metaData->readMetaData(thumbPath);
+            } else {
+                metaData->readMetaData(thumbPath, ba);
+            }
+        } catch (...) {
+            // this should never happen since we handle exceptions in metaData
+            qWarning() << "[Thumbnail] unexpected exception when reading exif thumbnail";
+        }
+
+        if (request.option != LoadThumbnailOption::force_full) {
+            exifThumb = loadThumbnailFromMetadata(*metaData);
+        }
+
+        bool loadFull = request.option != LoadThumbnailOption::force_exif && !exifThumb;
+        loadFull |= request.option == LoadThumbnailOption::force_size && exifThumb
+            && qMax(exifThumb->thumb.height(), exifThumb->thumb.width()) < request.size;
+        if (loadFull) {
+            exifThumb = {};
+            fullThumb = loadThumbnailFromFullImage(thumbPath, ba);
+        }
+
+        if (!fullThumb && !exifThumb) {
+            return std::nullopt;
+        }
     }
 
     QImage thumb = exifThumb ? exifThumb.value().thumb : fullThumb.value();
+
+    if (!thumb.isNull() && cachedThumb) {
+        if (dt.elapsed() >= 10) { // skip save if it loaded quickly
+            cachedThumb->save(thumb);
+        }
+    }
 
     LoadThumbnailResult res = {
         thumb,
@@ -142,9 +164,10 @@ std::optional<LoadThumbnailResult> loadThumbnail(const QString &filePath, LoadTh
         exifThumb && exifThumb->transformed,
     };
 
-    QString info = QString("[Thumbnail] %1 exif=%2 size=%3x%4 %8ms")
-                       .arg(thumbPath)
+    QString info = QString("[Thumbnail] %1 exif=%2 req=%3 size=%4x%5 %6ms")
+                       .arg(fileInfo.fileName())
                        .arg(exifThumb ? "yes" : "no")
+                       .arg(request.size)
                        .arg(res.thumb.width())
                        .arg(res.thumb.height())
                        .arg(dt.elapsed());
@@ -203,8 +226,10 @@ void removeBlackBorder(QImage &img)
 // DkThumbsThreadPool --------------------------------------------------------------------
 DkThumbsThreadPool::DkThumbsThreadPool()
 {
+    const auto &res = DkSettingsManager::param().resources();
+    int numThreads = qBound(1, res.thumbThreads, QThread::idealThreadCount() - 2);
     mPool = new QThreadPool();
-    mPool->setMaxThreadCount(qMax(mPool->maxThreadCount() - 2, 1));
+    mPool->setMaxThreadCount(numThreads);
 }
 
 DkThumbsThreadPool &DkThumbsThreadPool::instance()
@@ -224,9 +249,16 @@ void DkThumbsThreadPool::clear()
 }
 
 DkThumbLoader::DkThumbLoader()
-    : mWatchers(qMax(QThread::idealThreadCount() - 2, 1))
 {
-    mIdleWatchers.reserve(mWatchers.size());
+    unsigned numThreads = DkThumbsThreadPool::pool()->maxThreadCount();
+
+    const auto &res = DkSettingsManager::param().resources();
+    auto maxBytes = qsizetype(res.thumbCacheMemory) * 1024 * 1024;
+
+    mThumbnailCache.setMaxCost(maxBytes);
+    mWatchers = decltype(mWatchers){numThreads};
+
+    mIdleWatchers.reserve(numThreads);
     for (auto &ele : mWatchers) {
         mIdleWatchers.push_back(&ele);
         connect(&ele,
@@ -236,68 +268,57 @@ DkThumbLoader::DkThumbLoader()
     }
 }
 
-DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const QString &filePath)
+DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::loadThumbnailLocal(const LoadThumbnailRequest &request)
 {
-    const auto res = loadThumbnail(filePath, LoadThumbnailOption::none);
+    const auto res = loadThumbnail(request);
     if (!res) {
-        return {QImage(), filePath, false, false};
+        return {request, QImage(), false, false};
     }
-    return {DkImage::createThumb(res->thumb), filePath, true, res->fromExif};
+    return {request, DkImage::createThumb(res->thumb, request.size, request.constraint), true, res->fromExif};
 }
 
-DkThumbLoader::LoadThumbnailResultLocal DkThumbLoader::scaleFullThumbnail(const QString &filePath, const QImage &img)
+void DkThumbLoader::requestThumbnail(const LoadThumbnailRequest &request)
 {
-    return {DkImage::createThumb(img), filePath, true, false};
-}
-
-void DkThumbLoader::requestThumbnail(const QString &filePath)
-{
-    const auto *cached = mThumbnailCache.object(filePath);
+    const LoadThumbnailResultLocal *cached = mThumbnailCache.object(request.id);
     if (cached) {
         if (!cached->valid) {
-            emit thumbnailLoadFailed(cached->filePath);
-            return;
+            emit thumbnailLoadFailed(cached->request.id, cached->request.filePath);
+        } else {
+            emit thumbnailLoaded(cached->request.id, cached->request.filePath, cached->thumb, cached->fromExif);
         }
-
-        emit thumbnailLoaded(cached->filePath, cached->thumb, cached->fromExif);
         return;
     }
 
     if (mIdleWatchers.size() == 0) {
-        const int count = mCounts.value(filePath, 0);
-        if (count == 0) {
-            mQueue.push(filePath);
+        // We may have multiple widgets requesting the same thumbnail. With cancellation, we
+        // must ensure if only one cancels the others will not; and so we count the requests.
+        auto it = mCounts.find(request.id);
+        if (it == mCounts.end()) {
+            mQueue.push(request);
+            mCounts.insert(request.id, 1);
+        } else {
+            it.value() += 1;
+            Q_ASSERT(it.value() > 0);
         }
-        mCounts.insert(filePath, count + 1);
         return;
     }
 
     auto *w = mIdleWatchers.back();
     mIdleWatchers.pop_back();
-    w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
+    w->setFuture(QtConcurrent::run(loadThumbnailLocal, request));
 }
 
-void DkThumbLoader::cancelThumbnailRequest(const QString &filePath)
+void DkThumbLoader::cancelThumbnailRequest(const LoadThumbnailRequest &request)
 {
-    auto it = mCounts.find(filePath);
+    auto it = mCounts.find(request.id);
     if (it == mCounts.end()) {
         return;
     }
     it.value() -= 1;
-}
-
-void DkThumbLoader::dispatchFullImage(const QString &filePath, const QImage &img)
-{
-    if (mIdleWatchers.size() == 0) {
-        // Full image takes priority, so we can skip the pending requests
-        mCounts.remove(filePath);
-        mFullImageQueue.push({img, filePath, true, false});
-        return;
+    Q_ASSERT(it.value() >= 0);
+    if (it.value() == 0) {
+        mCounts.remove(it.key());
     }
-
-    auto *w = mIdleWatchers.back();
-    mIdleWatchers.pop_back();
-    w->setFuture(QtConcurrent::run(scaleFullThumbnail, filePath, img));
 }
 
 void DkThumbLoader::onThumbnailLoadFinished()
@@ -306,40 +327,59 @@ void DkThumbLoader::onThumbnailLoadFinished()
     Q_ASSERT(w != nullptr);
 
     auto *res = new LoadThumbnailResultLocal{w->result()};
+    const size_t resSize = sizeof(*res) + res->sizeInBytes();
+
+    auto it = mCounts.find(res->request.id);
+    if (it != mCounts.end()) {
+        // We have finished the request, the count might be gone due to cancellations
+        mCounts.remove(it.key());
+    }
 
     handleFinishedWatcher(w);
 
     if (!res->valid) { // NOLINT(clang-analyzer-core.uninitialized.Branch) -- false positive
-        emit thumbnailLoadFailed(res->filePath);
-        mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size());
+        emit thumbnailLoadFailed(res->request.id, res->request.filePath);
+        mThumbnailCache.insert(res->request.id, res, resSize);
         return;
     }
 
-    emit thumbnailLoaded(res->filePath, res->thumb, res->fromExif);
+    emit thumbnailLoaded(res->request.id, res->request.filePath, res->thumb, res->fromExif);
 
     // Add cache after finished using res because the cache takes ownership.
-    // Add 1 to avoid zero cost.
-    mThumbnailCache.insert(res->filePath, res, 1 + res->filePath.size() + res->thumb.sizeInBytes());
+    // FIXME: what happens if signal handler requests the same thing again?
+    mThumbnailCache.insert(res->request.id, res, resSize);
 }
 
 void DkThumbLoader::handleFinishedWatcher(QFutureWatcher<LoadThumbnailResultLocal> *w)
 {
-    if (mFullImageQueue.size() > 0) {
-        const LoadThumbnailResultLocal &item = mFullImageQueue.front();
-        w->setFuture(QtConcurrent::run(scaleFullThumbnail, item.filePath, item.thumb));
-        mFullImageQueue.pop();
-        return;
-    }
-
-    while (mQueue.size() > 0) {
-        const QString filePath = mQueue.front();
+    while (!mQueue.empty()) {
+        // Remove next request from the queue; if it has no refcount, all requests were cancelled
+        const LoadThumbnailRequest request = std::move(mQueue.front());
         mQueue.pop();
-        if (mCounts.value(filePath, 0) > 0) {
-            mCounts.remove(filePath);
-            w->setFuture(QtConcurrent::run(loadThumbnailLocal, filePath));
+        auto it = mCounts.find(request.id);
+        if (it != mCounts.end()) {
+            // Do not drop refcount here, we need to keep count while the request is processed
+            w->setFuture(QtConcurrent::run(loadThumbnailLocal, request));
             return;
         }
     }
     mIdleWatchers.push_back(w);
+}
+
+LoadThumbnailRequest::LoadThumbnailRequest(const QString &filePath_,
+                                           LoadThumbnailOption option_,
+                                           int size_,
+                                           ScaleConstraint constraint_)
+    : filePath(filePath_)
+    , option(option_)
+    , size(size_)
+    , constraint(constraint_)
+{
+    QString key = filePath;
+    key += QString::number(static_cast<int>(option));
+    key += QString::number(static_cast<int>(constraint_));
+    key += QString::number(size);
+
+    id = qHash(key);
 }
 }

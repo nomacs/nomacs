@@ -476,6 +476,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
     display_p.iconSize = settings.value("iconSize", display_p.iconSize).toInt();
     display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
+    display_p.highQualityThumbs = settings.value("highQualityThumbs", display_p.highQualityThumbs).toBool();
     // display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
     display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
     display_p.highQualityAntiAliasing = settings.value("highQualityAntiAliasing", display_p.highQualityAntiAliasing)
@@ -555,6 +556,15 @@ void DkSettings::load(QSettings &settings, bool defaults)
     resources_p.preferredExtension = settings.value("preferredExtension", resources_p.preferredExtension).toString();
     resources_p.gammaCorrection = settings.value("gammaCorrection", resources_p.gammaCorrection).toBool();
     resources_p.loadSavedImage = settings.value("loadSavedImage", resources_p.loadSavedImage).toInt();
+
+    resources_p.maxThumbSize = settings.value("maxThumbSize", resources_p.maxThumbSize).toInt();
+    resources_p.thumbThreads = settings.value("thumbThreads", resources_p.thumbThreads).toInt();
+    resources_p.thumbCacheMemory = settings.value("thumbCacheMemory", resources_p.thumbCacheMemory).toInt();
+    resources_p.thumbDiskSpace = settings.value("thumbDiskSpace", resources_p.thumbDiskSpace).toInt();
+    resources_p.preloadThumbs = settings.value("preloadThumbs", resources_p.preloadThumbs).toBool();
+    resources_p.sharedThumbs = settings.value("sharedThumbs", resources_p.sharedThumbs).toBool();
+    resources_p.thumbDiskCache = settings.value("thumbDiskCache", resources_p.thumbDiskCache).toBool();
+    resources_p.cleanupThumbCache = settings.value("cleanupDiskCache", resources_p.cleanupThumbCache).toBool();
 
     if (sync_p.switchModifier) {
         global_p.altMod = Qt::ControlModifier;
@@ -738,6 +748,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("iconSize", display_p.iconSize);
     if (force || display_p.thumbPreviewSize != display_d.thumbPreviewSize)
         settings.setValue("thumbPreviewSize", display_p.thumbPreviewSize);
+    if (force || display_p.highQualityThumbs != display_d.highQualityThumbs)
+        settings.setValue("highQualityThumbs", display_p.highQualityThumbs);
     // if (force ||display_p.saveThumb != display_d.saveThumb)
     //	settings.setValue("saveThumb", display_p.saveThumb);
     if (force || display_p.antiAliasing != display_d.antiAliasing)
@@ -861,6 +873,23 @@ void DkSettings::save(QSettings &settings, bool force)
     if (force || resources_p.loadSavedImage != resources_d.loadSavedImage)
         settings.setValue("loadSavedImage", resources_p.loadSavedImage);
 
+    if (force || resources_p.maxThumbSize != resources_d.maxThumbSize)
+        settings.setValue("maxThumbSize", resources_p.maxThumbSize);
+    if (force || resources_p.thumbThreads != resources_d.thumbThreads)
+        settings.setValue("thumbThreads", resources_p.thumbThreads);
+    if (force || resources_p.thumbCacheMemory != resources_d.thumbCacheMemory)
+        settings.setValue("thumbCacheMemory", resources_p.thumbCacheMemory);
+    if (force || resources_p.thumbDiskSpace != resources_d.thumbDiskSpace)
+        settings.setValue("thumbDiskSpace", resources_p.thumbDiskSpace);
+    if (force || resources_p.preloadThumbs != resources_d.preloadThumbs)
+        settings.setValue("preloadThumbs", resources_p.preloadThumbs);
+    if (force || resources_p.sharedThumbs != resources_d.sharedThumbs)
+        settings.setValue("sharedThumbs", resources_p.sharedThumbs);
+    if (force || resources_p.thumbDiskCache != resources_d.thumbDiskCache)
+        settings.setValue("thumbDiskCache", resources_p.thumbDiskCache);
+    if (force || resources_p.cleanupThumbCache != resources_d.cleanupThumbCache)
+        settings.setValue("cleanupDiskCache", resources_p.cleanupThumbCache);
+
     settings.endGroup();
 
     // keep loaded settings in mind
@@ -979,6 +1008,7 @@ void DkSettings::setToDefaultSettings()
     display_p.thumbSize = 64;
     display_p.iconSize = 20;
     display_p.thumbPreviewSize = 64;
+    display_p.highQualityThumbs = false;
     display_p.antiAliasing = true;
     display_p.highQualityAntiAliasing = false;
     display_p.showCrop = false;
@@ -1036,6 +1066,15 @@ void DkSettings::setToDefaultSettings()
     resources_p.gammaCorrection = true;
     resources_p.loadSavedImage = ls_load_to_tab;
     resources_p.waitForLastImg = true;
+
+    resources_p.maxThumbSize = 256;
+    resources_p.thumbThreads = qMax(1, QThread::idealThreadCount() - 2);
+    resources_p.thumbCacheMemory = 128;
+    resources_p.thumbDiskSpace = 0;
+    resources_p.preloadThumbs = false;
+    resources_p.sharedThumbs = true;
+    resources_p.thumbDiskCache = false;
+    resources_p.cleanupThumbCache = false;
 
     qDebug() << "ok... default settings are set";
 }
