@@ -97,8 +97,9 @@ bool DkFadeHelper::isFadeEnabled() const
 
 void DkFadeHelper::fade(bool show, bool saveSetting)
 {
-    qDebug().nospace() << "[fade] " << mWidget->metaObject()->className() << " show=" << show << " save=" << saveSetting
-                       << " showing=" << mShowing << " hiding=" << mHiding << " visible=" << mWidget->isVisible();
+    // qDebug().nospace() << "[fade] " << mWidget->metaObject()->className() << " show=" << show << " save=" <<
+    // saveSetting
+    //                    << " showing=" << mShowing << " hiding=" << mHiding << " visible=" << mWidget->isVisible();
 
     if (mDisplayBits && saveSetting) {
         int bit = DkSettingsManager::param().app().currentAppMode;

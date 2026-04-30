@@ -181,6 +181,7 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
                 opt = LoadThumbnailOption::force_full;
             }
 
+            // FIXME: must ignore orientation metadata here
             std::optional<LoadThumbnailResult> res = loadThumbnail(filePath, opt);
             if (!res || (!forceSave && res->fromExif)) {
                 return;
@@ -198,7 +199,7 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
                     rotatedThumb = rotatedThumb.transformed(rotationMatrix);
                 }
 
-                res->metaData->updateImageMetaData(rotatedThumb);
+                res->metaData->updateImageMetaData(rotatedThumb); // FIXME: resets orientation data
                 res->metaData->saveMetaData(res->filePath);
             } catch (...) {
                 qWarning() << "Sorry, I could not save the metadata";
