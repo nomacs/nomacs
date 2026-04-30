@@ -277,6 +277,12 @@ if(EXISTS ${OPEN_SSL_PATH})
     message(STATUS "open ssl found...")
 endif()
 
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/tls)
+file(GLOB QT_TLS_PLUGINS "${QT_QMAKE_PATH}/../plugins/tls/*.dll")
+file(COPY ${QT_TLS_PLUGINS} DESTINATION ${CMAKE_BINARY_DIR}/Release/tls PATTERN *backendd.dll EXCLUDE)
+file(COPY ${QT_TLS_PLUGINS} DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/tls PATTERN *backendd.dll EXCLUDE)
+file(COPY ${QT_TLS_PLUGINS} DESTINATION ${CMAKE_BINARY_DIR}/Debug/tls)
+
 # add default settings file
 #file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 #file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
