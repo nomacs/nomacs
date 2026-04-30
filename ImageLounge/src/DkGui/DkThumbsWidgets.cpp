@@ -2349,9 +2349,11 @@ void DkRecentDirWidget::createLayout(DkThumbLoader *thumbLoader)
     if (DkUtils::tryExists(firstFile, 30)) {
         const DkFileInfoList files = mRecentDir.files(4);
         for (auto &tp : files) {
-            auto tpl = new DkThumbPreviewLabel(tp.path(), thumbLoader, 42, this);
-            connect(tpl, &DkThumbPreviewLabel::loadFileSignal, this, &DkRecentDirWidget::loadFileSignal);
-            tls << tpl;
+            if (tp.exists()) {
+                auto tpl = new DkThumbPreviewLabel(tp.path(), thumbLoader, 42, this);
+                connect(tpl, &DkThumbPreviewLabel::loadFileSignal, this, &DkRecentDirWidget::loadFileSignal);
+                tls << tpl;
+            }
         }
     } else {
         qInfo() << firstFile.path() << "does not exist - according to a fast check";
