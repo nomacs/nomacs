@@ -5,6 +5,7 @@
 #include "DkUtils.h"
 
 #include <QBuffer>
+#include <QByteArrayView>
 #include <QCryptographicHash>
 #include <QDir>
 #include <QSaveFile>
@@ -35,14 +36,78 @@ static void disableContentIndexing(const QString &path)
 }
 #endif
 
+// check if cached thumb was written by nomacs, without decoding PNG image
+static bool isNomacsThumb(const QString &filename)
+{
+    // PNG uses big-endian, swap to little
+    static constexpr auto readUint32 = [](QFile &file) {
+        QByteArray buffer = file.read(4);
+        if (buffer.size() != 4) {
+            return 0u;
+        }
+        static_assert(Q_BYTE_ORDER == Q_LITTLE_ENDIAN);
+        return (static_cast<uint32_t>(buffer[0]) << 24) | (static_cast<uint32_t>(buffer[1]) << 16)
+            | (static_cast<uint32_t>(buffer[2]) << 8) | static_cast<uint32_t>(buffer[3]);
+    };
+
+    struct Comment {
+        QString key, value;
+    };
+
+    // read a chunk from the PNG file and return comment
+    static constexpr auto readChunk = [](QFile &file) -> std::optional<Comment> {
+        const uint32_t length = readUint32(file);
+        const QByteArray type = file.read(4);
+
+        if (type.length() != 4) {
+            return std::nullopt;
+        }
+
+        const QByteArray data = file.read(length);
+        (void)readUint32(file); // crc of chunk type
+
+        if (data.length() == length && type == "tEXt") {
+            // the key and value are separated by \0
+            QString comment = QString::fromLatin1(data);
+            int delim = comment.indexOf('\0');
+            if (delim >= 0) {
+                QString key = comment.mid(0, delim);
+                QString value = comment.mid(delim + 1);
+                return Comment{key, value};
+            }
+        }
+        return std::nullopt;
+    };
+
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Failed to open file!";
+        return false;
+    }
+
+    QByteArray signature = file.read(8);
+
+    static constexpr std::array<uint8_t, 8> kPngHeader = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+    if (signature != QByteArrayView(kPngHeader.data(), kPngHeader.size())) {
+        return false;
+    }
+
+    while (!file.atEnd()) {
+        auto comment = readChunk(file);
+        if (comment && comment->key == "Software") {
+            return comment->value == "nomacs";
+        }
+    }
+
+    return false;
+}
+
 void DkCachedThumb::cleanup(bool deleteAll)
 {
+    const bool isSharedCache = isXdgCompliant();
     const auto maxUsedBytes = deleteAll
         ? 0
         : static_cast<qint64>(DkSettingsManager::param().resources().thumbDiskSpace) * 1024 * 1024;
-    if (maxUsedBytes <= 0 && isXdgCompliant()) {
-        return; // Don't clear a shared thumb directory
-    }
 
     DkTimer dt{};
     bool haveAtimeCheck = false;
@@ -61,6 +126,11 @@ void DkCachedThumb::cleanup(bool deleteAll)
     for (auto &d : dirs) {
         const QFileInfoList files = QDir(d.absoluteFilePath()).entryInfoList(QDir::Files);
         for (QFileInfo f : files) {
+            // Don't delete thumbs created by other software
+            if (isSharedCache && !isNomacsThumb(f.absoluteFilePath())) {
+                continue;
+            }
+
             // Try using atime, but not all filesystems support it
             // Fallback to last modified which should be the same as created/birthTime
             if (!haveAtimeCheck) {
