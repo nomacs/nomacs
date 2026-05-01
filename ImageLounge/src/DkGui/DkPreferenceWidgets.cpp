@@ -793,6 +793,9 @@ void DkDisplayPreference::createLayout()
         tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
     keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
     keepZoomButtons[DkSettings::zoom_always_fit] = new QRadioButton(tr("Always zoom to fit"), this);
+    keepZoomButtons[DkSettings::zoom_keep_same_size_or_fit] = new QRadioButton(tr("Keep zoom if the size is the same, zoom to fit if it's different"), this);
+    keepZoomButtons[DkSettings::zoom_keep_same_size_or_fit]->setToolTip(
+        tr("If the image loaded has the same size as the previous, the zoom level is kept. Otherwise, zoom to fit is used."));
 
     // check wrt the current settings
     keepZoomButtons[DkSettingsManager::param().display().keepZoom]->setChecked(true);
@@ -802,6 +805,7 @@ void DkDisplayPreference::createLayout()
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_keep_same_size], DkSettings::zoom_keep_same_size);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_never_keep], DkSettings::zoom_never_keep);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_always_fit], DkSettings::zoom_always_fit);
+    keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_keep_same_size_or_fit], DkSettings::zoom_keep_same_size_or_fit);
     connect(keepZoomButtonGroup, &QButtonGroup::idClicked, this, &DkDisplayPreference::onKeepZoomButtonClicked);
 
     auto *keepZoomGroup = new DkGroupWidget(tr("When Displaying New Images"), this);
@@ -809,6 +813,7 @@ void DkDisplayPreference::createLayout()
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
+    keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size_or_fit]);
 
     mColorProfiles = new QComboBox(this);
     mColorProfiles->setToolTip(tr("Choose the color profile of the monitor"));

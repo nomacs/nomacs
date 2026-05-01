@@ -787,6 +787,11 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
     case DkSettings::zoom_always_fit:
         zoomToFit();
         break;
+    case DkSettings::zoom_keep_same_size_or_fit:
+        if (!isSameSize) {
+            zoomToFit();
+        }
+        break;
 
     default:
         Q_UNREACHABLE();

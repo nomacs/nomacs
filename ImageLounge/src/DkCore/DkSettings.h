@@ -146,6 +146,7 @@ public:
         zoom_keep_same_size, // keep if prev image size is the same
         zoom_never_keep, // zoom to fit, disallow scale > 100%
         zoom_always_fit, // zoom to fit, allow scale > 100%
+        zoom_keep_same_size_or_fit, // keep if same size, otherwise zoom to fit, allow scale >100%
         zoom_end,
     };
 
