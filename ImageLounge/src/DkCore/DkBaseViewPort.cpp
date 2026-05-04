@@ -776,7 +776,7 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
         break;
     case DkSettings::zoom_keep_same_size: {
         if (!isSameSize) {
-            mWorldMatrix.reset();
+            zoomToFit();
         }
         break;
     }
@@ -915,11 +915,47 @@ void DkBaseViewPort::zoomToFit()
 {
     const QSizeF imgSize = getImageSize();
     const QSizeF winSize = size();
-    const double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
+    double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
+
+    // apply maximum zoom limit when fitting to window
+    int maxZoomSetting = DkSettingsManager::param().display().maxZoomOnFit;
+    double maxZoom = 0;
+    switch (maxZoomSetting) {
+        case DkSettings::zoom_on_fit_100:
+            maxZoom = 1.0;
+            break;
+        case DkSettings::zoom_on_fit_125:
+            maxZoom = 1.25;
+            break;
+        case DkSettings::zoom_on_fit_150:
+            maxZoom = 1.5;
+            break;
+        case DkSettings::zoom_on_fit_200:
+            maxZoom = 2.0;
+            break;
+        case DkSettings::zoom_on_fit_300:
+            maxZoom = 3.0;
+            break;
+        case DkSettings::zoom_on_fit_400:
+            maxZoom = 4.0;
+            break;
+        case DkSettings::zoom_on_fit_500:
+            maxZoom = 5.0;
+            break;
+        case DkSettings::zoom_on_fit_unlimited:
+            maxZoom = 0;
+            break;
+        default:
+            Q_UNREACHABLE();
+    }
+
+    if (maxZoom > 0 && zoomLevel > maxZoom) {
+        zoomLevel = maxZoom;
+    }
 
     if (zoomLevel > 1) {
         zoomTo(zoomLevel);
-    } else if (zoomLevel < 1 || (zoomLevel == 1 && mSvg)) {
+    } else {
         resetView();
     }
 }

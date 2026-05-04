@@ -808,6 +808,22 @@ void DkDisplayPreference::createLayout()
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
 
+    // Maximum zoom when fitting to window
+    auto *maxZoomOnFitCombo = new QComboBox(this);
+    maxZoomOnFitCombo->addItem(tr("100%"));
+    maxZoomOnFitCombo->addItem(tr("125%"));
+    maxZoomOnFitCombo->addItem(tr("150%"));
+    maxZoomOnFitCombo->addItem(tr("200%"));
+    maxZoomOnFitCombo->addItem(tr("300%"));
+    maxZoomOnFitCombo->addItem(tr("400%"));
+    maxZoomOnFitCombo->addItem(tr("500%"));
+    maxZoomOnFitCombo->addItem(tr("Unlimited"));
+    maxZoomOnFitCombo->setCurrentIndex(DkSettingsManager::param().display().maxZoomOnFit);
+    connect(maxZoomOnFitCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkDisplayPreference::onMaxZoomOnFitChanged);
+
+    auto *maxZoomOnFitGroup = new DkGroupWidget(tr("Maximum Zoom When Fitting to Window"), this);
+    maxZoomOnFitGroup->addWidget(maxZoomOnFitCombo);
+
     mColorProfiles = new QComboBox(this);
     mColorProfiles->setToolTip(tr("Choose the color profile of the monitor"));
     connect(mColorProfiles, &QComboBox::activated, this, &DkDisplayPreference::onColorProfileActivated);
@@ -936,6 +952,7 @@ void DkDisplayPreference::createLayout()
     l->setAlignment(Qt::AlignTop);
     l->addWidget(zoomGroup);
     l->addWidget(keepZoomGroup);
+    l->addWidget(maxZoomOnFitGroup);
     l->addWidget(colorGroup);
     l->addWidget(iconGroup);
     l->addWidget(navigationGroup);
@@ -979,6 +996,12 @@ void DkDisplayPreference::onKeepZoomButtonClicked(int buttonId) const
 {
     if (DkSettingsManager::param().display().keepZoom != buttonId)
         DkSettingsManager::param().display().keepZoom = buttonId;
+}
+
+void DkDisplayPreference::onMaxZoomOnFitChanged(int index) const
+{
+    if (DkSettingsManager::param().display().maxZoomOnFit != index)
+        DkSettingsManager::param().display().maxZoomOnFit = index;
 }
 
 void DkDisplayPreference::onInvertZoomToggled(bool checked) const

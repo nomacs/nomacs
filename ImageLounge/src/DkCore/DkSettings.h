@@ -149,6 +149,19 @@ public:
         zoom_end,
     };
 
+    enum maxZoomOnFit {
+        zoom_on_fit_100 = 0,
+        zoom_on_fit_125,
+        zoom_on_fit_150,
+        zoom_on_fit_200,
+        zoom_on_fit_300,
+        zoom_on_fit_400,
+        zoom_on_fit_500,
+        zoom_on_fit_unlimited,
+
+        zoom_on_fit_end,
+    };
+
     enum TransitionMode {
         trans_appear,
         trans_fade,
@@ -209,6 +222,7 @@ public:
 
     struct Display {
         int keepZoom;
+        int maxZoomOnFit;
         bool invertZoom;
         bool tpPattern;
         bool showNavigation;

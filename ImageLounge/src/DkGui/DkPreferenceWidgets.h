@@ -172,6 +172,7 @@ public slots:
     void onDisplayTimeBoxValueChanged(double value) const;
     void onShowPlayerToggled(bool checked) const;
     void onKeepZoomButtonClicked(int buttonId) const;
+    void onMaxZoomOnFitChanged(int index) const;
     void onInvertZoomToggled(bool checked) const;
     void onHQAntiAliasingToggled(bool checked) const;
     void onAlwaysAnimateToggled(bool checked) const;
