@@ -459,6 +459,10 @@ void DkSettings::load(QSettings &settings, bool defaults)
     settings.beginGroup("DisplaySettings");
 
     display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
+    // Migrate removed zoom_never_keep to zoom_always_fit
+    if (display_p.keepZoom == removed_zoom_never_keep) {
+        display_p.keepZoom = zoom_always_fit;
+    }
     display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
     display_p.highlightColor = QColor::fromRgba(
         settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());

@@ -788,11 +788,11 @@ void DkDisplayPreference::createLayout()
     QVector<QRadioButton *> keepZoomButtons;
     keepZoomButtons.resize(DkSettings::zoom_end);
     keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
-    keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if the size is the same"), this);
+    keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(
+        tr("Keep zoom if the size is the same, otherwise fit to window"), this);
     keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(
-        tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
-    keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
-    keepZoomButtons[DkSettings::zoom_always_fit] = new QRadioButton(tr("Always zoom to fit"), this);
+        tr("If selected, if the image loaded has the exact same size as the previous, keep zoom level, otherwise zoom the image to fit the window dimensions"));
+    keepZoomButtons[DkSettings::zoom_always_fit] = new QRadioButton(tr("Always zoom to fit window"), this);
 
     // check wrt the current settings
     keepZoomButtons[DkSettingsManager::param().display().keepZoom]->setChecked(true);
@@ -800,14 +800,12 @@ void DkDisplayPreference::createLayout()
     auto *keepZoomButtonGroup = new QButtonGroup(this);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_always_keep], DkSettings::zoom_always_keep);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_keep_same_size], DkSettings::zoom_keep_same_size);
-    keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_never_keep], DkSettings::zoom_never_keep);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_always_fit], DkSettings::zoom_always_fit);
     connect(keepZoomButtonGroup, &QButtonGroup::idClicked, this, &DkDisplayPreference::onKeepZoomButtonClicked);
 
     auto *keepZoomGroup = new DkGroupWidget(tr("When Displaying New Images"), this);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
-    keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
 
     mColorProfiles = new QComboBox(this);

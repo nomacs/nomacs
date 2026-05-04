@@ -144,7 +144,7 @@ public:
     enum keepZoom {
         zoom_always_keep, // keep prev image zoom
         zoom_keep_same_size, // keep if prev image size is the same
-        zoom_never_keep, // zoom to fit, disallow scale > 100%
+        removed_zoom_never_keep, // this setting was removed, keeping it in the enum to not break existing user configs.
         zoom_always_fit, // zoom to fit, allow scale > 100%
         zoom_end,
     };

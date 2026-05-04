@@ -293,8 +293,7 @@ void DkBaseViewPort::setImage(const QImage &newImg)
 {
     mImgStorage.setImage(newImg);
     mImgRect = QRectF(QPointF(), getImageSize());
-    const bool kz = DkSettingsManager::param().display().keepZoom;
-    updateImageMatrix(kz ? DkSettings::zoom_keep_same_size : DkSettings::zoom_never_keep);
+    updateImageMatrix(static_cast<DkSettings::keepZoom>(DkSettingsManager::param().display().keepZoom));
     update();
 }
 
@@ -781,9 +780,6 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
         }
         break;
     }
-    case DkSettings::zoom_never_keep:
-        mWorldMatrix.reset();
-        break;
     case DkSettings::zoom_always_fit:
         zoomToFit();
         break;
