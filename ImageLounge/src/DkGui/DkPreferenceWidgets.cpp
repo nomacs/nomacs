@@ -1256,7 +1256,7 @@ void DkFilePreference::createLayout()
     thumbCacheGroup->setToolTip(tr("Save generated thumbnails to disk for future use."));
     thumbCacheGroup->setCheckable(true);
     thumbCacheGroup->setChecked(res.thumbDiskCache);
-    connect(thumbCacheGroup, &QGroupBox::clicked, [&](bool checked) {
+    connect(thumbCacheGroup, &QGroupBox::clicked, [this, &res](bool checked) {
         res.thumbDiskCache = checked;
         showRestartLabel();
     });
