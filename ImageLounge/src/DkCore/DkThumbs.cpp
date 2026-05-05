@@ -227,7 +227,8 @@ void removeBlackBorder(QImage &img)
 DkThumbsThreadPool::DkThumbsThreadPool()
 {
     const auto &res = DkSettingsManager::param().resources();
-    int numThreads = qBound(1, res.thumbThreads, QThread::idealThreadCount() - 2);
+    int cpuThreads = QThread::idealThreadCount();
+    int numThreads = cpuThreads <= 2 ? 1 : qBound(1, res.thumbThreads, cpuThreads - 2);
     mPool = new QThreadPool();
     mPool->setMaxThreadCount(numThreads);
 }
