@@ -402,7 +402,7 @@ void DkCachedThumb::save(const QImage &img, int loadedBinSize)
 
     // Release the job when we return
     struct OnReturn {
-        const QString &mCacheFilePath;
+        const QString mCacheFilePath;
         ~OnReturn()
         {
             QMutexLocker locker(&jobMutex);
