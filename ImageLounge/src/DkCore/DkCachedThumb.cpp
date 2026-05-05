@@ -69,7 +69,7 @@ static bool isNomacsThumb(const QString &filename)
         if (data.length() == length && type == "tEXt") {
             // the key and value are separated by \0
             QString comment = QString::fromLatin1(data);
-            int delim = comment.indexOf('\0');
+            int delim = comment.indexOf(QChar{'\0'});
             if (delim >= 0) {
                 QString key = comment.mid(0, delim);
                 QString value = comment.mid(delim + 1);
