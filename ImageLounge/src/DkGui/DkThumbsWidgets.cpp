@@ -337,7 +337,7 @@ void DkFilePreview::drawThumbs(QPainter *painter)
     const int thumbSize = DkSettingsManager::param().effectiveThumbSize(this); // size when we don't have img yet
 
     const auto &files = mFiles;
-    const int numFiles = files.size();
+    const int numFiles = static_cast<int>(files.size());
     for (int idx = 0; idx < numFiles; idx++) {
         const QString &filePath = files[idx].path();
 
@@ -1462,7 +1462,7 @@ void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool conn
 
 void DkThumbScene::keyPressEvent(QKeyEvent *event)
 {
-    unsigned mods = event->modifiers();
+    Qt::KeyboardModifiers mods = event->modifiers();
     mods &= ~Qt::KeypadModifier; // arrow from numpad
 
     // range mode: extend selection from anchor to current
