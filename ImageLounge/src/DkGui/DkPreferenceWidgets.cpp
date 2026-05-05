@@ -1187,7 +1187,7 @@ void DkFilePreference::createLayout()
     auto *thumbThreads = new DkSlider(tr("Thumbnail threads"), this);
     thumbThreads->setToolTip(tr("Limit temporary memory and CPU used to generate thumbnails."));
     thumbThreads->setMaximumWidth(500);
-    thumbThreads->setRange(1, QThread::idealThreadCount() - 2);
+    thumbThreads->setRange(1, qMax(1, QThread::idealThreadCount() - 2));
     thumbThreads->setValue(res.thumbThreads);
     connect(thumbThreads, &DkSlider::valueChanged, this, [this](int value) {
         DkSettingsManager::param().resources().thumbThreads = value;
