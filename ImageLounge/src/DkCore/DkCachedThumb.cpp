@@ -187,6 +187,8 @@ QFuture<void> &DkCachedThumb::cleanupJob()
 
 void DkCachedThumb::cleanupAsync()
 {
+    Q_ASSERT(QThread::currentThread() == qApp->thread());
+
     if (cleanupJob().isRunning()) {
         qWarning() << "[CachedThumb] cleanup in progress, try again later";
         return;
@@ -197,6 +199,8 @@ void DkCachedThumb::cleanupAsync()
 
 void DkCachedThumb::cleanupSync(bool deleteAll)
 {
+    Q_ASSERT(QThread::currentThread() == qApp->thread());
+
     while (cleanupJob().isRunning()) {
         qInfo() << "[CachedThumb] waiting for previous cleanup to finish...";
         QThread::msleep(1000);
