@@ -454,7 +454,33 @@ void DkViewPortTransformViewModel::syncTransform(const QTransform &world,
 
     mWorldMatrix = world;
     mImgMatrix = img;
-    updateImageMatrix();
+    if (mImgRect.size().isEmpty()) {
+        // Initial state has no image.
+        return;
+    }
+
+    const QRectF oldImgRect = mImgViewRect;
+    const QTransform oldImgMatrix = mImgMatrix;
+
+    mImgMatrix.reset();
+
+    // if the image is smaller or zoom is active: paint the image as is
+    if (!mViewportRect.contains(mImgRect.toRect())) {
+        mImgMatrix = scaleKeepAspectRatioAndCenter(mImgRect.size(), mViewportRect.size());
+    } else {
+        const QSizeF offset = (mViewportRect.size() - mImgRect.size()) / 2;
+        mImgMatrix.translate(offset.width(), offset.height());
+    }
+
+    mImgViewRect = mImgMatrix.mapRect(mImgRect);
+    emit zoomLevelRangeChanged();
+
+    // Maintain zoom level
+    const qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
+    const QPointF offset = oldImgRect.topLeft() / scaleFactor - mImgViewRect.topLeft();
+
+    mWorldMatrix.scale(scaleFactor, scaleFactor);
+    mWorldMatrix.translate(offset.x(), offset.y());
 
     QPointF imgPos = QPointF(canvasSize.x() * mImgRect.width(), canvasSize.y() * mImgRect.height());
 
