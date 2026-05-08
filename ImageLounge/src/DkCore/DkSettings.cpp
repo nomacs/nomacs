@@ -121,11 +121,6 @@ int DkSettings::effectiveThumbSize(QWidget *widget) const
     return qRound(display_p.thumbSize * dpiScaleFactor(widget));
 }
 
-int DkSettings::effectiveThumbPreviewSize(QWidget *widget) const
-{
-    return qRound(display_p.thumbPreviewSize * dpiScaleFactor(widget));
-}
-
 QStringList DkSettings::translatedCamData() const
 {
     return scamDataDesc;

@@ -981,7 +981,7 @@ void DkThumbLabel::onThumbnailLoaded(ThumbnailId id, const QString &filePath, co
     }
 
     // update label
-    mText.setPos(0, DkSettingsManager::param().effectiveThumbPreviewSize());
+    mText.setPos(0.0, DkSettingsManager::param().display().thumbPreviewSize / mDevicePixelRatio);
 
     prepareGeometryChange();
     generatePixmap(thumb);
@@ -1028,8 +1028,8 @@ void DkThumbLabel::cancelLoading()
 
 QRectF DkThumbLabel::boundingRect() const
 {
-    int sz = DkSettingsManager::param().effectiveThumbPreviewSize();
-    return QRectF(QPoint(0, 0), QSize(sz, sz));
+    qreal sz = DkSettingsManager::param().display().thumbPreviewSize / mDevicePixelRatio;
+    return QRectF(QPointF{}, QSizeF{sz, sz});
 }
 
 QPainterPath DkThumbLabel::shape() const
@@ -1287,7 +1287,7 @@ void DkThumbScene::updateLayout()
 
     QSize pSize = view->viewport()->size();
 
-    int psz = DkSettingsManager::param().effectiveThumbPreviewSize();
+    int psz = qRound(DkSettingsManager::param().display().thumbPreviewSize / view->devicePixelRatio());
     mXOffset = 2; // qCeil(psz*0.1f);
     mNumCols = qMax(qFloor(((float)pSize.width() - mXOffset) / (psz + mXOffset)), 1);
     mNumCols = qMin(mThumbs.size(), mNumCols);
@@ -1671,7 +1671,7 @@ void DkThumbScene::resizeThumbs(float dx)
         dx += 2.0f;
 
     int newSize = qRound(DkSettingsManager::param().display().thumbPreviewSize * dx);
-    int maxSize = DkSettingsManager::param().resources().maxThumbSize / getView()->devicePixelRatio();
+    int maxSize = DkSettingsManager::param().resources().maxThumbSize;
 
     newSize = qBound(6, newSize, maxSize);
     DkSettingsManager::param().display().thumbPreviewSize = newSize;

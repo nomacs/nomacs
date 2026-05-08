@@ -375,7 +375,6 @@ public:
     double dpiScaleFactor(QWidget *w = nullptr) const;
     int effectiveIconSize(QWidget *w = nullptr) const;
     int effectiveThumbSize(QWidget *w = nullptr) const;
-    int effectiveThumbPreviewSize(QWidget *w = nullptr) const;
 
     App &app();
     Global &global();
