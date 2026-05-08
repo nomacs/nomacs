@@ -1069,9 +1069,9 @@ void DkSettings::setToDefaultSettings()
     resources_p.maxThumbSize = 256;
     resources_p.thumbThreads = qMax(1, QThread::idealThreadCount() - 2);
     resources_p.thumbCacheMemory = 128;
-    resources_p.thumbDiskSpace = 0;
+    resources_p.thumbDiskSpace = 1024;
     resources_p.preloadThumbs = false;
-    resources_p.sharedThumbs = true;
+    resources_p.sharedThumbs = false;
     resources_p.thumbDiskCache = false;
     resources_p.cleanupThumbCache = false;
 
