@@ -788,10 +788,12 @@ void DkDisplayPreference::createLayout()
     QVector<QRadioButton *> keepZoomButtons;
     keepZoomButtons.resize(DkSettings::zoom_end);
     keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
-    keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(
-        tr("Keep zoom if the size is the same, otherwise fit to window"), this);
+    keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if the size is the same, "
+                                                                           "otherwise fit to window"),
+                                                                        this);
     keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(
-        tr("If new image has the same size as the previous image, keep zoom level. Otherwise zoom the image to fit the window."));
+        tr("If new image has the same size as the previous image, keep zoom level. Otherwise zoom the image to fit the "
+           "window."));
     keepZoomButtons[DkSettings::zoom_always_fit] = new QRadioButton(tr("Always zoom to fit window"), this);
 
     // check wrt the current settings
@@ -820,12 +822,15 @@ void DkDisplayPreference::createLayout()
     maxZoomOnFitCombo->addItem(tr("%1%").arg(500), 5.0);
     const int maxZoomIndex = maxZoomOnFitCombo->findData(DkSettingsManager::param().display().maxZoomOnFit);
     maxZoomOnFitCombo->setCurrentIndex(maxZoomIndex >= 0 ? maxZoomIndex : 0);
-    connect(maxZoomOnFitCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [maxZoomOnFitCombo](const int currentIndex) {
-        const double selectedOptionSettingValue = maxZoomOnFitCombo->itemData(currentIndex).toDouble();
-        if (DkSettingsManager::param().display().maxZoomOnFit != selectedOptionSettingValue) {
-            DkSettingsManager::param().display().maxZoomOnFit = selectedOptionSettingValue;
-        }
-    });
+    connect(maxZoomOnFitCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            [maxZoomOnFitCombo](const int currentIndex) {
+                const double selectedOptionSettingValue = maxZoomOnFitCombo->itemData(currentIndex).toDouble();
+                if (DkSettingsManager::param().display().maxZoomOnFit != selectedOptionSettingValue) {
+                    DkSettingsManager::param().display().maxZoomOnFit = selectedOptionSettingValue;
+                }
+            });
 
     auto *maxZoomOnFitGroup = new DkGroupWidget(tr("Maximum Zoom When Fitting to Window"), this);
     maxZoomOnFitGroup->addWidget(maxZoomOnFitCombo);
