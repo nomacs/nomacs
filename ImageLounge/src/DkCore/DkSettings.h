@@ -149,7 +149,6 @@ public:
         zoom_end,
     };
 
-
     enum TransitionMode {
         trans_appear,
         trans_fade,

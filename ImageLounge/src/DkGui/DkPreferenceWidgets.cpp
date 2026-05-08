@@ -1004,7 +1004,6 @@ void DkDisplayPreference::onKeepZoomButtonClicked(int buttonId) const
         DkSettingsManager::param().display().keepZoom = buttonId;
 }
 
-
 void DkDisplayPreference::onInvertZoomToggled(bool checked) const
 {
     if (DkSettingsManager::param().display().invertZoom != checked)
