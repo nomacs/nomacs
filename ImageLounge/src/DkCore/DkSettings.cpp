@@ -463,7 +463,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     if (display_p.keepZoom == removed_zoom_never_keep) {
         display_p.keepZoom = zoom_always_fit;
     }
-    display_p.maxZoomOnFit = settings.value("maxZoomOnFit", display_p.maxZoomOnFit).toInt();
+    display_p.maxZoomOnFit = settings.value("maxZoomOnFit", display_p.maxZoomOnFit).toDouble();
     display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
     display_p.highlightColor = QColor::fromRgba(
         settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
@@ -976,7 +976,7 @@ void DkSettings::setToDefaultSettings()
 #endif
 
     display_p.keepZoom = zoom_keep_same_size;
-    display_p.maxZoomOnFit = zoom_on_fit_unlimited;
+    display_p.maxZoomOnFit = 0.0;
     display_p.invertZoom = false;
     display_p.highlightColor = QColor(0, 204, 255);
     display_p.hudBgColor = QColor(0, 0, 0, 100);
