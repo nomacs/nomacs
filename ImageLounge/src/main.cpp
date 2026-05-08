@@ -92,7 +92,8 @@ int main(int argc, char *argv[])
     nmc::DkMetaDataHelper::initialize(); // this line makes the XmpParser thread-save - so don't delete it even if you
                                          // seem to know what you do
 
-    if (nmc::DkSettingsManager::param().resources().cleanupThumbCache) {
+    if (nmc::DkSettingsManager::param().resources().thumbDiskCache
+        && nmc::DkSettingsManager::param().resources().cleanupThumbCache) {
         nmc::DkCachedThumb::cleanupAsync();
     }
 
