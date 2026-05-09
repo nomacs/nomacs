@@ -1219,9 +1219,10 @@ void DkFilePreference::createLayout()
     auto *sharedBox = new QCheckBox(tr("Share thumbnails with other programs"), this);
     sharedBox->setToolTip(tr("Thumbnails created by other software will be used by nomacs, and vice versa."));
     sharedBox->setChecked(res.sharedThumbs);
-#ifndef Q_OS_UNIX
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
     sharedBox->setEnabled(false);
 #endif
+
     connect(sharedBox, &QCheckBox::toggled, this, [this, &res](bool checked) {
         // if sharing is disabled, offer to cleanup the non-shared area
         const QString cachePath = DkCachedThumb::cacheHome();
