@@ -826,10 +826,8 @@ void DkDisplayPreference::createLayout()
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             [maxZoomOnFitCombo](const int currentIndex) {
-                const double selectedOptionSettingValue = maxZoomOnFitCombo->itemData(currentIndex).toDouble();
-                if (DkSettingsManager::param().display().maxZoomOnFit != selectedOptionSettingValue) {
-                    DkSettingsManager::param().display().maxZoomOnFit = selectedOptionSettingValue;
-                }
+                DkSettingsManager::param().display().maxZoomOnFit = maxZoomOnFitCombo->itemData(currentIndex)
+                                                                        .toDouble();
             });
 
     auto *maxZoomOnFitGroup = new DkGroupWidget(tr("Maximum Zoom When Fitting to Window"), this);
