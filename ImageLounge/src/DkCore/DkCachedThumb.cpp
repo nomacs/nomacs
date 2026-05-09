@@ -255,7 +255,12 @@ QImage DkCachedThumb::load()
     // use it and also save the smaller size for later.
     XdgBin bin{};
     QImageReader reader{};
-    const int maxSize = DkSettingsManager::param().resources().maxThumbSize;
+    int maxSize = DkSettingsManager::param().resources().maxThumbSize;
+    if (DkSettingsManager::param().display().highQualityThumbs) {
+        // In hq mode allow the next size up to be used, if needed to meet scale constraint
+        // This prevents blur of square thumbnails except very narrow images
+        maxSize = qMin(1024, maxSize * 2);
+    }
 
     for (auto &xdgBin : kXdgBins) {
         QString cacheFilePath = cacheHome() + u'/' + xdgBin.name + u'/' + mCacheFileName;
@@ -348,7 +353,10 @@ void DkCachedThumb::save(const QImage &img, int loadedBinSize)
     // Find the first xdg bin large enough for scale constraint
     XdgBin bin{};
     QString cacheDirPath{}, cacheFilePath{};
-    const int maxSize = DkSettingsManager::param().resources().maxThumbSize;
+    int maxSize = DkSettingsManager::param().resources().maxThumbSize;
+    if (DkSettingsManager::param().display().highQualityThumbs) {
+        maxSize = qMin(1024, maxSize * 2);
+    }
 
     for (auto &xdgBin : kXdgBins) {
         bin = xdgBin;
