@@ -61,6 +61,7 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <QUrl>
+#include <QWindow>
 
 namespace nmc
 {
@@ -2293,6 +2294,19 @@ DkThumbScrollWidget::DkThumbScrollWidget(DkThumbLoader *thumbLoader,
     setContentsMargins(0, 0, 0, 0);
 
     mThumbsScene = new DkThumbScene(thumbLoader, this);
+
+    // resizeEvent() typically fires with screen change but doesn't see new dpr (xcb)
+    mPrevDevicePixelRatio = devicePixelRatio();
+    QWindow *window = topLevelWidget()->windowHandle();
+    connect(window, &QWindow::screenChanged, this, [this](QScreen *) {
+        const qreal dpr = devicePixelRatio();
+        if (dpr != mPrevDevicePixelRatio) {
+            mPrevDevicePixelRatio = dpr;
+            if (isVisible()) {
+                mThumbsScene->updateLayout();
+            }
+        }
+    });
 
     mView = new DkThumbsView(mThumbsScene, this);
     mView->setFocusPolicy(Qt::StrongFocus);
