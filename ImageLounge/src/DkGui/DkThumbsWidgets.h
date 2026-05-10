@@ -389,6 +389,7 @@ protected:
     QToolBar *mToolbar = nullptr;
     QLineEdit *mFilterEdit = nullptr;
     QAction *mAction = nullptr;
+    qreal mPrevDevicePixelRatio = 1.0;
 };
 
 class DkRecentDir
