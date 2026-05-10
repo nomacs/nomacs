@@ -442,23 +442,20 @@ void DkViewPortTransformViewModel::zoomOut()
     zoomLeveled(0.5);
 }
 
-void DkViewPortTransformViewModel::syncTransform(const QTransform &world,
-                                                 const QTransform &img,
-                                                 const QPointF &canvasSize)
+void DkViewPortTransformViewModel::syncTransform(const QPointF &pos, qreal zoomLevel, bool isRelativeTranslation)
 {
     if (mImgRect.size().isEmpty()) {
         return;
     }
 
-    // ok relative transform
-    if (canvasSize.isNull()) {
-        moveViewInWidgetCoords(QPointF(world.dx(), world.dy()));
+    if (isRelativeTranslation) {
+        moveViewInWidgetCoords(pos);
         return;
     }
 
-    zoomTo(world.m11() * img.m11());
+    zoomTo(zoomLevel);
 
-    QPointF viewPortCenter = QPointF(canvasSize.x() * mImgRect.width(), canvasSize.y() * mImgRect.height());
+    QPointF viewPortCenter = QPointF(pos.x() * mImgRect.width(), pos.y() * mImgRect.height());
     viewPortCenter = mImgMatrix.map(viewPortCenter);
     viewPortCenter = mWorldMatrix.map(viewPortCenter);
 

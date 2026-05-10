@@ -776,9 +776,9 @@ TEST_P(SyncTest, SyncTransform)
         QPointF size = vmSrc->viewPortRect().center();
         size = vmSrc->worldMatrix().inverted().map(size);
         size = vmSrc->imgMatrix().inverted().map(size);
-        vmTgt->syncTransform(vmSrc->worldMatrix(),
-                             vmSrc->imgMatrix(),
-                             {size.x() / params.srcImageSize.width(), size.y() / params.srcImageSize.height()});
+        vmTgt->syncTransform({size.x() / params.srcImageSize.width(), size.y() / params.srcImageSize.height()},
+                             vmSrc->zoomLevel(),
+                             false);
     };
 
     const auto getRelCenter = [](DkViewPortTransformViewModel *vm, const QSizeF &imgSize) {

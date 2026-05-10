@@ -41,7 +41,7 @@ public:
         return mWorldMatrix;
     }
 
-    void syncTransform(const QTransform &world, const QTransform &img, const QPointF &canvasSize);
+    void syncTransform(const QPointF &pos, qreal zoomLevel, bool isRelativeTranslation);
 
     [[nodiscard]] QRectF imgViewRect() const
     {
