@@ -446,51 +446,26 @@ void DkViewPortTransformViewModel::syncTransform(const QTransform &world,
                                                  const QTransform &img,
                                                  const QPointF &canvasSize)
 {
+    if (mImgRect.size().isEmpty()) {
+        return;
+    }
+
     // ok relative transform
     if (canvasSize.isNull()) {
         moveViewInWidgetCoords(QPointF(world.dx(), world.dy()));
         return;
     }
 
-    mWorldMatrix = world;
-    mImgMatrix = img;
-    if (mImgRect.size().isEmpty()) {
-        // Initial state has no image.
-        return;
-    }
+    zoomTo(world.m11() * img.m11());
 
-    const QRectF oldImgRect = mImgViewRect;
-    const QTransform oldImgMatrix = mImgMatrix;
-
-    mImgMatrix.reset();
-
-    // if the image is smaller or zoom is active: paint the image as is
-    if (!mViewportRect.contains(mImgRect.toRect())) {
-        mImgMatrix = scaleKeepAspectRatioAndCenter(mImgRect.size(), mViewportRect.size());
-    } else {
-        const QSizeF offset = (mViewportRect.size() - mImgRect.size()) / 2;
-        mImgMatrix.translate(offset.width(), offset.height());
-    }
-
-    mImgViewRect = mImgMatrix.mapRect(mImgRect);
-    emit zoomLevelRangeChanged();
-
-    // Maintain zoom level
-    const qreal scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
-    const QPointF offset = oldImgRect.topLeft() / scaleFactor - mImgViewRect.topLeft();
-
-    mWorldMatrix.scale(scaleFactor, scaleFactor);
-    mWorldMatrix.translate(offset.x(), offset.y());
-
-    QPointF imgPos = QPointF(canvasSize.x() * mImgRect.width(), canvasSize.y() * mImgRect.height());
-
-    imgPos = mImgMatrix.map(imgPos);
-    imgPos = mWorldMatrix.map(imgPos);
+    QPointF viewPortCenter = QPointF(canvasSize.x() * mImgRect.width(), canvasSize.y() * mImgRect.height());
+    viewPortCenter = mImgMatrix.map(viewPortCenter);
+    viewPortCenter = mWorldMatrix.map(viewPortCenter);
 
     // compute difference to current mViewport center - in world coordinates
-    imgPos = QPointF(mViewportRect.width() * 0.5, mViewportRect.height() * 0.5) - imgPos;
+    viewPortCenter = QPointF(mViewportRect.width() * 0.5, mViewportRect.height() * 0.5) - viewPortCenter;
 
-    translateViewInWidgetCoords(imgPos.x(), imgPos.y());
+    translateViewInWidgetCoords(viewPortCenter.x(), viewPortCenter.y());
     emit transformChanged();
 }
 
