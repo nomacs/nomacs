@@ -728,6 +728,8 @@ void DkNoMacs::restartFrameless(bool)
     QString exe = QApplication::applicationFilePath();
     QStringList args;
 
+    args << "--skip-startup";
+
     if (objectName() != "DkNoMacsFrameless")
         args << "-m" << "frameless";
     else
@@ -1544,6 +1546,8 @@ void DkNoMacs::newInstance(const QString &filePath)
 
     auto *a = static_cast<QAction *>(sender());
 
+    args << "--skip-startup";
+
     if (a && a == DkActionManager::instance().action(DkActionManager::menu_file_private_instance))
         args.append("-p");
 
@@ -1574,6 +1578,8 @@ void DkNoMacs::restartWithPseudoColor(bool contrast)
 
     QString exe = QApplication::applicationFilePath();
     QStringList args;
+
+    args << "--skip-startup";
 
     if (contrast)
         args << "-m" << "pseudocolor";
