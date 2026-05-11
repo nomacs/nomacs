@@ -266,7 +266,6 @@ QImage DkCachedThumb::load()
         QString cacheFilePath = cacheHome() + u'/' + xdgBin.name + u'/' + mCacheFileName;
 
         if (!QFile::exists(cacheFilePath)) {
-            // qInfo() << "[CachedThumb] no file" << cacheFilePath;
             continue;
         }
 
@@ -275,24 +274,17 @@ QImage DkCachedThumb::load()
 
         QSize sz = reader.size();
         if (!sz.isValid()) {
-            // qInfo() << "[CachedThumb] no SIZE" << cacheFilePath;
             // another nomacs instance or system daemon may have deleted this out from under us
             continue;
         }
 
         if (xdgBin.size >= maxSize || isLargeEnough(sz)) {
-            // qInfo() << "[CachedThumb] FOUND" << mFileInfo.fileName() << sz << "for" << mSize << (int)mConstraint <<
-            // dt;
             bin = xdgBin;
             break;
         }
-
-        // qInfo() << "[CachedThumb] cache REJECT" << mFileInfo.fileName() << sz << "for" << mSize << (int)mConstraint;
     }
 
     if (bin.size <= 0) {
-        // qInfo() << "[CachedThumb] cache MISS" << mFileInfo.fileName() << mSize << (int)mConstraint << mUri
-        // << mCacheFileName << dt;
         reader.setDevice(nullptr); // Release open file, if any
         return {};
     }
