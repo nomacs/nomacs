@@ -301,12 +301,18 @@ QImage DkCachedThumb::load()
     if (!th.isNull()) {
         // Check the freshness of the thumb; no reason to delete it here since we will regenerate shortly
         QString uri = th.text(QStringLiteral("Thumb::URI"));
-        qint64 modTime = th.text(QStringLiteral("Thumb::MTime")).toLongLong();
-        qint64 size = th.text(QStringLiteral("Thumb::Size")).toLongLong();
-        if (uri == mUri && modTime == lastModified().toSecsSinceEpoch() && size == mFileInfo.size()) {
-            // qDebug() << "[CachedThumb] loaded" << mFileInfo.fileName() << th.size() << "for size" << mSize
-            // << "constraint" << (int)mConstraint;
 
+        // XDG spec says "seconds" but nothing about fractions of a second, so ignore
+        QString modStr = th.text(QStringLiteral("Thumb::MTime"));
+        auto dotIdx = modStr.indexOf(QChar(u'.'));
+        auto intPart = dotIdx < 0 ? QStringView{modStr} : QStringView{modStr}.first(dotIdx);
+        qint64 modTime = intPart.toLongLong();
+
+        // Size is not required to be present
+        QString sizeStr = th.text(QStringLiteral("Thumb::Size"));
+        qint64 size = sizeStr.isEmpty() ? -1 : sizeStr.toLongLong();
+
+        if (uri == mUri && modTime == lastModified().toSecsSinceEpoch() && (size < 0 || size == mFileInfo.size())) {
             // If thumb is larger than necessary, we can save a smaller thumb to the cache for next time
             save(th, bin.size);
 
