@@ -403,6 +403,7 @@ int DkMetaDataT::getRating() const
     }
 
     // get Rating of Xmp Tag
+    // NOTE: -1 is a valid xmp rating (means rejected) but we ignore that
     if (!xmpData.empty()) {
         auto key = Exiv2::XmpKey("Xmp.xmp.Rating");
         auto pos = xmpData.findKey(key);
@@ -415,6 +416,7 @@ int DkMetaDataT::getRating() const
 
         // if xmpRating not found, try to find MicrosoftPhoto Rating tag
         if (xmpRating == -1) {
+            // FIXME: this fallback is incorrect as it gives rating percent
             key = Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating");
             pos = xmpData.findKey(key);
             if (pos != xmpData.end() && pos->count() != 0) {
