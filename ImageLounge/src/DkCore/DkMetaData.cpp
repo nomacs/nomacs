@@ -1233,46 +1233,39 @@ bool DkMetaDataT::setDescription(const QString &description)
 
 bool DkMetaDataT::setRating(int r)
 {
+    if (r < 0 || r > 5) {
+        qWarning() << "[setRating] invalid argument";
+        return false;
+    }
+
     if (mExifState == not_loaded || !mExifImg) {
         return false;
     }
 
-    const int currentRating = (mExifState == no_data) ? -1 : getRating();
-    if (currentRating == r) {
-        return false;
-    }
-
-    if (r < 0 || r > 5) {
-        return false;
-    }
-
-    if (currentRating < 0 && r == 0) {
-        return false;
-    }
-
-    int16_t ratingPercent = 0;
-    switch (r) {
-    case 1:
-        ratingPercent = 1;
-        break;
-    case 2:
-        ratingPercent = 25;
-        break;
-    case 3:
-        ratingPercent = 50;
-        break;
-    case 4:
-        ratingPercent = 75;
-        break;
-    case 5:
-        ratingPercent = 99;
-        break;
-    }
-
-    Exiv2::ExifData &exifData = mExifImg->exifData(); // Exif.Image.Rating  - short
-    Exiv2::XmpData &xmpData = mExifImg->xmpData(); // Xmp.xmp.Rating - text
+    Exiv2::ExifData &exifData = mExifImg->exifData();
+    Exiv2::XmpData &xmpData = mExifImg->xmpData();
 
     if (r > 0) {
+        int16_t ratingPercent = 0;
+        switch (r) {
+        case 1:
+            ratingPercent = 1;
+            break;
+        case 2:
+            ratingPercent = 25;
+            break;
+        case 3:
+            ratingPercent = 50;
+            break;
+        case 4:
+            ratingPercent = 75;
+            break;
+        case 5:
+            ratingPercent = 99;
+            break;
+        }
+        Q_ASSERT(ratingPercent > 0 && ratingPercent < 100);
+
         exifData["Exif.Image.Rating"] = uint16_t(r);
         exifData["Exif.Image.RatingPercent"] = ratingPercent;
         xmpData["Xmp.xmp.Rating"] = r;
@@ -1305,7 +1298,7 @@ bool DkMetaDataT::setRating(int r)
 
         mExifState = dirty;
     } catch (...) {
-        qDebug() << "[WARNING] I could not set the exif data for this image format...";
+        qWarning() << "[Exiv2] could not set exif/xmp data";
         return false;
     }
     return true;
