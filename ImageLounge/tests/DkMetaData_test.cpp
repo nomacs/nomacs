@@ -59,7 +59,12 @@ TEST(DkMetaData, RatingInitializesAndClearsEmptyMetadata)
 
     EXPECT_FALSE(emptyMeta.hasMetaData());
     EXPECT_FALSE(emptyMeta.isDirty());
-    EXPECT_FALSE(emptyMeta.setRating(0));
+    EXPECT_TRUE(emptyMeta.setRating(0));
+    EXPECT_TRUE(emptyMeta.isDirty());
+    EXPECT_EQ(emptyMeta.getRating(), -1);
+
+    emptyMeta.readMetaData(DkFileInfo(filePath));
+    EXPECT_FALSE(emptyMeta.hasMetaData());
     EXPECT_FALSE(emptyMeta.isDirty());
     EXPECT_FALSE(emptyMeta.setRating(7));
     EXPECT_FALSE(emptyMeta.isDirty());
