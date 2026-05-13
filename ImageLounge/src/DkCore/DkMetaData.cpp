@@ -1325,7 +1325,7 @@ bool DkMetaDataT::updateImageMetaData(const QImage &img, bool reset_orientation)
 
 bool DkMetaDataT::setExifValue(const QString &key, const QString &value)
 {
-    if (mExifState == not_loaded || mExifState == no_data) {
+    if (mExifState == not_loaded || !mExifImg) {
         return false;
     }
 
