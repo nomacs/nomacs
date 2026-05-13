@@ -1225,9 +1225,6 @@ void DkMetaDataT::setOrientation(int o)
 
 bool DkMetaDataT::setDescription(const QString &description)
 {
-    if (mExifState == not_loaded || mExifState == no_data)
-        return false;
-
     return setExifValue("Exif.Image.ImageDescription", description.toUtf8());
 }
 
