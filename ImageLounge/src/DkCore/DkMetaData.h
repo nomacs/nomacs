@@ -123,7 +123,7 @@ public:
     void setOrientation(int o);
     bool setRating(int r);
     bool setDescription(const QString &description);
-    bool setExifValue(QString key, QString taginfo);
+    bool setExifValue(const QString &key, const QString &value);
     bool updateImageMetaData(const QImage &img, bool reset_orientation = true);
     void setThumbnail(const QImage &thumb);
     void setQtValues(const QImage &cImg);
