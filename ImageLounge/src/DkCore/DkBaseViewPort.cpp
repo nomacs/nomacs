@@ -293,8 +293,7 @@ void DkBaseViewPort::setImage(const QImage &newImg)
 {
     mImgStorage.setImage(newImg);
     mImgRect = QRectF(QPointF(), getImageSize());
-    const bool kz = DkSettingsManager::param().display().keepZoom;
-    updateImageMatrix(kz ? DkSettings::zoom_keep_same_size : DkSettings::zoom_never_keep);
+    updateImageMatrix(static_cast<DkSettings::keepZoom>(DkSettingsManager::param().display().keepZoom));
     update();
 }
 
@@ -777,13 +776,10 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
         break;
     case DkSettings::zoom_keep_same_size: {
         if (!isSameSize) {
-            mWorldMatrix.reset();
+            zoomToFit();
         }
         break;
     }
-    case DkSettings::zoom_never_keep:
-        mWorldMatrix.reset();
-        break;
     case DkSettings::zoom_always_fit:
         zoomToFit();
         break;
@@ -919,11 +915,17 @@ void DkBaseViewPort::zoomToFit()
 {
     const QSizeF imgSize = getImageSize();
     const QSizeF winSize = size();
-    const double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
+    double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
+
+    // maxZoomOnFit <= 0 means unlimited, otherwise it is the zoom factor (e.g., 1.0 = 100%, 2.0 = 200%)
+    double maxZoom = DkSettingsManager::param().display().maxZoomOnFit;
+    if (maxZoom > 0 && zoomLevel > maxZoom) {
+        zoomLevel = maxZoom;
+    }
 
     if (zoomLevel > 1) {
         zoomTo(zoomLevel);
-    } else if (zoomLevel < 1 || (zoomLevel == 1 && mSvg)) {
+    } else {
         resetView();
     }
 }

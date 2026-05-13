@@ -790,11 +790,13 @@ void DkDisplayPreference::createLayout()
     QVector<QRadioButton *> keepZoomButtons;
     keepZoomButtons.resize(DkSettings::zoom_end);
     keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
-    keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if the size is the same"), this);
+    keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if the size is the same, "
+                                                                           "otherwise fit to window"),
+                                                                        this);
     keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(
-        tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
-    keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
-    keepZoomButtons[DkSettings::zoom_always_fit] = new QRadioButton(tr("Always zoom to fit"), this);
+        tr("If new image has the same size as the previous image, keep zoom level. Otherwise zoom the image to fit the "
+           "window."));
+    keepZoomButtons[DkSettings::zoom_always_fit] = new QRadioButton(tr("Always zoom to fit window"), this);
 
     // check wrt the current settings
     keepZoomButtons[DkSettingsManager::param().display().keepZoom]->setChecked(true);
@@ -802,15 +804,36 @@ void DkDisplayPreference::createLayout()
     auto *keepZoomButtonGroup = new QButtonGroup(this);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_always_keep], DkSettings::zoom_always_keep);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_keep_same_size], DkSettings::zoom_keep_same_size);
-    keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_never_keep], DkSettings::zoom_never_keep);
     keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_always_fit], DkSettings::zoom_always_fit);
     connect(keepZoomButtonGroup, &QButtonGroup::idClicked, this, &DkDisplayPreference::onKeepZoomButtonClicked);
 
     auto *keepZoomGroup = new DkGroupWidget(tr("When Displaying New Images"), this);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
-    keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
+
+    // Maximum zoom when fitting to window
+    auto *maxZoomOnFitCombo = new QComboBox(this);
+    maxZoomOnFitCombo->addItem(tr("Unlimited"), 0.0);
+    maxZoomOnFitCombo->addItem(tr("%1%").arg(100), 1.0);
+    maxZoomOnFitCombo->addItem(tr("%1%").arg(125), 1.25);
+    maxZoomOnFitCombo->addItem(tr("%1%").arg(150), 1.5);
+    maxZoomOnFitCombo->addItem(tr("%1%").arg(200), 2.0);
+    maxZoomOnFitCombo->addItem(tr("%1%").arg(300), 3.0);
+    maxZoomOnFitCombo->addItem(tr("%1%").arg(400), 4.0);
+    maxZoomOnFitCombo->addItem(tr("%1%").arg(500), 5.0);
+    const int maxZoomIndex = maxZoomOnFitCombo->findData(DkSettingsManager::param().display().maxZoomOnFit);
+    maxZoomOnFitCombo->setCurrentIndex(maxZoomIndex >= 0 ? maxZoomIndex : 0);
+    connect(maxZoomOnFitCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            [maxZoomOnFitCombo](const int currentIndex) {
+                DkSettingsManager::param().display().maxZoomOnFit = maxZoomOnFitCombo->itemData(currentIndex)
+                                                                        .toDouble();
+            });
+
+    auto *maxZoomOnFitGroup = new DkGroupWidget(tr("Maximum Zoom When Fitting to Window"), this);
+    maxZoomOnFitGroup->addWidget(maxZoomOnFitCombo);
 
     mColorProfiles = new QComboBox(this);
     mColorProfiles->setToolTip(tr("Choose the color profile of the monitor"));
@@ -940,6 +963,7 @@ void DkDisplayPreference::createLayout()
     l->setAlignment(Qt::AlignTop);
     l->addWidget(zoomGroup);
     l->addWidget(keepZoomGroup);
+    l->addWidget(maxZoomOnFitGroup);
     l->addWidget(colorGroup);
     l->addWidget(iconGroup);
     l->addWidget(navigationGroup);
