@@ -1225,9 +1225,6 @@ void DkMetaDataT::setOrientation(int o)
 
 bool DkMetaDataT::setDescription(const QString &description)
 {
-    if (mExifState == not_loaded || mExifState == no_data)
-        return false;
-
     return setExifValue("Exif.Image.ImageDescription", description.toUtf8());
 }
 
@@ -1326,12 +1323,11 @@ bool DkMetaDataT::updateImageMetaData(const QImage &img, bool reset_orientation)
     return success;
 }
 
-bool DkMetaDataT::setExifValue(QString key, QString taginfo)
+bool DkMetaDataT::setExifValue(const QString &key, const QString &value)
 {
-    bool setExifSuccessfull = false;
-
-    if (mExifState == not_loaded || mExifState == no_data)
+    if (mExifState == not_loaded || !mExifImg) {
         return false;
+    }
 
     try {
         Exiv2::ExifData &exifData = mExifImg->exifData();
@@ -1343,27 +1339,29 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo)
             // QByteArray ba = taginfo.toUtf8();
             // Exiv2::DataValue val((const byte*)ba.data(), taginfo.size(), Exiv2::ByteOrder::bigEndian,
             // Exiv2::TypeId::unsignedByte);
-
             // tag.setValue(&val);
-            if (!tag.setValue(taginfo.toStdString())) {
-                mExifState = dirty;
-                setExifSuccessfull = true;
+
+            if (0 != tag.setValue(value.toStdString())) {
+                qWarning() << "[Exiv2] setValue() on existing key failed" << key << value;
+                return false;
             }
         } else {
             Exiv2::ExifKey exivKey(key.toStdString());
             Exiv2::Exifdatum tag(exivKey);
-            if (!tag.setValue(taginfo.toStdString())) {
-                mExifState = dirty;
-                setExifSuccessfull = true;
+            if (0 != tag.setValue(value.toStdString())) {
+                qWarning() << "[Exiv2] setValue() on new key failed" << key << value;
+                return false;
             }
 
             exifData.add(tag);
         }
     } catch (...) {
-        setExifSuccessfull = false;
+        qWarning() << "[Exiv2] failed to set exif value" << key << value;
+        return false;
     }
 
-    return setExifSuccessfull;
+    mExifState = dirty;
+    return true;
 }
 
 QString DkMetaDataT::exiv2ToQString(std::string exifString)
