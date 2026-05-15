@@ -1409,7 +1409,7 @@ void DkImageLoader::rotateImage(double angle)
             qWarning() << "[Exiv2] rotate metadata failed";
         }
 
-        emit tr("Sorry, metadata rotation failed (check log).");
+        emit showInfoSignal(tr("Sorry, metadata rotation failed (check log)."));
     }
 
     // User may not be aware they disabled this
