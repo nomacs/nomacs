@@ -61,9 +61,6 @@ enum class LoadThumbnailOption {
     // Try to load EXIF thumbnail first, and fall back to full image if not exist.
     none,
 
-    // Only load EXIF thumbnail.
-    force_exif,
-
     // Return requested size if smaller than full image
     force_size,
 
