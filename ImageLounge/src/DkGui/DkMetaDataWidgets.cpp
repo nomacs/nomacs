@@ -103,7 +103,7 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData)
         QString lastKey = exifKeys.at(idx).split(".").last();
         QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
         QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx), true);
-        exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+        exifValue = DkMetaDataHelper::getInstance().formatSpecialValue(lastKey, exifValue);
 
         createItem(exifKeys.at(idx), translatedKey, exifValue);
     }
@@ -114,7 +114,7 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData)
         QString lastKey = iptcKeys.at(idx).split(".").last();
         QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
         QString exifValue = metaData->getIptcValue(iptcKeys.at(idx));
-        exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+        exifValue = DkMetaDataHelper::getInstance().formatSpecialValue(lastKey, exifValue);
 
         createItem(iptcKeys.at(idx), translatedKey, exifValue);
     }
@@ -125,7 +125,7 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData)
         QString lastKey = xmpKeys.at(idx).split(".").last();
         QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
         QString exifValue = metaData->getXmpValue(xmpKeys.at(idx));
-        exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+        exifValue = DkMetaDataHelper::getInstance().formatSpecialValue(lastKey, exifValue);
 
         createItem(xmpKeys.at(idx), translatedKey, exifValue);
     }
@@ -136,7 +136,7 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData)
         QString lastKey = cKey.split(".").last();
         QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
         QString exifValue = metaData->getQtValue(cKey);
-        exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+        exifValue = DkMetaDataHelper::getInstance().formatSpecialValue(lastKey, exifValue);
 
         createItem(tr("Data.") + cKey, translatedKey, exifValue);
     }
@@ -890,7 +890,7 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData)
         if (mKeyValues.contains(cKey)) {
             QString lastKey = cKey.split(".").last();
             QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx), true);
-            exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+            exifValue = DkMetaDataHelper::getInstance().formatSpecialValue(lastKey, exifValue);
 
             mEntryKeyLabels.append(createKeyLabel(cKey));
             mEntryValueLabels.append(createValueLabel(exifValue));
@@ -905,7 +905,7 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData)
         if (mKeyValues.contains(cKey)) {
             QString lastKey = iptcKeys.at(idx).split(".").last();
             QString exifValue = metaData->getIptcValue(iptcKeys.at(idx));
-            exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+            exifValue = DkMetaDataHelper::getInstance().formatSpecialValue(lastKey, exifValue);
 
             mEntryKeyLabels.append(createKeyLabel(cKey));
             mEntryValueLabels.append(createValueLabel(exifValue));
@@ -920,7 +920,7 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData)
         if (mKeyValues.contains(cKey)) {
             QString lastKey = xmpKeys.at(idx).split(".").last();
             QString exifValue = metaData->getXmpValue(xmpKeys.at(idx));
-            exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+            exifValue = DkMetaDataHelper::getInstance().formatSpecialValue(lastKey, exifValue);
 
             mEntryKeyLabels.append(createKeyLabel(cKey));
             mEntryValueLabels.append(createValueLabel(exifValue));
@@ -935,7 +935,7 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData)
         if (mKeyValues.contains(cKey)) {
             QString lastKey = cKey.split(".").last();
             QString exifValue = metaData->getQtValue(cKey);
-            exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+            exifValue = DkMetaDataHelper::getInstance().formatSpecialValue(lastKey, exifValue);
 
             mEntryKeyLabels.append(createKeyLabel(cKey));
             mEntryValueLabels.append(createValueLabel(exifValue));
