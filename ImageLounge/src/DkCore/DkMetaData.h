@@ -185,6 +185,7 @@ public:
         key_make,
         key_model,
         key_aperture,
+        key_fnumber,
         key_iso,
         key_flash,
         key_focal_length,
@@ -195,19 +196,20 @@ public:
         key_end
     };
 
-    QString getApertureValue(QSharedPointer<DkMetaDataT> metaData) const;
-    QString getFocalLength(QSharedPointer<DkMetaDataT> metaData) const;
-    QString getExposureTime(QSharedPointer<DkMetaDataT> metaData) const;
-    QString getExposureMode(QSharedPointer<DkMetaDataT> metaData) const;
-    QString getFlashMode(QSharedPointer<DkMetaDataT> metaData) const;
-    QString getCompression(QSharedPointer<DkMetaDataT> metaData) const;
+    QString formatApertureValue(const QString &value) const;
+    QString formatFNumber(const QString &value) const;
+    QString formatFocalLength(const QString &value) const;
+    QString formatExposureTime(const QString &value) const;
+    QString formatExposureMode(const QString &value) const;
+    QString formatFlashMode(const QString &value) const;
+    QString formatCompression(const QString &value) const;
     QString getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData) const;
-    QString getGpsAltitude(const QString &val) const;
+    QString formatGpsAltitude(const QString &val) const;
     QStringList convertGpsCoordinates(const QString &coordString) const;
     float convertRational(const QString &val) const;
     bool hasGPS(QSharedPointer<DkMetaDataT> metaData) const;
     QString translateKey(const QString &key) const;
-    QString resolveSpecialValue(QSharedPointer<DkMetaDataT> metaData, const QString &key, const QString &value) const;
+    QString formatSpecialValue(const QString &key, const QString &value) const;
 
     QStringList getCamSearchTags() const;
     QStringList getDescSearchTags() const;
