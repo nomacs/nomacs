@@ -370,20 +370,24 @@ void DkTrainDialog::loadFile(const QString &filePath)
     // TODO: archives cannot be trained currently
     bool imgLoaded = basicLoader.loadGeneral(lFilePath, true);
 
+    const QString suffix = fileInfo.suffix().toLower();
+
     if (!imgLoaded) {
         mViewport->setImage(QImage()); // remove the image
-        mAcceptedFile = "";
-        userFeedback(tr("Sorry, currently we don't support: *.%1 files").arg(fileInfo.suffix()), true);
+        mAcceptedSuffix = {};
+        mAcceptedFile = {};
+        userFeedback(tr("Sorry, currently we don't support: *.%1 files").arg(suffix), true);
         return;
     }
 
-    if (DkSettingsManager::param().app().fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
-        userFeedback(tr("*.%1 is already supported.").arg(fileInfo.suffix()), false);
+    if (DkSettingsManager::param().app().fileFilters.join(" ").contains(suffix)) {
+        userFeedback(tr("*.%1 is already supported.").arg(suffix), false);
         imgLoaded = false;
     } else
-        userFeedback(tr("*.%1 is supported.").arg(fileInfo.suffix()), false);
+        userFeedback(tr("*.%1 is supported.").arg(suffix), false);
 
     mViewport->setImage(basicLoader.image());
+    mAcceptedSuffix = suffix;
     mAcceptedFile = lFilePath;
 
     // try loading the file
@@ -393,17 +397,14 @@ void DkTrainDialog::loadFile(const QString &filePath)
 
 void DkTrainDialog::accept()
 {
-    QFileInfo acceptedFileInfo(mAcceptedFile);
-
     // add the extension to user filters
-    if (!DkSettingsManager::param().app().fileFilters.join(" ").contains(acceptedFileInfo.suffix(),
-                                                                         Qt::CaseInsensitive)) {
+    if (!DkSettingsManager::param().app().fileFilters.join(" ").contains(mAcceptedSuffix)) {
         QString name = QInputDialog::getText(this,
                                              "Format Name",
                                              tr("Please name the new format:"),
                                              QLineEdit::Normal,
                                              "Your File Format");
-        QString tag = name + " (*." + acceptedFileInfo.suffix() + ")";
+        QString tag = name + " (*." + mAcceptedSuffix + ")";
 
         // load user filters
         DefaultSettings settings;
@@ -412,7 +413,7 @@ void DkTrainDialog::accept()
         settings.setValue("ResourceSettings/userFilters", userFilters);
         DkSettingsManager::param().app().openFilters.append(tag);
 
-        const QString filter = "*." + acceptedFileInfo.suffix();
+        const QString filter = "*." + mAcceptedSuffix;
         DkSettingsManager::param().app().fileFilters.append(filter);
         DkSettingsManager::param().app().browseFilters.append(filter);
     }

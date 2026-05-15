@@ -184,6 +184,7 @@ protected:
     QLabel *mFeedbackLabel;
     DkBaseViewPort *mViewport;
 
+    QString mAcceptedSuffix;
     QString mAcceptedFile;
     QString mFile;
 };
