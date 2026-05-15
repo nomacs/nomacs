@@ -1588,6 +1588,7 @@ void DkMetaDataHelper::init()
     mCamSearchTags.append("Make");
     mCamSearchTags.append("Model");
     mCamSearchTags.append("ApertureValue");
+    mCamSearchTags.append("FNumber");
     mCamSearchTags.append("ISOSpeedRatings");
     mCamSearchTags.append("Flash");
     mCamSearchTags.append("FocalLength");
@@ -1710,110 +1711,89 @@ void DkMetaDataHelper::init()
     mCompressionModes.insert(65535, QObject::tr("Pentax PEF Compressed"));
 }
 
-QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData) const
+QString DkMetaDataHelper::formatApertureValue(const QString &value) const
 {
-    QString key = mCamSearchTags.at(key_aperture);
-
-    QString value = metaData->getExifValue(key);
-    QStringList sList = value.split('/');
+    const auto sList = QStringView{value}.split(QChar{u'/'});
 
     if (sList.size() == 2) {
         double val = pow(1.4142,
                          sList[0].toDouble()
                              / sList[1].toDouble()); // see the exif documentation (e.g.
                                                      // http://www.media.mit.edu/pia/Research/deepview/exif.html)
-        value = QString::fromStdString(DkUtils::stringify(val, 1));
-    }
-
-    // just divide the fnumber
-    if (value.isEmpty()) {
-        value = metaData->getExifValue("FNumber"); // try alternative tag
-        value = DkUtils::resolveFraction(value);
+        return QString::fromStdString(DkUtils::stringify(val, 1));
     }
 
     return value;
 }
 
-QString DkMetaDataHelper::getFocalLength(QSharedPointer<DkMetaDataT> metaData) const
+QString DkMetaDataHelper::formatFNumber(const QString &value) const
 {
-    // focal length
-    QString key = mCamSearchTags.at(key_focal_length);
+    return !value.isEmpty() ? DkUtils::resolveFraction(value) : value;
+}
 
-    QString value = metaData->getExifValue(key);
-
+QString DkMetaDataHelper::formatFocalLength(const QString &value) const
+{
     float v = convertRational(value);
-
-    if (v != -1)
-        value = QString::number(v) + " mm";
-
-    return value;
+    return v != -1 ? QString::number(v) + " mm" : value;
 }
 
-QString DkMetaDataHelper::getExposureTime(QSharedPointer<DkMetaDataT> metaData) const
+QString DkMetaDataHelper::formatExposureTime(const QString &value) const
 {
-    QString key = mCamSearchTags.at(key_exposure_time);
-    QString value = metaData->getExifValue(key);
-    QStringList sList = value.split('/');
+    // toInt() fails if there is formatting after the denominator
+    QString filtered = value;
+    filtered.removeIf([](const QChar &ch) {
+        return !ch.isDigit() && ch != QChar(u'/');
+    });
 
+    const auto sList = QStringView{filtered}.split(u'/');
     if (sList.size() == 2) {
-        int nom = sList[0].toInt(); // nominator
-        int denom = sList[1].toInt(); // denominator
+        int num = sList[0].toInt(); // numerator
+        int den = sList[1].toInt(); // denominator
 
         // if exposure time is less than a second -> normalize to get nice values (1/500 instead of 2/1000)
-        if (nom <= denom && nom != 0) {
+        QString format;
+        if (num <= den && num != 0) {
             // fixes #496
-            double nd = (double)denom / nom;
-            value = QString("1/") + QString::number(qRound(nd));
-        } else
-            value = QString::fromStdString(DkUtils::stringify((float)nom / (float)denom, 1));
+            double nd = (double)den / num;
+            format = QStringLiteral("1/") + QString::number(qRound(nd));
+        } else if (den != 0) {
+            format = QString::fromStdString(DkUtils::stringify((float)num / (float)den, 1));
+        }
 
-        value += " sec";
+        format += " sec";
+        return format;
     }
 
     return value;
 }
 
-QString DkMetaDataHelper::getExposureMode(QSharedPointer<DkMetaDataT> metaData) const
+QString DkMetaDataHelper::formatExposureMode(const QString &value) const
 {
-    QString key = mCamSearchTags.at(key_exposure_mode);
-    QString value = metaData->getExifValue(key);
     int mode = value.toInt();
-
-    if (mode >= 0 && mode < mExposureModes.size())
-        value = mExposureModes[mode];
-
-    return value;
+    QString name = mExposureModes.value(mode);
+    return name.isEmpty() ? value : name;
 }
 
-QString DkMetaDataHelper::getFlashMode(QSharedPointer<DkMetaDataT> metaData) const
+QString DkMetaDataHelper::formatFlashMode(const QString &value) const
 {
-    QString key = mCamSearchTags.at(key_flash);
-    QString value = metaData->getExifValue(key);
     unsigned int mode = value.toUInt();
-
-    if (mode < (unsigned int)mFlashModes.size())
-        value = mFlashModes[mode];
-    else {
-        value = mFlashModes.first(); // assuming no flash to be first
-        qWarning() << "illegal flash mode dected: " << mode;
+    QString name = mFlashModes.value(mode);
+    if (!name.isEmpty()) {
+        return name;
+    } else {
+        qWarning() << "illegal flash mode: " << mode;
+        return mFlashModes.first(); // assuming no flash to be first
     }
-
-    return value;
 }
 
-QString DkMetaDataHelper::getCompression(QSharedPointer<DkMetaDataT> metaData) const
+QString DkMetaDataHelper::formatCompression(const QString &value) const
 {
-    int cmpKey = metaData->getExifValue(mCamSearchTags[key_compression]).toInt();
-    QString value = mCompressionModes.value(cmpKey, "");
-
-    // show raw data if we can't map it
-    if (value.isEmpty())
-        value = QString::number(cmpKey);
-
-    return value;
+    int intValue = value.toInt();
+    QString name = mCompressionModes.value(intValue);
+    return name.isEmpty() ? value : name;
 }
 
-QString DkMetaDataHelper::getGpsAltitude(const QString &val) const
+QString DkMetaDataHelper::formatGpsAltitude(const QString &val) const
 {
     QString rVal = val;
     float v = convertRational(val);
@@ -1931,28 +1911,28 @@ QString DkMetaDataHelper::translateKey(const QString &key) const
     return translatedKey;
 }
 
-QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaData,
-                                              const QString &key,
-                                              const QString &value) const
+QString DkMetaDataHelper::formatSpecialValue(const QString &shortKey, const QString &value) const
 {
     QString rValue = value;
 
-    if (key == mCamSearchTags[key_aperture] || key == "FNumber") {
-        rValue = getApertureValue(metaData);
-    } else if (key == mCamSearchTags[key_focal_length]) {
-        rValue = getFocalLength(metaData);
-    } else if (key == mCamSearchTags[key_exposure_time]) {
-        rValue = getExposureTime(metaData);
-    } else if (key == mCamSearchTags[key_exposure_mode]) {
-        rValue = getExposureMode(metaData);
-    } else if (key == mCamSearchTags[key_flash]) {
-        rValue = getFlashMode(metaData);
-    } else if (key == mCamSearchTags[key_compression]) {
-        rValue = getCompression(metaData);
-    } else if (key == "GPSLatitude" || key == "GPSLongitude") {
+    if (shortKey == mCamSearchTags[key_aperture]) {
+        rValue = formatApertureValue(value);
+    } else if (shortKey == mCamSearchTags[key_fnumber]) {
+        rValue = formatFNumber(value);
+    } else if (shortKey == mCamSearchTags[key_focal_length]) {
+        rValue = formatFocalLength(value);
+    } else if (shortKey == mCamSearchTags[key_exposure_time]) {
+        rValue = formatExposureTime(value);
+    } else if (shortKey == mCamSearchTags[key_exposure_mode]) {
+        rValue = formatExposureMode(value);
+    } else if (shortKey == mCamSearchTags[key_flash]) {
+        rValue = formatFlashMode(value);
+    } else if (shortKey == mCamSearchTags[key_compression]) {
+        rValue = formatCompression(value);
+    } else if (shortKey == "GPSLatitude" || shortKey == "GPSLongitude") {
         rValue = convertGpsCoordinates(value).join(" ");
-    } else if (key == "GPSAltitude") {
-        rValue = getGpsAltitude(value);
+    } else if (shortKey == "GPSAltitude") {
+        rValue = formatGpsAltitude(value);
     } else if (value.contains("charset=")) {
         if (value.contains("charset=\"unicode\"", Qt::CaseInsensitive)) {
             rValue = rValue.replace("charset=\"unicode\" ", "", Qt::CaseInsensitive);
