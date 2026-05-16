@@ -34,6 +34,7 @@
 #include <optional>
 #include <queue>
 
+#include "DkBasicLoader.h"
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 
@@ -98,14 +99,16 @@ struct LoadThumbnailResult {
     bool transformed{};
 };
 
-std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request);
+std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request,
+                                                 DkLoadOptions loadOptions = DkLoadOption::normal);
 
 struct ThumbnailFromMetadata {
     QImage thumb{};
     bool transformed{};
 };
 
-std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData);
+std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData,
+                                                               DkLoadOptions loadOptions = DkLoadOption::normal);
 
 class DkThumbLoader : public QObject
 {

@@ -41,7 +41,7 @@ namespace nmc
 
 void removeBlackBorder(QImage &img);
 
-std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData)
+std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData, DkLoadOptions loadOptions)
 {
     QImage thumb = metaData.getThumbnail();
     if (thumb.isNull()) {
@@ -52,7 +52,8 @@ std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT
 
     int orientation = metaData.getOrientationDegrees();
 
-    const bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
+    bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
+    disableTransform |= loadOptions & DkLoadOption::untransformed; // match loadGeneral()
     const bool shouldTransform = !disableTransform && orientation != DkMetaDataT::or_invalid
         && orientation != DkMetaDataT::or_not_set;
     if (shouldTransform) {
@@ -73,17 +74,19 @@ std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT
     return ThumbnailFromMetadata{thumb, shouldTransform};
 }
 
-std::optional<QImage> loadThumbnailFromFullImage(const QString &filePath, QSharedPointer<QByteArray> baZip)
+std::optional<QImage> loadThumbnailFromFullImage(const QString &filePath,
+                                                 QSharedPointer<QByteArray> baZip,
+                                                 DkLoadOptions loadOptions)
 {
     DkBasicLoader loader;
-    if (loader.loadGeneral(filePath, baZip)) {
+    if (loader.loadGeneral(filePath, baZip, loadOptions)) {
         return loader.image();
     } else {
         return std::nullopt;
     }
 }
 
-std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request)
+std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &request, DkLoadOptions loadOptions)
 {
     DkTimer dt{};
 
@@ -131,7 +134,7 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
         }
 
         if (request.option != LoadThumbnailOption::force_full) {
-            exifThumb = loadThumbnailFromMetadata(*metaData);
+            exifThumb = loadThumbnailFromMetadata(*metaData, loadOptions);
         }
 
         bool loadFull = !exifThumb;
@@ -139,7 +142,7 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
             && qMax(exifThumb->thumb.height(), exifThumb->thumb.width()) < request.size;
         if (loadFull) {
             exifThumb = {};
-            fullThumb = loadThumbnailFromFullImage(thumbPath, ba);
+            fullThumb = loadThumbnailFromFullImage(thumbPath, ba, loadOptions);
         }
 
         if (!fullThumb && !exifThumb) {

@@ -450,6 +450,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation;
+    disableTransform |= options & DkLoadOption::untransformed;
     if (maybeTransformed && disableTransform)
         qWarning() << "[Loader] the plugin for" << suffix << "does not support disabling orientation/transform";
 
