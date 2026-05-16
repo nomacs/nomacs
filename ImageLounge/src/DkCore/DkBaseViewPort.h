@@ -71,16 +71,9 @@ public:
         mForceFastRendering = fastRendering;
     };
 
-    // world to viewport/widget transform
-    QTransform getWorldMatrix() const
+    QTransform imageToWidgetTransform() const
     {
-        return mTransformVM->worldMatrix();
-    }
-
-    // image(device-normalized) to world transform
-    QTransform getImageMatrix() const
-    {
-        return mTransformVM->imgMatrix();
+        return mTransformVM->imgMatrix() * mTransformVM->worldMatrix();
     }
 
     // visible region of the image, unscaled

@@ -119,6 +119,18 @@ protected:
     void leaveEvent(QEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 
+    // world to viewport/widget transform
+    QTransform getWorldMatrix() const
+    {
+        return transformVM()->worldMatrix();
+    }
+
+    // image(device-normalized) to world transform
+    QTransform getImageMatrix() const
+    {
+        return transformVM()->imgMatrix();
+    }
+
     QImage mImgBg;
 
     DkControlWidget *mController = nullptr;
