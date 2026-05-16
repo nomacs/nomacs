@@ -496,14 +496,18 @@ void DkViewPort::tcpForceSynchronize()
 
 void DkViewPort::tcpSynchronize(QTransform relativeMatrix, bool force)
 {
+    if (!isActiveWindow()) {
+        //  We are the synced instance.
+        return;
+    }
+
     if (!relativeMatrix.isIdentity()) {
         emit sendTransformSignal(relativeMatrix, QTransform(), QPointF());
         return;
     }
 
     // check if we need a synchronization
-    if ((force || qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)
-        && (hasFocus() || mController->hasFocus())) {
+    if ((force || qApp->keyboardModifiers() == mAltMod || DkSettingsManager::param().sync().syncActions)) {
         QPointF size = QPointF(width(), height()) / 2;
         size = getWorldMatrix().inverted().map(size);
         size = getImageMatrix().inverted().map(size);
