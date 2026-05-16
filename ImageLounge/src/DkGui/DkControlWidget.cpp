@@ -265,12 +265,7 @@ void DkControlWidget::connectWidgets()
     connect(mMetaDataInfo, &DkMetaDataHUD::positionChangeSignal, this, &DkControlWidget::changeMetaDataPosition);
 
     // zoom widget
-    connect(mZoomWidget, &DkZoomWidget::zoomSignal, mViewport, &DkViewPort::zoomTo);
-    connect(mViewport, &DkViewPort::zoomSignal, mZoomWidget, &DkZoomWidget::updateZoom);
-    connect(mViewport, &DkViewPort::zoomLevelRangeChanged, this, [this]() {
-        const auto zr = mViewport->zoomLevelRange();
-        mZoomWidget->setZoomLevelRange(zr.mMin, zr.mMax);
-    });
+    mZoomWidget->connectTransformViewModel(mViewport->transformVM());
     connect(mViewport, &DkViewPort::viewImageChanged, mZoomWidget->getOverview(), &DkOverview::imageUpdated);
 
     // waiting
@@ -341,13 +336,6 @@ void DkControlWidget::setCommentSaved(const QString &comment)
         return;
     }
     mViewport->imageContainer()->setMetaData(tr("File comment"));
-}
-
-void DkControlWidget::update()
-{
-    mZoomWidget->update();
-
-    QWidget::update();
 }
 
 void DkControlWidget::showWidgetsSettings()

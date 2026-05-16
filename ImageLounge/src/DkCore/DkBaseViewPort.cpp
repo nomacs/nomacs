@@ -139,10 +139,6 @@ DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent, bool resetWhenZoo
         update();
         emit imageUpdated();
     });
-    connect(mTransformVM.get(),
-            &DkViewPortTransformViewModel::zoomLevelRangeChanged,
-            this,
-            &DkBaseViewPort::zoomLevelRangeChanged);
 
     connect(mImageVM.get(), &DkViewPortImageViewModel::contentStateChanged, this, &DkBaseViewPort::updateRenderer);
 }

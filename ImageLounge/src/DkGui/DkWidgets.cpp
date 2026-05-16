@@ -39,6 +39,7 @@
 #include "DkToolbars.h"
 #include "DkUtils.h"
 #include "DkViewPort.h"
+#include "DkViewPortTransformViewModel.h"
 
 #include <DkUtils.h>
 #include <QAction>
@@ -639,6 +640,12 @@ bool DkOverview::updateThumb()
     return true;
 }
 
+void DkOverview::updateTransform(const QRectF &viewportRect)
+{
+    mViewPortRect = viewportRect;
+    update();
+}
+
 void DkOverview::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
@@ -652,25 +659,25 @@ void DkOverview::paintEvent(QPaintEvent *event)
     // map original image (disregarding viewport transform)
     const QRectF thumbRect = mImageToLocal.mapRect(QRectF(QPointF(), mOriginalImageSize));
 
-    // map visible region of the viewport
-    QRectF viewRect = viewPortToLocal().mapRect(mViewPort->geometry());
+    const qreal dpr = devicePixelRatioF();
+    const QRectF viewPortRect = (mImageToLocal * QTransform::fromScale(dpr, dpr)).mapRect(mViewPortRect);
 
     // draw thumbnail
     QPainter painter(this);
     painter.drawImage(thumbRect, mThumb);
 
     // highlight the visible region, only draw if we cannot see the entire image
-    QSizeF sizeDiff(thumbRect.size() - viewRect.size());
+    QSizeF sizeDiff(thumbRect.size() - viewPortRect.size());
     if (sizeDiff.width() >= 1.0 || sizeDiff.height() >= 1.0) {
         // clip to thumbnail
-        viewRect = viewRect.intersected(thumbRect);
+        const QRectF intersection = viewPortRect.intersected(thumbRect);
 
         QColor col = DkSettingsManager::param().display().highlightColor;
         col.setAlpha(255);
         painter.setPen(col);
         col.setAlpha(50);
         painter.setBrush(col);
-        painter.drawRect(viewRect);
+        painter.drawRect(intersection);
     }
 }
 
@@ -703,13 +710,10 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event)
         return;
 
     // jump to cursor; we need two points to send a delta x/y to viewport
-    QPointF currentCenter = viewPortToLocal().mapRect(mViewPort->geometry()).center();
+    QPointF currentCenter = mImageToLocal.map(mViewPortRect.center());
     QPointF newCenter = event->position();
 
     moveImage(currentCenter, newCenter);
-
-    if (event->modifiers() == DkSettingsManager::param().global().altMod)
-        mViewPort->tcpSynchronize();
 }
 
 void DkOverview::resizeEvent(QResizeEvent *event)
@@ -732,20 +736,6 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event)
     QPointF cursorPos = event->position();
     moveImage(mLastMousePos, cursorPos);
     mLastMousePos = cursorPos;
-
-    if (event->modifiers() == DkSettingsManager::param().global().altMod)
-        mViewPort->tcpSynchronize();
-}
-
-QTransform DkOverview::viewPortToLocal() const
-{
-    // multiply by devicePixelRatioF() since imageToWorld is in logical pixels and mImageToLocal is in physical pixels
-    QTransform worldToViewPort = mViewPort->getWorldMatrix();
-    QTransform imageToWorld = mViewPort->getImageMatrix();
-
-    QTransform mat = worldToViewPort.inverted() * imageToWorld.inverted() * devicePixelRatioF() * mImageToLocal;
-
-    return mat;
 }
 
 QTransform DkOverview::imageToLocal() const
@@ -826,6 +816,8 @@ void DkZoomWidget::createLayout()
 void DkZoomWidget::onSbZoomValueChanged(double zoomLevel)
 {
     emit zoomSignal(zoomLevel / 100.0);
+
+    // No update here. We update when the actual zoom is sent back from updateZoom.
 }
 
 void DkZoomWidget::onSlZoomValueChanged(int zoomLevel)
@@ -833,6 +825,8 @@ void DkZoomWidget::onSlZoomValueChanged(int zoomLevel)
     double level = std::exp(static_cast<double>(zoomLevel) / static_cast<double>(sSliderMax) * (mSliderMax - mSliderMin)
                             + mSliderMin);
     emit zoomSignal(level);
+
+    // No update here. We update when the actual zoom is sent back from updateZoom.
 }
 
 void DkZoomWidget::updateZoom(double zoomLevel)
@@ -840,12 +834,13 @@ void DkZoomWidget::updateZoom(double zoomLevel)
     mSlZoom->blockSignals(true);
     mSbZoom->blockSignals(true);
 
-    int slVal = qRound((std::log(zoomLevel / 100) - mSliderMin) / (mSliderMax - mSliderMin)
+    int slVal = qRound((std::log(zoomLevel) - mSliderMin) / (mSliderMax - mSliderMin)
                        * static_cast<double>(sSliderMax));
     mSlZoom->setValue(slVal);
-    mSbZoom->setValue(zoomLevel);
+    mSbZoom->setValue(zoomLevel * 100);
     mSlZoom->blockSignals(false);
     mSbZoom->blockSignals(false);
+    update();
 }
 
 void DkZoomWidget::setZoomLevelRange(double min, double max)
@@ -854,6 +849,23 @@ void DkZoomWidget::setZoomLevelRange(double min, double max)
     mSliderMax = std::log(max);
     mSbZoom->setMinimum(min * 100);
     mSbZoom->setMaximum(max * 100);
+    update();
+}
+
+void DkZoomWidget::connectTransformViewModel(DkViewPortTransformViewModel *tVM)
+{
+    connect(this, &DkZoomWidget::zoomSignal, tVM, &DkViewPortTransformViewModel::zoomTo);
+    connect(tVM, &DkViewPortTransformViewModel::transformChanged, this, [this, tVM]() {
+        updateZoom(tVM->zoomLevel());
+    });
+    connect(tVM, &DkViewPortTransformViewModel::zoomLevelRangeChanged, this, [this, tVM]() {
+        const auto zr = tVM->zoomLevelRange();
+        setZoomLevelRange(zr.mMin, zr.mMax);
+    });
+
+    connect(tVM, &DkViewPortTransformViewModel::transformChanged, mOverview, [this, tVM]() {
+        mOverview->updateTransform(tVM->viewportInImageCoords());
+    });
 }
 
 DkOverview *DkZoomWidget::getOverview() const

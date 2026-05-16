@@ -57,5 +57,6 @@ QImage DkViewPortImageViewModel::downsampled(const QSize &size,
 void DkViewPortImageViewModel::setImageOnly(const QImage &img)
 {
     mImgStorage.setImage(img);
+    emit contentStateChanged();
 }
 }

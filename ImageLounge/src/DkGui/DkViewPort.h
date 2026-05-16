@@ -75,16 +75,12 @@ signals:
     void sendNewFileSignal(qint16 op, QString filename = "") const;
     void infoSignal(const QString &msg) const; // needed to forward signals
     void addTabSignal(const QString &filePath) const;
-    void zoomSignal(double zoomLevel) const;
     void mouseClickSignal(QMouseEvent *event, QPoint imgPos) const;
     void showProgress(bool show, int time = -1) const;
     void viewImageChanged() const;
 
 public:
     void fullView() override;
-
-    // tcp actions
-    void tcpSynchronize(QTransform relativeMatrix = QTransform(), bool force = false);
 
     // file actions
     void loadFile(const QString &filePath);
@@ -139,6 +135,7 @@ private:
     void deleteImage();
 
     // tcp actions
+    void tcpSynchronize(QTransform relativeMatrix = QTransform(), bool force = false);
     void tcpSetWindowRect(QRect rect);
     void tcpForceSynchronize();
     void tcpLoadFile(qint16 idx, const QString &filename);
