@@ -13,8 +13,6 @@
 #include <QTransform>
 #include <QtContainerFwd>
 #include <QtGlobal>
-#include <QtTypes>
-#include <QtVersionChecks>
 #include <gtest/gtest.h>
 
 #include "DkSettings.h"
