@@ -96,7 +96,8 @@ signals:
     // new signals
     void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image) const;
     void imageUpdatedSignal(int idx) const; // folder scrollbar needs that
-    void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true) const;
+    void imageLoaded(QSharedPointer<DkImageContainerT> image) const;
+    void imageLoadFailed();
     void showInfoSignal(const QString &msg, int time = 3000, int position = 0) const;
     void updateDirSignal(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void imageHasGPSSignal(bool hasGPS) const;
@@ -137,17 +138,10 @@ public slots:
 
     // new slots
     void currentImageUpdated() const;
-    void imageLoaded(bool loaded = false);
+    void handleImageLoadResult(bool loaded = false);
     void imageSaved(const QString &file, bool saved = true, bool loadToTab = true);
     void imagesSorted();
 
-    /**
-     * promptSaveBeforeUnload checks whether the image has been edited,
-     * and asks whether the user want to save or discard the changes.
-     * Returns true if succeeded.
-     * Returns false if the user canceled the operation.
-     * */
-    bool promptSaveBeforeUnload();
     void reloadImage();
     void showOnMap();
 

@@ -447,7 +447,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event)
     painter.fillRect(this->rect(), nmc::DkSettingsManager::param().display().bgColor);
 
     // set the transform from image space to viewport
-    QTransform worldMat = viewport->getImageMatrix() * viewport->getWorldMatrix();
+    QTransform worldMat = viewport->imageToWidgetTransform();
     worldMat.scale(1.0 / devicePixelRatioF(), 1.0 / devicePixelRatioF());
 
     painter.setWorldTransform(worldMat);

@@ -54,12 +54,67 @@ class DkPluginViewPort;
 class DkOverview;
 class DkViewPortInterface;
 class DkThumbLoader;
+class DkViewPortFSViewModel;
 
 class DllCoreExport DkControlWidget : public DkWidget
 {
     Q_OBJECT
 
 public:
+    enum InfoPos {
+        bottom_left_label,
+        bottom_right_label,
+        top_left_label
+    };
+
+    enum Widgets {
+        last_widget = -1,
+        hud_widget,
+        crop_widget,
+
+        widget_end
+    };
+
+    explicit DkControlWidget(DkThumbLoader *thumbLoader,
+                             DkViewPort *parent = nullptr,
+                             Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkControlWidget() override = default;
+
+    void setFullScreen(bool fullscreen);
+
+    DkFilePreview *getFilePreview() const;
+    DkZoomWidget *getZoomWidget() const;
+    DkPlayer *getPlayer() const;
+    DkFileInfoLabel *getFileInfoLabel() const;
+    DkHistogramWidget *getHistogram() const;
+    DkCropWidget *getCropWidget() const;
+
+    // slots
+    void showPreview(bool visible);
+    void showMetaData(bool visible);
+    void startSlideshow(bool start = true);
+
+    bool closePlugin(bool askForSaving, bool force = false);
+    bool applyPluginChanges(bool askForSaving);
+
+    void updateImage(QSharedPointer<DkImageContainerT> imgC, bool updateMetadataIfNull = true);
+
+    void setInfo(const QString &msg, int time = 3000, int location = bottom_left_label);
+
+    void imagePresenceChanged(bool imagePresent);
+
+    void setFSVM(DkViewPortFSViewModel *fsVM);
+
+protected:
+    // events
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
+
+private:
     enum VerPos {
         top_scroll = 0,
         top_thumbs,
@@ -83,48 +138,18 @@ public:
         hor_pos_end
     };
 
-    enum InfoPos {
-        bottom_left_label,
-        bottom_right_label,
-        top_left_label
-    };
-
-    enum Widgets {
-        last_widget = -1,
-        hud_widget,
-        crop_widget,
-
-        widget_end
-    };
-
-    explicit DkControlWidget(DkThumbLoader *thumbLoader,
-                             DkViewPort *parent = nullptr,
-                             Qt::WindowFlags flags = Qt::WindowFlags());
-    ~DkControlWidget() override = default;
-
-    void setFullScreen(bool fullscreen);
-
-    DkFilePreview *getFilePreview() const;
-    DkFolderScrollBar *getScroller() const;
-    DkOverview *getOverview() const;
-    DkZoomWidget *getZoomWidget() const;
-    DkPlayer *getPlayer() const;
-    DkFileInfoLabel *getFileInfoLabel() const;
-    DkHistogramWidget *getHistogram() const;
-    DkCropWidget *getCropWidget() const;
+    // functions
+    void init();
+    void connectWidgets();
 
     void showWidgetsSettings();
     void setWidgetsVisible(bool visible, bool saveSettings = false);
 
-    void settingsChanged();
-
-public slots:
+    // Slots
     void toggleHUD(bool hide);
-    void showPreview(bool visible);
-    void showMetaData(bool visible);
+
     void showFileInfo(bool visible);
     void showPlayer(bool visible);
-    void startSlideshow(bool start = true);
     void hideCrop(bool hide = true);
     void showCrop(bool visible);
     void showOverview(bool visible);
@@ -135,23 +160,9 @@ public slots:
     void changeThumbNailPosition(int pos);
     void showScroller(bool visible);
     void setPluginWidget(DkViewPortInterface *pluginWidget, bool removeWidget);
-
-    bool closePlugin(bool askForSaving, bool force = false);
-    bool applyPluginChanges(bool askForSaving);
-
-    void updateImage(QSharedPointer<DkImageContainerT> imgC, bool updateMetadataIfNull = true);
-
-    void setInfo(const QString &msg, int time = 3000, int location = bottom_left_label);
     void updateRating(int rating);
-
-    void imagePresenceChanged(bool imagePresent);
-
-    void update();
-
-private:
     void onImageContainerInternalUpdated();
 
-protected slots:
     void setCommentSaved(const QString &comment);
 
     // signals from viewport plugins
@@ -159,19 +170,6 @@ protected slots:
     void pluginMessage(const QString &msg);
     void pluginLoadFile(const QString &path);
     void pluginLoadImage(const QImage &img);
-
-protected:
-    // events
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-
-    void keyPressEvent(QKeyEvent *event) override;
-    void keyReleaseEvent(QKeyEvent *event) override;
-
-    // functions
-    void init();
-    void connectWidgets();
 
     // layout (switching of HUD contexts)
     QVector<QWidget *> mWidgets;
