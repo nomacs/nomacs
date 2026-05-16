@@ -207,12 +207,12 @@ bool DkBasicLoader::isOrientationMirrored(const QImageIOHandler::Transformations
     return false;
 }
 
-bool DkBasicLoader::loadGeneral(const QString &filePath, bool loadMetaData, bool fast)
+bool DkBasicLoader::loadGeneral(const QString &filePath, DkLoadOptions options)
 {
-    return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
+    return loadGeneral(filePath, QSharedPointer<QByteArray>(), options);
 }
 
-bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast)
+bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, DkLoadOptions options)
 {
     DkTimer dt;
 
@@ -254,7 +254,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // Qt considers an orientation of 0 as wrong and fails to load these jpgs
     // however, the old nomacs wrote 0 if the orientation should be cleared
     // so we simply adopt the memory here
-    if (loadMetaData) {
+    if (options & DkLoadOption::metadata) {
         // collect all file info now and save it in metadata, we won't have
         // to do a slow fetch when displaying metadata panels
         origFileInfo.stat();
@@ -319,7 +319,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     bool libRawUsed = false;
     if (loader.isNull() && rawFormats.contains(suffix)) {
         libRawUsed = true;
-        if (loadRAW(mFile, img, ba, fast))
+        if (loadRAW(mFile, img, ba, options & DkLoadOption::fast))
             loader = "raw";
     }
 #endif
@@ -363,7 +363,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // - "image/jpeg" fixes #435 - thumbnail gets loaded in the RAW loader
     if (loader.isNull() && !libRawUsed && !qtFormats.contains(suffix) && mMetaData->getMimeType() != "image/jpeg") {
         // TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
-        if (loadRAW(mFile, img, ba, fast))
+        if (loadRAW(mFile, img, ba, options & DkLoadOption::fast))
             loader = "raw-unknown-suffix";
     }
 #endif
@@ -429,7 +429,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
         mirrored = isOrientationMirrored(transform);
     }
 
-    if (rotation == DkMetaDataT::or_invalid && loadMetaData && mMetaData->hasMetaData()) {
+    if (rotation == DkMetaDataT::or_invalid && (options & DkLoadOption::metadata) && mMetaData->hasMetaData()) {
         rotation = mMetaData->getOrientationDegrees();
         mirrored = mMetaData->isOrientationMirrored();
     }

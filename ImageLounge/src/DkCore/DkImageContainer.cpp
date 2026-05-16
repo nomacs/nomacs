@@ -414,7 +414,7 @@ QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QString &f
                                                                 const QSharedPointer<QByteArray> fileBuffer)
 {
     try {
-        loader->loadGeneral(filePath, fileBuffer, true, false);
+        loader->loadGeneral(filePath, fileBuffer, DkLoadOption::highquality);
     } catch (...) {
         qWarning() << "Unhandled exception in loadGeneral()";
     }
