@@ -76,7 +76,7 @@ std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT
 std::optional<QImage> loadThumbnailFromFullImage(const QString &filePath, QSharedPointer<QByteArray> baZip)
 {
     DkBasicLoader loader;
-    if (loader.loadGeneral(filePath, baZip, true, true)) {
+    if (loader.loadGeneral(filePath, baZip)) {
         return loader.image();
     } else {
         return std::nullopt;

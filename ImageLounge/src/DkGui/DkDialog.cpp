@@ -368,7 +368,7 @@ void DkTrainDialog::loadFile(const QString &filePath)
     // basicLoader.setTraining(true);
 
     // TODO: archives cannot be trained currently
-    bool imgLoaded = basicLoader.loadGeneral(lFilePath, true);
+    bool imgLoaded = basicLoader.loadGeneral(lFilePath);
 
     const QString suffix = fileInfo.suffix().toLower();
 
@@ -2700,7 +2700,7 @@ void DkExportTiffDialog::setFile(const QString &filePath)
     mTiffLabel->setText(filePath);
     mFileEdit->setText(fInfo.baseName());
 
-    mLoader.loadGeneral(filePath, true);
+    mLoader.loadGeneral(filePath);
     mViewport->setImage(mLoader.image());
 
     enableTIFFSave(mLoader.getNumPages() > 1);
@@ -3420,7 +3420,7 @@ cv::Mat DkMosaicDialog::createPatch(const QImage &thumb, const QString &filePath
     // load full image if we have not enough resolution
     if (thumb.isNull() || qMin(thumb.width(), thumb.height()) < patchRes) {
         DkBasicLoader loader;
-        loader.loadGeneral(filePath, true, true);
+        loader.loadGeneral(filePath);
         img = loader.image();
     } else
         img = thumb;
@@ -3625,7 +3625,7 @@ void DkMosaicDialog::setFile(const QString &filePath)
     mFolderLabel->setText(mSavePath);
     mFileLabel->setText(filePath);
 
-    mLoader.loadGeneral(filePath, true);
+    mLoader.loadGeneral(filePath);
     mViewport->setImage(mLoader.image());
 
     enableMosaicSave(mLoader.hasImage());

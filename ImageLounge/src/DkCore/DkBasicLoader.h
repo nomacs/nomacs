@@ -150,6 +150,21 @@ protected:
 #endif
 };
 
+enum class DkLoadOption {
+    fast = 0x1, // Allow speedups that may reduce quality such as RAW preview
+    metadata = 0x2, // Load metadata, needed for correct orientation & RAW preview
+    normal = fast | metadata, // Reasonable default, settings may force-disable RAW preview
+    highquality = metadata, // Highest quality, settings may force-enable RAW preview
+};
+Q_DECLARE_FLAGS(DkLoadOptions, DkLoadOption);
+} // namespace nmc
+
+// add operators for typesafe flags, must be global namespace for old qt versions
+Q_DECLARE_OPERATORS_FOR_FLAGS(nmc::DkLoadOptions);
+
+namespace nmc
+{
+
 /**
  * This class provides image loading and editing capabilities.
  * It additionally stores the currently loaded image.
@@ -196,21 +211,19 @@ public:
     /**
      * Load image from file.
      **/
-    bool loadGeneral(const QString &filePath, bool loadMetaData = false, bool fast = true);
+    bool loadGeneral(const QString &filePath, DkLoadOptions options = DkLoadOption::normal);
 
     /**
      * Loads the image for the given file
      * @param filePath path to the file; provides suffix to find the right loader
      * @param ba byteArray of the file contents; always used first
-     * @param loadMetadata load exif metadata
-     * @param fast use fast-but-less-accurate loader (e.g. RAW preview JPG)
+     * @param options flags to control loading
      * @note if the image is multipage, the next page is loaded
      * @return true if image was loaded and assigned to the edit history
      **/
     bool loadGeneral(const QString &filePath,
                      const QSharedPointer<QByteArray> ba,
-                     bool loadMetaData = false,
-                     bool fast = true);
+                     DkLoadOptions options = DkLoadOption::normal);
 
     /**
      * Loads the page requested (with respect to the current page)
