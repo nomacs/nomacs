@@ -44,6 +44,7 @@
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 #include "DkMath.h"
+#include "DkViewPortImageViewModel.h"
 #include "DkViewPortTransformViewModel.h"
 
 class QDoubleSpinBox;
@@ -344,26 +345,15 @@ public:
     explicit DkOverview(QWidget *parent = nullptr);
     ~DkOverview() override = default;
 
-    // get notified when the image in the viewport changes
-    void imageUpdated()
-    {
-        mThumb = {};
-    }
+    void connectTransformViewModel(DkViewPortTransformViewModel *vm);
+    void connectImageViewModel(DkViewPortImageViewModel *vm);
 
-    // bind to viewport; viewport owns overview (via controller), so dangling pointer is not possible
-    void setViewPort(DkViewPort *viewPort)
-    {
-        mViewPort = viewPort;
-        mThumb = {};
-    }
+signals:
+    void imageTranslated(const QPointF &translationInImageCoords);
 
-    void updateTransform(const QRectF &viewportRect);
-
-protected:
-    DkViewPort *mViewPort{};
-
-    QSize mOriginalImageSize{};
-    QImage mThumb{};
+private:
+    std::optional<QImage> mImage;
+    std::optional<QImage> mThumb;
     QTransform mImageToLocal{};
     QRectF mViewPortRect{};
 
@@ -377,12 +367,15 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
     // recompute thumbnail and transforms after imageUpdated()
-    bool updateThumb();
+    void updateThumb();
+    void setImage(const QImage &image);
 
     QTransform imageToLocal() const;
 
     // move original image in the viewport
     void moveImage(const QPointF &p1, const QPointF &p2);
+
+    void updateTransform(const QRectF &viewportRect);
 };
 
 class DkZoomWidget : public DkFadeLabel
@@ -392,9 +385,8 @@ class DkZoomWidget : public DkFadeLabel
 public:
     explicit DkZoomWidget(QWidget *parent = nullptr);
 
-    DkOverview *getOverview() const;
-
     void connectTransformViewModel(DkViewPortTransformViewModel *vm);
+    void connectImageViewModel(DkViewPortImageViewModel *vm);
 
 signals:
     void zoomSignal(double zoomLevel);

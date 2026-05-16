@@ -396,6 +396,11 @@ void DkViewPortTransformViewModel::moveViewInWidgetCoords(const QPointF &delta)
     controlImagePosition();
 }
 
+void DkViewPortTransformViewModel::moveViewInImageCoords(const QPointF &delta)
+{
+    moveViewInWidgetCoords(delta * zoomLevel());
+}
+
 void DkViewPortTransformViewModel::panLeft()
 {
     const qreal delta = -sPanFraction * static_cast<qreal>(mViewportRect.width());

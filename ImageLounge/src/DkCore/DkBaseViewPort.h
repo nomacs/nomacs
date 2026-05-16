@@ -108,11 +108,15 @@ public:
         return mTransformVM.get();
     }
 
+    [[nodiscard]] DkViewPortImageViewModel *imageVM() const
+    {
+        return mImageVM.get();
+    }
+
 signals:
     void imageUpdated() const; // triggers on zoom/pan
 
 public slots:
-    void moveViewInImageCoords(const QPointF &delta);
     void moveViewInWidgetCoords(const QPointF &delta);
     virtual void fullView();
 
@@ -231,11 +235,6 @@ protected:
     virtual void eraseBackground(QPainter &painter) const;
 
     [[nodiscard]] qreal zoomLevel() const;
-
-    [[nodiscard]] DkViewPortImageViewModel *imageVM() const
-    {
-        return mImageVM.get();
-    }
 
 private:
     bool gestureEvent(QGestureEvent *event);
