@@ -104,6 +104,7 @@ public:
     void zoomToFit();
 
     void moveViewInWidgetCoords(const QPointF &delta);
+    void moveViewInImageCoords(const QPointF &delta);
 
     void setDisablePanForSmallDimension(bool v)
     {

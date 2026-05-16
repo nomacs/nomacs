@@ -163,12 +163,6 @@ void DkBaseViewPort::togglePattern(bool show)
     update();
 }
 
-void DkBaseViewPort::moveViewInImageCoords(const QPointF &delta)
-{
-    // Reuse the logic
-    moveViewInWidgetCoords(delta * zoomLevel());
-}
-
 void DkBaseViewPort::moveViewInWidgetCoords(const QPointF &delta)
 {
     mTransformVM->moveViewInWidgetCoords(delta);

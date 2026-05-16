@@ -62,7 +62,6 @@ DkControlWidget::DkControlWidget(DkThumbLoader *thumbLoader, DkViewPort *parent,
     mFilePreview = new DkFilePreview(thumbLoader, this, flags);
     mMetaDataInfo = new DkMetaDataHUD(this);
     mZoomWidget = new DkZoomWidget(this);
-    mZoomWidget->getOverview()->setViewPort(parent);
 
     mPlayer = new DkPlayer(this);
     mPlayer->setMaximumHeight(90);
@@ -266,7 +265,7 @@ void DkControlWidget::connectWidgets()
 
     // zoom widget
     mZoomWidget->connectTransformViewModel(mViewport->transformVM());
-    connect(mViewport, &DkViewPort::viewImageChanged, mZoomWidget->getOverview(), &DkOverview::imageUpdated);
+    mZoomWidget->connectImageViewModel(mViewport->imageVM());
 
     // waiting
     connect(mDelayedInfo, &DkDelayedMessage::infoSignal, this, [this](const QString &msg, int time) {
