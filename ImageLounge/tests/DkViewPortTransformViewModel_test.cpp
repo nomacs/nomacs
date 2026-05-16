@@ -18,24 +18,6 @@
 #include "DkSettings.h"
 #include "DkViewPortTransformViewModel.h"
 
-// NOTE: these belongs in the global scope, otherwise they will hide the Qt provided overloads.
-#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
-constexpr bool qFuzzyCompare(const QPointF &lhs, const QPointF &rhs) noexcept
-{
-    return qFuzzyCompare(lhs.x(), rhs.x()) && qFuzzyCompare(lhs.y(), rhs.y());
-}
-
-constexpr bool qFuzzyCompare(const QSizeF &lhs, const QSizeF &rhs) noexcept
-{
-    return qFuzzyCompare(lhs.width(), rhs.width()) && qFuzzyCompare(lhs.height(), rhs.height());
-}
-
-constexpr bool qFuzzyCompare(const QRectF &lhs, const QRectF &rhs) noexcept
-{
-    return qFuzzyCompare(lhs.topLeft(), rhs.topLeft()) && qFuzzyCompare(lhs.bottomRight(), rhs.bottomRight());
-}
-#endif
-
 namespace nmc
 {
 
@@ -85,12 +67,43 @@ protected:
     std::unique_ptr<DkViewPortTransformViewModel> vm;
 };
 
-template<typename T>
-testing::AssertionResult assertQFuzzy(const T &t1, const T &t2)
+bool isClose(qreal actual, qreal expected, qreal rtol = 1e-7, qreal atol = 1e-10)
 {
-    if (!qFuzzyCompare(t1, t2)) {
+    return std::abs(actual - expected) < atol + rtol * std::abs(expected);
+}
+
+bool isClose(const QPointF &actual, const QPointF &expected, qreal rtol = 1e-7, qreal atol = 1e-10)
+{
+    return isClose(actual.x(), expected.x(), rtol, atol) && isClose(actual.y(), expected.y(), rtol, atol);
+}
+
+bool isClose(const QSizeF &actual, const QSizeF &expected, qreal rtol = 1e-7, qreal atol = 1e-10)
+{
+    return isClose(actual.width(), expected.width(), rtol, atol)
+        && isClose(actual.height(), expected.height(), rtol, atol);
+}
+
+bool isClose(const QRectF &actual, const QRectF &expected, qreal rtol = 1e-7, qreal atol = 1e-10)
+{
+    return isClose(actual.topLeft(), expected.topLeft(), rtol, atol)
+        && isClose(actual.size(), expected.size(), rtol, atol);
+}
+
+bool isClose(const QTransform &actual, const QTransform &expected, qreal rtol = 1e-7, qreal atol = 1e-10)
+{
+    return isClose(actual.m11(), expected.m11(), rtol, atol) && isClose(actual.m12(), expected.m12(), rtol, atol)
+        && isClose(actual.m13(), expected.m13(), rtol, atol) && isClose(actual.m21(), expected.m21(), rtol, atol)
+        && isClose(actual.m22(), expected.m22(), rtol, atol) && isClose(actual.m23(), expected.m23(), rtol, atol)
+        && isClose(actual.m31(), expected.m31(), rtol, atol) && isClose(actual.m32(), expected.m32(), rtol, atol)
+        && isClose(actual.m33(), expected.m33(), rtol, atol);
+}
+
+template<typename T>
+testing::AssertionResult assertQFuzzy(const T &actual, const T &expected)
+{
+    if (!isClose(actual, expected)) {
         QString s;
-        QDebug(&s) << t1 << "!=" << t2;
+        QDebug(&s) << actual << "!=" << expected;
         return testing::AssertionFailure() << s.toStdString();
     }
 
