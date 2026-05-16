@@ -176,30 +176,21 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT>> images
         const auto img = images[idx];
         mWatchers[idx] = std::make_unique<QFutureWatcher<void>>();
         mWatchers[idx]->setFuture(QtConcurrent::run([filePath = img->filePath(), forceSave]() {
-            LoadThumbnailOption opt = LoadThumbnailOption::none;
-            if (forceSave) {
-                opt = LoadThumbnailOption::force_full;
-            }
+            LoadThumbnailRequest req{};
+            req.filePath = filePath;
+            req.option = forceSave ? LoadThumbnailOption::force_full : LoadThumbnailOption::none;
 
-            // FIXME: must ignore orientation metadata here
-            std::optional<LoadThumbnailResult> res = loadThumbnail(LoadThumbnailRequest{filePath, opt});
+            // Load untransformed image. We can't modify orientation metadata as it would break the original.
+            // Make sure to always read from original file (no disk cache etc)
+            DkLoadOptions loadOpt = DkLoadOption::normal | DkLoadOption::untransformed | DkLoadOption::source;
+
+            std::optional<LoadThumbnailResult> res = loadThumbnail(req, loadOpt);
             if (!res || (!forceSave && res->fromExif)) {
                 return;
             }
 
-            // save the thumbnail
             try {
-                int orientation = res->metaData->getOrientationDegrees();
-                QImage rotatedThumb = res->thumb;
-                if (orientation != DkMetaDataT::or_invalid && orientation != DkMetaDataT::or_not_set
-                    && orientation != 0) {
-                    // TODO: Use DkUtils rotation
-                    QTransform rotationMatrix;
-                    rotationMatrix.rotate(-orientation);
-                    rotatedThumb = rotatedThumb.transformed(rotationMatrix);
-                }
-
-                res->metaData->updateImageMetaData(rotatedThumb); // FIXME: resets orientation data
+                res->metaData->updateImageMetaData(res->thumb, false);
                 res->metaData->saveMetaData(res->filePath);
             } catch (...) {
                 qWarning() << "Sorry, I could not save the metadata";
