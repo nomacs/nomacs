@@ -240,7 +240,6 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent, bool resetWh
         if (zoomChanged) {
             showZoom();
         }
-        mController->update(); // why do we need to update the mController manually?
         tcpSynchronize();
 
         if (zoomChanged) {
@@ -1594,7 +1593,6 @@ void DkViewPort::cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool
 void DkViewPort::emitZoomSignal()
 {
     qreal zoomPercentage = zoomLevel() * 100;
-    emit zoomSignal(zoomPercentage);
     DkStatusBarManager::instance().setMessage(QString::number(qRound(zoomPercentage)) + "%",
                                               DkStatusBar::status_zoom_info);
 }

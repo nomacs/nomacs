@@ -103,8 +103,6 @@ public:
 
     void imagePresenceChanged(bool imagePresent);
 
-    void update();
-
     void setFSVM(DkViewPortFSViewModel *fsVM);
 
 protected:

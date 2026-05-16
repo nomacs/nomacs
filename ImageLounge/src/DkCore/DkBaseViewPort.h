@@ -102,9 +102,14 @@ public:
 
     [[nodiscard]] DkViewPortTransformViewModel::ZoomLevelRange zoomLevelRange() const;
 
+    // The returned view model is owned by DkBaseViewPort
+    [[nodiscard]] DkViewPortTransformViewModel *transformVM() const
+    {
+        return mTransformVM.get();
+    }
+
 signals:
     void imageUpdated() const; // triggers on zoom/pan
-    void zoomLevelRangeChanged() const;
 
 public slots:
     void moveViewInImageCoords(const QPointF &delta);
@@ -226,12 +231,6 @@ protected:
     virtual void eraseBackground(QPainter &painter) const;
 
     [[nodiscard]] qreal zoomLevel() const;
-
-    // The returned view model is owned by DkBaseViewPort
-    DkViewPortTransformViewModel *transformVM() const
-    {
-        return mTransformVM.get();
-    }
 
     [[nodiscard]] DkViewPortImageViewModel *imageVM() const
     {
