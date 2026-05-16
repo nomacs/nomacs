@@ -154,6 +154,7 @@ enum class DkLoadOption {
     fast = 0x1, // Allow speedups that may reduce quality such as RAW preview
     metadata = 0x2, // Load metadata, needed for correct orientation & RAW preview
     untransformed = 0x4, // Disable any transformation (for embedded thumb generation)
+    source = 0x8, // Always read original file data, no caches or conversions
     normal = fast | metadata, // Reasonable default, settings may force-disable RAW preview
     highquality = metadata, // Highest quality, settings may force-enable RAW preview
 };
