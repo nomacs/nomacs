@@ -106,6 +106,7 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
     std::unique_ptr<DkCachedThumb> cachedThumb{};
 
     if (request.option != LoadThumbnailOption::force_full //
+        && !(loadOptions & DkLoadOption::source) //
         && DkSettingsManager::param().resources().thumbDiskCache) {
         cachedThumb = std::make_unique<DkCachedThumb>(fileInfo, request.size, request.constraint);
         QImage thumb = cachedThumb->load();
