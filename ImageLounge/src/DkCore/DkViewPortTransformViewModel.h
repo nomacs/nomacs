@@ -136,6 +136,8 @@ public:
         mDisableControlAndCenter = v;
     }
 
+    QRectF viewportInImageCoords() const;
+
 signals:
     void transformChanged();
     void zoomLevelRangeChanged();
