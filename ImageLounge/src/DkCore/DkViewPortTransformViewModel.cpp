@@ -522,4 +522,9 @@ void DkViewPortTransformViewModel::setMinZoomLevelTo1()
     mMinZoom = 1 / mImgMatrix.m11();
     emit zoomLevelRangeChanged();
 }
+
+QRectF DkViewPortTransformViewModel::viewportInImageCoords() const
+{
+    return mImgMatrix.inverted().mapRect(mWorldMatrix.inverted().mapRect(mViewportRect));
+}
 }

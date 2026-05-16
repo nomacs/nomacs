@@ -252,10 +252,8 @@ QRectF DkBaseViewPort::getImageViewRect() const
 
 QImage DkBaseViewPort::getCurrentImageRegion()
 {
-    QRectF viewRect = QRectF(QPointF(), size());
-
-    viewRect = mTransformVM->worldMatrix().inverted().mapRect(viewRect);
-    viewRect = (mTransformVM->imgMatrix().inverted() * devicePixelRatioF()).mapRect(viewRect);
+    const qreal dpr = devicePixelRatioF();
+    const QRectF viewRect = QTransform().scale(dpr, dpr).mapRect(mTransformVM->viewportInImageCoords());
 
     // Rect is now in image coordinates so just copy it.
     // If there is any oob condition it gets default fill
