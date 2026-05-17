@@ -929,6 +929,7 @@ void DkImageContainerT::setRating(int rating)
     QSharedPointer<DkMetaDataT> metaDataInfo = getMetaData();
     bool succeeded = metaDataInfo->setRating(rating);
     if (!succeeded) {
+        emit showInfoSignal(tr("Sorry, I cannot save rating on this image format."));
         return;
     }
     QString msg = (rating == 0) ? QObject::tr("Clear rating") : QObject::tr("Set rating to %1").arg(rating);
