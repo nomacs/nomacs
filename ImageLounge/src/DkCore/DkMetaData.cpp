@@ -1239,6 +1239,10 @@ bool DkMetaDataT::setRating(int r)
         return false;
     }
 
+    if (!isWriteable()) {
+        return false;
+    }
+
     Exiv2::ExifData &exifData = mExifImg->exifData();
     Exiv2::XmpData &xmpData = mExifImg->xmpData();
 
@@ -1326,6 +1330,10 @@ bool DkMetaDataT::updateImageMetaData(const QImage &img, bool reset_orientation)
 bool DkMetaDataT::setExifValue(const QString &key, const QString &value)
 {
     if (mExifState == not_loaded || !mExifImg) {
+        return false;
+    }
+
+    if (!isWriteable()) {
         return false;
     }
 
