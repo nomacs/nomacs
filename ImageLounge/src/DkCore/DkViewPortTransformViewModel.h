@@ -19,10 +19,9 @@ class DllCoreExport DkViewPortTransformViewModel : public QObject
     Q_OBJECT
 
 public:
-    explicit DkViewPortTransformViewModel(double devicePixelRatio, bool zeroPanControl, bool resetWhenZoomPastFit)
+    explicit DkViewPortTransformViewModel(double devicePixelRatio, bool resetWhenZoomPastFit)
         : mZoomTimer{std::make_unique<QTimer>()}
         , mDevicePixelRatio{devicePixelRatio}
-        , mZeroPanControl{zeroPanControl}
         , mResetWhenZoomPastFit{resetWhenZoomPastFit}
     {
         mZoomTimer->setSingleShot(true);
@@ -106,17 +105,6 @@ public:
     void moveViewInWidgetCoords(const QPointF &delta);
     void moveViewInImageCoords(const QPointF &delta);
 
-    void setDisablePanForSmallDimension(bool v)
-    {
-        mDisablePanForSmallDimension = v;
-    }
-
-    using ShowScrollBarSettingProvider = std::function<bool()>;
-    void setShowScrollBarSettingProvider(const ShowScrollBarSettingProvider &v)
-    {
-        mShowScrollBarSettingProvider = v;
-    }
-
     using ZoomLevelSettingProvider = std::function<std::optional<QVector<double>>()>;
     void setZoomLevelSettingProvider(const ZoomLevelSettingProvider &v)
     {
@@ -132,12 +120,32 @@ public:
     void zoomIn();
     void zoomOut();
 
-    void setDisableControlAndCenter(bool v)
+    QRectF viewportInImageCoords() const;
+
+    enum class PanBoundary : std::uint8_t {
+        None,
+        ImageEdge,
+        HalfViewportMargin,
+    };
+    Q_ENUM(PanBoundary)
+
+    using PanBoundarySettingProvider = std::function<PanBoundary()>;
+    void setPanBoundarySettingProvider(const PanBoundarySettingProvider &v)
     {
-        mDisableControlAndCenter = v;
+        mPanBoundarySettingProvider = v;
     }
 
-    QRectF viewportInImageCoords() const;
+    enum class PanCondition : std::uint8_t {
+        AlwaysAllow,
+        AllowWhenLarger,
+    };
+    Q_ENUM(PanCondition)
+
+    using PanConditionSettingProvider = std::function<PanCondition()>;
+    void setPanConditionSettingProvider(const PanConditionSettingProvider &v)
+    {
+        mPanConditionSettingProvider = v;
+    }
 
 signals:
     void transformChanged();
@@ -150,8 +158,9 @@ private:
     QRectF mImgViewRect;
     QRectF mViewportRect;
     QRectF mImgRect;
-    ShowScrollBarSettingProvider mShowScrollBarSettingProvider;
     ZoomLevelSettingProvider mZoomLevelSettingProvider;
+    PanBoundarySettingProvider mPanBoundarySettingProvider;
+    PanConditionSettingProvider mPanConditionSettingProvider;
 
     // mMinZoom is the constraint on zoomLevel relative to the default state
     // (when fit to view for image larger than the viewport or 100% for image smaller)
@@ -162,14 +171,8 @@ private:
     ZoomCenterLimit mZoomCenterLimit = ZoomCenterLimit::None;
 
     bool mBlockZooming = false;
-    // controls whether we cannot pan outside an image
-    bool mZeroPanControl = false;
 
     bool mResetWhenZoomPastFit = true;
-
-    bool mDisablePanForSmallDimension = true;
-
-    bool mDisableControlAndCenter = false;
 
     static constexpr qreal sPanFraction = 0.02;
 
@@ -190,6 +193,9 @@ private:
     // imageViewSize returns the size of the rectangle that contains the image in the
     // coordinates of this widget.
     [[nodiscard]] QSizeF imageViewSize() const;
+
+    PanBoundary panBoundary() const;
+    PanCondition panCondition() const;
 };
 
 // scaleKeepAspectRatioAndCenter creates a transformation that
