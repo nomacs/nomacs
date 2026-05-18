@@ -1618,8 +1618,12 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
     mStartIcons.append(am.icon(DkActionManager::icon_file_open_large));
     mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
     transformVM()->setZoomCenterLimit(DkViewPortTransformViewModel::ZoomCenterLimit::ToImageEdge);
-    transformVM()->setDisablePanForSmallDimension(false);
-    transformVM()->setDisableControlAndCenter(true);
+    transformVM()->setPanConditionSettingProvider([]() {
+        return DkViewPortTransformViewModel::PanCondition::AlwaysAllow;
+    });
+    transformVM()->setPanBoundarySettingProvider([]() {
+        return DkViewPortTransformViewModel::PanBoundary::None;
+    });
 }
 
 void DkViewPortFrameless::paintEvent(QPaintEvent *event)

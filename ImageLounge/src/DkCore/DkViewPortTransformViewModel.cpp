@@ -287,22 +287,32 @@ void DkViewPortTransformViewModel::zoomTo(double zoomLevel)
 
 void DkViewPortTransformViewModel::controlImagePosition()
 {
-    if (mDisableControlAndCenter) {
+    qreal lb;
+    qreal ub;
+    switch (panBoundary()) {
+    case PanBoundary::None: {
         emit transformChanged();
         return;
     }
-
-    qreal lb;
-    qreal ub;
-    if (mZeroPanControl || (mShowScrollBarSettingProvider && mShowScrollBarSettingProvider())) {
-        // we must not pan further if scrollbars are visible
+    case PanBoundary::ImageEdge: {
         lb = 0;
         ub = 0;
-    } else {
-        // default behavior
+        break;
+    }
+    case PanBoundary::HalfViewportMargin: {
         lb = mViewportRect.width() / 2;
         ub = mViewportRect.height() / 2;
+        break;
     }
+    }
+
+    // if (mZeroPanControl || (mShowScrollBarSettingProvider && mShowScrollBarSettingProvider())) {
+    //     // we must not pan further if scrollbars are visible
+    // } else {
+    //     // default behavior
+    //     lb = mViewportRect.width() / 2;
+    //     ub = mViewportRect.height() / 2;
+    // }
 
     const QRectF imgRectWorld = getImageViewRect();
     const qreal w = mViewportRect.width();
@@ -331,7 +341,7 @@ void DkViewPortTransformViewModel::controlImagePosition()
 
 void DkViewPortTransformViewModel::centerImage()
 {
-    if (mDisableControlAndCenter) {
+    if (panCondition() == PanCondition::AlwaysAllow) {
         return;
     }
 
@@ -383,7 +393,7 @@ void DkViewPortTransformViewModel::zoomToFit()
 void DkViewPortTransformViewModel::moveViewInWidgetCoords(const QPointF &delta)
 {
     QPointF lDelta = delta;
-    if (mDisablePanForSmallDimension) {
+    if (panCondition() == PanCondition::AllowWhenLarger) {
         const qreal w = mViewportRect.width();
         const qreal h = mViewportRect.height();
         const QSizeF imgWorldRect = imageViewSize();
@@ -531,5 +541,44 @@ void DkViewPortTransformViewModel::setMinZoomLevelTo1()
 QRectF DkViewPortTransformViewModel::viewportInImageCoords() const
 {
     return mImgMatrix.inverted().mapRect(mWorldMatrix.inverted().mapRect(mViewportRect));
+}
+
+DkViewPortTransformViewModel::PanBoundary DkViewPortTransformViewModel::panBoundary() const
+{
+    constexpr auto defaultBoundary = PanBoundary::HalfViewportMargin;
+
+    if (!mPanBoundarySettingProvider) {
+        return defaultBoundary;
+    }
+
+    const auto b = mPanBoundarySettingProvider();
+    switch (b) {
+    case PanBoundary::None:
+    case PanBoundary::HalfViewportMargin:
+    case PanBoundary::ImageEdge:
+        break;
+    default:
+        return defaultBoundary;
+    }
+    return b;
+}
+
+DkViewPortTransformViewModel::PanCondition DkViewPortTransformViewModel::panCondition() const
+{
+    constexpr auto defaultCondition = PanCondition::AllowWhenLarger;
+
+    if (!mPanConditionSettingProvider) {
+        return defaultCondition;
+    }
+
+    const auto c = mPanConditionSettingProvider();
+    switch (c) {
+    case PanCondition::AllowWhenLarger:
+    case PanCondition::AlwaysAllow:
+        break;
+    default:
+        return defaultCondition;
+    }
+    return c;
 }
 }

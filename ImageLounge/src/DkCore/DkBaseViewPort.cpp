@@ -59,7 +59,7 @@ namespace nmc
 DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent, bool resetWhenZoomPastFit)
     : QGraphicsView(parent)
     , mForceFastRendering{inDialog}
-    , mTransformVM{std::make_unique<DkViewPortTransformViewModel>(devicePixelRatioF(), inDialog, resetWhenZoomPastFit)}
+    , mTransformVM{std::make_unique<DkViewPortTransformViewModel>(devicePixelRatioF(), resetWhenZoomPastFit)}
     , mImageVM{std::make_unique<DkViewPortImageViewModel>()}
 {
     grabGesture(Qt::PanGesture);
@@ -67,9 +67,18 @@ DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent, bool resetWhenZoo
     grabGesture(Qt::SwipeGesture);
     setAttribute(Qt::WA_AcceptTouchEvents);
 
-    mTransformVM->setShowScrollBarSettingProvider([]() {
-        return DkSettingsManager::param().display().showScrollBars;
-    });
+    if (inDialog) {
+        mTransformVM->setPanBoundarySettingProvider([]() {
+            return DkViewPortTransformViewModel::PanBoundary::ImageEdge;
+        });
+    } else {
+        mTransformVM->setPanBoundarySettingProvider([]() {
+            if (DkSettingsManager::param().display().showScrollBars) {
+                return DkViewPortTransformViewModel::PanBoundary::ImageEdge;
+            }
+            return DkViewPortTransformViewModel::PanBoundary::HalfViewportMargin;
+        });
+    }
     mTransformVM->setZoomLevelSettingProvider([]() {
         return DkZoomConfig::instance().levels();
     });

@@ -26,8 +26,8 @@ class DkViewPortTransformViewModelTest : public testing::Test
 protected:
     void SetUp() override
     {
-        // devicePixelRatio = 1.0, zeroPanControl = false, resetWhenZoomPastFit = false
-        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false, false);
+        // devicePixelRatio = 1.0, resetWhenZoomPastFit = false
+        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false);
     }
 
     std::unique_ptr<DkViewPortTransformViewModel> vm;
@@ -60,8 +60,8 @@ class SetImageSizeTest : public testing::TestWithParam<SetImageSizeTestParam>
 protected:
     void SetUp() override
     {
-        // devicePixelRatio = 1.0, zeroPanControl = false, resetWhenZoomPastFit = false
-        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false, false);
+        // devicePixelRatio = 1.0, resetWhenZoomPastFit = false
+        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false);
     }
 
     std::unique_ptr<DkViewPortTransformViewModel> vm;
@@ -224,7 +224,9 @@ TEST_F(DkViewPortTransformViewModelTest, PanTranslation)
     vm->setImgSize(QSizeF(2000, 2000)); // Make it larger to allow panning
 
     // Set initial zoom to 1.0 (so no scaling constraints hide the pan)
-    vm->setDisablePanForSmallDimension(false); // allow free panning
+    vm->setPanConditionSettingProvider([]() {
+        return DkViewPortTransformViewModel::PanCondition::AlwaysAllow;
+    }); // allow free panning
 
     double initialDx = vm->worldMatrix().dx();
 
@@ -287,8 +289,8 @@ class SetWidgetSizeTest : public testing::TestWithParam<SetWidgetSizeTestParam>
 protected:
     void SetUp() override
     {
-        // devicePixelRatio = 1.0, zeroPanControl = false, resetWhenZoomPastFit = false
-        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false, false);
+        // devicePixelRatio = 1.0, resetWhenZoomPastFit = false
+        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false);
     }
 
     std::unique_ptr<DkViewPortTransformViewModel> vm;
@@ -509,8 +511,8 @@ class ZoomTest : public testing::TestWithParam<ZoomTestParam>
 protected:
     void SetUp() override
     {
-        // devicePixelRatio = 1.0, zeroPanControl = false, resetWhenZoomPastFit = false
-        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false, false);
+        // devicePixelRatio = 1.0, resetWhenZoomPastFit = false
+        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false);
     }
 
     std::unique_ptr<DkViewPortTransformViewModel> vm;
@@ -764,12 +766,12 @@ class SyncTest : public testing::TestWithParam<SyncTestParam>
 protected:
     void SetUp() override
     {
-        // devicePixelRatio = 1.0, zeroPanControl = false, resetWhenZoomPastFit = false
-        vmSrc = std::make_unique<DkViewPortTransformViewModel>(1.0, false, false);
+        // devicePixelRatio = 1.0, resetWhenZoomPastFit = false
+        vmSrc = std::make_unique<DkViewPortTransformViewModel>(1.0, false);
         vmSrc->setZoomCenterLimit(DkViewPortTransformViewModel::ZoomCenterLimit::CenterSmallDimension);
         vmSrc->setWidgetSize({1200, 900});
 
-        vmTgt = std::make_unique<DkViewPortTransformViewModel>(1.0, false, false);
+        vmTgt = std::make_unique<DkViewPortTransformViewModel>(1.0, false);
         vmTgt->setZoomCenterLimit(DkViewPortTransformViewModel::ZoomCenterLimit::CenterSmallDimension);
         vmTgt->setWidgetSize({1200, 900});
     }
