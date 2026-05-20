@@ -1060,7 +1060,7 @@ QString DkBatchOutput::getOutputDirectory()
     return mOutputlineEdit->text();
 }
 
-QString DkBatchOutput::getFilePattern()
+QString DkBatchOutput::getFilePattern() const
 {
     QString pattern = "";
 
@@ -1087,6 +1087,11 @@ QString DkBatchOutput::getFilePattern()
     }
 
     return pattern;
+}
+
+bool DkBatchOutput::isConversion() const
+{
+    return !getFilePattern().endsWith(".<old>");
 }
 
 void DkBatchOutput::loadFilePattern(const QString &pattern)
@@ -2754,6 +2759,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
     si.setDeleteOriginal(outputWidget()->deleteOriginal());
     si.setInputDirIsOutputDir(outputWidget()->useInputDir());
     si.setCompression(outputWidget()->getCompression());
+    si.setClearOrientation(outputWidget()->isConversion());
 
     DkBatchConfig config(inputWidget()->getSelectedFilesBatch(),
                          outputWidget()->getOutputDirectory(),

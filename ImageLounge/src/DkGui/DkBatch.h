@@ -318,7 +318,8 @@ public:
     bool useInputDir() const;
     bool deleteOriginal() const;
     QString getOutputDirectory();
-    QString getFilePattern();
+    QString getFilePattern() const;
+    bool isConversion() const; // if true, image is recompressed/reencoded
     void loadFilePattern(const QString &pattern);
     void setExampleFilename(const QString &exampleName);
 
