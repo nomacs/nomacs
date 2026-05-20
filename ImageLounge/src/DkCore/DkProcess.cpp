@@ -1203,7 +1203,10 @@ void DkBatchProcessing::compute()
     if (mBatchWatcher.isRunning())
         mBatchWatcher.waitForFinished();
 
-    QFuture<void> future = QtConcurrent::map(mBatchItems, &nmc::DkBatchProcessing::computeItem);
+    static auto *pool = new QThreadPool;
+    pool->setMaxThreadCount(DkSettingsManager::param().global().numThreads);
+
+    QFuture<void> future = QtConcurrent::map(pool, mBatchItems, &nmc::DkBatchProcessing::computeItem);
     mBatchWatcher.setFuture(future);
 }
 
