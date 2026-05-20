@@ -860,9 +860,15 @@ bool DkBatchProcess::process()
         return true;
     }
 
-    // udpate metadata
-    if (updateMetaData(imgC->getMetaData().data()))
+    // update metadata
+    DkMetaDataT *md = imgC->getMetaData().data();
+    if (updateMetaData(md)) {
         mLogStrings.append(QObject::tr("Original filename added to Exif"));
+    }
+
+    if (md && mSaveInfo.clearOrientation()) {
+        md->clearOrientation();
+    }
 
     // save the image
     if (imgC->saveImage(mSaveInfo.outputFilePath(), mSaveInfo.compression())) {

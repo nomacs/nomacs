@@ -88,6 +88,10 @@ public:
     void setDeleteOriginal(bool deleteOriginal);
     void setCompression(int compression);
     void setInputDirIsOutputDir(bool isOutputDir);
+    void setClearOrientation(bool clear)
+    {
+        mClearOrientation = clear;
+    }
 
     QString inputFilePath() const;
     QString outputFilePath() const;
@@ -101,6 +105,10 @@ public:
     bool isDeleteOriginal() const;
     bool isInputDirOutputDir() const;
     int compression() const;
+    bool clearOrientation() const
+    {
+        return mClearOrientation;
+    }
 
     void createBackupFilePath();
     void clearBackupFilePath();
@@ -114,6 +122,7 @@ private:
     int mCompression = -1;
     bool mDeleteOriginal = false;
     bool mInputDirIsOutputDir = false;
+    bool mClearOrientation = false;
 };
 
 }
