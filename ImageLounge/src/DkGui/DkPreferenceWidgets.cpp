@@ -1108,54 +1108,57 @@ void DkFilePreference::createLayout()
     auto *dirChooser = new DkDirectoryChooser(DkSettingsManager::param().global().tmpPath, this);
     connect(dirChooser, &DkDirectoryChooser::directoryChanged, this, &DkFilePreference::onDirChooserDirectoryChanged);
 
-    auto *tLabel = new QLabel(tr("Screenshots are automatically saved to this folder"), this);
-
-    auto *tempFolderGroup = new DkGroupWidget(tr("Use Temporary Folder"), this);
+    auto *tempFolderGroup = new DkGroupWidget(tr("Custom temporary folder"), this);
+    tempFolderGroup->setToolTip(tr("Pasted images and URLs are saved here. Empty to use system default."));
     tempFolderGroup->addWidget(dirChooser);
-    tempFolderGroup->addWidget(tLabel);
 
-    // cache size
-    int maxRam = qMax(qRound(DkMemory::getTotalMemory()), 1024);
-    qInfo() << "Available RAM: " << maxRam << "MB";
-    auto *cacheBox = new QSpinBox(this);
-    cacheBox->setMinimum(0);
-    cacheBox->setMaximum(maxRam);
-    cacheBox->setSuffix(" MB");
-    cacheBox->setMaximumWidth(200);
-    cacheBox->setValue(qRound(DkSettingsManager::param().resources().cacheMemory));
-    connect(cacheBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkFilePreference::onCacheBoxValueChanged);
+    const int maxRam = DkMemory::maxImageAlloc();
 
-    auto *cLabel = new QLabel(tr("We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]")
-                                  .arg(cacheBox->minimum())
-                                  .arg(cacheBox->maximum()),
-                              this);
-
-    auto *cacheGroup = new DkGroupWidget(tr("Maximal Cache Size"), this);
-    cacheGroup->addWidget(cacheBox);
-    cacheGroup->addWidget(cLabel);
-
-    // history size
-    // cache size
-    auto *historyBox = new QSpinBox(this);
-    historyBox->setMinimum(0);
-    historyBox->setMaximum(1024);
-    historyBox->setSuffix(" MB");
-    historyBox->setMaximumWidth(200);
-    historyBox->setValue(qRound(DkSettingsManager::param().resources().historyMemory));
-    connect(historyBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkFilePreference::onHistoryBoxValueChanged);
-
-    auto *hLabel = new QLabel(tr("We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]")
-                                  .arg(historyBox->minimum())
-                                  .arg(historyBox->maximum()),
-                              this);
-
-    auto *historyGroup = new DkGroupWidget(tr("History Size"), this);
-    historyGroup->addWidget(historyBox);
-    historyGroup->addWidget(hLabel);
-
-    // thumbnails
     auto &res = DkSettingsManager::param().resources();
 
+    auto *maxAlloc = new DkSlider(tr("Image allocation limit"), this);
+    maxAlloc->setToolTip(tr("Maximum memory allowed for any image. If exceeded, image will not be loaded."));
+    maxAlloc->setRange(1024, maxRam);
+    maxAlloc->setValueSuffix(QStringLiteral(" MB"));
+    maxAlloc->setMaximumWidth(500);
+    maxAlloc->setSpinBoxFixedWidth(100);
+    maxAlloc->setValue(res.maxImageAlloc);
+    connect(maxAlloc, &DkSlider::valueChanged, this, [&res](int value) {
+        res.maxImageAlloc = value;
+        QImageReader::setAllocationLimit(value);
+    });
+
+    // cache size
+    auto *cacheSize = new DkSlider(tr("File cache limit"));
+    cacheSize->setToolTip(
+        tr("Speeds up viewing of the next image. We recommend at least twice the size of the largest file."));
+    cacheSize->setRange(0, 2048);
+    cacheSize->setValueSuffix(QStringLiteral(" MB"));
+    cacheSize->setMaximumWidth(500);
+    cacheSize->setSpinBoxFixedWidth(100);
+    cacheSize->setValue(qRound(res.cacheMemory));
+    connect(cacheSize, &DkSlider::valueChanged, this, [&res](int value) {
+        res.cacheMemory = value;
+    });
+
+    // history size
+    auto *historySize = new DkSlider(tr("Edit history limit"));
+    historySize->setToolTip(tr("Determines maximum number of undo/redo entries."));
+    historySize->setRange(0, maxRam);
+    historySize->setValueSuffix(QStringLiteral(" MB"));
+    historySize->setMaximumWidth(500);
+    historySize->setSpinBoxFixedWidth(100);
+    historySize->setValue(qRound(DkSettingsManager::param().resources().historyMemory));
+    connect(historySize, &DkSlider::valueChanged, this, [&res](int value) {
+        res.historyMemory = value;
+    });
+
+    auto *memoryGroup = new DkGroupWidget(tr("Memory Usage"), this);
+    memoryGroup->addWidget(maxAlloc);
+    memoryGroup->addWidget(cacheSize);
+    memoryGroup->addWidget(historySize);
+
+    // thumbnails
     auto *enableHqThumbs = new QCheckBox(tr("Use high-quality thumbnails"));
     enableHqThumbs->setToolTip(tr("Use antialiasing and avoid upsampling."));
     enableHqThumbs->setChecked(DkSettingsManager::param().display().highQualityThumbs);
@@ -1187,6 +1190,7 @@ void DkFilePreference::createLayout()
     auto *thumbThreads = new DkSlider(tr("Thumbnail threads"), this);
     thumbThreads->setToolTip(tr("Limit temporary memory and CPU used to generate thumbnails."));
     thumbThreads->setMaximumWidth(500);
+    thumbThreads->setSpinBoxFixedWidth(100);
     thumbThreads->setRange(1, qMax(1, QThread::idealThreadCount() - 2));
     thumbThreads->setValue(res.thumbThreads);
     connect(thumbThreads, &DkSlider::valueChanged, this, [this](int value) {
@@ -1198,6 +1202,7 @@ void DkFilePreference::createLayout()
     thumbMemory->setToolTip(tr("Keeps recent thumbnails in memory. Use 0 to disable."));
     thumbMemory->setValueSuffix(QStringLiteral(" MB"));
     thumbMemory->setMaximumWidth(500);
+    thumbMemory->setSpinBoxFixedWidth(100);
     thumbMemory->setRange(0, 1024);
     thumbMemory->setValue(res.thumbCacheMemory);
     connect(thumbMemory, &DkSlider::valueChanged, this, [this](int value) {
@@ -1207,9 +1212,10 @@ void DkFilePreference::createLayout()
 
     auto *diskSlider = new DkSlider(tr("Disk cache limit"), this);
     diskSlider->setToolTip(tr("When deletion is enabled, trim disk cache to this size."));
-    diskSlider->setValueSuffix(tr(" MB"));
+    diskSlider->setValueSuffix(QStringLiteral(" MB"));
     diskSlider->setMaximumWidth(500);
     diskSlider->setRange(0, 1024 * 10);
+    diskSlider->setSpinBoxFixedWidth(100);
     diskSlider->setValue(res.thumbDiskSpace);
     connect(diskSlider, &DkSlider::valueChanged, this, [this](int value) {
         DkSettingsManager::param().resources().thumbDiskSpace = value;
@@ -1333,13 +1339,12 @@ void DkFilePreference::createLayout()
     // left column
     auto *l = new QVBoxLayout(this);
     l->setAlignment(Qt::AlignTop);
-    l->addWidget(tempFolderGroup);
-    l->addWidget(cacheGroup);
-    l->addWidget(historyGroup);
+    l->addWidget(memoryGroup);
     l->addWidget(thumbGroup);
     l->addWidget(loadGroup);
     l->addWidget(saveGroup);
     l->addWidget(skipGroup);
+    l->addWidget(tempFolderGroup);
 }
 
 void DkFilePreference::onDirChooserDirectoryChanged(const QString &dirPath) const
@@ -1373,20 +1378,6 @@ void DkFilePreference::onSkipBoxValueChanged(int value) const
 {
     if (DkSettingsManager::param().global().skipImgs != value) {
         DkSettingsManager::param().global().skipImgs = value;
-    }
-}
-
-void DkFilePreference::onCacheBoxValueChanged(int value) const
-{
-    if (DkSettingsManager::param().resources().cacheMemory != value) {
-        DkSettingsManager::param().resources().cacheMemory = (float)value;
-    }
-}
-
-void DkFilePreference::onHistoryBoxValueChanged(int value) const
-{
-    if (DkSettingsManager::param().resources().historyMemory != value) {
-        DkSettingsManager::param().resources().historyMemory = (float)value;
     }
 }
 

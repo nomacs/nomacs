@@ -83,6 +83,7 @@ void DkSlider::createLayout()
     titleLabel = new QLabel(this);
 
     sliderBox = new QSpinBox(this);
+    sliderBox->setAlignment(Qt::AlignRight);
 
     slider = new QSlider(this);
     slider->setOrientation(Qt::Horizontal);
@@ -154,6 +155,11 @@ void DkSlider::setValueSuffix(const QString &format)
 void DkSlider::setFocus(Qt::FocusReason reason)
 {
     sliderBox->setFocus(reason);
+}
+
+void DkSlider::setSpinBoxFixedWidth(int width)
+{
+    sliderBox->setFixedWidth(width);
 }
 
 void DkSlider::setValue(int value)

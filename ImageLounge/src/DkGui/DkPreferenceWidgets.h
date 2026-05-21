@@ -206,8 +206,6 @@ public slots:
     void onDirChooserDirectoryChanged(const QString &dirPath) const;
     void onLoadGroupButtonClicked(int buttonId) const;
     void onSkipBoxValueChanged(int value) const;
-    void onCacheBoxValueChanged(int value) const;
-    void onHistoryBoxValueChanged(int value) const;
     void onSaveGroupButtonClicked(int buttonId) const;
 
 signals:
