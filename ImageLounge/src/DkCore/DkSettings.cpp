@@ -563,6 +563,12 @@ void DkSettings::load(QSettings &settings, bool defaults)
     resources_p.thumbDiskCache = settings.value("thumbDiskCache", resources_p.thumbDiskCache).toBool();
     resources_p.cleanupThumbCache = settings.value("cleanupDiskCache", resources_p.cleanupThumbCache).toBool();
 
+    resources_p.maxImageAlloc = settings.value("maxImageAlloc", resources_p.maxImageAlloc).toInt();
+
+    // we could cause a system hang if this is too high so limit the value
+    resources_p.maxImageAlloc = qMin(resources_p.maxImageAlloc, DkMemory::maxImageAlloc());
+    QImageReader::setAllocationLimit(resources_p.maxImageAlloc);
+
     if (sync_p.switchModifier) {
         global_p.altMod = Qt::ControlModifier;
         global_p.ctrlMod = Qt::AltModifier;
@@ -889,6 +895,9 @@ void DkSettings::save(QSettings &settings, bool force)
     if (force || resources_p.cleanupThumbCache != resources_d.cleanupThumbCache)
         settings.setValue("cleanupDiskCache", resources_p.cleanupThumbCache);
 
+    if (force || resources_p.maxImageAlloc != resources_d.maxImageAlloc)
+        settings.setValue("maxImageAlloc", resources_p.maxImageAlloc);
+
     settings.endGroup();
 
     // keep loaded settings in mind
@@ -1075,6 +1084,8 @@ void DkSettings::setToDefaultSettings()
     resources_p.sharedThumbs = false;
     resources_p.thumbDiskCache = false;
     resources_p.cleanupThumbCache = false;
+
+    resources_p.maxImageAlloc = 2048;
 
     qDebug() << "ok... default settings are set";
 }

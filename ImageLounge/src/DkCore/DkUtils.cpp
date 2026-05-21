@@ -184,6 +184,21 @@ double DkMemory::getFreeMemory()
     return mem;
 }
 
+int DkMemory::maxImageAlloc()
+{
+    const int systemMemory = qRound(getTotalMemory());
+
+    // many cases where double the memory needed temporarily
+    int maxAlloc = systemMemory / 2;
+
+    if (maxAlloc <= 0) {
+        // getTotalMemory() unsupported, but we need something reasonable > 0
+        maxAlloc = 8 * 1024;
+    }
+
+    return maxAlloc;
+}
+
 // DkUtils --------------------------------------------------------------------
 #ifdef Q_OS_WIN
 
