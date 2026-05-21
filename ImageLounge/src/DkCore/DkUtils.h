@@ -454,6 +454,7 @@ class DllCoreExport DkMemory
 public:
     static double getTotalMemory();
     static double getFreeMemory();
+    static int maxImageAlloc();
 };
 
 class DllCoreExport DkFileNameConverter

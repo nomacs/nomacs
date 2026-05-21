@@ -343,6 +343,8 @@ public:
         bool sharedThumbs; // if true, thumbs are shared with the system thumbnailer
         bool thumbDiskCache; // if true, thumbs are saved to disk cache
         bool cleanupThumbCache; // if true, cleanup disk cache at startup
+
+        int maxImageAlloc; // MiB, max memory used for a single image
     };
 
     enum DisplayItems {
