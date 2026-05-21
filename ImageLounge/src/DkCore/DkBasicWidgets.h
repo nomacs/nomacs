@@ -61,6 +61,8 @@ public:
     int value() const;
     void setValueSuffix(const QString &format);
     void setFocus(Qt::FocusReason reason);
+    void setSpinBoxFixedWidth(int width);
+
 public slots:
     void setValue(int value);
 
