@@ -594,6 +594,46 @@ void DkSettings::load(QSettings &settings, bool defaults)
         meta_d = meta_p;
         resources_d = resources_p;
     }
+
+    const char *welcomeDialogKey = "AppSettings/firstTime.nomacs.3";
+    const bool showWelcomeDialog = settings.value(welcomeDialogKey, true).toBool();
+    if (showWelcomeDialog) {
+        // Find a translation file matching system language. Don't do this every
+        // time as it has to check a bunch of places. Also the user is allowed
+        // to change the language setting and this can't override that.
+        QString translationPref;
+        const QString langTerritory = QLocale::system().name(); // pt_BR
+        const QString lang = langTerritory.split(QChar(u'_')).takeFirst();
+
+        if (lang != "en") {
+            const QStringList translationDirs = getTranslationDirs();
+            const auto prefix = QStringLiteral(u"/nomacs_");
+            const auto suffix = QStringLiteral(u".qm");
+            for (auto &dirPath : translationDirs) {
+                QString primary = dirPath + prefix + langTerritory + suffix; // nomacs_pt_BR.qm
+                QString alternate = dirPath + prefix + lang + suffix; // nomacs_pt.qm
+                if (QFile::exists(primary)) {
+                    translationPref = langTerritory;
+                    break;
+                }
+                if (QFile::exists(alternate)) {
+                    translationPref = lang;
+                    break;
+                }
+            }
+
+            if (!translationPref.isEmpty()) {
+                // NOTE: This comes *after* global_d=global_p or else setting won't be saved.
+                global_p.language = translationPref;
+            }
+        }
+#ifndef Q_OS_WIN
+        // We can skip welcome dialog if there is nothing else besides language
+        if (lang == "en" || !translationPref.isEmpty()) {
+            settings.setValue(welcomeDialogKey, false);
+        }
+#endif
+    }
 }
 
 void DkSettings::save(bool force)
