@@ -108,14 +108,9 @@ void DkFolderScrollBar::updateFile(int idx)
 
     if (isActive()) {
         blockSignals(true);
-        QSlider::setValue(idx);
+        setValue(idx);
         blockSignals(false);
     }
-}
-
-void DkFolderScrollBar::setValue(int idx)
-{
-    QSlider::setValue(idx);
 }
 
 void DkFolderScrollBar::mousePressEvent(QMouseEvent *event)
