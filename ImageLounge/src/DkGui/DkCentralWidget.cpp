@@ -717,10 +717,8 @@ void DkCentralWidget::removeTab(int tabIdx)
     }
 
     mTabInfos.remove(tabIdx);
-    mTabbar->removeTab(tabIdx);
+    mTabbar->removeTab(tabIdx); // => currentTabChanged() => switchWidget()
     updateTabIdx();
-
-    switchWidget(mTabbar->currentIndex());
 
     if (mTabInfos.size() == 0) { // Make sure we have at least one tab
         addTab();
