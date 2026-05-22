@@ -196,8 +196,6 @@ public:
     explicit DkFolderScrollBar(QWidget *parent = nullptr);
     ~DkFolderScrollBar() override;
 
-    virtual void setValue(int i);
-
 public slots:
     void updateDir(QVector<QSharedPointer<DkImageContainerT>> images);
 
