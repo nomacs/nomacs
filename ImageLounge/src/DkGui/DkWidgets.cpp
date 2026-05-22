@@ -87,7 +87,6 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget *parent)
     setObjectName("DkFolderScrollBar");
     setOrientation(Qt::Horizontal);
     init();
-    mMouseDown = false;
 }
 
 DkFolderScrollBar::~DkFolderScrollBar() = default;
@@ -103,9 +102,6 @@ void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT>> ima
 
 void DkFolderScrollBar::updateFile(int idx)
 {
-    if (mMouseDown)
-        return;
-
     if (isActive()) {
         blockSignals(true);
         setValue(idx);
@@ -121,10 +117,25 @@ void DkFolderScrollBar::mousePressEvent(QMouseEvent *event)
 
 void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event)
 {
-    mMouseDown = false;
-    blockSignals(false);
-    emit valueChanged(value());
     QSlider::mouseReleaseEvent(event);
+    blockSignals(false);
+    emit loadFileSignal(value());
+}
+
+void DkFolderScrollBar::wheelEvent(QWheelEvent *event)
+{
+    event->accept();
+
+    int dy = event->angleDelta().y();
+    int step = dy < 0 ? 1 : -1;
+    int v = qBound(0, value() + step, maximum());
+
+    emit loadFileSignal(v);
+}
+
+void DkFolderScrollBar::keyPressEvent(QKeyEvent *event)
+{
+    qApp->sendEvent(parent(), event);
 }
 
 void DkFolderScrollBar::init()

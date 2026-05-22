@@ -198,19 +198,18 @@ public:
 
 public slots:
     void updateDir(QVector<QSharedPointer<DkImageContainerT>> images);
-
     void updateFile(int idx);
 
 signals:
     void loadFileSignal(int idx) const;
-    void visibleSignal(bool visible) const;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
     QColor mBgCol;
-    bool mMouseDown = false;
 
     void init();
 };

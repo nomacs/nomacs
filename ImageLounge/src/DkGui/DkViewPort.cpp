@@ -1906,9 +1906,8 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
                 &DkFolderScrollBar::updateFile,
                 Qt::UniqueConnection);
 
-        // TODO: this connect seems to have no corresponding disconnect
         connect(mController->getScroller(),
-                &DkFolderScrollBar::valueChanged,
+                &DkFolderScrollBar::loadFileSignal,
                 loader.data(),
                 &DkImageLoader::loadFileAt);
     } else {
@@ -1941,6 +1940,11 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
                    QOverload<int>::of(&DkImageLoader::imageUpdatedSignal),
                    mController->getScroller(),
                    &DkFolderScrollBar::updateFile);
+
+        disconnect(mController->getScroller(),
+                   &DkFolderScrollBar::loadFileSignal,
+                   loader.data(),
+                   &DkImageLoader::loadFileAt);
     }
 }
 
