@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <QDebug>
+#include <QMetaEnum>
 #include <QPoint>
 #include <QRectF>
 #include <QSizeF>
@@ -966,4 +967,188 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                              },
                          }));
 
+struct PanRestrictionTestParam {
+    std::string_view desc;
+    DkViewPortTransformViewModel::PanBoundary boundary;
+    DkViewPortTransformViewModel::PanCondition condition;
+    QSizeF imageSize;
+    QPointF pan1;
+    QPointF expectedMidTopLeft;
+    QPointF pan2;
+    QPointF expectedFinalTopLeft;
+};
+
+void PrintTo(const PanRestrictionTestParam &tc, std::ostream *os)
+{
+    const auto bme = QMetaEnum::fromType<DkViewPortTransformViewModel::PanBoundary>();
+    const auto cme = QMetaEnum::fromType<DkViewPortTransformViewModel::PanCondition>();
+    *os << "boundary: " << bme.valueToKey(static_cast<quint64>(tc.boundary))
+        << ", condition: " << cme.valueToKey(static_cast<quint64>(tc.condition)) << ", " << tc.desc;
+}
+
+class PanRestrictionTest : public testing::TestWithParam<PanRestrictionTestParam>
+{
+protected:
+    void SetUp() override
+    {
+        vm = std::make_unique<DkViewPortTransformViewModel>(1.0, false);
+        vm->setWidgetSize({100, 100});
+    }
+
+    std::unique_ptr<nmc::DkViewPortTransformViewModel> vm;
+};
+
+TEST_P(PanRestrictionTest, PanRestriction)
+{
+    const PanRestrictionTestParam &params = GetParam();
+
+    vm->setPanBoundarySettingProvider([&params]() {
+        return params.boundary;
+    });
+    vm->setPanConditionSettingProvider([&params]() {
+        return params.condition;
+    });
+
+    // Load image and force zoom to 1.0
+    vm->setImgSize(params.imageSize, DkSettings::zoom_always_keep);
+    EXPECT_DOUBLE_EQ(vm->zoomLevel(), 1);
+
+    vm->moveViewInWidgetCoords(params.pan1);
+    EXPECT_TRUE(assertClose(vm->getImageViewRect().topLeft(), params.expectedMidTopLeft))
+        << "unequal topLeft after pan1";
+
+    vm->moveViewInWidgetCoords(params.pan2);
+    EXPECT_TRUE(assertClose(vm->getImageViewRect().topLeft(), params.expectedFinalTopLeft))
+        << "unequal topLeft after pan2";
+}
+
+INSTANTIATE_TEST_SUITE_P(AllPolicies,
+                         PanRestrictionTest,
+                         testing::ValuesIn(std::vector<PanRestrictionTestParam>{
+                             // Large Image (200x200 in 100x100 viewport)
+                             // Initial TopLeft is (-50, -50)
+                             {
+                                 "large image, free",
+                                 DkViewPortTransformViewModel::PanBoundary::None,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {200, 200},
+                                 {10, 10},
+                                 {-40, -40},
+                                 {20, 20},
+                                 {-20, -20},
+                             },
+                             {
+                                 "large image, clamps topLeft",
+                                 DkViewPortTransformViewModel::PanBoundary::ImageEdge,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {200, 200},
+                                 {60, 60},
+                                 {0, 0},
+                                 {10, -10},
+                                 {0, -10},
+                             },
+                             {
+                                 "large image, in range",
+                                 DkViewPortTransformViewModel::PanBoundary::ImageEdge,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {200, 200},
+                                 {-20, -20},
+                                 {-70, -70},
+                                 {-20, 10},
+                                 {-90, -60},
+                             },
+                             {
+                                 "large image, clamps bottomRight",
+                                 DkViewPortTransformViewModel::PanBoundary::ImageEdge,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {200, 200},
+                                 {-60, -60},
+                                 {-100, -100},
+                                 {-10, 10},
+                                 {-100, -90},
+                             },
+                             {
+                                 "large image, Clamps_TopLeft",
+                                 DkViewPortTransformViewModel::PanBoundary::HalfViewportMargin,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {200, 200},
+                                 {110, 110},
+                                 {50, 50}, // -50 + 110 = 60, clamps to 50
+                                 {0, 0},
+                                 {50, 50},
+                             },
+                             {
+                                 "large image, Clamps_BottomRight",
+                                 DkViewPortTransformViewModel::PanBoundary::HalfViewportMargin,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {200, 200},
+                                 {-110, -110},
+                                 {-150, -150}, // -50 - 110 = -160, clamps to -150
+                                 {0, 0},
+                                 {-150, -150},
+                             },
+
+                             // Small Image (50x50 in 100x100 viewport)
+                             // Initial TopLeft is (25, 25)
+                             {
+                                 "small image, Pans_Freely",
+                                 DkViewPortTransformViewModel::PanBoundary::None,
+                                 DkViewPortTransformViewModel::PanCondition::AlwaysAllow,
+                                 {50, 50},
+                                 {10, 10},
+                                 {35, 35},
+                                 {0, 0},
+                                 {35, 35},
+                             },
+                             {
+                                 "small image, Blocks_Pan",
+                                 DkViewPortTransformViewModel::PanBoundary::None,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {50, 50},
+                                 {10, 10},
+                                 {25, 25},
+                                 {0, 0},
+                                 {25, 25},
+                             },
+                             {
+                                 "small image, Pans_Freely",
+                                 DkViewPortTransformViewModel::PanBoundary::ImageEdge,
+                                 DkViewPortTransformViewModel::PanCondition::AlwaysAllow,
+                                 {50, 50},
+                                 {10, 10},
+                                 {35, 35},
+                                 {0, 0},
+                                 {35, 35},
+                             },
+                             {
+                                 "small image, Blocks_Pan",
+                                 DkViewPortTransformViewModel::PanBoundary::ImageEdge,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {50, 50},
+                                 {10, 10},
+                                 {25, 25},
+                                 {0, 0},
+                                 {25, 25},
+                             },
+                             {
+                                 "small image, Pans_Freely",
+                                 DkViewPortTransformViewModel::PanBoundary::HalfViewportMargin,
+                                 DkViewPortTransformViewModel::PanCondition::AlwaysAllow,
+                                 {50, 50},
+                                 {-40, -40},
+                                 {-15, -15},
+                                 {0, 0},
+                                 {-15, -15},
+                             },
+                             {
+                                 "small image, Blocks_Pan",
+                                 DkViewPortTransformViewModel::PanBoundary::HalfViewportMargin,
+                                 DkViewPortTransformViewModel::PanCondition::AllowWhenLarger,
+                                 {50, 50},
+                                 {-40, -40},
+                                 {25, 25},
+                                 {0, 0},
+                                 {25, 25},
+                             },
+                         }));
 }

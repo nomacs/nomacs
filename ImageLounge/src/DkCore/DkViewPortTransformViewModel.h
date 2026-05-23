@@ -127,6 +127,8 @@ public:
         ImageEdge,
         HalfViewportMargin,
     };
+    Q_ENUM(PanBoundary)
+
     using PanBoundarySettingProvider = std::function<PanBoundary()>;
     void setPanBoundarySettingProvider(const PanBoundarySettingProvider &v)
     {
@@ -137,6 +139,8 @@ public:
         AlwaysAllow,
         AllowWhenLarger,
     };
+    Q_ENUM(PanCondition)
+
     using PanConditionSettingProvider = std::function<PanCondition()>;
     void setPanConditionSettingProvider(const PanConditionSettingProvider &v)
     {
