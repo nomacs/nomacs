@@ -390,6 +390,7 @@ protected:
     QLineEdit *mFilterEdit = nullptr;
     QAction *mAction = nullptr;
     qreal mPrevDevicePixelRatio = 1.0;
+    bool mActive{};
 };
 
 class DkRecentDir

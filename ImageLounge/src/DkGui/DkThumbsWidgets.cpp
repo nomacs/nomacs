@@ -2460,17 +2460,23 @@ void DkThumbScrollWidget::setDir(const QString &dirPath)
 
 void DkThumbScrollWidget::setVisible(bool visible)
 {
-    connectToActions(visible);
+    // Qt sends redundant setVisible(), ignore them
+    if (mActive != visible) {
+        mActive = visible;
 
-    if (visible) {
-        mFilterEdit->setText("");
-    } else
-        mThumbsScene->cancelLoading();
+        connectToActions(visible);
 
-    if (mAction) {
-        mAction->blockSignals(true);
-        mAction->setChecked(visible);
-        mAction->blockSignals(false);
+        if (visible) {
+            mFilterEdit->setText("");
+        } else {
+            mThumbsScene->cancelLoading();
+        }
+
+        if (mAction) {
+            mAction->blockSignals(true);
+            mAction->setChecked(visible);
+            mAction->blockSignals(false);
+        }
     }
 
     DkWidget::setVisible(visible);
@@ -2479,8 +2485,9 @@ void DkThumbScrollWidget::setVisible(bool visible)
 void DkThumbScrollWidget::connectToActions(bool activate)
 {
     DkActionManager &am = DkActionManager::instance();
-    for (QAction *a : am.previewActions())
+    for (QAction *a : am.previewActions()) {
         a->setEnabled(activate);
+    }
 
     if (activate) {
         connect(am.action(DkActionManager::preview_select_all),
