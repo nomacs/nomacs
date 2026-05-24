@@ -390,7 +390,7 @@ public:
         preview_batch,
         preview_print,
 
-        actions_end
+        preview_end
     };
 
     enum FileIcons {
@@ -446,6 +446,11 @@ public:
     static constexpr QKeyCombination shortcut_open_preview = Qt::Key_T;
     static constexpr QKeyCombination shortcut_open_thumbview = Qt::SHIFT | Qt::Key_T;
     static constexpr QKeyCombination shortcut_open_dir = Qt::CTRL | Qt::SHIFT | Qt::Key_O;
+#ifdef Q_OS_WIN
+    static constexpr QKeyCombination shortcut_quick_launch = Qt::CTRL | Qt::Key_Q;
+#else
+    static constexpr QKeyCombination shortcut_quick_launch = Qt::CTRL | Qt::Key_L;
+#endif
     static constexpr QKeyCombination shortcut_app_manager = Qt::CTRL | Qt::Key_M;
     static constexpr QKeyCombination shortcut_save_as = Qt::CTRL | Qt::SHIFT | Qt::Key_S;
     static constexpr QKeyCombination shortcut_first_file = Qt::Key_Home;
