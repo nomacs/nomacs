@@ -793,21 +793,6 @@ QAction *DkActionManager::action(PreviewActions action) const
     return mPreviewActions[action];
 }
 
-QIcon DkActionManager::icon(FileIcons icon) const
-{
-    return mFileIcons[icon];
-}
-
-QIcon DkActionManager::icon(ViewIcons icon) const
-{
-    return mViewIcons[icon];
-}
-
-QIcon DkActionManager::icon(EditIcons icon) const
-{
-    return mEditIcons[icon];
-}
-
 QVector<QAction *> DkActionManager::fileActions() const
 {
     return mFileActions;
@@ -985,51 +970,7 @@ void DkActionManager::init()
         mPluginManager = nullptr;
     });
 #endif
-
-    createIcons();
 }
-
-void DkActionManager::createIcons()
-{
-    mFileIcons.resize(icon_file_end);
-    mFileIcons[icon_file_dir] = DkImage::loadIcon(":/nomacs/img/dir.svg");
-    mFileIcons[icon_file_open] = DkImage::loadIcon(":/nomacs/img/open.svg");
-    mFileIcons[icon_file_save] = DkImage::loadIcon(":/nomacs/img/save.svg");
-    mFileIcons[icon_file_print] = DkImage::loadIcon(":/nomacs/img/print.svg");
-    mFileIcons[icon_file_open_large] = QIcon(":/nomacs/img/open.svg");
-    mFileIcons[icon_file_dir_large] = QIcon(":/nomacs/img/dir.svg");
-    mFileIcons[icon_file_prev] = DkImage::loadIcon(":/nomacs/img/previous.svg");
-    mFileIcons[icon_file_next] = DkImage::loadIcon(":/nomacs/img/next.svg");
-    mFileIcons[icon_file_filter] = DkImage::loadIcon(":/nomacs/img/filter-disabled.svg");
-    mFileIcons[icon_file_filter].addFile(":/nomacs/img/filter.svg", QSize(), QIcon::Normal, QIcon::On);
-    mFileIcons[icon_file_find] = DkImage::loadIcon(":/nomacs/img/find.svg");
-
-    mEditIcons.resize(icon_edit_end);
-    mEditIcons[icon_edit_image] = DkImage::loadIcon(":/nomacs/img/sliders.svg");
-    mEditIcons[icon_edit_rotate_cw] = DkImage::loadIcon(":/nomacs/img/rotate-cw.svg");
-    mEditIcons[icon_edit_rotate_ccw] = DkImage::loadIcon(":/nomacs/img/rotate-cc.svg");
-    mEditIcons[icon_edit_crop] = DkImage::loadIcon(":/nomacs/img/crop.svg");
-    mEditIcons[icon_edit_resize] = DkImage::loadIcon(":/nomacs/img/resize.svg");
-    mEditIcons[icon_edit_copy] = DkImage::loadIcon(":/nomacs/img/copy.svg");
-    mEditIcons[icon_edit_paste] = DkImage::loadIcon(":/nomacs/img/paste.svg");
-    mEditIcons[icon_edit_delete] = DkImage::loadIcon(":/nomacs/img/trash.svg");
-    mEditIcons[icon_edit_undo] = DkImage::loadIcon(":/nomacs/img/edit-undo.svg");
-    mEditIcons[icon_edit_redo] = DkImage::loadIcon(":/nomacs/img/edit-redo.svg");
-
-    mViewIcons.resize(icon_view_end);
-    mViewIcons[icon_view_fullscreen] = DkImage::loadIcon(":/nomacs/img/fullscreen.svg");
-    mViewIcons[icon_view_reset] = DkImage::loadIcon(":/nomacs/img/zoom-reset.svg");
-    mViewIcons[icon_view_100] = DkImage::loadIcon(":/nomacs/img/zoom-100.svg");
-    mViewIcons[icon_view_gps] = DkImage::loadIcon(":/nomacs/img/location.svg");
-    mViewIcons[icon_view_zoom_in] = DkImage::loadIcon(":/nomacs/img/zoom-in.svg");
-    mViewIcons[icon_view_zoom_out] = DkImage::loadIcon(":/nomacs/img/zoom-out.svg");
-
-    mViewIcons[icon_view_movie_play] = DkImage::loadIcon(":/nomacs/img/pause.svg");
-    mViewIcons[icon_view_movie_play].addFile(":/nomacs/img/play.svg", QSize(), QIcon::Normal, QIcon::On);
-    mViewIcons[icon_view_movie_prev] = DkImage::loadIcon(":/nomacs/img/previous.svg");
-    mViewIcons[icon_view_movie_next] = DkImage::loadIcon(":/nomacs/img/next.svg");
-}
-
 void DkActionManager::createActions(QWidget *parent)
 {
     static const QIcon no_icon{};
