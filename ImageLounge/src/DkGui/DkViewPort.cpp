@@ -1988,8 +1988,9 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
     mStartActions.append(am.action(DkActionManager::menu_file_open));
     mStartActions.append(am.action(DkActionManager::menu_file_open_dir));
 
-    mStartIcons.append(am.icon(DkActionManager::icon_file_open_large));
-    mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
+    mStartIcons.append(QIcon{":/nomacs/img/open.svg"});
+    mStartIcons.append(QIcon{":/nomacs/img/dir.svg"});
+
     mResetWhenZoomPastFit = false;
 }
 
@@ -2055,8 +2056,7 @@ void DkViewPortFrameless::resizeEvent(QResizeEvent *event)
 
     for (int idx = 0; idx < mStartActions.size(); idx++) {
         QRectF iconRect = QRectF(offset, iconSize);
-        QPixmap ci = !mStartIcons[idx].isNull() ? mStartIcons[idx].pixmap(iconSize)
-                                                : mStartActions[idx]->icon().pixmap(iconSize);
+        QPixmap ci = mStartIcons[idx].pixmap(iconSize);
         mStartActionsRects.push_back(iconRect);
         mStartActionsIcons.push_back(ci);
 
@@ -2085,14 +2085,9 @@ void DkViewPortFrameless::eraseBackground(QPainter &painter) const
 
     // draw start actions
     for (int idx = 0; idx < mStartActions.size(); idx++) {
-        if (!mStartIcons[idx].isNull())
-            painter.drawPixmap(mStartActionsRects[idx],
-                               mStartActionsIcons[idx],
-                               QRect(QPoint(), mStartActionsIcons[idx].size()));
-        else
-            painter.drawPixmap(mStartActionsRects[idx],
-                               mStartActionsIcons[idx],
-                               QRect(QPoint(), mStartActionsIcons[idx].size()));
+        painter.drawPixmap(mStartActionsRects[idx],
+                           mStartActionsIcons[idx],
+                           QRect(QPoint(), mStartActionsIcons[idx].size()));
 
         QRectF tmpRect = mStartActionsRects[idx];
         QString text = mStartActions[idx]->text().remove("&");
