@@ -359,6 +359,24 @@ void DkAppManager::openTriggered() const
         openFileSignal(a);
 }
 
+DkActionBuilder::DkActionBuilder(QVector<QAction *> &actions, size_t numActions, QWidget *parent)
+    : mActions{actions}
+    , mParent{parent}
+{
+    mActions.resize(numActions);
+}
+
+DkActionBuilder::~DkActionBuilder() = default;
+
+QAction *DkActionBuilder::add(DkActionId id, const QIcon &icon, const QString &text, const QString &statusTip)
+{
+    auto *a = new QAction{icon, text, mParent};
+    a->setStatusTip(statusTip);
+    a->setObjectName(id.objectName);
+    mActions[id.index] = a;
+    return a;
+}
+
 // DkActionManager --------------------------------------------------------------------
 DkActionManager::DkActionManager()
 {
