@@ -393,50 +393,6 @@ public:
         preview_end
     };
 
-    enum FileIcons {
-        icon_file_prev,
-        icon_file_next,
-        icon_file_dir,
-        icon_file_open,
-        icon_file_open_large,
-        icon_file_dir_large,
-        icon_file_save,
-        icon_file_print,
-        icon_file_filter,
-        icon_file_find,
-
-        icon_file_end, // nothing beyond this point
-    };
-
-    enum EditIcons {
-        icon_edit_image,
-        icon_edit_rotate_cw,
-        icon_edit_rotate_ccw,
-        icon_edit_crop,
-        icon_edit_resize,
-        icon_edit_copy,
-        icon_edit_paste,
-        icon_edit_delete,
-        icon_edit_undo,
-        icon_edit_redo,
-
-        icon_edit_end, // nothing beyond this point
-    };
-
-    enum ViewIcons {
-        icon_view_fullscreen,
-        icon_view_reset,
-        icon_view_100,
-        icon_view_gps,
-        icon_view_movie_play,
-        icon_view_movie_prev,
-        icon_view_movie_next,
-        icon_view_zoom_in,
-        icon_view_zoom_out,
-
-        icon_view_end, // nothing beyond this point
-    };
-
     // default nomacs shortcuts
     // keyboard shortcuts
     // general
@@ -593,10 +549,6 @@ public:
     QAction *action(HiddenActions action) const;
     QAction *action(PreviewActions action) const;
 
-    QIcon icon(FileIcons icon) const;
-    QIcon icon(ViewIcons icon) const;
-    QIcon icon(EditIcons icon) const;
-
     QVector<QAction *> fileActions() const;
     QVector<QAction *> sortActions() const;
     QVector<QAction *> openWithActions() const;
@@ -631,7 +583,6 @@ protected:
     DkActionManager();
 
     void init();
-    void createIcons();
 
     QMenu *createFileMenu(QWidget *parent);
     QMenu *createSortMenu(QWidget *parent);
@@ -676,12 +627,6 @@ protected:
     // sync
     QMenu *mSyncMenu = nullptr;
     DkTcpMenu *mLocalMenu = nullptr;
-
-    // icons
-    QVector<QIcon> mFileIcons;
-    QVector<QIcon> mEditIcons;
-    QVector<QIcon> mViewIcons;
-    QVector<QIcon> mToolsIcons;
 
     DkAppManager *mAppManager = nullptr;
     DkPluginActionManager *mPluginManager = nullptr;
