@@ -311,21 +311,37 @@ void DkViewPortTransformViewModel::controlImagePosition(std::optional<PanBoundar
     const qreal h = mViewportRect.height();
 
     qreal tX = 0;
+    if (imgRectWorld.width() > w) {
+        if (imgRectWorld.left() > lb) {
+            tX = lb - imgRectWorld.left();
+        }
+        if (imgRectWorld.right() < w - lb) {
+            tX = w - lb - imgRectWorld.right();
+        }
+    } else {
+        if (imgRectWorld.left() < -lb) {
+            tX = -lb - imgRectWorld.left();
+        }
+        if (imgRectWorld.right() > w + lb) {
+            tX = w + lb - imgRectWorld.right();
+        }
+    }
+
     qreal tY = 0;
-    if (imgRectWorld.left() > lb && imgRectWorld.width() > w) {
-        tX = lb - imgRectWorld.left();
-    }
-
-    if (imgRectWorld.top() > ub && imgRectWorld.height() > h) {
-        tY = ub - imgRectWorld.top();
-    }
-
-    if (imgRectWorld.right() < w - lb && imgRectWorld.width() > w) {
-        tX = w - lb - imgRectWorld.right();
-    }
-
-    if (imgRectWorld.bottom() < h - ub && imgRectWorld.height() > h) {
-        tY = h - ub - imgRectWorld.bottom();
+    if (imgRectWorld.height() > h) {
+        if (imgRectWorld.top() > ub) {
+            tY = ub - imgRectWorld.top();
+        }
+        if (imgRectWorld.bottom() < h - ub) {
+            tY = h - ub - imgRectWorld.bottom();
+        }
+    } else {
+        if (imgRectWorld.top() < -ub) {
+            tY = -ub - imgRectWorld.top();
+        }
+        if (imgRectWorld.bottom() > h + ub) {
+            tY = h + ub - imgRectWorld.bottom();
+        }
     }
     translateViewInWidgetCoords(tX, tY);
     emit transformChanged();
