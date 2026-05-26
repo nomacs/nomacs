@@ -1274,6 +1274,9 @@ void DkToolBarManager::showToolBarsTemporarily(bool show)
         QList<QToolBar *> tbs = nomacs->findChildren<QToolBar *>();
 
         for (QToolBar *t : tbs) {
+            if (t->objectName() == "DkThumbToolBar") {
+                continue;
+            }
             if (t->isVisible()) {
                 t->hide();
                 mHiddenToolBars.append(t);

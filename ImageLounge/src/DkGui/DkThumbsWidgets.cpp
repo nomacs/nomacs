@@ -2335,6 +2335,8 @@ DkThumbScrollWidget::~DkThumbScrollWidget()
 void DkThumbScrollWidget::createToolbar()
 {
     mToolbar = new QToolBar(tr("Thumb Preview Toolbar"), this);
+    mToolbar->setObjectName("DkThumbToolBar");
+
     mToolbar->setIconSize(
         QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
