@@ -523,17 +523,7 @@ QString DkCachedThumb::cacheHome()
 
 bool DkCachedThumb::isLargeEnough(const QSize &sz) const
 {
-    switch (mConstraint) {
-    case ScaleConstraint::longest_side:
-        return qMax(sz.width(), sz.height()) >= mSize;
-    case ScaleConstraint::shortest_side:
-        return qMin(sz.width(), sz.height()) >= mSize;
-    case ScaleConstraint::width:
-        return sz.width() >= mSize;
-    case ScaleConstraint::height:
-        return sz.height() >= mSize;
-    }
-    return false;
+    return DkImage::isResizeDownsampling(sz, mSize, mConstraint);
 }
 
 QDateTime DkCachedThumb::lastModified() const

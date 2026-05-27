@@ -140,7 +140,7 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
 
         bool loadFull = !exifThumb;
         loadFull |= request.option == LoadThumbnailOption::force_size && exifThumb
-            && qMax(exifThumb->thumb.height(), exifThumb->thumb.width()) < request.size;
+            && !DkImage::isResizeDownsampling(exifThumb->thumb.size(), request.size, request.constraint);
         if (loadFull) {
             exifThumb = {};
             fullThumb = loadThumbnailFromFullImage(thumbPath, ba, loadOptions);
