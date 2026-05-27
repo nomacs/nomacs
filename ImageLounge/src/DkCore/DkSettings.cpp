@@ -1135,17 +1135,14 @@ void DkSettings::applyDefaultsFromFile()
     DefaultSettings ds;
 
     if (ds.value("firstTime", true).toBool()) {
-        QString dsf = getDefaultSettingsFile();
-        if (!QFileInfo(dsf).exists()) {
-            qInfo() << "I could not find the default settings file: " << dsf;
-        }
-
-        QSettings defaultSettings(dsf, QSettings::IniFormat);
-        copySettings(defaultSettings, ds);
-
         ds.setValue("firstTime", false);
 
-        qInfo() << "defaults loaded from" << dsf;
+        QString dsf = getDefaultSettingsFile();
+        if (QFile::exists(dsf)) {
+            QSettings defaultSettings(dsf, QSettings::IniFormat);
+            copySettings(defaultSettings, ds);
+            qInfo() << "User defaults loaded from" << dsf;
+        }
     }
 }
 
