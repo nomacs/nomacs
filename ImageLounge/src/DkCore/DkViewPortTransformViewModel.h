@@ -187,7 +187,7 @@ private:
     void zoomToPoint(double factor, const QPointF &pos);
     void translateViewInWidgetCoords(qreal x, qreal y);
     void resetView();
-    void controlImagePosition();
+    void controlImagePosition(std::optional<PanBoundary> bound = std::nullopt);
     void centerImage();
 
     // imageViewSize returns the size of the rectangle that contains the image in the

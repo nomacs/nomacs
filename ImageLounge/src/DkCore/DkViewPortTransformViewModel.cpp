@@ -285,11 +285,11 @@ void DkViewPortTransformViewModel::zoomTo(double zoomLevel)
     zoom(zoomLevel / mImgMatrix.m11());
 }
 
-void DkViewPortTransformViewModel::controlImagePosition()
+void DkViewPortTransformViewModel::controlImagePosition(std::optional<PanBoundary> bound)
 {
     qreal lb;
     qreal ub;
-    switch (panBoundary()) {
+    switch (bound.value_or(panBoundary())) {
     case PanBoundary::None: {
         emit transformChanged();
         return;
@@ -351,21 +351,14 @@ void DkViewPortTransformViewModel::centerImage()
     qreal tY = 0;
     if (imgWorldRect.width() < w) {
         tX = (w - imgWorldRect.width()) * 0.5f - imgWorldRect.x();
-    } else if (imgWorldRect.left() > 0) {
-        tX = -imgWorldRect.left();
-    } else if (imgWorldRect.right() < w) {
-        tX = (w - imgWorldRect.right());
     }
 
     if (imgWorldRect.height() < h) {
         tY = (h - imgWorldRect.height()) * 0.5f - imgWorldRect.y();
-    } else if (imgWorldRect.top() > 0) {
-        tY = -imgWorldRect.top();
-    } else if (imgWorldRect.bottom() < h) {
-        tY = (h - imgWorldRect.bottom());
     }
 
     translateViewInWidgetCoords(tX, tY);
+    controlImagePosition(PanBoundary::ImageEdge);
 }
 
 void DkViewPortTransformViewModel::zoomToFit()
