@@ -359,7 +359,12 @@ void DkGeneralPreference::createLayout()
     for (auto &c : colors)
         themeGroup->addWidget(c.chooser);
 
-    // default pushbutton
+    auto *resetDialogs = new QPushButton(tr("Reset Dialog Settings"));
+    resetDialogs->setMaximumWidth(300);
+    connect(resetDialogs, &QPushButton::clicked, this, [] {
+        DefaultSettings().remove("DkDialog");
+    });
+
     auto *defaultSettings = new QPushButton(tr("Reset All Settings"));
     defaultSettings->setMaximumWidth(300);
     connect(defaultSettings, &QPushButton::clicked, this, &DkGeneralPreference::onDefaultSettingsClicked);
@@ -373,6 +378,7 @@ void DkGeneralPreference::createLayout()
     connect(exportSettings, &QPushButton::clicked, this, &DkGeneralPreference::onExportSettingsClicked);
 
     auto *defaultGroup = new DkGroupWidget(tr("Default Settings"), this);
+    defaultGroup->addWidget(resetDialogs);
     defaultGroup->addWidget(defaultSettings);
     defaultGroup->addWidget(importSettings);
     defaultGroup->addWidget(exportSettings);
