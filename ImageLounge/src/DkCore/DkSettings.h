@@ -371,7 +371,7 @@ public:
     void setToDefaultSettings();
     void setNumThreads(int numThreads);
 
-    bool isPortable();
+    bool isPortable() const;
     QString settingsPath() const;
 
     double dpiScaleFactor(QWidget *w = nullptr) const;

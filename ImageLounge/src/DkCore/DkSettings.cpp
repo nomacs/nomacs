@@ -1174,7 +1174,7 @@ void DkSettings::setNumThreads(int numThreads)
     }
 }
 
-bool DkSettings::isPortable()
+bool DkSettings::isPortable() const
 {
     QFileInfo fi(QCoreApplication::applicationDirPath(), "settings.ini");
     return fi.absoluteFilePath() == settingsPath();
