@@ -1645,12 +1645,13 @@ DefaultSettings::DefaultSettings()
 }
 #elif defined(Q_OS_DARWIN)
 DefaultSettings::DefaultSettings()
-    : QSettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationDomain(), qApp->applicationName())
+    // ~/.config/nomacs/Image Lounge.ini
+    : QSettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName())
 {
 }
 #else
 DefaultSettings::DefaultSettings()
-    : QSettings()
+    : QSettings() // Unix: ~/.config/nomacs/Image Lounge.conf
 {
 }
 #endif
