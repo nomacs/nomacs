@@ -2238,6 +2238,22 @@ std::optional<QImage> DkImage::unsharpMask(QImage &&img, float sigma, float weig
     return std::nullopt;
 }
 
+bool DkImage::isResizeDownsampling(const QSize &srcSize, int dstSize, ScaleConstraint constraint)
+{
+    switch (constraint) {
+    case ScaleConstraint::longest_side:
+        return qMax(srcSize.width(), srcSize.height()) >= dstSize;
+    case ScaleConstraint::shortest_side:
+        return qMin(srcSize.width(), srcSize.height()) >= dstSize;
+    case ScaleConstraint::width:
+        return srcSize.width() >= dstSize;
+    case ScaleConstraint::height:
+        return srcSize.height() >= dstSize;
+    }
+    Q_UNREACHABLE();
+    return false;
+}
+
 QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint constraint)
 {
     if (image.isNull())

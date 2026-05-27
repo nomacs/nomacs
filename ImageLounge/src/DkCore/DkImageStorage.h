@@ -131,6 +131,10 @@ public:
      * @note size passed through QIcon::addFile is ignored; we always render the requested size
      */
     static QIcon loadIcon(const QString &filePath, const QColor &color = {});
+    /**
+     * Return true if a rescale under a constraint, from src to dst, will downsample or leave sampling unchanged.
+     */
+    static bool isResizeDownsampling(const QSize &srcSize, int dstSize, ScaleConstraint constraint);
     static QImage createThumb(const QImage &img, int maxSize = -1, ScaleConstraint constraint = {});
     static QPixmap makeSquare(const QPixmap &pm);
     static QPixmap merge(const QVector<QImage> &imgs);
