@@ -643,9 +643,23 @@ void DkGeneralPreference::onDefaultSettingsClicked()
                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
     if (answer == QMessageBox::Yes) {
-        DkSettingsManager::param().setToDefaultSettings();
+        // We need to delete every key from QSettings
+        // - DkSettingsManager doesn't manage all keys
+        // - We cannot use QFile::remove() since the QFile::exists() determines isPortable()
+        DefaultSettings ds;
+        const QStringList keys = ds.allKeys();
+        for (auto &key : keys) {
+            ds.remove(key);
+        }
+
+        // Prevent DkSettingsManager saving current settings back on exit
+        // FIXME: some other destructors still put their current values back
+        DkSettingsManager::param().load(ds, true);
+
+        // Activate any first-run behavior
+        ds.setValue("AppSettings/firstTime.nomacs.3", true);
+
         showRestartLabel();
-        qDebug() << "answer is: " << answer << "flushing all settings...";
     }
 }
 
