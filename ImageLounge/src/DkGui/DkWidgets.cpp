@@ -1033,24 +1033,27 @@ void DkRatingLabel::init()
         button->setCheckable(true);
 
         rating++;
-        auto changeFunc = [this, rating] {
-            editRating(rating);
+        auto toggleFunc = [this, rating] { // turn star on or off
+            editRating(rating, true);
+        };
+        auto setFunc = [this, rating] { // set star on
+            editRating(rating, false);
         };
 
-        connect(button, &DkButton::released, this, changeFunc);
-        connect(am.action(star.action), &QAction::triggered, this, changeFunc);
+        connect(button, &DkButton::released, this, toggleFunc);
+        connect(am.action(star.action), &QAction::triggered, this, setFunc);
 
         mStars.append(button);
     }
 
     connect(am.action(DkActionManager::sc_star_rating_0), &QAction::triggered, this, [this] {
-        editRating(0);
+        editRating(0, false);
     });
 }
 
-void DkRatingLabel::editRating(int rating)
+void DkRatingLabel::editRating(int rating, bool toggle)
 {
-    if (mRating == rating) {
+    if (mRating == rating && toggle) {
         rating--; // unchecking a star
     }
 
