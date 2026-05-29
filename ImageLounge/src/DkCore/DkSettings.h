@@ -149,6 +149,12 @@ public:
         zoom_end,
     };
 
+    enum keepZoomKeepSameSizeFallback {
+        kzkss_fallback_fit_bigger_or_reset,
+        kzkss_fallback_always_fit,
+        kzkss_fallback_end,
+    };
+
     enum TransitionMode {
         trans_appear,
         trans_fade,
@@ -209,6 +215,7 @@ public:
 
     struct Display {
         int keepZoom;
+        int keepZoomKeepSameSizeFallback;
         bool invertZoom;
         bool tpPattern;
         bool showNavigation;

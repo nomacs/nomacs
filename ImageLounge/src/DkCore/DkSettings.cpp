@@ -454,6 +454,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     settings.beginGroup("DisplaySettings");
 
     display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
+    display_p.keepZoomKeepSameSizeFallback = settings.value("keepZoomFallback", display_p.keepZoomKeepSameSizeFallback)
+                                                 .toInt();
     display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
     display_p.highlightColor = QColor::fromRgba(
         settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
@@ -718,6 +720,8 @@ void DkSettings::save(QSettings &settings, bool force)
 
     if (force || display_p.keepZoom != display_d.keepZoom)
         settings.setValue("keepZoom", display_p.keepZoom);
+    if (force || display_p.keepZoomKeepSameSizeFallback != display_d.keepZoomKeepSameSizeFallback)
+        settings.setValue("keepZoomFallback", display_p.keepZoomKeepSameSizeFallback);
     if (force || display_p.invertZoom != display_d.invertZoom)
         settings.setValue("invertZoom", display_p.invertZoom);
     if (force || display_p.highlightColor != display_d.highlightColor)
@@ -993,6 +997,7 @@ void DkSettings::setToDefaultSettings()
 #endif
 
     display_p.keepZoom = zoom_keep_same_size;
+    display_p.keepZoomKeepSameSizeFallback = kzkss_fallback_fit_bigger_or_reset;
     display_p.invertZoom = false;
     display_p.highlightColor = QColor(0, 204, 255);
     display_p.hudBgColor = QColor(0, 0, 0, 100);
