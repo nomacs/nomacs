@@ -110,7 +110,7 @@ private:
 
     void updateRating();
     void init();
-    void editRating(int rating);
+    void editRating(int rating, bool toggle);
 };
 
 class DkFileInfoLabel : public DkFadeLabel
