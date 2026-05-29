@@ -112,7 +112,7 @@ void DkViewPortTransformViewModel::zoomToPoint(double factor, const QPointF &pos
     applyZoomAroundPos(factor, pos, mWorldMatrix);
 }
 
-void DkViewPortTransformViewModel::zoom(double factor, const QPointF &center, bool force)
+void DkViewPortTransformViewModel::zoom(double factor, const std::optional<QPointF> &center, bool force)
 {
     if (mBlockZooming) {
         return;
@@ -181,7 +181,7 @@ QPointF DkViewPortTransformViewModel::mapToImagePixel(const QPointF &p) const
     return (mWorldMatrix.inverted() * mImgMatrix.inverted() * mDevicePixelRatio).map(p);
 }
 
-DkViewPortTransformViewModel::ZoomPos DkViewPortTransformViewModel::calcZoomCenter(const QPointF &center,
+DkViewPortTransformViewModel::ZoomPos DkViewPortTransformViewModel::calcZoomCenter(const std::optional<QPointF> &center,
                                                                                    double factor) const
 {
     switch (mZoomCenterLimit) {
@@ -192,10 +192,7 @@ DkViewPortTransformViewModel::ZoomPos DkViewPortTransformViewModel::calcZoomCent
     default:
         // Fallback logic.
         // if no center assigned: zoom in at the image center
-        if (center.x() == -1 || center.y() == -1) {
-            return {mImgViewRect.center()};
-        }
-        return {center};
+        return {center.value_or(mImgViewRect.center())};
     }
 }
 
@@ -437,7 +434,7 @@ void DkViewPortTransformViewModel::panDown()
     moveViewInWidgetCoords(QPointF(0, delta));
 }
 
-void DkViewPortTransformViewModel::zoomLeveled(double factor, const QPointF &center)
+void DkViewPortTransformViewModel::zoomLeveled(double factor, const std::optional<QPointF> &center)
 {
     if (mZoomLevelSettingProvider) {
         const auto levels = mZoomLevelSettingProvider();
@@ -484,15 +481,11 @@ void DkViewPortTransformViewModel::syncTransform(const QPointF &pos, qreal zoomL
 }
 
 DkViewPortTransformViewModel::ZoomPos DkViewPortTransformViewModel::calcZoomCenterLimitToImageEdge(
-    const QPointF &center) const
+    const std::optional<QPointF> &center) const
 {
     QRectF viewRect = getImageViewRect();
-    QPointF pos = center;
-
     // if no center assigned: zoom in at the image center
-    if (pos.x() == -1 || pos.y() == -1) {
-        pos = viewRect.center();
-    }
+    QPointF pos = center.value_or(viewRect.center());
 
     if (pos.x() < viewRect.left()) {
         pos.setX(viewRect.left());
@@ -509,15 +502,15 @@ DkViewPortTransformViewModel::ZoomPos DkViewPortTransformViewModel::calcZoomCent
 }
 
 DkViewPortTransformViewModel::ZoomPos DkViewPortTransformViewModel::calcZoomCenterLimitCenterSmallDimension(
-    const QPointF &center,
+    const std::optional<QPointF> &center,
     double factor) const
 {
     // if no center assigned: zoom in at the image center
-    if (center.x() == -1 || center.y() == -1) {
+    if (!center) {
         return {mImgViewRect.center()};
     }
 
-    QPointF pos = center;
+    QPointF pos = center.value();
     bool recenter = false;
     const QSizeF scaledSize = imageViewSize() * factor;
     // if the image does not fill the view port - do not zoom to the mouse coordinate

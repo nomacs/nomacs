@@ -30,6 +30,7 @@
 #include <QBuffer>
 #include <QGraphicsView>
 #include <memory>
+#include <optional>
 
 #include "DkImageStorage.h"
 #include "DkSettings.h"
@@ -128,7 +129,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 
-    void zoom(double factor, const QPointF &center = QPointF(-1, -1), bool force = false);
+    void zoom(double factor, const std::optional<QPointF> &center = std::nullopt, bool force = false);
     bool imageInside() const;
 
     // slots

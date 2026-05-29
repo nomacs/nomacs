@@ -48,6 +48,7 @@
 #include <algorithm>
 #include <cfloat>
 #include <memory>
+#include <optional>
 #include <qobject.h>
 #include <qsvgrenderer.h>
 #include <type_traits>
@@ -177,7 +178,7 @@ void DkBaseViewPort::moveViewInWidgetCoords(const QPointF &delta)
     mTransformVM->moveViewInWidgetCoords(delta);
 }
 
-void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
+void DkBaseViewPort::zoom(double factor, const std::optional<QPointF> &center, bool force)
 {
     if (mImageVM->isEmpty()) {
         return;

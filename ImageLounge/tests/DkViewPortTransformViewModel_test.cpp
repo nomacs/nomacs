@@ -515,7 +515,7 @@ TEST_P(ZoomTest, DkViewPortZoom)
     }
 
     // Disable snap
-    vm->zoom(params.zoomFactor, params.zoomCenter.value_or(QPointF(-1, -1)), true);
+    vm->zoom(params.zoomFactor, params.zoomCenter, true);
 
     EXPECT_DOUBLE_EQ(vm->zoomLevel(), params.expectedNewZoomLevel) << "unequal zoom level";
     EXPECT_TRUE(assertClose(vm->getImageViewRect().size(), params.imageSize * params.expectedNewZoomLevel))
@@ -803,7 +803,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(800, 600),
                                  QSizeF(800, 600),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.5, {-1, -1}, true);
+                                     vm->zoom(0.5, std::nullopt, true);
                                  },
                              },
                              {
@@ -811,7 +811,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(800, 600),
                                  QSizeF(800, 600),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(1.5, {-1, -1}, true);
+                                     vm->zoom(1.5, std::nullopt, true);
                                  },
                              },
                              {
@@ -819,7 +819,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(800, 600),
                                  QSizeF(400, 200),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.5, {-1, -1}, true);
+                                     vm->zoom(0.5, std::nullopt, true);
                                  },
                              },
                              {
@@ -827,7 +827,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(800, 600),
                                  QSizeF(400, 200),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(1.5, {-1, -1}, true);
+                                     vm->zoom(1.5, std::nullopt, true);
                                  },
                              },
                              {
@@ -835,7 +835,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2400, 1800),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.6, {-1, -1}, true);
+                                     vm->zoom(0.6, std::nullopt, true);
                                  },
                              },
                              {
@@ -843,7 +843,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2400, 1800),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.5, {-1, -1}, true);
+                                     vm->zoom(0.5, std::nullopt, true);
                                  },
                              },
                              {
@@ -851,7 +851,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2400, 1800),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(1.5, {-1, -1}, true);
+                                     vm->zoom(1.5, std::nullopt, true);
                                  },
                              },
                              {
@@ -859,7 +859,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2400, 1800),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.6, {400, 300}, true);
+                                     vm->zoom(0.6, {{400, 300}}, true);
                                  },
                              },
                              {
@@ -867,7 +867,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2400, 1800),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.5, {400, 300}, true);
+                                     vm->zoom(0.5, {{400, 300}}, true);
                                  },
                              },
                              {
@@ -875,7 +875,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2400, 1800),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(1.5, {400, 300}, true);
+                                     vm->zoom(1.5, {{400, 300}}, true);
                                  },
                              },
                              {
@@ -891,7 +891,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2000, 1600),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.6, {-1, -1}, true);
+                                     vm->zoom(0.6, std::nullopt, true);
                                  },
                              },
                              {
@@ -900,7 +900,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2000, 1600),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.5, {-1, -1}, true);
+                                     vm->zoom(0.5, std::nullopt, true);
                                  },
                              },
                              {
@@ -908,7 +908,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2000, 1600),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(1.5, {-1, -1}, true);
+                                     vm->zoom(1.5, std::nullopt, true);
                                  },
                              },
                              {
@@ -916,7 +916,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2000, 1600),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.6, {400, 300}, true);
+                                     vm->zoom(0.6, {{400, 300}}, true);
                                  },
                              },
                              {
@@ -925,7 +925,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2000, 1600),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(0.5, {400, 300}, true);
+                                     vm->zoom(0.5, {{400, 300}}, true);
                                  },
                              },
                              {
@@ -933,7 +933,7 @@ INSTANTIATE_TEST_SUITE_P(ZoomCases,
                                  QSizeF(2400, 1800),
                                  QSizeF(2000, 1600),
                                  [](DkViewPortTransformViewModel *vm) {
-                                     vm->zoom(1.5, {400, 300}, true);
+                                     vm->zoom(1.5, {{400, 300}}, true);
                                  },
                              },
                              {

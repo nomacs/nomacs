@@ -8,6 +8,7 @@
 #include <QTransform>
 #include <cstdint>
 #include <functional>
+#include <optional>
 
 #include "DkSettings.h"
 #include "nmc_config.h"
@@ -61,7 +62,7 @@ public:
     void setImgSize(const QSizeF &size, std::optional<DkSettings::keepZoom> keepZoom = std::nullopt);
     void fullView();
     [[nodiscard]] qreal zoomLevel() const;
-    void zoom(double factor, const QPointF &center = QPointF(-1, -1), bool force = false);
+    void zoom(double factor, const std::optional<QPointF> &center = std::nullopt, bool force = false);
 
     // getImageViewRect returns the rectangle that contains the image in the
     // coordinates of this widget.
@@ -116,7 +117,7 @@ public:
     void panUp();
     void panDown();
 
-    void zoomLeveled(double factor, const QPointF &center = QPointF(-1, -1));
+    void zoomLeveled(double factor, const std::optional<QPointF> &center = std::nullopt);
     void zoomIn();
     void zoomOut();
 
@@ -178,9 +179,10 @@ private:
 
     void stopBlockZooming();
 
-    [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const;
-    [[nodiscard]] ZoomPos calcZoomCenterLimitCenterSmallDimension(const QPointF &center, double factor) const;
-    [[nodiscard]] ZoomPos calcZoomCenterLimitToImageEdge(const QPointF &center) const;
+    [[nodiscard]] ZoomPos calcZoomCenter(const std::optional<QPointF> &center, double factor) const;
+    [[nodiscard]] ZoomPos calcZoomCenterLimitCenterSmallDimension(const std::optional<QPointF> &center,
+                                                                  double factor) const;
+    [[nodiscard]] ZoomPos calcZoomCenterLimitToImageEdge(const std::optional<QPointF> &center) const;
 
     void updateImageMatrix(std::optional<DkSettings::keepZoom> keepZoom = std::nullopt, const QSizeF &oldSize = {});
     void setBlockZooming(bool v);
