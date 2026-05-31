@@ -282,7 +282,14 @@ void DkNoMacs::createActions()
     connect(am.action(DkActionManager::menu_sort_ascending), &QAction::triggered, this, &DkNoMacs::changeSorting);
     connect(am.action(DkActionManager::menu_sort_descending), &QAction::triggered, this, &DkNoMacs::changeSorting);
 
-    connect(am.action(DkActionManager::menu_panel_menu), &QAction::toggled, this, &DkNoMacs::showMenuBar);
+    connect(am.action(DkActionManager::menu_panel_menu), &QAction::toggled, this, [this](bool checked) {
+        auto appMode = DkSettingsManager::param().app().currentAppMode;
+        // frameless and fullscreen hide by default, so toggling menubar visiblity should not be permanent.
+        if (!DkSettings::modeIsFullscreen(appMode) && DkSettings::normalMode(appMode) != DkSettings::mode_frameless) {
+            DkSettingsManager::param().app().showMenuBar = checked;
+        }
+        showMenuBar(checked);
+    });
     connect(am.action(DkActionManager::menu_panel_explorer), &QAction::toggled, this, [this](bool show) {
         showExplorer(show);
     });
@@ -625,7 +632,7 @@ void DkNoMacs::enterFullScreen()
     appMode = DkSettings::fullscreenMode(appMode);
     DkSettingsManager::param().app().currentAppMode = appMode;
 
-    menuBar()->hide();
+    showMenuBar(false);
     DkToolBarManager::inst().show(false);
     DkStatusBarManager::instance().statusbar()->hide();
     getTabWidget()->showTabs(false);
@@ -663,9 +670,10 @@ void DkNoMacs::exitFullScreen()
         appMode = DkSettings::normalMode(appMode);
         DkSettingsManager::param().app().currentAppMode = appMode;
 
-        if (appMode != DkSettings::mode_frameless) {
-            if (DkSettingsManager::param().app().showMenuBar)
-                mMenu->show();
+        if (appMode == DkSettings::mode_frameless) {
+            showMenuBar(false);
+        } else {
+            showMenuBar(DkSettingsManager::param().app().showMenuBar);
             if (DkSettingsManager::param().app().showStatusBar)
                 DkStatusBarManager::instance().statusbar()->show();
         }
@@ -1676,14 +1684,12 @@ bool DkNoMacs::eventFilter(QObject *, QEvent *event)
 
 void DkNoMacs::showMenuBar(bool show)
 {
-    DkSettingsManager::param().app().showMenuBar = show;
-
     QAction *mp = DkActionManager::instance().action(DkActionManager::menu_panel_menu);
     mp->blockSignals(true);
-    mp->setChecked(DkSettingsManager::param().app().showMenuBar);
+    mp->setChecked(show);
     mp->blockSignals(false);
 
-    int tts = (DkSettingsManager::param().app().showMenuBar) ? -1 : 5000;
+    int tts = show ? -1 : 5000;
     mMenu->setTimeToShow(tts);
 
     if (show)
@@ -2185,15 +2191,12 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     setAcceptDrops(true);
     setMouseTracking(true); // receive mouse event everytime
 
-    // in frameless, you cannot control if menu is visible...
     DkActionManager &am = DkActionManager::instance();
-    am.action(DkActionManager::menu_panel_menu)->setEnabled(false);
     am.action(DkActionManager::menu_panel_statusbar)->setEnabled(false);
     am.action(DkActionManager::menu_panel_statusbar)->setChecked(false);
     am.action(DkActionManager::menu_panel_toolbar)->setChecked(false);
 
-    mMenu->setTimeToShow(5000);
-    mMenu->hide();
+    showMenuBar(false);
 
     am.action(DkActionManager::menu_view_frameless)->blockSignals(true);
     am.action(DkActionManager::menu_view_frameless)->setChecked(true);
