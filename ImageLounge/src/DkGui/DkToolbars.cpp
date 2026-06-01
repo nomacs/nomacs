@@ -63,6 +63,12 @@ DkMainToolBar::DkMainToolBar(const QString &title, QWidget *parent /* = 0 */)
     : QToolBar(title, parent)
 {
     createLayout();
+
+    connect(toggleViewAction(), &QAction::triggered, this, [](bool checked) {
+        DkSettingsManager::param().app().showToolBar = checked;
+        QAction *menuAction = DkActionManager::instance().action(DkActionManager::menu_panel_toolbar);
+        menuAction->setChecked(checked);
+    });
 }
 
 void DkMainToolBar::createLayout()
