@@ -1700,10 +1700,6 @@ void DkActionManager::createActions(QWidget *parent)
         a->setToolTip(a->statusTip());
 
     // trivial connects
-    QObject::connect(action(menu_panel_toggle), &QAction::triggered, [](bool hide) {
-        DkSettingsManager::param().app().hideAllPanels = hide;
-    });
-
     QObject::connect(action(menu_panel_statusbar), &QAction::triggered, [](bool show) {
         DkStatusBarManager::instance().show(show);
     });

@@ -707,6 +707,8 @@ void DkNoMacs::exitFullScreen()
 
 void DkNoMacs::toggleDocks(bool hide)
 {
+    DkSettingsManager::param().app().hideAllPanels = hide;
+
     if (hide) {
         showExplorer(false, false);
         showMetaDataDock(false, false);
