@@ -608,7 +608,7 @@ void DkNoMacs::readSettings()
 
     // restore state makes the toolbar visible - so hide it again...
     if (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) {
-        DkToolBarManager::inst().showDefaultToolBar(false, false);
+        DkToolBarManager::inst().showDefaultToolBar(false);
         DkStatusBarManager::instance().show(false, false);
     }
 }
@@ -715,7 +715,7 @@ void DkNoMacs::toggleDocks(bool hide)
         showEditDock(false, false);
         showHistoryDock(false, false);
         showLogDock(false, false);
-        DkToolBarManager::inst().show(false, false);
+        DkToolBarManager::inst().show(false);
         DkStatusBarManager::instance().show(false, false);
     } else {
         restoreDocks();

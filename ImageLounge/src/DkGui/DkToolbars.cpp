@@ -1224,9 +1224,9 @@ void DkToolBarManager::createDefaultToolBar()
     nomacs->addToolBar(mToolBar);
 }
 
-void DkToolBarManager::show(bool show, bool permanent)
+void DkToolBarManager::show(bool show)
 {
-    showDefaultToolBar(show, permanent);
+    showDefaultToolBar(show);
     showMovieToolBar(show);
     showToolBarsTemporarily(show);
 }
@@ -1285,7 +1285,7 @@ void DkToolBarManager::showToolBarsTemporarily(bool show)
     }
 }
 
-void DkToolBarManager::showDefaultToolBar(bool show, bool permanent)
+void DkToolBarManager::showDefaultToolBar(bool show)
 {
     if (!show && !mToolBar)
         return;
@@ -1296,8 +1296,6 @@ void DkToolBarManager::showDefaultToolBar(bool show, bool permanent)
     if (mToolBar->isVisible() == show)
         return;
 
-    if (permanent)
-        DkSettingsManager::param().app().showToolBar = show;
     DkActionManager::instance()
         .action(DkActionManager::menu_panel_toolbar)
         ->setChecked(DkSettingsManager::param().app().showToolBar);
