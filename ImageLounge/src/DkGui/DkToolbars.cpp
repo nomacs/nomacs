@@ -1233,6 +1233,10 @@ void DkToolBarManager::show(bool show)
 
 void DkToolBarManager::restore()
 {
+    if (DkSettingsManager::param().app().hideAllPanels) {
+        return;
+    }
+
     if (mToolBar)
         mToolBar->setVisible(DkSettingsManager::param().app().showToolBar);
     if (mMovieToolBar)
