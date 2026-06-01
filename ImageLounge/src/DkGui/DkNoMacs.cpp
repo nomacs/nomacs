@@ -1646,7 +1646,15 @@ void DkNoMacs::onWindowLoaded()
     // load settings AFTER everything is initialized
     getTabWidget()->loadSettings();
 
-    toggleDocks(DkSettingsManager::param().app().hideAllPanels);
+    bool hidePanels = DkSettingsManager::param().app().hideAllPanels;
+    toggleDocks(hidePanels);
+
+    // it can be confusing when panels aren't showing on startup
+    if (hidePanels) {
+        QTimer::singleShot(0, [this] {
+            getTabWidget()->setInfo(tr("All panels are hidden."));
+        });
+    }
 }
 
 void DkNoMacs::keyPressEvent(QKeyEvent *event)
