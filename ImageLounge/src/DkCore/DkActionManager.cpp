@@ -1705,6 +1705,7 @@ void DkActionManager::createActions(QWidget *parent)
     });
 
     QObject::connect(action(menu_panel_toolbar), &QAction::triggered, [](bool show) {
+        DkSettingsManager::param().app().showToolBar = show;
         DkToolBarManager::inst().showDefaultToolBar(show);
     });
 

@@ -320,9 +320,9 @@ public:
     DkToolBarManager(DkToolBarManager const &) = delete;
     void operator=(DkToolBarManager const &) = delete;
 
-    void showDefaultToolBar(bool show, bool permanent = true);
+    void showDefaultToolBar(bool show);
     void showMovieToolBar(bool show);
-    void show(bool show, bool permanent = false);
+    void show(bool show);
     void restore();
     void showToolBar(QToolBar *toolbar, bool show);
     void showToolBarsTemporarily(bool show);
