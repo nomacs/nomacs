@@ -1,5 +1,5 @@
 # Change following line to force rebuild of AppVeyor cache:
-# Last rebuild: 2026-04-30
+# Last rebuild: 2026-06-04
 
 import os
 from utils.config import Config
@@ -36,6 +36,7 @@ class NomacsConfig(Config):
             "-DENABLE_AVIF=ON",
             "-DENABLE_JXL=ON",
             "-DENABLE_JXR=ON",
+            "-DENABLE_EXR=ON",
             "-DENABLE_INCREMENTER=OFF",
             "-B" + self.builddir,
             self.srcpath
