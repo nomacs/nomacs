@@ -263,11 +263,6 @@ void DkViewPortTransformViewModel::updateImageMatrix(std::optional<DkSettings::k
         Q_UNREACHABLE();
     }
 
-    // if image is not inside, we'll align it at the top left border
-    if (!mViewportRect.intersects(getImageViewRect())) {
-        mWorldMatrix.translate(-mWorldMatrix.dx(), -mWorldMatrix.dy());
-        centerImage();
-    }
     emit transformChanged();
 }
 
