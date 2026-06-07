@@ -77,10 +77,12 @@ void DkViewPortTransformViewModel::translateViewInWidgetCoords(qreal x, qreal y)
 void DkViewPortTransformViewModel::setWidgetSize(const QSize &size)
 {
     mViewportRect = QRect({}, size);
-    updateImageMatrix();
-    if (!mImgRect.isNull()) {
-        centerImage();
+    if (mImgRect.isNull()) {
+        return;
     }
+    updateImageMatrix();
+    centerImage();
+    controlImagePosition(PanBoundary::ImageEdge);
 }
 
 void DkViewPortTransformViewModel::setImgSize(const QSizeF &size, std::optional<DkSettings::keepZoom> keepZoom)
@@ -350,11 +352,7 @@ void DkViewPortTransformViewModel::centerImage()
     const qreal w = mViewportRect.width();
     const qreal h = mViewportRect.height();
 
-    // This is not exactly centering the image.
-    // In each coordinates:
-    // - If the size is smaller than the viewport, translate so that the image is center.
-    // - Otherwise (the size is larger), and somehow the viewport is not fully filled,
-    //   translate to fill the viewport.
+    // If the size is smaller than the viewport, translate so that the image is center.
     qreal tX = 0;
     qreal tY = 0;
     if (imgWorldRect.width() < w) {
@@ -366,7 +364,6 @@ void DkViewPortTransformViewModel::centerImage()
     }
 
     translateViewInWidgetCoords(tX, tY);
-    controlImagePosition(PanBoundary::ImageEdge);
 }
 
 void DkViewPortTransformViewModel::zoomToFit()
