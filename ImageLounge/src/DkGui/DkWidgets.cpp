@@ -106,7 +106,7 @@ void DkFolderScrollBar::updateFile(int idx)
     if (mMouseDown)
         return;
 
-    if (isVisible()) {
+    if (isActive()) {
         blockSignals(true);
         QSlider::setValue(idx);
         blockSignals(false);
@@ -2121,7 +2121,7 @@ void DkHistogramWidget::loadSettings()
  **/
 void DkHistogramWidget::drawHistogram(const QImage &imgQt)
 {
-    if (!isVisible() || imgQt.isNull()) {
+    if (!isActive() || imgQt.isNull()) {
         setValid(false);
         return;
     }

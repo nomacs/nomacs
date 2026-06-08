@@ -845,8 +845,7 @@ QStringList DkMetaDataHUD::getDefaultKeys() const
 void DkMetaDataHUD::setMetaData(QSharedPointer<DkMetaDataT> metaData)
 {
     mMetaData = metaData;
-    if (isVisible()) {
-        // only update if I am visible
+    if (isActive()) {
         updateMetaData(mMetaData);
     }
 }

@@ -475,7 +475,7 @@ void DkViewPort::showZoom()
 
     QString zoomStr = QString::asprintf("%.1f%%", zoomLevel() * 100);
 
-    if (!mController->getZoomWidget()->isVisible())
+    if (!mController->getZoomWidget()->isActive())
         mController->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
 }
 
@@ -2421,7 +2421,7 @@ void DkViewPortContrast::updateImage(bool enable)
     emit viewImageChanged();
 
     // the histogram normally redraws from imageContainer, we want it to use the grayscale image
-    if (mController->getHistogram() && mController->getHistogram()->isVisible()) {
+    if (mController->getHistogram() && mController->getHistogram()->isActive()) {
         mController->getHistogram()->drawHistogram(getImage());
     }
 

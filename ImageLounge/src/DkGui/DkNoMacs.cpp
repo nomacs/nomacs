@@ -1836,7 +1836,7 @@ void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool e
         bar->setMessage("", DkStatusBar::status_filesize_info);
         bar->setMessage("", DkStatusBar::status_filenumber_info);
     } else {
-        if (((vp && !vp->getController()->getFileInfoLabel()->isVisible())
+        if (((vp && !vp->getController()->getFileInfoLabel()->isActive())
              || !DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date))
             && getTabWidget()->getCurrentImage()) {
             // create statusbar info

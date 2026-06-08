@@ -401,61 +401,32 @@ void DkControlWidget::setWidgetsVisible(bool visible, bool saveSettings)
 
 void DkControlWidget::showPreview(bool visible)
 {
-    if (!mFilePreview)
-        return;
-
-    if (visible && !mFilePreview->isVisible())
-        mFilePreview->show();
-    else if (!visible && mFilePreview->isVisible())
-        mFilePreview->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
+    bool saveSetting = visible || !mViewport->getImage().isNull();
+    mFilePreview->activate(visible, saveSetting);
 }
 
 void DkControlWidget::showScroller(bool visible)
 {
-    if (!mFolderScroll)
-        return;
-
-    if (visible && !mFolderScroll->isVisible())
-        mFolderScroll->show();
-    else if (!visible && mFolderScroll->isVisible())
-        mFolderScroll->hide(
-            !mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
+    bool saveSetting = visible || !mViewport->getImage().isNull();
+    mFolderScroll->activate(visible, saveSetting);
 }
 
 void DkControlWidget::showMetaData(bool visible)
 {
-    if (!mMetaDataInfo)
-        return;
-
-    if (visible && !mMetaDataInfo->isVisible()) {
-        mMetaDataInfo->show();
-        qDebug() << "showing metadata...";
-    } else if (!visible && mMetaDataInfo->isVisible())
-        mMetaDataInfo->hide(
-            !mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
+    bool saveSetting = visible || !mViewport->getImage().isNull();
+    mMetaDataInfo->activate(visible, saveSetting);
 }
 
 void DkControlWidget::showFileInfo(bool visible)
 {
-    if (!mFileInfoLabel)
-        return;
-
-    if (visible && !mFileInfoLabel->isVisible())
-        mFileInfoLabel->show();
-    else if (!visible && mFileInfoLabel->isVisible())
-        mFileInfoLabel->hide(
-            !mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
+    bool saveSetting = visible || !mViewport->getImage().isNull();
+    mFileInfoLabel->activate(visible, saveSetting);
 }
 
 void DkControlWidget::showPlayer(bool visible)
 {
-    if (!mPlayer)
-        return;
-
-    if (visible)
-        mPlayer->show();
-    else
-        mPlayer->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the viewport
+    bool saveSetting = visible || !mViewport->getImage().isNull();
+    mPlayer->activate(visible, saveSetting);
 }
 
 void DkControlWidget::startSlideshow(bool start)
@@ -465,14 +436,8 @@ void DkControlWidget::startSlideshow(bool start)
 
 void DkControlWidget::showOverview(bool visible)
 {
-    if (!mZoomWidget)
-        return;
-
-    if (visible && !mZoomWidget->isVisible()) {
-        mZoomWidget->show();
-    } else if (!visible && mZoomWidget->isVisible()) {
-        mZoomWidget->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the mViewport
-    }
+    bool saveSetting = visible || !mViewport->getImage().isNull();
+    mZoomWidget->activate(visible, saveSetting);
 }
 
 void DkControlWidget::hideCrop(bool hide /* = true */)
@@ -492,31 +457,23 @@ void DkControlWidget::showCrop(bool visible)
 
 void DkControlWidget::showHistogram(bool visible)
 {
-    if (!mHistogram)
-        return;
+    const QImage img = mViewport->getImage();
+    bool saveSetting = visible || !img.isNull();
+    mHistogram->activate(visible, saveSetting);
 
-    if (visible && !mHistogram->isVisible()) {
-        mHistogram->show();
-        if (!mViewport->getImage().isNull())
-            mHistogram->drawHistogram(mViewport->getImage());
-        else
+    if (visible) {
+        if (!img.isNull()) {
+            mHistogram->drawHistogram(img);
+        } else {
             mHistogram->clearHistogram();
-    } else if (!visible && mHistogram->isVisible()) {
-        mHistogram->hide(!mViewport->getImage().isNull()); // do not save settings if we have no image in the mViewport
+        }
     }
 }
 
 void DkControlWidget::showCommentWidget(bool visible)
 {
-    if (!mCommentWidget)
-        return;
-
-    if (visible && !mCommentWidget->isVisible()) {
-        mCommentWidget->show();
-    } else if (!visible && mCommentWidget->isVisible()) {
-        mCommentWidget->hide(
-            !mViewport->getImage().isNull()); // do not save settings if we have no image in the mViewport
-    }
+    bool saveSetting = visible || !mViewport->getImage().isNull();
+    mCommentWidget->activate(visible, saveSetting);
 }
 
 void DkControlWidget::switchWidget(QWidget *widget)
@@ -758,7 +715,7 @@ void DkControlWidget::changeThumbNailPosition(int pos)
 
 void DkControlWidget::settingsChanged()
 {
-    if (mFileInfoLabel && mFileInfoLabel->isVisible()) {
+    if (mFileInfoLabel->isActive()) {
         showFileInfo(false); // just a hack but all states are preserved this way
         showFileInfo(true);
     }
