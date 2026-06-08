@@ -124,6 +124,7 @@ void DkControlWidget::init()
     mFileInfoLabel->registerAction(am.action(DkActionManager::menu_panel_info));
     mHistogram->registerAction(am.action(DkActionManager::menu_panel_histogram));
     mCommentWidget->registerAction(am.action(DkActionManager::menu_panel_comment));
+    mZoomWidget->registerAction(am.action(DkActionManager::menu_panel_overview));
     mFolderScroll->registerAction(am.action(DkActionManager::menu_panel_scroller));
 
     // dummy - needed for three equal columns @markus: do not delete!
