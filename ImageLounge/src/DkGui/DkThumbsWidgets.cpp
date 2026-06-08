@@ -570,7 +570,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event)
         return;
     }
 
-    if (currentFileIdx >= 0 && isVisible()) {
+    if (currentFileIdx >= 0 && isActive()) {
         scrollToCurrentImage = true;
         moveImageTimer->start();
     }
@@ -820,7 +820,7 @@ void DkFilePreview::newPosition()
 
 void DkFilePreview::moveImages()
 {
-    if (!isVisible()) {
+    if (!isActive()) {
         moveImageTimer->stop();
         return;
     }

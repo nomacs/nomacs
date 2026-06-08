@@ -97,6 +97,12 @@ public:
         mEnabled = enable;
     }
 
+    // test if widget was activated/deactivated by fade()
+    bool isActive() const
+    {
+        return mActive;
+    }
+
 protected:
     // if true, overrides of of setVisible() should directly call QWidget::setVisible()
     bool mSetWidgetVisible = false;
@@ -133,6 +139,7 @@ private:
     QGraphicsOpacityEffect *mOpacityEffect;
 
     bool mEnabled = true;
+    bool mActive = false;
     bool mShowing = false;
     bool mHiding = false;
     int mTimerId = 0; // from mWidget->startTimer()
@@ -209,6 +216,20 @@ public:
     void hide(bool saveSetting = true)
     {
         setVisible(false, saveSetting);
+    }
+
+    // we need to avoid this since visibility doesn't mean a something is active or not,
+    // it could be animating out (visible and inactive) or occluded (not visible and active)
+    bool isVisible() = delete;
+
+    // helper to toggle a panel on or off
+    void activate(bool enable, bool saveSetting)
+    {
+        if (enable) {
+            show(saveSetting);
+        } else {
+            hide(saveSetting);
+        }
     }
 
 protected:
