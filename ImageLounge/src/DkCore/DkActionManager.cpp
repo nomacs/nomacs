@@ -250,10 +250,10 @@ void DkAppManager::findDefaultSoftware()
     }
 }
 
-bool DkAppManager::containsApp(QStringView appName) const
+bool DkAppManager::containsApp(QStringView appId) const
 {
-    auto it = std::find_if(mApps.begin(), mApps.end(), [appName](QAction *action) {
-        return action->objectName() == appName;
+    auto it = std::find_if(mApps.begin(), mApps.end(), [appId](QAction *action) {
+        return action->objectName() == appId;
     });
     return it != mApps.end();
 }
