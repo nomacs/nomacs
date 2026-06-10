@@ -143,9 +143,6 @@ void DkAppManager::loadSettings()
         action->setToolTip(settings.value("appPath", "").toString());
         action->setObjectName(settings.value("objectName", "").toString());
 
-        // default shortcuts
-        if (action->objectName() == mDefaultNames[app_explorer])
-            action->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
 
         if (QFileInfo(action->toolTip()).exists() && !action->text().isEmpty())
             mApps.append(action);
@@ -245,6 +242,7 @@ void DkAppManager::findDefaultSoftware()
             auto *a = new QAction(QObject::tr("&Explorer"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
             a->setObjectName(mDefaultNames[app_explorer]);
+            a->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
             mApps.append(a);
         }
     }
