@@ -1843,6 +1843,27 @@ void DkShortcutsModel::saveActions() const
     settings.endGroup();
 }
 
+void DkShortcutsModel::checkState() const
+{
+    QMap<QString, const QAction *> map;
+    for (const auto &group : mActions) {
+        for (const auto *action : group) {
+            QString actionId = action->objectName();
+            if (actionId.isEmpty()) {
+                qWarning() << "[ShortcutsModel] no unique id for action" << action->text();
+            }
+
+            auto it = map.find(actionId);
+            if (it != map.end() && it.value() != action) {
+                qWarning() << "[ShortcutsModel] duplicate id on action" << action->text() << "and"
+                           << it.value()->text();
+            } else {
+                map.insert(actionId, action);
+            }
+        }
+    }
+}
+
 // DkShortcutsDialog --------------------------------------------------------------------
 DkShortcutsDialog::DkShortcutsDialog(QWidget *parent, Qt::WindowFlags flags)
     : QDialog(parent, flags)
@@ -4145,6 +4166,8 @@ void DkDialogManager::openShortcutsDialog() const
 #endif // WITH_PLUGINS
     shortcutsDialog->addActions(am.helpActions(), am.helpMenu()->title());
     shortcutsDialog->addActions(am.hiddenActions(), tr("Shortcuts"));
+
+    shortcutsDialog->checkState();
 
     shortcutsDialog->exec();
     shortcutsDialog->deleteLater();
