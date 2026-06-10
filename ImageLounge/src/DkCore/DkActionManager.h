@@ -79,6 +79,7 @@ protected:
     void loadSettings();
     void assignIcon(QAction *app) const;
     bool containsApp(QStringView appId) const;
+    QString actionId(const QString &name) const;
 
     QString searchForSoftware(const QString &organization,
                               const QString &application,
