@@ -65,7 +65,9 @@ DkAppManager::DkAppManager(QWidget *parent)
     loadSettings();
 
 #ifndef Q_OS_WIN
-    if (!containsApp(kOpenDirAppName)) {
+    QString name = kOpenDirAppName.toString();
+    QString id = actionId(name);
+    if (!containsApp(id)) {
 #if defined(Q_OS_MACOS)
         QString fileManagerName = tr("&Finder");
 #else
@@ -73,16 +75,17 @@ DkAppManager::DkAppManager(QWidget *parent)
 #endif
         auto *action = new QAction(fileManagerName);
         action->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
-        action->setToolTip(kOpenDirAppName.toString());
-        action->setObjectName(kOpenDirAppName.toString());
+        action->setToolTip(name);
+        action->setObjectName(id);
         mApps.append(action);
     }
 #endif
-
-    if (!containsApp(kOpenFileAppName)) {
+    name = kOpenFileAppName.toString();
+    id = actionId(name);
+    if (!containsApp(id)) {
         auto *action = new QAction(tr("&Default Application"));
-        action->setToolTip(kOpenFileAppName.toString());
-        action->setObjectName(kOpenFileAppName.toString());
+        action->setToolTip(name);
+        action->setObjectName(id);
         mApps.append(action);
     }
 
