@@ -56,6 +56,13 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject *parent)
     mRunIDs = runIds.toList();
 
     // create menu actions
+    QStringList actionIds;
+    actionIds.resize(id_end);
+    actionIds[id_crop_to_page] = "plugin_pagextraction_crop_to_page";
+    actionIds[id_crop_to_metadata] = "plugin_pagextraction_crop_to_metadata";
+    actionIds[id_draw_to_page] = "plugin_pagextraction_draw_to_page";
+    mActionIds = actionIds;
+
     QVector<QString> menuNames;
     menuNames.resize(id_end);
 
@@ -100,7 +107,7 @@ QList<QAction *> DkPageExtractionPlugin::createActions(QWidget *parent)
     if (mActions.empty()) {
         for (int idx = 0; idx < id_end; idx++) {
             auto *ca = new QAction(mMenuNames[idx], parent);
-            ca->setObjectName(mMenuNames[idx]);
+            ca->setObjectName(mActionIds[idx]);
             ca->setStatusTip(mMenuStatusTips[idx]);
             ca->setData(mRunIDs[idx]); // runID needed for calling function runPlugin()
             mActions.append(ca);

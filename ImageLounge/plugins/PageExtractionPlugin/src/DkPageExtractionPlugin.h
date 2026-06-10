@@ -76,6 +76,7 @@ public:
 protected:
     QList<QAction *> mActions;
     QStringList mRunIDs;
+    QStringList mActionIds;
     QStringList mMenuNames;
     QStringList mMenuStatusTips;
     QString mResultPath;
