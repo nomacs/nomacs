@@ -434,6 +434,8 @@ public:
     void resetActions();
     void saveActions() const;
 
+    void checkState() const;
+
 public slots:
     void checkDuplicate(const QString &text, void *item); // deprecated (Qt4)
     void checkDuplicate(const QKeySequence &ks, void *item);
@@ -455,7 +457,10 @@ public:
     explicit DkShortcutsDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     void addActions(const QVector<QAction *> &actions, const QString &name);
-
+    void checkState()
+    {
+        mModel->checkState();
+    }
 public slots:
     void accept() override;
 
