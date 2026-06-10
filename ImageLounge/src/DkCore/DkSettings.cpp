@@ -1624,35 +1624,6 @@ DkZoomConfig::~DkZoomConfig()
     saveSettings(ds);
 }
 
-double DkZoomConfig::nextFactor(double currentFactor, double delta) const
-{
-    // do nothing?
-    if (!mUseLevels)
-        return delta;
-
-    assert(currentFactor != 0.0);
-
-    if (currentFactor == 0.0)
-        return 1.0;
-
-    if (delta > 1) {
-        for (double l : mLevels) {
-            if (currentFactor < l) {
-                return l / currentFactor;
-            }
-        }
-    } else if (delta < 1) {
-        for (int idx = mLevels.size() - 1; idx >= 0; idx--) {
-            if (currentFactor > mLevels[idx]) {
-                return mLevels[idx] / currentFactor;
-            }
-        }
-    }
-
-    // do nothing
-    return 1.0;
-}
-
 QVector<double> DkZoomConfig::defaultLevels() const
 {
     QVector<double> levels;

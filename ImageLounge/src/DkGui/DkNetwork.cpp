@@ -112,7 +112,12 @@ void DkClientManager::connectionReceivedTransformation(DkConnection *,
                                                        const QTransform &imgTransform,
                                                        const QPointF &canvasSize)
 {
-    emit receivedTransformation(transform, imgTransform, canvasSize);
+    if (canvasSize.isNull()) {
+        emit receivedTransformation({transform.dx(), transform.dy()}, 1, true);
+        return;
+    }
+
+    emit receivedTransformation(canvasSize, transform.m11() * imgTransform.m11(), false);
 }
 
 void DkClientManager::connectionReceivedPosition(DkConnection *, const QRect &rect, bool opacity, bool overlaid)

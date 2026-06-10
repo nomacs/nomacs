@@ -457,7 +457,6 @@ public:
     DkZoomConfig(DkZoomConfig const &) = delete;
     void operator=(DkZoomConfig const &) = delete;
 
-    double nextFactor(double currentFactor, double delta) const;
     QVector<double> defaultLevels() const;
 
     bool useLevels() const;
@@ -469,6 +468,14 @@ public:
     void setLevelsToDefault();
 
     static bool checkLevels(const QVector<double> &levels);
+
+    [[nodiscard]] std::optional<QVector<double>> levels() const
+    {
+        if (!mUseLevels) {
+            return std::nullopt;
+        }
+        return mLevels;
+    }
 
 private:
     QVector<double> mLevels;
