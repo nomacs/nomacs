@@ -117,7 +117,6 @@ void DkAppManager::saveSettings() const
         settings.setArrayIndex(idx);
         settings.setValue("appName", mApps.at(idx)->text());
         settings.setValue("appPath", mApps.at(idx)->toolTip());
-        settings.setValue("objectName", mApps.at(idx)->objectName());
     }
     settings.endArray();
     settings.endGroup();
@@ -145,8 +144,7 @@ void DkAppManager::loadSettings()
         auto *action = new QAction(parent());
         action->setText(settings.value("appName", "").toString());
         action->setToolTip(settings.value("appPath", "").toString());
-        action->setObjectName(settings.value("objectName", "").toString());
-
+        action->setObjectName(actionId(action->text()));
 
         if (QFileInfo(action->toolTip()).exists() && !action->text().isEmpty())
             mApps.append(action);
