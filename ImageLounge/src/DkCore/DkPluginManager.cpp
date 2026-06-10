@@ -315,7 +315,7 @@ void DkPluginContainer::loadMetaData(const QJsonValue &val)
 
     for (const QString &key : keys) {
         if (key == "PluginName")
-            mPluginName = metaData.value(key).toString();
+            mPluginName = metaData.value(key).toString(); // NOTE: must not be translated
         else if (key == "AuthorName")
             mAuthorName = metaData.value(key).toString();
         else if (key == "Company")
@@ -1478,6 +1478,8 @@ void DkPluginActionManager::addPluginsToMenu()
 
     QStringList pluginMenu = QStringList();
 
+    const QRegularExpression whitespace{"\\s+"};
+
     for (auto plugin : loadedPlugins) {
         DkPluginInterface *pi = plugin->plugin();
 
@@ -1488,6 +1490,7 @@ void DkPluginActionManager::addPluginsToMenu()
         } else if (pi) {
             auto *a = new QAction(plugin->pluginName(), this);
             a->setData(plugin->id());
+            a->setObjectName("plugin_" + plugin->pluginName().toLower().remove(whitespace));
             mPluginActions.append(a);
             mMenu->addAction(a);
             connect(a, &QAction::triggered, plugin.data(), &DkPluginContainer::run);
