@@ -127,6 +127,14 @@ void DkAppManager::saveSettings() const
     settings.endGroup();
 }
 
+QString DkAppManager::actionId(const QString &name) const
+{
+    // return a unique name for binding shortcuts and custom toolbars
+    const static QRegularExpression whiteSpace("\\s+");
+
+    return "openwith_" + name.toLower().remove(whiteSpace);
+}
+
 void DkAppManager::loadSettings()
 {
     DefaultSettings settings;
