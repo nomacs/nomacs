@@ -1799,7 +1799,7 @@ void DkShortcutsModel::resetActions()
         QVector<QAction *> cActions = mActions.at(pIdx);
 
         for (int idx = 0; idx < cActions.size(); idx++) {
-            QString val = settings.value(cActions[idx]->text(), "no-shortcut").toString();
+            QString val = settings.value(cActions[idx]->objectName(), "no-shortcut").toString();
 
             if (val != "no-shortcut") {
                 cActions[idx]->setShortcut(QKeySequence());
@@ -1829,15 +1829,14 @@ void DkShortcutsModel::saveActions() const
             auto ks = cItem->data(1).value<QKeySequence>();
 
             if (cActions.at(mIdx)->shortcut() != ks) {
-                if (cActions.at(mIdx)->text().isEmpty()) {
+                QString actionId = cActions.at(mIdx)->objectName();
+                if (actionId.isEmpty()) {
                     qDebug() << "empty action detected! shortcut is: " << ks;
                     continue;
                 }
 
-                QString aT = cActions.at(mIdx)->text().remove("&");
-
                 cActions.at(mIdx)->setShortcut(ks); // assign new shortcut
-                settings.setValue(aT, ks.toString()); // note this works as long as you don't change the language!
+                settings.setValue(actionId, ks.toString());
             }
         }
     }
