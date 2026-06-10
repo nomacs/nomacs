@@ -62,13 +62,6 @@ namespace nmc
 DkAppManager::DkAppManager(QWidget *parent)
     : QObject(parent)
 {
-    mDefaultNames.resize(app_idx_end);
-    mDefaultNames[app_photohsop] = "PhotoshopAction";
-    mDefaultNames[app_picasa] = "PicasaAction";
-    mDefaultNames[app_picasa_viewer] = "PicasaViewerAction";
-    mDefaultNames[app_irfan_view] = "IrfanViewAction";
-    mDefaultNames[app_explorer] = "ExplorerAction";
-
     loadSettings();
 
 #ifndef Q_OS_WIN
@@ -200,56 +193,57 @@ void DkAppManager::findDefaultSoftware()
 {
     QString appPath;
 
-    // Photoshop
-    if (!containsApp(mDefaultNames[app_photohsop])) {
+    QString id = actionId("@photoshop");
+    if (!containsApp(id)) {
         appPath = searchForSoftware("Adobe", "Photoshop", "ApplicationPath");
         if (!appPath.isEmpty()) {
             auto *a = new QAction(QObject::tr("&Photoshop"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
-            a->setObjectName(mDefaultNames[app_photohsop]);
+            a->setObjectName(id);
             mApps.append(a);
         }
     }
 
-    if (!containsApp(mDefaultNames[app_picasa])) {
-        // Picasa
+    id = actionId("@picasa");
+    if (!containsApp(id)) {
         appPath = searchForSoftware("Google", "Picasa", "Directory");
         if (!appPath.isEmpty()) {
             auto *a = new QAction(QObject::tr("Pic&asa"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
-            a->setObjectName(mDefaultNames[app_picasa]);
+            a->setObjectName(id);
             mApps.append(a);
         }
     }
 
-    if (!containsApp(mDefaultNames[app_picasa_viewer])) {
-        // Picasa Photo Viewer
+    id = actionId("@picasa_viewer");
+    if (!containsApp(id)) {
         appPath = searchForSoftware("Google", "Picasa", "Directory", "PicasaPhotoViewer.exe");
         if (!appPath.isEmpty()) {
             auto *a = new QAction(QObject::tr("Picasa Ph&oto Viewer"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
-            a->setObjectName(mDefaultNames[app_picasa_viewer]);
+            a->setObjectName(id);
             mApps.append(a);
         }
     }
 
-    if (!containsApp(mDefaultNames[app_irfan_view])) {
-        // IrfanView
+    id = actionId("@irfanview");
+    if (!containsApp(id)) {
         appPath = searchForSoftware("IrfanView", "shell");
         if (!appPath.isEmpty()) {
             auto *a = new QAction(QObject::tr("&IrfanView"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
-            a->setObjectName(mDefaultNames[app_irfan_view]);
+            a->setObjectName(id);
             mApps.append(a);
         }
     }
 
-    if (!containsApp(mDefaultNames[app_explorer])) {
+    id = actionId("@explorer");
+    if (!containsApp(id)) {
         appPath = "C:/Windows/explorer.exe";
         if (QFileInfo(appPath).exists()) {
             auto *a = new QAction(QObject::tr("&Explorer"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
-            a->setObjectName(mDefaultNames[app_explorer]);
+            a->setObjectName(id);
             a->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
             mApps.append(a);
         }

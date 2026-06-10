@@ -58,16 +58,6 @@ public:
     QAction *createAction(const QString &filePath);
     QAction *findAction(const QString &appPath) const;
 
-    enum defaultAppIdx {
-        app_photohsop,
-        app_picasa,
-        app_picasa_viewer,
-        app_irfan_view,
-        app_explorer,
-
-        app_idx_end
-    };
-
 public slots:
     void openTriggered() const;
 
@@ -87,7 +77,6 @@ protected:
                               const QString &exeName = "") const;
     void findDefaultSoftware();
 
-    QVector<QString> mDefaultNames;
     QVector<QAction *> mApps;
     bool mFirstTime = true;
 };
