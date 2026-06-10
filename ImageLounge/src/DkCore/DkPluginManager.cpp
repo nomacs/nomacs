@@ -243,7 +243,7 @@ bool DkPluginContainer::load()
 
     if (mType != type_unknown) {
         // init actions
-        plugin()->createActions(DkUtils::getMainWindow());
+        plugin()->createActions(actionIdPrefix(), DkUtils::getMainWindow());
         createMenu();
     }
 
@@ -446,6 +446,11 @@ QString DkPluginContainer::tagline() const
 QString DkPluginContainer::id() const
 {
     return mId;
+}
+
+QString DkPluginContainer::actionIdPrefix() const
+{
+    return "plugin_" + mId.left(7) + "_";
 }
 
 QDate DkPluginContainer::dateCreated() const
@@ -1481,13 +1486,15 @@ void DkPluginActionManager::addPluginsToMenu()
     for (auto plugin : loadedPlugins) {
         DkPluginInterface *pi = plugin->plugin();
 
+        const QString idPrefix = plugin->actionIdPrefix();
         if (pi && plugin->pluginMenu()) {
-            QList<QAction *> actions = pi->createActions(DkUtils::getMainWindow());
+            QList<QAction *> actions = pi->createActions(idPrefix, DkUtils::getMainWindow());
             mPluginSubMenus.append(plugin->pluginMenu());
             mMenu->addMenu(plugin->pluginMenu());
         } else if (pi) {
             auto *a = new QAction(plugin->pluginName(), this);
             a->setData(plugin->id());
+            a->setObjectName(idPrefix + "default");
             mPluginActions.append(a);
             mMenu->addAction(a);
             connect(a, &QAction::triggered, plugin.data(), &DkPluginContainer::run);

@@ -58,8 +58,22 @@ public:
 
     virtual QImage image() const = 0;
 
-    virtual QList<QAction *> createActions(QWidget *)
+    /**
+     * @brief Create menu actions; for plugins with >1 menu action
+     * @param idPrefix required prefix of the objectName() of each action
+     *
+     * @note The action objectName must contain a unique and stable id for binding shortcuts.
+     * To facilitate that, idPrefix is provided that is unique to the plugin.
+     * The suggested usage is:
+     *    auto* action=new QAction(tr("Rotate 90 Degrees Counter-clockwise"));
+     *    action->setObjectName(idPrefix + "rotate_90_ccw");
+     *
+     * @note If you are compiling github/nomacs/nomacs-plugins please note
+     * that repo is now deprecated and you should just build github/nomacs/nomacs
+     */
+    virtual QList<QAction *> createActions(const QString &idPrefix, QWidget *)
     {
+        Q_UNUSED(idPrefix)
         return QList<QAction *>();
     };
     virtual QList<QAction *> pluginActions() const
@@ -212,6 +226,6 @@ protected:
 }
 
 // Change this version number if DkPluginInterface is changed!
-Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.6")
-Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.6")
-Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.8")
+Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.7")
+Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.7")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.9")

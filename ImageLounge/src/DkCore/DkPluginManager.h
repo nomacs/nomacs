@@ -124,6 +124,7 @@ public:
     QString fullDescription() const;
     QString tagline() const;
     QString id() const;
+    QString actionIdPrefix() const;
 
     QDate dateCreated() const;
     QDate dateModified() const;

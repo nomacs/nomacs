@@ -42,7 +42,7 @@ public:
     QImage image() const override;
     QString name() const override;
 
-    QList<QAction *> createActions(QWidget *parent) override;
+    QList<QAction *> createActions(const QString &idPrefix, QWidget *parent) override;
     QList<QAction *> pluginActions() const override;
     QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID,
                                                     QSharedPointer<nmc::DkImageContainer> image,
@@ -76,6 +76,7 @@ public:
 protected:
     QList<QAction *> mActions;
     QStringList mRunIDs;
+    QStringList mActionIds;
     QStringList mMenuNames;
     QStringList mMenuStatusTips;
     QString mResultPath;
