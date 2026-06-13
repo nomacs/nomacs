@@ -1736,6 +1736,7 @@ void DkShortcutsModel::addDataActions(QVector<QAction *> actions, const QString 
         }
 
         QString text = actions[idx]->text().remove("&");
+        text = '[' + actions[idx]->objectName() + ']' + ' ' + text;
 
         QVector<QVariant> actionData;
         actionData << text << actions[idx]->shortcut();

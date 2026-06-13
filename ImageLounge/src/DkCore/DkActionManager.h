@@ -383,6 +383,8 @@ public:
         preview_end
     };
 
+    // TODO: most of these are not used externally, should they be removed?
+
     // default nomacs shortcuts
     // keyboard shortcuts
     // general
