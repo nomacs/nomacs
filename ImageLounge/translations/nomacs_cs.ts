@@ -5179,7 +5179,7 @@ Upozornění: Dojde ke změně souborů.</translation>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Show Statistics</source>
-        <translation type="unfinished">Zobrazit statistiky</translation>
+        <translation>Zobrazit Statistiky</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>

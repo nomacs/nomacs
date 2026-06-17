@@ -5170,7 +5170,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Show Statistics</source>
-        <translation type="unfinished">Statistieken weergeven</translation>
+        <translation>Statistieken Weergeven</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
