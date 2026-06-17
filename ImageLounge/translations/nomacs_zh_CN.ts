@@ -2551,7 +2551,7 @@
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Delete File Permanently?</source>
-        <translation type="unfinished"></translation>
+        <translation>永久删除文件？</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2564,12 +2564,20 @@ Date modified: %3
 
 This action cannot be undone.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>我无法将此文件移动到回收站。
+您想要永久删除此文件吗？
+
+%1
+大小： %2
+日期修改： %3
+
+此操作不能撤消。
+</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Delete &amp;All</source>
-        <translation type="unfinished"></translation>
+        <translation>删除全部</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
@@ -2721,7 +2729,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp"/>
         <source>Unmanaged</source>
-        <translation type="unfinished"></translation>
+        <translation>未管理</translation>
     </message>
 </context>
 <context>
@@ -2872,17 +2880,17 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Finder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;查找</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;文件管理器</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Default Application</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;默认应用</translation>
     </message>
 </context>
 <context>
@@ -3018,7 +3026,7 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkBaseViewPort.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (未指定)</translation>
     </message>
 </context>
 <context>
@@ -3026,17 +3034,17 @@ Please restart nomacs and try again.</source>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (未指定)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>CMYK (%1) to sRGB</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK (%1) 到 sRGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>CMYK (Unspecified) to sRGB</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK (未指定) 到 sRGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
@@ -4155,22 +4163,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose the color profile of the monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>选择显示器的颜色配置</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Color Management</source>
-        <translation type="unfinished"></translation>
+        <translation>色彩管理</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Display Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>显示配置文件</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose ICC Profile...</source>
-        <translation type="unfinished"></translation>
+        <translation>打开 ICC 配置文件...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4275,7 +4283,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Open ICC Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>打开 ICC 配置文件</translation>
     </message>
 </context>
 <context>
@@ -4607,7 +4615,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Thumbnails</source>
-        <translation type="unfinished">缩略图</translation>
+        <translation>缩略图</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5326,40 +5334,42 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Creating Inconsistent Metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>创建不一致的元数据</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Orientation metadata is disabled or ignored, you must use
 &quot;Save As&quot; for correct metadata.</source>
-        <translation type="unfinished"></translation>
+        <translation>方向元数据被禁用或忽略，您必须使用
+&quot;另存为&quot; 以获取正确的元数据。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>&amp;Do not warn me again</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;不再警告我</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Rotated (EXIF)</source>
-        <translation type="unfinished"></translation>
+        <translation>旋转(EXIF)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, metadata rotation failed (check log).</source>
-        <translation type="unfinished"></translation>
+        <translation>对不起，元数据旋转失败 (检查日志)。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Lossless Rotation Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>无损旋转已禁用</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>This file could be rotated losslessly with EXIF metadata,
 but saving orientation metadata has been disabled in settings.</source>
-        <translation type="unfinished"></translation>
+        <translation>此文件可以使用 EXIF 元数据无损旋转，
+但保存方向元数据在设置中被禁用。</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -7354,12 +7364,12 @@ Please contact your system administrator for further information.</source>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Unspecified</source>
-        <translation type="unfinished"></translation>
+        <translation>未指定</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>自定义</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>

@@ -109,7 +109,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Open a directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevřít složku</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -310,12 +310,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>by File &amp;Size</source>
-        <translation type="unfinished"></translation>
+        <translation>podle &amp;velikosti souboru</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Sort by File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Seřadit podle velikosti souboru</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -719,7 +719,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Fit Window to Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Přizpůsobit okno na obrázek</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -729,7 +729,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Zoom image to fit window</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvětšení obrázku pro přizpůsobení okna</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -739,12 +739,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Nápověda</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Load next file</source>
-        <translation type="unfinished"></translation>
+        <translation>Načíst další soubor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -759,7 +759,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Crop the current image</source>
-        <translation type="unfinished"></translation>
+        <translation>Oříznout aktuální obrázek</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1048,7 +1048,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Set Desktop &amp;Wallpaper</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavit jako &amp;pozadí</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1382,12 +1382,12 @@
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Clear rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyčistit hodnocení</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Set rating to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavit hodnocení na %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
@@ -2339,7 +2339,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Output file exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Výstupní soubor už existuje</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2349,7 +2349,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Input file does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Vstupní soubor neexistuje</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2359,12 +2359,12 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Empty input file</source>
-        <translation type="unfinished"></translation>
+        <translation>Prázdný vstupní soubor</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to write output file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba při zápisu výstupního souboru: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2514,7 +2514,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA FP16</source>
-        <translation type="unfinished"></translation>
+        <translation>RGBA FP16</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2529,7 +2529,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Delete File Permanently?</source>
-        <translation type="unfinished"></translation>
+        <translation>Trvale odstranit soubor?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2542,12 +2542,20 @@ Date modified: %3
 
 This action cannot be undone.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Soubor nelze přesunout do&#xa0;koše.
+Chcete tento soubor trvale odstranit?
+
+%1
+Velikost: %2
+Datum změny: %3
+
+Akci nepůjde vrátit zpět.
+</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Delete &amp;All</source>
-        <translation type="unfinished"></translation>
+        <translation>Sm&amp;azat vše</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -2592,7 +2600,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source>Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Panel nástrojů</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
@@ -2677,7 +2685,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/main.cpp"/>
         <source>Print build information</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypsat informace o&#xa0;sestavení</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
@@ -2711,7 +2719,7 @@ This action cannot be undone.
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Thumb: </source>
-        <translation type="unfinished"></translation>
+        <translation>Náhled: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -2872,17 +2880,17 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Finder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Finder</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Správce souborů</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Default Application</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Výchozí aplikace</translation>
     </message>
 </context>
 <context>
@@ -3018,7 +3026,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkBaseViewPort.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (neurčeno)</translation>
     </message>
 </context>
 <context>
@@ -3026,17 +3034,17 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (neurčeno)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>CMYK (%1) to sRGB</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK (%1) do sRGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>CMYK (Unspecified) to sRGB</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK (neurčeno) do sRGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
@@ -3385,7 +3393,7 @@ Tato možnost je užitečná pouze pokud rozšíření ukládají soubory strano
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>&amp;Crop to center</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Oříznout na&#xa0;střed</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3579,7 +3587,7 @@ Tato možnost je užitečná pouze pokud rozšíření ukládají soubory strano
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Scroll to current file</source>
-        <translation type="unfinished"></translation>
+        <translation>Přejít na aktuální soubor</translation>
     </message>
 </context>
 <context>
@@ -3632,22 +3640,22 @@ Tato možnost je užitečná pouze pokud rozšíření ukládají soubory strano
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Downloading &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Stahování „%1“</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, there are unsaved changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Jsou zde neuložené změny</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, renaming archived files is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bohužel, přejmenování archivovaných souborů není podporováno.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, the directory: %1 does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Složka %1 neexistuje</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -3657,22 +3665,22 @@ Tato možnost je užitečná pouze pokud rozšíření ukládají soubory strano
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Rename: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Přejmenovat: %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>New File Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nový název souboru:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t rename: NFS mount is case-insensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze přejmenovat: NFS připojení nerozlišuje velikost písmen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Overwrite: %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Přepsat: %1?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -3683,12 +3691,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t delete: &quot;%1&quot; : %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze smazat: „%1“: %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t rename: &quot;%1&quot; : %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze přejmenovat: „%1“: %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -3912,7 +3920,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
         <source>File comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentář k souboru</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
@@ -4155,12 +4163,12 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose the color profile of the monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte barevný profil monitoru</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Color Management</source>
-        <translation type="unfinished"></translation>
+        <translation>Správa barev</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4607,7 +4615,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Thumbnails</source>
-        <translation type="unfinished">Náhledy</translation>
+        <translation>Náhledy</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4682,7 +4690,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation type="unfinished">Pro použití změn je třeba aplikaci nomacs restartovat</translation>
+        <translation>Pro použití změn je třeba aplikaci nomacs restartovat</translation>
     </message>
 </context>
 <context>
@@ -4814,17 +4822,20 @@ Delete them now?</source>
 %1
 and save to metadata.
 Warning: This will modify the files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypočítat miniatury pro&#xa0;obrázky v:
+%1
+a&#xa0;uložit je do metadat.
+Upozornění: Dojde ke změně souborů.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Apply to the files without thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít na soubory bez miniatur</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Apply to all files and overwrite existing thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít na všechny soubory a&#xa0;přepsat existující miniatury</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -4867,22 +4878,22 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Foreground Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Barva popředí</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Sets the overall theme. The System theme uses the operating system theme except for custom widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastaví celkový motiv. Motiv Systém použije vzhled operačního systému všude kromě vlastních widgetů</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Sets the appearance of buttons, checkboxes, etc. on the System theme or otherwise unstyled elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastaví vzhled tlačítek, zaškrtávacích políček atd. na vzhled systému nebo jinak nestylované prvky</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Vzhled</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4953,12 +4964,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Open First Image in Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevřít první obrázek ve složce</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>When opening a folder, show the first image. Otherwise, show the folder&apos;s contents.</source>
-        <translation type="unfinished"></translation>
+        <translation>Při otevírání složky zobrazit první obrázek. Jinak zobrazit obsah složky.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5013,7 +5024,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Show Nomacs Logo</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit Nomacs logo</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5023,12 +5034,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Enable Animations</source>
-        <translation type="unfinished"></translation>
+        <translation>Povolit animace</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, enable animations on user interface components.</source>
-        <translation type="unfinished"></translation>
+        <translation>Je-li zaškrtnuto, komponenty uživatelského rozhraní budou animovány.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5053,7 +5064,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Close on Middle Mouse Button</source>
-        <translation type="unfinished"></translation>
+        <translation>Zavřít prostředním tlačítkem myši</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5083,7 +5094,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Help translate nomacs</source>
-        <translation type="unfinished"></translation>
+        <translation>Pomozte přeložit nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5328,7 +5339,7 @@ neobsahuje žádný obrázek</translation>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, deleting archived files is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bohužel, mazání archivovaných souborů není podporováno.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5355,7 +5366,7 @@ neobsahuje žádný obrázek</translation>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>&amp;Do not warn me again</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Znovu neupozorňovat</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5365,7 +5376,7 @@ neobsahuje žádný obrázek</translation>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, metadata rotation failed (check log).</source>
-        <translation type="unfinished"></translation>
+        <translation>Otočení pomocí metadat se nezdařilo (podrobnosti v&#xa0;logu).</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5376,7 +5387,8 @@ neobsahuje žádný obrázek</translation>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>This file could be rotated losslessly with EXIF metadata,
 but saving orientation metadata has been disabled in settings.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tento soubor může být otočen bezztrátově pomocí EXIF metadat,
+ale ukládání orientace do metadat bylo v&#xa0;nastavení vypnuto.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5594,7 +5606,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Embedded Thumbnail</source>
-        <translation type="unfinished"></translation>
+        <translation>Vložená miniatura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
@@ -5604,7 +5616,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozlišení</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
@@ -5614,12 +5626,12 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>yes</source>
-        <translation type="unfinished"></translation>
+        <translation>ano</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>no</source>
-        <translation type="unfinished"></translation>
+        <translation>ne</translation>
     </message>
 </context>
 <context>
@@ -6051,7 +6063,7 @@ potom stiskněte %1</translation>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Open Tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevřít panely</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
@@ -6120,7 +6132,7 @@ potom stiskněte %1</translation>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Choose a Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybrat monitor</translation>
     </message>
 </context>
 <context>
@@ -6441,12 +6453,12 @@ potom stiskněte %1</translation>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>four stars</source>
-        <translation type="unfinished"></translation>
+        <translation>čtyři hvězdičky</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>five stars</source>
-        <translation type="unfinished"></translation>
+        <translation>pět hvězdiček</translation>
     </message>
 </context>
 <context>
@@ -6765,7 +6777,7 @@ Použijte klávesu ESC k vrácení změn.</translation>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Copy build information</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopírovat informace o sestavení</translation>
     </message>
 </context>
 <context>
@@ -6879,17 +6891,17 @@ Použijte klávesu ESC k vrácení změn.</translation>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Copy Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopírovat obrázky</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>The current directory is invalid or no longer exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuální složka je neplatná nebo už neexistuje.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Copying to an archive is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopírování do archivu není podporováno.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -7358,12 +7370,12 @@ Další informace získáte od správce systému.</translation>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Unspecified</source>
-        <translation type="unfinished"></translation>
+        <translation>Nespecifikováno</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastní</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>

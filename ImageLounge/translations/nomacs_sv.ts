@@ -300,12 +300,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>by File &amp;Size</source>
-        <translation type="unfinished"></translation>
+        <translation>efter fil &amp;storlek</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Sort by File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Filstorlek</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -730,37 +730,37 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Hjälp</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Open a directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Öppna mapp</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Open a text file containing a list of filepaths, and open tabs for them</source>
-        <translation type="unfinished"></translation>
+        <translation>Öppna en textfil som innehåller en lista med filsökvägar och öppna flikar för dem</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Load next file</source>
-        <translation type="unfinished"></translation>
+        <translation>Läs nästa fil</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>copy file path</source>
-        <translation type="unfinished"></translation>
+        <translation>kopiera filsökväg</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>copy image pixels</source>
-        <translation type="unfinished"></translation>
+        <translation>kopiera bildpixlar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Crop the current image</source>
-        <translation type="unfinished"></translation>
+        <translation>Beskär den aktuella bilden</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1049,7 +1049,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Set Desktop &amp;Wallpaper</source>
-        <translation type="unfinished"></translation>
+        <translation>Ställ in skrivbordsbakgrund</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1383,12 +1383,12 @@
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Clear rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Rensa betyg</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Set rating to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Sätt betyg till %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
@@ -2165,23 +2165,23 @@ Starta om nomacs och försök igen.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image cropped from metadata.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 bild beskuren från metadata.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image rotated %2 degrees.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 -bilden roterade %2 grader.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image resized to %2 x %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 bild skalad till %2 x %3.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image %2 x %3 cropped to x%4 y%5 w%6 h%7</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 bild %2 x %3 beskurna till x%4 y%5 w%6 h%7</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2191,7 +2191,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 not transformed.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 inte omvandlad.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2340,32 +2340,32 @@ Starta om nomacs och försök igen.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Output file exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Filen finns</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to open output: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte öppna utdata: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Input file does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Inmatningsfil finns inte</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to open input file</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att öppna indatafilen</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Empty input file</source>
-        <translation type="unfinished"></translation>
+        <translation>Tom indatafil</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to write output file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte skriva utdatafil: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2510,27 +2510,27 @@ Starta om nomacs och försök igen.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA 64-bit</source>
-        <translation type="unfinished"></translation>
+        <translation>RGBA 64-bitars</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA FP16</source>
-        <translation type="unfinished"></translation>
+        <translation>RGBA FP16 </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA FP32</source>
-        <translation type="unfinished"></translation>
+        <translation>RGBA FP32</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>CMYK 32-Bit</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK 32-bitars</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Delete File Permanently?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta bort fil permanent?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2543,12 +2543,20 @@ Date modified: %3
 
 This action cannot be undone.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Jag kunde inte flytta den här filen till papperskorgen.
+Vill du permanent ta bort denna fil?
+
+%1
+Storlek: %2
+Datum ändrad: %3
+
+Denna åtgärd kan inte ångras.
+Vill du radera den här filen permanent?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Delete &amp;All</source>
-        <translation type="unfinished"></translation>
+        <translation>Radera allt</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -2593,7 +2601,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source>Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Verktygsfält</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
@@ -2633,7 +2641,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/main.cpp"/>
         <source>List of files and/or directories to open</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista över filer och/eller kataloger att öppna</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
@@ -2673,12 +2681,12 @@ This action cannot be undone.
     <message>
         <location filename="../src/main.cpp"/>
         <source>List available image formats</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista tillgängliga bildformat</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
         <source>Print build information</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriv ut versionsinformation</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
@@ -2712,18 +2720,18 @@ This action cannot be undone.
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Thumb: </source>
-        <translation type="unfinished"></translation>
+        <translation>Miniatyrbild: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Embedded </source>
-        <translation type="unfinished"></translation>
+        <translation>Inbäddad </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp"/>
         <source>Unmanaged</source>
-        <translation type="unfinished"></translation>
+        <translation>Ohanterad </translation>
     </message>
 </context>
 <context>
@@ -2873,17 +2881,17 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Finder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sökare</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Filhanterare</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Default Application</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardapplikation</translation>
     </message>
 </context>
 <context>
@@ -3019,7 +3027,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkBaseViewPort.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (ospecificerat) </translation>
     </message>
 </context>
 <context>
@@ -3027,17 +3035,17 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (ospecificerat) </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>CMYK (%1) to sRGB</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK (%1) till sRGB </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>CMYK (Unspecified) to sRGB</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK (ospecificerat) till sRGB </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
@@ -3316,7 +3324,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoom</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3387,7 +3395,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>&amp;Crop to center</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Beskär till mitten</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3402,7 +3410,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Zoom to: %1 px by %2 px</source>
-        <translation type="unfinished"></translation>
+        <translation>Zooma till: %1 px av %2 px </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3581,7 +3589,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Scroll to current file</source>
-        <translation type="unfinished"></translation>
+        <translation>Bläddra till nuvarande fil</translation>
     </message>
 </context>
 <context>
@@ -3634,17 +3642,17 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Downloading &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Hämtar &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, there are unsaved changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Tyvärr, det finns osparade ändringar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, renaming archived files is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tyvärr, döpa om arkiverade filer stöds inte.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -3659,38 +3667,39 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Rename: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Byt namn på %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>New File Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nytt filnamn </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t rename: NFS mount is case-insensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>Tyvärr, jag kan inte byta namn: NFS-fästet är okänsligt för kasus</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Overwrite: %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriv över? </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>The file: %1 already exists.
 Do you want to replace it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Filen: %1 finns redan.
+Vill du ersätta den?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t delete: &quot;%1&quot; : %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Tyvärr, jag kan&apos;t ta bort: &quot;%1&quot; : %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t rename: &quot;%1&quot; : %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Tyvärr, jag kan&apos;t byta namn: &quot;%1&quot; : %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -3811,7 +3820,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
         <source>JXL Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>JXL Inställningar</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
@@ -3914,7 +3923,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
         <source>File comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Fil kommentar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
@@ -4157,22 +4166,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose the color profile of the monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj färgprofilen för bildskärmen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Color Management</source>
-        <translation type="unfinished"></translation>
+        <translation>Färghantering</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Display Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Visa profil</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose ICC Profile...</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj ICC Profil...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4277,7 +4286,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Open ICC Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Öppna ICC-profil</translation>
     </message>
 </context>
 <context>
@@ -4817,17 +4826,20 @@ Delete them now?</source>
 %1
 and save to metadata.
 Warning: This will modify the files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Beräkna miniatyrer för bilder i:
+%1
+och spara till metadata.
+Varning: Detta kommer att ändra filerna.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Apply to the files without thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Applicera på filerna utan miniatyrer</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Apply to all files and overwrite existing thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Tillämpa på alla filer och skriv över befintliga miniatyrbilder</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -4865,37 +4877,37 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Previewing theme. Restart nomacs to apply all changes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Förhandsgranska tema. Starta om Nomacs för att tillämpa alla ändringar.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Foreground Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Bakgrundsfärg</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Sets the overall theme. The System theme uses the operating system theme except for custom widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>Sätter det övergripande temat. Systemtemat använder operativsystemets tema förutom anpassade widgetar</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Sets the appearance of buttons, checkboxes, etc. on the System theme or otherwise unstyled elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Ställer in utseendet på knappar, kryssrutor etc. på Systemtemat eller på annat sätt oformaterade element</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Utseende</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Nomacs  Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Nomacs Tema </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Widget Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Tema Widget</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4956,12 +4968,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Open First Image in Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Öppna första bilden i mappen</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>When opening a folder, show the first image. Otherwise, show the folder&apos;s contents.</source>
-        <translation type="unfinished"></translation>
+        <translation>När du öppnar en mapp, visa den första bilden. Annars, visa mappens innehåll.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5016,7 +5028,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Show Nomacs Logo</source>
-        <translation type="unfinished"></translation>
+        <translation>Visa Nomacs logotyp</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5171,7 +5183,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Show Statistics</source>
-        <translation type="unfinished">Visa statistik</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>

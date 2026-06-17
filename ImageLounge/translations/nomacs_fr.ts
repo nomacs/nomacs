@@ -310,7 +310,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>by File &amp;Size</source>
-        <translation type="unfinished"></translation>
+        <translation>par &amp;Taille de Fichier</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -739,12 +739,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Aide</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Load next file</source>
-        <translation type="unfinished"></translation>
+        <translation>Charger le fichier suivant</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -3019,7 +3019,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkBaseViewPort.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">sRGB (non spécifié)</translation>
     </message>
 </context>
 <context>
@@ -3027,7 +3027,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (non spécifié)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
@@ -5171,7 +5171,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Show Statistics</source>
-        <translation type="unfinished">Afficher les statistiques</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>

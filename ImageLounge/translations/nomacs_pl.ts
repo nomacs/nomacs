@@ -300,12 +300,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>by File &amp;Size</source>
-        <translation type="unfinished"></translation>
+        <translation>według rozmiaru &amp;pliku</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Sort by File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortuj wg. rozmiaru</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -729,37 +729,37 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Pomoc</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Open a directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwórz katalog</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Open a text file containing a list of filepaths, and open tabs for them</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwórz plik tekstowy zawierający listę ścieżek plików i otwórz dla nich zakładki</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Load next file</source>
-        <translation type="unfinished"></translation>
+        <translation>Załaduj następny plik</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>copy file path</source>
-        <translation type="unfinished"></translation>
+        <translation>kopiuj ścieżkę pliku</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>copy image pixels</source>
-        <translation type="unfinished"></translation>
+        <translation>kopiuj piksele obrazu</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Crop the current image</source>
-        <translation type="unfinished"></translation>
+        <translation>Przytnij bieżący obraz</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1048,7 +1048,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Set Desktop &amp;Wallpaper</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustaw &amp;tapetę pulpitu</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -1382,12 +1382,12 @@
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Clear rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyczyść ocenę</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Set rating to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustaw ocenę na %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkManipulators.cpp"/>
@@ -2164,23 +2164,23 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image cropped from metadata.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 obraz przycięty z metadanych.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image rotated %2 degrees.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 obraz obrócony %2 stopni.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image resized to %2 x %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 obraz zmienił rozmiar na %2 x %3.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 image %2 x %3 cropped to x%4 y%5 w%6 h%7</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 obraz %2 x %3 przycięty do x%4 y%5 w%6 h%7</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2190,7 +2190,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>%1 not transformed.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 nie został zmieniony.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2339,32 +2339,32 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Output file exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik wyjściowy istnieje</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to open output: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się otworzyć wyjścia: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Input file does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik wejściowy nie istnieje</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to open input file</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się otworzyć pliku wejściowego</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Empty input file</source>
-        <translation type="unfinished"></translation>
+        <translation>Pusty plik wejściowy</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
         <source>Failed to write output file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się zapisać pliku wyjściowego: %1</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkProcess.cpp"/>
@@ -2509,27 +2509,27 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA 64-bit</source>
-        <translation type="unfinished"></translation>
+        <translation>RGBA 64-bitowe</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA FP16</source>
-        <translation type="unfinished"></translation>
+        <translation>RGBA FP16</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>RGBA FP32</source>
-        <translation type="unfinished"></translation>
+        <translation>RGBA FP32</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>CMYK 32-Bit</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK 32-bitowe</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Delete File Permanently?</source>
-        <translation type="unfinished"></translation>
+        <translation>Usunąć plik na stałe?</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
@@ -2542,12 +2542,20 @@ Date modified: %3
 
 This action cannot be undone.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Nie mogłem przenieść tego pliku do kosza.
+Czy chcesz trwale usunąć ten plik?
+
+%1
+Rozmiar: %2
+Data modyfikacji: %3
+
+Tej akcji nie można cofnąć.
+</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkUtils.cpp"/>
         <source>Delete &amp;All</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń &amp;wszystko</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -2592,7 +2600,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source>Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasek narzędzi</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkToolbars.cpp"/>
@@ -2632,7 +2640,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/main.cpp"/>
         <source>List of files and/or directories to open</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista plików i/lub katalogów do otwarcia</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
@@ -2672,12 +2680,12 @@ This action cannot be undone.
     <message>
         <location filename="../src/main.cpp"/>
         <source>List available image formats</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista dostępnych formatów obrazów</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
         <source>Print build information</source>
-        <translation type="unfinished"></translation>
+        <translation>Drukuj informacje o kompilacji</translation>
     </message>
     <message>
         <location filename="../src/main.cpp"/>
@@ -2711,18 +2719,18 @@ This action cannot be undone.
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Thumb: </source>
-        <translation type="unfinished"></translation>
+        <translation>Miniatura: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Embedded </source>
-        <translation type="unfinished"></translation>
+        <translation>Wbudowane </translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp"/>
         <source>Unmanaged</source>
-        <translation type="unfinished"></translation>
+        <translation>Niezarządzane</translation>
     </message>
 </context>
 <context>
@@ -2872,17 +2880,17 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Finder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Wyszukiwarka</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Menadżer plików</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Default Application</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Domyślna aplikacja</translation>
     </message>
 </context>
 <context>
@@ -3018,7 +3026,7 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkBaseViewPort.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (Nieokreślone)</translation>
     </message>
 </context>
 <context>
@@ -3026,17 +3034,17 @@ This action cannot be undone.
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>sRGB (Unspecified)</source>
-        <translation type="unfinished"></translation>
+        <translation>sRGB (Nieokreślone)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>CMYK (%1) to sRGB</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK (%1) do sRGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
         <source>CMYK (Unspecified) to sRGB</source>
-        <translation type="unfinished"></translation>
+        <translation>CMYK (Nieokreślone) do sRGB</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkBasicLoader.cpp"/>
@@ -3386,7 +3394,7 @@ Używaj ostrożnie!</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>&amp;Crop to center</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Przytnij do środka</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3401,7 +3409,7 @@ Używaj ostrożnie!</translation>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
         <source>Zoom to: %1 px by %2 px</source>
-        <translation type="unfinished"></translation>
+        <translation>Powiększ do: %1 px o %2 px</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp"/>
@@ -3580,7 +3588,7 @@ Używaj ostrożnie!</translation>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Scroll to current file</source>
-        <translation type="unfinished"></translation>
+        <translation>Przewiń do obecnego pliku</translation>
     </message>
 </context>
 <context>
@@ -3633,22 +3641,22 @@ Używaj ostrożnie!</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Downloading &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Pobieranie &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, there are unsaved changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepraszamy, są niezapisane zmiany</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, renaming archived files is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepraszamy, zmiana nazwy zarchiwizowanych plików nie jest obsługiwana.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, the directory: %1 does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepraszamy, katalog %1 nie istnieje</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -3658,38 +3666,39 @@ Używaj ostrożnie!</translation>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Rename: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmień nazwę %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>New File Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nowa nazwa pliku:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t rename: NFS mount is case-insensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepraszamy, nie można zmienić nazwy: partycje NFS są wrażliwe na wielkość liter</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Overwrite: %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Nadpisać %1?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>The file: %1 already exists.
 Do you want to replace it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik %1 już istnieje. 
+Czy chcesz go zastąpić?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t delete: &quot;%1&quot; : %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepraszamy, nie można usunąć: &quot;%1&quot; : %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>Sorry, I can&apos;t rename: &quot;%1&quot; : %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepraszamy, nie można zmienić nazwy: &quot;%1&quot; : %2</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
@@ -3810,7 +3819,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
         <source>JXL Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawienia JXL</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSaveDialog.cpp"/>
@@ -3913,7 +3922,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
         <source>File comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarz do pliku</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkControlWidget.cpp"/>
@@ -4156,22 +4165,22 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose the color profile of the monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz profil kolorów monitora</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Color Management</source>
-        <translation type="unfinished"></translation>
+        <translation>Zarządzanie kolorami</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Display Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Profil monitora</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose ICC Profile...</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz profil ICC...</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4276,7 +4285,7 @@ Do you want to replace it?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Open ICC Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwórz profil ICC</translation>
     </message>
 </context>
 <context>
@@ -4608,7 +4617,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Thumbnails</source>
-        <translation type="unfinished">Miniatury</translation>
+        <translation>Miniatury</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4683,7 +4692,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation type="unfinished">Zrestartuj nomacs by zastosować zmiany</translation>
+        <translation>Zrestartuj nomacs by zastosować zmiany</translation>
     </message>
 </context>
 <context>
@@ -4815,17 +4824,20 @@ Delete them now?</source>
 %1
 and save to metadata.
 Warning: This will modify the files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Oblicz miniatury obrazów w:
+%1
+i zapisz do metadanych.
+Ostrzeżenie: To zmodyfikuje pliki.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Apply to the files without thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastosuj do plików bez miniatur</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Apply to all files and overwrite existing thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastosuj do wszystkich plików i nadpisz istniejące miniatury</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
@@ -4863,37 +4875,37 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Previewing theme. Restart nomacs to apply all changes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Podgląd motywu. Uruchom ponownie nomacs, aby zastosować zmiany.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Foreground Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Główny kolor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Sets the overall theme. The System theme uses the operating system theme except for custom widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawia ogólny motyw. Motyw systemu używa motywu systemu operacyjnego z wyjątkiem niestandardowych widżetów</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Sets the appearance of buttons, checkboxes, etc. on the System theme or otherwise unstyled elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawia wygląd przycisków, pól wyboru itp. w motywie systemu lub w niestylowanych elementach</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Wygląd</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Nomacs  Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Motyw Nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Widget Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Motyw widżetów</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4954,12 +4966,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Open First Image in Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwórz pierwszy obraz w folderze</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>When opening a folder, show the first image. Otherwise, show the folder&apos;s contents.</source>
-        <translation type="unfinished"></translation>
+        <translation>Podczas otwierania folderu pokaż pierwszy obraz. W przeciwnym razie pokaż zawartość folderu.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5014,7 +5026,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Show Nomacs Logo</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż logo Nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5024,12 +5036,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Enable Animations</source>
-        <translation type="unfinished"></translation>
+        <translation>Włącz animacje</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>If checked, enable animations on user interface components.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeśli zaznaczone, włącz animacje na komponentach interfejsu użytkownika.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5054,12 +5066,12 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Close on Middle Mouse Button</source>
-        <translation type="unfinished"></translation>
+        <translation>Zamknij środkowym przyciskiem myszy</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Close nomacs if the Middle Mouse Button is pressed over the image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zamknij nomacs, jeśli środkowy przycisk myszy jest naciśnięty na obrazie.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5084,7 +5096,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Help translate nomacs</source>
-        <translation type="unfinished"></translation>
+        <translation>Pomóż nam tłumaczyć nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5328,7 +5340,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, deleting archived files is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepraszamy, usuwanie zarchiwizowanych plików nie jest obsługiwane.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5343,40 +5355,42 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Creating Inconsistent Metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Tworzenie niespójnych metadanych</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Orientation metadata is disabled or ignored, you must use
 &quot;Save As&quot; for correct metadata.</source>
-        <translation type="unfinished"></translation>
+        <translation>Metadane orientacji są wyłączone lub ignorowane, musisz użyć
+&quot;Zapisz jako&quot; dla poprawnych metadanych.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>&amp;Do not warn me again</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nie ostrzegaj mnie ponownie</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Rotated (EXIF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Obrócony (EXIF)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Sorry, metadata rotation failed (check log).</source>
-        <translation type="unfinished"></translation>
+        <translation>Przepraszamy, rotacja metadanych nie powiodła się (sprawdź logi).</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>Lossless Rotation Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Bezstratna rotacja wyłączona</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
         <source>This file could be rotated losslessly with EXIF metadata,
 but saving orientation metadata has been disabled in settings.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ten plik może być obracany bestratnie z metadanymi EXIF,
+ale w ustawieniach wyłączono metadane orientacji.</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageLoader.cpp"/>
@@ -5594,7 +5608,7 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Embedded Thumbnail</source>
-        <translation type="unfinished"></translation>
+        <translation>Zagnieżdżona miniatura</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
@@ -5604,22 +5618,22 @@ but saving orientation metadata has been disabled in settings.</source>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozdzielczość</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>Transformed</source>
-        <translation type="unfinished"></translation>
+        <translation>Przekształcone</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>yes</source>
-        <translation type="unfinished"></translation>
+        <translation>tak</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkMetaDataWidgets.cpp"/>
         <source>no</source>
-        <translation type="unfinished"></translation>
+        <translation>nie</translation>
     </message>
 </context>
 <context>
@@ -6050,7 +6064,7 @@ a potem naciśnij %1</translation>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Open Tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwarte karty</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
@@ -6440,12 +6454,12 @@ a potem naciśnij %1</translation>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>four stars</source>
-        <translation type="unfinished"></translation>
+        <translation>cztery gwiazdki</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>five stars</source>
-        <translation type="unfinished"></translation>
+        <translation>pięć gwiazdek</translation>
     </message>
 </context>
 <context>
@@ -6764,7 +6778,7 @@ Wciśnij klawisz ESC, aby cofnąć zmiany</translation>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Copy build information</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiuj informacje o kompilacji</translation>
     </message>
 </context>
 <context>
@@ -6878,17 +6892,17 @@ Wciśnij klawisz ESC, aby cofnąć zmiany</translation>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Copy Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Skopiuj obrazy</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>The current directory is invalid or no longer exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bieżący katalog jest nieprawidłowy lub już nie istnieje.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Copying to an archive is unsupported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiowanie do archiwum nie jest obsługiwane.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -7357,12 +7371,12 @@ skontaktuj się z administratorem systemu, aby uzyskać dodatkowe informacje.</t
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Unspecified</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieokreślone</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Niestandardowe</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkViewPort.cpp"/>

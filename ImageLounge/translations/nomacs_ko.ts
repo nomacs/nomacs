@@ -104,7 +104,7 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Open Tabs</source>
-        <translation type="unfinished"></translation>
+        <translation>탭 열기</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>

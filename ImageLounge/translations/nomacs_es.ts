@@ -310,12 +310,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>by File &amp;Size</source>
-        <translation type="unfinished"></translation>
+        <translation>por &amp;tamaño de archivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Sort by File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar por tamaño de archivo</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>

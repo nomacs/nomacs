@@ -4608,7 +4608,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Thumbnails</source>
-        <translation type="unfinished">Мініатюри</translation>
+        <translation>Мініатюри</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4683,7 +4683,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation type="unfinished">Перезапустіть nomacs, щоб застосувати зміни</translation>
+        <translation>Перезапустіть nomacs, щоб застосувати зміни</translation>
     </message>
 </context>
 <context>
