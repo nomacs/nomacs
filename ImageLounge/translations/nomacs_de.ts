@@ -2701,7 +2701,7 @@ Dies kann nicht rückgängig gemacht werden.
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Name: </source>
-        <translation>Name: </translation>
+        <translation>Dateiname: </translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -4692,7 +4692,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation type="unfinished">Bitte Nomacs neu starten um die Änderungen anzuwenden</translation>
+        <translation>Bitte Nomacs neu starten um die Änderungen anzuwenden</translation>
     </message>
 </context>
 <context>
