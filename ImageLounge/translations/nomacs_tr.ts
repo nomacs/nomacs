@@ -4211,11 +4211,6 @@ Do you want to replace it?</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>Unknown Transition</source>
-        <translation>Bilinmeyen Geçiş</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Appear</source>
         <translation>Belirmek</translation>
     </message>
@@ -4467,33 +4462,159 @@ Do you want to show them again?</source>
     <name>nmc::DkFilePreference</name>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>Screenshots are automatically saved to this folder</source>
-        <translation>Ekran görüntüleri otomatik olarak bu klasöre kaydedilir</translation>
+        <source>Custom temporary folder</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>Use Temporary Folder</source>
-        <translation>Geçici Klasör Kullan</translation>
+        <source>Pasted images and URLs are saved here. Empty to use system default.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-        <translation>Ortalama 100 MB civarında ön bellek boyutu ayarlamanızı öneririz. [%1-%2 MB]</translation>
+        <source>Image allocation limit</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>Maximal Cache Size</source>
-        <translation>En Büyük Önbellek Boyutu</translation>
+        <source>Maximum memory allowed for any image. If exceeded, image will not be loaded.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-        <translation>Yaklaşık 100 MB civarında bir düzenleme geçmişi boyutu ayarlamanızı öneririz. [%1-%2 MB]</translation>
+        <source>File cache limit</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>History Size</source>
-        <translation>Geçmiş Boyutu</translation>
+        <source>Speeds up viewing of the next image. We recommend at least twice the size of the largest file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Edit history limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Determines maximum number of undo/redo entries.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Memory Usage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Use high-quality thumbnails</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Use antialiasing and avoid upsampling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Preload thumbnails</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Compute a limited number of thumbnails before they are needed. Reduces delays but uses more memory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Limit the size of thumbnails to conserve resources. Zooming above this size will be disabled or will lose sharpness.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Thumbnail threads</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Limit temporary memory and CPU used to generate thumbnails.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Thumbnail memory cache limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Keeps recent thumbnails in memory. Use 0 to disable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Disk cache limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>When deletion is enabled, trim disk cache to this size.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Share thumbnails with other programs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Thumbnails created by other software will be used by nomacs, and vice versa.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Cleanup thumbnails?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>There are thumbnails saved in:
+
+&quot;%1&quot;
+
+When sharing thumbnails, these will no longer be used.
+
+Delete them now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Delete old thumbnails on startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>When cache limit is exceeded, delete least-recently-used thumbnails in the background.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Enable disk cache</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Save generated thumbnails to disk for future use.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Thumbnails</source>
+        <translation type="unfinished">Küçük Resimler</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Maximum thumbnail size</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4559,6 +4680,11 @@ Do you want to show them again?</source>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Number of Skipped Images on PgUp/PgDown</source>
         <translation>PgUp/PgDown&apos;da atlanılan görüntülerin sayısı</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Please Restart nomacs to apply changes</source>
+        <translation type="unfinished">Lütfen değişiklikleri uygulamak için nomacs&apos;i yeniden başlatın</translation>
     </message>
 </context>
 <context>
@@ -4768,6 +4894,11 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Widget Theme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Reset Dialog Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5035,16 +5166,16 @@ Warning: This will modify the files.</source>
     </message>
 </context>
 <context>
-    <name>nmc::DkHistogram</name>
+    <name>nmc::DkHistogramWidget</name>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Show Statistics</source>
-        <translation>İstatistikleri Göster</translation>
+        <translation type="unfinished">İstatistikleri Göster</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
-        <source>Histogram Settings</source>
-        <translation>Sütun Grafiği Ayarları</translation>
+        <source>Log Scale</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5110,6 +5241,11 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
         <translation>Üzgünüm, dosyaya yazamam&apos;: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>Sorry, I cannot save rating on this image format.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5328,6 +5464,11 @@ but saving orientation metadata has been disabled in settings.</source>
         <location filename="../src/DkCore/DkSettings.cpp"/>
         <source>Aperture Value</source>
         <translation>Diyafram değeri</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkSettings.cpp"/>
+        <source>F-Number</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkSettings.cpp"/>
@@ -5923,6 +6064,11 @@ daha sonra %1&apos;e basın</translation>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>Image Index:</source>
         <translation>Görüntü dizini:</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkNoMacs.cpp"/>
+        <source>All panels are hidden.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
