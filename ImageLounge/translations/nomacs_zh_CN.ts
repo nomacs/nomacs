@@ -5179,7 +5179,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Show Statistics</source>
-        <translation type="unfinished">显示统计信息</translation>
+        <translation>显示统计信息</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>

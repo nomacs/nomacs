@@ -5169,7 +5169,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
         <source>Show Statistics</source>
-        <translation type="unfinished">Statisztika megjelenítése</translation>
+        <translation>Statisztika Megjelenítése</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkWidgets.cpp"/>
