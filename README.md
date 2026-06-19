@@ -1,3 +1,8 @@
+<table><tr>
+<td><img src="ImageLounge/screenshots/nomacs_3_21-raw_metadata.png"></td>
+<td><img src="ImageLounge/screenshots/nomacs_3_21-thumbnails.png"></td>
+</tr></table>
+
 # nomacs - Image Lounge 🍸
 
 nomacs is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images. nomacs is licensed under the GNU General Public License v3 and available for Windows, Linux, FreeBSD, Mac, Haiku, and OS/2.
@@ -5,6 +10,15 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 [![Build status](https://ci.appveyor.com/api/projects/status/ye6wd1hap4cebyo8?svg=true)](https://ci.appveyor.com/project/novomesk/nomacs)
 [![Downloads](https://img.shields.io/github/downloads/nomacs/nomacs/total.svg)](https://github.com/nomacs/nomacs/releases/latest)
 [![Crowdin](https://badges.crowdin.net/nomacs-neo/localized.svg)](https://crowdin.com/project/nomacs-neo)
+
+
+## Downloads
+
+- [Latest stable release](https://github.com/nomacs/nomacs/releases/latest)
+- [Latest beta release](https://github.com/nomacs/nomacs/releases)
+- [Continuous builds (Windows)](https://ci.appveyor.com/project/novomesk/nomacs/history)
+- [Continuous builds (Linux,macOS)](https://github.com/nomacs/nomacs/actions)
+
 
 ## Get the Source
 
