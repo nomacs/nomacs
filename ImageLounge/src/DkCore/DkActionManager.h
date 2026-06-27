@@ -47,8 +47,8 @@ class DllCoreExport DkAppManager : public QObject
     Q_OBJECT
 
 public:
-    static constexpr QStringView kOpenDirAppName = u"OpenDir";
-    static constexpr QStringView kOpenFileAppName = u"OpenFile";
+    static constexpr QStringView kOpenDirAppName = u"@opendir";
+    static constexpr QStringView kOpenFileAppName = u"@openfile";
 
     explicit DkAppManager(QWidget *parent = nullptr);
     ~DkAppManager() override;
@@ -57,16 +57,6 @@ public:
     QVector<QAction *> getActions() const;
     QAction *createAction(const QString &filePath);
     QAction *findAction(const QString &appPath) const;
-
-    enum defaultAppIdx {
-        app_photohsop,
-        app_picasa,
-        app_picasa_viewer,
-        app_irfan_view,
-        app_explorer,
-
-        app_idx_end
-    };
 
 public slots:
     void openTriggered() const;
@@ -78,7 +68,8 @@ protected:
     void saveSettings() const;
     void loadSettings();
     void assignIcon(QAction *app) const;
-    bool containsApp(QStringView appName) const;
+    bool containsApp(QStringView appId) const;
+    QString actionId(const QString &name) const;
 
     QString searchForSoftware(const QString &organization,
                               const QString &application,
@@ -86,9 +77,95 @@ protected:
                               const QString &exeName = "") const;
     void findDefaultSoftware();
 
-    QVector<QString> mDefaultNames;
     QVector<QAction *> mApps;
     bool mFirstTime = true;
+};
+
+struct DkActionId {
+    int index; // index into the associated actions array
+    const char *objectName; // uuid for settings, etc
+};
+
+// Shorthand to make enum index into a unique identifier string,
+// which then becomes the action objectName
+#define ACTION_ID(enumIndex)                                                                                           \
+    nmc::DkActionId                                                                                                    \
+    {                                                                                                                  \
+        enumIndex, #enumIndex                                                                                          \
+    }
+
+class DllCoreExport DkActionBuilder
+{
+private:
+    QVector<QAction *> &mActions; // indexed by id.index
+    QWidget *mParent{};
+
+    QAction *add(DkActionId id, const QIcon &icon, const QString &text, const QString &statusTip);
+
+public:
+    DkActionBuilder(QVector<QAction *> &actions, size_t numActions, QWidget *parent);
+    ~DkActionBuilder();
+
+    QAction *add(DkActionId id,
+                 const QIcon &icon,
+                 const QString &text,
+                 const QString &statusTip,
+                 const QKeySequence &shortcut)
+    {
+        auto *a = add(id, icon, text, statusTip);
+        a->setShortcut(shortcut);
+        return a;
+    }
+
+    // This overload is needed, QKeySequence(StandardKey) only takes the first shortcut
+    // when there are multiple for the standard key.
+    QAction *add(DkActionId id,
+                 const QIcon &icon,
+                 const QString &text,
+                 const QString &statusTip,
+                 QKeySequence::StandardKey standardKey)
+    {
+        auto *a = add(id, icon, text, statusTip);
+        a->setShortcuts(standardKey);
+        return a;
+    }
+
+    QAction *add(DkActionId id,
+                 const QIcon &icon,
+                 const QString &text,
+                 const QString &statusTip,
+                 const QList<QKeySequence> &shortcuts)
+    {
+        auto *a = add(id, icon, text, statusTip);
+        a->setShortcuts(shortcuts);
+        return a;
+    }
+
+    QAction *addCheckable(DkActionId id,
+                          const QIcon &icon,
+                          const QString &text,
+                          const QString &statusTip,
+                          const QKeySequence &shortcut,
+                          bool checked)
+    {
+        auto *a = add(id, icon, text, statusTip, shortcut);
+        a->setCheckable(true);
+        a->setChecked(checked);
+        return a;
+    }
+
+    QAction *addCheckable(DkActionId id,
+                          const QIcon &icon,
+                          const QString &text,
+                          const QString &statusTip,
+                          QKeySequence::StandardKey standardKey,
+                          bool checked)
+    {
+        auto *a = add(id, icon, text, statusTip, standardKey);
+        a->setCheckable(true);
+        a->setChecked(checked);
+        return a;
+    }
 };
 
 class DllCoreExport DkActionManager
@@ -303,52 +380,10 @@ public:
         preview_batch,
         preview_print,
 
-        actions_end
+        preview_end
     };
 
-    enum FileIcons {
-        icon_file_prev,
-        icon_file_next,
-        icon_file_dir,
-        icon_file_open,
-        icon_file_open_large,
-        icon_file_dir_large,
-        icon_file_save,
-        icon_file_print,
-        icon_file_filter,
-        icon_file_find,
-
-        icon_file_end, // nothing beyond this point
-    };
-
-    enum EditIcons {
-        icon_edit_image,
-        icon_edit_rotate_cw,
-        icon_edit_rotate_ccw,
-        icon_edit_crop,
-        icon_edit_resize,
-        icon_edit_copy,
-        icon_edit_paste,
-        icon_edit_delete,
-        icon_edit_undo,
-        icon_edit_redo,
-
-        icon_edit_end, // nothing beyond this point
-    };
-
-    enum ViewIcons {
-        icon_view_fullscreen,
-        icon_view_reset,
-        icon_view_100,
-        icon_view_gps,
-        icon_view_movie_play,
-        icon_view_movie_prev,
-        icon_view_movie_next,
-        icon_view_zoom_in,
-        icon_view_zoom_out,
-
-        icon_view_end, // nothing beyond this point
-    };
+    // TODO: most of these are not used externally, should they be removed?
 
     // default nomacs shortcuts
     // keyboard shortcuts
@@ -359,6 +394,11 @@ public:
     static constexpr QKeyCombination shortcut_open_preview = Qt::Key_T;
     static constexpr QKeyCombination shortcut_open_thumbview = Qt::SHIFT | Qt::Key_T;
     static constexpr QKeyCombination shortcut_open_dir = Qt::CTRL | Qt::SHIFT | Qt::Key_O;
+#ifdef Q_OS_WIN
+    static constexpr QKeyCombination shortcut_quick_launch = Qt::CTRL | Qt::Key_Q;
+#else
+    static constexpr QKeyCombination shortcut_quick_launch = Qt::CTRL | Qt::Key_L;
+#endif
     static constexpr QKeyCombination shortcut_app_manager = Qt::CTRL | Qt::Key_M;
     static constexpr QKeyCombination shortcut_save_as = Qt::CTRL | Qt::SHIFT | Qt::Key_S;
     static constexpr QKeyCombination shortcut_first_file = Qt::Key_Home;
@@ -501,10 +541,6 @@ public:
     QAction *action(HiddenActions action) const;
     QAction *action(PreviewActions action) const;
 
-    QIcon icon(FileIcons icon) const;
-    QIcon icon(ViewIcons icon) const;
-    QIcon icon(EditIcons icon) const;
-
     QVector<QAction *> fileActions() const;
     QVector<QAction *> sortActions() const;
     QVector<QAction *> openWithActions() const;
@@ -539,7 +575,6 @@ protected:
     DkActionManager();
 
     void init();
-    void createIcons();
 
     QMenu *createFileMenu(QWidget *parent);
     QMenu *createSortMenu(QWidget *parent);
@@ -584,12 +619,6 @@ protected:
     // sync
     QMenu *mSyncMenu = nullptr;
     DkTcpMenu *mLocalMenu = nullptr;
-
-    // icons
-    QVector<QIcon> mFileIcons;
-    QVector<QIcon> mEditIcons;
-    QVector<QIcon> mViewIcons;
-    QVector<QIcon> mToolsIcons;
 
     DkAppManager *mAppManager = nullptr;
     DkPluginActionManager *mPluginManager = nullptr;

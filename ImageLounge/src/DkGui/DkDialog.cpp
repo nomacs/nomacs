@@ -1736,6 +1736,7 @@ void DkShortcutsModel::addDataActions(QVector<QAction *> actions, const QString 
         }
 
         QString text = actions[idx]->text().remove("&");
+        text = '[' + actions[idx]->objectName() + ']' + ' ' + text;
 
         QVector<QVariant> actionData;
         actionData << text << actions[idx]->shortcut();
@@ -1799,7 +1800,7 @@ void DkShortcutsModel::resetActions()
         QVector<QAction *> cActions = mActions.at(pIdx);
 
         for (int idx = 0; idx < cActions.size(); idx++) {
-            QString val = settings.value(cActions[idx]->text(), "no-shortcut").toString();
+            QString val = settings.value(cActions[idx]->objectName(), "no-shortcut").toString();
 
             if (val != "no-shortcut") {
                 cActions[idx]->setShortcut(QKeySequence());
@@ -1829,19 +1830,39 @@ void DkShortcutsModel::saveActions() const
             auto ks = cItem->data(1).value<QKeySequence>();
 
             if (cActions.at(mIdx)->shortcut() != ks) {
-                if (cActions.at(mIdx)->text().isEmpty()) {
+                QString actionId = cActions.at(mIdx)->objectName();
+                if (actionId.isEmpty()) {
                     qDebug() << "empty action detected! shortcut is: " << ks;
                     continue;
                 }
 
-                QString aT = cActions.at(mIdx)->text().remove("&");
-
                 cActions.at(mIdx)->setShortcut(ks); // assign new shortcut
-                settings.setValue(aT, ks.toString()); // note this works as long as you don't change the language!
+                settings.setValue(actionId, ks.toString());
             }
         }
     }
     settings.endGroup();
+}
+
+void DkShortcutsModel::checkState() const
+{
+    QMap<QString, const QAction *> map;
+    for (const auto &group : mActions) {
+        for (const auto *action : group) {
+            QString actionId = action->objectName();
+            if (actionId.isEmpty()) {
+                qWarning() << "[ShortcutsModel] no unique id for action" << action->text();
+            }
+
+            auto it = map.find(actionId);
+            if (it != map.end() && it.value() != action) {
+                qWarning() << "[ShortcutsModel] duplicate id on action" << action->text() << "and"
+                           << it.value()->text();
+            } else {
+                map.insert(actionId, action);
+            }
+        }
+    }
 }
 
 // DkShortcutsDialog --------------------------------------------------------------------
@@ -4146,6 +4167,8 @@ void DkDialogManager::openShortcutsDialog() const
 #endif // WITH_PLUGINS
     shortcutsDialog->addActions(am.helpActions(), am.helpMenu()->title());
     shortcutsDialog->addActions(am.hiddenActions(), tr("Shortcuts"));
+
+    shortcutsDialog->checkState();
 
     shortcutsDialog->exec();
     shortcutsDialog->deleteLater();
