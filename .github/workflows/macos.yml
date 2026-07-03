@@ -45,9 +45,9 @@ jobs:
 
         config:
           # this is extremely slow (~15 minutes) due to opencv
-          - type: quazip
+          - type: opencv
             packages: libraw
-            flags: "-DENABLE_QUAZIP=ON -DUSE_SYSTEM_QUAZIP=OFF"
+            flags: "-DENABLE_QUAZIP=OFF"
             kimageformats: true # compile kimageformat-plugins
             opencv: true # compile a minimal opencv
             portable: true # use the new portable bundle script
@@ -75,8 +75,11 @@ jobs:
         id: get_info
         run: |
           # note: our build of opencv has no external deps so compiler and commit is sufficient
+          git clone --depth 1 -b 4.13.0 https://github.com/opencv/opencv.git 3rd-party/opencv
+          cd 3rd-party/opencv
+          OPENCV_ID=$(git rev-parse --short HEAD)
+          cd ../..
           COMPILER_ID=$(echo $(c++ --version) $(realpath $(xcrun --show-sdk-path)))
-          OPENCV_ID=$(git submodule status 3rd-party/opencv)
           OPENCV_KEY=$(echo $COMPILER_ID $OPENCV_ID | sha256)
 
           echo "Compiler: $COMPILER_ID"
@@ -94,12 +97,6 @@ jobs:
         if: steps.cache_packages.outputs.cache-hit != 'true'
         run: |
           brew install --quiet --force-bottle ${{ matrix.runner.packages }} ${{ matrix.qt.packages }} ${{ matrix.config.packages }}
-
-      - name: Checkout Submodules
-        run: |
-          cd ${GITHUB_WORKSPACE}
-          git submodule update --init --depth 1 3rd-party/imageformats
-          git submodule update --init --depth 1 3rd-party/quazip
 
       - name: Cache opencv
         id: cache_opencv

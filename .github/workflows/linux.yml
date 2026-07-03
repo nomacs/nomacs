@@ -27,44 +27,32 @@ jobs:
         config:
           - name: minimum-clang
             container: "ghcr.io/nomacs/ubuntu:24.04"
-            submodules: false
             deps: ""
             cmake_flags: "-DENABLE_PLUGINS=OFF -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF -DENABLE_QUAZIP=OFF"
             env: "CC=clang CXX=clang++"
             appimage: false
           - name: minimum-gcc
             container: "ghcr.io/nomacs/ubuntu:24.04"
-            submodules: false
             deps: ""
             cmake_flags: "-DENABLE_PLUGINS=OFF -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF -DENABLE_QUAZIP=OFF"
             env: "CC=gcc CXX=g++"
             appimage: true
           - name: default-clang
             container: "ghcr.io/nomacs/ubuntu:24.04"
-            submodules: false
             deps: ""
             cmake_flags: ""
             env: "CC=clang CXX=clang++"
             appimage: false
           - name: default-gcc
             container: "ghcr.io/nomacs/ubuntu:24.04"
-            submodules: false
             deps: ""
             cmake_flags: ""
             env: "CC=gcc CXX=g++"
             appimage: true
           - name: quazip-gcc-2404
             container: "ghcr.io/nomacs/neon:24.04"
-            submodules: false
             deps: "libquazip1-qt6-dev kf6-kimageformat-plugins"
             cmake_flags: "-DENABLE_QUAZIP=ON"
-            env: "CC=gcc CXX=g++"
-            appimage: true
-          - name: quazip-gcc-2204
-            container: "ghcr.io/nomacs/neon:22.04"
-            submodules: true
-            deps: "kf6-kimageformat-plugins"
-            cmake_flags: "-DENABLE_QUAZIP=ON -DUSE_SYSTEM_QUAZIP=OFF"
             env: "CC=gcc CXX=g++"
             appimage: true
 
@@ -82,12 +70,6 @@ jobs:
 
       - name: Allow unsafe git in container
         run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
-
-      - name: Checkout submodules
-        if: matrix.config.submodules
-        run: |
-          git submodule init
-          git submodule update 3rd-party/quazip
 
       - name: Install build dependencies
         run: |
