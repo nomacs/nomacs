@@ -14,38 +14,37 @@ environment:
       VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
-      PYTHON: "C:\\Python313-x64"
+      PYTHON: "C:\\Python314-x64"
       GIT_CLONE_PROTECTION_ACTIVE: false
+      NOMACS_DEPENDENCIES: C:/projects/nomacs/3rd-party
 
     certpwd:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
 
-cache:
-    - 3rd-party/build/opencv -> scripts/make.py        # don't rebuild unless the make script changes
-    - 3rd-party/build/expat -> scripts/make.py
-    - 3rd-party/build/exiv2 -> scripts/make.py
-    - 3rd-party/build/quazip -> scripts/make.py
-    - 3rd-party/build/libraw -> scripts/make.py
-#    - 3rd-party/build/imageformats -> scripts/make.py
-
 install:
     - appveyor DownloadFile "https://github.com/novomesk/downloads/raw/main/nasm-2.16.03-win64.zip" -FileName "nasm.zip"
+    - appveyor DownloadFile "https://github.com/novomesk/downloads/raw/refs/heads/main/nomacs/nomacs-dependencies-2026-07-03.7z" -FileName "nomacs-dependencies.7z"
     - 7z x "nasm.zip"
+    - mkdir C:\projects\nomacs\3rd-party
+    - 7z x -oC:\projects\nomacs\3rd-party "nomacs-dependencies.7z"
     - move nasm-* NASM
     - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%;%CD%\NASM;
     - nasm -v
-    - git submodule update --init --recursive
-    - git lfs pull
     - call "%VCVARS%"
 
 build_script:
-    - python scripts\make.py %QT6% --build-config release
+    - mkdir build
+    - cd build
+    - cmake -G "NMake Makefiles" -DCMAKE_PREFIX_PATH=%QT6%;%NOMACS_DEPENDENCIES% -DCMAKE_INSTALL_PREFIX=%PWD%\installer\nomacs.x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DOpenCV_DIR=%NOMACS_DEPENDENCIES%/lib -DENABLE_QUAZIP=ON ../ImageLounge
+    - nmake
+    - nmake install
+    - cd ..
 
 after_build:
     - cd installer
     # make msi installer & sign nomacs
     - call make-msi-setup.bat %certpwd%
-    - call make-inno-setup.bat %certpwd%
+    #- call make-inno-setup.bat %certpwd%
     - call python ../scripts/make-portable.py
 
 artifacts:
@@ -55,8 +54,8 @@ artifacts:
     - path: 'installer/nomacs-setup-x64.msi'
       name: nomacs-installer
 
-    - path: 'installer/nomacs-setup-x64.exe'
-      name: nomacs-multi-user-installer
+#    - path: 'installer/nomacs-setup-x64.exe'
+#      name: nomacs-multi-user-installer
 
     - path: 'installer/nomacs.x64/translations'
       name: translations
