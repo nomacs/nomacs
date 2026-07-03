@@ -57,10 +57,6 @@
 #endif
 
 #ifdef WITH_LIBTIFF
-#ifdef Q_CC_MSVC
-#include <tif_config.h>
-#endif
-
 //  here we clash (typedef redefinition with different types ('long' vs 'int64_t' (aka 'long long')))
 //  so we simply define our own int64 before including tiffio
 #define uint64 uint64_hack_
