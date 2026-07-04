@@ -4,9 +4,7 @@
 
 set -e
 
-git submodule update --init --depth 1 3rd-party/opencv
-
-mkdir 3rd-party/opencv/build 
+mkdir 3rd-party/opencv/build
 
 cd 3rd-party/opencv/build
 
