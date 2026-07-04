@@ -1317,10 +1317,25 @@ void DkViewPort::wheelEvent(QWheelEvent *event)
         } else {
             delta = event->angleDelta().y();
         }
-        if (delta < 0)
+
+        // accumulate deltas and only navigate on a full wheel step (120):
+        // high-resolution wheels (e.g. Logitech MX/G-series, some touchpads) report
+        // several small-delta events per notch, which skipped multiple images (#1079)
+        constexpr int wheelStep = 120; // Qt reports wheel deltas in 1/8 degree; one notch = 15 degrees
+
+        // reset the accumulator when the scroll direction changes
+        if ((delta < 0 && mWheelAccumulator > 0) || (delta > 0 && mWheelAccumulator < 0))
+            mWheelAccumulator = 0;
+
+        mWheelAccumulator += delta;
+
+        if (mWheelAccumulator <= -wheelStep) {
             loadNextFileFast();
-        if (delta > 0)
+            mWheelAccumulator = 0;
+        } else if (mWheelAccumulator >= wheelStep) {
             loadPrevFileFast();
+            mWheelAccumulator = 0;
+        }
     } else
         DkBaseViewPort::wheelEvent(event);
 
