@@ -1331,10 +1331,10 @@ void DkViewPort::wheelEvent(QWheelEvent *event)
 
         if (mWheelAccumulator <= -wheelStep) {
             loadNextFileFast();
-            mWheelAccumulator = 0;
+            mWheelAccumulator += wheelStep;
         } else if (mWheelAccumulator >= wheelStep) {
             loadPrevFileFast();
-            mWheelAccumulator = 0;
+            mWheelAccumulator -= wheelStep;
         }
     } else
         DkBaseViewPort::wheelEvent(event);
