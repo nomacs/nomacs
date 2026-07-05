@@ -1,0 +1,91 @@
+cmake_minimum_required(VERSION 3.15)
+project(jxrlib LANGUAGES C)
+
+include(GNUInstallDirs)
+include(TestBigEndian)
+
+if(NOT MSVC)
+    add_definitions(-D__ANSI__)
+endif()
+
+test_big_endian(ISBIGENDIAN)
+if(ISBIGENDIAN)
+    set(DEF_ENDIAN _BIG__ENDIAN_)
+endif()
+
+include_directories(
+    common/include
+    image/sys
+    jxrgluelib
+    jxrtestlib
+)
+
+# JPEG-XR
+
+set(JPEGXR_SOURCES
+    image/sys/adapthuff.c
+    image/sys/image.c
+    image/sys/strcodec.c
+    image/sys/strPredQuant.c
+    image/sys/strTransform.c
+    image/sys/perfTimerANSI.c
+    image/sys/memory_lim.c
+
+    image/decode/decode.c
+    image/decode/postprocess.c
+    image/decode/segdec.c
+    image/decode/strdec.c
+    image/decode/strInvTransform.c
+    image/decode/strPredQuantDec.c
+    image/decode/JXRTranscode.c
+
+    image/encode/encode.c
+    image/encode/segenc.c
+    image/encode/strenc.c
+    image/encode/strFwdTransform.c
+    image/encode/strPredQuantEnc.c
+)
+add_library(jpegxr STATIC ${JPEGXR_SOURCES})
+set_property(TARGET jpegxr PROPERTY COMPILE_DEFINITIONS DISABLE_PERF_MEASUREMENT ${DEF_ENDIAN})
+set_property(TARGET jpegxr PROPERTY LINK_INTERFACE_LIBRARIES "")
+install(TARGETS jpegxr
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+# JXR-GLUE
+
+set(JXRGLUE_SOURCES
+    jxrgluelib/JXRGlue.c
+    jxrgluelib/JXRMeta.c
+    jxrgluelib/JXRGluePFC.c
+    jxrgluelib/JXRGlueJxr.c
+
+    jxrtestlib/JXRTest.c
+    jxrtestlib/JXRTestBmp.c
+    jxrtestlib/JXRTestHdr.c
+    jxrtestlib/JXRTestPnm.c
+    jxrtestlib/JXRTestTif.c
+    jxrtestlib/JXRTestYUV.c
+)
+add_library(jxrglue ${JXRGLUE_SOURCES})
+target_link_libraries(jxrglue jpegxr)
+set_property(TARGET jxrglue PROPERTY COMPILE_DEFINITIONS DISABLE_PERF_MEASUREMENT ${DEF_ENDIAN})
+set_property(TARGET jxrglue PROPERTY LINK_INTERFACE_LIBRARIES "")
+install(TARGETS jxrglue
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+install(FILES
+    jxrgluelib/JXRGlue.h
+    jxrgluelib/JXRMeta.h
+    jxrgluelib/JXRVersion.h
+    jxrtestlib/JXRTest.h
+    image/sys/windowsmediaphoto.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Headers
+)
+install(DIRECTORY common/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  FILES_MATCHING PATTERN "*.h"
+)
