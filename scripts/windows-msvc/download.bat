@@ -44,6 +44,14 @@ IF NOT EXIST openexr (
   git clone --depth 1 -b v3.4.12 https://github.com/AcademySoftwareFoundation/openexr.git openexr
 )
 
+IF NOT EXIST xz (
+  git clone --depth 1 -b v5.8.3 https://github.com/tukaani-project/xz.git xz
+)
+
+IF NOT EXIST zstd (
+  git clone --depth 1 -b v1.5.7 https://github.com/facebook/zstd.git zstd
+)
+
 IF NOT EXIST libtiff (
   git clone --depth 1 -b v4.7.1 https://gitlab.com/libtiff/libtiff.git libtiff
 )
