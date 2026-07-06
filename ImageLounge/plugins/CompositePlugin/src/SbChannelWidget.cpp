@@ -14,7 +14,6 @@
 #include <QSettings>
 
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
 
 namespace nmc
 {
@@ -77,7 +76,7 @@ void SbChannelWidget::loadImage(QString file)
         mSrcFormat = qImg.copy(0, 0, 1, 1);
 
         mImg = DkImage::qImage2Mat(qImg);
-        cv::cvtColor(mImg, mImg, CV_RGB2GRAY);
+        cv::cvtColor(mImg, mImg, cv::COLOR_RGB2GRAY);
 
         updateThumbnail();
         QFileInfo fi(file);

@@ -30,7 +30,6 @@
 #include <QSettings>
 
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
 
 /*******************************************************************************************************
  * SbCompositePlugin	- enter the plugin class name (e.g. DkPageExtractionPlugin)
@@ -231,9 +230,9 @@ void SbCompositePlugin::onNewAlpha(QImage _alpha)
         mAlpha = DkImage::qImage2Mat(_alpha);
         // currently it seems like qImage2Mat converts a single-channel QImage to a multi-channel Mat. so..
         if (mAlpha.channels() == 4)
-            cv::cvtColor(mAlpha, mAlpha, CV_RGBA2GRAY);
+            cv::cvtColor(mAlpha, mAlpha, cv::COLOR_RGBA2GRAY);
         else if (mAlpha.channels() == 3)
-            cv::cvtColor(mAlpha, mAlpha, CV_RGB2GRAY);
+            cv::cvtColor(mAlpha, mAlpha, cv::COLOR_RGB2GRAY);
     }
 }
 

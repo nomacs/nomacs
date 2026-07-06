@@ -92,7 +92,6 @@
 
 #ifdef WITH_OPENCV
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
 #endif
 
 #ifdef WITH_QUAZIP
@@ -3200,7 +3199,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
 
     mImg = mImg.rowRange(qFloor(shR), mImg.rows - qCeil(shR)).colRange(qFloor(shC), mImg.cols - qCeil(shC));
     cv::Mat mImgLab;
-    cv::cvtColor(mImg, mImgLab, CV_RGB2Lab);
+    cv::cvtColor(mImg, mImgLab, cv::COLOR_RGB2Lab);
     std::vector<cv::Mat> channels;
     cv::split(mImgLab, channels);
     cv::Mat imgL = channels[0];
@@ -3308,7 +3307,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
                     // debug
                     cv::Mat imgT3;
                     cv::merge(channels, imgT3);
-                    cv::cvtColor(imgT3, imgT3, CV_Lab2BGR);
+                    cv::cvtColor(imgT3, imgT3, cv::COLOR_Lab2BGR);
                     emit updateImage(DkImage::mat2QImage(imgT3, mSrcImg));
                 }
 
@@ -3426,7 +3425,7 @@ cv::Mat DkMosaicDialog::createPatch(const QImage &thumb, const QString &filePath
         img = thumb;
 
     cv::Mat cvThumb = DkImage::qImage2Mat(img);
-    cv::cvtColor(cvThumb, cvThumb, CV_RGB2Lab);
+    cv::cvtColor(cvThumb, cvThumb, cv::COLOR_RGB2Lab);
     std::vector<cv::Mat> channels;
     cv::split(cvThumb, channels);
     cvThumb = channels[0];
@@ -3446,7 +3445,7 @@ cv::Mat DkMosaicDialog::createPatch(const QImage &thumb, const QString &filePath
     if (cvThumb.rows < patchRes || cvThumb.cols < patchRes)
         qDebug() << "enlarging thumbs!!";
 
-    cv::resize(cvThumb, cvThumb, cv::Size(patchRes, patchRes), 0.0, 0.0, CV_INTER_AREA);
+    cv::resize(cvThumb, cvThumb, cv::Size(patchRes, patchRes), 0.0, 0.0, cv::INTER_AREA);
 
     return cvThumb;
 }
@@ -3553,7 +3552,7 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */,
             origR = mOrigImg.clone();
             mosaicR = mMosaicMatSmall.clone();
         } else {
-            cv::resize(mOrigImg, origR, mMosaicMat.size(), 0, 0, CV_INTER_LANCZOS4);
+            cv::resize(mOrigImg, origR, mMosaicMat.size(), 0, 0, cv::INTER_LANCZOS4);
             mosaicR = mMosaicMat;
             mOrigImg.release();
         }
@@ -3592,7 +3591,7 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */,
 
         // if (!computePreview)
         //	mosaicMat.release();
-        cv::cvtColor(origR, origR, CV_Lab2BGR);
+        cv::cvtColor(origR, origR, cv::COLOR_Lab2BGR);
         qDebug() << "color converted";
 
         mMosaic = DkImage::mat2QImage(origR, mSrcImg);
