@@ -106,6 +106,8 @@ if(ENABLE_QUAZIP)
         message(STATUS "QUAZIP: QuaZip-1 for Qt${QT_VERSION_MAJOR} found")
         set(QUAZIP_LIBRARIES QuaZip::QuaZip)
         add_definitions(-DWITH_QUAZIP)
+    else()
+        message(FATAL_ERROR "QUAZIP: specified ENABLE_QUAZIP, but QuaZip-1 for Qt${QT_VERSION_MAJOR} was not found")
     endif()
 endif(ENABLE_QUAZIP)
 
