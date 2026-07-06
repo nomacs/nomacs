@@ -99,25 +99,13 @@ unset(QUAZIP_SOURCES CACHE)
 unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
-    # mxe quazip package uses -lquazip, has no cmake,
-    # and its quazip.pc file is broken
-    if(DEFINED ENV{MXE_TARGET})
-        message(STATUS "QUAZIP: using mxe version")
-        set(QUAZIP_INCLUDE_DIR "")
-        set(QUAZIP_LIBRARIES quazip)
+    find_package(QuaZip-Qt${QT_VERSION_MAJOR} QUIET)
+    if(QuaZip-Qt${QT_VERSION_MAJOR}_FOUND)
+        message(STATUS "QUAZIP: QuaZip-1 for Qt${QT_VERSION_MAJOR} found")
+        set(QUAZIP_LIBRARIES QuaZip::QuaZip)
         add_definitions(-DWITH_QUAZIP)
     else()
-        find_package(QuaZip-Qt${QT_VERSION_MAJOR} QUIET)
-        if(QuaZip-Qt${QT_VERSION_MAJOR}_FOUND)
-            message(STATUS "QUAZIP: QuaZip-1 for Qt${QT_VERSION_MAJOR} found")
-            set(QUAZIP_LIBRARIES QuaZip::QuaZip)
-            add_definitions(-DWITH_QUAZIP)
-        else()
-            message(
-                FATAL_ERROR
-                "QUAZIP: specified USE_SYSTEM_QUAZIP, but QuaZip-1 for Qt${QT_VERSION_MAJOR} was not found"
-            )
-        endif()
+        message(FATAL_ERROR "QUAZIP: specified ENABLE_QUAZIP, but QuaZip-1 for Qt${QT_VERSION_MAJOR} was not found")
     endif()
 endif(ENABLE_QUAZIP)
 
