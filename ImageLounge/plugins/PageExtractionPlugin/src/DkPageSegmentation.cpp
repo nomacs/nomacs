@@ -30,7 +30,9 @@
 #include <QPainterPath>
 
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
+#if CV_MAJOR_VERSION >= 5
+#include "opencv2/geometry.hpp"
+#endif
 
 namespace nmp
 {
@@ -90,7 +92,7 @@ void DkPageSegmentation::compute()
         if (mScale == 1.0f && 960.0f / mImg.cols < 0.8f)
             mScale = 960.0f / mImg.cols;
 
-        cv::cvtColor(mImg, imgLab, CV_RGB2Lab); // boost colors
+        cv::cvtColor(mImg, imgLab, cv::COLOR_RGB2Lab); // boost colors
         lImg = findRectangles(mImg, mRects);
     }
 
@@ -102,7 +104,7 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
     cv::Mat tImg, gray;
 
     if (mScale != 1.0f)
-        cv::resize(img, tImg, cv::Size(), mScale, mScale, CV_INTER_AREA); // inter nn -> assuming resize to be 1/(2^n)
+        cv::resize(img, tImg, cv::Size(), mScale, mScale, cv::INTER_AREA); // inter nn -> assuming resize to be 1/(2^n)
     else
         tImg = img;
 
@@ -138,7 +140,7 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
             }
 
             // find contours and store them all as a list
-            findContours(gray, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+            findContours(gray, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
             if (mLooseDetection) {
                 std::vector<std::vector<cv::Point>> hull;
@@ -160,7 +162,7 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
 
             // DEBUG ------------------------
             // cv::Mat pImg = image.clone();
-            // cv::cvtColor(pImg, pImg, CV_Lab2RGB);
+            // cv::cvtColor(pImg, pImg, cv::COLOR_Lab2RGB);
             // DEBUG ------------------------
 
             // test each contour
@@ -196,7 +198,7 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat &img, std::vector<DkPol
                 }
             }
             // DEBUG ------------------------
-            // cv::cvtColor(pImg, pImg, CV_RGB2BGR);
+            // cv::cvtColor(pImg, pImg, cv::COLOR_RGB2BGR);
             // DkIP::imwrite("polyImg" + DkUtils::stringify(c) + "-" + DkUtils::stringify(l) + ".png", pImg);
             // DEBUG ------------------------
         }

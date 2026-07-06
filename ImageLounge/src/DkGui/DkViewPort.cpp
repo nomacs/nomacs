@@ -61,7 +61,6 @@
 
 #ifdef WITH_OPENCV
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
 #endif
 
 #ifdef Q_OS_WIN
@@ -2365,7 +2364,7 @@ void DkViewPortContrast::setImage(const QImage &newImg)
         }
         // The first element in the vector contains the gray scale 'average' of the 3 channels:
         cv::Mat grayMat;
-        cv::cvtColor(imgUC3, grayMat, CV_BGR2GRAY);
+        cv::cvtColor(imgUC3, grayMat, cv::COLOR_BGR2GRAY);
         auto grayImg = QImage((const unsigned char *)grayMat.data,
                               (int)grayMat.cols,
                               (int)grayMat.rows,

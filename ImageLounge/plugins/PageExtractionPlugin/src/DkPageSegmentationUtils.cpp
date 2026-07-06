@@ -25,7 +25,9 @@
 #include "DkPageSegmentationUtils.h"
 
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
+#if CV_MAJOR_VERSION >= 5
+#include "opencv2/geometry.hpp"
+#endif
 
 #include <algorithm>
 
@@ -433,9 +435,9 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect> &
 {
     cv::Mat gray, bw;
 
-    cv::cvtColor(img, gray, CV_RGB2GRAY);
+    cv::cvtColor(img, gray, cv::COLOR_RGB2GRAY);
     if (scale != 1.0f) {
-        cv::resize(gray, gray, cv::Size(), scale, scale, CV_INTER_AREA); // inter nn -> assuming resize to be 1/(2^n)
+        cv::resize(gray, gray, cv::Size(), scale, scale, cv::INTER_AREA); // inter nn -> assuming resize to be 1/(2^n)
     }
     const int smallerSide = std::min(gray.size().width, gray.size().height);
 

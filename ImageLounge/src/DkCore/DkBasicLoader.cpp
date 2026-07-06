@@ -50,7 +50,6 @@
 #ifdef WITH_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
 
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
@@ -835,7 +834,7 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
         case DRIF_FMT_BGR888: {
             cv::Mat imgMat = cv::Mat((int)h, (int)w, CV_8UC3, imgBytes);
             cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t *>(img.bits()));
-            cv::cvtColor(imgMat, rgbMat, CV_BGR2RGB);
+            cv::cvtColor(imgMat, rgbMat, cv::COLOR_BGR2RGB);
 
             success = true;
         } break;
@@ -869,7 +868,7 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
         case DRIF_FMT_BGRA8888: {
             cv::Mat imgMat = cv::Mat((int)h, (int)w, CV_8UC4, imgBytes);
             cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t *>(img.bits()));
-            cv::cvtColor(imgMat, rgbMat, CV_BGR2RGB, 3);
+            cv::cvtColor(imgMat, rgbMat, cv::COLOR_BGR2RGB, 3);
 
             success = true;
         } break;
@@ -877,7 +876,7 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
         case DRIF_FMT_RGBA8888: {
             cv::Mat imgMat = cv::Mat((int)h, (int)w, CV_8UC4, imgBytes);
             cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t *>(img.bits()));
-            cv::cvtColor(imgMat, rgbMat, CV_RGBA2RGB, 3);
+            cv::cvtColor(imgMat, rgbMat, cv::COLOR_RGBA2RGB, 3);
 
             success = true;
         } break;
@@ -885,7 +884,7 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
         case DRIF_FMT_GRAY: {
             cv::Mat imgMat = cv::Mat((int)h, (int)w, CV_8UC1, imgBytes);
             cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t *>(img.bits()));
-            cv::cvtColor(imgMat, rgbMat, CV_GRAY2RGB);
+            cv::cvtColor(imgMat, rgbMat, cv::COLOR_GRAY2RGB);
 
             success = true;
         } break;
@@ -893,7 +892,7 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
         case DRIF_FMT_YUV420P: {
             cv::Mat imgMat = cv::Mat((int)h + h / 2, (int)w, CV_8UC1, imgBytes);
             cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t *>(img.bits()));
-            cv::cvtColor(imgMat, rgbMat, CV_YUV2RGB_I420);
+            cv::cvtColor(imgMat, rgbMat, cv::COLOR_YUV2RGB_I420);
 
             success = true;
         } break;
@@ -901,7 +900,7 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
         case DRIF_FMT_YVU420P: {
             cv::Mat imgMat = cv::Mat((int)h + h / 2, (int)w, CV_8UC1, imgBytes);
             cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t *>(img.bits()));
-            cv::cvtColor(imgMat, rgbMat, CV_YUV2RGB_YV12);
+            cv::cvtColor(imgMat, rgbMat, cv::COLOR_YUV2RGB_YV12);
 
             success = true;
         } break;
@@ -909,7 +908,7 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
         case DRIF_FMT_NV12: {
             cv::Mat imgMat = cv::Mat((int)h + h / 2, (int)w, CV_8UC1, imgBytes);
             cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t *>(img.bits()));
-            cv::cvtColor(imgMat, rgbMat, CV_YUV2RGB_NV12);
+            cv::cvtColor(imgMat, rgbMat, cv::COLOR_YUV2RGB_NV12);
 
             success = true;
         } break;
@@ -917,7 +916,7 @@ bool DkBasicLoader::loadDRIF(const QString &filePath, QImage &img, QSharedPointe
         case DRIF_FMT_NV21: {
             cv::Mat imgMat = cv::Mat((int)h + h / 2, (int)w, CV_8UC1, imgBytes);
             cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t *>(img.bits()));
-            cv::cvtColor(imgMat, rgbMat, CV_YUV2RGB_NV21);
+            cv::cvtColor(imgMat, rgbMat, cv::COLOR_YUV2RGB_NV21);
 
             success = true;
         } break;
@@ -2318,14 +2317,14 @@ cv::Mat DkRawLoader::demosaic(LibRaw &iProcessor) const
 
         // define bayer pattern
         if (type == 180) {
-            cvtColor(rawMat, rgbImg, CV_BayerBG2RGB); // bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) ->	RG RG RG
-                                                      //													GB GB GB
+            cvtColor(rawMat, rgbImg, cv::COLOR_BayerBG2RGB); // bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) ->	RG RG RG
+                                                             //													GB GB GB
         } else if (type == 30) {
-            cvtColor(rawMat, rgbImg, CV_BayerRG2RGB); // bitmask  00 01 11 10	-> 0 1 3 2
+            cvtColor(rawMat, rgbImg, cv::COLOR_BayerRG2RGB); // bitmask  00 01 11 10	-> 0 1 3 2
         } else if (type == 225) {
-            cvtColor(rawMat, rgbImg, CV_BayerGB2RGB); // bitmask  11 10 00 01
+            cvtColor(rawMat, rgbImg, cv::COLOR_BayerGB2RGB); // bitmask  11 10 00 01
         } else if (type == 75) {
-            cvtColor(rawMat, rgbImg, CV_BayerGR2RGB); // bitmask  01 00 10 11
+            cvtColor(rawMat, rgbImg, cv::COLOR_BayerGR2RGB); // bitmask  01 00 10 11
         } else {
             qWarning() << "Wrong Bayer Pattern (not BG, RG, GB, GR)\n";
             return cv::Mat();
@@ -2501,7 +2500,7 @@ void DkRawLoader::reduceColorNoise(const LibRaw &iProcessor, cv::Mat &img) const
         // revert back to 8-bit image
         img.convertTo(img, CV_8U);
 
-        cv::cvtColor(img, img, CV_RGB2YCrCb);
+        cv::cvtColor(img, img, cv::COLOR_RGB2YCrCb);
 
         std::vector<cv::Mat> imgCh;
         cv::split(img, imgCh);
@@ -2511,7 +2510,7 @@ void DkRawLoader::reduceColorNoise(const LibRaw &iProcessor, cv::Mat &img) const
         cv::medianBlur(imgCh[2], imgCh[2], winSize);
 
         cv::merge(imgCh, img);
-        cv::cvtColor(img, img, CV_YCrCb2RGB);
+        cv::cvtColor(img, img, cv::COLOR_YCrCb2RGB);
         qDebug() << "median blur takes:" << dt;
     }
 }
@@ -2527,7 +2526,7 @@ QImage DkRawLoader::raw2Img(const LibRaw &iProcessor, cv::Mat &img) const
 
     // TODO: for now - fix this!
     if (img.channels() == 1)
-        cv::cvtColor(img, img, CV_GRAY2RGB);
+        cv::cvtColor(img, img, cv::COLOR_GRAY2RGB);
 
     QImage src;
     src.setColorSpace(QColorSpace{QColorSpace::SRgb}); // for output_color=1

@@ -32,7 +32,7 @@
 #include <QRandomGenerator>
 
 #ifdef WITH_OPENCV
-#include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2/imgproc/imgproc.hpp"
 #endif
 
 namespace nmp
@@ -91,7 +91,7 @@ double DkSkewEstimator::getSkewAngle()
         cv::Mat matGray;
 
         if (mMatImg.channels() > 1)
-            cv::cvtColor(mMatImg, matGray, CV_BGR2GRAY);
+            cv::cvtColor(mMatImg, matGray, cv::COLOR_BGR2GRAY);
         else
             matGray = mMatImg;
 
@@ -224,7 +224,7 @@ cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralS
 
     // for displaying:
     // cv::normalize(separability, separability, 0, 255, NORM_MINMAX, CV_8UC1);
-    // cvtColor(separability, separability, CV_GRAY2RGB);
+    // cvtColor(separability, separability, cv::COLOR_GRAY2RGB);
 
     return separability;
 }

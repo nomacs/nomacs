@@ -26,6 +26,12 @@
  *******************************************************************************************************/
 
 #include "DkFakeMiniaturesDialog.h"
+#ifdef WITH_OPENCV
+#include "opencv2/imgproc.hpp"
+#if CV_MAJOR_VERSION >= 5
+#include "opencv2/geometry.hpp"
+#endif
+#endif
 #include "DkImageStorage.h"
 
 #include <QColorSpace>
