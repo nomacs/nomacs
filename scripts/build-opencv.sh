@@ -4,9 +4,8 @@
 
 set -e
 
-mkdir 3rd-party/opencv/build
-
-cd 3rd-party/opencv/build
+mkdir build
+cd build
 
 cmake .. \
   -G Ninja \

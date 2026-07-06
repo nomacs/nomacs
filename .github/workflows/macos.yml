@@ -72,14 +72,17 @@ jobs:
           fetch-depth: 0 # ensure full history for git rev-parse
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Get System Info
-        id: get_info
+      - name: Checkout OpenCV
+        id: checkout_opencv
+        if: matrix.config.opencv
         run: |
+          cd ${RUNNER_TEMP}
+
           # note: our build of opencv has no external deps so compiler and commit is sufficient
-          git clone --depth 1 -b 4.13.0 https://github.com/opencv/opencv.git 3rd-party/opencv
-          cd 3rd-party/opencv
+          git clone --depth 1 -b 4.13.0 https://github.com/opencv/opencv.git
+          cd opencv
           OPENCV_ID=$(git rev-parse --short HEAD)
-          cd ../..
+
           COMPILER_ID=$(echo $(c++ --version) $(realpath $(xcrun --show-sdk-path)))
           OPENCV_KEY=$(echo $COMPILER_ID $OPENCV_ID | sha256)
 
@@ -105,15 +108,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /opt/opencv
-          key: ${{ runner.os }}-opencv-${{ steps.get_info.outputs.OPENCV_KEY }}
+          key: ${{ runner.os }}-opencv-${{ steps.checkout_opencv.outputs.OPENCV_KEY }}
 
       - name: Build opencv
         if: matrix.config.opencv && steps.cache_opencv.outputs.cache-hit != 'true'
         run: |
-          cd ${GITHUB_WORKSPACE}
+          cd ${RUNNER_TEMP}/opencv
           # put opencv in /opt to prevent conflicts with homebrew and/or apple silicon
-          # note kimageformats is installed into qt plugins directory so it won't be a problem,
-          ./scripts/build-opencv.sh -D CMAKE_INSTALL_PREFIX=/opt/opencv
+          ${GITHUB_WORKSPACE}/scripts/build-opencv.sh -D CMAKE_INSTALL_PREFIX=/opt/opencv
+
       - name: Build quazip
         if: matrix.config.quazip
         run: |
