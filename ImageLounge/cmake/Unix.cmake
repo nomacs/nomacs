@@ -9,9 +9,7 @@ else()
     add_definitions(-DNDEBUG)
 endif()
 
-# try to use system libraries or not
-# currently disabled due to packaging problems
-option(USE_SYSTEM_QUAZIP "Use quazip libary provided by system" OFF)
+# by default use our fork of qpsd with many changes by this point
 option(USE_SYSTEM_LIBQPSD "Use qpsd libary provided by system" OFF)
 
 # search for pkgConfig, needed for exvi2, libraw, and older OpenCV versions
