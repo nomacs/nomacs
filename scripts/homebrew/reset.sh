@@ -7,9 +7,11 @@
 export NONINTERACTIVE=1 # homebrew
 export HOMEBREW_TEMP=/usr/local/tmp
 
-# with ramdisk mounted this won't touch actual /usr/local
+# with ramdisk mounted (as overlay) this won't touch actual /usr/local
 sudo rm -rf /usr/local/*
 sudo rm -rf /opt/opencv
+sudo rm -rf /opt/quazip
+sudo rm -rf /opt/kimageformats
 
 set -e
 
