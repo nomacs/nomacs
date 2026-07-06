@@ -44,12 +44,12 @@ jobs:
             cmakefiles: "qt6/lib/cmake" # root dir is runner.homebrew-opt
 
         config:
-          # this is extremely slow (~15 minutes) due to opencv
-          - type: opencv
+          - type: full
             packages: libraw
-            flags: "-DENABLE_QUAZIP=OFF"
+            flags: "-DENABLE_QUAZIP=ON"
             kimageformats: true # compile kimageformat-plugins
             opencv: true # compile a minimal opencv
+            quazip: true # compile quazip
             portable: true # use the new portable bundle script
             bundle: false # build portable bundle using macdeployqt
             artifacts: true # upload artifacts
@@ -60,6 +60,7 @@ jobs:
             flags: "-DENABLE_PLUGINS=OFF -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF -DENABLE_QUAZIP=OFF"
             kimageformats: false
             opencv: false
+            quazip: false
             portable: true
             bundle: false
             artifacts: false
@@ -113,12 +114,22 @@ jobs:
           # put opencv in /opt to prevent conflicts with homebrew and/or apple silicon
           # note kimageformats is installed into qt plugins directory so it won't be a problem,
           ./scripts/build-opencv.sh -D CMAKE_INSTALL_PREFIX=/opt/opencv
+      - name: Build quazip
+        if: matrix.config.quazip
+        run: |
+          # would prefer quazip brew package, but it has link issues on MacOS 15
+          cd ${RUNNER_TEMP}
+          git clone --depth 1 -b v1.7.2 https://github.com/stachenov/quazip.git
+          cd quazip && mkdir build && cd build
+          cmake -G Ninja -D CMAKE_INSTALL_PREFIX=/opt/quazip ..
+          ninja
+          sudo ninja install
 
       - name: Configure
         run: |
           mkdir ${GITHUB_WORKSPACE}/build
           cd ${GITHUB_WORKSPACE}/build
-          export CMAKE_PREFIX_PATH="/opt/opencv:${{ matrix.runner.homebrew-opt }}/${{ matrix.qt.cmakefiles }}"
+          export CMAKE_PREFIX_PATH="/opt/opencv:/opt/quazip:${{ matrix.runner.homebrew-opt }}/${{ matrix.qt.cmakefiles }}"
           cmake -G Ninja ${{ matrix.runner.arch_flags }} ${{ matrix.qt.flags }} ${{ matrix.config.flags }} ../ImageLounge
 
       - name: Get Build Version
