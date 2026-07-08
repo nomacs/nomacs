@@ -1777,6 +1777,8 @@ void DkShortcutsModel::addActions()
         allPluginActions << m->actions().toVector();
     }
 
+    allPluginActions.append(am.pluginActions());
+
     addDataActions(allPluginActions, pm->menu()->title());
 #endif
 
