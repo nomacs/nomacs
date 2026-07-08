@@ -53,6 +53,8 @@ class QComboBox;
 class QCheckBox;
 class QProgressBar;
 
+class ShortcutsModel_Init_Test;
+
 namespace nmc
 {
 class DkBaseViewPort;
@@ -445,6 +447,13 @@ signals:
 protected:
     void addActions();
     void addDataActions(QVector<QAction *> actions, const QString &name);
+
+    // testing
+    friend class ::ShortcutsModel_Init_Test;
+    auto actions() const
+    {
+        return mActions;
+    }
 
     TreeItem *mRootItem;
     QVector<QVector<QAction *>> mActions;

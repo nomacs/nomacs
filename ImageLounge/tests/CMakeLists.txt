@@ -1,6 +1,13 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore)
 
-add_executable(core_tests DkUtils_test.cpp DkBaseViewPort_test.cpp DkNativeImage_test.cpp DkMetaData_test.cpp)
+add_executable(
+    core_tests
+    DkUtils_test.cpp
+    DkBaseViewPort_test.cpp
+    DkNativeImage_test.cpp
+    DkMetaData_test.cpp
+    DkShortcutsModel_test.cpp
+)
 
 target_link_libraries(
     core_tests
@@ -14,8 +21,10 @@ target_link_libraries(
 add_custom_target(
     check
     COMMAND
-        LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/:$ENV{LD_LIBRARY_PATH}
-        DYLD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/:$ENV{DYLD_LIBRARY_PATH} ${CMAKE_CTEST_COMMAND} --output-on-failure
+        LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/:$ENV{LD_LIBRARY_PATH} #
+        DYLD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/:$ENV{DYLD_LIBRARY_PATH} #
+        QT_PLUGIN_PATH=${CMAKE_BINARY_DIR}/nomacs-plugins #
+        ${CMAKE_CTEST_COMMAND} --output-on-failure
     DEPENDS core_tests
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
