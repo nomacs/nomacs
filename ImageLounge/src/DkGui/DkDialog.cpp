@@ -1596,6 +1596,8 @@ DkShortcutsModel::DkShortcutsModel(QObject *parent)
     rootData << tr("Name") << tr("Shortcut");
 
     mRootItem = new TreeItem(rootData);
+
+    addActions();
 }
 
 DkShortcutsModel::~DkShortcutsModel()
@@ -1722,9 +1724,12 @@ Qt::ItemFlags DkShortcutsModel::flags(const QModelIndex &index) const
 
 void DkShortcutsModel::addDataActions(QVector<QAction *> actions, const QString &name)
 {
+    QString cleanName = name;
+    cleanName.remove(QChar{'&'});
+
     // create root
     QVector<QVariant> menuData;
-    menuData << name;
+    menuData << cleanName;
 
     auto *menuItem = new TreeItem(menuData, mRootItem);
 
@@ -1746,6 +1751,37 @@ void DkShortcutsModel::addDataActions(QVector<QAction *> actions, const QString 
 
     mRootItem->appendChild(menuItem);
     mActions.append(actions);
+}
+
+void DkShortcutsModel::addActions()
+{
+    DkActionManager &am = DkActionManager::instance();
+
+    addDataActions(am.fileActions(), am.fileMenu()->title());
+    addDataActions(am.openWithActions(), am.openWithMenu()->title());
+    addDataActions(am.sortActions(), am.sortMenu()->title());
+    addDataActions(am.editActions(), am.editMenu()->title());
+    addDataActions(am.manipulatorActions(), am.manipulatorMenu()->title());
+    addDataActions(am.viewActions(), am.viewMenu()->title());
+    addDataActions(am.panelActions(), am.panelMenu()->title());
+    addDataActions(am.toolsActions(), am.toolsMenu()->title());
+    addDataActions(am.syncActions(), am.syncMenu()->title());
+    addDataActions(am.previewActions(), tr("Preview"));
+
+#ifdef WITH_PLUGINS
+    DkPluginActionManager *pm = am.pluginActionManager();
+    pm->updateMenu();
+
+    QVector<QAction *> allPluginActions = pm->pluginActions();
+    for (const QMenu *m : pm->pluginSubMenus()) {
+        allPluginActions << m->actions().toVector();
+    }
+
+    addDataActions(allPluginActions, pm->menu()->title());
+#endif
+
+    addDataActions(am.helpActions(), am.helpMenu()->title());
+    addDataActions(am.hiddenActions(), tr("Shortcuts"));
 }
 
 void DkShortcutsModel::checkDuplicate(const QString &text, void *item)
@@ -1928,12 +1964,6 @@ void DkShortcutsDialog::createLayout()
     // layout->addSpacing()
     layout->addWidget(buttons);
     resize(420, 500);
-}
-
-void DkShortcutsDialog::addActions(const QVector<QAction *> &actions, const QString &name)
-{
-    QString cleanName = name;
-    mModel->addDataActions(actions, cleanName.remove("&"));
 }
 
 void DkShortcutsDialog::contextMenu(const QPoint &)
@@ -4138,37 +4168,8 @@ DkDialogManager::DkDialogManager(QObject *parent)
 
 void DkDialogManager::openShortcutsDialog() const
 {
-    DkActionManager &am = DkActionManager::instance();
-
     auto *shortcutsDialog = new DkShortcutsDialog(DkUtils::getMainWindow());
-    shortcutsDialog->addActions(am.fileActions(), am.fileMenu()->title());
-    shortcutsDialog->addActions(am.openWithActions(), am.openWithMenu()->title());
-    shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
-    shortcutsDialog->addActions(am.editActions(), am.editMenu()->title());
-    shortcutsDialog->addActions(am.manipulatorActions(), am.manipulatorMenu()->title());
-    shortcutsDialog->addActions(am.viewActions(), am.viewMenu()->title());
-    shortcutsDialog->addActions(am.panelActions(), am.panelMenu()->title());
-    shortcutsDialog->addActions(am.toolsActions(), am.toolsMenu()->title());
-    shortcutsDialog->addActions(am.syncActions(), am.syncMenu()->title());
-    shortcutsDialog->addActions(am.previewActions(), tr("Preview"));
-#ifdef WITH_PLUGINS // TODO
-
-    DkPluginActionManager *pm = am.pluginActionManager();
-    pm->updateMenu();
-
-    QVector<QAction *> allPluginActions = pm->pluginActions();
-
-    for (const QMenu *m : pm->pluginSubMenus()) {
-        allPluginActions << m->actions().toVector();
-    }
-
-    shortcutsDialog->addActions(allPluginActions, pm->menu()->title());
-#endif // WITH_PLUGINS
-    shortcutsDialog->addActions(am.helpActions(), am.helpMenu()->title());
-    shortcutsDialog->addActions(am.hiddenActions(), tr("Shortcuts"));
-
     shortcutsDialog->checkState();
-
     shortcutsDialog->exec();
     shortcutsDialog->deleteLater();
 }
