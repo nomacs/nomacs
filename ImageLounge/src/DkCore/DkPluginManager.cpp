@@ -1432,16 +1432,12 @@ void DkPluginActionManager::updateMenu()
     }
 
     mMenu->clear();
+    mPluginActions.clear();
 
     DkPluginManager::instance().loadPlugins();
     const QVector<QSharedPointer<DkPluginContainer>> plugins = DkPluginManager::instance().getPlugins();
 
-    if (plugins.isEmpty()) {
-        // no plugins found, add the plugin manager action
-        mPluginActions = DkActionManager::instance().pluginActions();
-        mMenu->addAction(mPluginActions[DkActionManager::menu_plugin_manager]);
-        mPluginActions.resize(DkActionManager::menu_plugin_manager); // reduce the size again
-    } else {
+    if (!plugins.isEmpty()) {
         for (auto &p : plugins) {
             connect(p.data(),
                     QOverload<DkViewPortInterface *, bool>::of(&DkPluginContainer::runPlugin),
@@ -1455,18 +1451,13 @@ void DkPluginActionManager::updateMenu()
                     Qt::UniqueConnection);
         }
 
-        // delete old plugin actions
-        for (int idx = mPluginActions.size(); idx > DkActionManager::menu_plugins_end; idx--) {
-            mPluginActions.pop_back();
-        }
         addPluginsToMenu();
+        mMenu->addSeparator();
     }
+
+    mMenu->addActions(DkActionManager::instance().pluginActions());
 }
 
-/**
- * Creates the plugin menu when it is not empty
- * called in DkNoMacs::createPluginsMenu()
- **/
 void DkPluginActionManager::addPluginsToMenu()
 {
     QVector<QSharedPointer<DkPluginContainer>> loadedPlugins = DkPluginManager::instance().getPlugins();
@@ -1494,9 +1485,6 @@ void DkPluginActionManager::addPluginsToMenu()
             connect(a, &QAction::triggered, plugin.data(), &DkPluginContainer::run);
         }
     }
-
-    mMenu->addSeparator();
-    mMenu->addAction(DkActionManager::instance().action(DkActionManager::menu_plugin_manager));
 
     QVector<QAction *> allPluginActions = mPluginActions;
 
