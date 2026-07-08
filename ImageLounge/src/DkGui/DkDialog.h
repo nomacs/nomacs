@@ -432,7 +432,7 @@ public:
     void resetActions();
     void saveActions() const;
 
-    void checkState() const;
+    bool checkState() const;
 
 public slots:
     void checkDuplicate(const QString &text, void *item); // deprecated (Qt4)
@@ -460,7 +460,7 @@ public:
     void addActions(const QVector<QAction *> &actions, const QString &name);
     void checkState()
     {
-        mModel->checkState();
+        (void)mModel->checkState();
     }
 public slots:
     void accept() override;
