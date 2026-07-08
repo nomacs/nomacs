@@ -1001,7 +1001,8 @@ void DkSettings::setToDefaultSettings()
     app_p.showFileInfoLabel.setBit(mode_default, false);
     app_p.showFileInfoLabel.setBit(mode_contrast, false);
 
-    app_p.appMode = 0;
+    app_p.appMode = mode_default;
+    app_p.currentAppMode = mode_default;
     app_p.privateMode = false;
     app_p.defaultJpgQuality = 97;
 
