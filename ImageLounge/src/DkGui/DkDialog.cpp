@@ -1878,18 +1878,21 @@ void DkShortcutsModel::saveActions() const
     settings.endGroup();
 }
 
-void DkShortcutsModel::checkState() const
+bool DkShortcutsModel::checkState() const
 {
+    bool ok = true;
     QMap<QString, const QAction *> map;
     for (const auto &group : mActions) {
         for (const auto *action : group) {
             QString actionId = action->objectName();
             if (actionId.isEmpty()) {
+                ok = false;
                 qWarning() << "[ShortcutsModel] no unique id for action" << action->text();
             }
 
             auto it = map.find(actionId);
             if (it != map.end() && it.value() != action) {
+                ok = false;
                 qWarning() << "[ShortcutsModel] duplicate id on action" << action->text() << "and"
                            << it.value()->text();
             } else {
@@ -1897,6 +1900,7 @@ void DkShortcutsModel::checkState() const
             }
         }
     }
+    return ok;
 }
 
 // DkShortcutsDialog --------------------------------------------------------------------
