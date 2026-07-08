@@ -1425,38 +1425,36 @@ QVector<QMenu *> DkPluginActionManager::pluginSubMenus() const
 
 void DkPluginActionManager::updateMenu()
 {
-    qDebug() << "CREATING plugin menu";
-
     if (!mMenu) {
-        qWarning() << "plugin menu is NULL where it should not be!";
+        Q_ASSERT(mMenu);
+        qCritical() << "plugins menu is null, cannot populate!!";
+        return;
     }
 
-    DkPluginManager::instance().loadPlugins();
-    QVector<QSharedPointer<DkPluginContainer>> plugins = DkPluginManager::instance().getPlugins();
-
-    if (plugins.empty()) {
-        // mPluginActions.resize(DkActionManager::menu_plugins_end);
-        mPluginActions = DkActionManager::instance().pluginActions();
-    }
     mMenu->clear();
 
-    for (auto p : plugins) {
-        connect(p.data(),
-                QOverload<DkViewPortInterface *, bool>::of(&DkPluginContainer::runPlugin),
-                this,
-                QOverload<DkViewPortInterface *, bool>::of(&DkPluginActionManager::runPlugin),
-                Qt::UniqueConnection);
-        connect(p.data(),
-                QOverload<DkPluginContainer *, const QString &>::of(&DkPluginContainer::runPlugin),
-                this,
-                QOverload<DkPluginContainer *, const QString &>::of(&DkPluginActionManager::runPlugin),
-                Qt::UniqueConnection);
-    }
+    DkPluginManager::instance().loadPlugins();
+    const QVector<QSharedPointer<DkPluginContainer>> plugins = DkPluginManager::instance().getPlugins();
 
-    if (plugins.isEmpty()) { // no  plugins
+    if (plugins.isEmpty()) {
+        // no plugins found, add the plugin manager action
+        mPluginActions = DkActionManager::instance().pluginActions();
         mMenu->addAction(mPluginActions[DkActionManager::menu_plugin_manager]);
         mPluginActions.resize(DkActionManager::menu_plugin_manager); // reduce the size again
     } else {
+        for (auto &p : plugins) {
+            connect(p.data(),
+                    QOverload<DkViewPortInterface *, bool>::of(&DkPluginContainer::runPlugin),
+                    this,
+                    QOverload<DkViewPortInterface *, bool>::of(&DkPluginActionManager::runPlugin),
+                    Qt::UniqueConnection);
+            connect(p.data(),
+                    QOverload<DkPluginContainer *, const QString &>::of(&DkPluginContainer::runPlugin),
+                    this,
+                    QOverload<DkPluginContainer *, const QString &>::of(&DkPluginActionManager::runPlugin),
+                    Qt::UniqueConnection);
+        }
+
         // delete old plugin actions
         for (int idx = mPluginActions.size(); idx > DkActionManager::menu_plugins_end; idx--) {
             mPluginActions.pop_back();
