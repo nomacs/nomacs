@@ -512,54 +512,170 @@ public:
 
     QMenu *updateOpenWithMenu();
 
-    QMenu *fileMenu() const;
-    QMenu *sortMenu() const;
-    QMenu *openWithMenu() const;
-    QMenu *viewMenu() const;
-    QMenu *editMenu() const;
-    QMenu *manipulatorMenu() const;
-    QMenu *toolsMenu() const;
-    QMenu *panelMenu() const;
-    QMenu *helpMenu() const;
-    QMenu *contextMenu() const;
-    QMenu *syncMenu() const;
-    DkTcpMenu *localMenu() const;
+    QMenu *fileMenu() const
+    {
+        return mFileMenu;
+    }
+    QMenu *sortMenu() const
+    {
+        return mSortMenu;
+    }
+    QMenu *openWithMenu() const
+    {
+        return mOpenWithMenu;
+    }
+    QMenu *viewMenu() const
+    {
+        return mViewMenu;
+    }
+    QMenu *editMenu() const
+    {
+        return mEditMenu;
+    }
+    QMenu *manipulatorMenu() const
+    {
+        return mManipulatorMenu;
+    }
+    QMenu *toolsMenu() const
+    {
+        return mToolsMenu;
+    }
+    QMenu *panelMenu() const
+    {
+        return mPanelMenu;
+    }
+    QMenu *helpMenu() const
+    {
+        return mHelpMenu;
+    }
+    QMenu *contextMenu() const
+    {
+        return mContextMenu;
+    }
+    QMenu *syncMenu() const
+    {
+        return mSyncMenu;
+    }
+    DkTcpMenu *localMenu() const
+    {
+        return mLocalMenu;
+    }
 
-    DkManipulatorManager manipulatorManager() const;
+    DkManipulatorManager manipulatorManager() const
+    {
+        return mManipulators;
+    }
 
     void createActions(QWidget *parent);
     void createMenus(QWidget *parent);
 
-    QAction *action(FileAction action) const;
-    QAction *action(SortAction action) const;
-    QAction *action(ViewAction action) const;
-    QAction *action(EditAction action) const;
-    QAction *action(ToolsAction action) const;
-    QAction *action(PanelAction action) const;
-    QAction *action(SyncAction action) const;
-    QAction *action(PluginAction action) const;
-    QAction *action(HelpAction action) const;
-    QAction *action(MiscAction action) const;
-    QAction *action(PreviewAction action) const;
+    QAction *action(FileAction action) const
+    {
+        return mFileActions[action];
+    }
+    QAction *action(SortAction action) const
+    {
+        return mSortActions[action];
+    }
+    QAction *action(ViewAction action) const
+    {
+        return mViewActions[action];
+    }
+    QAction *action(EditAction action) const
+    {
+        return mEditActions[action];
+    }
+    QAction *action(ToolsAction action) const
+    {
+        return mToolsActions[action];
+    }
+    QAction *action(PanelAction action) const
+    {
+        return mPanelActions[action];
+    }
+    QAction *action(SyncAction action) const
+    {
+        return mSyncActions[action];
+    }
+    QAction *action(PluginAction action) const
+    {
+        return mPluginActions[action];
+    }
+    QAction *action(HelpAction action) const
+    {
+        return mHelpActions[action];
+    }
+    QAction *action(MiscAction action) const
+    {
+        return mMiscActions[action];
+    }
+    QAction *action(PreviewAction action) const
+    {
+        return mPreviewActions[action];
+    }
 
-    QVector<QAction *> fileActions() const;
-    QVector<QAction *> sortActions() const;
+    QVector<QAction *> fileActions() const
+    {
+        return mFileActions;
+    }
+    QVector<QAction *> sortActions() const
+    {
+        return mSortActions;
+    }
+
     QVector<QAction *> openWithActions() const;
-    QVector<QAction *> viewActions() const;
-    QVector<QAction *> editActions() const;
-    QVector<QAction *> toolsActions() const;
-    QVector<QAction *> panelActions() const;
-    QVector<QAction *> syncActions() const;
-    QVector<QAction *> pluginActions() const;
-    QVector<QAction *> helpActions() const;
-    QVector<QAction *> previewActions() const;
-    QVector<QAction *> manipulatorActions() const;
+
+    QVector<QAction *> viewActions() const
+    {
+        return mViewActions;
+    }
+    QVector<QAction *> editActions() const
+    {
+        return mEditActions;
+    }
+    QVector<QAction *> toolsActions() const
+    {
+        return mToolsActions;
+    }
+    QVector<QAction *> panelActions() const
+    {
+        return mPanelActions;
+    }
+    QVector<QAction *> syncActions() const
+    {
+        return mSyncActions;
+    }
+    QVector<QAction *> pluginActions() const
+    {
+        return mPluginActions;
+    }
+    QVector<QAction *> helpActions() const
+    {
+        return mHelpActions;
+    }
+    QVector<QAction *> previewActions() const
+    {
+        return mPreviewActions;
+    }
+    QVector<QAction *> manipulatorActions() const
+    {
+        return mManipulators.actions();
+    }
 
     QVector<QAction *> allActions() const;
 
-    QVector<QAction *> miscActions() const;
-    DkAppManager *appManager() const;
-    DkPluginActionManager *pluginActionManager() const;
+    QVector<QAction *> miscActions() const
+    {
+        return mMiscActions;
+    }
+    DkAppManager *appManager() const
+    {
+        return mAppManager;
+    }
+    DkPluginActionManager *pluginActionManager() const
+    {
+        return mPluginManager;
+    }
 
     void assignCustomShortcuts(QVector<QAction *> actions) const;
 
