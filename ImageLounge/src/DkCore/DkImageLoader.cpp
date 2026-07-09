@@ -87,23 +87,23 @@ DkImageLoader::DkImageLoader()
         directoryChanged();
     });
 
-    connect(DkActionManager::instance().action(DkActionManager::menu_file_save_copy),
+    connect(DkActionManager::instance().action(DkActionManager::file_save_copy),
             &QAction::triggered,
             this,
             &DkImageLoader::copyUserFile);
-    connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo),
+    connect(DkActionManager::instance().action(DkActionManager::edit_undo),
             &QAction::triggered,
             this,
             &DkImageLoader::undo);
-    connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo),
+    connect(DkActionManager::instance().action(DkActionManager::edit_redo),
             &QAction::triggered,
             this,
             &DkImageLoader::redo);
-    connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map),
+    connect(DkActionManager::instance().action(DkActionManager::view_gps_map),
             &QAction::triggered,
             this,
             &DkImageLoader::showOnMap);
-    connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent),
+    connect(DkActionManager::instance().action(DkActionManager::file_delete_silent),
             &QAction::triggered,
             this,
             &DkImageLoader::deleteFile,

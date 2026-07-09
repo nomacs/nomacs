@@ -95,7 +95,7 @@ void DkStatusBarManager::show(bool show, bool permanent)
     if (permanent)
         DkSettingsManager::param().app().showStatusBar = show;
     DkActionManager::instance()
-        .action(DkActionManager::menu_panel_statusbar)
+        .action(DkActionManager::panel_statusbar)
         ->setChecked(DkSettingsManager::param().app().showStatusBar);
 
     statusbar()->setVisible(show);

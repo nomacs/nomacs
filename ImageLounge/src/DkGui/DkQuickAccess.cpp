@@ -133,7 +133,7 @@ DkQuickAccessEdit::DkQuickAccessEdit(QWidget *parent)
     : QLineEdit("", parent)
 {
     QString shortcutText = DkActionManager::instance()
-                               .action(DkActionManager::menu_file_quick_launch)
+                               .action(DkActionManager::file_quick_launch) //
                                ->shortcut()
                                .toString();
     setPlaceholderText(tr("Quick Launch (%1)").arg(shortcutText));

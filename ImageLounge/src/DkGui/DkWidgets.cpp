@@ -1017,14 +1017,14 @@ void DkRatingLabel::init()
     DkActionManager &am = DkActionManager::instance();
 
     const struct {
-        DkActionManager::HiddenActions action;
+        DkActionManager::MiscAction action;
         QString toolTip;
     } stars[] = {
-        {DkActionManager::sc_star_rating_1, tr("one star")},
-        {DkActionManager::sc_star_rating_2, tr("two stars")},
-        {DkActionManager::sc_star_rating_3, tr("three star")},
-        {DkActionManager::sc_star_rating_4, tr("four stars")},
-        {DkActionManager::sc_star_rating_5, tr("five stars")},
+        {DkActionManager::star_rating_1, tr("one star")},
+        {DkActionManager::star_rating_2, tr("two stars")},
+        {DkActionManager::star_rating_3, tr("three star")},
+        {DkActionManager::star_rating_4, tr("four stars")},
+        {DkActionManager::star_rating_5, tr("five stars")},
     };
 
     int rating = 0;
@@ -1046,7 +1046,7 @@ void DkRatingLabel::init()
         mStars.append(button);
     }
 
-    connect(am.action(DkActionManager::sc_star_rating_0), &QAction::triggered, this, [this] {
+    connect(am.action(DkActionManager::star_rating_0), &QAction::triggered, this, [this] {
         editRating(0, false);
     });
 }
@@ -1218,7 +1218,7 @@ void DkPlayer::createLayout()
     playButton->setFlat(true);
     playButton->setCheckable(true);
     playButton->setChecked(false);
-    playButton->addAction(DkActionManager::instance().action(DkActionManager::menu_view_slideshow));
+    playButton->addAction(DkActionManager::instance().action(DkActionManager::view_slideshow));
     connect(playButton, &QPushButton::clicked, this, &DkPlayer::play);
 
     nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", iconColor), "", this);
@@ -1267,7 +1267,7 @@ void DkPlayer::init()
         this->hide(false); // do not save setting when showing/hiding temporarily
     });
 
-    connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow),
+    connect(DkActionManager::instance().action(DkActionManager::view_slideshow),
             &QAction::triggered,
             this,
             &DkPlayer::togglePlay);

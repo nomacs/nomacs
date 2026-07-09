@@ -1873,15 +1873,15 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager &manager)
 
     mMplWidgets.clear(); // TODO: delete the old ones now?
 
-    mMplWidgets << new DkTinyPlanetWidget(manager.manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
-    mMplWidgets << new DkBlurWidget(manager.manipulatorExt(DkManipulatorManager::m_blur), this);
-    mMplWidgets << new DkUnsharpMaskWidget(manager.manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
-    mMplWidgets << new DkRotateWidget(manager.manipulatorExt(DkManipulatorManager::m_rotate), this);
-    mMplWidgets << new DkThresholdWidget(manager.manipulatorExt(DkManipulatorManager::m_threshold), this);
-    mMplWidgets << new DkHueWidget(manager.manipulatorExt(DkManipulatorManager::m_hue), this);
-    mMplWidgets << new DkExposureWidget(manager.manipulatorExt(DkManipulatorManager::m_exposure), this);
-    mMplWidgets << new DkColorWidget(manager.manipulatorExt(DkManipulatorManager::m_color), this);
-    mMplWidgets << new DkResizeWidget(manager.manipulatorExt(DkManipulatorManager::m_resize), this);
+    mMplWidgets << new DkTinyPlanetWidget(manager.manipulatorExt(DkManipulatorManager::mpl_tiny_planet), this);
+    mMplWidgets << new DkBlurWidget(manager.manipulatorExt(DkManipulatorManager::mpl_blur), this);
+    mMplWidgets << new DkUnsharpMaskWidget(manager.manipulatorExt(DkManipulatorManager::mpl_unsharp_mask), this);
+    mMplWidgets << new DkRotateWidget(manager.manipulatorExt(DkManipulatorManager::mpl_rotate), this);
+    mMplWidgets << new DkThresholdWidget(manager.manipulatorExt(DkManipulatorManager::mpl_threshold), this);
+    mMplWidgets << new DkHueWidget(manager.manipulatorExt(DkManipulatorManager::mpl_hue), this);
+    mMplWidgets << new DkExposureWidget(manager.manipulatorExt(DkManipulatorManager::mpl_exposure), this);
+    mMplWidgets << new DkColorWidget(manager.manipulatorExt(DkManipulatorManager::mpl_color), this);
+    mMplWidgets << new DkResizeWidget(manager.manipulatorExt(DkManipulatorManager::mpl_resize), this);
 
     for (auto *w : mMplWidgets) {
         connect(w->baseManipulator()->action(), &QAction::triggered, this, [this, w] {

@@ -49,18 +49,18 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
     : DkWidget(parent)
 {
     // create widgets
-    DkActionManager &am = DkActionManager::instance();
-    mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet),
-                                       this);
-    mWidgets << new DkBlurWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_blur), this);
-    mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask),
-                                        this);
-    mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
-    mWidgets << new DkResizeWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_resize), this);
-    mWidgets << new DkThresholdWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_threshold), this);
-    mWidgets << new DkHueWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_hue), this);
-    mWidgets << new DkColorWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_color), this);
-    mWidgets << new DkExposureWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_exposure), this);
+    const DkActionManager &am = DkActionManager::instance();
+    const DkManipulatorManager &mm = am.manipulatorManager();
+
+    mWidgets << new DkTinyPlanetWidget(mm.manipulatorExt(DkManipulatorManager::mpl_tiny_planet), this);
+    mWidgets << new DkBlurWidget(mm.manipulatorExt(DkManipulatorManager::mpl_blur), this);
+    mWidgets << new DkUnsharpMaskWidget(mm.manipulatorExt(DkManipulatorManager::mpl_unsharp_mask), this);
+    mWidgets << new DkRotateWidget(mm.manipulatorExt(DkManipulatorManager::mpl_rotate), this);
+    mWidgets << new DkResizeWidget(mm.manipulatorExt(DkManipulatorManager::mpl_resize), this);
+    mWidgets << new DkThresholdWidget(mm.manipulatorExt(DkManipulatorManager::mpl_threshold), this);
+    mWidgets << new DkHueWidget(mm.manipulatorExt(DkManipulatorManager::mpl_hue), this);
+    mWidgets << new DkColorWidget(mm.manipulatorExt(DkManipulatorManager::mpl_color), this);
+    mWidgets << new DkExposureWidget(mm.manipulatorExt(DkManipulatorManager::mpl_exposure), this);
 
     setObjectName("DkPreferenceTabs");
     createLayout();
@@ -84,8 +84,8 @@ void DkManipulatorWidget::createLayout()
     auto *group = new QButtonGroup(this);
 
     DkActionManager &am = DkActionManager::instance();
-    for (int idx = DkManipulatorManager::m_end; idx < DkManipulatorManager::m_ext_end; idx++) {
-        const auto extIdx = static_cast<DkManipulatorManager::ManipulatorExtId>(idx);
+    for (int idx = DkManipulatorManager::numSimpleManipulators; idx < DkManipulatorManager::numManipulators; idx++) {
+        const auto extIdx = static_cast<DkManipulatorManager::ExtendedManipulator>(idx);
         auto mpl = am.manipulatorManager().manipulatorExt(extIdx);
 
         auto *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
