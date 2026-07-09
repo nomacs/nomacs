@@ -1783,7 +1783,7 @@ void DkShortcutsModel::addActions()
 #endif
 
     addDataActions(am.helpActions(), am.helpMenu()->title());
-    addDataActions(am.miscActions(), tr("Shortcuts"));
+    addDataActions(am.miscActions(), tr("Miscellaneous"));
 }
 
 void DkShortcutsModel::checkDuplicate(const QString &text, void *item)
