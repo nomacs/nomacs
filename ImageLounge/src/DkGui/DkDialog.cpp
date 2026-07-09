@@ -1783,7 +1783,7 @@ void DkShortcutsModel::addActions()
 #endif
 
     addDataActions(am.helpActions(), am.helpMenu()->title());
-    addDataActions(am.hiddenActions(), tr("Shortcuts"));
+    addDataActions(am.miscActions(), tr("Shortcuts"));
 }
 
 void DkShortcutsModel::checkDuplicate(const QString &text, void *item)
@@ -4157,19 +4157,13 @@ DkDialogManager::DkDialogManager(QObject *parent)
 {
     DkActionManager &am = DkActionManager::instance();
 
-    connect(am.action(DkActionManager::menu_edit_shortcuts),
+    connect(am.action(DkActionManager::edit_shortcuts),
             &QAction::triggered,
             this,
             &DkDialogManager::openShortcutsDialog);
-    connect(am.action(DkActionManager::menu_file_app_manager),
-            &QAction::triggered,
-            this,
-            &DkDialogManager::openAppManager);
-    connect(am.action(DkActionManager::menu_file_print), &QAction::triggered, this, &DkDialogManager::openPrintDialog);
-    connect(am.action(DkActionManager::menu_tools_mosaic),
-            &QAction::triggered,
-            this,
-            &DkDialogManager::openMosaicDialog);
+    connect(am.action(DkActionManager::file_app_manager), &QAction::triggered, this, &DkDialogManager::openAppManager);
+    connect(am.action(DkActionManager::file_print), &QAction::triggered, this, &DkDialogManager::openPrintDialog);
+    connect(am.action(DkActionManager::tools_mosaic), &QAction::triggered, this, &DkDialogManager::openMosaicDialog);
 }
 
 void DkDialogManager::openShortcutsDialog() const
@@ -4222,7 +4216,7 @@ void DkDialogManager::openMosaicDialog() const
         imgC->setImage(mosaicDialog->getImage(), tr("Mosaic"));
 
         mCentralWidget->addTab(imgC);
-        DkActionManager::instance().action(DkActionManager::menu_file_save_as)->trigger();
+        DkActionManager::instance().action(DkActionManager::file_save_as)->trigger();
     }
 
     mosaicDialog->deleteLater();

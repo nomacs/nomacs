@@ -178,195 +178,198 @@ public:
     DkActionManager(DkActionManager const &) = delete;
     void operator=(DkActionManager const &) = delete;
 
-    enum FileMenuActions {
-        menu_file_open,
-        menu_file_open_dir,
-        menu_file_open_list,
-        menu_file_quick_launch,
-        menu_file_app_manager,
-        menu_file_save,
-        menu_file_save_as,
-        menu_file_save_copy,
-        menu_file_save_list,
-        menu_file_save_web,
-        menu_file_rename,
-        menu_file_goto,
-        menu_file_find,
-        menu_file_recursive,
-        menu_file_show_recent,
-        menu_file_print,
-        menu_file_reload,
-        menu_file_next,
-        menu_file_prev,
-        menu_file_new_instance,
-        menu_file_private_instance,
-        menu_file_exit,
+    // define the action groups for shortcuts customizing; menus need not reflect these exactly
+    enum FileAction {
+        file_open,
+        file_open_dir,
+        file_open_list,
+        file_quick_launch,
+        file_app_manager,
+        file_save,
+        file_save_as,
+        file_save_copy,
+        file_save_list,
+        file_save_web,
+        file_rename,
+        nav_goto_file,
+        file_find,
+        file_recursive,
+        file_show_recent,
+        file_print,
+        file_reload,
+        nav_next_file,
+        nav_prev_file,
+        file_new_instance,
+        file_private_instance,
+        file_exit,
 
-        menu_file_end, // nothing beyond this point
+        numFileActions,
     };
 
-    enum SortMenuActions {
-        menu_sort_filename,
-        menu_sort_file_size,
-        menu_sort_date_created,
-        menu_sort_date_modified,
-        menu_sort_random,
-        menu_sort_ascending,
-        menu_sort_descending,
+    enum SortAction {
+        sort_filename,
+        sort_file_size,
+        sort_date_created,
+        sort_date_modified,
+        sort_random,
+        sort_ascending,
+        sort_descending,
 
-        menu_sort_end,
+        numSortActions,
     };
 
-    enum EditMenuActions {
-        menu_edit_image,
-        menu_edit_rotate_cw,
-        menu_edit_rotate_ccw,
-        menu_edit_rotate_180,
-        menu_edit_undo,
-        menu_edit_redo,
-        menu_edit_copy,
-        menu_edit_copy_buffer,
-        menu_edit_copy_color,
-        menu_edit_paste,
-        menu_edit_shortcuts,
-        menu_edit_preferences,
-        menu_edit_transform,
-        menu_edit_delete,
-        menu_edit_crop,
+    enum EditAction {
+        panel_edit_image,
 
-        menu_edit_end, // nothing beyond this point
+        edit_rotate_cw,
+        edit_rotate_ccw,
+        edit_rotate_180,
+        edit_undo,
+        edit_redo,
+        edit_copy,
+        edit_copy_buffer,
+        edit_copy_color,
+        edit_paste,
+        edit_shortcuts,
+        edit_preferences,
+        edit_transform,
+        edit_delete,
+        edit_crop,
+
+        numEditActions,
     };
 
-    enum ToolsMenuActions {
-        menu_tools_thumbs,
-        menu_tools_filter,
-        menu_tools_export_tiff,
-        menu_tools_extract_archive,
-        menu_tools_mosaic,
-        menu_tools_batch,
-        menu_tools_wallpaper,
-        menu_tools_train_format,
+    enum ToolsAction {
+        tools_thumbs,
+        tools_filter,
+        tools_export_tiff,
+        tools_extract_archive,
+        tools_mosaic,
+        tools_batch,
+        tools_wallpaper,
+        tools_train_format,
 
-        menu_tools_end,
+        numToolsActions,
     };
 
-    enum PanelMenuActions {
-        menu_panel_toggle,
+    enum PanelAction {
+        panel_toggle_all,
 
-        menu_panel_menu,
-        menu_panel_toolbar,
-        menu_panel_statusbar,
-        menu_panel_transfertoolbar,
+        panel_menubar,
+        panel_toolbar,
+        panel_statusbar,
+        panel_transfertoolbar,
 
-        menu_panel_player,
-        menu_panel_preview,
-        menu_panel_thumbview,
-        menu_panel_scroller,
-        menu_panel_exif,
-        menu_panel_info,
-        menu_panel_histogram,
-        menu_panel_overview,
-        menu_panel_explorer,
-        menu_panel_metadata_dock,
-        menu_panel_comment,
-        menu_panel_history,
-        menu_panel_log,
+        panel_player,
+        panel_preview,
+        panel_thumbview,
+        panel_scroller,
+        panel_exif,
+        panel_info,
+        panel_histogram,
+        panel_overview,
+        panel_explorer,
+        panel_metadata_dock,
+        panel_comment,
+        panel_history,
+        panel_log,
 
-        menu_panel_end,
+        numPanelActions,
     };
 
-    enum ViewMenuActions {
-        menu_view_fullscreen,
-        menu_view_reset,
-        menu_view_100,
-        menu_view_fit_frame,
-        menu_view_zoom_in,
-        menu_view_zoom_out,
-        menu_view_anti_aliasing,
-        menu_view_tp_pattern,
-        menu_view_frameless,
+    enum ViewAction {
+        view_fullscreen,
+        view_reset,
+        view_100,
+        view_fit_frame,
+        view_zoom_in,
+        view_zoom_out,
+        view_anti_aliasing,
+        view_tp_pattern,
+        view_frameless,
 
-        menu_view_new_tab,
-        menu_view_close_tab,
-        menu_view_close_all_tabs,
-        menu_view_first_tab,
-        menu_view_previous_tab,
-        menu_view_goto_tab,
-        menu_view_next_tab,
-        menu_view_last_tab,
+        view_new_tab,
+        view_close_tab,
+        view_close_all_tabs,
+        view_first_tab,
+        view_previous_tab,
+        view_goto_tab,
+        view_next_tab,
+        view_last_tab,
 
-        menu_view_opacity_up,
-        menu_view_opacity_down,
-        menu_view_opacity_an,
-        menu_view_opacity_change,
-        menu_view_lock_window,
-        menu_view_gps_map,
-        menu_view_slideshow,
-        menu_view_movie_pause,
-        menu_view_movie_next,
-        menu_view_movie_prev,
+        view_opacity_up,
+        view_opacity_down,
+        view_opacity_an,
+        view_opacity_change,
+        view_lock_window,
+        view_gps_map,
+        view_slideshow,
+        view_movie_pause,
+        view_movie_next,
+        view_movie_prev,
 
-        menu_view_monitors, // frameless only
+        view_monitors, // frameless only
 
-        menu_view_end, // nothing beyond this point
+        numViewActions,
     };
 
-    enum SyncMenuActions {
-        menu_sync_view,
-        menu_sync_pos,
-        menu_sync_arrange,
-        menu_sync_connect_all,
-        menu_sync_all_actions,
+    enum SyncAction {
+        sync_view,
+        sync_pos,
+        sync_arrange,
+        sync_connect_all,
+        sync_all_actions,
 
-        menu_sync_end, // nothing beyond this point
+        numSyncActions,
     };
 
-    enum PluginMenuActions {
-        menu_plugin_manager,
+    enum PluginAction {
+        plugin_manager,
 
-        menu_plugins_end, // nothing beyond this point
+        numPluginActions,
     };
 
-    enum HelpMenuActions {
-        menu_help_update,
-        menu_help_update_translation,
-        menu_help_bug,
-        menu_help_documentation,
-        menu_help_about,
+    enum HelpAction {
+        help_update,
+        help_update_translation,
+        help_bug,
+        help_documentation,
+        help_about,
 
-        menu_help_end, // nothing beyond this point
+        numHelpActions,
     };
 
-    enum HiddenActions {
-        sc_test_rec,
-        sc_test_pong,
+    enum MiscAction {
+        test_rec,
+        test_pong,
 
-        sc_first_file,
-        sc_last_file,
-        sc_skip_prev,
-        sc_skip_next,
-        sc_skip_next_sync,
-        sc_skip_prev_sync,
-        sc_first_file_sync,
-        sc_last_file_sync,
-        sc_delete_silent,
+        nav_first_file,
+        nav_last_file,
+        nav_skip_prev,
+        nav_skip_next,
+        nav_skip_next_sync,
+        nav_skip_prev_sync,
+        nav_first_file_sync,
+        nav_last_file_sync,
 
-        sc_star_rating_0,
-        sc_star_rating_1,
-        sc_star_rating_2,
-        sc_star_rating_3,
-        sc_star_rating_4,
-        sc_star_rating_5,
+        file_delete_silent,
 
-        sc_pan_up,
-        sc_pan_down,
-        sc_pan_left,
-        sc_pan_right,
+        star_rating_0,
+        star_rating_1,
+        star_rating_2,
+        star_rating_3,
+        star_rating_4,
+        star_rating_5,
 
-        sc_end, // nothing beyond this point
+        view_pan_up,
+        view_pan_down,
+        view_pan_left,
+        view_pan_right,
+
+        numMiscActions,
     };
 
-    enum PreviewActions {
+    enum PreviewAction {
         preview_select_all,
         preview_zoom_in,
         preview_zoom_out,
@@ -380,7 +383,7 @@ public:
         preview_batch,
         preview_print,
 
-        preview_end
+        numPreviewActions
     };
 
     // default nomacs shortcuts
@@ -527,17 +530,17 @@ public:
     void createActions(QWidget *parent);
     void createMenus(QWidget *parent);
 
-    QAction *action(FileMenuActions action) const;
-    QAction *action(SortMenuActions action) const;
-    QAction *action(ViewMenuActions action) const;
-    QAction *action(EditMenuActions action) const;
-    QAction *action(ToolsMenuActions action) const;
-    QAction *action(PanelMenuActions action) const;
-    QAction *action(SyncMenuActions action) const;
-    QAction *action(PluginMenuActions action) const;
-    QAction *action(HelpMenuActions action) const;
-    QAction *action(HiddenActions action) const;
-    QAction *action(PreviewActions action) const;
+    QAction *action(FileAction action) const;
+    QAction *action(SortAction action) const;
+    QAction *action(ViewAction action) const;
+    QAction *action(EditAction action) const;
+    QAction *action(ToolsAction action) const;
+    QAction *action(PanelAction action) const;
+    QAction *action(SyncAction action) const;
+    QAction *action(PluginAction action) const;
+    QAction *action(HelpAction action) const;
+    QAction *action(MiscAction action) const;
+    QAction *action(PreviewAction action) const;
 
     QVector<QAction *> fileActions() const;
     QVector<QAction *> sortActions() const;
@@ -554,7 +557,7 @@ public:
 
     QVector<QAction *> allActions() const;
 
-    QVector<QAction *> hiddenActions() const;
+    QVector<QAction *> miscActions() const;
     DkAppManager *appManager() const;
     DkPluginActionManager *pluginActionManager() const;
 
@@ -586,7 +589,7 @@ protected:
     QMenu *createContextMenu(QWidget *parent);
     QMenu *createSyncMenu(QWidget *parent);
 
-    // actions
+    // actions indexed by their associated enum
     QVector<QAction *> mFileActions;
     QVector<QAction *> mSortActions;
     QVector<QAction *> mEditActions;
@@ -597,8 +600,7 @@ protected:
     QVector<QAction *> mPluginActions;
     QVector<QAction *> mHelpActions;
     QVector<QAction *> mPreviewActions;
-
-    QVector<QAction *> mHiddenActions;
+    QVector<QAction *> mMiscActions;
 
     DkManipulatorManager mManipulators;
 

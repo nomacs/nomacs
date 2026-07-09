@@ -322,10 +322,7 @@ void DkLocalClientManager::startServer()
     searchForOtherClients();
 
     DkActionManager &am = DkActionManager::instance();
-    connect(am.action(DkActionManager::menu_sync_connect_all),
-            &QAction::triggered,
-            this,
-            &DkLocalClientManager::connectAll);
+    connect(am.action(DkActionManager::sync_connect_all), &QAction::triggered, this, &DkLocalClientManager::connectAll);
 }
 
 // slots

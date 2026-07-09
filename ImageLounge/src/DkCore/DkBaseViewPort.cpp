@@ -95,10 +95,10 @@ DkBaseViewPort::DkBaseViewPort(bool inDialog, QWidget *parent)
 
     // connect pan actions
     const DkActionManager &am = DkActionManager::instance();
-    connect(am.action(DkActionManager::sc_pan_left), &QAction::triggered, this, &DkBaseViewPort::panLeft);
-    connect(am.action(DkActionManager::sc_pan_right), &QAction::triggered, this, &DkBaseViewPort::panRight);
-    connect(am.action(DkActionManager::sc_pan_up), &QAction::triggered, this, &DkBaseViewPort::panUp);
-    connect(am.action(DkActionManager::sc_pan_down), &QAction::triggered, this, &DkBaseViewPort::panDown);
+    connect(am.action(DkActionManager::view_pan_left), &QAction::triggered, this, &DkBaseViewPort::panLeft);
+    connect(am.action(DkActionManager::view_pan_right), &QAction::triggered, this, &DkBaseViewPort::panRight);
+    connect(am.action(DkActionManager::view_pan_up), &QAction::triggered, this, &DkBaseViewPort::panUp);
+    connect(am.action(DkActionManager::view_pan_down), &QAction::triggered, this, &DkBaseViewPort::panDown);
 
     connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &DkBaseViewPort::scrollVertically);
     connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &DkBaseViewPort::scrollHorizontally);

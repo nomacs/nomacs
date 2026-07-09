@@ -141,7 +141,7 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
 
     // add actions that cannot be found in the main menu
     DkActionManager &am = DkActionManager::instance();
-    addActions(am.hiddenActions().toList());
+    addActions(am.miscActions().toList());
     addActions(am.openWithActions().toList());
 
     connect(&mImgStorage, &DkImageStorage::infoSignal, this, &DkViewPort::infoSignal);
@@ -153,39 +153,33 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
                 &DkViewPort::applyPlugin);
 
     // connect
-    connect(am.action(DkActionManager::menu_file_reload), &QAction::triggered, this, &DkViewPort::reloadFile);
-    connect(am.action(DkActionManager::menu_file_next), &QAction::triggered, this, &DkViewPort::loadNextFileFast);
-    connect(am.action(DkActionManager::menu_file_prev), &QAction::triggered, this, &DkViewPort::loadPrevFileFast);
-    connect(am.action(DkActionManager::menu_file_save), &QAction::triggered, this, &DkViewPort::saveFile);
-    connect(am.action(DkActionManager::menu_file_save_as), &QAction::triggered, this, &DkViewPort::saveFileAs);
-    connect(am.action(DkActionManager::menu_file_save_web), &QAction::triggered, this, &DkViewPort::saveFileWeb);
-    connect(am.action(DkActionManager::menu_tools_wallpaper), &QAction::triggered, this, &DkViewPort::setAsWallpaper);
+    connect(am.action(DkActionManager::file_reload), &QAction::triggered, this, &DkViewPort::reloadFile);
+    connect(am.action(DkActionManager::nav_next_file), &QAction::triggered, this, &DkViewPort::loadNextFileFast);
+    connect(am.action(DkActionManager::nav_prev_file), &QAction::triggered, this, &DkViewPort::loadPrevFileFast);
+    connect(am.action(DkActionManager::file_save), &QAction::triggered, this, &DkViewPort::saveFile);
+    connect(am.action(DkActionManager::file_save_as), &QAction::triggered, this, &DkViewPort::saveFileAs);
+    connect(am.action(DkActionManager::file_save_web), &QAction::triggered, this, &DkViewPort::saveFileWeb);
+    connect(am.action(DkActionManager::tools_wallpaper), &QAction::triggered, this, &DkViewPort::setAsWallpaper);
 
-    connect(am.action(DkActionManager::menu_edit_rotate_cw), &QAction::triggered, this, &DkViewPort::rotateCW);
-    connect(am.action(DkActionManager::menu_edit_rotate_ccw), &QAction::triggered, this, &DkViewPort::rotateCCW);
-    connect(am.action(DkActionManager::menu_edit_rotate_180), &QAction::triggered, this, &DkViewPort::rotate180);
-    connect(am.action(DkActionManager::menu_edit_transform), &QAction::triggered, this, &DkViewPort::resizeImage);
-    connect(am.action(DkActionManager::menu_edit_delete), &QAction::triggered, this, &DkViewPort::deleteImage);
-    connect(am.action(DkActionManager::menu_edit_copy), &QAction::triggered, this, &DkViewPort::copyImagePath);
-    connect(am.action(DkActionManager::menu_edit_copy_buffer), &QAction::triggered, this, &DkViewPort::copyImageBuffer);
-    connect(am.action(DkActionManager::menu_edit_copy_color),
-            &QAction::triggered,
-            this,
-            &DkViewPort::copyPixelColorValue);
+    connect(am.action(DkActionManager::edit_rotate_cw), &QAction::triggered, this, &DkViewPort::rotateCW);
+    connect(am.action(DkActionManager::edit_rotate_ccw), &QAction::triggered, this, &DkViewPort::rotateCCW);
+    connect(am.action(DkActionManager::edit_rotate_180), &QAction::triggered, this, &DkViewPort::rotate180);
+    connect(am.action(DkActionManager::edit_transform), &QAction::triggered, this, &DkViewPort::resizeImage);
+    connect(am.action(DkActionManager::edit_delete), &QAction::triggered, this, &DkViewPort::deleteImage);
+    connect(am.action(DkActionManager::edit_copy), &QAction::triggered, this, &DkViewPort::copyImagePath);
+    connect(am.action(DkActionManager::edit_copy_buffer), &QAction::triggered, this, &DkViewPort::copyImageBuffer);
+    connect(am.action(DkActionManager::edit_copy_color), &QAction::triggered, this, &DkViewPort::copyPixelColorValue);
 
-    connect(am.action(DkActionManager::menu_view_reset), &QAction::triggered, this, &DkViewPort::zoomToFit);
-    connect(am.action(DkActionManager::menu_view_100), &QAction::triggered, this, &DkViewPort::fullView);
-    connect(am.action(DkActionManager::menu_view_zoom_in), &QAction::triggered, this, &DkViewPort::zoomIn);
-    connect(am.action(DkActionManager::menu_view_zoom_out), &QAction::triggered, this, &DkViewPort::zoomOut);
-    connect(am.action(DkActionManager::menu_view_tp_pattern), &QAction::toggled, this, &DkViewPort::togglePattern);
-    connect(am.action(DkActionManager::menu_view_movie_pause), &QAction::triggered, this, &DkViewPort::pauseMovie);
-    connect(am.action(DkActionManager::menu_view_movie_prev),
-            &QAction::triggered,
-            this,
-            &DkViewPort::previousMovieFrame);
-    connect(am.action(DkActionManager::menu_view_movie_next), &QAction::triggered, this, &DkViewPort::nextMovieFrame);
+    connect(am.action(DkActionManager::view_reset), &QAction::triggered, this, &DkViewPort::zoomToFit);
+    connect(am.action(DkActionManager::view_100), &QAction::triggered, this, &DkViewPort::fullView);
+    connect(am.action(DkActionManager::view_zoom_in), &QAction::triggered, this, &DkViewPort::zoomIn);
+    connect(am.action(DkActionManager::view_zoom_out), &QAction::triggered, this, &DkViewPort::zoomOut);
+    connect(am.action(DkActionManager::view_tp_pattern), &QAction::toggled, this, &DkViewPort::togglePattern);
+    connect(am.action(DkActionManager::view_movie_pause), &QAction::triggered, this, &DkViewPort::pauseMovie);
+    connect(am.action(DkActionManager::view_movie_prev), &QAction::triggered, this, &DkViewPort::previousMovieFrame);
+    connect(am.action(DkActionManager::view_movie_next), &QAction::triggered, this, &DkViewPort::nextMovieFrame);
 
-    connect(am.action(DkActionManager::menu_sync_view), &QAction::triggered, this, &DkViewPort::tcpForceSynchronize);
+    connect(am.action(DkActionManager::sync_view), &QAction::triggered, this, &DkViewPort::tcpForceSynchronize);
 
     // playing
     connect(mPrevButton, &QPushButton::pressed, this, &DkViewPort::loadPrevFileFast);
@@ -232,14 +226,14 @@ DkViewPort::~DkViewPort()
 void DkViewPort::createShortcuts()
 {
     DkActionManager &am = DkActionManager::instance();
-    connect(am.action(DkActionManager::sc_first_file), &QAction::triggered, this, &DkViewPort::loadFirst);
-    connect(am.action(DkActionManager::sc_last_file), &QAction::triggered, this, &DkViewPort::loadLast);
-    connect(am.action(DkActionManager::sc_skip_prev), &QAction::triggered, this, &DkViewPort::loadSkipPrev10);
-    connect(am.action(DkActionManager::sc_skip_next), &QAction::triggered, this, &DkViewPort::loadSkipNext10);
-    connect(am.action(DkActionManager::sc_first_file_sync), &QAction::triggered, this, &DkViewPort::loadFirst);
-    connect(am.action(DkActionManager::sc_last_file_sync), &QAction::triggered, this, &DkViewPort::loadLast);
-    connect(am.action(DkActionManager::sc_skip_next_sync), &QAction::triggered, this, &DkViewPort::loadNextFileFast);
-    connect(am.action(DkActionManager::sc_skip_prev_sync), &QAction::triggered, this, &DkViewPort::loadPrevFileFast);
+    connect(am.action(DkActionManager::nav_first_file), &QAction::triggered, this, &DkViewPort::loadFirst);
+    connect(am.action(DkActionManager::nav_last_file), &QAction::triggered, this, &DkViewPort::loadLast);
+    connect(am.action(DkActionManager::nav_skip_prev), &QAction::triggered, this, &DkViewPort::loadSkipPrev10);
+    connect(am.action(DkActionManager::nav_skip_next), &QAction::triggered, this, &DkViewPort::loadSkipNext10);
+    connect(am.action(DkActionManager::nav_first_file_sync), &QAction::triggered, this, &DkViewPort::loadFirst);
+    connect(am.action(DkActionManager::nav_last_file_sync), &QAction::triggered, this, &DkViewPort::loadLast);
+    connect(am.action(DkActionManager::nav_skip_next_sync), &QAction::triggered, this, &DkViewPort::loadNextFileFast);
+    connect(am.action(DkActionManager::nav_skip_prev_sync), &QAction::triggered, this, &DkViewPort::loadPrevFileFast);
 }
 
 void DkViewPort::setPaintWidget(QWidget *widget, bool removeWidget)
@@ -762,7 +756,7 @@ void DkViewPort::applyManipulator()
 
     // show the dock (in case it's not shown yet)
     if (mplExt) {
-        am.action(DkActionManager::menu_edit_image)->setChecked(true);
+        am.action(DkActionManager::panel_edit_image)->setChecked(true);
     }
 
     // undo last if it is an extended manipulator
@@ -1067,7 +1061,7 @@ void DkViewPort::nextMovieFrame()
         return;
 
     if (mMovie->state() == QMovie::Running) {
-        DkActionManager::instance().action(DkActionManager::menu_view_movie_pause)->trigger();
+        DkActionManager::instance().action(DkActionManager::view_movie_pause)->trigger();
         return;
     }
 
@@ -1081,7 +1075,7 @@ void DkViewPort::previousMovieFrame()
         return;
 
     if (mMovie->state() == QMovie::Running) {
-        DkActionManager::instance().action(DkActionManager::menu_view_movie_pause)->trigger();
+        DkActionManager::instance().action(DkActionManager::view_movie_pause)->trigger();
         return;
     }
 
@@ -1985,8 +1979,8 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
         mImgBg.load(":/nomacs/img/splash-screen.png");
 
     DkActionManager &am = DkActionManager::instance();
-    mStartActions.append(am.action(DkActionManager::menu_file_open));
-    mStartActions.append(am.action(DkActionManager::menu_file_open_dir));
+    mStartActions.append(am.action(DkActionManager::file_open));
+    mStartActions.append(am.action(DkActionManager::file_open_dir));
 
     mStartIcons.append(QIcon{":/nomacs/img/open.svg"});
     mStartIcons.append(QIcon{":/nomacs/img/dir.svg"});

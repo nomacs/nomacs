@@ -66,7 +66,7 @@ DkMainToolBar::DkMainToolBar(const QString &title, QWidget *parent /* = 0 */)
 
     connect(toggleViewAction(), &QAction::triggered, this, [](bool checked) {
         DkSettingsManager::param().app().showToolBar = checked;
-        QAction *menuAction = DkActionManager::instance().action(DkActionManager::menu_panel_toolbar);
+        QAction *menuAction = DkActionManager::instance().action(DkActionManager::panel_toolbar);
         menuAction->setChecked(checked);
     });
 }
@@ -1181,51 +1181,51 @@ void DkToolBarManager::createDefaultToolBar()
 
     // add actions
     DkActionManager &am = DkActionManager::instance();
-    mToolBar->addAction(am.action(DkActionManager::menu_file_prev));
-    mToolBar->addAction(am.action(DkActionManager::menu_file_next));
+    mToolBar->addAction(am.action(DkActionManager::nav_prev_file));
+    mToolBar->addAction(am.action(DkActionManager::nav_next_file));
     mToolBar->addSeparator();
 
-    mToolBar->addAction(am.action(DkActionManager::menu_file_open));
-    mToolBar->addAction(am.action(DkActionManager::menu_file_open_dir));
-    mToolBar->addAction(am.action(DkActionManager::menu_file_save));
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_delete));
-    mToolBar->addAction(am.action(DkActionManager::menu_tools_filter));
+    mToolBar->addAction(am.action(DkActionManager::file_open));
+    mToolBar->addAction(am.action(DkActionManager::file_open_dir));
+    mToolBar->addAction(am.action(DkActionManager::file_save));
+    mToolBar->addAction(am.action(DkActionManager::edit_delete));
+    mToolBar->addAction(am.action(DkActionManager::tools_filter));
     mToolBar->addSeparator();
 
     // view
-    mToolBar->addAction(am.action(DkActionManager::menu_view_zoom_in));
-    mToolBar->addAction(am.action(DkActionManager::menu_view_zoom_out));
+    mToolBar->addAction(am.action(DkActionManager::view_zoom_in));
+    mToolBar->addAction(am.action(DkActionManager::view_zoom_out));
     mToolBar->addSeparator();
 
     // edit
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_copy));
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_paste));
+    mToolBar->addAction(am.action(DkActionManager::edit_copy));
+    mToolBar->addAction(am.action(DkActionManager::edit_paste));
     mToolBar->addSeparator();
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_rotate_ccw));
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_rotate_cw));
+    mToolBar->addAction(am.action(DkActionManager::edit_rotate_ccw));
+    mToolBar->addAction(am.action(DkActionManager::edit_rotate_cw));
     mToolBar->addSeparator();
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_crop));
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_transform));
+    mToolBar->addAction(am.action(DkActionManager::edit_crop));
+    mToolBar->addAction(am.action(DkActionManager::edit_transform));
     mToolBar->addSeparator();
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_undo));
-    mToolBar->addAction(am.action(DkActionManager::menu_edit_redo));
+    mToolBar->addAction(am.action(DkActionManager::edit_undo));
+    mToolBar->addAction(am.action(DkActionManager::edit_redo));
     mToolBar->addSeparator();
 
     // view
-    mToolBar->addAction(am.action(DkActionManager::menu_view_fullscreen));
-    mToolBar->addAction(am.action(DkActionManager::menu_view_reset));
-    mToolBar->addAction(am.action(DkActionManager::menu_view_100));
+    mToolBar->addAction(am.action(DkActionManager::view_fullscreen));
+    mToolBar->addAction(am.action(DkActionManager::view_reset));
+    mToolBar->addAction(am.action(DkActionManager::view_100));
     mToolBar->addSeparator();
 
-    mToolBar->addAction(am.action(DkActionManager::menu_view_gps_map));
+    mToolBar->addAction(am.action(DkActionManager::view_gps_map));
     mToolBar->allActionsAdded();
 
     mMovieToolBar = nomacs->addToolBar(QObject::tr("Movie ToolBar"));
     mMovieToolBar->setObjectName("movieToolbar");
     mMovieToolBar->setIconSize(QSize(is, is));
-    mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_prev));
-    mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_pause));
-    mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_next));
+    mMovieToolBar->addAction(am.action(DkActionManager::view_movie_prev));
+    mMovieToolBar->addAction(am.action(DkActionManager::view_movie_pause));
+    mMovieToolBar->addAction(am.action(DkActionManager::view_movie_next));
 
     nomacs->addToolBar(mToolBar);
 }
@@ -1307,7 +1307,7 @@ void DkToolBarManager::showDefaultToolBar(bool show)
         return;
 
     DkActionManager::instance()
-        .action(DkActionManager::menu_panel_toolbar)
+        .action(DkActionManager::panel_toolbar)
         ->setChecked(DkSettingsManager::param().app().showToolBar);
 
     mToolBar->setVisible(show);

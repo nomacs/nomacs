@@ -97,38 +97,38 @@ class DllCoreExport DkManipulatorManager
 public:
     DkManipulatorManager();
 
-    // simple manipulators
-    enum ManipulatorId {
-        m_grayscale = 0,
-        m_auto_adjust,
-        m_normalize,
-        m_invert,
-        m_flip_h,
-        m_flip_v,
+    // manipulators with no parameters besides input image
+    enum SimpleManipulator {
+        mpl_grayscale = 0,
+        mpl_auto_adjust,
+        mpl_normalize,
+        mpl_invert,
+        mpl_flip_h,
+        mpl_flip_v,
 
-        m_end
+        numSimpleManipulators
     };
 
-    // extended manipulators
-    enum ManipulatorExtId {
-        m_rotate = m_end,
-        m_resize,
-        m_threshold,
-        m_color,
-        m_hue,
-        m_exposure,
-        m_tiny_planet,
-        m_blur,
-        m_unsharp_mask,
+    // manipulators with parameters
+    enum ExtendedManipulator {
+        mpl_rotate = numSimpleManipulators,
+        mpl_resize,
+        mpl_threshold,
+        mpl_color,
+        mpl_hue,
+        mpl_exposure,
+        mpl_tiny_planet,
+        mpl_blur,
+        mpl_unsharp_mask,
 
-        m_ext_end
+        numManipulators
     };
 
     void createManipulators(QWidget *parent);
 
     QVector<QAction *> actions() const;
 
-    QSharedPointer<DkBaseManipulatorExt> manipulatorExt(const ManipulatorExtId &mId) const;
+    QSharedPointer<DkBaseManipulatorExt> manipulatorExt(const ExtendedManipulator &mId) const;
     QSharedPointer<DkBaseManipulator> manipulator(const QAction *action) const;
     QSharedPointer<DkBaseManipulator> manipulator(const QString &name) const;
     QVector<QSharedPointer<DkBaseManipulator>> manipulators() const;

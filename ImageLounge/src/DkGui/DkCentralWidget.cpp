@@ -255,25 +255,22 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     setAcceptDrops(true);
 
     DkActionManager &am = DkActionManager::instance();
-    connect(am.action(DkActionManager::menu_view_new_tab), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::view_new_tab), &QAction::triggered, this, [this]() {
         addTab();
     });
-    connect(am.action(DkActionManager::menu_view_close_tab), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::view_close_tab), &QAction::triggered, this, [this]() {
         removeTab();
     });
-    connect(am.action(DkActionManager::menu_view_close_all_tabs), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::view_close_all_tabs), &QAction::triggered, this, [this]() {
         clearAllTabs();
     });
-    connect(am.action(DkActionManager::menu_view_first_tab), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::view_first_tab), &QAction::triggered, this, [this]() {
         setActiveTab(0);
     });
-    connect(am.action(DkActionManager::menu_view_previous_tab),
-            &QAction::triggered,
-            this,
-            &DkCentralWidget::previousTab);
-    connect(am.action(DkActionManager::menu_edit_paste), &QAction::triggered, this, &DkCentralWidget::pasteImage);
+    connect(am.action(DkActionManager::view_previous_tab), &QAction::triggered, this, &DkCentralWidget::previousTab);
+    connect(am.action(DkActionManager::edit_paste), &QAction::triggered, this, &DkCentralWidget::pasteImage);
 
-    connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::view_goto_tab), &QAction::triggered, this, [this]() {
         bool ok = false;
         int idx = QInputDialog::getInt(this,
                                        tr("Go to Tab"),
@@ -287,17 +284,14 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
         if (ok)
             setActiveTab(idx - 1);
     });
-    connect(am.action(DkActionManager::menu_view_next_tab), &QAction::triggered, this, &DkCentralWidget::nextTab);
-    connect(am.action(DkActionManager::menu_view_last_tab), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::view_next_tab), &QAction::triggered, this, &DkCentralWidget::nextTab);
+    connect(am.action(DkActionManager::view_last_tab), &QAction::triggered, this, [this]() {
         setActiveTab(getTabs().count() - 1);
     });
-    connect(am.action(DkActionManager::menu_tools_batch), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::tools_batch), &QAction::triggered, this, [this]() {
         openBatch();
     });
-    connect(am.action(DkActionManager::menu_panel_thumbview),
-            &QAction::triggered,
-            this,
-            &DkCentralWidget::showThumbView);
+    connect(am.action(DkActionManager::panel_thumbview), &QAction::triggered, this, &DkCentralWidget::showThumbView);
 
 #ifdef WITH_PLUGINS
     if (am.pluginActionManager())
@@ -354,14 +348,11 @@ void DkCentralWidget::createLayout()
 
     connect(this,
             &DkCentralWidget::imageHasGPSSignal,
-            DkActionManager::instance().action(DkActionManager::menu_view_gps_map),
+            DkActionManager::instance().action(DkActionManager::view_gps_map),
             &QAction::setEnabled);
 
     // preferences
-    connect(am.action(DkActionManager::menu_edit_preferences),
-            &QAction::triggered,
-            this,
-            &DkCentralWidget::openPreferences);
+    connect(am.action(DkActionManager::edit_preferences), &QAction::triggered, this, &DkCentralWidget::openPreferences);
 }
 
 void DkCentralWidget::saveSettings(bool saveTabs) const
@@ -580,7 +571,7 @@ DkPreferenceWidget *DkCentralWidget::createPreferences()
 DkRecentFilesWidget *DkCentralWidget::createRecentFiles()
 {
     auto *rw = new DkRecentFilesWidget(&mThumbLoader, this);
-    rw->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
+    rw->registerAction(DkActionManager::instance().action(DkActionManager::file_show_recent));
 
     connect(rw, &DkRecentFilesWidget::loadFileSignal, this, &DkCentralWidget::load);
     connect(rw, &DkRecentFilesWidget::loadDirSignal, this, &DkCentralWidget::load);
@@ -592,7 +583,7 @@ DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
 {
     auto *thumbScrollWidget = new DkThumbScrollWidget(&mThumbLoader, this);
     // thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettingsManager::param().slideShow().backgroundColor);
-    thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
+    thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::panel_thumbview));
 
     // thumbnail preview widget
     connect(thumbScrollWidget->getThumbWidget(), &DkThumbScene::loadFileSignal, this, &DkCentralWidget::load);
