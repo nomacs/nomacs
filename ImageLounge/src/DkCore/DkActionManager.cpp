@@ -1798,10 +1798,20 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction *> actions) const
         }
 
         QString actionId = a->objectName();
-        QString val = settings.value(actionId, "no-shortcut").toString();
+        QVariant val = settings.value(actionId);
+        if (!val.isValid()) {
+            // convert old setting keyed to action text
+            // we'll keep it around in case version is downgraded
+            QString oldKey = a->text().remove(QChar('&'));
+            val = settings.value(oldKey);
+            if (val.isValid()) {
+                settings.setValue(actionId, val);
+            }
+        }
 
-        if (val != "no-shortcut")
-            a->setShortcut(val);
+        if (val.isValid()) {
+            a->setShortcut(val.toString());
+        }
     }
 
     settings.endGroup();
