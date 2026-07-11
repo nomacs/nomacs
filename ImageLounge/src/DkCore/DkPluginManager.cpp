@@ -1366,31 +1366,31 @@ void DkPluginManager::createPluginsPath()
 DkPluginActionManager::DkPluginActionManager(QObject *parent)
     : QObject(parent)
 {
-    assignCustomPluginShortcuts();
+    assignDummyPluginShortcuts();
 }
 
-void DkPluginActionManager::assignCustomPluginShortcuts()
+void DkPluginActionManager::assignDummyPluginShortcuts()
 {
+    const QVariant unset{};
+    mPluginDummyActions.clear();
+
     DefaultSettings settings;
-    settings.beginGroup("CustomPluginShortcuts");
-    QStringList psKeys = settings.allKeys();
+    settings.beginGroup("PluginActions");
+
+    const QStringList pluginActionIds = settings.allKeys();
+
     settings.endGroup();
+    settings.beginGroup("CustomShortcuts");
 
-    if (psKeys.size() > 0) {
-        settings.beginGroup("CustomShortcuts");
-
-        mPluginDummyActions = QVector<QAction *>();
-
-        for (int i = 0; i < psKeys.size(); i++) {
-            auto *action = new QAction(psKeys.at(i), this);
-            QString val = settings.value(psKeys.at(i), "no-shortcut").toString();
-            if (val != "no-shortcut")
-                action->setShortcut(val);
-            connect(action, &QAction::triggered, this, &DkPluginActionManager::runPluginFromShortcut);
-            mPluginDummyActions.append(action);
+    for (auto &actionId : pluginActionIds) {
+        auto *action = new QAction(actionId, this);
+        action->setObjectName(actionId);
+        QVariant val = settings.value(actionId);
+        if (val != unset) {
+            action->setShortcut(val.toString());
         }
-
-        settings.endGroup();
+        connect(action, &QAction::triggered, this, &DkPluginActionManager::runPluginFromShortcut);
+        mPluginDummyActions.append(action);
     }
 }
 
@@ -1518,12 +1518,16 @@ void DkPluginActionManager::runPluginFromShortcut()
 
 void DkPluginActionManager::savePluginActions(QVector<QAction *> actions) const
 {
+    // save plugin action data to settings so we can bind a shortcut before plugin is loaded
     DefaultSettings settings;
-    settings.beginGroup("CustomPluginShortcuts");
-    settings.remove("");
-    for (int i = 0; i < actions.size(); i++)
-        settings.setValue(actions.at(i)->text(), actions.at(i)->text());
-    settings.endGroup();
+
+    // remove possibly outdated plugin data
+    settings.remove("PluginActions");
+
+    settings.beginGroup("PluginActions");
+    for (QAction *a : actions) {
+        settings.setValue(a->objectName(), a->text());
+    }
 }
 
 }
