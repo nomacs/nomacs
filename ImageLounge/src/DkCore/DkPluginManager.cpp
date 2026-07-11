@@ -1498,25 +1498,22 @@ void DkPluginActionManager::addPluginsToMenu()
 
 void DkPluginActionManager::runPluginFromShortcut()
 {
-    qDebug() << "running plugin shortcut...";
-
     const auto *action = qobject_cast<QAction *>(sender());
-    QString actionName = action->text();
 
     updateMenu();
 
     QVector<QAction *> allPluginActions = mPluginActions;
 
-    for (const QMenu *m : mPluginSubMenus) {
+    for (const QMenu *m : std::as_const(mPluginSubMenus)) {
         allPluginActions << m->actions().toVector();
     }
 
-    // this method fails if two plugins have the same action name!!
-    for (int i = 0; i < allPluginActions.size(); i++)
-        if (allPluginActions.at(i)->text().compare(actionName) == 0) {
-            allPluginActions.at(i)->trigger();
+    for (QAction *pluginAction : std::as_const(allPluginActions)) {
+        if (pluginAction->objectName() == action->objectName()) {
+            pluginAction->trigger();
             break;
         }
+    }
 }
 
 void DkPluginActionManager::savePluginActions(QVector<QAction *> actions) const
