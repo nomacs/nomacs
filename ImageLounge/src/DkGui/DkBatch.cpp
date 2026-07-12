@@ -2767,16 +2767,16 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
     config.setSaveInfo(si);
 
     if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
-        auto *msgBox = new DkMessageBox(QMessageBox::Question,
-                                        tr("Create Output Directory"),
-                                        tr("Should I create:\n%1").arg(config.getOutputDirPath()),
-                                        (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                        DkUtils::getMainWindow());
+        DkMessageBox msgBox(QMessageBox::Question,
+                            tr("Create Output Directory"),
+                            tr("Should I create:\n%1").arg(config.getOutputDirPath()),
+                            (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                            DkUtils::getMainWindow());
 
-        msgBox->setDefaultButton(QMessageBox::Yes);
-        msgBox->setObjectName("batchOutputDirDialog");
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        msgBox.setObjectName("batchOutputDirDialog");
 
-        int answer = msgBox->exec();
+        int answer = msgBox.exec();
 
         if (answer != QMessageBox::Accepted && answer != QMessageBox::Yes) {
             return DkBatchConfig();

@@ -380,16 +380,16 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
         return;
 
     if (cw->getTabs().size() > 1) {
-        auto *msg = new DkMessageBox(QMessageBox::Question,
-                                     tr("Quit nomacs"),
-                                     tr("Do you want nomacs to save your tabs?"),
-                                     (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                     this);
-        msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
-        msg->setButtonText(QMessageBox::No, tr("&Quit"));
-        msg->setObjectName("saveTabsDialog");
+        DkMessageBox msg(QMessageBox::Question,
+                         tr("Quit nomacs"),
+                         tr("Do you want nomacs to save your tabs?"),
+                         (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                         this);
+        msg.setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
+        msg.setButtonText(QMessageBox::No, tr("&Quit"));
+        msg.setObjectName("saveTabsDialog");
 
-        int answer = msg->exec();
+        int answer = msg.exec();
 
         if (answer == QMessageBox::Cancel || answer == QMessageBox::NoButton) { // User canceled - do not close
             event->ignore();

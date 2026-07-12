@@ -615,17 +615,16 @@ bool DkImageLoader::promptSaveBeforeUnload()
         return true;
     }
 
-    auto *msgBox = new DkMessageBox(QMessageBox::Question,
-                                    tr("Save Image"),
-                                    tr("Do you want to save changes to:\n%1")
-                                        .arg(QFileInfo(mCurrentImage->filePath()).fileName()),
-                                    (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                    DkUtils::getMainWindow());
+    DkMessageBox msgBox(QMessageBox::Question,
+                        tr("Save Image"),
+                        tr("Do you want to save changes to:\n%1").arg(QFileInfo(mCurrentImage->filePath()).fileName()),
+                        (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                        DkUtils::getMainWindow());
 
-    msgBox->setDefaultButton(QMessageBox::No);
-    msgBox->setObjectName("saveEditDialog");
+    msgBox.setDefaultButton(QMessageBox::No);
+    msgBox.setObjectName("saveEditDialog");
 
-    const int answer = msgBox->exec();
+    const int answer = msgBox.exec();
 
     if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
         // Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
@@ -993,14 +992,14 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
     // don't ask the user if save was hit & the file format is supported for saving
     if (silent && !selectedFilter.isEmpty() && isEdited()) {
         fileName = filePath();
-        auto *msg = new DkMessageBox(QMessageBox::Question,
-                                     tr("Overwrite File"),
-                                     tr("Do you want to overwrite:\n%1?").arg(fileName),
-                                     (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                     dialogParent);
-        msg->setObjectName("overwriteDialog");
+        DkMessageBox msg(QMessageBox::Question,
+                         tr("Overwrite File"),
+                         tr("Do you want to overwrite:\n%1?").arg(fileName),
+                         (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                         dialogParent);
+        msg.setObjectName("overwriteDialog");
 
-        int answer = msg->exec();
+        int answer = msg.exec();
         overwriteFile = answer == QMessageBox::Yes;
         if (answer == QDialog::Rejected || answer == QMessageBox::Cancel)
             return;
@@ -1373,16 +1372,16 @@ void DkImageLoader::rotateImage(double angle)
         // Warn if this may result in invalid metadata
         // This is not a problem if there is no write support, "Save As" will clear orientation metadata
         if (!mOrientationWarningShown && (flags & DkBasicLoader::Flag::ignored_orientation)) {
-            auto *msgBox = new DkMessageBox(QMessageBox::Warning,
-                                            tr("Creating Inconsistent Metadata"),
-                                            tr("Orientation metadata is disabled or ignored, you must use\n"
-                                               "\"Save As\" for correct metadata."),
-                                            QMessageBox::Ok | QMessageBox::Cancel,
-                                            DkUtils::getMainWindow());
-            msgBox->setDefaultButton(QMessageBox::Ok);
-            msgBox->setCheckBoxText(tr("&Do not warn me again"));
-            msgBox->setObjectName("rotateOrientationIgnored");
-            int result = msgBox->exec();
+            DkMessageBox msgBox(QMessageBox::Warning,
+                                tr("Creating Inconsistent Metadata"),
+                                tr("Orientation metadata is disabled or ignored, you must use\n"
+                                   "\"Save As\" for correct metadata."),
+                                QMessageBox::Ok | QMessageBox::Cancel,
+                                DkUtils::getMainWindow());
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            msgBox.setCheckBoxText(tr("&Do not warn me again"));
+            msgBox.setObjectName("rotateOrientationIgnored");
+            int result = msgBox.exec();
             if (result == QMessageBox::Rejected || result == QMessageBox::Cancel) {
                 return;
             }
@@ -1415,16 +1414,16 @@ void DkImageLoader::rotateImage(double angle)
     // User may not be aware they disabled this
     if (!mSaveOrientationWarningShown && metaData->hasMetaData() && !saveMetaData && !modifiedPixels
         && metaData->isWriteable()) {
-        auto *msgBox = new DkMessageBox(QMessageBox::Warning,
-                                        tr("Lossless Rotation Disabled"),
-                                        tr("This file could be rotated losslessly with EXIF metadata,\n"
-                                           "but saving orientation metadata has been disabled in settings."),
-                                        QMessageBox::Ok | QMessageBox::Cancel,
-                                        DkUtils::getMainWindow());
-        msgBox->setDefaultButton(QMessageBox::Ok);
-        msgBox->setCheckBoxText(tr("&Do not warn me again"));
-        msgBox->setObjectName("rotateSaveOrientationDisabled");
-        int result = msgBox->exec();
+        DkMessageBox msgBox(QMessageBox::Warning,
+                            tr("Lossless Rotation Disabled"),
+                            tr("This file could be rotated losslessly with EXIF metadata,\n"
+                               "but saving orientation metadata has been disabled in settings."),
+                            QMessageBox::Ok | QMessageBox::Cancel,
+                            DkUtils::getMainWindow());
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.setCheckBoxText(tr("&Do not warn me again"));
+        msgBox.setObjectName("rotateSaveOrientationDisabled");
+        int result = msgBox.exec();
         if (result == QMessageBox::Rejected || result == QMessageBox::Cancel) {
             return;
         }
