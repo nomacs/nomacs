@@ -1724,59 +1724,52 @@ void DkNoMacs::openFileWith(QAction *action)
         return result;
     };
 
-    const QString appPath = action->toolTip();
+    QString appPath = action->toolTip();
     DkFileInfo fileInfo(getTabWidget()->getCurrentFilePath());
+    QStringList args;
 
+    // don't open the file, select it in the file manager or at least open parent directory
     if (appPath == DkAppManager::kOpenDirAppName) {
         if (fileInfo.isFromZip()) {
             fileInfo = DkFileInfo(fileInfo.dirPath());
         }
+#ifdef Q_OS_WIN
+        appPath = "C:/Windows/explorer.exe";
+        args << "/select,";
+#else
         QUrl url = QUrl::fromLocalFile(fileInfo.dirPath());
+        QDesktopServices::openUrl(url);
+        return;
+#endif
+    }
+
+    if (fileInfo.isFromZip()) {
+        fileInfo = extractToTmpFile(fileInfo);
+    }
+
+    if (appPath == DkAppManager::kOpenFileAppName) {
+        QUrl url = QUrl::fromLocalFile(fileInfo.path());
         QDesktopServices::openUrl(url);
         return;
     }
 
-    if (appPath == DkAppManager::kOpenFileAppName) {
-        if (fileInfo.isFromZip()) {
-            fileInfo = extractToTmpFile(fileInfo);
-        }
-        if (fileInfo.exists()) {
-            QUrl url = QUrl::fromLocalFile(fileInfo.path());
-            QDesktopServices::openUrl(url);
-        }
-        return;
+    const QFileInfo app(appPath);
+    if (!app.exists()) {
+        getTabWidget()->setInfo(tr("Sorry, %1 does not exist").arg(app.fileName()));
     }
 
-    QFileInfo app(appPath);
-
-    if (!app.exists())
-        getTabWidget()->setInfo("Sorry, " % app.fileName() % " does not exist");
-
-    QStringList args;
-
-    // open the file location, not the file itself
-    bool openLocation = app.fileName() == "explorer.exe";
-
-    if (!openLocation && fileInfo.isFromZip()) {
-        fileInfo = extractToTmpFile(fileInfo);
-        if (!fileInfo.exists()) {
-            return;
-        }
+    // add email attachment
+    if (app.fileName().toLower() == "outlook.exe") {
+        args << "/a";
     }
-    QString filePath = fileInfo.path();
-    if (openLocation)
-        args << "/select," << QDir::toNativeSeparators(fileInfo.isFromZip() ? fileInfo.dirPath() : filePath);
-    else if (app.fileName().toLower() == "outlook.exe") {
-        args << "/a" << QDir::toNativeSeparators(filePath);
-    } else
-        args << QDir::toNativeSeparators(filePath);
+
+    args << QDir::toNativeSeparators(fileInfo.path());
+    qInfo() << "[openFileWith]" << app.absoluteFilePath() << args;
 
     bool started = mProcess.startDetached(app.absoluteFilePath(), args);
-
-    if (started)
-        qDebug() << "starting: " << app.fileName() << args;
-    else
-        getTabWidget()->setInfo("Sorry, I could not start: " % app.absoluteFilePath());
+    if (!started) {
+        getTabWidget()->setInfo(tr("Sorry, I could not start %1").arg(app.absoluteFilePath()));
+    }
 }
 
 void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC)
