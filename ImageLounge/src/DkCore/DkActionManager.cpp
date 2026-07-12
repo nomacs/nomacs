@@ -64,33 +64,27 @@ DkAppManager::DkAppManager(QWidget *parent)
 {
     loadSettings();
 
-    QString name, id;
-
-#ifndef Q_OS_WIN
-    name = kOpenDirAppName.toString();
-    id = actionId(name);
-    if (!containsApp(id)) {
+    QString name = kOpenDirAppName.toString();
+    QString id = actionId(name);
 #if defined(Q_OS_MACOS)
-        QString fileManagerName = tr("&Finder");
+    QString fileManagerName = tr("&Finder");
+#elif defined(Q_OS_WIN)
+    QString fileManagerName = tr("&Explorer");
 #else
-        QString fileManagerName = tr("&File Manager");
+    QString fileManagerName = tr("&File Manager");
 #endif
-        auto *action = new QAction(fileManagerName);
-        action->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
-        action->setToolTip(name);
-        action->setObjectName(id);
-        mApps.append(action);
-    }
-#endif
+    auto *action = new QAction(fileManagerName);
+    action->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
+    action->setToolTip(name);
+    action->setObjectName(id);
+    mApps.append(action);
 
     name = kOpenFileAppName.toString();
     id = actionId(name);
-    if (!containsApp(id)) {
-        auto *action = new QAction(tr("&Default Application"));
-        action->setToolTip(name);
-        action->setObjectName(id);
-        mApps.append(action);
-    }
+    action = new QAction(tr("&Default Application"));
+    action->setToolTip(name);
+    action->setObjectName(id);
+    mApps.append(action);
 
     if (mFirstTime)
         findDefaultSoftware();
@@ -144,15 +138,29 @@ void DkAppManager::loadSettings()
 
     for (int idx = 0; idx < size; idx++) {
         settings.setArrayIndex(idx);
-        auto *action = new QAction(parent());
-        action->setText(settings.value("appName", "").toString());
-        action->setToolTip(settings.value("appPath", "").toString());
-        action->setObjectName(actionId(action->text()));
 
-        if (QFileInfo(action->toolTip()).exists() && !action->text().isEmpty())
+        const QString appName = settings.value("appName").toString();
+        const QString appPath = settings.value("appPath").toString();
+
+#ifdef Q_OS_WIN
+        // ignore the old explorer.exe entry, now uses special @<name> entry
+        if (appName == "&Explorer" && appPath == "C:/Windows/explorer.exe") {
+            continue;
+        }
+#endif
+        // always ignore the default actions so they can have
+        // translated names and they are always available
+        if (appPath == kOpenDirAppName || appPath == kOpenFileAppName) {
+            continue;
+        }
+
+        if (QFile::exists(appPath) && !appName.isEmpty()) {
+            auto *action = new QAction(parent());
+            action->setText(appName);
+            action->setToolTip(appPath);
+            action->setObjectName(actionId(appName));
             mApps.append(action);
-        else
-            qDebug() << "could not locate: " << action->toolTip();
+        }
     }
     settings.endArray();
     settings.endGroup();
@@ -238,18 +246,6 @@ void DkAppManager::findDefaultSoftware()
             auto *a = new QAction(QObject::tr("&IrfanView"), parent());
             a->setToolTip(QDir::fromNativeSeparators(appPath));
             a->setObjectName(id);
-            mApps.append(a);
-        }
-    }
-
-    id = actionId("@explorer");
-    if (!containsApp(id)) {
-        appPath = "C:/Windows/explorer.exe";
-        if (QFileInfo(appPath).exists()) {
-            auto *a = new QAction(QObject::tr("&Explorer"), parent());
-            a->setToolTip(QDir::fromNativeSeparators(appPath));
-            a->setObjectName(id);
-            a->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
             mApps.append(a);
         }
     }
