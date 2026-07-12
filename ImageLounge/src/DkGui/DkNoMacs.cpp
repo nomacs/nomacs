@@ -756,13 +756,7 @@ void DkNoMacs::restartFrameless(bool)
 
     nmc::DkSettingsManager::param().save();
 
-    bool started = mProcess.startDetached(exe, args);
-
-    // close me if the new instance started
-    if (started)
-        close();
-
-    qDebug() << "frameless arguments: " << args;
+    DkCentralWidget::tryRestart(args);
 }
 
 void DkNoMacs::showRecentFilesOnStartUp()
@@ -774,13 +768,8 @@ void DkNoMacs::showRecentFilesOnStartUp()
 
 void DkNoMacs::startPong() const
 {
-    QString exe = QApplication::applicationFilePath();
     QStringList args;
-
-    args.append("--pong");
-
-    bool started = mProcess.startDetached(exe, args);
-    qDebug() << "pong started: " << started;
+    DkCentralWidget::tryRestart({"--pong"});
 }
 
 void DkNoMacs::fitFrame()
@@ -1551,7 +1540,6 @@ void DkNoMacs::cleanSettings()
 
 void DkNoMacs::newInstance(const QString &filePath)
 {
-    QString exe = QApplication::applicationFilePath();
     QStringList args;
 
     auto *a = static_cast<QAction *>(sender());
@@ -1569,7 +1557,7 @@ void DkNoMacs::newInstance(const QString &filePath)
     DkSettingsManager::param().app().appMode = DkSettingsManager::param().app().currentAppMode;
     DkSettingsManager::param().save();
 
-    QProcess::startDetached(exe, args);
+    QProcess::startDetached(QApplication::applicationFilePath(), args);
 }
 
 void DkNoMacs::loadRecursion()
@@ -1604,13 +1592,7 @@ void DkNoMacs::restartWithPseudoColor(bool contrast)
 
     args.append(getTabWidget()->getCurrentFilePath());
 
-    bool started = mProcess.startDetached(exe, args);
-
-    // close me if the new instance started
-    if (started)
-        close();
-
-    qDebug() << "contrast arguments: " << args;
+    DkCentralWidget::tryRestart(args);
 }
 
 void DkNoMacs::onWindowLoaded()
@@ -1783,8 +1765,7 @@ void DkNoMacs::openFileWith(QAction *action)
     } else
         args << QDir::toNativeSeparators(filePath);
 
-    bool started = mProcess.startDetached(app.absoluteFilePath(), args);
-
+    bool started = QProcess::startDetached(app.absoluteFilePath(), args);
     if (started)
         qDebug() << "starting: " << app.fileName() << args;
     else

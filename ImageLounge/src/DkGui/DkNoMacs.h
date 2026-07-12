@@ -238,7 +238,6 @@ protected:
     DkTranslationUpdater *mTranslationUpdater = nullptr;
 
     QRect mOldGeometry;
-    QProcess mProcess;
 
     // functions
     explicit DkNoMacs(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
