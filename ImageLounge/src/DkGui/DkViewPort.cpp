@@ -645,16 +645,16 @@ void DkViewPort::deleteImage()
     question = tr("Do you want to permanently delete %1?").arg(fileInfo.fileName());
 #endif
 
-    auto *msgBox = new DkMessageBox(QMessageBox::Question,
-                                    tr("Delete File"),
-                                    question,
-                                    (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                    this);
+    DkMessageBox msgBox(QMessageBox::Question,
+                        tr("Delete File"),
+                        question,
+                        (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                        this);
 
-    msgBox->setDefaultButton(QMessageBox::Yes);
-    msgBox->setObjectName("deleteFileDialog");
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    msgBox.setObjectName("deleteFileDialog");
 
-    int answer = msgBox->exec();
+    int answer = msgBox.exec();
 
     if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes)
         mLoader->deleteFile();

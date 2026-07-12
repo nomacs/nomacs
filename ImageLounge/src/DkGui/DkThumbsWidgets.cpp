@@ -1843,16 +1843,16 @@ void DkThumbScene::deleteSelected()
     if (numFiles <= 0)
         return;
 
-    auto *msgBox = new DkMessageBox(QMessageBox::Question,
-                                    tr("Delete File"),
-                                    tr("Shall I move %1 file(s) to trash?").arg(numFiles),
-                                    (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                    DkUtils::getMainWindow());
+    DkMessageBox msgBox(QMessageBox::Question,
+                        tr("Delete File"),
+                        tr("Shall I move %1 file(s) to trash?").arg(numFiles),
+                        (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                        DkUtils::getMainWindow());
 
-    msgBox->setDefaultButton(QMessageBox::Yes);
-    msgBox->setObjectName("deleteThumbFileDialog");
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    msgBox.setObjectName("deleteThumbFileDialog");
 
-    int answer = msgBox->exec();
+    int answer = msgBox.exec();
 
     if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
         (void)DkUtils::moveToTrash(getSelectedFiles());

@@ -101,8 +101,6 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
                                 const QString &userText,
                                 QMessageBox::StandardButtons buttons)
 {
-    setAttribute(Qt::WA_DeleteOnClose, true);
-
     auto *grid = new QGridLayout;
     int leftMargin = style()->pixelMetric(QStyle::PM_LayoutLeftMargin, nullptr, this);
     grid->setSpacing(leftMargin);
@@ -177,7 +175,12 @@ int DkMessageBox::exec()
     if (!show)
         return answer;
 
-    answer = QDialog::exec(); // destroys dialog - be careful with what you do afterwards
+    if (testAttribute(Qt::WA_DeleteOnClose)) {
+        qFatal("WA_DeleteOnClose deletes before exec() returns!");
+        return 0;
+    }
+
+    answer = QDialog::exec();
 
     settings.beginGroup("DkDialog");
     if (answer != QMessageBox::NoButton && answer != QMessageBox::Cancel) {
