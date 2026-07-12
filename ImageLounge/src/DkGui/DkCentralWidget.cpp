@@ -1040,23 +1040,32 @@ void DkCentralWidget::switchWidget(QWidget *widget)
     }
 }
 
+void DkCentralWidget::tryRestart(const QStringList &args)
+{
+    auto conn = connect(qApp, &QApplication::lastWindowClosed, [args] {
+        qInfo() << "Restarting with args:" << args;
+        QProcess::startDetached(QApplication::applicationFilePath(), args);
+    });
+
+    // if all windows close successfully, signal fires
+    QApplication::closeAllWindows();
+
+    // closeAllWindows doesn't return until signal fires, safe to disconnect here
+    disconnect(conn);
+}
+
 void DkCentralWidget::restart() const
 {
-    // safe settings first - since the intention of a restart is often a global settings change
+    // save settings first - since the intention of a restart is often a global settings change
     DkSettingsManager::param().save();
 
-    QString exe = QApplication::applicationFilePath();
     QStringList args;
 
-    if (getCurrentImage())
+    if (getCurrentImage()) {
         args.append(getCurrentImage()->filePath());
+    }
 
-    QProcess p;
-    bool started = p.startDetached(exe, args);
-
-    // close me if the new instance started
-    if (started)
-        QApplication::closeAllWindows();
+    tryRestart(args);
 }
 
 void DkCentralWidget::showProgress(bool show, int time)

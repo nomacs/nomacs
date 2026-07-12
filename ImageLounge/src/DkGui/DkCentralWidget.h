@@ -131,6 +131,8 @@ public:
     QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
     bool requestClose() const;
 
+    static void tryRestart(const QStringList &args = {});
+
 signals:
     void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
     void imageHasGPSSignal(bool) const;
