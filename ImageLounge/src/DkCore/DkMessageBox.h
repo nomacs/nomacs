@@ -61,13 +61,12 @@ public slots:
     int exec() override;
 
 protected:
-    QLabel *iconLabel;
-    QLabel *textLabel;
-    QDialogButtonBox *buttonBox;
-    QCheckBox *showAgain;
+    QLabel *mTextLabel;
+    QDialogButtonBox *mButtonBox;
+    QCheckBox *mShowAgain;
 
     void createLayout(QMessageBox::Icon userIcon, const QString &userText, QMessageBox::StandardButtons buttons);
     void updateSize();
-    QPixmap msgBoxStandardIcon(QMessageBox::Icon icon);
+    QPixmap msgBoxStandardIcon(QMessageBox::Icon icon) const;
 };
 }
