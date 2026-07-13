@@ -46,9 +46,9 @@ namespace nmc
 DkMessageBox::DkMessageBox(QMessageBox::Icon icon,
                            const QString &title,
                            const QString &text,
-                           QMessageBox::StandardButtons buttons /* = QMessageBox::NoButton */,
-                           QWidget *parent /* = 0 */,
-                           Qt::WindowFlags f /* = Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint */)
+                           QMessageBox::StandardButtons buttons,
+                           QWidget *parent,
+                           Qt::WindowFlags f)
     : QDialog(parent, f)
 {
     createLayout(icon, text, buttons);
@@ -59,7 +59,7 @@ DkMessageBox::~DkMessageBox() = default;
 
 // Modified from
 // https://github.com/qt/qtbase/blob/cca658d4821b6d7378df13c29d1dab53c44359ac/src/widgets/dialogs/qmessagebox.cpp#L2735C1-L2761C2
-QPixmap DkMessageBox::msgBoxStandardIcon(QMessageBox::Icon icon)
+QPixmap DkMessageBox::msgBoxStandardIcon(QMessageBox::Icon icon) const
 {
     QStyle *style = this->style();
     int iconSize = style->pixelMetric(QStyle::PM_MessageBoxIconSize);
@@ -98,75 +98,64 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
     int leftMargin = style()->pixelMetric(QStyle::PM_LayoutLeftMargin, nullptr, this);
     grid->setSpacing(leftMargin);
 
-    // schamlos von qmessagebox.cpp geklaut
-    textLabel = new QLabel(userText);
+    auto *textLabel = new QLabel(userText);
     textLabel->setTextInteractionFlags(
         Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, nullptr, this)));
-    textLabel->setObjectName(QLatin1String("textLabel"));
+    textLabel->setObjectName("textLabel");
     textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     textLabel->setOpenExternalLinks(true);
     textLabel->setIndent(0);
 
-    iconLabel = new QLabel;
+    auto *iconLabel = new QLabel;
     iconLabel->setPixmap(msgBoxStandardIcon(userIcon));
-    iconLabel->setObjectName(QLatin1String("iconLabel"));
+    iconLabel->setObjectName("iconLabel");
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    showAgain = new QCheckBox(tr("Remember my choice"));
-    showAgain->setObjectName(QLatin1String("checkBox"));
-    showAgain->setChecked(true);
+    mShowAgain = new QCheckBox(tr("Remember my choice"));
+    mShowAgain->setObjectName("checkBox");
+    mShowAgain->setChecked(true);
 
-    buttonBox = new QDialogButtonBox;
-    buttonBox->setObjectName(QLatin1String("buttonBox"));
-    buttonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, nullptr, this) != 0);
-    QObject::connect(buttonBox, &QDialogButtonBox::clicked, this, &DkMessageBox::buttonClicked);
 
-    buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
+    mButtonBox = new QDialogButtonBox;
+    mButtonBox->setObjectName("buttonBox");
+    mButtonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, nullptr, this) != 0);
+    mButtonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
+    QObject::connect(mButtonBox, &QDialogButtonBox::clicked, this, &DkMessageBox::buttonClicked);
 
-#if 1
     grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
     grid->addWidget(textLabel, 0, 1, 2, 1);
-    grid->addWidget(showAgain, 2, 1, 1, 2);
-    grid->addWidget(buttonBox, 3, 0, 1, 2);
-#else
-    grid->setVerticalSpacing(8);
-    grid->setHorizontalSpacing(0);
-    setContentsMargins(24, 15, 24, 20);
-    grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignLeft);
-    grid->addWidget(textLabel, 0, 1, 1, 1);
-    // -- leave space for information label --
-    grid->setRowStretch(1, 100);
-    grid->setRowMinimumHeight(2, 6);
-    grid->addWidget(buttonBox, 3, 1, 1, 1);
-#endif
+    grid->addWidget(mShowAgain, 2, 1, 1, 2);
+    grid->addWidget(mButtonBox, 3, 0, 1, 2);
 
-    // grid->setSizeConstraint(QLayout::SetNoConstraint);
     setLayout(grid);
-
     setModal(true);
 }
 
 void DkMessageBox::setVisible(bool visible)
 {
-    if (visible)
+    if (visible) {
         adjustSize();
+    }
 
     QDialog::setVisible(visible);
 }
 
 int DkMessageBox::exec()
 {
-    QString objName = objectName();
-    const QString answerKey = objName + "-answer";
+    const QString dialogId = objectName();
+    const QString answerKey = dialogId + "-answer";
 
     DefaultSettings settings;
     settings.beginGroup("DkDialog");
-    bool show = settings.value(objName, true).toBool();
-    int answer = settings.value(answerKey, QDialog::Accepted).toInt();
-    showAgain->setChecked(!show);
 
-    if (!show)
+    bool show = settings.value(dialogId, true).toBool();
+    int answer = settings.value(answerKey, QDialog::Accepted).toInt();
+    mShowAgain->setChecked(!show);
+
+    if (!show) {
+        qInfo() << "Dialog" << dialogId << "skipped with answer" << static_cast<QMessageBox::StandardButton>(answer);
         return answer;
+    }
 
     if (testAttribute(Qt::WA_DeleteOnClose)) {
         qFatal("WA_DeleteOnClose deletes before exec() returns!");
@@ -175,13 +164,13 @@ int DkMessageBox::exec()
 
     answer = QDialog::exec();
 
-    show = !showAgain->isChecked();
+    show = !mShowAgain->isChecked();
 
     if (!show && answer != QMessageBox::NoButton && answer != QMessageBox::Cancel) {
-        settings.setValue(objName, false);
+        settings.setValue(dialogId, false);
         settings.setValue(answerKey, answer);
     } else {
-        settings.remove(objName);
+        settings.remove(dialogId);
         settings.remove(answerKey);
     }
 
@@ -190,36 +179,37 @@ int DkMessageBox::exec()
 
 void DkMessageBox::setDefaultButton(QMessageBox::StandardButton button)
 {
-    QPushButton *b = buttonBox->button(QDialogButtonBox::StandardButton(button));
-
-    if (!b)
-        return;
-
-    b->setDefault(true);
-    b->setFocus();
+    QPushButton *b = mButtonBox->button(QDialogButtonBox::StandardButton(button));
+    if (b) {
+        b->setDefault(true);
+        b->setFocus();
+    }
 }
 
 void DkMessageBox::setButtonText(QMessageBox::StandardButton button, const QString &text)
 {
-    if (QAbstractButton *abstractButton = buttonBox->button(QDialogButtonBox::StandardButton(button)))
-        abstractButton->setText(text);
+    QPushButton *b = mButtonBox->button(QDialogButtonBox::StandardButton(button));
+    if (b) {
+        b->setText(text);
+    }
 }
 
 void DkMessageBox::setCheckBoxText(const QString &text)
 {
-    showAgain->setText(text);
+    mShowAgain->setText(text);
 }
 
 void DkMessageBox::buttonClicked(QAbstractButton *button)
 {
-    int ret = buttonBox->standardButton(button);
+    int ret = mButtonBox->standardButton(button);
     done(ret); // does not trigger closeEvent
 }
 
 void DkMessageBox::updateSize()
 {
-    if (!isVisible())
+    if (!isVisible()) {
         return;
+    }
 
     QFontMetrics fm(QApplication::font("QMdiSubWindowTitleBar"));
 
@@ -233,8 +223,9 @@ void DkMessageBox::updateSize()
 #else
     int hardLimit = qMin(screenSize.width() - 480, 1000); // can never get bigger than this
     // on small screens allows the messagebox be the same size as the screen
-    if (screenSize.width() <= 1024)
+    if (screenSize.width() <= 1024) {
         hardLimit = screenSize.width();
+    }
 #endif
 #ifdef Q_OS_MAC
     int softLimit = qMin(screenSize.width() / 2, 420);
@@ -247,20 +238,22 @@ void DkMessageBox::updateSize()
 #endif // Q_OS_WINCE
 #endif
 
-    textLabel->setWordWrap(false); // makes the label return min size
+    mTextLabel->setWordWrap(false); // makes the label return min size
     int width = minimumWidth();
 
     if (width > softLimit) {
-        textLabel->setWordWrap(true);
+        mTextLabel->setWordWrap(true);
         width = qMax(softLimit, minimumWidth());
 
-        if (width > hardLimit)
+        if (width > hardLimit) {
             width = hardLimit;
+        }
     }
 
     int windowTitleWidth = qMin(textWidth, hardLimit);
-    if (windowTitleWidth > width)
+    if (windowTitleWidth > width) {
         width = windowTitleWidth;
+    }
 
     this->setFixedSize(width, minimumHeight());
     QCoreApplication::removePostedEvents(this, QEvent::LayoutRequest);
