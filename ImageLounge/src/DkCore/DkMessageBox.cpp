@@ -55,14 +55,7 @@ DkMessageBox::DkMessageBox(QMessageBox::Icon icon,
     setWindowTitle(title);
 }
 
-DkMessageBox::~DkMessageBox()
-{
-    // save settings
-    DefaultSettings settings;
-    settings.beginGroup("DkDialog");
-    settings.setValue(objectName(), !showAgain->isChecked());
-    settings.endGroup();
-}
+DkMessageBox::~DkMessageBox() = default;
 
 // Modified from
 // https://github.com/qt/qtbase/blob/cca658d4821b6d7378df13c29d1dab53c44359ac/src/widgets/dialogs/qmessagebox.cpp#L2735C1-L2761C2
@@ -164,12 +157,12 @@ void DkMessageBox::setVisible(bool visible)
 int DkMessageBox::exec()
 {
     QString objName = objectName();
+    const QString answerKey = objName + "-answer";
 
     DefaultSettings settings;
     settings.beginGroup("DkDialog");
     bool show = settings.value(objName, true).toBool();
-    int answer = settings.value(objName + "-answer", QDialog::Accepted).toInt();
-    settings.endGroup();
+    int answer = settings.value(answerKey, QDialog::Accepted).toInt();
     showAgain->setChecked(!show);
 
     if (!show)
@@ -182,13 +175,15 @@ int DkMessageBox::exec()
 
     answer = QDialog::exec();
 
-    settings.beginGroup("DkDialog");
-    if (answer != QMessageBox::NoButton && answer != QMessageBox::Cancel) {
-        // save show again
-        settings.setValue(objName + "-answer", answer);
-    } else
-        settings.setValue(objName, true);
-    settings.endGroup();
+    show = !showAgain->isChecked();
+
+    if (!show && answer != QMessageBox::NoButton && answer != QMessageBox::Cancel) {
+        settings.setValue(objName, false);
+        settings.setValue(answerKey, answer);
+    } else {
+        settings.remove(objName);
+        settings.remove(answerKey);
+    }
 
     return answer;
 }
