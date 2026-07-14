@@ -1544,6 +1544,7 @@ void DkNoMacs::newInstance(const QString &filePath)
 
     auto *a = static_cast<QAction *>(sender());
 
+    args << "--nmc-session" << QString::number(DkSettingsManager::param().global().sessionId);
     args << "--skip-startup";
 
     if (a && a == DkActionManager::instance().action(DkActionManager::menu_file_private_instance))

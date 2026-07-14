@@ -295,6 +295,8 @@ public:
         int sortDir;
         quint32 sortSeed;
         QString pluginsDir;
+
+        qulonglong sessionId;
     };
 
     struct SlideShow {
