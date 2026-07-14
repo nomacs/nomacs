@@ -1,7 +1,7 @@
 @echo off
 
 IF NOT EXIST pkgconf (
-  git clone --depth 1 -b pkgconf-2.5.1 https://github.com/pkgconf/pkgconf.git pkgconf
+  git clone --depth 1 -b pkgconf-3.0.2 https://github.com/pkgconf/pkgconf.git pkgconf
 )
 
 IF NOT EXIST zlib (
@@ -17,7 +17,7 @@ IF NOT EXIST openjpeg (
 )
 
 IF NOT EXIST dav1d (
-  git clone --depth 1 -b 1.5.3 https://code.videolan.org/videolan/dav1d.git dav1d 
+  git clone --depth 1 -b 1.5.4 https://code.videolan.org/videolan/dav1d.git dav1d 
 )
 
 IF NOT EXIST lcms2 (
@@ -38,10 +38,15 @@ IF NOT EXIST libwebp (
 
 IF NOT EXIST libavif (
   git clone --depth 1 -b v1.4.2 https://github.com/AOMediaCodec/libavif.git libavif
+  cd libavif\ext
+  git clone --single-branch https://chromium.googlesource.com/libyuv/libyuv
+  cd libyuv
+  git checkout 5d03bf9ba
+  cd ..\..\..
 )
 
 IF NOT EXIST openexr (
-  git clone --depth 1 -b v3.4.12 https://github.com/AcademySoftwareFoundation/openexr.git openexr
+  git clone --depth 1 -b v3.4.13 https://github.com/AcademySoftwareFoundation/openexr.git openexr
 )
 
 IF NOT EXIST xz (
@@ -53,15 +58,15 @@ IF NOT EXIST zstd (
 )
 
 IF NOT EXIST libtiff (
-  git clone --depth 1 -b v4.7.1 https://gitlab.com/libtiff/libtiff.git libtiff
+  git clone --depth 1 -b v4.7.2 https://gitlab.com/libtiff/libtiff.git libtiff
 )
 
 IF NOT EXIST opencv (
-  git clone --depth 1 -b 4.13.0 https://github.com/opencv/opencv.git opencv
+  git clone --depth 1 -b 5.0.0 https://github.com/opencv/opencv.git opencv
 )
 
 IF NOT EXIST libexpat (
-  git clone --depth 1 -b R_2_8_1 https://github.com/libexpat/libexpat.git libexpat
+  git clone --depth 1 -b R_2_8_2 https://github.com/libexpat/libexpat.git libexpat
 )
 
 IF NOT EXIST exiv2 (
@@ -78,7 +83,7 @@ IF NOT EXIST libraw (
 )
 
 IF NOT EXIST quazip (
-  git clone --depth 1 -b v1.7.1 https://github.com/stachenov/quazip.git quazip
+  git clone --depth 1 -b v1.7.2 https://github.com/stachenov/quazip.git quazip
 )
 
 IF NOT EXIST libde265 (
@@ -98,7 +103,7 @@ IF NOT EXIST libheif (
 )
 
 IF NOT EXIST extra-cmake-modules (
-  git clone --depth 1 -b v6.27.0 https://invent.kde.org/frameworks/extra-cmake-modules.git extra-cmake-modules
+  git clone --depth 1 -b v6.28.0 https://invent.kde.org/frameworks/extra-cmake-modules.git extra-cmake-modules
 )
 
 IF NOT EXIST jxrlib (
@@ -107,12 +112,12 @@ IF NOT EXIST jxrlib (
 )
 
 IF NOT EXIST karchive (
-  git clone --depth 1 -b v6.27.0 https://invent.kde.org/frameworks/karchive.git karchive
+  git clone --depth 1 -b v6.28.0 https://invent.kde.org/frameworks/karchive.git karchive
 )
 
 IF NOT EXIST kimageformats (
   git clone --single-branch https://invent.kde.org/frameworks/kimageformats.git kimageformats
   cd kimageformats
-  git checkout 18322b06593bf08105f9bdeaaa4bc142ba71ec31
+  git checkout 2faf524b850959c28fdda19998bdc291a0380415
   cd ..
 )

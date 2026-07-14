@@ -9,7 +9,7 @@ RMDIR /S /Q build-pkgconf
 mkdir build-pkgconf
 cd build-pkgconf
 
-meson setup --prefix=%NOMACS_DEPENDENCIES% --buildtype=release -Dtests=disabled ../pkgconf
+meson setup --prefix=%NOMACS_DEPENDENCIES% --buildtype=release ../pkgconf
 
 if %ERRORLEVEL% NEQ 0 (
   echo Error configure

@@ -55,72 +55,82 @@ if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-011-libtiff.bat
+call make-011-xz.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-012-opencv.bat
+call make-012-zstd.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-013-libexpat.bat
+call make-013-libtiff.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-014-exiv2.bat
+call make-014-opencv.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-015-libraw.bat
+call make-015-libexpat.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-016-quazip.bat
+call make-016-exiv2.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-017-libde265.bat
+call make-017-libraw.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-018-openh264.bat
+call make-018-quazip.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-019-x264.bat
+call make-019-libde265.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-020-libheif.bat
+call make-020-openh264.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-021-extra-cmake-modules.bat
+call make-021-x264.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-022-jxrlib.bat
+call make-022-libheif.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-023-karchive.bat
+call make-023-extra-cmake-modules.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-call make-024-kimageformats.bat
+call make-024-jxrlib.bat
+if %ERRORLEVEL% NEQ 0 (
+  exit /b 1
+)
+
+call make-025-karchive.bat
+if %ERRORLEVEL% NEQ 0 (
+  exit /b 1
+)
+
+call make-026-kimageformats.bat
 if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )

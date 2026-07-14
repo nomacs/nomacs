@@ -22,7 +22,7 @@ Important! Use / as folder separator for NOMACS_DEPENDENCIES variable
 SET NOMACS_DEPENDENCIES=C:/projects/nomacs/3rd-party
 
 Use same Qt version for dependencies and for the nomacs itself
-SET QT6=C:\Qt\6.9.3\msvc2022_64
+SET QT6=C:\Qt\6.11.1\msvc2022_64
 
 Adjust path for Python for the location where you installed it:
 SET PYTHON3_EXECUTABLE="C:\Program Files\Python313\python.exe"
