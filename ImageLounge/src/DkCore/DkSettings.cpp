@@ -1031,6 +1031,7 @@ void DkSettings::setToDefaultSettings()
     global_p.horZoomSkips = true;
     global_p.doubleClickForFullscreen = true;
     global_p.showLogoImage = true;
+    global_p.sessionId = QDateTime::currentSecsSinceEpoch();
 
 #ifdef Q_OS_LINUX
     sync_p.switchModifier = true;

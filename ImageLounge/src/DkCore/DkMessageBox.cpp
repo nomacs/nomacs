@@ -164,8 +164,7 @@ void DkMessageBox::setVisible(bool visible)
 
 int DkMessageBox::exec()
 {
-    // TODO: new instances should probably count as same session
-    static const qulonglong sessionId = QDateTime::currentSecsSinceEpoch();
+    const qulonglong sessionId = DkSettingsManager::param().global().sessionId;
 
     const QString dialogId = objectName();
     const QString answerKey = dialogId + "-answer";

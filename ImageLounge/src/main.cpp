@@ -155,6 +155,11 @@ int main(int argc, char *argv[])
     skipStartupOpt.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(skipStartupOpt);
 
+    // odd name but session* is reserved by Qt
+    QCommandLineOption sessionOpt(QStringList("nmc-session"), "", "sessionId");
+    sessionOpt.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(sessionOpt);
+
     parser.process(app);
 
     // CMD parser --------------------------------------------------------------------
@@ -237,6 +242,10 @@ int main(int argc, char *argv[])
     app.installTranslator(&translatorQt);
 
     nmc::DkNoMacs *w = nullptr;
+
+    if (parser.isSet(sessionOpt)) {
+        nmc::DkSettingsManager::param().global().sessionId = parser.value(sessionOpt).toULongLong();
+    }
 
     if (parser.isSet(privateOpt))
         nmc::DkSettingsManager::param().app().privateMode = true;
