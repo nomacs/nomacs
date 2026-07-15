@@ -17,6 +17,7 @@ environment:
       PYTHON: "C:\\Python314-x64"
       GIT_CLONE_PROTECTION_ACTIVE: false
       NOMACS_DEPENDENCIES: C:/projects/nomacs/3rd-party
+      MS_CMAKE_PATH: C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin
 
     certpwd:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
@@ -28,7 +29,7 @@ install:
     - mkdir C:\projects\nomacs\3rd-party
     - 7z x -oC:\projects\nomacs\3rd-party "nomacs-dependencies.7z"
     - move nasm-* NASM
-    - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%;%CD%\NASM;
+    - set PATH=%MS_CMAKE_PATH%;%PYTHON%;%PYTHON%\\Scripts;%PATH%;%CD%\NASM;
     - nasm -v
     - call "%VCVARS%"
 
