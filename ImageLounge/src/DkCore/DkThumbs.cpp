@@ -53,7 +53,7 @@ std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT
     int orientation = metaData.getOrientationDegrees();
 
     bool disableTransform = DkSettingsManager::param().metaData().ignoreExifOrientation; // match loadGeneral()
-    disableTransform |= loadOptions & DkLoadOption::untransformed; // match loadGeneral()
+    disableTransform = disableTransform || loadOptions.testFlag(DkLoadOption::untransformed); // match loadGeneral()
     const bool shouldTransform = !disableTransform && orientation != DkMetaDataT::or_invalid
         && orientation != DkMetaDataT::or_not_set;
     if (shouldTransform) {
