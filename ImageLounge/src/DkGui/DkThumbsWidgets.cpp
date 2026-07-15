@@ -1866,19 +1866,20 @@ void DkThumbScene::renameSelected() const
         return;
 
     bool ok;
+    const bool oneFile = fileList.count() == 1;
     QString newFileName = QInputDialog::getText(DkUtils::getMainWindow(),
-                                                tr("Rename File(s)"),
-                                                tr("New Filename:"),
+                                                oneFile ? tr("Rename File") : tr("Rename Multiple Files"),
+                                                oneFile ? tr("New Filename:") : tr("Filename Prefix:"),
                                                 QLineEdit::Normal,
-                                                "",
+                                                oneFile ? QFileInfo(fileList[0]).completeBaseName() : "img",
                                                 &ok);
 
     if (!ok || newFileName.isEmpty()) {
         return;
     }
 
-    QString pattern = (fileList.size() == 1) ? newFileName + ".<old>"
-                                             : newFileName + "<d:3>.<old>"; // no index if just 1 file was added
+    QString pattern = oneFile ? newFileName + ".<old>"
+                              : newFileName + "<d:3>.<old>"; // no index if just 1 file was added
     DkFileNameConverter converter(pattern);
 
     for (int idx = 0; idx < fileList.size(); idx++) {
