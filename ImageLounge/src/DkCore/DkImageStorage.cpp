@@ -2250,7 +2250,6 @@ bool DkImage::isResizeDownsampling(const QSize &srcSize, int dstSize, ScaleConst
         return srcSize.height() >= dstSize;
     }
     Q_UNREACHABLE();
-    return false;
 }
 
 QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint constraint)
