@@ -24,7 +24,7 @@ environment:
 
 install:
     - appveyor DownloadFile "https://github.com/novomesk/downloads/raw/main/nasm-2.16.03-win64.zip" -FileName "nasm.zip"
-    - appveyor DownloadFile "https://github.com/novomesk/downloads/raw/refs/heads/main/nomacs/nomacs-dependencies-2026-07-14.7z" -FileName "nomacs-dependencies.7z"
+    - appveyor DownloadFile "https://github.com/novomesk/downloads/raw/refs/heads/main/nomacs/nomacs-dependencies-2026-07-17.7z" -FileName "nomacs-dependencies.7z"
     - 7z x "nasm.zip"
     - mkdir C:\projects\nomacs\3rd-party
     - 7z x -oC:\projects\nomacs\3rd-party "nomacs-dependencies.7z"

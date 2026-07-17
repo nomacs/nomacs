@@ -1,7 +1,7 @@
 @echo off
 
 IF NOT EXIST pkgconf (
-  git clone --depth 1 -b pkgconf-3.0.2 https://github.com/pkgconf/pkgconf.git pkgconf
+  git clone --depth 1 -b pkgconf-3.0.3 https://github.com/pkgconf/pkgconf.git pkgconf
 )
 
 IF NOT EXIST zlib (
@@ -77,7 +77,7 @@ IF NOT EXIST libraw (
   mkdir libraw
   cd libraw
   git clone --depth 1 https://github.com/LibRaw/LibRaw-cmake.git
-  git clone --depth 1 -b 0.22.1 https://github.com/LibRaw/LibRaw.git
+  git clone --depth 1 -b 0.22.2 https://github.com/LibRaw/LibRaw.git
   copy ..\!patches\libraw-build-source.txt CMakeLists.txt
   cd ..
 )
@@ -118,6 +118,6 @@ IF NOT EXIST karchive (
 IF NOT EXIST kimageformats (
   git clone --single-branch https://invent.kde.org/frameworks/kimageformats.git kimageformats
   cd kimageformats
-  git checkout 2faf524b850959c28fdda19998bdc291a0380415
+  git checkout ad0fb9dde4ffb1977a3ea800d90a26665de687b8
   cd ..
 )
