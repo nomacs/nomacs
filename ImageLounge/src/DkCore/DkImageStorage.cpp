@@ -2667,7 +2667,7 @@ protected:
         return render<ChannelType>(self, Format::Type, Format::Channels);
     }
 
-    static constexpr int kCaps = cap_gray | cap_rgb_invariant | cap_serial;
+    static constexpr int kCaps = cap_gray | cap_rgb | cap_bgr | cap_serial;
     static constexpr FmtList kFmts = listForKernelCaps(kCaps);
     static constexpr DispatchTable kTable = makeTable<DkHistogramRender>(kFmts);
 
