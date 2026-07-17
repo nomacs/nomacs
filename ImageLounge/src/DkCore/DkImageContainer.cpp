@@ -29,6 +29,7 @@
 
 #include "DkBasicLoader.h"
 #include "DkImageStorage.h"
+#include "DkMessageBox.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
@@ -693,6 +694,54 @@ void DkImageContainerT::loadingFinished()
         emit showInfoSignal(msg);
         emit fileLoadedSignal(false);
         mLoadState = exists_not;
+
+#ifndef Q_OS_WIN
+        // common issue with nomacs is kimageformats isn't installed by distro, so provide some help
+        // check extension unique to kimageformats and unlikely to be disabled
+        static bool installed = QImageReader::supportedImageFormats().contains(QByteArrayView{"qoi"});
+        static bool dialogShown = false;
+
+        if (!installed && !dialogShown) {
+            // all kimageformats extensions as of 7ec1170
+            // generate with: jq -r '.Keys[]' src/imageformats/*.json | uniq | sort | xargs -I '{}' echo '"{}",'
+            static constexpr std::array<const char *, 80> knownSuffixes{
+                "3fr",  "ani", "arw",  "avci", "avif", "avifs", "bw",   "cr2",  "cr3", "crw", "dcr",  "dds",
+                "dng",  "eps", "epsf", "epsi", "erf",  "exr",   "ff",   "fff",  "hdp", "hdr", "heic", "heif",
+                "hej2", "hif", "iff",  "iiq",  "ilbm", "im1",   "im24", "im32", "im8", "j2k", "jp2",  "jpf",
+                "jxl",  "jxr", "k25",  "kdc",  "kra",  "lbm",   "mdc",  "mef",  "mos", "mrw", "nef",  "nrw",
+                "ora",  "orf", "pcx",  "pdd",  "pef",  "pfm",   "phm",  "pic",  "psb", "psd", "psdt", "pxr",
+                "qoi",  "raf", "ras",  "raw",  "rgb",  "rgba",  "rw2",  "rwl",  "sct", "sgi", "sr2",  "srf",
+                "srw",  "sti", "sun",  "tga",  "tim",  "wdp",   "x3f",  "xcf",
+            };
+
+            const auto fileSuffix = fileInfo().suffix().toLower().toStdString();
+            bool supported = std::binary_search(knownSuffixes.begin(), knownSuffixes.end(), fileSuffix);
+
+            if (supported) {
+                dialogShown = true;
+
+                // log something in case dialog is suppressed
+                qInfo() << "kimageformats supports" << fileSuffix.c_str() << "but it does not seem to be installed";
+
+                DkMessageBox msgBox(QMessageBox::Information,
+                                    tr("Failed to load file"),
+                                    tr("The file format may not be installed by default.\n"
+                                       "\n"
+                                       "Installing the kimageformats plugin package from your\n"
+                                       "distribution may resolve the issue.\n"
+                                       "\n"
+                                       "Common package names for your distribution:\n\n%1")
+                                        .arg("  - kimageformat6-plugins (Ubuntu, Mint, Debian)\n"
+                                             "  - kimageformats (Arch, Gentoo, Nix)\n"
+                                             "  - kf6-kimageformats (Red Hat, Fedora, openSUSE)\n"),
+                                    QMessageBox::Ok);
+                msgBox.setCheckBoxText(tr("Don't show this again"));
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.setObjectName("kimageformatsDialog");
+                (void)msgBox.exec();
+            }
+        }
+#endif
         return;
     }
 
