@@ -47,6 +47,7 @@ option(ENABLE_TESTING "Run tests" ON)
 option(ENABLE_BENCHMARK "Run benchmark" OFF)
 option(ENABLE_PCH "Enable precompiled headers" OFF)
 option(ENABLE_SANITIZE "Enable runtime sanitizers (slow, development only)" OFF)
+option(ENABLE_DBUS "Enable features using D-Bus (Unix/Linux)" ON)
 
 # Codecov
 if(ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
