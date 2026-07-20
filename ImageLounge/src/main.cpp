@@ -47,6 +47,7 @@
 
 #include "DkCachedThumb.h"
 #include "DkCentralWidget.h"
+#include "DkLocalIPC.h"
 #include "DkNoMacs.h"
 #include "DkPluginManager.h"
 #include "DkPong.h"
@@ -123,6 +124,9 @@ int main(int argc, char *argv[])
                                QObject::tr("default | frameless | pseudocolor"));
     parser.addOption(modeOpt);
 
+    QCommandLineOption instanceOpt(QStringList{"i", "new-instance"}, QObject::tr("Start a new instance"));
+    parser.addOption(instanceOpt);
+
     QCommandLineOption batchOpt(QStringList() << "batch",
                                 QObject::tr("Batch processing of <batch-settings.pnm>."),
                                 QObject::tr("batch-settings-path"));
@@ -159,6 +163,10 @@ int main(int argc, char *argv[])
     QCommandLineOption sessionOpt(QStringList("nmc-session"), "", "sessionId");
     sessionOpt.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(sessionOpt);
+
+    QCommandLineOption restartOpt(QStringList("nmc-restart"));
+    restartOpt.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(restartOpt);
 
     parser.process(app);
 
@@ -228,6 +236,46 @@ int main(int argc, char *argv[])
 
     if (noUI)
         return 0;
+
+    // When "File/New-Instance" is used, the new instance is never
+    // promoted to the first instance. The next instance that starts
+    // after the first one closes becomes the first instance.
+    bool keepSingleInstance = nmc::DkSettingsManager::param().app().singleInstance && !parser.isSet(instanceOpt);
+
+    if (keepSingleInstance) {
+        const bool restarting = parser.isSet(restartOpt);
+        auto &nomacsInstance = nmc::DkLocalIPC::instance();
+        if (restarting) {
+            // When the first instance restarts itself (settings or mode switch),
+            // the new process must wait for previous process to release locks so it
+            // can become the new leader.
+            // In the unlikely chance this fails, allow a second instance of nomacs to proceed
+            nomacsInstance.waitFirstInstance();
+        }
+
+        if (!nomacsInstance.isFirstInstance() && !restarting) {
+            nomacsInstance.activate();
+
+            bool firstFile = true;
+            bool alwaysLoadToTab = nmc::DkSettingsManager::param().app().openNewTab;
+
+            for (auto &filePath : parser.positionalArguments()) {
+                if (filePath.isEmpty()) {
+                    continue;
+                }
+
+                if (firstFile && !alwaysLoadToTab) {
+                    nomacsInstance.load(filePath);
+                } else {
+                    nomacsInstance.loadToTab(filePath);
+                }
+
+                firstFile = false;
+            }
+
+            return 0;
+        }
+    }
 
     // install translations
     const QString translationName = "nomacs_" + nmc::DkSettingsManager::param().global().language + ".qm";
@@ -358,6 +406,13 @@ int main(int argc, char *argv[])
     qInfo() << "Initialization takes: " << dt;
 
     nmc::DkCentralWidget *cw = w->getTabWidget();
+
+    if (keepSingleInstance) {
+        auto &nomacsInstance = nmc::DkLocalIPC::instance();
+        if (nomacsInstance.isFirstInstance()) {
+            nmc::DkLocalIPC::instance().setCentralWidget(cw);
+        }
+    }
 
     bool loading = false;
 
