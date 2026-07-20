@@ -1751,6 +1751,7 @@ void DkThumbScene::copySelected() const
 
     auto *mimeData = new QMimeData();
     mimeData->setUrls(urls);
+    mimeData->setText(fileList.join("\n"));
 
     QApplication::clipboard()->setMimeData(mimeData);
 }
