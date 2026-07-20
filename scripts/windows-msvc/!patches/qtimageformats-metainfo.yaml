@@ -1,0 +1,17 @@
+description: Image format plugins for nomacs
+tier: 2
+type: functional
+platforms:
+    - name: Linux
+    - name: FreeBSD
+    - name: macOS
+    - name: Windows
+      note: No EPS support on Windows
+    - name: Android
+portingAid: false
+deprecated: false
+release: true
+
+public_lib: true
+group: Frameworks
+subgroup: Tier 2

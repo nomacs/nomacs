@@ -118,6 +118,15 @@ IF NOT EXIST karchive (
 IF NOT EXIST kimageformats (
   git clone --single-branch https://invent.kde.org/frameworks/kimageformats.git kimageformats
   cd kimageformats
-  git checkout ad0fb9dde4ffb1977a3ea800d90a26665de687b8
+  git checkout 7ec1170c86dc96323bef26c17cad13fa1a60dafd
+  cd ..
+)
+
+IF NOT EXIST qtimageformats (
+  mkdir qtimageformats
+  copy !patches\qtimageformats-build-source.txt qtimageformats\CMakeLists.txt
+  copy !patches\qtimageformats-metainfo.yaml qtimageformats\metainfo.yaml
+  cd qtimageformats
+  git clone --depth 1 -b 6.12 https://github.com/qt/qtimageformats.git qtimageformats
   cd ..
 )

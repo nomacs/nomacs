@@ -135,4 +135,9 @@ if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
+call make-027-qtimageformats.bat
+if %ERRORLEVEL% NEQ 0 (
+  exit /b 1
+)
+
 echo Success!!!
