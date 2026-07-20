@@ -57,3 +57,6 @@ if(ENABLE_QUAZIP)
         message(FATAL_ERROR "QuaZip-Qt6 was not found")
     endif()
 endif(ENABLE_QUAZIP)
+
+find_package(KDSingleApplication-qt6 REQUIRED)
+add_definitions(-DWITH_KDSINGLEAPPLICATION)

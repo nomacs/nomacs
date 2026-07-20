@@ -72,6 +72,8 @@ target_link_libraries(
 target_sources(${BINARY_NAME} PRIVATE src/utf8.manifest)
 target_sources(${DLL_CORE_NAME} PRIVATE src/utf8.manifest)
 
+target_link_libraries(${DLL_CORE_NAME} KDAB::kdsingleapplication)
+
 # set(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
 file(GLOB NOMACS_AUTOMOC "${CMAKE_BINARY_DIR}/*_automoc.cpp ${CMAKE_BINARY_DIR}/moc_.cpp")
 
@@ -133,6 +135,8 @@ file(COPY $ENV{NOMACS_DEPENDENCIES}/bin/jxl_threads.dll DESTINATION ${CMAKE_BINA
 file(COPY $ENV{NOMACS_DEPENDENCIES}/bin/jxl_cms.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 
 file(COPY $ENV{NOMACS_DEPENDENCIES}/bin/KF6Archive.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+
+file(COPY $ENV{NOMACS_DEPENDENCIES}/bin/kdsingleapplication-qt6.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 
 # copy Qt libs
 file(COPY ${QT_QMAKE_PATH}/Qt6Widgets.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
