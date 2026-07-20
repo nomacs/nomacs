@@ -1036,6 +1036,7 @@ void DkCentralWidget::tryRestart(const QStringList &args)
     auto conn = connect(qApp, &QApplication::lastWindowClosed, [args] {
         qInfo() << "Restarting with args:" << args;
         QStringList tmp;
+        tmp << "--nmc-restart";
         tmp << "--nmc-session" << QString::number(DkSettingsManager::param().global().sessionId);
         tmp << args;
         QProcess::startDetached(QApplication::applicationFilePath(), tmp);
