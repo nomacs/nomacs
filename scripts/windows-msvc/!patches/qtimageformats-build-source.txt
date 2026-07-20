@@ -1,0 +1,60 @@
+cmake_minimum_required(VERSION 3.29)
+
+project(nomacs-qtimageformats VERSION 6.11.1)
+
+include(FeatureSummary)
+find_package(ECM 6.28.0 NO_MODULE)
+set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
+feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
+
+set(CMAKE_MODULE_PATH ${KImageFormats_SOURCE_DIR}/cmake/find-modules ${ECM_MODULE_PATH})
+
+include(KDEInstallDirs)
+include(KDEFrameworkCompilerSettings NO_POLICY_SCOPE)
+include(KDECMakeSettings)
+
+include(ECMDeprecationSettings)
+include(FindPkgConfig)
+
+set(REQUIRED_QT_VERSION 6.9.0)
+find_package(Qt6Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
+
+pkg_check_modules(TIFF REQUIRED IMPORTED_TARGET libtiff-4)
+pkg_check_modules(WEBP REQUIRED IMPORTED_TARGET libwebp)
+pkg_check_modules(WEBPDEMUX REQUIRED IMPORTED_TARGET libwebpdemux)
+pkg_check_modules(WEBPMUX REQUIRED IMPORTED_TARGET libwebpmux)
+
+include(ECMFeatureSummary)
+ecm_feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+
+function(kimageformats_add_plugin plugin)
+    set(options)
+    set(oneValueArgs)
+    set(multiValueArgs SOURCES)
+    cmake_parse_arguments(KIF_ADD_PLUGIN "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    if(NOT KIF_ADD_PLUGIN_SOURCES)
+        message(FATAL_ERROR "kimageformats_add_plugin called without SOURCES parameter")
+    endif()
+
+    qt_add_plugin(${plugin} PLUGIN_TYPE imageformats)
+    target_sources(${plugin} PRIVATE ${KIF_ADD_PLUGIN_SOURCES})
+    set_target_properties(${plugin} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/imageformats)
+    target_link_libraries(${plugin} PRIVATE Qt6::Gui)
+
+    if(ANDROID)
+        # Plugins should be named with lib prefix on Android
+        # Working name: libplugins_imageformats_kimg_avif_armeabi-v7a.so
+        # Doesn't work: plugins_imageformats_kimg_avif_armeabi-v7a.so
+        if(NOT ${CMAKE_SHARED_LIBRARY_PREFIX} STREQUAL "")
+            set_target_properties(${plugin} PROPERTIES PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
+        endif()
+    endif()
+
+    install(TARGETS ${plugin} DESTINATION ${KDE_INSTALL_QTPLUGINDIR}/imageformats)
+endfunction()
+
+kimageformats_add_plugin(nomacs_qtiff SOURCES qtimageformats/src/plugins/imageformats/tiff/main.cpp qtimageformats/src/plugins/imageformats/tiff/qtiffhandler.cpp)
+target_link_libraries(nomacs_qtiff PRIVATE PkgConfig::TIFF)
+
+kimageformats_add_plugin(nomacs_qwebp SOURCES qtimageformats/src/plugins/imageformats/webp/main.cpp qtimageformats/src/plugins/imageformats/webp/qwebphandler.cpp)
+target_link_libraries(nomacs_qwebp PRIVATE PkgConfig::WEBP PkgConfig::WEBPDEMUX PkgConfig::WEBPMUX)

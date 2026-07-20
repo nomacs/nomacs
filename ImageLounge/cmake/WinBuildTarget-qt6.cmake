@@ -103,6 +103,8 @@ file(COPY $ENV{NOMACS_DEPENDENCIES}/bin/zstd.dll DESTINATION ${CMAKE_BINARY_DIR}
 if(ENABLE_TIFF)
     file(COPY "$ENV{NOMACS_DEPENDENCIES}/bin/tiff.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
     file(COPY "$ENV{NOMACS_DEPENDENCIES}/bin/libwebp.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+    file(COPY "$ENV{NOMACS_DEPENDENCIES}/bin/libwebpdemux.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+    file(COPY "$ENV{NOMACS_DEPENDENCIES}/bin/libwebpmux.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 endif(ENABLE_TIFF)
 if(ENABLE_QUAZIP)
     file(COPY "$ENV{NOMACS_DEPENDENCIES}/bin/quazip1-qt6.dll" DESTINATION ${CMAKE_BINARY_DIR}/Release/)
@@ -149,6 +151,14 @@ file(COPY ${QT_EXTRA_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imag
 
 file(GLOB KDE_IMAGE_FORMATS "$ENV{NOMACS_DEPENDENCIES}/lib/plugins/imageformats/kimg_*.dll")
 file(COPY ${KDE_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
+
+if(ENABLE_TIFF)
+    # Use our builds of TIFF and WEBP plugins
+    file(REMOVE ${CMAKE_BINARY_DIR}/Release/imageformats/qtiff.dll)
+    file(REMOVE ${CMAKE_BINARY_DIR}/Release/imageformats/qwebp.dll)
+    file(GLOB CUSTOM_IMAGE_FORMATS "$ENV{NOMACS_DEPENDENCIES}/lib/plugins/imageformats/nomacs_q*.dll")
+    file(COPY ${CUSTOM_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
+endif(ENABLE_TIFF)
 
 # Icon Engines (SVG Icons)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/iconengines)
