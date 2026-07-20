@@ -122,3 +122,12 @@ else()
     file(GLOB LIBQPSD_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.cpp")
     file(GLOB LIBQPSD_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
 endif(USE_SYSTEM_LIBQPSD)
+
+if(ENABLE_DBUS)
+  find_package(Qt6DBus REQUIRED)
+  add_definitions(-DWITH_DBUS)
+else()
+  find_package(KDSingleApplication-qt6 REQUIRED)
+  add_definitions(-DWITH_KDSINGLEAPPLICATION)
+endif()
+

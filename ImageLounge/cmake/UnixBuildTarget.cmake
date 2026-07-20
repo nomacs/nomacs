@@ -71,6 +71,12 @@ target_link_libraries(
     Qt::Svg
 )
 
+if (ENABLE_DBUS)
+target_link_libraries(${DLL_CORE_NAME} Qt::DBus)
+else()
+target_link_libraries(${DLL_CORE_NAME} KDAB::kdsingleapplication)
+endif()
+
 # core flags
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
