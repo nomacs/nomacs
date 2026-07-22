@@ -112,7 +112,7 @@ public:
     QStringList getIptcKeys() const;
     QStringList getQtKeys() const;
     QStringList getQtValues() const;
-    QStringList getIptcValues() const;
+    // QStringList getIptcValues() const;
     QStringList getXmpKeys() const;
 
     void getFileMetaData(QStringList &fileKeys, QStringList &fileValues) const;
