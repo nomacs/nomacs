@@ -207,6 +207,8 @@ private:
 
     QPoint mCurrentPixelPos;
 
+    int mWheelAccumulator = 0; // accumulates high-resolution wheel deltas for image navigation
+
     DkRotatingRect mCropRect;
 
     DkFadeButton *mNextButton = nullptr;
