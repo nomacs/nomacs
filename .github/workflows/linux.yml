@@ -63,7 +63,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           lfs: true
           ref: ${{ github.event.pull_request.head.sha }}
@@ -112,7 +112,7 @@ jobs:
 
       - name: Upload Artifacts
         if: matrix.config.appimage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "nomacs-${{ steps.get_version.outputs.BUILD }}-${{ matrix.config.name }}.AppImage"
           path: build/nomacs-*.AppImage
@@ -127,7 +127,7 @@ jobs:
         run: echo "PR_FETCH_DEPTH=$(( ${{ github.event.pull_request.commits }} + 1 ))" >> "${GITHUB_ENV}"
       
       - name: Checkout PR branch and all PR commits
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: ${{ env.PR_FETCH_DEPTH }}

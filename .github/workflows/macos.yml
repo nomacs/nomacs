@@ -67,7 +67,7 @@ jobs:
             release: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0 # ensure full history for git rev-parse
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -93,7 +93,7 @@ jobs:
 
       - name: Setup Cache
         run: |
-          # we must install things to /opt for packaging script to work, but cache@v4 won't write there
+          # we must install things to /opt for packaging script to work, but cache@v5 won't write there
           sudo mkdir /opt/opencv
           sudo chown $USER:$(id -gn) /opt/opencv
 
@@ -105,7 +105,7 @@ jobs:
       - name: Cache opencv
         id: cache_opencv
         if: matrix.config.opencv
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /opt/opencv
           key: ${{ runner.os }}-opencv-${{ steps.checkout_opencv.outputs.OPENCV_KEY }}
@@ -180,7 +180,7 @@ jobs:
 
       - name: Upload Artifacts
         if: matrix.config.artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "nomacs-${{ steps.get_version.outputs.VERSION }}-${{ matrix.config.type }}-qt${{ matrix.qt.ver}}"
           path: build/portable/nomacs.app.zip
