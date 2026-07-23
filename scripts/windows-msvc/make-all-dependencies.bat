@@ -140,4 +140,9 @@ if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
+call make-028-kdsingleapplication.bat
+if %ERRORLEVEL% NEQ 0 (
+  exit /b 1
+)
+
 echo Success!!!
