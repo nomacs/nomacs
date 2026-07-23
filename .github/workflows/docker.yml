@@ -13,9 +13,9 @@ jobs:
     strategy:
       matrix:
         config:
-          - name: "neon"
-            tag: "22.04"
-            dockerfile: "Dockerfile.kde-neon.2204"
+          #- name: "neon"
+          #  tag: "22.04"
+          #  dockerfile: "Dockerfile.kde-neon.2204"
           - name: "neon"
             tag: "24.04"
             dockerfile: "Dockerfile.kde-neon.2404"
