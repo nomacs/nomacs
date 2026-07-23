@@ -33,6 +33,7 @@
 
 class QDialogButtonBox;
 class QCheckBox;
+class QComboBox;
 
 namespace nmc
 {
@@ -61,13 +62,21 @@ public slots:
     int exec() override;
 
 protected:
-    QLabel *iconLabel;
-    QLabel *textLabel;
-    QDialogButtonBox *buttonBox;
-    QCheckBox *showAgain;
+    enum Option {
+        opt_forever = 0,
+        opt_session = 1,
+        opt_hour = 2,
+        opt_day = 3,
+        opt_week = 4,
+
+        numOptions
+    };
+
+    QDialogButtonBox *mButtonBox;
+    QCheckBox *mShowAgain;
+    QComboBox *mOptionBox;
 
     void createLayout(QMessageBox::Icon userIcon, const QString &userText, QMessageBox::StandardButtons buttons);
-    void updateSize();
-    QPixmap msgBoxStandardIcon(QMessageBox::Icon icon);
+    QPixmap msgBoxStandardIcon(QMessageBox::Icon icon) const;
 };
 }

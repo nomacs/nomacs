@@ -605,7 +605,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
         const QString langTerritory = QLocale::system().name(); // pt_BR
         const QString lang = langTerritory.split(QChar(u'_')).takeFirst();
 
-        if (lang != "en") {
+        if (lang != "en" && lang != "C") {
             const QStringList translationDirs = getTranslationDirs();
             const auto prefix = QStringLiteral(u"/nomacs_");
             const auto suffix = QStringLiteral(u".qm");
@@ -629,7 +629,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
         }
 #ifndef Q_OS_WIN
         // We can skip welcome dialog if there is nothing else besides language
-        if (lang == "en" || !translationPref.isEmpty()) {
+        if (lang == "en" || lang == "C" || !translationPref.isEmpty()) {
             settings.setValue(welcomeDialogKey, false);
         }
 #endif
@@ -1031,6 +1031,7 @@ void DkSettings::setToDefaultSettings()
     global_p.horZoomSkips = true;
     global_p.doubleClickForFullscreen = true;
     global_p.showLogoImage = true;
+    global_p.sessionId = QDateTime::currentSecsSinceEpoch();
 
 #ifdef Q_OS_LINUX
     sync_p.switchModifier = true;

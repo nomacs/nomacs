@@ -31,6 +31,7 @@
 
 #include <QApplication>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGuiApplication>
@@ -38,6 +39,7 @@
 #include <QPushButton>
 #include <QScreen>
 #include <QStyle>
+#include <QTimeZone>
 
 namespace nmc
 {
@@ -46,27 +48,20 @@ namespace nmc
 DkMessageBox::DkMessageBox(QMessageBox::Icon icon,
                            const QString &title,
                            const QString &text,
-                           QMessageBox::StandardButtons buttons /* = QMessageBox::NoButton */,
-                           QWidget *parent /* = 0 */,
-                           Qt::WindowFlags f /* = Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint */)
+                           QMessageBox::StandardButtons buttons,
+                           QWidget *parent,
+                           Qt::WindowFlags f)
     : QDialog(parent, f)
 {
     createLayout(icon, text, buttons);
     setWindowTitle(title);
 }
 
-DkMessageBox::~DkMessageBox()
-{
-    // save settings
-    DefaultSettings settings;
-    settings.beginGroup("DkDialog");
-    settings.setValue(objectName(), !showAgain->isChecked());
-    settings.endGroup();
-}
+DkMessageBox::~DkMessageBox() = default;
 
 // Modified from
 // https://github.com/qt/qtbase/blob/cca658d4821b6d7378df13c29d1dab53c44359ac/src/widgets/dialogs/qmessagebox.cpp#L2735C1-L2761C2
-QPixmap DkMessageBox::msgBoxStandardIcon(QMessageBox::Icon icon)
+QPixmap DkMessageBox::msgBoxStandardIcon(QMessageBox::Icon icon) const
 {
     QStyle *style = this->style();
     int iconSize = style->pixelMetric(QStyle::PM_MessageBoxIconSize);
@@ -101,171 +96,182 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
                                 const QString &userText,
                                 QMessageBox::StandardButtons buttons)
 {
-    setAttribute(Qt::WA_DeleteOnClose, true);
-
-    auto *grid = new QGridLayout;
-    int leftMargin = style()->pixelMetric(QStyle::PM_LayoutLeftMargin, nullptr, this);
-    grid->setSpacing(leftMargin);
-
-    // schamlos von qmessagebox.cpp geklaut
-    textLabel = new QLabel(userText);
+    auto *textLabel = new QLabel(userText);
     textLabel->setTextInteractionFlags(
         Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, nullptr, this)));
-    textLabel->setObjectName(QLatin1String("textLabel"));
+    textLabel->setObjectName("textLabel");
     textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     textLabel->setOpenExternalLinks(true);
     textLabel->setIndent(0);
 
-    iconLabel = new QLabel;
+    auto *iconLabel = new QLabel;
     iconLabel->setPixmap(msgBoxStandardIcon(userIcon));
-    iconLabel->setObjectName(QLatin1String("iconLabel"));
+    iconLabel->setObjectName("iconLabel");
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    showAgain = new QCheckBox(tr("Remember my choice"));
-    showAgain->setObjectName(QLatin1String("checkBox"));
-    showAgain->setChecked(true);
+    mShowAgain = new QCheckBox(tr("Remember my choice"));
+    mShowAgain->setObjectName("checkBox");
+    mShowAgain->setChecked(true);
 
-    buttonBox = new QDialogButtonBox;
-    buttonBox->setObjectName(QLatin1String("buttonBox"));
-    buttonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, nullptr, this) != 0);
-    QObject::connect(buttonBox, &QDialogButtonBox::clicked, this, &DkMessageBox::buttonClicked);
+    QStringList options;
+    options.resize(numOptions);
+    options[opt_forever] = tr("Forever");
+    options[opt_session] = tr("This Session");
+    options[opt_hour] = tr("One Hour");
+    options[opt_day] = tr("One Day");
+    options[opt_week] = tr("One Week");
 
-    buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
+    mOptionBox = new QComboBox{};
+    mOptionBox->setObjectName("comboBox");
+    mOptionBox->addItems(options);
+    mOptionBox->setEnabled(false);
+    connect(mShowAgain, &QCheckBox::toggled, [this](bool checked) {
+        mOptionBox->setEnabled(checked);
+    });
 
-#if 1
+    mButtonBox = new QDialogButtonBox;
+    mButtonBox->setObjectName("buttonBox");
+    mButtonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, nullptr, this) != 0);
+    mButtonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
+    QObject::connect(mButtonBox, &QDialogButtonBox::clicked, this, &DkMessageBox::buttonClicked);
+
+    // less crowded with some space above button box
+    auto *spacer = new QFrame;
+    spacer->setFrameShape(QFrame::NoFrame);
+
+    auto *grid = new QGridLayout;
+    int leftMargin = style()->pixelMetric(QStyle::PM_LayoutLeftMargin, nullptr, this);
+    grid->setSpacing(leftMargin);
     grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
     grid->addWidget(textLabel, 0, 1, 2, 1);
-    grid->addWidget(showAgain, 2, 1, 1, 2);
-    grid->addWidget(buttonBox, 3, 0, 1, 2);
-#else
-    grid->setVerticalSpacing(8);
-    grid->setHorizontalSpacing(0);
-    setContentsMargins(24, 15, 24, 20);
-    grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignLeft);
-    grid->addWidget(textLabel, 0, 1, 1, 1);
-    // -- leave space for information label --
-    grid->setRowStretch(1, 100);
-    grid->setRowMinimumHeight(2, 6);
-    grid->addWidget(buttonBox, 3, 1, 1, 1);
-#endif
+    grid->addWidget(mShowAgain, 2, 1, 1, 1);
+    grid->addWidget(mOptionBox, 3, 1, 1, 1);
+    grid->addWidget(spacer, 4, 0, 1, 2);
+    grid->addWidget(mButtonBox, 5, 0, 1, 2);
 
-    // grid->setSizeConstraint(QLayout::SetNoConstraint);
     setLayout(grid);
-
     setModal(true);
 }
 
 void DkMessageBox::setVisible(bool visible)
 {
-    if (visible)
+    if (visible) {
         adjustSize();
+    }
 
     QDialog::setVisible(visible);
 }
 
 int DkMessageBox::exec()
 {
-    QString objName = objectName();
+    const qulonglong sessionId = DkSettingsManager::param().global().sessionId;
+
+    const QString dialogId = objectName();
+    const QString answerKey = dialogId + "-answer";
+    const QString optionKey = dialogId + "-option";
+    const QString timeKey = dialogId + "-time";
+    const QString sessionKey = "sessionId";
 
     DefaultSettings settings;
     settings.beginGroup("DkDialog");
-    bool show = settings.value(objName, true).toBool();
-    int answer = settings.value(objName + "-answer", QDialog::Accepted).toInt();
-    settings.endGroup();
-    showAgain->setChecked(!show);
 
-    if (!show)
+    bool show = settings.value(dialogId, true).toBool();
+    int answer = settings.value(answerKey, QDialog::Accepted).toInt();
+    const int option = settings.value(optionKey, opt_forever).toInt();
+    const QDateTime time = settings.value(timeKey).toDateTime();
+
+    // if the dialog times out show with the last options chosen
+    mShowAgain->setChecked(!show);
+    mOptionBox->setEnabled(!show);
+    mOptionBox->setCurrentIndex(option);
+
+    if (!show) {
+        QDateTime expiration;
+        const QDateTime now = QDateTime::currentDateTime();
+        const QDateTime future = now.addSecs(60 * 60);
+        const QDateTime past = now.addSecs(-60 * 60);
+
+        switch (option) {
+        case opt_forever:
+            expiration = future;
+            break;
+        case opt_session: {
+            qulonglong savedId = settings.value(sessionKey).toULongLong();
+            expiration = sessionId == savedId ? future : past;
+            break;
+        }
+        case opt_hour:
+            expiration = time.addSecs(60 * 60);
+            break;
+        case opt_day:
+            expiration = time.date().endOfDay();
+            break;
+        case opt_week:
+            expiration = time.date().addDays(6).endOfDay();
+            break;
+        default:
+            qWarning() << "unknown dialog option:" << settings.group() << optionKey << option;
+            expiration = past;
+            break;
+        }
+        show = now > expiration;
+    }
+
+    if (!show) {
+        qInfo() << this << "skipped with answer" << static_cast<QMessageBox::StandardButton>(answer) << answer;
         return answer;
+    }
 
-    answer = QDialog::exec(); // destroys dialog - be careful with what you do afterwards
+    if (testAttribute(Qt::WA_DeleteOnClose)) {
+        qFatal("WA_DeleteOnClose deletes before exec() returns!");
+        return 0;
+    }
 
-    settings.beginGroup("DkDialog");
-    if (answer != QMessageBox::NoButton && answer != QMessageBox::Cancel) {
-        // save show again
-        settings.setValue(objName + "-answer", answer);
-    } else
-        settings.setValue(objName, true);
-    settings.endGroup();
+    answer = QDialog::exec();
+
+    show = !mShowAgain->isChecked();
+
+    if (!show && answer != QMessageBox::NoButton && answer != QMessageBox::Cancel) {
+        settings.setValue(dialogId, false);
+        settings.setValue(answerKey, answer);
+        settings.setValue(optionKey, mOptionBox->currentIndex());
+        settings.setValue(timeKey, QDateTime::currentDateTime());
+        settings.setValue(sessionKey, sessionId);
+    } else {
+        settings.remove(dialogId);
+        settings.remove(answerKey);
+        settings.remove(optionKey);
+        settings.remove(timeKey);
+    }
 
     return answer;
 }
 
 void DkMessageBox::setDefaultButton(QMessageBox::StandardButton button)
 {
-    QPushButton *b = buttonBox->button(QDialogButtonBox::StandardButton(button));
-
-    if (!b)
-        return;
-
-    b->setDefault(true);
-    b->setFocus();
+    QPushButton *b = mButtonBox->button(QDialogButtonBox::StandardButton(button));
+    if (b) {
+        b->setDefault(true);
+        b->setFocus();
+    }
 }
 
 void DkMessageBox::setButtonText(QMessageBox::StandardButton button, const QString &text)
 {
-    if (QAbstractButton *abstractButton = buttonBox->button(QDialogButtonBox::StandardButton(button)))
-        abstractButton->setText(text);
+    QPushButton *b = mButtonBox->button(QDialogButtonBox::StandardButton(button));
+    if (b) {
+        b->setText(text);
+    }
 }
 
 void DkMessageBox::setCheckBoxText(const QString &text)
 {
-    showAgain->setText(text);
+    mShowAgain->setText(text);
 }
 
 void DkMessageBox::buttonClicked(QAbstractButton *button)
 {
-    int ret = buttonBox->standardButton(button);
+    int ret = mButtonBox->standardButton(button);
     done(ret); // does not trigger closeEvent
 }
-
-void DkMessageBox::updateSize()
-{
-    if (!isVisible())
-        return;
-
-    QFontMetrics fm(QApplication::font("QMdiSubWindowTitleBar"));
-
-    QScreen *screen = QGuiApplication::screenAt(QCursor::pos());
-    QSize screenSize = screen ? screen->size() : QSize(1024, 768); // diem: be safe
-    int textWidth = fm.horizontalAdvance(windowTitle()) + 50;
-
-#if defined(Q_OS_WINCE)
-    // the width of the screen, less the window border.
-    int hardLimit = screenSize.width() - (frameGeometry().width() - geometry().width());
-#else
-    int hardLimit = qMin(screenSize.width() - 480, 1000); // can never get bigger than this
-    // on small screens allows the messagebox be the same size as the screen
-    if (screenSize.width() <= 1024)
-        hardLimit = screenSize.width();
-#endif
-#ifdef Q_OS_MAC
-    int softLimit = qMin(screenSize.width() / 2, 420);
-#else
-        // note: ideally on windows, hard and soft limits but it breaks compat
-#ifndef Q_OS_WINCE
-    int softLimit = qMin(screenSize.width() / 2, 500);
-#else
-    int softLimit = qMin(screenSize.width() * 3 / 4, 500);
-#endif // Q_OS_WINCE
-#endif
-
-    textLabel->setWordWrap(false); // makes the label return min size
-    int width = minimumWidth();
-
-    if (width > softLimit) {
-        textLabel->setWordWrap(true);
-        width = qMax(softLimit, minimumWidth());
-
-        if (width > hardLimit)
-            width = hardLimit;
-    }
-
-    int windowTitleWidth = qMin(textWidth, hardLimit);
-    if (windowTitleWidth > width)
-        width = windowTitleWidth;
-
-    this->setFixedSize(width, minimumHeight());
-    QCoreApplication::removePostedEvents(this, QEvent::LayoutRequest);
-}
-
 }

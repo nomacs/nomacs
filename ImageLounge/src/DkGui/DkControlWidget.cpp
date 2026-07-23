@@ -536,15 +536,15 @@ bool DkControlWidget::closePlugin(bool askForSaving, bool force)
             bool applyChanges = true;
 
             if (askForSaving) {
-                auto *msgBox = new DkMessageBox(QMessageBox::Question,
-                                                tr("Closing Plugin"),
-                                                tr("Apply plugin changes?"),
-                                                QMessageBox::Yes | QMessageBox::No,
-                                                this);
-                msgBox->setDefaultButton(QMessageBox::Yes);
-                msgBox->setObjectName("SavePluginChanges");
+                DkMessageBox msgBox(QMessageBox::Question,
+                                    tr("Closing Plugin"),
+                                    tr("Apply plugin changes?"),
+                                    QMessageBox::Yes | QMessageBox::No,
+                                    this);
+                msgBox.setDefaultButton(QMessageBox::Yes);
+                msgBox.setObjectName("SavePluginChanges");
 
-                int answer = msgBox->exec();
+                int answer = msgBox.exec();
                 applyChanges = (answer == QMessageBox::Accepted || answer == QMessageBox::Yes);
             }
 

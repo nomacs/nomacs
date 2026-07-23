@@ -380,16 +380,16 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
         return;
 
     if (cw->getTabs().size() > 1) {
-        auto *msg = new DkMessageBox(QMessageBox::Question,
-                                     tr("Quit nomacs"),
-                                     tr("Do you want nomacs to save your tabs?"),
-                                     (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                                     this);
-        msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
-        msg->setButtonText(QMessageBox::No, tr("&Quit"));
-        msg->setObjectName("saveTabsDialog");
+        DkMessageBox msg(QMessageBox::Question,
+                         tr("Quit nomacs"),
+                         tr("Do you want nomacs to save your tabs?"),
+                         (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                         this);
+        msg.setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
+        msg.setButtonText(QMessageBox::No, tr("&Quit"));
+        msg.setObjectName("saveTabsDialog");
 
-        int answer = msg->exec();
+        int answer = msg.exec();
 
         if (answer == QMessageBox::Cancel || answer == QMessageBox::NoButton) { // User canceled - do not close
             event->ignore();
@@ -756,13 +756,7 @@ void DkNoMacs::restartFrameless(bool)
 
     nmc::DkSettingsManager::param().save();
 
-    bool started = mProcess.startDetached(exe, args);
-
-    // close me if the new instance started
-    if (started)
-        close();
-
-    qDebug() << "frameless arguments: " << args;
+    DkCentralWidget::tryRestart(args);
 }
 
 void DkNoMacs::showRecentFilesOnStartUp()
@@ -774,13 +768,8 @@ void DkNoMacs::showRecentFilesOnStartUp()
 
 void DkNoMacs::startPong() const
 {
-    QString exe = QApplication::applicationFilePath();
     QStringList args;
-
-    args.append("--pong");
-
-    bool started = mProcess.startDetached(exe, args);
-    qDebug() << "pong started: " << started;
+    DkCentralWidget::tryRestart({"--pong"});
 }
 
 void DkNoMacs::fitFrame()
@@ -1551,11 +1540,11 @@ void DkNoMacs::cleanSettings()
 
 void DkNoMacs::newInstance(const QString &filePath)
 {
-    QString exe = QApplication::applicationFilePath();
     QStringList args;
 
     auto *a = static_cast<QAction *>(sender());
 
+    args << "--nmc-session" << QString::number(DkSettingsManager::param().global().sessionId);
     args << "--skip-startup";
 
     if (a && a == DkActionManager::instance().action(DkActionManager::menu_file_private_instance))
@@ -1569,7 +1558,7 @@ void DkNoMacs::newInstance(const QString &filePath)
     DkSettingsManager::param().app().appMode = DkSettingsManager::param().app().currentAppMode;
     DkSettingsManager::param().save();
 
-    QProcess::startDetached(exe, args);
+    QProcess::startDetached(QApplication::applicationFilePath(), args);
 }
 
 void DkNoMacs::loadRecursion()
@@ -1604,13 +1593,7 @@ void DkNoMacs::restartWithPseudoColor(bool contrast)
 
     args.append(getTabWidget()->getCurrentFilePath());
 
-    bool started = mProcess.startDetached(exe, args);
-
-    // close me if the new instance started
-    if (started)
-        close();
-
-    qDebug() << "contrast arguments: " << args;
+    DkCentralWidget::tryRestart(args);
 }
 
 void DkNoMacs::onWindowLoaded()
@@ -1783,8 +1766,7 @@ void DkNoMacs::openFileWith(QAction *action)
     } else
         args << QDir::toNativeSeparators(filePath);
 
-    bool started = mProcess.startDetached(app.absoluteFilePath(), args);
-
+    bool started = QProcess::startDetached(app.absoluteFilePath(), args);
     if (started)
         qDebug() << "starting: " << app.fileName() << args;
     else
