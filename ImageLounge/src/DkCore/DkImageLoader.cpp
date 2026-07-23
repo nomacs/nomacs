@@ -1719,6 +1719,11 @@ void DkImageLoader::sort()
         std::reverse(mImages.begin(), mImages.end());
 
     emit updateDirSignal(mImages);
+
+    if (mCurrentImage) {
+        int idx = findFileIdx(mCurrentImage->filePath(), mImages);
+        emit imageUpdatedSignal(idx);
+    }
 }
 
 void DkImageLoader::currentImageUpdated() const
