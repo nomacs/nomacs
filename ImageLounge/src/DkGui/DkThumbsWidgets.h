@@ -94,7 +94,7 @@ public:
 public slots:
     void moveImages();
     void updateThumbs(QVector<QSharedPointer<DkImageContainerT>> images);
-    void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
+    void setFileIndex(int fileIdx);
     void newPosition();
 
 signals:
