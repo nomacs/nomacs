@@ -130,3 +130,7 @@ IF NOT EXIST qtimageformats (
   git clone --depth 1 -b 6.12 https://github.com/qt/qtimageformats.git qtimageformats
   cd ..
 )
+
+IF NOT EXIST kdsingleapplication (
+  git clone --depth 1 -b v1.2.1 https://github.com/KDAB/KDSingleApplication.git kdsingleapplication
+)
