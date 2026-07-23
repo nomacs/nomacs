@@ -878,23 +878,12 @@ void DkFilePreview::moveImages()
     update();
 }
 
-void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage)
+void DkFilePreview::setFileIndex(int fileIdx)
 {
-    if (!cImage)
-        return;
-
-    int tIdx = -1;
-
-    for (int idx = 0; static_cast<unsigned int>(idx) < mFiles.size(); idx++) {
-        if (mFiles[idx] == cImage->originalFileInfo()) {
-            tIdx = idx;
-            break;
-        }
-    }
-
-    currentFileIdx = tIdx;
-    if (currentFileIdx >= 0)
+    currentFileIdx = fileIdx;
+    if (currentFileIdx >= 0) {
         scrollToCurrentImage = true;
+    }
     update();
 }
 
