@@ -2250,7 +2250,6 @@ bool DkImage::isResizeDownsampling(const QSize &srcSize, int dstSize, ScaleConst
         return srcSize.height() >= dstSize;
     }
     Q_UNREACHABLE();
-    return false;
 }
 
 QImage DkImage::createThumb(const QImage &image, int maxSize, ScaleConstraint constraint)
@@ -2668,7 +2667,7 @@ protected:
         return render<ChannelType>(self, Format::Type, Format::Channels);
     }
 
-    static constexpr int kCaps = cap_gray | cap_rgb_invariant | cap_serial;
+    static constexpr int kCaps = cap_gray | cap_rgb | cap_bgr | cap_serial;
     static constexpr FmtList kFmts = listForKernelCaps(kCaps);
     static constexpr DispatchTable kTable = makeTable<DkHistogramRender>(kFmts);
 

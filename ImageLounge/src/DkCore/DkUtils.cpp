@@ -1109,7 +1109,8 @@ bool DkUtils::moveToTrash(const QStringList &files)
         bool ok = false;
         QFileInfo fileInfo(filePath);
 
-        QFile file(filePath);
+        // resolve the path, works around qt bug. See nomacs#1627
+        QFile file(fileInfo.canonicalFilePath());
 
         // delete links first; exists() will fail on a broken symlink
         if (fileInfo.isSymLink()) {

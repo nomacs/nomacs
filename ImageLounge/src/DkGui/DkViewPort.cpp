@@ -1892,9 +1892,9 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
                 &DkFilePreview::updateThumbs,
                 Qt::UniqueConnection);
         connect(loader.data(),
-                QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
+                QOverload<int>::of(&DkImageLoader::imageUpdatedSignal),
                 mController->getFilePreview(),
-                &DkFilePreview::setFileInfo,
+                &DkFilePreview::setFileIndex,
                 Qt::UniqueConnection);
 
         connect(loader.data(),
@@ -1937,9 +1937,9 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
                    mController->getFilePreview(),
                    &DkFilePreview::updateThumbs);
         disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
+                   QOverload<int>::of(&DkImageLoader::imageUpdatedSignal),
                    mController->getFilePreview(),
-                   &DkFilePreview::setFileInfo);
+                   &DkFilePreview::setFileIndex);
 
         disconnect(loader.data(), &DkImageLoader::showInfoSignal, mController, &DkControlWidget::setInfo);
 

@@ -484,7 +484,13 @@ QString DkMetaDataT::getNativeExifValue(const QString &key, bool humanReadable) 
                 // qDebug() << "pos count: " << pos->count();
                 // Exiv2::Value::AutoPtr v = pos->getValue();
                 if (key == QLatin1String("Exif.Photo.UserComment")) {
-                    info = QString::fromStdString(static_cast<const Exiv2::CommentValue &>(pos->value()).comment());
+                    const auto &value = pos->value();
+                    auto *commentValue = dynamic_cast<const Exiv2::CommentValue *>(&value);
+                    if (commentValue) {
+                        info = QString::fromStdString(commentValue->comment());
+                    } else {
+                        info = exiv2ToQString(pos->toString());
+                    }
                 } else if (humanReadable) {
                     std::stringstream ss;
                     ss << *pos;
@@ -572,30 +578,28 @@ QString DkMetaDataT::getExifValue(const QString &key) const
 
 QString DkMetaDataT::getIptcValue(const QString &key) const
 {
-    QString info;
+    QStringList info;
 
     if (mExifState != loaded && mExifState != dirty)
-        return info;
+        return {};
 
     const Exiv2::IptcData &iptcData = mExifImg->iptcData();
 
     if (!iptcData.empty()) {
-        Exiv2::IptcData::const_iterator pos;
-
         try {
-            auto ekey = Exiv2::IptcKey(key.toStdString());
-            pos = iptcData.findKey(ekey);
+            auto skey = key.toStdString();
+            for (auto pos = iptcData.begin(); pos != iptcData.end(); ++pos) {
+                if (pos->key() == skey) {
+                    info << exiv2ToQString(pos->toString());
+                }
+            }
         } catch (...) {
-            return info;
-        }
-
-        if (pos != iptcData.end() && pos->count() != 0) {
-            auto v = pos->getValue();
-            info = exiv2ToQString(pos->toString());
+            qWarning() << "[Exiv2] exception thrown while fetching" << key;
         }
     }
 
-    return info;
+    // format consistent with other array value types (xmp)
+    return info.join(QStringView{u", "});
 }
 
 void DkMetaDataT::getFileMetaData(QStringList &fileKeys, QStringList &fileValues) const
@@ -947,7 +951,10 @@ QStringList DkMetaDataT::getIptcKeys() const
 
     for (auto md = iptcData.begin(); md != endI; ++md) {
         std::string tmp = md->key();
-        iptcKeys << QString::fromStdString(tmp);
+        QString key = QString::fromStdString(tmp);
+        if (!iptcKeys.contains(key)) {
+            iptcKeys << key;
+        }
     }
 
     return iptcKeys;
@@ -975,6 +982,7 @@ QStringList DkMetaDataT::getExifValues() const
     return exifValues;
 }
 
+#if DEADCODE
 QStringList DkMetaDataT::getIptcValues() const
 {
     QStringList iptcValues;
@@ -988,12 +996,14 @@ QStringList DkMetaDataT::getIptcValues() const
     if (iptcData.empty())
         return iptcValues;
     for (auto md = iptcData.begin(); md != endI; ++md) {
+        // BUG: this won't align with getIptcKeys() due to multi-value keys
         std::string tmp = md->value().toString();
         iptcValues << exiv2ToQString(tmp);
     }
 
     return iptcValues;
 }
+#endif
 
 void DkMetaDataT::setQtValues(const QImage &img)
 {
