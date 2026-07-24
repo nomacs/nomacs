@@ -47,6 +47,7 @@
 
 #include "DkCachedThumb.h"
 #include "DkCentralWidget.h"
+#include "DkLocalIPC.h"
 #include "DkNoMacs.h"
 #include "DkPluginManager.h"
 #include "DkPong.h"
@@ -155,6 +156,8 @@ int main(int argc, char *argv[])
     skipStartupOpt.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(skipStartupOpt);
 
+    // TODO: --new-instance argument to force a new instance for File/New Instance
+
     parser.process(app);
 
     // CMD parser --------------------------------------------------------------------
@@ -223,6 +226,48 @@ int main(int argc, char *argv[])
 
     if (noUI)
         return 0;
+
+    // TODO: open mode setting:
+    // -open in new instance
+    // -open new private instance
+    // -open to new tab
+    // -open to current tab
+
+    // TODO: other single-instance things we can do besides open a file?
+    // TODO: theme: padding around tab close button went missing ?!
+    // TODO: macOS open-event needs special handling
+
+    // When "File/New-Instance" is used, the new instance is never
+    // promoted to the first-instance. The next instance that starts
+    // becomes the first instance.
+
+    bool keepSingleInstance = true; // TODO: settings
+
+    if (keepSingleInstance) {
+        auto &nomacsInstance = nmc::DkLocalIPC::instance();
+        if (!nomacsInstance.isFirstInstance()) {
+            nomacsInstance.activate();
+
+            bool firstFile = true;
+            bool alwaysLoadToTab = true; // TODO: settings
+
+            for (auto &filePath : parser.positionalArguments()) {
+                if (filePath.isEmpty()) {
+                    continue;
+                }
+
+                if (firstFile && !alwaysLoadToTab) {
+                    nomacsInstance.load(filePath);
+                } else {
+                    nomacsInstance.loadToTab(filePath);
+                }
+
+                firstFile = false;
+            }
+
+            return 0;
+        }
+    }
 
     // install translations
     const QString translationName = "nomacs_" + nmc::DkSettingsManager::param().global().language + ".qm";
@@ -349,6 +394,13 @@ int main(int argc, char *argv[])
     qInfo() << "Initialization takes: " << dt;
 
     nmc::DkCentralWidget *cw = w->getTabWidget();
+
+    if (keepSingleInstance) {
+        auto &nomacsInstance = nmc::DkLocalIPC::instance();
+        if (nomacsInstance.isFirstInstance()) {
+            nmc::DkLocalIPC::instance().setCentralWidget(cw);
+        }
+    }
 
     bool loading = false;
 

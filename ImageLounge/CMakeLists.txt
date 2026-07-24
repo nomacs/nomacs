@@ -46,6 +46,7 @@ option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
 option(ENABLE_TESTING "Run tests" ON)
 option(ENABLE_BENCHMARK "Run benchmark" OFF)
 option(ENABLE_PCH "Enable precompiled headers" OFF)
+option(ENABLE_DBUS "Enable features using D-Bus (Unix/Linux)" OFF)
 
 # Codecov
 if(ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)

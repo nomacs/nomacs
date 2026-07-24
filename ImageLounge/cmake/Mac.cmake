@@ -111,6 +111,9 @@ if(ENABLE_QUAZIP)
     endif()
 endif(ENABLE_QUAZIP)
 
+find_package(KDSingleApplication-qt6 REQUIRED)
+add_definitions(-DWITH_KDSINGLEAPPLICATION)
+
 # add libqpsd
 file(GLOB LIBQPSD_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.cpp")
 file(GLOB LIBQPSD_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
