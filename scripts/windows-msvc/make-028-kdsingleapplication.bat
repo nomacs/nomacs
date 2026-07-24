@@ -5,10 +5,15 @@ if not defined NOMACS_DEPENDENCIES (
   exit /b 1
 )
 
+if not defined QT6 (
+  echo Error QT6 directory is not set
+  exit /b 1
+)
+
 RMDIR /S /Q build-kdsingleapplication
 mkdir build-kdsingleapplication
 cd build-kdsingleapplication
-cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=%NOMACS_DEPENDENCIES% -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON ../kdsingleapplication
+cmake -G "NMake Makefiles" -DCMAKE_PREFIX_PATH=%QT6% -DCMAKE_INSTALL_PREFIX=%NOMACS_DEPENDENCIES% -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON ../kdsingleapplication
 
 if %ERRORLEVEL% NEQ 0 (
   echo Error configure
