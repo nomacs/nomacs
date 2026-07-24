@@ -116,16 +116,16 @@ void DkControlWidget::init()
     mCommentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     // register actions
-    DkActionManager &am = DkActionManager::instance();
-    mFilePreview->registerAction(am.action(DkActionManager::menu_panel_preview));
-    mMetaDataInfo->registerAction(am.action(DkActionManager::menu_panel_exif));
-    mPlayer->registerAction(am.action(DkActionManager::menu_panel_player));
-    mCropWidget->registerAction(am.action(DkActionManager::menu_edit_crop));
-    mFileInfoLabel->registerAction(am.action(DkActionManager::menu_panel_info));
-    mHistogram->registerAction(am.action(DkActionManager::menu_panel_histogram));
-    mCommentWidget->registerAction(am.action(DkActionManager::menu_panel_comment));
-    mZoomWidget->registerAction(am.action(DkActionManager::menu_panel_overview));
-    mFolderScroll->registerAction(am.action(DkActionManager::menu_panel_scroller));
+    const DkActionManager &am = DkActionManager::instance();
+    mFilePreview->registerAction(am.action(DkActionManager::panel_preview));
+    mMetaDataInfo->registerAction(am.action(DkActionManager::panel_exif));
+    mPlayer->registerAction(am.action(DkActionManager::panel_player));
+    mCropWidget->registerAction(am.action(DkActionManager::edit_crop));
+    mFileInfoLabel->registerAction(am.action(DkActionManager::panel_info));
+    mHistogram->registerAction(am.action(DkActionManager::panel_histogram));
+    mCommentWidget->registerAction(am.action(DkActionManager::panel_comment));
+    mZoomWidget->registerAction(am.action(DkActionManager::panel_overview));
+    mFolderScroll->registerAction(am.action(DkActionManager::panel_scroller));
 
     // dummy - needed for three equal columns @markus: do not delete!
     auto *dw = new QWidget(this);
@@ -311,19 +311,16 @@ void DkControlWidget::connectWidgets()
     }
 
     // actions
-    connect(am.action(DkActionManager::menu_edit_crop), &QAction::triggered, this, &DkControlWidget::showCrop);
-    connect(am.action(DkActionManager::menu_panel_overview), &QAction::toggled, this, &DkControlWidget::showOverview);
-    connect(am.action(DkActionManager::menu_panel_player), &QAction::toggled, this, &DkControlWidget::showPlayer);
-    connect(am.action(DkActionManager::menu_panel_preview), &QAction::toggled, this, &DkControlWidget::showPreview);
-    connect(am.action(DkActionManager::menu_panel_scroller), &QAction::toggled, this, &DkControlWidget::showScroller);
-    connect(am.action(DkActionManager::menu_panel_exif), &QAction::toggled, this, &DkControlWidget::showMetaData);
-    connect(am.action(DkActionManager::menu_panel_info), &QAction::toggled, this, &DkControlWidget::showFileInfo);
-    connect(am.action(DkActionManager::menu_panel_histogram), &QAction::toggled, this, &DkControlWidget::showHistogram);
-    connect(am.action(DkActionManager::menu_panel_comment),
-            &QAction::toggled,
-            this,
-            &DkControlWidget::showCommentWidget);
-    connect(am.action(DkActionManager::menu_panel_toggle), &QAction::toggled, this, &DkControlWidget::toggleHUD);
+    connect(am.action(DkActionManager::edit_crop), &QAction::triggered, this, &DkControlWidget::showCrop);
+    connect(am.action(DkActionManager::panel_overview), &QAction::toggled, this, &DkControlWidget::showOverview);
+    connect(am.action(DkActionManager::panel_player), &QAction::toggled, this, &DkControlWidget::showPlayer);
+    connect(am.action(DkActionManager::panel_preview), &QAction::toggled, this, &DkControlWidget::showPreview);
+    connect(am.action(DkActionManager::panel_scroller), &QAction::toggled, this, &DkControlWidget::showScroller);
+    connect(am.action(DkActionManager::panel_exif), &QAction::toggled, this, &DkControlWidget::showMetaData);
+    connect(am.action(DkActionManager::panel_info), &QAction::toggled, this, &DkControlWidget::showFileInfo);
+    connect(am.action(DkActionManager::panel_histogram), &QAction::toggled, this, &DkControlWidget::showHistogram);
+    connect(am.action(DkActionManager::panel_comment), &QAction::toggled, this, &DkControlWidget::showCommentWidget);
+    connect(am.action(DkActionManager::panel_toggle_all), &QAction::toggled, this, &DkControlWidget::toggleHUD);
 }
 
 void DkControlWidget::setCommentSaved(const QString &comment)
@@ -362,7 +359,7 @@ void DkControlWidget::showWidgetsSettings()
     }
 
     // do not show if hide panels is checked
-    if (DkActionManager::instance().action(DkActionManager::menu_panel_toggle)->isChecked())
+    if (DkActionManager::instance().action(DkActionManager::panel_toggle_all)->isChecked())
         return;
 
     // qDebug() << "current app mode: " << DkSettingsManager::param().app().currentAppMode;

@@ -1595,6 +1595,8 @@ DkShortcutsModel::DkShortcutsModel(QObject *parent)
     rootData << tr("Name") << tr("Shortcut");
 
     mRootItem = new TreeItem(rootData);
+
+    addActions();
 }
 
 DkShortcutsModel::~DkShortcutsModel()
@@ -1721,9 +1723,12 @@ Qt::ItemFlags DkShortcutsModel::flags(const QModelIndex &index) const
 
 void DkShortcutsModel::addDataActions(QVector<QAction *> actions, const QString &name)
 {
+    QString cleanName = name;
+    cleanName.remove(QChar{'&'});
+
     // create root
     QVector<QVariant> menuData;
-    menuData << name;
+    menuData << cleanName;
 
     auto *menuItem = new TreeItem(menuData, mRootItem);
 
@@ -1745,6 +1750,39 @@ void DkShortcutsModel::addDataActions(QVector<QAction *> actions, const QString 
 
     mRootItem->appendChild(menuItem);
     mActions.append(actions);
+}
+
+void DkShortcutsModel::addActions()
+{
+    DkActionManager &am = DkActionManager::instance();
+
+    addDataActions(am.fileActions(), am.fileMenu()->title());
+    addDataActions(am.openWithActions(), am.openWithMenu()->title());
+    addDataActions(am.sortActions(), am.sortMenu()->title());
+    addDataActions(am.editActions(), am.editMenu()->title());
+    addDataActions(am.manipulatorActions(), am.manipulatorMenu()->title());
+    addDataActions(am.viewActions(), am.viewMenu()->title());
+    addDataActions(am.panelActions(), am.panelMenu()->title());
+    addDataActions(am.toolsActions(), am.toolsMenu()->title());
+    addDataActions(am.syncActions(), am.syncMenu()->title());
+    addDataActions(am.previewActions(), tr("Preview"));
+
+#ifdef WITH_PLUGINS
+    DkPluginActionManager *pm = am.pluginActionManager();
+    pm->updateMenu();
+
+    QVector<QAction *> allPluginActions = pm->pluginActions();
+    for (const QMenu *m : pm->pluginSubMenus()) {
+        allPluginActions << m->actions().toVector();
+    }
+
+    allPluginActions.append(am.pluginActions());
+
+    addDataActions(allPluginActions, pm->menu()->title());
+#endif
+
+    addDataActions(am.helpActions(), am.helpMenu()->title());
+    addDataActions(am.miscActions(), tr("Miscellaneous"));
 }
 
 void DkShortcutsModel::checkDuplicate(const QString &text, void *item)
@@ -1798,7 +1836,7 @@ void DkShortcutsModel::resetActions()
         QVector<QAction *> cActions = mActions.at(pIdx);
 
         for (int idx = 0; idx < cActions.size(); idx++) {
-            QString val = settings.value(cActions[idx]->text(), "no-shortcut").toString();
+            QString val = settings.value(cActions[idx]->objectName(), "no-shortcut").toString();
 
             if (val != "no-shortcut") {
                 cActions[idx]->setShortcut(QKeySequence());
@@ -1828,19 +1866,43 @@ void DkShortcutsModel::saveActions() const
             auto ks = cItem->data(1).value<QKeySequence>();
 
             if (cActions.at(mIdx)->shortcut() != ks) {
-                if (cActions.at(mIdx)->text().isEmpty()) {
+                QString actionId = cActions.at(mIdx)->objectName();
+                if (actionId.isEmpty()) {
                     qDebug() << "empty action detected! shortcut is: " << ks;
                     continue;
                 }
 
-                QString aT = cActions.at(mIdx)->text().remove("&");
-
                 cActions.at(mIdx)->setShortcut(ks); // assign new shortcut
-                settings.setValue(aT, ks.toString()); // note this works as long as you don't change the language!
+                settings.setValue(actionId, ks.toString());
             }
         }
     }
     settings.endGroup();
+}
+
+bool DkShortcutsModel::checkState() const
+{
+    bool ok = true;
+    QMap<QString, const QAction *> map;
+    for (const auto &group : mActions) {
+        for (const auto *action : group) {
+            QString actionId = action->objectName();
+            if (actionId.isEmpty()) {
+                ok = false;
+                qWarning() << "[ShortcutsModel] no unique id for action" << action->text();
+            }
+
+            auto it = map.find(actionId);
+            if (it != map.end() && it.value() != action) {
+                ok = false;
+                qWarning() << "[ShortcutsModel] duplicate id on action" << action->text() << "and"
+                           << it.value()->text();
+            } else {
+                map.insert(actionId, action);
+            }
+        }
+    }
+    return ok;
 }
 
 // DkShortcutsDialog --------------------------------------------------------------------
@@ -1907,12 +1969,6 @@ void DkShortcutsDialog::createLayout()
     // layout->addSpacing()
     layout->addWidget(buttons);
     resize(420, 500);
-}
-
-void DkShortcutsDialog::addActions(const QVector<QAction *> &actions, const QString &name)
-{
-    QString cleanName = name;
-    mModel->addDataActions(actions, cleanName.remove("&"));
 }
 
 void DkShortcutsDialog::contextMenu(const QPoint &)
@@ -4100,52 +4156,19 @@ DkDialogManager::DkDialogManager(QObject *parent)
 {
     DkActionManager &am = DkActionManager::instance();
 
-    connect(am.action(DkActionManager::menu_edit_shortcuts),
+    connect(am.action(DkActionManager::edit_shortcuts),
             &QAction::triggered,
             this,
             &DkDialogManager::openShortcutsDialog);
-    connect(am.action(DkActionManager::menu_file_app_manager),
-            &QAction::triggered,
-            this,
-            &DkDialogManager::openAppManager);
-    connect(am.action(DkActionManager::menu_file_print), &QAction::triggered, this, &DkDialogManager::openPrintDialog);
-    connect(am.action(DkActionManager::menu_tools_mosaic),
-            &QAction::triggered,
-            this,
-            &DkDialogManager::openMosaicDialog);
+    connect(am.action(DkActionManager::file_app_manager), &QAction::triggered, this, &DkDialogManager::openAppManager);
+    connect(am.action(DkActionManager::file_print), &QAction::triggered, this, &DkDialogManager::openPrintDialog);
+    connect(am.action(DkActionManager::tools_mosaic), &QAction::triggered, this, &DkDialogManager::openMosaicDialog);
 }
 
 void DkDialogManager::openShortcutsDialog() const
 {
-    DkActionManager &am = DkActionManager::instance();
-
     auto *shortcutsDialog = new DkShortcutsDialog(DkUtils::getMainWindow());
-    shortcutsDialog->addActions(am.fileActions(), am.fileMenu()->title());
-    shortcutsDialog->addActions(am.openWithActions(), am.openWithMenu()->title());
-    shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
-    shortcutsDialog->addActions(am.editActions(), am.editMenu()->title());
-    shortcutsDialog->addActions(am.manipulatorActions(), am.manipulatorMenu()->title());
-    shortcutsDialog->addActions(am.viewActions(), am.viewMenu()->title());
-    shortcutsDialog->addActions(am.panelActions(), am.panelMenu()->title());
-    shortcutsDialog->addActions(am.toolsActions(), am.toolsMenu()->title());
-    shortcutsDialog->addActions(am.syncActions(), am.syncMenu()->title());
-    shortcutsDialog->addActions(am.previewActions(), tr("Preview"));
-#ifdef WITH_PLUGINS // TODO
-
-    DkPluginActionManager *pm = am.pluginActionManager();
-    pm->updateMenu();
-
-    QVector<QAction *> allPluginActions = pm->pluginActions();
-
-    for (const QMenu *m : pm->pluginSubMenus()) {
-        allPluginActions << m->actions().toVector();
-    }
-
-    shortcutsDialog->addActions(allPluginActions, pm->menu()->title());
-#endif // WITH_PLUGINS
-    shortcutsDialog->addActions(am.helpActions(), am.helpMenu()->title());
-    shortcutsDialog->addActions(am.hiddenActions(), tr("Shortcuts"));
-
+    shortcutsDialog->checkState();
     shortcutsDialog->exec();
     shortcutsDialog->deleteLater();
 }
@@ -4192,7 +4215,7 @@ void DkDialogManager::openMosaicDialog() const
         imgC->setImage(mosaicDialog->getImage(), tr("Mosaic"));
 
         mCentralWidget->addTab(imgC);
-        DkActionManager::instance().action(DkActionManager::menu_file_save_as)->trigger();
+        DkActionManager::instance().action(DkActionManager::file_save_as)->trigger();
     }
 
     mosaicDialog->deleteLater();

@@ -199,7 +199,7 @@ signals:
     void showViewPort() const;
 
 protected:
-    void assignCustomPluginShortcuts();
+    void assignDummyPluginShortcuts();
     void savePluginActions(QVector<QAction *> actions) const;
 
     QVector<QAction *> mPluginActions;

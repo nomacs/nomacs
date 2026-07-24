@@ -47,8 +47,8 @@ class DllCoreExport DkAppManager : public QObject
     Q_OBJECT
 
 public:
-    static constexpr QStringView kOpenDirAppName = u"OpenDir";
-    static constexpr QStringView kOpenFileAppName = u"OpenFile";
+    static constexpr QStringView kOpenDirAppName = u"@opendir";
+    static constexpr QStringView kOpenFileAppName = u"@openfile";
 
     explicit DkAppManager(QWidget *parent = nullptr);
     ~DkAppManager() override;
@@ -57,16 +57,6 @@ public:
     QVector<QAction *> getActions() const;
     QAction *createAction(const QString &filePath);
     QAction *findAction(const QString &appPath) const;
-
-    enum defaultAppIdx {
-        app_photohsop,
-        app_picasa,
-        app_picasa_viewer,
-        app_irfan_view,
-        app_explorer,
-
-        app_idx_end
-    };
 
 public slots:
     void openTriggered() const;
@@ -78,7 +68,8 @@ protected:
     void saveSettings() const;
     void loadSettings();
     void assignIcon(QAction *app) const;
-    bool containsApp(QStringView appName) const;
+    bool containsApp(QStringView appId) const;
+    QString actionId(const QString &name) const;
 
     QString searchForSoftware(const QString &organization,
                               const QString &application,
@@ -86,9 +77,95 @@ protected:
                               const QString &exeName = "") const;
     void findDefaultSoftware();
 
-    QVector<QString> mDefaultNames;
     QVector<QAction *> mApps;
     bool mFirstTime = true;
+};
+
+struct DkActionId {
+    int index; // index into the associated actions array
+    const char *objectName; // uuid for settings, etc
+};
+
+// Shorthand to make enum index into a unique identifier string,
+// which then becomes the action objectName
+#define ACTION_ID(enumIndex)                                                                                           \
+    nmc::DkActionId                                                                                                    \
+    {                                                                                                                  \
+        enumIndex, #enumIndex                                                                                          \
+    }
+
+class DllCoreExport DkActionBuilder
+{
+private:
+    QVector<QAction *> &mActions; // indexed by id.index
+    QWidget *mParent{};
+
+    QAction *add(DkActionId id, const QIcon &icon, const QString &text, const QString &statusTip);
+
+public:
+    DkActionBuilder(QVector<QAction *> &actions, size_t numActions, QWidget *parent);
+    ~DkActionBuilder();
+
+    QAction *add(DkActionId id,
+                 const QIcon &icon,
+                 const QString &text,
+                 const QString &statusTip,
+                 const QKeySequence &shortcut)
+    {
+        auto *a = add(id, icon, text, statusTip);
+        a->setShortcut(shortcut);
+        return a;
+    }
+
+    // This overload is needed, QKeySequence(StandardKey) only takes the first shortcut
+    // when there are multiple for the standard key.
+    QAction *add(DkActionId id,
+                 const QIcon &icon,
+                 const QString &text,
+                 const QString &statusTip,
+                 QKeySequence::StandardKey standardKey)
+    {
+        auto *a = add(id, icon, text, statusTip);
+        a->setShortcuts(standardKey);
+        return a;
+    }
+
+    QAction *add(DkActionId id,
+                 const QIcon &icon,
+                 const QString &text,
+                 const QString &statusTip,
+                 const QList<QKeySequence> &shortcuts)
+    {
+        auto *a = add(id, icon, text, statusTip);
+        a->setShortcuts(shortcuts);
+        return a;
+    }
+
+    QAction *addCheckable(DkActionId id,
+                          const QIcon &icon,
+                          const QString &text,
+                          const QString &statusTip,
+                          const QKeySequence &shortcut,
+                          bool checked)
+    {
+        auto *a = add(id, icon, text, statusTip, shortcut);
+        a->setCheckable(true);
+        a->setChecked(checked);
+        return a;
+    }
+
+    QAction *addCheckable(DkActionId id,
+                          const QIcon &icon,
+                          const QString &text,
+                          const QString &statusTip,
+                          QKeySequence::StandardKey standardKey,
+                          bool checked)
+    {
+        auto *a = add(id, icon, text, statusTip, standardKey);
+        a->setCheckable(true);
+        a->setChecked(checked);
+        return a;
+    }
 };
 
 class DllCoreExport DkActionManager
@@ -101,195 +178,198 @@ public:
     DkActionManager(DkActionManager const &) = delete;
     void operator=(DkActionManager const &) = delete;
 
-    enum FileMenuActions {
-        menu_file_open,
-        menu_file_open_dir,
-        menu_file_open_list,
-        menu_file_quick_launch,
-        menu_file_app_manager,
-        menu_file_save,
-        menu_file_save_as,
-        menu_file_save_copy,
-        menu_file_save_list,
-        menu_file_save_web,
-        menu_file_rename,
-        menu_file_goto,
-        menu_file_find,
-        menu_file_recursive,
-        menu_file_show_recent,
-        menu_file_print,
-        menu_file_reload,
-        menu_file_next,
-        menu_file_prev,
-        menu_file_new_instance,
-        menu_file_private_instance,
-        menu_file_exit,
+    // define the action groups for shortcuts customizing; menus need not reflect these exactly
+    enum FileAction {
+        file_open,
+        file_open_dir,
+        file_open_list,
+        file_quick_launch,
+        file_app_manager,
+        file_save,
+        file_save_as,
+        file_save_copy,
+        file_save_list,
+        file_save_web,
+        file_rename,
+        nav_goto_file,
+        file_find,
+        file_recursive,
+        file_show_recent,
+        file_print,
+        file_reload,
+        nav_next_file,
+        nav_prev_file,
+        file_new_instance,
+        file_private_instance,
+        file_exit,
 
-        menu_file_end, // nothing beyond this point
+        numFileActions,
     };
 
-    enum SortMenuActions {
-        menu_sort_filename,
-        menu_sort_file_size,
-        menu_sort_date_created,
-        menu_sort_date_modified,
-        menu_sort_random,
-        menu_sort_ascending,
-        menu_sort_descending,
+    enum SortAction {
+        sort_filename,
+        sort_file_size,
+        sort_date_created,
+        sort_date_modified,
+        sort_random,
+        sort_ascending,
+        sort_descending,
 
-        menu_sort_end,
+        numSortActions,
     };
 
-    enum EditMenuActions {
-        menu_edit_image,
-        menu_edit_rotate_cw,
-        menu_edit_rotate_ccw,
-        menu_edit_rotate_180,
-        menu_edit_undo,
-        menu_edit_redo,
-        menu_edit_copy,
-        menu_edit_copy_buffer,
-        menu_edit_copy_color,
-        menu_edit_paste,
-        menu_edit_shortcuts,
-        menu_edit_preferences,
-        menu_edit_transform,
-        menu_edit_delete,
-        menu_edit_crop,
+    enum EditAction {
+        panel_edit_image,
 
-        menu_edit_end, // nothing beyond this point
+        edit_rotate_cw,
+        edit_rotate_ccw,
+        edit_rotate_180,
+        edit_undo,
+        edit_redo,
+        edit_copy,
+        edit_copy_buffer,
+        edit_copy_color,
+        edit_paste,
+        edit_shortcuts,
+        edit_preferences,
+        edit_transform,
+        edit_delete,
+        edit_crop,
+
+        numEditActions,
     };
 
-    enum ToolsMenuActions {
-        menu_tools_thumbs,
-        menu_tools_filter,
-        menu_tools_export_tiff,
-        menu_tools_extract_archive,
-        menu_tools_mosaic,
-        menu_tools_batch,
-        menu_tools_wallpaper,
-        menu_tools_train_format,
+    enum ToolsAction {
+        tools_thumbs,
+        tools_filter,
+        tools_export_tiff,
+        tools_extract_archive,
+        tools_mosaic,
+        tools_batch,
+        tools_wallpaper,
+        tools_train_format,
 
-        menu_tools_end,
+        numToolsActions,
     };
 
-    enum PanelMenuActions {
-        menu_panel_toggle,
+    enum PanelAction {
+        panel_toggle_all,
 
-        menu_panel_menu,
-        menu_panel_toolbar,
-        menu_panel_statusbar,
-        menu_panel_transfertoolbar,
+        panel_menubar,
+        panel_toolbar,
+        panel_statusbar,
+        panel_transfertoolbar,
 
-        menu_panel_player,
-        menu_panel_preview,
-        menu_panel_thumbview,
-        menu_panel_scroller,
-        menu_panel_exif,
-        menu_panel_info,
-        menu_panel_histogram,
-        menu_panel_overview,
-        menu_panel_explorer,
-        menu_panel_metadata_dock,
-        menu_panel_comment,
-        menu_panel_history,
-        menu_panel_log,
+        panel_player,
+        panel_preview,
+        panel_thumbview,
+        panel_scroller,
+        panel_exif,
+        panel_info,
+        panel_histogram,
+        panel_overview,
+        panel_explorer,
+        panel_metadata_dock,
+        panel_comment,
+        panel_history,
+        panel_log,
 
-        menu_panel_end,
+        numPanelActions,
     };
 
-    enum ViewMenuActions {
-        menu_view_fullscreen,
-        menu_view_reset,
-        menu_view_100,
-        menu_view_fit_frame,
-        menu_view_zoom_in,
-        menu_view_zoom_out,
-        menu_view_anti_aliasing,
-        menu_view_tp_pattern,
-        menu_view_frameless,
+    enum ViewAction {
+        view_fullscreen,
+        view_reset,
+        view_100,
+        view_fit_frame,
+        view_zoom_in,
+        view_zoom_out,
+        view_anti_aliasing,
+        view_tp_pattern,
+        view_frameless,
 
-        menu_view_new_tab,
-        menu_view_close_tab,
-        menu_view_close_all_tabs,
-        menu_view_first_tab,
-        menu_view_previous_tab,
-        menu_view_goto_tab,
-        menu_view_next_tab,
-        menu_view_last_tab,
+        view_new_tab,
+        view_close_tab,
+        view_close_all_tabs,
+        view_first_tab,
+        view_previous_tab,
+        view_goto_tab,
+        view_next_tab,
+        view_last_tab,
 
-        menu_view_opacity_up,
-        menu_view_opacity_down,
-        menu_view_opacity_an,
-        menu_view_opacity_change,
-        menu_view_lock_window,
-        menu_view_gps_map,
-        menu_view_slideshow,
-        menu_view_movie_pause,
-        menu_view_movie_next,
-        menu_view_movie_prev,
+        view_opacity_up,
+        view_opacity_down,
+        view_opacity_an,
+        view_opacity_change,
+        view_lock_window,
+        view_gps_map,
+        view_slideshow,
+        view_movie_pause,
+        view_movie_next,
+        view_movie_prev,
 
-        menu_view_monitors, // frameless only
+        view_monitors, // frameless only
 
-        menu_view_end, // nothing beyond this point
+        numViewActions,
     };
 
-    enum SyncMenuActions {
-        menu_sync_view,
-        menu_sync_pos,
-        menu_sync_arrange,
-        menu_sync_connect_all,
-        menu_sync_all_actions,
+    enum SyncAction {
+        sync_view,
+        sync_pos,
+        sync_arrange,
+        sync_connect_all,
+        sync_all_actions,
 
-        menu_sync_end, // nothing beyond this point
+        numSyncActions,
     };
 
-    enum PluginMenuActions {
-        menu_plugin_manager,
+    enum PluginAction {
+        plugin_manager,
 
-        menu_plugins_end, // nothing beyond this point
+        numPluginActions,
     };
 
-    enum HelpMenuActions {
-        menu_help_update,
-        menu_help_update_translation,
-        menu_help_bug,
-        menu_help_documentation,
-        menu_help_about,
+    enum HelpAction {
+        help_update,
+        help_update_translation,
+        help_bug,
+        help_documentation,
+        help_about,
 
-        menu_help_end, // nothing beyond this point
+        numHelpActions,
     };
 
-    enum HiddenActions {
-        sc_test_rec,
-        sc_test_pong,
+    enum MiscAction {
+        test_rec,
+        test_pong,
 
-        sc_first_file,
-        sc_last_file,
-        sc_skip_prev,
-        sc_skip_next,
-        sc_skip_next_sync,
-        sc_skip_prev_sync,
-        sc_first_file_sync,
-        sc_last_file_sync,
-        sc_delete_silent,
+        nav_first_file,
+        nav_last_file,
+        nav_skip_prev,
+        nav_skip_next,
+        nav_skip_next_sync,
+        nav_skip_prev_sync,
+        nav_first_file_sync,
+        nav_last_file_sync,
 
-        sc_star_rating_0,
-        sc_star_rating_1,
-        sc_star_rating_2,
-        sc_star_rating_3,
-        sc_star_rating_4,
-        sc_star_rating_5,
+        file_delete_silent,
 
-        sc_pan_up,
-        sc_pan_down,
-        sc_pan_left,
-        sc_pan_right,
+        star_rating_0,
+        star_rating_1,
+        star_rating_2,
+        star_rating_3,
+        star_rating_4,
+        star_rating_5,
 
-        sc_end, // nothing beyond this point
+        view_pan_up,
+        view_pan_down,
+        view_pan_left,
+        view_pan_right,
+
+        numMiscActions,
     };
 
-    enum PreviewActions {
+    enum PreviewAction {
         preview_select_all,
         preview_zoom_in,
         preview_zoom_out,
@@ -303,51 +383,7 @@ public:
         preview_batch,
         preview_print,
 
-        actions_end
-    };
-
-    enum FileIcons {
-        icon_file_prev,
-        icon_file_next,
-        icon_file_dir,
-        icon_file_open,
-        icon_file_open_large,
-        icon_file_dir_large,
-        icon_file_save,
-        icon_file_print,
-        icon_file_filter,
-        icon_file_find,
-
-        icon_file_end, // nothing beyond this point
-    };
-
-    enum EditIcons {
-        icon_edit_image,
-        icon_edit_rotate_cw,
-        icon_edit_rotate_ccw,
-        icon_edit_crop,
-        icon_edit_resize,
-        icon_edit_copy,
-        icon_edit_paste,
-        icon_edit_delete,
-        icon_edit_undo,
-        icon_edit_redo,
-
-        icon_edit_end, // nothing beyond this point
-    };
-
-    enum ViewIcons {
-        icon_view_fullscreen,
-        icon_view_reset,
-        icon_view_100,
-        icon_view_gps,
-        icon_view_movie_play,
-        icon_view_movie_prev,
-        icon_view_movie_next,
-        icon_view_zoom_in,
-        icon_view_zoom_out,
-
-        icon_view_end, // nothing beyond this point
+        numPreviewActions
     };
 
     // default nomacs shortcuts
@@ -359,6 +395,11 @@ public:
     static constexpr QKeyCombination shortcut_open_preview = Qt::Key_T;
     static constexpr QKeyCombination shortcut_open_thumbview = Qt::SHIFT | Qt::Key_T;
     static constexpr QKeyCombination shortcut_open_dir = Qt::CTRL | Qt::SHIFT | Qt::Key_O;
+#ifdef Q_OS_WIN
+    static constexpr QKeyCombination shortcut_quick_launch = Qt::CTRL | Qt::Key_Q;
+#else
+    static constexpr QKeyCombination shortcut_quick_launch = Qt::CTRL | Qt::Key_L;
+#endif
     static constexpr QKeyCombination shortcut_app_manager = Qt::CTRL | Qt::Key_M;
     static constexpr QKeyCombination shortcut_save_as = Qt::CTRL | Qt::SHIFT | Qt::Key_S;
     static constexpr QKeyCombination shortcut_first_file = Qt::Key_Home;
@@ -471,58 +512,170 @@ public:
 
     QMenu *updateOpenWithMenu();
 
-    QMenu *fileMenu() const;
-    QMenu *sortMenu() const;
-    QMenu *openWithMenu() const;
-    QMenu *viewMenu() const;
-    QMenu *editMenu() const;
-    QMenu *manipulatorMenu() const;
-    QMenu *toolsMenu() const;
-    QMenu *panelMenu() const;
-    QMenu *helpMenu() const;
-    QMenu *contextMenu() const;
-    QMenu *syncMenu() const;
-    DkTcpMenu *localMenu() const;
+    QMenu *fileMenu() const
+    {
+        return mFileMenu;
+    }
+    QMenu *sortMenu() const
+    {
+        return mSortMenu;
+    }
+    QMenu *openWithMenu() const
+    {
+        return mOpenWithMenu;
+    }
+    QMenu *viewMenu() const
+    {
+        return mViewMenu;
+    }
+    QMenu *editMenu() const
+    {
+        return mEditMenu;
+    }
+    QMenu *manipulatorMenu() const
+    {
+        return mManipulatorMenu;
+    }
+    QMenu *toolsMenu() const
+    {
+        return mToolsMenu;
+    }
+    QMenu *panelMenu() const
+    {
+        return mPanelMenu;
+    }
+    QMenu *helpMenu() const
+    {
+        return mHelpMenu;
+    }
+    QMenu *contextMenu() const
+    {
+        return mContextMenu;
+    }
+    QMenu *syncMenu() const
+    {
+        return mSyncMenu;
+    }
+    DkTcpMenu *localMenu() const
+    {
+        return mLocalMenu;
+    }
 
-    DkManipulatorManager manipulatorManager() const;
+    DkManipulatorManager manipulatorManager() const
+    {
+        return mManipulators;
+    }
 
     void createActions(QWidget *parent);
     void createMenus(QWidget *parent);
 
-    QAction *action(FileMenuActions action) const;
-    QAction *action(SortMenuActions action) const;
-    QAction *action(ViewMenuActions action) const;
-    QAction *action(EditMenuActions action) const;
-    QAction *action(ToolsMenuActions action) const;
-    QAction *action(PanelMenuActions action) const;
-    QAction *action(SyncMenuActions action) const;
-    QAction *action(PluginMenuActions action) const;
-    QAction *action(HelpMenuActions action) const;
-    QAction *action(HiddenActions action) const;
-    QAction *action(PreviewActions action) const;
+    QAction *action(FileAction action) const
+    {
+        return mFileActions[action];
+    }
+    QAction *action(SortAction action) const
+    {
+        return mSortActions[action];
+    }
+    QAction *action(ViewAction action) const
+    {
+        return mViewActions[action];
+    }
+    QAction *action(EditAction action) const
+    {
+        return mEditActions[action];
+    }
+    QAction *action(ToolsAction action) const
+    {
+        return mToolsActions[action];
+    }
+    QAction *action(PanelAction action) const
+    {
+        return mPanelActions[action];
+    }
+    QAction *action(SyncAction action) const
+    {
+        return mSyncActions[action];
+    }
+    QAction *action(PluginAction action) const
+    {
+        return mPluginActions[action];
+    }
+    QAction *action(HelpAction action) const
+    {
+        return mHelpActions[action];
+    }
+    QAction *action(MiscAction action) const
+    {
+        return mMiscActions[action];
+    }
+    QAction *action(PreviewAction action) const
+    {
+        return mPreviewActions[action];
+    }
 
-    QIcon icon(FileIcons icon) const;
-    QIcon icon(ViewIcons icon) const;
-    QIcon icon(EditIcons icon) const;
+    QVector<QAction *> fileActions() const
+    {
+        return mFileActions;
+    }
+    QVector<QAction *> sortActions() const
+    {
+        return mSortActions;
+    }
 
-    QVector<QAction *> fileActions() const;
-    QVector<QAction *> sortActions() const;
     QVector<QAction *> openWithActions() const;
-    QVector<QAction *> viewActions() const;
-    QVector<QAction *> editActions() const;
-    QVector<QAction *> toolsActions() const;
-    QVector<QAction *> panelActions() const;
-    QVector<QAction *> syncActions() const;
-    QVector<QAction *> pluginActions() const;
-    QVector<QAction *> helpActions() const;
-    QVector<QAction *> previewActions() const;
-    QVector<QAction *> manipulatorActions() const;
+
+    QVector<QAction *> viewActions() const
+    {
+        return mViewActions;
+    }
+    QVector<QAction *> editActions() const
+    {
+        return mEditActions;
+    }
+    QVector<QAction *> toolsActions() const
+    {
+        return mToolsActions;
+    }
+    QVector<QAction *> panelActions() const
+    {
+        return mPanelActions;
+    }
+    QVector<QAction *> syncActions() const
+    {
+        return mSyncActions;
+    }
+    QVector<QAction *> pluginActions() const
+    {
+        return mPluginActions;
+    }
+    QVector<QAction *> helpActions() const
+    {
+        return mHelpActions;
+    }
+    QVector<QAction *> previewActions() const
+    {
+        return mPreviewActions;
+    }
+    QVector<QAction *> manipulatorActions() const
+    {
+        return mManipulators.actions();
+    }
 
     QVector<QAction *> allActions() const;
 
-    QVector<QAction *> hiddenActions() const;
-    DkAppManager *appManager() const;
-    DkPluginActionManager *pluginActionManager() const;
+    QVector<QAction *> miscActions() const
+    {
+        return mMiscActions;
+    }
+    DkAppManager *appManager() const
+    {
+        return mAppManager;
+    }
+    DkPluginActionManager *pluginActionManager() const
+    {
+        return mPluginManager;
+    }
 
     void assignCustomShortcuts(QVector<QAction *> actions) const;
 
@@ -539,7 +692,6 @@ protected:
     DkActionManager();
 
     void init();
-    void createIcons();
 
     QMenu *createFileMenu(QWidget *parent);
     QMenu *createSortMenu(QWidget *parent);
@@ -553,7 +705,7 @@ protected:
     QMenu *createContextMenu(QWidget *parent);
     QMenu *createSyncMenu(QWidget *parent);
 
-    // actions
+    // actions indexed by their associated enum
     QVector<QAction *> mFileActions;
     QVector<QAction *> mSortActions;
     QVector<QAction *> mEditActions;
@@ -564,8 +716,7 @@ protected:
     QVector<QAction *> mPluginActions;
     QVector<QAction *> mHelpActions;
     QVector<QAction *> mPreviewActions;
-
-    QVector<QAction *> mHiddenActions;
+    QVector<QAction *> mMiscActions;
 
     DkManipulatorManager mManipulators;
 
@@ -584,12 +735,6 @@ protected:
     // sync
     QMenu *mSyncMenu = nullptr;
     DkTcpMenu *mLocalMenu = nullptr;
-
-    // icons
-    QVector<QIcon> mFileIcons;
-    QVector<QIcon> mEditIcons;
-    QVector<QIcon> mViewIcons;
-    QVector<QIcon> mToolsIcons;
 
     DkAppManager *mAppManager = nullptr;
     DkPluginActionManager *mPluginManager = nullptr;

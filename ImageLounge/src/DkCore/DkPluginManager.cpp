@@ -315,7 +315,7 @@ void DkPluginContainer::loadMetaData(const QJsonValue &val)
 
     for (const QString &key : keys) {
         if (key == "PluginName")
-            mPluginName = metaData.value(key).toString();
+            mPluginName = metaData.value(key).toString(); // NOTE: must not be translated
         else if (key == "AuthorName")
             mAuthorName = metaData.value(key).toString();
         else if (key == "Company")
@@ -1366,31 +1366,31 @@ void DkPluginManager::createPluginsPath()
 DkPluginActionManager::DkPluginActionManager(QObject *parent)
     : QObject(parent)
 {
-    assignCustomPluginShortcuts();
+    assignDummyPluginShortcuts();
 }
 
-void DkPluginActionManager::assignCustomPluginShortcuts()
+void DkPluginActionManager::assignDummyPluginShortcuts()
 {
+    const QVariant unset{};
+    mPluginDummyActions.clear();
+
     DefaultSettings settings;
-    settings.beginGroup("CustomPluginShortcuts");
-    QStringList psKeys = settings.allKeys();
+    settings.beginGroup("PluginActions");
+
+    const QStringList pluginActionIds = settings.allKeys();
+
     settings.endGroup();
+    settings.beginGroup("CustomShortcuts");
 
-    if (psKeys.size() > 0) {
-        settings.beginGroup("CustomShortcuts");
-
-        mPluginDummyActions = QVector<QAction *>();
-
-        for (int i = 0; i < psKeys.size(); i++) {
-            auto *action = new QAction(psKeys.at(i), this);
-            QString val = settings.value(psKeys.at(i), "no-shortcut").toString();
-            if (val != "no-shortcut")
-                action->setShortcut(val);
-            connect(action, &QAction::triggered, this, &DkPluginActionManager::runPluginFromShortcut);
-            mPluginDummyActions.append(action);
+    for (auto &actionId : pluginActionIds) {
+        auto *action = new QAction(actionId, this);
+        action->setObjectName(actionId);
+        QVariant val = settings.value(actionId);
+        if (val != unset) {
+            action->setShortcut(val.toString());
         }
-
-        settings.endGroup();
+        connect(action, &QAction::triggered, this, &DkPluginActionManager::runPluginFromShortcut);
+        mPluginDummyActions.append(action);
     }
 }
 
@@ -1425,50 +1425,39 @@ QVector<QMenu *> DkPluginActionManager::pluginSubMenus() const
 
 void DkPluginActionManager::updateMenu()
 {
-    qDebug() << "CREATING plugin menu";
-
     if (!mMenu) {
-        qWarning() << "plugin menu is NULL where it should not be!";
+        Q_ASSERT(mMenu);
+        qCritical() << "plugins menu is null, cannot populate!!";
+        return;
     }
+
+    mMenu->clear();
+    mPluginActions.clear();
 
     DkPluginManager::instance().loadPlugins();
-    QVector<QSharedPointer<DkPluginContainer>> plugins = DkPluginManager::instance().getPlugins();
+    const QVector<QSharedPointer<DkPluginContainer>> plugins = DkPluginManager::instance().getPlugins();
 
-    if (plugins.empty()) {
-        // mPluginActions.resize(DkActionManager::menu_plugins_end);
-        mPluginActions = DkActionManager::instance().pluginActions();
-    }
-    mMenu->clear();
-
-    for (auto p : plugins) {
-        connect(p.data(),
-                QOverload<DkViewPortInterface *, bool>::of(&DkPluginContainer::runPlugin),
-                this,
-                QOverload<DkViewPortInterface *, bool>::of(&DkPluginActionManager::runPlugin),
-                Qt::UniqueConnection);
-        connect(p.data(),
-                QOverload<DkPluginContainer *, const QString &>::of(&DkPluginContainer::runPlugin),
-                this,
-                QOverload<DkPluginContainer *, const QString &>::of(&DkPluginActionManager::runPlugin),
-                Qt::UniqueConnection);
-    }
-
-    if (plugins.isEmpty()) { // no  plugins
-        mMenu->addAction(mPluginActions[DkActionManager::menu_plugin_manager]);
-        mPluginActions.resize(DkActionManager::menu_plugin_manager); // reduce the size again
-    } else {
-        // delete old plugin actions
-        for (int idx = mPluginActions.size(); idx > DkActionManager::menu_plugins_end; idx--) {
-            mPluginActions.pop_back();
+    if (!plugins.isEmpty()) {
+        for (auto &p : plugins) {
+            connect(p.data(),
+                    QOverload<DkViewPortInterface *, bool>::of(&DkPluginContainer::runPlugin),
+                    this,
+                    QOverload<DkViewPortInterface *, bool>::of(&DkPluginActionManager::runPlugin),
+                    Qt::UniqueConnection);
+            connect(p.data(),
+                    QOverload<DkPluginContainer *, const QString &>::of(&DkPluginContainer::runPlugin),
+                    this,
+                    QOverload<DkPluginContainer *, const QString &>::of(&DkPluginActionManager::runPlugin),
+                    Qt::UniqueConnection);
         }
+
         addPluginsToMenu();
+        mMenu->addSeparator();
     }
+
+    mMenu->addActions(DkActionManager::instance().pluginActions());
 }
 
-/**
- * Creates the plugin menu when it is not empty
- * called in DkNoMacs::createPluginsMenu()
- **/
 void DkPluginActionManager::addPluginsToMenu()
 {
     QVector<QSharedPointer<DkPluginContainer>> loadedPlugins = DkPluginManager::instance().getPlugins();
@@ -1477,6 +1466,8 @@ void DkPluginActionManager::addPluginsToMenu()
     mPluginSubMenus.clear();
 
     QStringList pluginMenu = QStringList();
+
+    const QRegularExpression whitespace{"\\s+"};
 
     for (auto plugin : loadedPlugins) {
         DkPluginInterface *pi = plugin->plugin();
@@ -1488,14 +1479,12 @@ void DkPluginActionManager::addPluginsToMenu()
         } else if (pi) {
             auto *a = new QAction(plugin->pluginName(), this);
             a->setData(plugin->id());
+            a->setObjectName("plugin_" + plugin->pluginName().toLower().remove(whitespace));
             mPluginActions.append(a);
             mMenu->addAction(a);
             connect(a, &QAction::triggered, plugin.data(), &DkPluginContainer::run);
         }
     }
-
-    mMenu->addSeparator();
-    mMenu->addAction(DkActionManager::instance().action(DkActionManager::menu_plugin_manager));
 
     QVector<QAction *> allPluginActions = mPluginActions;
 
@@ -1509,35 +1498,36 @@ void DkPluginActionManager::addPluginsToMenu()
 
 void DkPluginActionManager::runPluginFromShortcut()
 {
-    qDebug() << "running plugin shortcut...";
-
     const auto *action = qobject_cast<QAction *>(sender());
-    QString actionName = action->text();
 
     updateMenu();
 
     QVector<QAction *> allPluginActions = mPluginActions;
 
-    for (const QMenu *m : mPluginSubMenus) {
+    for (const QMenu *m : std::as_const(mPluginSubMenus)) {
         allPluginActions << m->actions().toVector();
     }
 
-    // this method fails if two plugins have the same action name!!
-    for (int i = 0; i < allPluginActions.size(); i++)
-        if (allPluginActions.at(i)->text().compare(actionName) == 0) {
-            allPluginActions.at(i)->trigger();
+    for (QAction *pluginAction : std::as_const(allPluginActions)) {
+        if (pluginAction->objectName() == action->objectName()) {
+            pluginAction->trigger();
             break;
         }
+    }
 }
 
 void DkPluginActionManager::savePluginActions(QVector<QAction *> actions) const
 {
+    // save plugin action data to settings so we can bind a shortcut before plugin is loaded
     DefaultSettings settings;
-    settings.beginGroup("CustomPluginShortcuts");
-    settings.remove("");
-    for (int i = 0; i < actions.size(); i++)
-        settings.setValue(actions.at(i)->text(), actions.at(i)->text());
-    settings.endGroup();
+
+    // remove possibly outdated plugin data
+    settings.remove("PluginActions");
+
+    settings.beginGroup("PluginActions");
+    for (QAction *a : actions) {
+        settings.setValue(a->objectName(), a->text());
+    }
 }
 
 }

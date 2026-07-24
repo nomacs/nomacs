@@ -2717,7 +2717,7 @@ DkImageStorage::DkImageStorage()
 {
     connect(&mWorker, &QFutureWatcher<QImage>::finished, this, &DkImageStorage::workerFinished);
 
-    connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing),
+    connect(DkActionManager::instance().action(DkActionManager::view_anti_aliasing),
             &QAction::toggled,
             this,
             &DkImageStorage::antiAliasingChanged);

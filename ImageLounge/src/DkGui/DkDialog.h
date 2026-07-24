@@ -429,10 +429,10 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
-    void addDataActions(QVector<QAction *> actions, const QString &name);
-
     void resetActions();
     void saveActions() const;
+
+    bool checkState() const;
 
 public slots:
     void checkDuplicate(const QString &text, void *item); // deprecated (Qt4)
@@ -443,6 +443,9 @@ signals:
     void duplicateSignal(const QString &info) const;
 
 protected:
+    void addActions();
+    void addDataActions(QVector<QAction *> actions, const QString &name);
+
     TreeItem *mRootItem;
     QVector<QVector<QAction *>> mActions;
 };
@@ -455,7 +458,10 @@ public:
     explicit DkShortcutsDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     void addActions(const QVector<QAction *> &actions, const QString &name);
-
+    void checkState()
+    {
+        (void)mModel->checkState();
+    }
 public slots:
     void accept() override;
 

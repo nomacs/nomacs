@@ -249,40 +249,37 @@ void DkNoMacs::createActions()
 {
     DkActionManager &am = DkActionManager::instance();
 
-    connect(am.action(DkActionManager::menu_file_open), &QAction::triggered, this, &DkNoMacs::openFile);
-    connect(am.action(DkActionManager::menu_file_open_dir), &QAction::triggered, this, &DkNoMacs::openDir);
-    connect(am.action(DkActionManager::menu_file_quick_launch), &QAction::triggered, this, &DkNoMacs::openQuickLaunch);
-    connect(am.action(DkActionManager::menu_file_open_list), &QAction::triggered, this, &DkNoMacs::openFileList);
-    connect(am.action(DkActionManager::menu_file_save_list), &QAction::triggered, this, &DkNoMacs::saveFileList);
-    connect(am.action(DkActionManager::menu_file_rename),
-            &QAction::triggered,
-            getTabWidget(),
-            &DkCentralWidget::renameFile);
-    connect(am.action(DkActionManager::menu_file_goto), &QAction::triggered, this, &DkNoMacs::goTo);
+    connect(am.action(DkActionManager::file_open), &QAction::triggered, this, &DkNoMacs::openFile);
+    connect(am.action(DkActionManager::file_open_dir), &QAction::triggered, this, &DkNoMacs::openDir);
+    connect(am.action(DkActionManager::file_quick_launch), &QAction::triggered, this, &DkNoMacs::openQuickLaunch);
+    connect(am.action(DkActionManager::file_open_list), &QAction::triggered, this, &DkNoMacs::openFileList);
+    connect(am.action(DkActionManager::file_save_list), &QAction::triggered, this, &DkNoMacs::saveFileList);
+    connect(am.action(DkActionManager::file_rename), &QAction::triggered, getTabWidget(), &DkCentralWidget::renameFile);
+    connect(am.action(DkActionManager::nav_goto_file), &QAction::triggered, this, &DkNoMacs::goTo);
 
-    connect(am.action(DkActionManager::menu_file_show_recent),
+    connect(am.action(DkActionManager::file_show_recent),
             &QAction::triggered,
             getTabWidget(),
             &DkCentralWidget::showRecentFiles);
-    connect(am.action(DkActionManager::menu_file_new_instance), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::file_new_instance), &QAction::triggered, this, [this]() {
         newInstance();
     });
-    connect(am.action(DkActionManager::menu_file_private_instance), &QAction::triggered, this, [this]() {
+    connect(am.action(DkActionManager::file_private_instance), &QAction::triggered, this, [this]() {
         newInstance();
     });
-    connect(am.action(DkActionManager::menu_file_find), &QAction::triggered, this, &DkNoMacs::find);
-    connect(am.action(DkActionManager::menu_file_recursive), &QAction::triggered, this, &DkNoMacs::setRecursiveScan);
-    connect(am.action(DkActionManager::menu_file_exit), &QAction::triggered, this, &DkNoMacs::close);
+    connect(am.action(DkActionManager::file_find), &QAction::triggered, this, &DkNoMacs::find);
+    connect(am.action(DkActionManager::file_recursive), &QAction::triggered, this, &DkNoMacs::setRecursiveScan);
+    connect(am.action(DkActionManager::file_exit), &QAction::triggered, this, &DkNoMacs::close);
 
-    connect(am.action(DkActionManager::menu_sort_filename), &QAction::triggered, this, &DkNoMacs::changeSorting);
-    connect(am.action(DkActionManager::menu_sort_file_size), &QAction::triggered, this, &DkNoMacs::changeSorting);
-    connect(am.action(DkActionManager::menu_sort_date_created), &QAction::triggered, this, &DkNoMacs::changeSorting);
-    connect(am.action(DkActionManager::menu_sort_date_modified), &QAction::triggered, this, &DkNoMacs::changeSorting);
-    connect(am.action(DkActionManager::menu_sort_random), &QAction::triggered, this, &DkNoMacs::changeSorting);
-    connect(am.action(DkActionManager::menu_sort_ascending), &QAction::triggered, this, &DkNoMacs::changeSorting);
-    connect(am.action(DkActionManager::menu_sort_descending), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::sort_filename), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::sort_file_size), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::sort_date_created), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::sort_date_modified), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::sort_random), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::sort_ascending), &QAction::triggered, this, &DkNoMacs::changeSorting);
+    connect(am.action(DkActionManager::sort_descending), &QAction::triggered, this, &DkNoMacs::changeSorting);
 
-    connect(am.action(DkActionManager::menu_panel_menu), &QAction::toggled, this, [this](bool checked) {
+    connect(am.action(DkActionManager::panel_menubar), &QAction::toggled, this, [this](bool checked) {
         auto appMode = DkSettingsManager::param().app().currentAppMode;
         // frameless and fullscreen hide by default, so toggling menubar visiblity should not be permanent.
         if (!DkSettings::modeIsFullscreen(appMode) && DkSettings::normalMode(appMode) != DkSettings::mode_frameless) {
@@ -290,66 +287,57 @@ void DkNoMacs::createActions()
         }
         showMenuBar(checked);
     });
-    connect(am.action(DkActionManager::menu_panel_explorer), &QAction::toggled, this, [this](bool show) {
+    connect(am.action(DkActionManager::panel_explorer), &QAction::toggled, this, [this](bool show) {
         showExplorer(show);
     });
-    connect(am.action(DkActionManager::menu_panel_metadata_dock), &QAction::toggled, this, [this](bool show) {
+    connect(am.action(DkActionManager::panel_metadata_dock), &QAction::toggled, this, [this](bool show) {
         showMetaDataDock(show);
     });
-    connect(am.action(DkActionManager::menu_edit_image), &QAction::toggled, this, [this](bool show) {
+    connect(am.action(DkActionManager::panel_edit_image), &QAction::toggled, this, [this](bool show) {
         showEditDock(show);
     });
-    connect(am.action(DkActionManager::menu_panel_history), &QAction::toggled, this, [this](bool show) {
+    connect(am.action(DkActionManager::panel_history), &QAction::toggled, this, [this](bool show) {
         showHistoryDock(show);
     });
-    connect(am.action(DkActionManager::menu_panel_log), &QAction::toggled, this, [this](bool show) {
+    connect(am.action(DkActionManager::panel_log), &QAction::toggled, this, [this](bool show) {
         showLogDock(show);
     });
-    connect(am.action(DkActionManager::menu_panel_preview), &QAction::toggled, this, &DkNoMacs::showThumbsDock);
-    connect(am.action(DkActionManager::menu_panel_toggle), &QAction::toggled, this, &DkNoMacs::toggleDocks);
+    connect(am.action(DkActionManager::panel_preview), &QAction::toggled, this, &DkNoMacs::showThumbsDock);
+    connect(am.action(DkActionManager::panel_toggle_all), &QAction::toggled, this, &DkNoMacs::toggleDocks);
 
-    connect(am.action(DkActionManager::menu_view_fit_frame), &QAction::triggered, this, &DkNoMacs::fitFrame);
-    connect(am.action(DkActionManager::menu_view_fullscreen), &QAction::triggered, this, &DkNoMacs::toggleFullScreen);
-    connect(am.action(DkActionManager::menu_view_frameless), &QAction::toggled, this, &DkNoMacs::restartFrameless);
-    connect(am.action(DkActionManager::menu_panel_transfertoolbar),
+    connect(am.action(DkActionManager::view_fit_frame), &QAction::triggered, this, &DkNoMacs::fitFrame);
+    connect(am.action(DkActionManager::view_fullscreen), &QAction::triggered, this, &DkNoMacs::toggleFullScreen);
+    connect(am.action(DkActionManager::view_frameless), &QAction::toggled, this, &DkNoMacs::restartFrameless);
+    connect(am.action(DkActionManager::panel_transfertoolbar),
             &QAction::toggled,
             this,
             &DkNoMacs::restartWithPseudoColor);
-    connect(am.action(DkActionManager::menu_view_opacity_change),
-            &QAction::triggered,
-            this,
-            &DkNoMacs::showOpacityDialog);
-    connect(am.action(DkActionManager::menu_view_opacity_up), &QAction::triggered, this, &DkNoMacs::opacityUp);
-    connect(am.action(DkActionManager::menu_view_opacity_down), &QAction::triggered, this, &DkNoMacs::opacityDown);
-    connect(am.action(DkActionManager::menu_view_opacity_an),
-            &QAction::triggered,
-            this,
-            &DkNoMacs::animateChangeOpacity);
-    connect(am.action(DkActionManager::menu_view_lock_window), &QAction::triggered, this, &DkNoMacs::lockWindow);
+    connect(am.action(DkActionManager::view_opacity_change), &QAction::triggered, this, &DkNoMacs::showOpacityDialog);
+    connect(am.action(DkActionManager::view_opacity_up), &QAction::triggered, this, &DkNoMacs::opacityUp);
+    connect(am.action(DkActionManager::view_opacity_down), &QAction::triggered, this, &DkNoMacs::opacityDown);
+    connect(am.action(DkActionManager::view_opacity_an), &QAction::triggered, this, &DkNoMacs::animateChangeOpacity);
+    connect(am.action(DkActionManager::view_lock_window), &QAction::triggered, this, &DkNoMacs::lockWindow);
 
-    connect(am.action(DkActionManager::menu_tools_thumbs), &QAction::triggered, this, &DkNoMacs::computeThumbsBatch);
-    connect(am.action(DkActionManager::menu_tools_filter), &QAction::triggered, this, &DkNoMacs::find);
-    connect(am.action(DkActionManager::menu_tools_export_tiff), &QAction::triggered, this, &DkNoMacs::exportTiff);
-    connect(am.action(DkActionManager::menu_tools_extract_archive),
+    connect(am.action(DkActionManager::tools_thumbs), &QAction::triggered, this, &DkNoMacs::computeThumbsBatch);
+    connect(am.action(DkActionManager::tools_filter), &QAction::triggered, this, &DkNoMacs::find);
+    connect(am.action(DkActionManager::tools_export_tiff), &QAction::triggered, this, &DkNoMacs::exportTiff);
+    connect(am.action(DkActionManager::tools_extract_archive),
             &QAction::triggered,
             this,
             &DkNoMacs::extractImagesFromArchive);
-    connect(am.action(DkActionManager::menu_tools_train_format), &QAction::triggered, this, &DkNoMacs::trainFormat);
+    connect(am.action(DkActionManager::tools_train_format), &QAction::triggered, this, &DkNoMacs::trainFormat);
 
-    connect(am.action(DkActionManager::sc_test_rec), &QAction::triggered, this, &DkNoMacs::loadRecursion);
-    connect(am.action(DkActionManager::sc_test_pong), &QAction::triggered, this, &DkNoMacs::startPong);
+    connect(am.action(DkActionManager::test_rec), &QAction::triggered, this, &DkNoMacs::loadRecursion);
+    connect(am.action(DkActionManager::test_pong), &QAction::triggered, this, &DkNoMacs::startPong);
 
-    connect(am.action(DkActionManager::menu_plugin_manager), &QAction::triggered, this, &DkNoMacs::openPluginManager);
+    connect(am.action(DkActionManager::plugin_manager), &QAction::triggered, this, &DkNoMacs::openPluginManager);
 
     // help menu
-    connect(am.action(DkActionManager::menu_help_about), &QAction::triggered, this, &DkNoMacs::aboutDialog);
-    connect(am.action(DkActionManager::menu_help_documentation),
-            &QAction::triggered,
-            this,
-            &DkNoMacs::openDocumentation);
-    connect(am.action(DkActionManager::menu_help_bug), &QAction::triggered, this, &DkNoMacs::bugReport);
-    connect(am.action(DkActionManager::menu_help_update), &QAction::triggered, this, &DkNoMacs::checkForUpdate);
-    connect(am.action(DkActionManager::menu_help_update_translation),
+    connect(am.action(DkActionManager::help_about), &QAction::triggered, this, &DkNoMacs::aboutDialog);
+    connect(am.action(DkActionManager::help_documentation), &QAction::triggered, this, &DkNoMacs::openDocumentation);
+    connect(am.action(DkActionManager::help_bug), &QAction::triggered, this, &DkNoMacs::bugReport);
+    connect(am.action(DkActionManager::help_update), &QAction::triggered, this, &DkNoMacs::checkForUpdate);
+    connect(am.action(DkActionManager::help_update_translation),
             &QAction::triggered,
             this,
             &DkNoMacs::updateTranslations);
@@ -908,11 +896,11 @@ void DkNoMacs::lockWindow(bool lock)
         SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT);
         SetWindowPos((HWND)this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
-        auto keyStr = DkActionManager::instance().action(DkActionManager::menu_view_lock_window)->shortcut().toString();
+        auto keyStr = DkActionManager::instance().action(DkActionManager::view_lock_window)->shortcut().toString();
         getTabWidget()->setInfo(tr("Window Locked\nTo unlock: gain focus (ALT+Tab),\nthen press %1").arg(keyStr));
     } else if (lock && windowOpacity() == 1.0f) {
         getTabWidget()->setInfo(tr("You should first reduce opacity\n before working through the window."));
-        DkActionManager::instance().action(DkActionManager::menu_view_lock_window)->setChecked(false);
+        DkActionManager::instance().action(DkActionManager::view_lock_window)->setChecked(false);
     } else {
         qDebug() << "deactivating...";
         HWND hwnd = (HWND)winId(); // get handle of the widget
@@ -936,9 +924,9 @@ void DkNoMacs::newClientConnected(bool connected)
     // add methods if clients are connected
 
     DkActionManager &am = DkActionManager::instance();
-    am.action(DkActionManager::menu_sync_view)->setEnabled(connected);
-    am.action(DkActionManager::menu_sync_pos)->setEnabled(connected);
-    am.action(DkActionManager::menu_sync_arrange)->setEnabled(connected);
+    am.action(DkActionManager::sync_view)->setEnabled(connected);
+    am.action(DkActionManager::sync_pos)->setEnabled(connected);
+    am.action(DkActionManager::sync_arrange)->setEnabled(connected);
 }
 
 void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid)
@@ -1008,7 +996,7 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings)
 #else
         mExplorer = new DkBrowseExplorer(tr("File Explorer"));
 #endif
-        mExplorer->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_explorer));
+        mExplorer->registerAction(DkActionManager::instance().action(DkActionManager::panel_explorer));
         mExplorer->setDisplaySettings(&DkSettingsManager::param().app().showExplorer);
         addDockWidget(mExplorer->getDockLocationSettings(Qt::LeftDockWidgetArea), mExplorer);
 
@@ -1042,7 +1030,7 @@ void DkNoMacs::showMetaDataDock(bool show, bool saveSettings)
 
     if (!mMetaDataDock) {
         mMetaDataDock = new DkMetaDataDock(tr("Meta Data Info"), this);
-        mMetaDataDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_metadata_dock));
+        mMetaDataDock->registerAction(DkActionManager::instance().action(DkActionManager::panel_metadata_dock));
         mMetaDataDock->setDisplaySettings(&DkSettingsManager::param().app().showMetaDataDock);
         addDockWidget(mMetaDataDock->getDockLocationSettings(Qt::RightDockWidgetArea), mMetaDataDock);
 
@@ -1065,7 +1053,7 @@ void DkNoMacs::showEditDock(bool show, bool saveSettings)
 
     if (!mEditDock) {
         mEditDock = new DkEditDock(tr("Edit Image"), this);
-        mEditDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_edit_image));
+        mEditDock->registerAction(DkActionManager::instance().action(DkActionManager::panel_edit_image));
         mEditDock->setDisplaySettings(&DkSettingsManager::param().app().showEditDock);
         addDockWidget(mEditDock->getDockLocationSettings(Qt::RightDockWidgetArea), mEditDock);
     }
@@ -1080,7 +1068,7 @@ void DkNoMacs::showHistoryDock(bool show, bool saveSettings)
 
     if (!mHistoryDock) {
         mHistoryDock = new DkHistoryDock(tr("History"), this);
-        mHistoryDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_history));
+        mHistoryDock->registerAction(DkActionManager::instance().action(DkActionManager::panel_history));
         mHistoryDock->setDisplaySettings(&DkSettingsManager::param().app().showHistoryDock);
         addDockWidget(mHistoryDock->getDockLocationSettings(Qt::RightDockWidgetArea), mHistoryDock);
 
@@ -1101,7 +1089,7 @@ void DkNoMacs::showLogDock(bool show, bool saveSettings)
     if (!mLogDock) {
         // get last location
         mLogDock = new DkLogDock(tr("Console"), this);
-        mLogDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_log));
+        mLogDock->registerAction(DkActionManager::instance().action(DkActionManager::panel_log));
         mLogDock->setDisplaySettings(&DkSettingsManager::param().app().showLogDock);
         addDockWidget(mLogDock->getDockLocationSettings(Qt::LeftDockWidgetArea), mLogDock);
     }
@@ -1142,7 +1130,7 @@ void DkNoMacs::showThumbsDock(bool show)
 
     if (!mThumbsDock) {
         mThumbsDock = new DkDockWidget(tr("Thumbnails"), this);
-        mThumbsDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_preview));
+        mThumbsDock->registerAction(DkActionManager::instance().action(DkActionManager::panel_preview));
         mThumbsDock->setDisplaySettings(&DkSettingsManager::param().app().showFilePreview);
         mThumbsDock->setWidget(vp->getController()->getFilePreview());
         addDockWidget(mThumbsDock->getDockLocationSettings(Qt::TopDockWidgetArea), mThumbsDock);
@@ -1361,7 +1349,7 @@ void DkNoMacs::find(bool filterAction)
         return;
 
     if (filterAction) {
-        int db = (QObject::sender() == DkActionManager::instance().action(DkActionManager::menu_tools_filter))
+        int db = (QObject::sender() == DkActionManager::instance().action(DkActionManager::tools_filter))
             ? DkSearchDialog::filter_button
             : DkSearchDialog::find_button;
         qDebug() << "default button: " << db;
@@ -1381,7 +1369,7 @@ void DkNoMacs::find(bool filterAction)
         int answer = searchDialog->exec();
 
         DkActionManager::instance()
-            .action(DkActionManager::menu_tools_filter)
+            .action(DkActionManager::tools_filter)
             ->setChecked(answer == DkSearchDialog::filter_button);
     } else {
         // remove the filter
@@ -1396,19 +1384,19 @@ void DkNoMacs::changeSorting(bool change)
     if (change) {
         QString senderName = QObject::sender()->objectName();
 
-        if (senderName == "menu_sort_filename")
+        if (senderName == "sort_filename")
             DkSettingsManager::param().global().sortMode = DkSettings::sort_filename;
-        else if (senderName == "menu_sort_file_size")
+        else if (senderName == "sort_file_size")
             DkSettingsManager::param().global().sortMode = DkSettings::sort_file_size;
-        else if (senderName == "menu_sort_date_created")
+        else if (senderName == "sort_date_created")
             DkSettingsManager::param().global().sortMode = DkSettings::sort_date_created;
-        else if (senderName == "menu_sort_date_modified")
+        else if (senderName == "sort_date_modified")
             DkSettingsManager::param().global().sortMode = DkSettings::sort_date_modified;
-        else if (senderName == "menu_sort_random")
+        else if (senderName == "sort_random")
             DkSettingsManager::param().global().sortMode = DkSettings::sort_random;
-        else if (senderName == "menu_sort_ascending")
+        else if (senderName == "sort_ascending")
             DkSettingsManager::param().global().sortDir = DkSettings::sort_ascending;
-        else if (senderName == "menu_sort_descending")
+        else if (senderName == "sort_descending")
             DkSettingsManager::param().global().sortDir = DkSettings::sort_descending;
 
         if (getTabWidget()->getCurrentImageLoader())
@@ -1417,10 +1405,10 @@ void DkNoMacs::changeSorting(bool change)
 
     QVector<QAction *> sortActions = DkActionManager::instance().sortActions();
     for (int idx = 0; idx < sortActions.size(); idx++) {
-        if (idx < DkActionManager::menu_sort_ascending)
+        if (idx < DkActionManager::sort_ascending)
             sortActions[idx]->setChecked(idx == DkSettingsManager::param().global().sortMode);
-        else if (idx >= DkActionManager::menu_sort_ascending)
-            sortActions[idx]->setChecked(idx - DkActionManager::menu_sort_ascending
+        else if (idx >= DkActionManager::sort_ascending)
+            sortActions[idx]->setChecked(idx - DkActionManager::sort_ascending
                                          == DkSettingsManager::param().global().sortDir);
     }
 }
@@ -1558,7 +1546,7 @@ void DkNoMacs::newInstance(const QString &filePath)
 
     args << "--skip-startup";
 
-    if (a && a == DkActionManager::instance().action(DkActionManager::menu_file_private_instance))
+    if (a && a == DkActionManager::instance().action(DkActionManager::file_private_instance))
         args.append("-p");
 
     if (filePath.isEmpty())
@@ -1694,7 +1682,7 @@ bool DkNoMacs::eventFilter(QObject *, QEvent *event)
 
 void DkNoMacs::showMenuBar(bool show)
 {
-    QAction *mp = DkActionManager::instance().action(DkActionManager::menu_panel_menu);
+    QAction *mp = DkActionManager::instance().action(DkActionManager::panel_menubar);
     mp->blockSignals(true);
     mp->setChecked(show);
     mp->blockSignals(false);
@@ -1736,59 +1724,52 @@ void DkNoMacs::openFileWith(QAction *action)
         return result;
     };
 
-    const QString appPath = action->toolTip();
+    QString appPath = action->toolTip();
     DkFileInfo fileInfo(getTabWidget()->getCurrentFilePath());
+    QStringList args;
 
+    // don't open the file, select it in the file manager or at least open parent directory
     if (appPath == DkAppManager::kOpenDirAppName) {
         if (fileInfo.isFromZip()) {
             fileInfo = DkFileInfo(fileInfo.dirPath());
         }
+#ifdef Q_OS_WIN
+        appPath = "C:/Windows/explorer.exe";
+        args << "/select,";
+#else
         QUrl url = QUrl::fromLocalFile(fileInfo.dirPath());
+        QDesktopServices::openUrl(url);
+        return;
+#endif
+    }
+
+    if (fileInfo.isFromZip()) {
+        fileInfo = extractToTmpFile(fileInfo);
+    }
+
+    if (appPath == DkAppManager::kOpenFileAppName) {
+        QUrl url = QUrl::fromLocalFile(fileInfo.path());
         QDesktopServices::openUrl(url);
         return;
     }
 
-    if (appPath == DkAppManager::kOpenFileAppName) {
-        if (fileInfo.isFromZip()) {
-            fileInfo = extractToTmpFile(fileInfo);
-        }
-        if (fileInfo.exists()) {
-            QUrl url = QUrl::fromLocalFile(fileInfo.path());
-            QDesktopServices::openUrl(url);
-        }
-        return;
+    const QFileInfo app(appPath);
+    if (!app.exists()) {
+        getTabWidget()->setInfo(tr("Sorry, %1 does not exist").arg(app.fileName()));
     }
 
-    QFileInfo app(appPath);
-
-    if (!app.exists())
-        getTabWidget()->setInfo("Sorry, " % app.fileName() % " does not exist");
-
-    QStringList args;
-
-    // open the file location, not the file itself
-    bool openLocation = app.fileName() == "explorer.exe";
-
-    if (!openLocation && fileInfo.isFromZip()) {
-        fileInfo = extractToTmpFile(fileInfo);
-        if (!fileInfo.exists()) {
-            return;
-        }
+    // add email attachment
+    if (app.fileName().toLower() == "outlook.exe") {
+        args << "/a";
     }
-    QString filePath = fileInfo.path();
-    if (openLocation)
-        args << "/select," << QDir::toNativeSeparators(fileInfo.isFromZip() ? fileInfo.dirPath() : filePath);
-    else if (app.fileName().toLower() == "outlook.exe") {
-        args << "/a" << QDir::toNativeSeparators(filePath);
-    } else
-        args << QDir::toNativeSeparators(filePath);
+
+    args << QDir::toNativeSeparators(fileInfo.path());
+    qInfo() << "[openFileWith]" << app.absoluteFilePath() << args;
 
     bool started = mProcess.startDetached(app.absoluteFilePath(), args);
-
-    if (started)
-        qDebug() << "starting: " << app.fileName() << args;
-    else
-        getTabWidget()->setInfo("Sorry, I could not start: " % app.absoluteFilePath());
+    if (!started) {
+        getTabWidget()->setInfo(tr("Sorry, I could not start %1").arg(app.absoluteFilePath()));
+    }
 }
 
 void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC)
@@ -2085,8 +2066,8 @@ void DkNoMacsSync::createActions()
     DkActionManager &am = DkActionManager::instance();
 
     // sync menu
-    connect(am.action(DkActionManager::menu_sync_pos), &QAction::triggered, this, &DkNoMacs::tcpSendWindowRect);
-    connect(am.action(DkActionManager::menu_sync_arrange), &QAction::triggered, this, &DkNoMacs::tcpSendArrange);
+    connect(am.action(DkActionManager::sync_pos), &QAction::triggered, this, &DkNoMacs::tcpSendWindowRect);
+    connect(am.action(DkActionManager::sync_arrange), &QAction::triggered, this, &DkNoMacs::tcpSendArrange);
 
     auto cm = DkSyncManager::inst().client();
     Q_ASSERT(cm);
@@ -2202,25 +2183,25 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     setMouseTracking(true); // receive mouse event everytime
 
     DkActionManager &am = DkActionManager::instance();
-    am.action(DkActionManager::menu_panel_statusbar)->setEnabled(false);
-    am.action(DkActionManager::menu_panel_statusbar)->setChecked(false);
-    am.action(DkActionManager::menu_panel_toolbar)->setChecked(false);
+    am.action(DkActionManager::panel_statusbar)->setEnabled(false);
+    am.action(DkActionManager::panel_statusbar)->setChecked(false);
+    am.action(DkActionManager::panel_toolbar)->setChecked(false);
 
     showMenuBar(false);
 
-    am.action(DkActionManager::menu_view_frameless)->blockSignals(true);
-    am.action(DkActionManager::menu_view_frameless)->setChecked(true);
-    am.action(DkActionManager::menu_view_frameless)->blockSignals(false);
+    am.action(DkActionManager::view_frameless)->blockSignals(true);
+    am.action(DkActionManager::view_frameless)->setChecked(true);
+    am.action(DkActionManager::view_frameless)->blockSignals(false);
 
     chooseMonitor(false);
-    connect(am.action(DkActionManager::menu_view_monitors), &QAction::triggered, this, [this] {
+    connect(am.action(DkActionManager::view_monitors), &QAction::triggered, this, [this] {
         chooseMonitor(true);
     });
 
     DkStatusBarManager::instance().show(false, false);
 
     // actions that should always be disabled
-    DkActionManager::instance().action(DkActionManager::menu_view_fit_frame)->setEnabled(false);
+    DkActionManager::instance().action(DkActionManager::view_fit_frame)->setEnabled(false);
 }
 
 DkNoMacsFrameless::~DkNoMacsFrameless() = default;
@@ -2231,8 +2212,8 @@ void DkNoMacsFrameless::createContextMenu()
 
     DkActionManager &am = DkActionManager::instance();
     am.contextMenu()->addSeparator();
-    am.contextMenu()->addAction(am.action(DkActionManager::menu_view_monitors));
-    am.contextMenu()->addAction(am.action(DkActionManager::menu_file_exit));
+    am.contextMenu()->addAction(am.action(DkActionManager::view_monitors));
+    am.contextMenu()->addAction(am.action(DkActionManager::file_exit));
 }
 
 void DkNoMacsFrameless::paintEvent(QPaintEvent *event)
@@ -2335,9 +2316,9 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
     // TODO: this should be checked but no event should be called
     DkActionManager &am = DkActionManager::instance();
-    am.action(DkActionManager::menu_panel_transfertoolbar)->blockSignals(true);
-    am.action(DkActionManager::menu_panel_transfertoolbar)->setChecked(true);
-    am.action(DkActionManager::menu_panel_transfertoolbar)->blockSignals(false);
+    am.action(DkActionManager::panel_transfertoolbar)->blockSignals(true);
+    am.action(DkActionManager::panel_transfertoolbar)->setChecked(true);
+    am.action(DkActionManager::panel_transfertoolbar)->blockSignals(false);
 }
 
 DkNoMacsContrast::~DkNoMacsContrast() = default;
