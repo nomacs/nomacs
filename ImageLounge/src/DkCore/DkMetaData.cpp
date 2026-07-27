@@ -1855,6 +1855,7 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 
 QStringList DkMetaDataHelper::convertGpsCoordinates(const QString &coordString) const
 {
+    // convert rational values to float
     QStringList gpsInfo;
     QStringList entries = coordString.split(" ");
 
@@ -1946,7 +1947,8 @@ QString DkMetaDataHelper::formatSpecialValue(const QString &shortKey, const QStr
     } else if (shortKey == mCamSearchTags[key_compression]) {
         rValue = formatCompression(value);
     } else if (shortKey == "GPSLatitude" || shortKey == "GPSLongitude") {
-        rValue = convertGpsCoordinates(value).join(" ");
+        QStringList parts = convertGpsCoordinates(value);
+        rValue = parts.empty() ? value : parts.join(QChar{u' '});
     } else if (shortKey == "GPSAltitude") {
         rValue = formatGpsAltitude(value);
     } else if (value.contains("charset=")) {
