@@ -39,6 +39,7 @@
 #include <QPushButton>
 #include <QScreen>
 #include <QStyle>
+#include <QStyleOptionButton>
 #include <QTimeZone>
 
 namespace nmc
@@ -92,6 +93,20 @@ QPixmap DkMessageBox::msgBoxStandardIcon(QMessageBox::Icon icon) const
     return pm;
 }
 
+// distance from where checkbox starts to where text label begins
+static int checkBoxTextIndent(const QCheckBox *checkBox)
+{
+    QStyleOptionButton option;
+    option.initFrom(checkBox);
+    option.text = checkBox->text();
+    option.icon = checkBox->icon();
+    option.iconSize = checkBox->iconSize();
+
+    QRect textRect = checkBox->style()->subElementRect(QStyle::SE_CheckBoxContents, &option, checkBox);
+
+    return textRect.x();
+}
+
 void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
                                 const QString &userText,
                                 QMessageBox::StandardButtons buttons)
@@ -135,19 +150,26 @@ void DkMessageBox::createLayout(QMessageBox::Icon userIcon,
     mButtonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
     QObject::connect(mButtonBox, &QDialogButtonBox::clicked, this, &DkMessageBox::buttonClicked);
 
-    // less crowded with some space above button box
-    auto *spacer = new QFrame;
-    spacer->setFrameShape(QFrame::NoFrame);
+    // align the options combobox with checkbox text (standard HIG)
+    // and keep it tight to the text to show they go together
+    auto *indentLayout = new QHBoxLayout;
+    indentLayout->setContentsMargins(checkBoxTextIndent(mShowAgain), 0, 0, 0);
+    indentLayout->addWidget(mOptionBox);
+    indentLayout->addStretch(1);
+
+    auto *checkBoxLayout = new QVBoxLayout;
+    checkBoxLayout->addWidget(mShowAgain);
+    checkBoxLayout->addLayout(indentLayout);
+    checkBoxLayout->setSpacing(4);
 
     auto *grid = new QGridLayout;
     int leftMargin = style()->pixelMetric(QStyle::PM_LayoutLeftMargin, nullptr, this);
     grid->setSpacing(leftMargin);
+    grid->setRowStretch(0, 1);
     grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
     grid->addWidget(textLabel, 0, 1, 2, 1);
-    grid->addWidget(mShowAgain, 2, 1, 1, 1);
-    grid->addWidget(mOptionBox, 3, 1, 1, 1);
-    grid->addWidget(spacer, 4, 0, 1, 2);
-    grid->addWidget(mButtonBox, 5, 0, 1, 2);
+    grid->addLayout(checkBoxLayout, 2, 1, 1, 1);
+    grid->addWidget(mButtonBox, 3, 0, 1, 2);
 
     setLayout(grid);
     setModal(true);
