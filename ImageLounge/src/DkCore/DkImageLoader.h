@@ -163,8 +163,6 @@ protected:
 
     static QStringList getFoldersRecursive(const QString &dirPath);
 
-    void clearPath();
-
     QString getCopyPath() const;
 
     QSharedPointer<DkImageContainerT> findOrCreateFile(const QString &filePath) const;
