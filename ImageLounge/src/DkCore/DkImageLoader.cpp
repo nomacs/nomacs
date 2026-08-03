@@ -661,16 +661,15 @@ bool DkImageLoader::promptSaveBeforeUnload()
  **/
 void DkImageLoader::activate(bool isActive /* = true */)
 {
+    blockSignals(!isActive);
+
     if (!isActive) {
-        // go to sleep - schlofand wöhlar ihr camölar
-        blockSignals(true);
         clearPath();
     } else if (!mCurrentImage) {
-        // wake up again
-        blockSignals(false);
         setCurrentImage(mLastImageLoaded);
-    } else
+    } else {
         emit updateDirSignal(mImages);
+    }
 }
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg)
