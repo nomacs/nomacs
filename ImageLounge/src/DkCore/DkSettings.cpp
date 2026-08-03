@@ -404,6 +404,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     app_p.useLogFile = settings.value("useLogFile", app_p.useLogFile).toBool();
     app_p.defaultJpgQuality = settings.value("defaultJpgQuality", app_p.defaultJpgQuality).toInt();
     app_p.appMode = settings.value("appMode", app_p.appMode).toInt();
+    app_p.singleInstance = settings.value("singleInstance", app_p.singleInstance).toBool();
+    app_p.openNewTab = settings.value("openNewTab", app_p.openNewTab).toBool();
 
     QStringList tmpFileFilters = app_p.fileFilters;
     QStringList tmpContainerFilters = app_p.containerRawFilters.split(" ");
@@ -702,6 +704,10 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("browseFilters", app_p.browseFilters);
     if (force || app_p.registerFilters != app_d.registerFilters)
         settings.setValue("registerFilters", app_p.registerFilters);
+    if (force || app_p.singleInstance != app_d.singleInstance)
+        settings.setValue("singleInstance", app_p.singleInstance);
+    if (force || app_p.openNewTab != app_d.openNewTab)
+        settings.setValue("openNewTab", app_p.openNewTab);
 
     // always save (user setting)
     settings.setValue("defaultJpgQuality", app_p.defaultJpgQuality);
@@ -1005,6 +1011,8 @@ void DkSettings::setToDefaultSettings()
     app_p.currentAppMode = mode_default;
     app_p.privateMode = false;
     app_p.defaultJpgQuality = 97;
+    app_p.singleInstance = false;
+    app_p.openNewTab = false;
 
     global_p.skipImgs = 10;
     global_p.numFiles = 50;
