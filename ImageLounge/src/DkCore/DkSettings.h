@@ -205,6 +205,9 @@ public:
         QStringList rawFilters;
         QStringList containerFilters;
         QString containerRawFilters;
+
+        bool singleInstance; // use the same process for each open file
+        bool openNewTab; // files added from file manager create new tab or replace current
     };
 
     struct Display {
