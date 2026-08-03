@@ -117,25 +117,6 @@ DkImageLoader::~DkImageLoader()
 }
 
 /**
- * Clears the path.
- * Calling this method makes the loader forget
- * about the current directory. It also destroys
- * the currently loaded image.
- **/
-void DkImageLoader::clearPath()
-{
-    // lastFileLoaded must exist
-    if (mCurrentImage && mCurrentImage->exists()) {
-        this->receiveUpdates(false);
-        mLastImageLoaded = mCurrentImage;
-        mImages.clear();
-
-        // only clear the current image if it exists
-        mCurrentImage.clear();
-    }
-}
-
-/**
  * Loads a given directory.
  * @param newDir the directory to be loaded.
  **/
@@ -664,7 +645,15 @@ void DkImageLoader::activate(bool isActive /* = true */)
     blockSignals(!isActive);
 
     if (!isActive) {
-        clearPath();
+        // lastFileLoaded must exist
+        if (mCurrentImage && mCurrentImage->exists()) {
+            this->receiveUpdates(false);
+            mLastImageLoaded = mCurrentImage;
+            mImages.clear();
+
+            // only clear the current image if it exists
+            mCurrentImage.clear();
+        }
     } else if (!mCurrentImage) {
         setCurrentImage(mLastImageLoaded);
     } else {
