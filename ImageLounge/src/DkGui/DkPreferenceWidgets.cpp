@@ -393,6 +393,21 @@ void DkGeneralPreference::createLayout()
     leftColumnLayout->addWidget(defaultGroup);
 
     // checkboxes
+    auto *cbSingleInstance = new QCheckBox(tr("Single application instance"));
+    cbSingleInstance->setToolTip(tr("If checked, files are opened in the first instance."));
+    cbSingleInstance->setChecked(DkSettingsManager::param().app().singleInstance);
+    connect(cbSingleInstance, &QCheckBox::toggled, this, [this](bool checked) {
+        DkSettingsManager::param().app().singleInstance = checked;
+        showRestartLabel();
+    });
+
+    auto *cbOpenNewTab = new QCheckBox(tr("Open in new tab"));
+    cbOpenNewTab->setToolTip(tr("If checked, files and directories are opened in a new tab."));
+    cbOpenNewTab->setChecked(DkSettingsManager::param().app().openNewTab);
+    connect(cbOpenNewTab, &QCheckBox::toggled, this, [](bool checked) {
+        DkSettingsManager::param().app().openNewTab = checked;
+    });
+
     auto *cbRecentFiles = new QCheckBox(tr("Show Recent Files on Start-Up"), this);
     cbRecentFiles->setToolTip(tr("Show the History Panel on Start-Up"));
     cbRecentFiles->setChecked(DkSettingsManager::param().app().showRecentFiles);
@@ -482,6 +497,8 @@ void DkGeneralPreference::createLayout()
     connect(cbCheckForUpdates, &QCheckBox::toggled, this, &DkGeneralPreference::onCheckForUpdatesToggled);
 
     auto *generalGroup = new DkGroupWidget(tr("General"), this);
+    generalGroup->addWidget(cbSingleInstance);
+    generalGroup->addWidget(cbOpenNewTab);
     generalGroup->addWidget(cbRecentFiles);
     generalGroup->addWidget(cbLogRecentFiles);
     generalGroup->addWidget(cbCheckOpenDuplicates);
