@@ -633,31 +633,18 @@ bool DkImageLoader::promptSaveBeforeUnload()
     return false;
 }
 
-/**
- * Activates or deactivates the loader.
- * If activated, the directory is indexed & the current image is loaded.
- * If deactivated, the image list & the current image are deleted which
- * should save some memory. In addition, all signals are mBlocked.
- * @param isActive if true, the loader is activated
- **/
 void DkImageLoader::activate(bool isActive /* = true */)
 {
+    // stop or start using the loader, for example when switching tabs or
+    // a mode switch like thumb scene hides the image
     blockSignals(!isActive);
+    receiveUpdates(isActive);
 
-    if (!isActive) {
-        // lastFileLoaded must exist
-        if (mCurrentImage && mCurrentImage->exists()) {
-            this->receiveUpdates(false);
-            mLastImageLoaded = mCurrentImage;
-            mImages.clear();
-
-            // only clear the current image if it exists
-            mCurrentImage.clear();
+    if (mCurrentImage) {
+        if (!isActive) {
+            // we don't need the image immediately, it can be discarded after loading
+            mCurrentImage->cancel();
         }
-    } else if (!mCurrentImage) {
-        setCurrentImage(mLastImageLoaded);
-    } else {
-        emit updateDirSignal(mImages);
     }
 }
 
