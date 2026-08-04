@@ -642,7 +642,6 @@ void DkSettings::save(bool force)
 {
     DefaultSettings s;
     save(s, force);
-    qDebug() << "saved settings to:" << s.fileName();
 }
 
 void DkSettings::save(QSettings &settings, bool force)
@@ -954,6 +953,8 @@ void DkSettings::save(QSettings &settings, bool force)
     sync_d = sync_p;
     meta_d = meta_p;
     resources_d = resources_p;
+
+    qDebug() << "saved settings to:" << settings.fileName();
 }
 
 void DkSettings::loadHistory()
