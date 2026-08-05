@@ -1486,11 +1486,6 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getCurrentImage() const
     return mCurrentImage;
 }
 
-QSharedPointer<DkImageContainerT> DkImageLoader::getLastImage() const
-{
-    return mLastImageLoaded;
-}
-
 /**
  * Returns the currently loaded directory.
  * @return QDir the currently loaded directory.

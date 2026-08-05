@@ -62,7 +62,6 @@ public:
 
     void rotateImage(double angle);
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
-    QSharedPointer<DkImageContainerT> getLastImage() const;
     QString filePath() const;
     QStringList getFileNames() const;
 
@@ -184,7 +183,6 @@ protected:
     QStringList mSubFolders;
     QVector<QSharedPointer<DkImageContainerT>> mImages;
     QSharedPointer<DkImageContainerT> mCurrentImage;
-    QSharedPointer<DkImageContainerT> mLastImageLoaded;
     bool mFolderUpdated = false;
     bool mSortingImages = false;
     bool mSortingIsDirty = false;
