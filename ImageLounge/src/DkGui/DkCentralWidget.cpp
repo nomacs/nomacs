@@ -81,7 +81,6 @@ DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObj
     if (imgC)
         mTabMode = tab_single_image;
     mTabIdx = idx;
-    mFilePath = getFilePath();
 }
 
 DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject *parent)
@@ -132,7 +131,7 @@ void DkTabInfo::saveSettings(QSettings &settings) const
 
 QString DkTabInfo::getFilePath() const
 {
-    return (mImageLoader->getCurrentImage()) ? mImageLoader->getCurrentImage()->filePath() : mFilePath;
+    return mImageLoader->filePath();
 }
 
 void DkTabInfo::setTabIdx(int tabIdx)
@@ -151,7 +150,6 @@ void DkTabInfo::setImage(QSharedPointer<DkImageContainerT> imgC)
 
     if (imgC)
         mTabMode = tab_single_image;
-    mFilePath = getFilePath();
 }
 
 QSharedPointer<DkImageLoader> DkTabInfo::getImageLoader() const
