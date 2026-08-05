@@ -118,12 +118,7 @@ void DkTabInfo::loadSettings(const QSettings &settings)
 
 void DkTabInfo::saveSettings(QSettings &settings) const
 {
-    QSharedPointer<DkImageContainerT> imgC;
-    if (mImageLoader->getCurrentImage())
-        imgC = mImageLoader->getCurrentImage();
-    else
-        imgC = mImageLoader->getLastImage();
-
+    auto imgC = mImageLoader->getCurrentImage();
     if (imgC)
         settings.setValue("tabFileInfo", imgC->filePath());
     settings.setValue("tabMode", mTabMode);
@@ -215,9 +210,6 @@ QString DkTabInfo::getTabText() const
         tabText = QObject::tr("Thumbnail Preview");
 
     QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
-    if (!imgC)
-        imgC = mImageLoader->getLastImage();
-
     if (!imgC)
         return tabText;
 
