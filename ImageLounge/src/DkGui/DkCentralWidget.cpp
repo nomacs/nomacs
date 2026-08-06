@@ -785,19 +785,16 @@ int DkCentralWidget::getActiveTab()
 
 void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
 {
+    Q_UNUSED(img)
+
     int idx = mTabbar->currentIndex();
-
-    if (idx == -1) {
-        addTab(img, false);
-    } else if (idx > mTabInfos.size())
-        addTab(img, idx);
-    else {
-        QSharedPointer<DkTabInfo> tabInfo = mTabInfos[idx];
-        tabInfo->setImage(img);
-
-        updateTab(tabInfo);
-        switchWidget(tabInfo->getMode());
+    if (idx < 0) {
+        qWarning() << "Image loaded but no tab available";
+        return;
     }
+
+    QSharedPointer<DkTabInfo> tabInfo = mTabInfos[idx];
+    updateTab(tabInfo);
 }
 
 QVector<QSharedPointer<DkTabInfo>> DkCentralWidget::getTabs() const
