@@ -427,25 +427,38 @@ void DkCentralWidget::currentTabChanged(int idx)
     if (idx < 0 || idx >= mTabInfos.size())
         return;
 
-    updateLoader(mTabInfos.at(idx)->getImageLoader());
+    auto tab = mTabInfos.at(idx);
+    updateLoader(tab->getImageLoader());
 
     if (getThumbScrollWidget())
         getThumbScrollWidget()->clear();
 
-    mTabInfos.at(idx)->activate();
-    QSharedPointer<DkImageContainerT> imgC = mTabInfos.at(idx)->getImage();
+    tab->activate();
 
-    if (imgC && mTabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image) {
-        mTabInfos.at(idx)->getImageLoader()->load(imgC);
-        showViewPort();
-    } else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_thumb_preview) {
+    switch (tab->getMode()) {
+    case DkTabInfo::tab_single_image: {
+        auto imgC = tab->getImage();
+        if (imgC) {
+            tab->getImageLoader()->load(imgC);
+            showViewPort();
+        }
+        break;
+    }
+    case DkTabInfo::tab_thumb_preview:
         showThumbView();
-    } else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_recent_files) {
+        break;
+    case DkTabInfo::tab_recent_files:
         showRecentFiles();
-    } else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_preferences) {
+        break;
+    case DkTabInfo::tab_preferences:
         showPreferences();
-    } else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_batch) {
+        break;
+    case DkTabInfo::tab_batch:
         showBatch();
+        break;
+    case DkTabInfo::tab_empty:
+    case DkTabInfo::tab_end:
+        break;
     }
 }
 
