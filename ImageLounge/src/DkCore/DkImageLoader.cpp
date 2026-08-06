@@ -567,6 +567,11 @@ QStringList DkImageLoader::getFileNames() const
 
 QVector<QSharedPointer<DkImageContainerT>> DkImageLoader::getImages()
 {
+    // support reading dir if image is not loaded yet (which always includes dir scan)
+    // otherwise we must leave unchanged, as it may diverge due to recursive scan
+    if (mCurrentDir.isEmpty() && mCurrentImage) {
+        mCurrentDir = mCurrentImage->dirPath();
+    }
     loadDir(mCurrentDir);
     return mImages;
 }
