@@ -383,10 +383,7 @@ void DkCentralWidget::saveSettings(bool saveTabs) const
 
 void DkCentralWidget::loadSettings()
 {
-    QVector<QSharedPointer<DkTabInfo>> tabInfos;
-
     DefaultSettings settings;
-
     settings.beginGroup(objectName());
 
     int size = settings.beginReadArray("Tabs");
@@ -395,21 +392,16 @@ void DkCentralWidget::loadSettings()
 
         QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo());
         tabInfo->loadSettings(settings);
-        tabInfo->setTabIdx(idx);
-        tabInfos.append(tabInfo);
+        addTab(tabInfo, true);
     }
 
-    settings.endArray();
-    settings.endGroup();
-
-    setTabList(tabInfos);
-
-    if (tabInfos.empty()) {
+    if (mTabInfos.empty()) {
         QSharedPointer<DkTabInfo> info = QSharedPointer<DkTabInfo>(new DkTabInfo());
         info->setMode(DkTabInfo::tab_empty);
-        info->setTabIdx(0);
-        addTab(info);
+        addTab(info, true);
     }
+
+    mTabbar->setCurrentIndex(mTabbar->count() - 1);
 }
 
 bool DkCentralWidget::hasViewPort() const
@@ -640,22 +632,6 @@ void DkCentralWidget::tabMoved(int from, int to)
     mTabInfos.insert(to, tabInfo);
 
     updateTabIdx();
-}
-
-void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex /* = -1 */)
-{
-    mTabInfos = tabInfos;
-
-    for (QSharedPointer<DkTabInfo> &tabInfo : tabInfos)
-        mTabbar->addTab(tabInfo->getTabText());
-
-    if (activeIndex == -1)
-        activeIndex = tabInfos.size() - 1;
-
-    mTabbar->setCurrentIndex(activeIndex);
-
-    if (tabInfos.size() > 1)
-        mTabbar->show();
 }
 
 void DkCentralWidget::addTab(const DkFileInfo &file, bool background)
