@@ -192,7 +192,6 @@ protected:
 
     void createLayout();
     void updateTabIdx();
-    void switchWidget(int widget);
     void switchWidget(QWidget *widget = nullptr);
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
