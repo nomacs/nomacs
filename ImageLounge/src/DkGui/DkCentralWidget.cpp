@@ -436,14 +436,9 @@ void DkCentralWidget::currentTabChanged(int idx)
     tab->activate();
 
     switch (tab->getMode()) {
-    case DkTabInfo::tab_single_image: {
-        auto imgC = tab->getImage();
-        if (imgC) {
-            tab->getImageLoader()->load(imgC);
-            showViewPort();
-        }
+    case DkTabInfo::tab_single_image:
+        showViewPort();
         break;
-    }
     case DkTabInfo::tab_thumb_preview:
         showThumbView();
         break;
@@ -869,9 +864,14 @@ void DkCentralWidget::showViewPort(bool show /* = true */)
             createViewPort();
 
         switchWidget(mWidgets[viewport_widget]);
-        if (getCurrentImage())
-            getViewPort()->setImage(getCurrentImage()->image());
+
+        auto tab = mTabInfos[mTabbar->currentIndex()];
+
+        getViewPort()->setImageLoader(tab->getImageLoader());
         getViewPort()->show();
+
+        tab->getImageLoader()->load(tab->getImage());
+
     } else if (hasViewPort()) {
         getViewPort()->getController()->getFilePreview()->cancelLoading();
         getViewPort()->deactivate();
