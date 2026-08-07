@@ -662,23 +662,27 @@ void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, bool backgr
 
 void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 {
-    // if the current tab is empty, replace it
-    const int currentIdx = mTabbar->currentIndex();
-    if (currentIdx >= 0 && mTabInfos.at(currentIdx)->getMode() == DkTabInfo::tab_empty
-        && tabInfo->getMode() != DkTabInfo::tab_empty) {
-        // don't use removeTab(), it may create a new empty tab
-        mTabbar->blockSignals(true);
-        mTabbar->removeTab(currentIdx);
-        mTabbar->blockSignals(false);
+    {
+        // prevent currentTabChanged() until we are ready to change tabs
+        // this prevents image loading in background tabs
+        QSignalBlocker blocker(mTabbar);
 
-        tabInfo->setTabIdx(currentIdx);
-        mTabInfos.replace(currentIdx, tabInfo);
-        updateTabIdx();
-        mTabbar->insertTab(currentIdx, tabInfo->getTabText());
-    } else {
-        tabInfo->setTabIdx(mTabInfos.size());
-        mTabInfos.push_back(tabInfo);
-        mTabbar->addTab(tabInfo->getTabText());
+        // if the current tab is empty, replace it
+        const int currentIdx = mTabbar->currentIndex();
+        if (currentIdx >= 0 && mTabInfos.at(currentIdx)->getMode() == DkTabInfo::tab_empty
+            && tabInfo->getMode() != DkTabInfo::tab_empty) {
+            // don't use removeTab(), it may create a new empty tab
+            mTabbar->removeTab(currentIdx);
+
+            tabInfo->setTabIdx(currentIdx);
+            mTabInfos.replace(currentIdx, tabInfo);
+            updateTabIdx();
+            mTabbar->insertTab(currentIdx, tabInfo->getTabText());
+        } else {
+            tabInfo->setTabIdx(mTabInfos.size());
+            mTabInfos.push_back(tabInfo);
+            mTabbar->addTab(tabInfo->getTabText());
+        }
     }
 
     if (!background)
