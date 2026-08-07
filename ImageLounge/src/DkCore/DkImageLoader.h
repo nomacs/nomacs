@@ -155,6 +155,7 @@ protected:
     void updateCacher(QSharedPointer<DkImageContainerT> imgC);
     int getSubFolderIdx(int fromIdx, bool forward) const;
     void updateHistory();
+    void sortImages();
     void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images);
     void createImages(const DkFileInfoList &files, bool sort = true);
     QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
