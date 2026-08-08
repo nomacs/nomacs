@@ -116,88 +116,50 @@ DkImageLoader::~DkImageLoader()
         mCreateImageWatcher.blockSignals(true);
 }
 
-/**
- * Loads a given directory.
- * @param newDir the directory to be loaded.
- **/
 bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
 {
-    // if (creatingImages) {
-    //	//emit showInfoSignal(tr("Indexing folder..."), 4000);	// stop showing
-    //	return false;
-    // }
-
     DkTimer dt;
     DkFileInfo info(newDirPath);
+    bool updated = false; // only emit signal if we touch mImages
 
-    // folder changed signal was emitted
     if (mFolderUpdated && newDirPath == mCurrentDir) {
+        // folder changed signal was emitted
+        updated = true;
         mFolderUpdated = false;
-        DkFileInfoList
-            files = DkFileInfo::readDirectory(newDirPath,
-                                              mFolderFilterString); // this line takes seconds if you have lots of files
-                                                                    // and slow loading (e.g. network)
 
-        // might get empty too (e.g. someone deletes all images)
-        if (files.empty()) {
-            emit showInfoSignal(tr("%1 \n does not contain any image").arg(newDirPath), 4000); // stop showing
-            mImages.clear();
-            emit updateDirSignal(mImages);
-            return false;
+        DkFileInfoList files = DkFileInfo::readDirectory(mCurrentDir, mFolderFilterString);
+
+        createImages(files, true);
+    } else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && info.isDir()) {
+        // new folder
+        updated = true;
+        mFolderUpdated = false;
+        mCurrentDir = newDirPath;
+        mFolderFilterString.clear(); // delete keywords -> otherwise user may be confused
+
+        DkFileInfoList files;
+        if (scanRecursive && DkSettingsManager::param().global().scanSubFolders) {
+            files = updateSubFolders(mCurrentDir);
+        } else {
+            files = DkFileInfo::readDirectory(mCurrentDir, mFolderFilterString);
         }
 
-        // disabled threaded sorting - people didn't like it (#484 and #460)
-        // if (files.size() > 2000) {
-        //	createImages(files, false);
-        //	sortImagesThreaded(images);
-        //}
-        // else
+        mImages.clear(); // do not preserve unchanged images
         createImages(files, true);
-
-        qDebug() << "getting file list.....";
     }
-    // new folder is loaded
-    else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && info.isDir()) {
-        DkFileInfoList files;
 
-        // newDir.setNameFilters(DkSettingsManager::param().app().fileFilters);
-        // newDir.setSorting(QDir::LocaleAware);		// TODO: extend
-
-        // update save directory
-        mCurrentDir = newDirPath;
-        mFolderUpdated = false;
-
-        mFolderFilterString.clear(); // delete key words -> otherwise user may be confused
-
-        if (scanRecursive && DkSettingsManager::param().global().scanSubFolders)
-            files = updateSubFolders(mCurrentDir);
-        else
-            files = DkFileInfo::readDirectory(mCurrentDir,
-                                              mFolderFilterString); // this line takes seconds if you have lots of files
-                                                                    // and slow loading (e.g. network)
-
-        // ok new folder, this should speed-up loading
-        mImages.clear();
-
-        //// TODO: creating ~120 000 images takes about 2 secs
-        //// but sorting (just filenames) takes ages (on windows)
-        //// so we should fix this using 2 strategies:
-        //// - thread the image creation process
-        //// - while loading (if the user wants to move in the folder) we could display some message (e.g. indexing dir)
-        // if (files.size() > 2000) {
-        //	createImages(files, false);
-        //	sortImagesThreaded(mImages);
-        // }
-        // else
-        createImages(files, true);
-
-        qInfoClean() << newDirPath << " [" << mImages.size() << "] indexed in " << dt;
+    // might get empty too (e.g. someone deletes all images)
+    bool empty = mImages.empty();
+    if (empty) {
+        emit showInfoSignal(tr("%1 \n does not contain any image").arg(newDirPath), 4000);
     }
-    // else
-    //	qDebug() << "ignoring... old dir: " << dir.absolutePath() << " newDir: " << newDir << " file size: " <<
-    // images.size();
 
-    return true;
+    if (updated) {
+        qInfo() << "[loadDir]" << newDirPath << mImages.size() << "indexed in" << dt;
+        emit updateDirSignal(mImages);
+    }
+
+    return !empty;
 }
 
 void DkImageLoader::loadDirRecursive(const QString &newDirPath)
