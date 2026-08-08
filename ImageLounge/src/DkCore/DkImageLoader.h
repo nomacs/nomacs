@@ -129,6 +129,7 @@ public slots:
                          const QString &fileExt = "png",
                          bool threaded = true);
     void setFolderFilter(const QString &filter);
+    // load or update dir; emit updateDirSignal if there is a change
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);
     void loadDirRecursive(const QString &newDirPath);
     void errorDialog(const QString &msg) const;
