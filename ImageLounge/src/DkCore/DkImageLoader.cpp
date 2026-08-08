@@ -534,7 +534,11 @@ QVector<QSharedPointer<DkImageContainerT>> DkImageLoader::getImages()
     if (mCurrentDir.isEmpty() && mCurrentImage) {
         mCurrentDir = mCurrentImage->dirPath();
     }
+
+    // since this returns image list it should not emit the same thing
+    QSignalBlocker blocker(this);
     loadDir(mCurrentDir);
+
     return mImages;
 }
 
