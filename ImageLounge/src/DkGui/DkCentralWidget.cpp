@@ -186,7 +186,7 @@ QIcon DkTabInfo::getIcon(const QSize &size)
 
     const QSharedPointer<DkImageContainerT> img = mImageLoader->getCurrentImage();
 
-    if (!img) {
+    if (!img || !img->hasImage()) {
         return {};
     }
 
