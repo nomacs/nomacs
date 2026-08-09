@@ -164,9 +164,6 @@ void DkTabInfo::activate(bool isActive)
 
 QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const
 {
-    if (!mImageLoader)
-        return QSharedPointer<DkImageContainerT>();
-
     return mImageLoader->getCurrentImage();
 }
 
