@@ -609,8 +609,6 @@ void DkCentralWidget::createViewPort()
     else
         vp = new DkViewPort(&mThumbLoader, this);
 
-    if (mTabbar->currentIndex() != -1)
-        vp->setImageLoader(mTabInfos[mTabbar->currentIndex()]->getImageLoader());
     connect(vp, &DkViewPort::addTabSignal, this, [this](const QString &filePath) {
         addTab(filePath);
     });
