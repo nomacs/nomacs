@@ -178,6 +178,8 @@ public slots:
     void renameFile();
 
 protected:
+    void activateTab(int tabIdx);
+
     QTabBar *mTabbar = nullptr;
     DkProgressBar *mProgressBar = nullptr;
     QVector<QSharedPointer<DkTabInfo>> mTabInfos;
