@@ -1699,10 +1699,12 @@ void DkViewPort::loadFile(const QString &filePath)
 
     DkFileInfo info(filePath);
 
-    if (info.isDir())
-        mLoader->setDir(info);
-    else
+    if (info.isDir()) {
+        mLoader->setCurrentDir(info);
+        mLoader->firstFile();
+    } else {
         mLoader->load(info);
+    }
 
     // diem: I removed this line for a) we don't support remote displays anymore and be:
     // https://github.com/nomacs/nomacs/issues/219 qDebug() << "sync mode: " <<

@@ -78,7 +78,12 @@ public:
     QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool recursive = false, int currFileIdx = 0);
 
     QString getDirPath() const;
-    void setDir(const DkFileInfo &info);
+    /**
+     * @brief set current dir and file but don't load any image
+     * @param info directory
+     * @note reads dir contents and emits updateDirSignal()
+     */
+    void setCurrentDir(const DkFileInfo &info);
     bool hasMovie() const;
     bool hasSvg() const;
 

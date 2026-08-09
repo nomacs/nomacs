@@ -1748,16 +1748,13 @@ void DkImageLoader::setFolderFilter(const QString &filter)
     loadDir(mCurrentDir); // simulate a folder update operation
 }
 
-/**
- * Sets the current directory to dir.
- * @param dir the directory to be loaded.
- **/
-void DkImageLoader::setDir(const DkFileInfo &info)
+void DkImageLoader::setCurrentDir(const DkFileInfo &info)
 {
     Q_ASSERT(info.isDir());
 
-    if (loadDir(info.path()))
-        firstFile();
+    if (loadDir(info.path())) {
+        setCurrentImage(mImages.at(0));
+    }
 }
 
 /**
@@ -1839,18 +1836,12 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
                 this,
                 &DkImageLoader::currentImageUpdated,
                 Qt::UniqueConnection);
-        connect(currImage,
-                &DkImageContainerT::zipFileDownloadedSignal,
-                this,
-                &DkImageLoader::setDir,
-                Qt::UniqueConnection);
+        connect(currImage, &DkImageContainerT::zipFileDownloadedSignal, this, [this](const DkFileInfo &info) {
+            setCurrentDir(info);
+            firstFile();
+        });
     } else if (!connectSignals) {
-        disconnect(currImage, &DkImageContainerT::errorDialogSignal, this, &DkImageLoader::errorDialog);
-        disconnect(currImage, &DkImageContainerT::fileLoadedSignal, this, &DkImageLoader::imageLoaded);
-        disconnect(currImage, &DkImageContainerT::showInfoSignal, this, &DkImageLoader::showInfoSignal);
-        disconnect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved);
-        disconnect(currImage, &DkImageContainerT::imageUpdatedSignal, this, &DkImageLoader::currentImageUpdated);
-        disconnect(currImage, &DkImageContainerT::zipFileDownloadedSignal, this, &DkImageLoader::setDir);
+        disconnect(currImage, nullptr, this, nullptr);
     }
 
     currImage->receiveUpdates(connectSignals);
