@@ -95,6 +95,10 @@ public:
     TabMode getMode() const;
     void setMode(int mode);
 
+    // return true if we should use this tab for "open in new tab" rather
+    // than create a new tab
+    bool useForNewImageTab() const;
+
 protected:
     QSharedPointer<DkImageLoader> mImageLoader;
     int mTabIdx = 0;

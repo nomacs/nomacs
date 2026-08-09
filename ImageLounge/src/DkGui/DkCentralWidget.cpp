@@ -236,6 +236,22 @@ void DkTabInfo::setMode(int mode)
         mTabMode = static_cast<enum TabMode>(mode);
 }
 
+bool DkTabInfo::useForNewImageTab() const
+{
+    switch (mTabMode) {
+    case tab_recent_files:
+    case tab_preferences:
+    case tab_empty:
+        return true;
+    case tab_single_image:
+    case tab_thumb_preview:
+    case tab_batch:
+    case tab_end:
+        return false;
+    }
+    return false;
+}
+
 // DkCenteralWidget --------------------------------------------------------------------
 DkCentralWidget::DkCentralWidget(QWidget *parent)
     : DkWidget(parent)
@@ -1190,8 +1206,16 @@ void DkCentralWidget::load(const QString &path)
 
 void DkCentralWidget::loadToTab(const QString &path)
 {
-    QSharedPointer<DkTabInfo> newTab(new DkTabInfo(DkTabInfo::tab_empty));
-    addTab(newTab);
+    // if current tab is empty or non-image just use that instead
+    bool useCurrentTab = false;
+    if (mTabInfos.count() > 0) {
+        useCurrentTab = mTabInfos[mTabbar->currentIndex()]->useForNewImageTab();
+    }
+
+    if (!useCurrentTab) {
+        QSharedPointer<DkTabInfo> newTab(new DkTabInfo(DkTabInfo::tab_empty));
+        addTab(newTab);
+    }
 
     load(path);
 }
