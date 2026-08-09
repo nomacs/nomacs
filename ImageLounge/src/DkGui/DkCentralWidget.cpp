@@ -721,9 +721,15 @@ void DkCentralWidget::removeTab(int tabIdx)
 
 void DkCentralWidget::clearAllTabs()
 {
-    int count = getTabs().count();
-    for (int idx = 0; idx < count; idx++)
-        removeTab();
+    {
+        // block while removing to prevent expensive currentTabChanged()
+        QSignalBlocker blocker(mTabbar);
+        int count = getTabs().count();
+        for (int idx = 0; idx < count; idx++) {
+            removeTab();
+        }
+    }
+    currentTabChanged(mTabbar->currentIndex());
 }
 
 void DkCentralWidget::updateTab(QSharedPointer<DkTabInfo> tabInfo)
