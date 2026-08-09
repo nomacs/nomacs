@@ -1891,8 +1891,9 @@ void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader)
     if (mLoader) {
         // The image loader can have a previous directory,
         // so need to get the states from it.
-        mController->getFilePreview()->updateThumbs(mLoader->getImages());
-        mLoader->activate();
+        auto images = mLoader->getImages();
+        mController->getScroller()->updateDir(images);
+        mController->getFilePreview()->updateThumbs(images);
     }
 }
 
