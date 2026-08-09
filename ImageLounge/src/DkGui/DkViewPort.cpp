@@ -1887,10 +1887,12 @@ QSharedPointer<DkImageContainerT> DkViewPort::imageContainer() const
 
 void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader)
 {
+    connectLoader(mLoader, false);
     mLoader = newLoader;
-    connectLoader(newLoader);
 
     if (mLoader) {
+        connectLoader(mLoader, true);
+
         // The image loader can have a previous directory,
         // so need to get the states from it.
         auto images = mLoader->getImages();
