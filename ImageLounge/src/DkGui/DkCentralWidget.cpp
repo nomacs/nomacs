@@ -396,7 +396,7 @@ void DkCentralWidget::loadSettings()
         addTab(info, true);
     }
 
-    mTabbar->setCurrentIndex(mTabbar->count() - 1);
+    activateTab(mTabbar->count() - 1);
 }
 
 bool DkCentralWidget::hasViewPort() const
@@ -676,7 +676,7 @@ void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
     }
 
     if (!background)
-        mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+        activateTab(tabInfo->getTabIdx());
 
     if (mTabInfos.size() > 1)
         mTabbar->show();
@@ -1481,6 +1481,18 @@ void DkCentralWidget::renameFile()
     }
 
     load(renamedInfo.absoluteFilePath());
+}
+
+void DkCentralWidget::activateTab(int tabIdx)
+{
+    // make a tab active and guarantee signal delivery as
+    // setCurrentIndex is noop when index doesn't change
+    Q_ASSERT(tabIdx >= 0 && tabIdx < mTabbar->count());
+    if (tabIdx == mTabbar->currentIndex()) {
+        currentTabChanged(tabIdx);
+    } else {
+        mTabbar->setCurrentIndex(tabIdx);
+    }
 }
 
 } // namespace nmc
