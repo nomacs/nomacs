@@ -710,14 +710,13 @@ void DkCentralWidget::removeTab(int tabIdx)
     mTabbar->removeTab(tabIdx); // => currentTabChanged() => switchWidget()
     updateTabIdx();
 
-    if (mTabInfos.size() == 0) { // Make sure we have at least one tab
+    if (mTabInfos.empty()) { // Make sure we have at least one tab
         addTab();
-        imageUpdatedSignal(mTabInfos.at(0)->getImage());
-        return;
     }
 
-    if (mTabInfos.size() <= 1)
+    if (mTabInfos.size() <= 1) {
         mTabbar->hide();
+    }
 }
 
 void DkCentralWidget::clearAllTabs()
