@@ -476,9 +476,6 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
     if (!loader)
         return;
 
-    if (hasViewPort())
-        getViewPort()->setImageLoader(loader);
-
     connect(loader.data(),
             QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
             this,
