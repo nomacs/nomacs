@@ -1134,48 +1134,36 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void DkCentralWidget::load(const QString &path)
 {
-    if (!hasViewPort())
-        createViewPort(); // viewport is shared by all tabs
-
-    // create the initial empty tab; do not show recents if we fail here
-    // TODO: also add tab if modifier key is pressed
-    if (mTabbar->count() == 0) {
-        QSharedPointer<DkTabInfo> newTab(new DkTabInfo(DkTabInfo::tab_empty));
-        addTab(newTab);
+    if (mTabbar->count() <= 0) {
+        qWarning() << "no tab to load into";
+        return;
     }
 
     QSharedPointer<DkTabInfo> tab = mTabInfos[mTabbar->currentIndex()];
     QSharedPointer<DkImageLoader> loader = tab->getImageLoader();
 
     // if we have changes to the image, always ask to save them
-    if (!loader->promptSaveBeforeUnload())
+    if (!loader->promptSaveBeforeUnload()) {
         return;
+    }
+
+    Q_ASSERT(!loader->isEdited());
+    Q_ASSERT(!loader->signalsBlocked());
 
     DkFileInfo fileInfo(path);
     if (fileInfo.isDir()) {
-        if (!loader->loadDir(fileInfo.path())) {
-            setInfo(tr("I could not load \"%1\"").arg(path));
-            return;
-        }
-        // load dir does not set a current image; it seems one is always needed
-        // or else switching between tabs could revert to the old directory
-        auto img = loader->getImages().value(0);
+        loader->setCurrentDir(fileInfo);
+
         if (DkSettingsManager::param().global().openDirShowFirstImage) {
-            tab->setMode(DkTabInfo::tab_single_image);
-            loader->load(img);
+            showViewPort();
         } else {
-            loader->setCurrentImage(img);
             showThumbView();
         }
     } else {
-        tab->setMode(DkTabInfo::tab_single_image);
-        // load() does nothing if file matches; but we want to reset edit history etc if we have changes
-        if (loader->isEdited() && fileInfo == loader->getCurrentImage()->fileInfo())
-            loader->reloadImage();
-        else
-            loader->load(fileInfo);
+        auto img = QSharedPointer<DkImageContainerT>{new DkImageContainerT{fileInfo}};
+        loader->setCurrentImage(img);
+        showViewPort();
     }
-    updateTab(tab); // required to set the tab text on background tabs
 }
 
 void DkCentralWidget::loadToTab(const QString &path)
