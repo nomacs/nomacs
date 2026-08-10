@@ -450,6 +450,9 @@ void DkCentralWidget::currentTabChanged(int idx)
     case DkTabInfo::tab_end:
         break;
     }
+
+    // the tab is fully configured, we can update the text/icon now
+    updateTab(tab);
 }
 
 void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
