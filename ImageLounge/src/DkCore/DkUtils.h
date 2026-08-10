@@ -489,26 +489,6 @@ private:
     std::vector<Frag> mFrags;
 };
 
-// from: http://stackoverflow.com/questions/5006547/qt-best-practice-for-a-single-instance-app-protection
-#if DEADCODE
-class DllCoreExport DkRunGuard
-{
-public:
-    DkRunGuard();
-    ~DkRunGuard();
-
-    bool tryRunning();
-
-private:
-    QString mSharedMemKey = "nomacs | run guard shared memory";
-    QString mLockKey = "nomacs | run guard semaphore";
-
-    QSharedMemory mSharedMem; /* gcc cannot deal with this: = mSharedMemKey;*/
-
-    Q_DISABLE_COPY(DkRunGuard)
-};
-#endif // DEADCODE
-
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
 class DllCoreExport TreeItem
 {
