@@ -1188,43 +1188,12 @@ void DkNoMacs::openFile()
     if (filePaths.isEmpty())
         return;
 
-    int count = getTabWidget()->getTabs().count(); // Save current count of tabs for setting tab position later
-    if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
-        count = 0;
-
-    QSet<QString> duplicates;
-    for (const QString &fp : filePaths) {
-        bool dup = false;
-
-        if (DkSettingsManager::param().global().checkOpenDuplicates) { // Should we check for duplicates?
-            for (auto tab : getTabWidget()->getTabs()) {
-                if (tab->getFilePath().compare(fp) == 0) {
-                    duplicates.insert(tab->getFilePath());
-                    dup = true;
-                    break;
-                }
-            }
-        }
-
-        if (!dup) {
-            // > 1: only open in tab if more than one file is opened
-            bool newTab = (filePaths.size() > 1) || (getTabWidget()->getTabs().size() > 1);
-            if (newTab)
-                getTabWidget()->loadToTab(fp);
-            else
-                getTabWidget()->load(fp);
-        }
+    auto *centralWidget = getTabWidget();
+    bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
+    for (const QString &fp : std::as_const(filePaths)) {
+        centralWidget->loadUnique(fp, newTab);
+        newTab = true;
     }
-    if (duplicates.count() > 0) { // Show message if at least one duplicate was found
-        QString duptext = tr("The following duplicates were not opened:");
-        for (auto dup : duplicates) {
-            duptext.append("\n" + dup);
-        }
-        getTabWidget()->getViewPort()->getController()->setInfo(duptext);
-    }
-
-    if (filePaths.count() > duplicates.count()) // Only set the active tab if there is actually something added
-        getTabWidget()->setActiveTab(count); // Set first file opened to be the active tab
 }
 
 void DkNoMacs::openFileList()
