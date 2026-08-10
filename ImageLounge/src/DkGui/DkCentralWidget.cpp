@@ -1159,6 +1159,10 @@ void DkCentralWidget::load(const QString &path)
         loader->setCurrentImage(img);
         showViewPort();
     }
+
+    // must update tab text/icon here in case loading fails
+    updateTab(tab);
+}
 }
 
 void DkCentralWidget::loadToTab(const QString &path)
