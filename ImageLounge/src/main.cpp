@@ -38,6 +38,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
 #include <QObject>
@@ -254,7 +255,7 @@ int main(int argc, char *argv[])
                     continue;
                 }
 
-                nomacsInstance.loadUnique(filePath, newTab);
+                nomacsInstance.loadUnique(QDir::fromNativeSeparators(filePath), newTab);
                 newTab = true;
             }
 
@@ -408,7 +409,7 @@ int main(int argc, char *argv[])
 
         loading = true;
 
-        cw->loadUnique(filePath, newTab);
+        cw->loadUnique(QDir::fromNativeSeparators(filePath), newTab);
         newTab = true;
     }
 
