@@ -90,14 +90,6 @@ int main(int argc, char *argv[])
     nmc::DkSettingsManager::instance().init();
     nmc::DkMetaDataHelper::initialize(); // this line makes the XmpParser thread-save - so don't delete it even if you
                                          // seem to know what you do
-    // uncomment this for the single instance feature...
-    //// check for single instance
-    // nmc::DkRunGuard guard;
-    //
-    // if (!guard.tryRunning()) {
-    //	qDebug() << "nomacs is already running - quitting...";
-    //	return 0;
-    // }
 
     // CMD parser --------------------------------------------------------------------
     QCommandLineParser parser;
