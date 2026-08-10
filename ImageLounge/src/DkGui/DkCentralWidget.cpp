@@ -698,8 +698,9 @@ void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 
 void DkCentralWidget::removeTab(int tabIdx)
 {
-    if (tabIdx == -1)
+    if (tabIdx == -1) {
         tabIdx = mTabbar->currentIndex();
+    }
 
     // if user requests close on batch while processing - cancel batch
     if (mTabInfos[tabIdx]->getMode() == DkTabInfo::tab_batch) {
@@ -709,11 +710,26 @@ void DkCentralWidget::removeTab(int tabIdx)
             bw->close();
     }
 
-    mTabInfos.remove(tabIdx);
-    mTabbar->removeTab(tabIdx); // => currentTabChanged() => switchWidget()
-    updateTabIdx();
+    // TODO: ask to save changes here but make sure to abort closeAllTabs
 
-    if (mTabInfos.empty()) { // Make sure we have at least one tab
+    // must block currentTabChanged() here since we'll see inconsistent
+    // state until updateTabIdx() returns. Side benefit, we don't
+    // see a refresh when deleting inactive tabs
+    bool currentTabWillChange = tabIdx == mTabbar->currentIndex();
+    {
+        QSignalBlocker blocker(mTabbar);
+        mTabInfos.remove(tabIdx);
+        mTabbar->removeTab(tabIdx);
+        updateTabIdx();
+    }
+
+    if (!mTabInfos.empty()) {
+        // we blocked the signal so we now manually trip the signal
+        if (currentTabWillChange) {
+            activateTab(mTabbar->currentIndex());
+        }
+    } else {
+        // make sure we have at least one tab
         addTab();
     }
 
@@ -1515,6 +1531,12 @@ void DkCentralWidget::activateTab(int tabIdx)
     // make a tab active and guarantee signal delivery as
     // setCurrentIndex is noop when index doesn't change
     Q_ASSERT(tabIdx >= 0 && tabIdx < mTabbar->count());
+
+    // if signals blocked assume we don't want anything to happen (closeAllTabs etc)
+    if (mTabbar->signalsBlocked()) {
+        return;
+    }
+
     if (tabIdx == mTabbar->currentIndex()) {
         currentTabChanged(tabIdx);
     } else {
