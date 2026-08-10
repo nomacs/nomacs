@@ -256,21 +256,14 @@ int main(int argc, char *argv[])
         if (!nomacsInstance.isFirstInstance() && !restarting) {
             nomacsInstance.activate();
 
-            bool firstFile = true;
-            bool alwaysLoadToTab = nmc::DkSettingsManager::param().app().openNewTab;
-
+            bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
             for (auto &filePath : parser.positionalArguments()) {
                 if (filePath.isEmpty()) {
                     continue;
                 }
 
-                if (firstFile && !alwaysLoadToTab) {
-                    nomacsInstance.load(filePath);
-                } else {
-                    nomacsInstance.loadToTab(filePath);
-                }
-
-                firstFile = false;
+                nomacsInstance.loadUnique(filePath, newTab);
+                newTab = true;
             }
 
             return 0;
@@ -415,17 +408,16 @@ int main(int argc, char *argv[])
     }
 
     bool loading = false;
+    bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
 
     for (auto &filePath : parser.positionalArguments()) {
         if (filePath.isEmpty())
             continue;
 
-        if (loading)
-            cw->loadToTab(filePath);
-        else
-            cw->load(filePath);
-
         loading = true;
+
+        cw->loadUnique(filePath, newTab);
+        newTab = true;
     }
 
     // load recent files if there is nothing to display

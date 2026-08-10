@@ -90,10 +90,10 @@ private:
                 window->requestActivate();
             }
 
-        } else if (msg[0] == "load" && msg.length() == 2) {
-            mCentralWidget->load(msg[1]);
-        } else if (msg[0] == "loadToTab" && msg.length() == 2) {
-            mCentralWidget->loadToTab(msg[1]);
+        } else if (msg[0] == "loadUnique" && msg.length() == 3) {
+            QString path = msg[1];
+            bool newTab = msg[2].toInt() != 0;
+            mCentralWidget->loadUnique(path, newTab);
         } else {
             qWarning() << "[local-socket] invalid/unknown message" << msg;
         }
@@ -122,17 +122,10 @@ private:
         sendMessage(msg);
     }
 
-    void load(const QString &path) override
+    void loadUnique(const QString &path, bool newTab) override
     {
         QStringList msg;
-        msg << "load" << path;
-        sendMessage(msg);
-    }
-
-    void loadToTab(const QString &path) override
-    {
-        QStringList msg;
-        msg << "loadToTab" << path;
+        msg << "loadUnique" << path << QString::number(newTab);
         sendMessage(msg);
     }
 
@@ -171,13 +164,9 @@ public Q_SLOTS:
             window->requestActivate();
         }
     }
-    void load(const QString &path)
+    void loadUnique(const QString &path, bool loadToTab)
     {
-        mCentralWidget->load(path);
-    }
-    void loadToTab(const QString &path)
-    {
-        mCentralWidget->load(path);
+        mCentralWidget->loadUnique(path, loadToTab);
     }
 
 private:
@@ -252,14 +241,9 @@ public:
         sendMessage("activate", {qEnvironmentVariable("XDG_ACTIVATION_TOKEN")});
     }
 
-    void load(const QString &path) override
+    void loadUnique(const QString &path, bool loadToTab) override
     {
-        sendMessage("load", {path});
-    }
-
-    void loadToTab(const QString &path) override
-    {
-        sendMessage("loadToTab", {path});
+        sendMessage("loadUnique", {path, loadToTab});
     }
 
 private:

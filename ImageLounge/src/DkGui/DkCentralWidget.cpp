@@ -1163,6 +1163,26 @@ void DkCentralWidget::load(const QString &path)
     // must update tab text/icon here in case loading fails
     updateTab(tab);
 }
+
+void DkCentralWidget::loadUnique(const QString &path, bool newTab)
+{
+    if (DkSettingsManager::param().global().checkOpenDuplicates) {
+        for (auto &tabInfo : std::as_const(mTabInfos)) {
+            auto fp = tabInfo->getFilePath();
+            auto imgC = tabInfo->getImage();
+            if (fp == path && !(imgC && imgC->isEdited()) && tabInfo->getMode() != DkTabInfo::tab_thumb_preview) {
+                qInfo() << "Using existing tab for duplicate" << path;
+                mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+                return;
+            }
+        }
+    }
+
+    if (newTab) {
+        loadToTab(path);
+    } else {
+        load(path);
+    }
 }
 
 void DkCentralWidget::loadToTab(const QString &path)

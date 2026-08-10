@@ -165,6 +165,9 @@ public slots:
     // load file/dir to new tab
     void loadToTab(const QString &path);
 
+    // load file/dir, or switch to tab if duplicate
+    void loadUnique(const QString &path, bool newTab);
+
     void loadUrl(const QUrl &urls, bool newTab);
     void loadUrls(const QList<QUrl> &urls, const int maxUrlsToLoad = 20);
 

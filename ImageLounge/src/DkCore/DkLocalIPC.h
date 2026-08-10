@@ -37,13 +37,9 @@ public:
      */
     virtual void activate() = 0;
     /**
-     * @brief open file or dir in the first instance; replace current tab
+     * @brief loadUnique open file/dir or switch to already open tab
      */
-    virtual void load(const QString &path) = 0;
-    /**
-     * @brief open file or dir in the first instance; create a new tab
-     */
-    virtual void loadToTab(const QString &path) = 0;
+    virtual void loadUnique(const QString &path, bool newTab) = 0;
 
     virtual ~DkLocalIPC() = default;
 
