@@ -900,7 +900,8 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT>> imag
         }
     }
 
-    update();
+    // do not update here; we'll wait for file index to avoid repaints
+    // update();
 }
 
 void DkFilePreview::setVisible(bool visible, bool saveSettings)
