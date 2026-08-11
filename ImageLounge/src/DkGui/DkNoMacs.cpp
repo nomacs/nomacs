@@ -1298,12 +1298,22 @@ void DkNoMacs::openQuickLaunch()
     }
 }
 
-void DkNoMacs::loadFile(const QString &filePath)
+void DkNoMacs::openFileEvent(const QString &filePath)
 {
-    if (!getTabWidget())
+    // handle open file event from operating system IPC (macOS Apple Events, D-Bus etc)
+    bool oneInstance = nmc::DkSettingsManager::param().app().singleInstance;
+    if (!oneInstance) {
+        newInstance(filePath);
         return;
+    }
 
-    getTabWidget()->load(filePath);
+    auto *centralWidget = getTabWidget();
+    if (!centralWidget) {
+        return;
+    }
+
+    bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
+    centralWidget->loadUnique(filePath, newTab);
 }
 
 void DkNoMacs::find(bool filterAction)

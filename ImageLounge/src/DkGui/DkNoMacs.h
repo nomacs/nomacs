@@ -93,7 +93,7 @@ public:
 
     virtual DkCentralWidget *getTabWidget() const;
 
-    void loadFile(const QString &filePath);
+    void openFileEvent(const QString &filePath);
 
 signals:
     void sendArrangeSignal(bool overlaid) const;
