@@ -400,6 +400,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    bool restoredTabs = cw->getTabs().count() > 1;
     bool loading = false;
     bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
 
@@ -414,8 +415,9 @@ int main(int argc, char *argv[])
     }
 
     // load recent files if there is nothing to display
-    if (!loading && nmc::DkSettingsManager::param().app().showRecentFiles)
-        w->showRecentFilesOnStartUp();
+    if (!loading && !restoredTabs && nmc::DkSettingsManager::param().app().showRecentFiles) {
+        cw->showRecentFiles();
+    }
 
     if (w->isFullScreen())
         w->enterFullScreen();
