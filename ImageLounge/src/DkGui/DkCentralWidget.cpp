@@ -233,6 +233,11 @@ void DkTabInfo::setMode(int mode)
 
 bool DkTabInfo::useForNewImageTab() const
 {
+    auto imgC = getImage();
+    if (imgC && imgC->isEdited()) {
+        return false;
+    }
+
     switch (mTabMode) {
     case tab_recent_files:
     case tab_preferences:
