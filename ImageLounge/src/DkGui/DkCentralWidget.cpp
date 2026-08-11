@@ -1196,7 +1196,7 @@ void DkCentralWidget::loadUnique(const QString &path, bool newTab)
             const DkFileInfo tabInfo(tab->getFilePath());
             auto imgC = tab->getImage();
             bool edited = imgC && imgC->isEdited();
-            bool sameFile = fileInfo == tabInfo;
+            bool sameFile = tab->getMode() == DkTabInfo::tab_single_image && fileInfo == tabInfo;
             bool sameDir = tab->getMode() == DkTabInfo::tab_thumb_preview && fileInfo.isDir()
                 && fileInfo.path() == tabInfo.dirPath();
             if (!edited && (sameFile || sameDir)) {
