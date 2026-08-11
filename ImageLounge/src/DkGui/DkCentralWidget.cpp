@@ -1186,12 +1186,17 @@ void DkCentralWidget::load(const QString &path)
 void DkCentralWidget::loadUnique(const QString &path, bool newTab)
 {
     if (DkSettingsManager::param().global().checkOpenDuplicates) {
-        for (auto &tabInfo : std::as_const(mTabInfos)) {
-            auto fp = tabInfo->getFilePath();
-            auto imgC = tabInfo->getImage();
-            if (fp == path && !(imgC && imgC->isEdited()) && tabInfo->getMode() != DkTabInfo::tab_thumb_preview) {
+        const DkFileInfo fileInfo(path);
+        for (auto &tab : std::as_const(mTabInfos)) {
+            const DkFileInfo tabInfo(tab->getFilePath());
+            auto imgC = tab->getImage();
+            bool edited = imgC && imgC->isEdited();
+            bool sameFile = fileInfo == tabInfo;
+            bool sameDir = tab->getMode() == DkTabInfo::tab_thumb_preview && fileInfo.isDir()
+                && fileInfo.path() == tabInfo.dirPath();
+            if (!edited && (sameFile || sameDir)) {
                 qInfo() << "Using existing tab for duplicate" << path;
-                mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+                mTabbar->setCurrentIndex(tab->getTabIdx());
                 return;
             }
         }
