@@ -400,9 +400,11 @@ int main(int argc, char *argv[])
         }
     }
 
+    // if there are any restored tabs, do not replace the last one with first file argument,
+    // i.e. never alter the restored state immediately at launch
     bool restoredTabs = cw->getTabs().count() > 1;
     bool loading = false;
-    bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
+    bool newTab = restoredTabs || nmc::DkSettingsManager::param().app().openNewTab;
 
     for (auto &filePath : parser.positionalArguments()) {
         if (filePath.isEmpty())
