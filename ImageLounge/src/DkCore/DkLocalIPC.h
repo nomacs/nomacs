@@ -16,6 +16,11 @@ class DllCoreExport DkLocalIPC
 {
 public:
     /**
+     * @brief do early initialization before QApplication() can mess things up
+     */
+    static void initialize();
+
+    /**
      * @brief create server or client instance; first nomacs process is the server
      */
     static DkLocalIPC &instance();

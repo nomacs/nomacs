@@ -6,6 +6,7 @@ Exec=nomacs %F
 Terminal=false
 Icon=org.nomacs.ImageLounge
 Type=Application
+StartupNotify=true
 StartupWMClass=Image Lounge
 Actions=NewInstance;NewPrivateInstance;
 Categories=Graphics;RasterGraphics;Viewer;2DGraphics;
