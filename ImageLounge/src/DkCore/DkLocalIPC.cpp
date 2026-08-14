@@ -13,6 +13,8 @@
 
 #ifdef WITH_KDSINGLEAPPLICATION
 #include "kdsingleapplication.h"
+#include <QJsonArray>
+#include <QJsonObject>
 #endif
 
 #ifdef WITH_DBUS
@@ -307,23 +309,30 @@ private:
     {
         Q_ASSERT(isFirstInstance());
 
-        // TODO: validate the message, invalid data will segfault
-        // in QDataStream::operator>>
-        QByteArray encoded = msgData;
-        QDataStream data(&encoded, QIODevice::ReadOnly);
-        QStringList msg;
-        data >> msg;
-        qInfo() << "[local-socket] msg received:" << msg;
-        if (msg.empty()) {
-            qWarning() << "[local-socket] ignoring empty message";
+        QJsonParseError error;
+        QJsonObject obj = QJsonDocument::fromJson(msgData, &error).object();
+        if (obj.empty()) {
+            qInfo() << "[local-socket] invalid JSON:" << error.offset << error.errorString();
             return;
         }
+        qInfo() << "[local-socket] message received:" << obj;
+
+        const int version = obj.value("version").toInt();
+        const QString method = obj.value("method").toString();
+        QList<QVariant> args = obj.value("params").toArray().toVariantList();
+
+        if (version != kIpcVersion) {
+            qWarning() << "[local-socket] unsupported message version, expected" << kIpcVersion;
+            return;
+        }
+
         if (!mCentralWidget) {
             qWarning() << "[local-socket] no registered central widget";
             return;
         }
-        if (msg[0] == "activate" && msg.length() == 2) {
-            const QString &token = msg[1];
+
+        if (method == "activate" && args.length() == 1) {
+            const QByteArray token = args[0].toByteArray();
             qInfo() << "[local-socket] activation token received:" << token;
 
             QWidget *top = mCentralWidget->topLevelWidget();
@@ -331,16 +340,16 @@ private:
 
             QWindow *window = top->windowHandle();
             if (window) {
-                setWindowActivationToken(window, token.toLatin1());
+                setWindowActivationToken(window, token);
                 window->requestActivate();
             }
 
-        } else if (msg[0] == "loadUnique" && msg.length() == 3) {
-            QString path = msg[1];
-            bool newTab = msg[2].toInt() != 0;
+        } else if (method == "loadUnique" && args.length() == 2) {
+            QString path = args[0].toString();
+            bool newTab = args[1].toBool();
             mCentralWidget->loadUnique(path, newTab);
         } else {
-            qWarning() << "[local-socket] invalid/unknown message" << msg;
+            qWarning() << "[local-socket] invalid/unknown message" << args;
         }
     }
 
@@ -350,12 +359,15 @@ private:
         mCentralWidget = centralWidget;
     }
 
-    void sendMessage(const QStringList &msg)
+    void sendMessage(const QString &method, const QList<QVariant> &args)
     {
         Q_ASSERT(!isFirstInstance());
-        QByteArray encoded;
-        QDataStream ds(&encoded, QIODevice::WriteOnly);
-        ds << msg;
+        QJsonObject obj;
+        obj["version"] = kIpcVersion;
+        obj["id"] = QCoreApplication::applicationPid();
+        obj["method"] = method;
+        obj["params"] = QJsonArray::fromVariantList(args);
+        QByteArray encoded = QJsonDocument{obj}.toJson();
         mSocket->sendMessage(encoded);
     }
 
@@ -364,9 +376,7 @@ private:
         QByteArray token = getWindowActivationToken();
 
         qInfo() << "[local-socket] forwarding activation token:" << token;
-        QStringList msg;
-        msg << "activate" << token;
-        sendMessage(msg);
+        sendMessage("activate", {token});
 
         // send the startup id remove message to stop cursor spinning in file managers
 #if QT_CONFIG(xcb)
@@ -378,13 +388,12 @@ private:
 
     void loadUnique(const QString &path, bool newTab) override
     {
-        QStringList msg;
-        msg << "loadUnique" << path << QString::number(newTab);
-        sendMessage(msg);
+        sendMessage("loadUnique", {path, newTab});
     }
 
     std::unique_ptr<KDSingleApplication> mSocket{};
     DkCentralWidget *mCentralWidget{};
+    const int kIpcVersion{1};
 };
 
 #endif // WITH_KDSINGLEAPPLICATION
