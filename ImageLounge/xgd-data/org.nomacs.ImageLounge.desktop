@@ -2,14 +2,24 @@
 Name=nomacs
 GenericName=Image Viewer
 Comment=nomacs is a free, open source image viewer.
-Exec=nomacs %f
+Exec=nomacs %F
 Terminal=false
 Icon=org.nomacs.ImageLounge
 Type=Application
+StartupWMClass=Image Lounge
+Actions=NewInstance;NewPrivateInstance;
 Categories=Graphics;RasterGraphics;Viewer;2DGraphics;
-MimeType=image/avif;image/bmp;image/gif;image/heic;image/heif;image/jpeg;image/jxl;image/png;image/tiff;image/webp;image/x-eps;image/x-ico;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;image/x-xbitmap;image/x-xpixmap;
+MimeType=inode/directory;image/avif;image/bmp;image/gif;image/heic;image/heif;image/jpeg;image/jxl;image/png;image/tiff;image/webp;image/x-eps;image/x-ico;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;image/x-xbitmap;image/x-xpixmap;
 GenericName[de]=Bildbetrachter
 Comment[de]=Ressourcenschonender, plattformübergreifender Bildbetrachter mit Unterstützung für verschiedenste Formate
 Name[pt]=nomacs
 GenericName[pt]=Visualizador de imagens
 Comment[pt]=Um visualizador de imagens desenvolvido em Qt
+
+[Desktop Action NewInstance]
+Name=New Instance
+Exec=nomacs --new-instance
+
+[Desktop Action NewPrivateInstance]
+Name=New Private Instance
+Exec=nomacs --new-instance --private
