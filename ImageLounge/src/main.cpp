@@ -72,6 +72,7 @@ int main(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 {
 #endif
+    nmc::DkLocalIPC::initialize();
 
     QCoreApplication::setOrganizationName("nomacs");
     QCoreApplication::setOrganizationDomain("https://nomacs.org");
