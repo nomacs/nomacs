@@ -608,14 +608,19 @@ void DkImageLoader::activate(bool isActive /* = true */)
 {
     // stop or start using the loader, for example when switching tabs or
     // a mode switch like thumb scene hides the image
+
+    // cancel image currently loading, when it finishes it will not notify us
+    // due to updates being blocked
+    bool cancelLoading = !isActive && mCurrentImage && mCurrentImage->getLoadState() == DkImageContainer::loading;
+    if (cancelLoading) {
+        emit updateSpinnerSignalDelayed(false);
+    }
+
     blockSignals(!isActive);
     receiveUpdates(isActive);
 
-    if (mCurrentImage) {
-        if (!isActive) {
-            // we don't need the image immediately, it can be discarded after loading
-            mCurrentImage->cancel();
-        }
+    if (cancelLoading) {
+        mCurrentImage->cancel();
     }
 }
 
