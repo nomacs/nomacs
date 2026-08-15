@@ -1340,8 +1340,9 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
 
                 dropImg = bl.image();
 
-                if (!dropImg.isNull())
-                    qDebug() << "image loaded from MS data";
+                if (!dropImg.isNull()) {
+                    qInfo() << "image loaded from MS data";
+                }
                 break;
             }
         }
@@ -1356,13 +1357,14 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
         // we got text data. maybe it is a list of urls
         urls = DkUtils::findUrlsInTextNewline(mimeData->text());
     }
+
     // load from image buffer
-    else if (dropImg.isNull() && mimeData->hasImage()) {
+    if (urls.empty() && dropImg.isNull() && mimeData->hasImage()) {
         // we got an image buffer
         dropImg = qvariant_cast<QImage>(mimeData->imageData());
-        qInfo() << "Qt image loaded from mime";
+        qInfo() << "image loaded from mime";
     } else {
-        qDebug() << "Sorry, I could not handle the clipboard data:" << mimeData->formats();
+        qInfo() << "Unsupported clipboard data:" << mimeData->formats();
     }
 
     if (!dropImg.isNull()) {
@@ -1370,7 +1372,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
         return true;
     }
 
-    if (urls.size() == 0) {
+    if (urls.empty()) {
         return false;
     }
 
