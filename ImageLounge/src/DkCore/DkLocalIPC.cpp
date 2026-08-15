@@ -257,6 +257,7 @@ static void setWindowActivationToken(QWindow *window, const QByteArray &token)
 
     const QString platform = QGuiApplication::platformName();
     if (platform == "wayland") {
+        Q_UNUSED(window)
         qputenv("XDG_ACTIVATION_TOKEN", token);
     } else if (platform == "xcb") {
 #if QT_CONFIG(xcb)
