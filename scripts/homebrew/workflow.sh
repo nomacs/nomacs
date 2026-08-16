@@ -41,7 +41,17 @@ git clone --depth 1 -b 4.14.0 https://github.com/opencv/opencv.git
 cd opencv
 $RUN_DIR/nomacs/scripts/build-opencv.sh -D CMAKE_INSTALL_PREFIX=/opt/opencv
 
-export CMAKE_PREFIX_PATH="/opt/opencv:/opt/quazip"
+cd $RUN_DIR
+rm -rf kdsa
+git clone --depth 1 -b v1.2.1 https://github.com/KDAB/KDSingleApplication kdsa
+cd kdsa
+mkdir build
+cd build
+cmake -G Ninja -D CMAKE_INSTALL_PREFIX=/opt/kdsa ..
+ninja
+sudo ninja install
+
+export CMAKE_PREFIX_PATH="/opt/opencv:/opt/quazip:/opt/kdsa"
 
 cd $RUN_DIR/nomacs
 rm -rf build
