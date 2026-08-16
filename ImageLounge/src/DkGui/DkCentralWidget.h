@@ -148,6 +148,7 @@ public slots:
     void tabMoved(int from, int to);
     void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), bool background = false);
     void addTab(const DkFileInfo &file, bool background = false);
+    void addTab(DkTabInfo::TabMode mode, bool background = false);
     void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
     void removeTab(int tabIdx = -1);
     void nextTab() const;

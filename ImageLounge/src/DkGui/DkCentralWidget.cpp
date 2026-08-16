@@ -262,7 +262,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
 
     DkActionManager &am = DkActionManager::instance();
     connect(am.action(DkActionManager::view_new_tab), &QAction::triggered, this, [this]() {
-        addTab();
+        addTab(DkTabInfo::tab_recent_files);
     });
     connect(am.action(DkActionManager::view_close_tab), &QAction::triggered, this, [this]() {
         removeTab();
@@ -396,9 +396,7 @@ void DkCentralWidget::loadSettings()
     }
 
     if (mTabInfos.empty()) {
-        QSharedPointer<DkTabInfo> info = QSharedPointer<DkTabInfo>(new DkTabInfo());
-        info->setMode(DkTabInfo::tab_empty);
-        addTab(info, true);
+        addTab(DkTabInfo::tab_empty, true);
     }
 
     activateTab(mTabbar->count() - 1);
@@ -658,6 +656,12 @@ void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, bool backgr
     addTab(tabInfo, background);
 }
 
+void DkCentralWidget::addTab(DkTabInfo::TabMode mode, bool background)
+{
+    QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo(mode));
+    addTab(tabInfo, background);
+}
+
 void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 {
     {
@@ -735,7 +739,7 @@ void DkCentralWidget::removeTab(int tabIdx)
         }
     } else {
         // make sure we have at least one tab
-        addTab();
+        addTab(DkTabInfo::tab_recent_files);
     }
 
     if (mTabInfos.size() <= 1) {
@@ -926,8 +930,7 @@ void DkCentralWidget::openPreferences()
         }
     }
 
-    QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_preferences, mTabInfos.size()));
-    addTab(info);
+    addTab(DkTabInfo::tab_preferences);
 }
 
 void DkCentralWidget::showPreferences(bool show)
@@ -967,8 +970,7 @@ void DkCentralWidget::openBatch(const QStringList &selectedFiles)
         }
     }
 
-    QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_batch, mTabInfos.size()));
-    addTab(info);
+    addTab(DkTabInfo::tab_batch);
 
     auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
     if (!bw) {
@@ -1223,8 +1225,7 @@ void DkCentralWidget::loadToTab(const QString &path)
     }
 
     if (!useCurrentTab) {
-        QSharedPointer<DkTabInfo> newTab(new DkTabInfo(DkTabInfo::tab_empty));
-        addTab(newTab);
+        addTab(DkTabInfo::tab_empty);
     }
 
     load(path);
@@ -1372,7 +1373,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
     if (!dropImg.isNull()) {
         auto tabInfo = mTabInfos.value(mTabbar->currentIndex());
         if (tabInfo && !tabInfo->useForNewImageTab()) {
-            addTab(); // fixme: add empty tab, not recents
+            addTab(DkTabInfo::tab_empty);
         }
         showViewPort();
         getViewPort()->loadImage(dropImg);
