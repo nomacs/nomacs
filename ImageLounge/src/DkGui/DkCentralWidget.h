@@ -198,7 +198,7 @@ protected:
 
     void createLayout();
     void updateTabIdx();
-    void switchWidget(QWidget *widget = nullptr);
+    void switchWidget(QWidget *widget);
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
     void updateLoader(QSharedPointer<DkImageLoader> loader) const;
