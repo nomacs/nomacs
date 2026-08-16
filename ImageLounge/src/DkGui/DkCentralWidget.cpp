@@ -1241,11 +1241,14 @@ void DkCentralWidget::loadUrls(const QList<QUrl> &urls, int maxUrlsToLoad)
     if (urls.size() > maxUrlsToLoad)
         qWarning() << "Too many urls found, I will only load the first" << maxUrlsToLoad;
 
-    if (urls.size() == 1)
-        loadUrl(urls[0], false);
-    else {
-        for (const QUrl &url : urls)
-            loadUrl(url, true);
+    bool newTab = false;
+    auto tabInfo = mTabInfos.value(mTabbar->currentIndex());
+    if (tabInfo && !tabInfo->useForNewImageTab()) {
+        newTab = true;
+    }
+    for (const QUrl &url : urls) {
+        loadUrl(url, newTab);
+        newTab = true;
     }
 }
 
@@ -1268,10 +1271,19 @@ void DkCentralWidget::loadUrl(const QUrl &url, bool newTab)
         fileInfo = DkFileInfo(url.path());
     } else if (QNetworkAccessManager().supportedSchemes().contains(url.scheme())) {
         // load a remote url
-        if (newTab) {
-            QSharedPointer<DkTabInfo> tab(new DkTabInfo(DkTabInfo::tab_empty));
-            addTab(tab, false); // must be current tab
+        // there isn't a path yet but the tab needs a title
+        QString path = url.fileName();
+        if (path.isEmpty()) {
+            path = "<url>";
         }
+
+        // we need to go through load() to get the tab state correct
+        if (newTab) {
+            loadToTab(path);
+        } else {
+            load(path);
+        }
+
         setInfo(tr("Downloading \"%1\"").arg(url.toDisplayString()));
         getCurrentImageLoader()->downloadFile(url);
         return;
@@ -1288,13 +1300,6 @@ void DkCentralWidget::loadUrl(const QUrl &url, bool newTab)
 
 void DkCentralWidget::pasteImage()
 {
-    auto tabInfo = mTabInfos.value(mTabbar->currentIndex());
-
-    if (tabInfo && !tabInfo->useForNewImageTab()) {
-        addTab();
-    }
-    showViewPort();
-
     QClipboard *clipboard = QApplication::clipboard();
 
     if (!loadFromMime(clipboard->mimeData()))
@@ -1316,9 +1321,6 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
 {
     if (!mimeData)
         return false;
-
-    if (!hasViewPort())
-        createViewPort();
 
     QStringList mimeFmts = mimeData->formats();
 
@@ -1368,6 +1370,11 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
     }
 
     if (!dropImg.isNull()) {
+        auto tabInfo = mTabInfos.value(mTabbar->currentIndex());
+        if (tabInfo && !tabInfo->useForNewImageTab()) {
+            addTab(); // fixme: add empty tab, not recents
+        }
+        showViewPort();
         getViewPort()->loadImage(dropImg);
         return true;
     }
