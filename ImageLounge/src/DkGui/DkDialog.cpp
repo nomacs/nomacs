@@ -1836,9 +1836,8 @@ void DkShortcutsModel::resetActions()
         QVector<QAction *> cActions = mActions.at(pIdx);
 
         for (int idx = 0; idx < cActions.size(); idx++) {
-            QString val = settings.value(cActions[idx]->objectName(), "no-shortcut").toString();
-
-            if (val != "no-shortcut") {
+            QVariant val = settings.value(cActions[idx]->objectName());
+            if (val.isValid()) {
                 cActions[idx]->setShortcut(QKeySequence());
             }
         }
