@@ -1916,6 +1916,7 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction *> actions) const
     DefaultSettings settings;
     settings.beginGroup("CustomShortcuts");
 
+    QSet<QString> allShortcuts;
     for (QAction *a : actions) {
         if (!a) {
             qWarning() << "NULL action detected!";
@@ -1924,18 +1925,30 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction *> actions) const
 
         QString actionId = a->objectName();
         QVariant val = settings.value(actionId);
+        bool saveSetting = false;
         if (!val.isValid()) {
             // convert old setting keyed to action text
             // we'll keep it around in case version is downgraded
             QString oldKey = a->text().remove(QChar('&'));
             val = settings.value(oldKey);
+            saveSetting = true;
             if (val.isValid()) {
-                settings.setValue(actionId, val);
+                qInfo() << "[shortcuts] importing old shortcut" << oldKey << val;
             }
         }
 
         if (val.isValid()) {
-            a->setShortcut(val.toString());
+            QString strVal = val.toString();
+            bool isDup = !strVal.isEmpty() && allShortcuts.contains(strVal);
+            if (!isDup) {
+                a->setShortcut(strVal);
+                allShortcuts.insert(strVal);
+                if (saveSetting) {
+                    settings.setValue(actionId, val);
+                }
+            } else {
+                qWarning() << "[shortcuts] duplicate custom shortcut ignored:" << actionId << val;
+            }
         }
     }
 
