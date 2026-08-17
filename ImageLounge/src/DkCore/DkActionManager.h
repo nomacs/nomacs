@@ -81,87 +81,117 @@ protected:
     bool mFirstTime = true;
 };
 
-struct DkActionId {
-    int index; // index into the associated actions array
-    const char *objectName; // uuid for settings, etc
-};
-
-// Shorthand to make enum index into a unique identifier string,
-// which then becomes the action objectName
-#define ACTION_ID(enumIndex)                                                                                           \
-    nmc::DkActionId                                                                                                    \
-    {                                                                                                                  \
-        enumIndex, #enumIndex                                                                                          \
-    }
-
+/**
+ * @brief Helper for creating actions
+ * @param T enum type of the actions, or <int> to allow anything
+ */
+template<typename T>
 class DllCoreExport DkActionBuilder
 {
 private:
-    QVector<QAction *> &mActions; // indexed by id.index
-    QWidget *mParent{};
+    QVector<QAction *> &mActions;
+    QObject *mParent{};
 
-    QAction *add(DkActionId id, const QIcon &icon, const QString &text, const QString &statusTip);
+    /**
+     * @brief add action to the array
+     * @param idx enum for the action
+     * @param id stable string identifier; will be written to config files
+     * @param icon action icon for menus and toolbars
+     * @param text action label
+     * @param statusTip action hover text
+     *
+     * @warning The id should not be changed (normally), as it will be saved to
+     * config files. Any modification is considered a breaking change to the user
+     * config file.
+     */
+    QAction *add(T idx, const char *id, const QIcon &icon, const QString &text, const QString &statusTip)
+    {
+        Q_ASSERT(idx >= 0 && idx < mActions.size());
+        auto *a = new QAction{icon, text, mParent};
+        a->setStatusTip(statusTip);
+        a->setObjectName(id);
+        mActions[idx] = a;
+        return a;
+    }
 
 public:
-    DkActionBuilder(QVector<QAction *> &actions, size_t numActions, QWidget *parent);
-    ~DkActionBuilder();
+    /**
+     * @brief constructor
+     * @param actions array to contain the added actions
+     * @param numActions number of actions that will be added by add()
+     * @param parent owner of the actions
+     */
+    DkActionBuilder(QVector<QAction *> &actions, size_t numActions, QObject *parent)
+        : mActions{actions}
+        , mParent{parent}
+    {
+        mActions.resize(numActions);
+    }
 
-    QAction *add(DkActionId id,
+    DkActionBuilder() = delete;
+    ~DkActionBuilder() = default;
+
+    QAction *add(T idx,
+                 const char *id,
                  const QIcon &icon,
                  const QString &text,
                  const QString &statusTip,
                  const QKeySequence &shortcut)
     {
-        auto *a = add(id, icon, text, statusTip);
+        auto *a = add(idx, id, icon, text, statusTip);
         a->setShortcut(shortcut);
         return a;
     }
 
     // This overload is needed, QKeySequence(StandardKey) only takes the first shortcut
     // when there are multiple for the standard key.
-    QAction *add(DkActionId id,
+    QAction *add(T idx,
+                 const char *id,
                  const QIcon &icon,
                  const QString &text,
                  const QString &statusTip,
                  QKeySequence::StandardKey standardKey)
     {
-        auto *a = add(id, icon, text, statusTip);
+        auto *a = add(idx, id, icon, text, statusTip);
         a->setShortcuts(standardKey);
         return a;
     }
 
-    QAction *add(DkActionId id,
+    QAction *add(T idx,
+                 const char *id,
                  const QIcon &icon,
                  const QString &text,
                  const QString &statusTip,
                  const QList<QKeySequence> &shortcuts)
     {
-        auto *a = add(id, icon, text, statusTip);
+        auto *a = add(idx, id, icon, text, statusTip);
         a->setShortcuts(shortcuts);
         return a;
     }
 
-    QAction *addCheckable(DkActionId id,
+    QAction *addCheckable(T idx,
+                          const char *id,
                           const QIcon &icon,
                           const QString &text,
                           const QString &statusTip,
                           const QKeySequence &shortcut,
                           bool checked)
     {
-        auto *a = add(id, icon, text, statusTip, shortcut);
+        auto *a = add(idx, id, icon, text, statusTip, shortcut);
         a->setCheckable(true);
         a->setChecked(checked);
         return a;
     }
 
-    QAction *addCheckable(DkActionId id,
+    QAction *addCheckable(T idx,
+                          const char *id,
                           const QIcon &icon,
                           const QString &text,
                           const QString &statusTip,
                           QKeySequence::StandardKey standardKey,
                           bool checked)
     {
-        auto *a = add(id, icon, text, statusTip, standardKey);
+        auto *a = add(idx, id, icon, text, statusTip, standardKey);
         a->setCheckable(true);
         a->setChecked(checked);
         return a;

@@ -365,24 +365,6 @@ void DkAppManager::openTriggered() const
         openFileSignal(a);
 }
 
-DkActionBuilder::DkActionBuilder(QVector<QAction *> &actions, size_t numActions, QWidget *parent)
-    : mActions{actions}
-    , mParent{parent}
-{
-    mActions.resize(numActions);
-}
-
-DkActionBuilder::~DkActionBuilder() = default;
-
-QAction *DkActionBuilder::add(DkActionId id, const QIcon &icon, const QString &text, const QString &statusTip)
-{
-    auto *a = new QAction{icon, text, mParent};
-    a->setStatusTip(statusTip);
-    a->setObjectName(id.objectName);
-    mActions[id.index] = a;
-    return a;
-}
-
 // DkActionManager --------------------------------------------------------------------
 DkActionManager::DkActionManager()
 {
@@ -787,6 +769,7 @@ void DkActionManager::init()
     });
 #endif
 }
+
 void DkActionManager::createActions(QWidget *parent)
 {
     static const QIcon no_icon{};
@@ -796,137 +779,159 @@ void DkActionManager::createActions(QWidget *parent)
     const bool checked{true};
 
     // file actions
-    DkActionBuilder fileActions(mFileActions, numFileActions, parent);
+    DkActionBuilder<FileAction> fileActions(mFileActions, numFileActions, parent);
 
-    fileActions.add(ACTION_ID(file_open),
+    fileActions.add(file_open,
+                    "file_open",
                     DkImage::loadIcon(":/nomacs/img/open.svg"),
                     QObject::tr("&Open"),
                     QObject::tr("Open an image"),
                     QKeySequence::Open);
 
-    fileActions.add(ACTION_ID(file_open_dir),
+    fileActions.add(file_open_dir,
+                    "file_open_dir",
                     DkImage::loadIcon(":/nomacs/img/open.svg"),
                     QObject::tr("Open &Directory"),
                     QObject::tr("Open a directory"),
                     shortcut_open_dir);
 
-    fileActions.add(ACTION_ID(file_open_list),
+    fileActions.add(file_open_list,
+                    "file_open_list",
                     no_icon,
                     QObject::tr("&Open Tabs"),
                     QObject::tr("Open a text file containing a list of filepaths, and open tabs for them"),
                     no_shortcut);
 
-    fileActions.add(ACTION_ID(file_quick_launch),
+    fileActions.add(file_quick_launch,
+                    "file_quick_launch",
                     no_icon,
                     QObject::tr("&Quick Launch"),
                     no_tooltip,
                     shortcut_quick_launch);
 
-    fileActions.add(ACTION_ID(file_app_manager),
+    fileActions.add(file_app_manager,
+                    "file_app_manager",
                     no_icon,
                     QObject::tr("&Manage Applications"),
                     QObject::tr("Manage Applications which are Automatically Opened"),
                     shortcut_app_manager);
 
-    fileActions.add(ACTION_ID(file_rename),
+    fileActions.add(file_rename,
+                    "file_rename",
                     no_icon,
                     QObject::tr("Re&name"),
                     QObject::tr("Rename an image"),
                     shortcut_rename);
 
-    fileActions.add(ACTION_ID(nav_goto_file),
+    fileActions.add(nav_goto_file,
+                    "nav_goto_file",
                     no_icon,
                     QObject::tr("&Go To"),
                     QObject::tr("Go To an image"),
                     shortcut_goto);
 
-    fileActions.add(ACTION_ID(file_save),
+    fileActions.add(file_save,
+                    "file_save",
                     DkImage::loadIcon(":/nomacs/img/save.svg"),
                     QObject::tr("&Save"),
                     QObject::tr("Save an image"),
                     QKeySequence::Save);
 
-    fileActions.add(ACTION_ID(file_save_as),
+    fileActions.add(file_save_as,
+                    "file_save_as",
                     no_icon,
                     QObject::tr("S&ave As"),
                     QObject::tr("Save an image as"),
                     shortcut_save_as);
 
-    fileActions.add(ACTION_ID(file_save_copy),
+    fileActions.add(file_save_copy,
+                    "file_save_copy",
                     no_icon,
                     QObject::tr("Sa&ve a Copy"),
                     QObject::tr("Copy the Image"),
                     no_shortcut);
 
-    fileActions.add(ACTION_ID(file_save_list),
+    fileActions.add(file_save_list,
+                    "file_save_list",
                     no_icon,
                     QObject::tr("&Save Tabs"),
                     QObject::tr("Save a newline separated list of the filenames of the open tabs"),
                     no_shortcut);
 
-    fileActions.add(ACTION_ID(file_save_web),
+    fileActions.add(file_save_web,
+                    "file_save_web",
                     no_icon,
                     QObject::tr("&Save for Web"),
                     QObject::tr("Save an Image for Web Applications"),
                     no_shortcut);
 
-    fileActions.add(ACTION_ID(file_print),
+    fileActions.add(file_print,
+                    "file_print",
                     DkImage::loadIcon(":/nomacs/img/print.svg"),
                     QObject::tr("&Print"),
                     QObject::tr("Print an image"),
                     QKeySequence::Print);
 
-    fileActions.addCheckable(ACTION_ID(file_show_recent),
+    fileActions.addCheckable(file_show_recent,
+                             "file_show_recent",
                              no_icon,
                              QObject::tr("&Recent Files"),
                              QObject::tr("Show Recent Files"),
                              shortcut_recent_files,
                              unchecked);
 
-    fileActions.add(ACTION_ID(file_reload),
+    fileActions.add(file_reload,
+                    "file_reload",
                     no_icon,
                     QObject::tr("&Reload File"),
                     QObject::tr("Reload File"),
                     shortcut_reload);
 
-    fileActions.add(ACTION_ID(nav_next_file),
+    fileActions.add(nav_next_file,
+                    "nav_next_file",
                     DkImage::loadIcon(":/nomacs/img/next.svg"),
                     QObject::tr("Ne&xt File"),
                     QObject::tr("Load next file"),
                     shortcut_next_file);
 
-    fileActions.add(ACTION_ID(nav_prev_file),
+    fileActions.add(nav_prev_file,
+                    "nav_prev_file",
                     DkImage::loadIcon(":/nomacs/img/previous.svg"),
                     QObject::tr("Pre&vious File"),
                     QObject::tr("Load previous file"),
                     shortcut_prev_file);
 
-    fileActions.add(ACTION_ID(file_new_instance),
+    fileActions.add(file_new_instance,
+                    "file_new_instance",
                     no_icon,
                     QObject::tr("St&art New Instance"),
                     QObject::tr("Open file in new instance"),
                     shortcut_new_instance);
 
-    fileActions.add(ACTION_ID(file_private_instance),
+    fileActions.add(file_private_instance,
+                    "file_private_instance",
                     no_icon,
                     QObject::tr("St&art Private Instance"),
                     QObject::tr("Open private instance"),
                     shortcut_private_instance);
 
-    fileActions.add(ACTION_ID(file_find),
+    fileActions.add(file_find,
+                    "file_find",
                     DkImage::loadIcon(":/nomacs/img/find.svg"),
                     QObject::tr("&Find && Filter"),
                     QObject::tr("Find an image"),
                     QKeySequence::Find);
 
-    fileActions.addCheckable(ACTION_ID(file_recursive),
+    fileActions.addCheckable(file_recursive,
+                             "file_recursive",
                              no_icon,
                              QObject::tr("Scan Folder Re&cursive"),
                              QObject::tr("Step through Folder and Sub Folders"),
                              no_shortcut,
                              DkSettingsManager::param().global().scanSubFolders);
 
-    fileActions.add(ACTION_ID(file_exit), //
+    fileActions.add(file_exit, //
+                    "file_exit",
                     no_icon,
                     QObject::tr("&Exit"),
                     QObject::tr("Exit"),
@@ -935,145 +940,167 @@ void DkActionManager::createActions(QWidget *parent)
     const auto sortMode = DkSettingsManager::param().global().sortMode;
     const auto sortDir = DkSettingsManager::param().global().sortDir;
 
-    DkActionBuilder sortActions(mSortActions, numSortActions, parent);
+    DkActionBuilder<SortAction> sortActions(mSortActions, numSortActions, parent);
 
-    sortActions.addCheckable(ACTION_ID(sort_filename),
+    sortActions.addCheckable(sort_filename,
+                             "sort_filename",
                              no_icon,
                              QObject::tr("by &Filename"),
                              QObject::tr("Sort by Filename"),
                              no_shortcut,
                              sortMode == DkSettings::sort_filename);
 
-    sortActions.addCheckable(ACTION_ID(sort_file_size),
+    sortActions.addCheckable(sort_file_size,
+                             "sort_file_size",
                              no_icon,
                              QObject::tr("by File &Size"),
                              QObject::tr("Sort by File Size"),
                              no_shortcut,
                              sortMode == DkSettings::sort_file_size);
 
-    sortActions.addCheckable(ACTION_ID(sort_date_created),
+    sortActions.addCheckable(sort_date_created,
+                             "sort_date_created",
                              no_icon,
                              QObject::tr("by Date &Created"),
                              QObject::tr("Sort by Date Created"),
                              no_shortcut,
                              sortMode == DkSettings::sort_date_created);
 
-    sortActions.addCheckable(ACTION_ID(sort_date_modified),
+    sortActions.addCheckable(sort_date_modified,
+                             "sort_date_modified",
                              no_icon,
                              QObject::tr("by Date Modified"),
                              QObject::tr("Sort by Date Last Modified"),
                              no_shortcut,
                              sortMode == DkSettings::sort_date_modified);
 
-    sortActions.addCheckable(ACTION_ID(sort_random),
+    sortActions.addCheckable(sort_random,
+                             "sort_random",
                              no_icon,
                              QObject::tr("Random"),
                              QObject::tr("Sort in Random Order"),
                              no_shortcut,
                              sortMode == DkSettings::sort_random);
 
-    sortActions.addCheckable(ACTION_ID(sort_ascending),
+    sortActions.addCheckable(sort_ascending,
+                             "sort_ascending",
                              no_icon,
                              QObject::tr("&Ascending"),
                              QObject::tr("Sort in Ascending Order"),
                              no_shortcut,
                              sortDir == Qt::AscendingOrder);
 
-    sortActions.addCheckable(ACTION_ID(sort_descending),
+    sortActions.addCheckable(sort_descending,
+                             "sort_descending",
                              no_icon,
                              QObject::tr("&Descending"),
                              QObject::tr("Sort in Descending Order"),
                              no_shortcut,
                              sortDir == Qt::DescendingOrder);
 
-    DkActionBuilder editActions(mEditActions, numEditActions, parent);
+    DkActionBuilder<EditAction> editActions(mEditActions, numEditActions, parent);
 
-    editActions.add(ACTION_ID(edit_rotate_cw),
+    editActions.add(edit_rotate_cw,
+                    "edit_rotate_cw",
                     DkImage::loadIcon(":/nomacs/img/rotate-cw.svg"),
                     QObject::tr("9&0%1 Clockwise").arg(dk_degree_str),
                     QObject::tr("rotate the image 90%1 clockwise").arg(dk_degree_str),
                     shortcut_rotate_cw);
 
-    editActions.add(ACTION_ID(edit_rotate_ccw),
+    editActions.add(edit_rotate_ccw,
+                    "edit_rotate_ccw",
                     DkImage::loadIcon(":/nomacs/img/rotate-cc.svg"),
                     QObject::tr("&90%1 Counter Clockwise").arg(dk_degree_str),
                     QObject::tr("rotate the image 90%1 counter clockwise").arg(dk_degree_str),
                     shortcut_rotate_ccw);
 
-    editActions.add(ACTION_ID(edit_rotate_180),
+    editActions.add(edit_rotate_180,
+                    "edit_rotate_180",
                     no_icon,
                     QObject::tr("180%1").arg(dk_degree_str),
                     QObject::tr("rotate the image by 180%1").arg(dk_degree_str),
                     no_shortcut);
 
-    editActions.add(ACTION_ID(edit_undo),
+    editActions.add(edit_undo,
+                    "edit_undo",
                     DkImage::loadIcon(":/nomacs/img/edit-undo.svg"),
                     QObject::tr("&Undo"),
                     QObject::tr("Undo Last Action"),
                     QKeySequence::Undo);
 
-    editActions.add(ACTION_ID(edit_redo),
+    editActions.add(edit_redo,
+                    "edit_redo",
                     DkImage::loadIcon(":/nomacs/img/edit-redo.svg"),
                     QObject::tr("&Redo"),
                     QObject::tr("Redo Last Action"),
                     QKeySequence::Redo);
 
-    editActions.add(ACTION_ID(edit_copy),
+    editActions.add(edit_copy,
+                    "edit_copy",
                     DkImage::loadIcon(":/nomacs/img/copy.svg"),
                     QObject::tr("&Copy"),
                     QObject::tr("copy file path"),
                     QKeySequence::Copy);
 
-    editActions.add(ACTION_ID(edit_copy_buffer),
+    editActions.add(edit_copy_buffer,
+                    "edit_copy_buffer",
                     no_icon,
                     QObject::tr("Copy &Buffer"),
                     QObject::tr("copy image pixels"),
                     shortcut_copy_buffer);
 
-    editActions.add(ACTION_ID(edit_copy_color),
+    editActions.add(edit_copy_color,
+                    "edit_copy_color",
                     no_icon,
                     QObject::tr("Copy Co&lor"),
                     QObject::tr("copy pixel color value as HEX"),
                     shortcut_copy_color);
 
-    editActions.add(ACTION_ID(edit_paste),
+    editActions.add(edit_paste,
+                    "edit_paste",
                     DkImage::loadIcon(":/nomacs/img/paste.svg"),
                     QObject::tr("&Paste"),
                     QObject::tr("paste image"),
                     QList<QKeySequence>{QKeySequence::Paste, shortcut_paste});
 
-    editActions.add(ACTION_ID(edit_delete),
+    editActions.add(edit_delete,
+                    "edit_delete",
                     DkImage::loadIcon(":/nomacs/img/trash.svg"),
                     QObject::tr("&Delete"),
                     QObject::tr("delete current fileInfo"),
                     QKeySequence::Delete);
 
-    editActions.add(ACTION_ID(edit_shortcuts),
+    editActions.add(edit_shortcuts,
+                    "edit_shortcuts",
                     no_icon,
                     QObject::tr("&Keyboard Shortcuts"),
                     QObject::tr("lets you customize your keyboard shortcuts"),
                     shortcut_shortcuts);
 
-    editActions.add(ACTION_ID(edit_preferences),
+    editActions.add(edit_preferences,
+                    "edit_preferences",
                     no_icon,
                     QObject::tr("&Settings"),
                     QObject::tr("settings"),
                     shortcut_settings);
 
-    editActions.addCheckable(ACTION_ID(panel_edit_image),
+    editActions.addCheckable(panel_edit_image,
+                             "panel_edit_image",
                              DkImage::loadIcon(":/nomacs/img/sliders.svg"),
                              QObject::tr("Image &Adjustments"),
                              QObject::tr("open image manipulation toolbox"),
                              shortcut_edit_image,
                              unchecked);
 
-    editActions.add(ACTION_ID(edit_transform),
+    editActions.add(edit_transform,
+                    "edit_transform",
                     DkImage::loadIcon(":/nomacs/img/resize.svg"),
                     QObject::tr("R&esize Image"),
                     QObject::tr("resize the current image"),
                     shortcut_transform);
 
-    editActions.addCheckable(ACTION_ID(edit_crop),
+    editActions.addCheckable(edit_crop,
+                             "edit_crop",
                              DkImage::loadIcon(":/nomacs/img/crop.svg"),
                              QObject::tr("Cr&op Image"),
                              QObject::tr("Crop the current image"),
@@ -1081,37 +1108,42 @@ void DkActionManager::createActions(QWidget *parent)
                              unchecked);
 
     // panel actions
-    DkActionBuilder panelActions(mPanelActions, numPanelActions, parent);
+    DkActionBuilder<PanelAction> panelActions(mPanelActions, numPanelActions, parent);
 
-    panelActions.addCheckable(ACTION_ID(panel_menubar),
+    panelActions.addCheckable(panel_menubar,
+                              "panel_menubar",
                               no_icon,
                               QObject::tr("Show &Menu"),
                               QObject::tr("Hides the Menu and Shows it Again on ALT"),
                               no_shortcut,
                               checked);
 
-    panelActions.addCheckable(ACTION_ID(panel_toolbar),
+    panelActions.addCheckable(panel_toolbar,
+                              "panel_toolbar",
                               no_icon,
                               QObject::tr("Tool&bar"),
                               QObject::tr("Show Toolbar"),
                               shortcut_show_toolbar,
                               checked);
 
-    panelActions.addCheckable(ACTION_ID(panel_statusbar),
+    panelActions.addCheckable(panel_statusbar,
+                              "panel_statusbar",
                               no_icon,
                               QObject::tr("&Statusbar"),
                               QObject::tr("Show Statusbar"),
                               shortcut_show_statusbar,
                               checked);
 
-    panelActions.addCheckable(ACTION_ID(panel_transfertoolbar),
+    panelActions.addCheckable(panel_transfertoolbar,
+                              "panel_transfertoolbar",
                               no_icon,
                               QObject::tr("&Pseudocolor Function"),
                               QObject::tr("Show Pseudocolor Function"),
                               shortcut_show_transfer,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_overview),
+    panelActions.addCheckable(panel_overview,
+                              "panel_overview",
                               no_icon,
                               QObject::tr("O&verview"),
                               QObject::tr("Shows the Zoom Overview"),
@@ -1119,91 +1151,104 @@ void DkActionManager::createActions(QWidget *parent)
                               DkSettingsManager::param().app().showOverview.testBit(
                                   DkSettingsManager::param().app().currentAppMode));
 
-    panelActions.addCheckable(ACTION_ID(panel_player),
+    panelActions.addCheckable(panel_player,
+                              "panel_player",
                               no_icon,
                               QObject::tr("Pla&yer"),
                               QObject::tr("Shows the Slide Show Player"),
                               shortcut_show_player,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_toggle_all),
+    panelActions.addCheckable(panel_toggle_all,
+                              "panel_toggle_all",
                               no_icon,
                               QObject::tr("&Hide All Panels"),
                               QObject::tr("Hide all panels"),
                               shortcut_toggle_panels,
                               DkSettingsManager::param().app().hideAllPanels);
 
-    panelActions.addCheckable(ACTION_ID(panel_explorer),
+    panelActions.addCheckable(panel_explorer,
+                              "panel_explorer",
                               no_icon,
                               QObject::tr("File &Explorer"),
                               QObject::tr("Show File Explorer"),
                               shortcut_show_explorer,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_metadata_dock),
+    panelActions.addCheckable(panel_metadata_dock,
+                              "panel_metadata_dock",
                               no_icon,
                               QObject::tr("Metadata &Info"),
                               QObject::tr("Show Metadata Info"),
                               shortcut_show_metadata_dock,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_preview),
+    panelActions.addCheckable(panel_preview,
+                              "panel_preview",
                               no_icon,
                               QObject::tr("&Thumbnails"),
                               QObject::tr("Show Thumbnails"),
                               shortcut_open_preview,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_thumbview),
+    panelActions.addCheckable(panel_thumbview,
+                              "panel_thumbview",
                               no_icon,
                               QObject::tr("&Thumbnail Preview"),
                               QObject::tr("Show Thumbnails Preview"),
                               shortcut_open_thumbview,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_scroller),
+    panelActions.addCheckable(panel_scroller,
+                              "panel_scroller",
                               no_icon,
                               QObject::tr("&Folder Scrollbar"),
                               QObject::tr("Show Folder Scrollbar"),
                               no_shortcut,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_exif),
+    panelActions.addCheckable(panel_exif,
+                              "panel_exif",
                               no_icon,
                               QObject::tr("&Metadata Ribbon"),
                               QObject::tr("Shows the Metadata Panel"),
                               shortcut_show_exif,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_info),
+    panelActions.addCheckable(panel_info,
+                              "panel_info",
                               no_icon,
                               QObject::tr("File &Info"),
                               QObject::tr("Shows the Info Panel"),
                               shortcut_show_info,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_histogram),
+    panelActions.addCheckable(panel_histogram,
+                              "panel_histogram",
                               no_icon,
                               QObject::tr("&Histogram"),
                               QObject::tr("Shows the Histogram Panel"),
                               shortcut_show_histogram,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_comment),
+    panelActions.addCheckable(panel_comment,
+                              "panel_comment",
                               no_icon,
                               QObject::tr("Image &Notes"),
                               QObject::tr("Shows Image Notes"),
                               shortcut_show_comment,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_history),
+    panelActions.addCheckable(panel_history,
+                              "panel_history",
                               no_icon,
                               QObject::tr("Edit &History"),
                               QObject::tr("Shows the edit history"),
                               shortcut_show_history,
                               unchecked);
 
-    panelActions.addCheckable(ACTION_ID(panel_log),
+    panelActions.addCheckable(panel_log,
+                              "panel_log",
                               no_icon,
                               QObject::tr("Show &Log"),
                               QObject::tr("Shows the log window"),
@@ -1211,145 +1256,168 @@ void DkActionManager::createActions(QWidget *parent)
                               unchecked);
 
     // view actions
-    DkActionBuilder viewActions(mViewActions, numViewActions, parent);
+    DkActionBuilder<ViewAction> viewActions(mViewActions, numViewActions, parent);
 
-    viewActions.add(ACTION_ID(view_new_tab),
+    viewActions.add(view_new_tab,
+                    "view_new_tab",
                     no_icon,
                     QObject::tr("New &Tab"),
                     QObject::tr("Open a new tab"),
                     shortcut_new_tab);
 
-    viewActions.add(ACTION_ID(view_close_tab),
+    viewActions.add(view_close_tab,
+                    "view_close_tab",
                     no_icon,
                     QObject::tr("&Close Tab"),
                     QObject::tr("Close current tab"),
                     shortcut_close_tab);
 
-    viewActions.add(ACTION_ID(view_close_all_tabs),
+    viewActions.add(view_close_all_tabs,
+                    "view_close_all_tabs",
                     no_icon,
                     QObject::tr("&Close All Tabs"),
                     QObject::tr("Close all open tabs"),
                     no_shortcut);
 
-    viewActions.add(ACTION_ID(view_fit_frame),
+    viewActions.add(view_fit_frame,
+                    "view_fit_frame",
                     no_icon,
                     QObject::tr("&Fit Window to Image"),
                     QObject::tr("Fit window to the image"),
                     shortcut_fit_frame);
 
-    viewActions.add(ACTION_ID(view_first_tab),
+    viewActions.add(view_first_tab,
+                    "view_first_tab",
                     no_icon,
                     QObject::tr("F&irst Tab"),
                     QObject::tr("Switch to first tab"),
                     no_shortcut);
 
-    viewActions.add(ACTION_ID(view_previous_tab),
+    viewActions.add(view_previous_tab,
+                    "view_previous_tab",
                     no_icon,
                     QObject::tr("&Previous Tab"),
                     QObject::tr("Switch to previous tab"),
                     shortcut_previous_tab);
 
-    viewActions.add(ACTION_ID(view_goto_tab),
+    viewActions.add(view_goto_tab,
+                    "view_goto_tab",
                     no_icon,
                     QObject::tr("&Go to Tab"),
                     QObject::tr("Go to tab by index"),
                     no_shortcut);
 
-    viewActions.add(ACTION_ID(view_next_tab),
+    viewActions.add(view_next_tab,
+                    "view_next_tab",
                     no_icon,
                     QObject::tr("&Next Tab"),
                     QObject::tr("Switch to next tab"),
                     shortcut_next_tab);
 
-    viewActions.add(ACTION_ID(view_last_tab),
+    viewActions.add(view_last_tab,
+                    "view_last_tab",
                     no_icon,
                     QObject::tr("La&st Tab"),
                     QObject::tr("Switch to last tab"),
                     no_shortcut);
 
-    viewActions.add(ACTION_ID(view_fullscreen),
+    viewActions.add(view_fullscreen,
+                    "view_fullscreen",
                     DkImage::loadIcon(":/nomacs/img/fullscreen.svg"),
                     QObject::tr("Fu&ll Screen"),
                     QObject::tr("Full Screen"),
                     shortcut_full_screen_ff);
 
-    viewActions.add(ACTION_ID(view_reset),
+    viewActions.add(view_reset,
+                    "view_reset",
                     DkImage::loadIcon(":/nomacs/img/zoom-reset.svg"),
                     QObject::tr("&Fit Image to Window"),
                     QObject::tr("Zoom image to fit window"),
                     shortcut_reset_view);
 
-    viewActions.add(ACTION_ID(view_100),
+    viewActions.add(view_100,
+                    "view_100",
                     DkImage::loadIcon(":/nomacs/img/zoom-100.svg"),
                     QObject::tr("Show &100%"),
                     QObject::tr("Shows the image at 100%"),
                     shortcut_zoom_full);
 
-    viewActions.add(ACTION_ID(view_zoom_in),
+    viewActions.add(view_zoom_in,
+                    "view_zoom_in",
                     DkImage::loadIcon(":/nomacs/img/zoom-in.svg"),
                     QObject::tr("Zoom &In"),
                     QObject::tr("zoom in"),
                     QKeySequence::ZoomIn);
 
-    viewActions.add(ACTION_ID(view_zoom_out),
+    viewActions.add(view_zoom_out,
+                    "view_zoom_out",
                     DkImage::loadIcon(":/nomacs/img/zoom-out.svg"),
                     QObject::tr("&Zoom Out"),
                     QObject::tr("zoom out"),
                     QKeySequence::ZoomOut);
 
-    viewActions.addCheckable(ACTION_ID(view_anti_aliasing),
+    viewActions.addCheckable(view_anti_aliasing,
+                             "view_anti_aliasing",
                              no_icon,
                              QObject::tr("&Anti Aliasing"),
                              QObject::tr("if checked images are smoother"),
                              shortcut_anti_aliasing,
                              DkSettingsManager::param().display().antiAliasing);
 
-    viewActions.addCheckable(ACTION_ID(view_tp_pattern),
+    viewActions.addCheckable(view_tp_pattern,
+                             "view_tp_pattern",
                              no_icon,
                              QObject::tr("&Transparency Pattern"),
                              QObject::tr("if checked, a pattern will be displayed for transparent objects"),
                              shortcut_tp_pattern,
                              DkSettingsManager::param().display().tpPattern);
 
-    viewActions.addCheckable(ACTION_ID(view_frameless),
+    viewActions.addCheckable(view_frameless,
+                             "view_frameless",
                              no_icon,
                              QObject::tr("&Frameless"),
                              QObject::tr("shows a frameless window"),
                              shortcut_frameless,
                              unchecked);
 
-    viewActions.add(ACTION_ID(view_opacity_change),
+    viewActions.add(view_opacity_change,
+                    "view_opacity_change",
                     no_icon,
                     QObject::tr("&Change Opacity"),
                     QObject::tr("change the window opacity"),
                     shortcut_opacity_change);
 
-    viewActions.add(ACTION_ID(view_opacity_up),
+    viewActions.add(view_opacity_up,
+                    "view_opacity_up",
                     no_icon,
                     QObject::tr("Opacity &Up"),
                     QObject::tr("changes the window opacity"),
                     shortcut_opacity_up);
 
-    viewActions.add(ACTION_ID(view_opacity_down),
+    viewActions.add(view_opacity_down,
+                    "view_opacity_down",
                     no_icon,
                     QObject::tr("Opacity &Down"),
                     QObject::tr("changes the window opacity"),
                     shortcut_opacity_down);
 
-    viewActions.add(ACTION_ID(view_opacity_an),
+    viewActions.add(view_opacity_an,
+                    "view_opacity_an",
                     no_icon,
                     QObject::tr("To&ggle Opacity"),
                     QObject::tr("toggle the window opacity"),
                     shortcut_an_opacity);
 
-    viewActions.addCheckable(ACTION_ID(view_lock_window),
+    viewActions.addCheckable(view_lock_window,
+                             "view_lock_window",
                              no_icon,
                              QObject::tr("Lock &Window"),
                              QObject::tr("lock the window"),
                              shortcut_lock_window,
                              unchecked);
 
-    viewActions.add(ACTION_ID(view_slideshow),
+    viewActions.add(view_slideshow,
+                    "view_slideshow",
                     no_icon,
                     QObject::tr("&Toggle Slideshow"),
                     QObject::tr("Start/Pause the slideshow"),
@@ -1357,33 +1425,38 @@ void DkActionManager::createActions(QWidget *parent)
 
     QIcon pausePlayIcon = DkImage::loadIcon(":/nomacs/img/pause.svg");
     pausePlayIcon.addFile(":/nomacs/img/play.svg", QSize(), QIcon::Normal, QIcon::On);
-    viewActions.addCheckable(ACTION_ID(view_movie_pause),
+    viewActions.addCheckable(view_movie_pause,
+                             "view_movie_pause",
                              pausePlayIcon,
                              QObject::tr("&Pause Movie"),
                              QObject::tr("pause the current movie"),
                              no_shortcut,
                              unchecked);
 
-    viewActions.add(ACTION_ID(view_movie_prev),
+    viewActions.add(view_movie_prev,
+                    "view_movie_prev",
                     DkImage::loadIcon(":/nomacs/img/previous.svg"),
                     QObject::tr("P&revious Frame"),
                     QObject::tr("show previous frame"),
                     no_shortcut);
 
-    viewActions.add(ACTION_ID(view_movie_next),
+    viewActions.add(view_movie_next,
+                    "view_movie_next",
                     DkImage::loadIcon(":/nomacs/img/next.svg"),
                     QObject::tr("&Next Frame"),
                     QObject::tr("show next frame"),
                     no_shortcut);
 
-    viewActions.add(ACTION_ID(view_monitors),
+    viewActions.add(view_monitors,
+                    "view_monitors",
                     no_icon,
                     QObject::tr("Choose &Monitor"),
                     QObject::tr("Choose the Monitor to run nomacs"),
                     no_shortcut);
 
     viewActions
-        .add(ACTION_ID(view_gps_map),
+        .add(view_gps_map,
+             "view_gps_map",
              DkImage::loadIcon(":/nomacs/img/location.svg"),
              QObject::tr("Show Image Location"),
              QObject::tr("shows where the image was taken in Google maps"),
@@ -1391,10 +1464,11 @@ void DkActionManager::createActions(QWidget *parent)
         ->setEnabled(false);
 
     // tools actions
-    DkActionBuilder toolsActions(mToolsActions, numToolsActions, parent);
+    DkActionBuilder<ToolsAction> toolsActions(mToolsActions, numToolsActions, parent);
 
     toolsActions
-        .add(ACTION_ID(tools_thumbs),
+        .add(tools_thumbs,
+             "tools_thumbs",
              no_icon,
              QObject::tr("Compute &Thumbnails"),
              QObject::tr("compute all thumbnails of the current folder"),
@@ -1404,73 +1478,84 @@ void DkActionManager::createActions(QWidget *parent)
     QIcon filterIcon = DkImage::loadIcon(":/nomacs/img/filter-disabled.svg");
     filterIcon.addFile(":/nomacs/img/filter.svg", QSize(), QIcon::Normal, QIcon::On);
 
-    toolsActions.addCheckable(ACTION_ID(tools_filter),
+    toolsActions.addCheckable(tools_filter,
+                              "tools_filter",
                               filterIcon,
                               QObject::tr("&Filter"),
                               QObject::tr("Find an image"),
                               no_shortcut,
                               unchecked);
 
-    toolsActions.add(ACTION_ID(tools_export_tiff),
+    toolsActions.add(tools_export_tiff,
+                     "tools_export_tiff",
                      no_icon,
                      QObject::tr("Export Multipage &TIFF"),
                      QObject::tr("Export TIFF pages to multiple tiff files"),
                      no_shortcut);
 
-    toolsActions.add(ACTION_ID(tools_extract_archive),
+    toolsActions.add(tools_extract_archive,
+                     "tools_extract_archive",
                      no_icon,
                      QObject::tr("Extract From Archive"),
                      QObject::tr("Extract images from an archive (%1)")
                          .arg(DkSettingsManager::param().app().containerRawFilters),
                      shortcut_extract);
 
-    toolsActions.add(ACTION_ID(tools_mosaic),
+    toolsActions.add(tools_mosaic,
+                     "tools_mosaic",
                      no_icon,
                      QObject::tr("&Mosaic Image"),
                      QObject::tr("Create a Mosaic Image"),
                      no_shortcut);
 
-    toolsActions.add(ACTION_ID(tools_wallpaper),
+    toolsActions.add(tools_wallpaper,
+                     "tools_wallpaper",
                      no_icon,
                      QObject::tr("Set Desktop &Wallpaper"),
                      QObject::tr("set the current image as wallpaper"),
                      no_shortcut);
 
-    toolsActions.add(ACTION_ID(tools_train_format),
+    toolsActions.add(tools_train_format,
+                     "tools_train_format",
                      no_icon,
                      QObject::tr("Add Image Format"),
                      QObject::tr("Add a new image format to nomacs"),
                      no_shortcut);
 
-    toolsActions.add(ACTION_ID(tools_batch),
+    toolsActions.add(tools_batch,
+                     "tools_batch",
                      no_icon,
                      QObject::tr("Batch Processing"),
                      QObject::tr("Apply actions to multiple images"),
                      shortcut_batch_processing);
 
     // help actions
-    DkActionBuilder helpActions(mHelpActions, numHelpActions, parent);
+    DkActionBuilder<HelpAction> helpActions(mHelpActions, numHelpActions, parent);
 
-    helpActions.add(ACTION_ID(help_about),
+    helpActions.add(help_about, //
+                    "help_about",
                     no_icon,
                     QObject::tr("&About Nomacs"),
                     QObject::tr("about"),
                     shortcut_show_help);
 
-    helpActions.add(ACTION_ID(help_documentation),
+    helpActions.add(help_documentation,
+                    "help_documentation",
                     no_icon,
                     QObject::tr("&Documentation"),
                     QObject::tr("Online Documentation"),
                     no_shortcut);
 
-    helpActions.add(ACTION_ID(help_bug),
+    helpActions.add(help_bug, //
+                    "help_bug",
                     no_icon,
                     QObject::tr("&Report a Bug"),
                     QObject::tr("Report a Bug"),
                     no_shortcut);
 
     helpActions
-        .add(ACTION_ID(help_update),
+        .add(help_update,
+             "help_update",
              no_icon,
              QObject::tr("&Check for Updates"),
              QObject::tr("check for updates"),
@@ -1478,7 +1563,8 @@ void DkActionManager::createActions(QWidget *parent)
         ->setDisabled(DkSettingsManager::param().sync().disableUpdateInteraction);
 
     helpActions
-        .add(ACTION_ID(help_update_translation),
+        .add(help_update_translation,
+             "help_update_translation",
              no_icon,
              QObject::tr("&Update Translation"),
              QObject::tr("Checks for a new version of the translations of the current language"),
@@ -1486,10 +1572,11 @@ void DkActionManager::createActions(QWidget *parent)
         ->setDisabled(DkSettingsManager::param().sync().disableUpdateInteraction);
 
     // sync actions
-    DkActionBuilder syncActions(mSyncActions, numSyncActions, parent);
+    DkActionBuilder<SyncAction> syncActions(mSyncActions, numSyncActions, parent);
 
     syncActions
-        .add(ACTION_ID(sync_view),
+        .add(sync_view,
+             "sync_view",
              no_icon,
              QObject::tr("Synchronize &View"),
              QObject::tr("synchronize the current view"),
@@ -1497,7 +1584,8 @@ void DkActionManager::createActions(QWidget *parent)
         ->setEnabled(false);
 
     syncActions
-        .add(ACTION_ID(sync_pos),
+        .add(sync_pos,
+             "sync_pos",
              no_icon,
              QObject::tr("&Window Overlay"),
              QObject::tr("toggle the window opacity"),
@@ -1505,20 +1593,23 @@ void DkActionManager::createActions(QWidget *parent)
         ->setEnabled(false);
 
     syncActions
-        .add(ACTION_ID(sync_arrange),
+        .add(sync_arrange,
+             "sync_arrange",
              no_icon,
              QObject::tr("Arrange Instances"),
              QObject::tr("arrange connected instances"),
              shortcut_arrange)
         ->setEnabled(false);
 
-    syncActions.add(ACTION_ID(sync_connect_all),
+    syncActions.add(sync_connect_all,
+                    "sync_connect_all",
                     no_icon,
                     QObject::tr("Connect &All"),
                     QObject::tr("connect all instances"),
                     shortcut_connect_all);
 
-    syncActions.addCheckable(ACTION_ID(sync_all_actions),
+    syncActions.addCheckable(sync_all_actions,
+                             "sync_all_actions",
                              no_icon,
                              QObject::tr("&Sync All Actions"),
                              QObject::tr("Transmit All Signals Automatically."),
@@ -1526,209 +1617,247 @@ void DkActionManager::createActions(QWidget *parent)
                              DkSettingsManager::param().sync().syncActions);
 
     // plugin actions
-    DkActionBuilder pluginActions(mPluginActions, numPluginActions, parent);
+    DkActionBuilder<PluginAction> pluginActions(mPluginActions, numPluginActions, parent);
 
-    pluginActions.add(ACTION_ID(plugin_manager),
+    pluginActions.add(plugin_manager,
+                      "plugin_manager",
                       no_icon,
                       QObject::tr("&Plugin Manager"),
                       QObject::tr("manage installed plugins and download new ones"),
                       no_shortcut);
 
     // preview actions
-    DkActionBuilder previewActions(mPreviewActions, numPreviewActions, parent);
+    DkActionBuilder<PreviewAction> previewActions(mPreviewActions, numPreviewActions, parent);
 
-    previewActions.addCheckable(ACTION_ID(preview_select_all),
+    previewActions.addCheckable(preview_select_all,
+                                "preview_select_all",
                                 no_icon,
                                 QObject::tr("Select &All"),
                                 no_tooltip,
                                 QKeySequence::SelectAll,
                                 checked);
 
-    previewActions.add(ACTION_ID(preview_zoom_in),
+    previewActions.add(preview_zoom_in,
+                       "preview_zoom_in",
                        DkImage::loadIcon(":/nomacs/img/zoom-in.svg"),
                        QObject::tr("Zoom &In"),
                        no_tooltip,
                        QKeySequence::ZoomIn);
 
-    previewActions.add(ACTION_ID(preview_zoom_out),
+    previewActions.add(preview_zoom_out,
+                       "preview_zoom_out",
                        DkImage::loadIcon(":/nomacs/img/zoom-out.svg"),
                        QObject::tr("Zoom &Out"),
                        no_tooltip,
                        QKeySequence::ZoomOut);
 
-    previewActions.addCheckable(ACTION_ID(preview_display_squares),
+    previewActions.addCheckable(preview_display_squares,
+                                "preview_display_squares",
                                 DkImage::loadIcon(":/nomacs/img/rects.svg"),
                                 QObject::tr("Display &Squares"),
                                 no_tooltip,
                                 no_shortcut,
                                 DkSettingsManager::param().display().displaySquaredThumbs);
 
-    previewActions.addCheckable(ACTION_ID(preview_show_labels),
+    previewActions.addCheckable(preview_show_labels,
+                                "preview_show_labels",
                                 DkImage::loadIcon(":/nomacs/img/show-filename.svg"),
                                 QObject::tr("Show &Filename"),
                                 no_tooltip,
                                 no_shortcut,
                                 DkSettingsManager::param().display().showThumbLabel);
 
-    previewActions.add(ACTION_ID(preview_filter), //
+    previewActions.add(preview_filter, //
+                       "preview_filter",
                        no_icon,
                        QObject::tr("&Filter"),
                        no_tooltip,
                        QKeySequence::Find);
 
-    previewActions.add(ACTION_ID(preview_delete), //
+    previewActions.add(preview_delete, //
+                       "preview_delete",
                        DkImage::loadIcon(":/nomacs/img/trash.svg"),
                        QObject::tr("&Delete"),
                        no_tooltip,
                        QKeySequence::Delete);
 
-    previewActions.add(ACTION_ID(preview_copy), //
+    previewActions.add(preview_copy, //
+                       "preview_copy",
                        DkImage::loadIcon(":/nomacs/img/copy.svg"),
                        QObject::tr("&Copy"),
                        no_tooltip,
                        QKeySequence::Copy);
 
-    previewActions.add(ACTION_ID(preview_paste), //
+    previewActions.add(preview_paste, //
+                       "preview_paste",
                        DkImage::loadIcon(":/nomacs/img/paste.svg"),
                        QObject::tr("&Paste"),
                        no_tooltip,
                        QKeySequence::Paste);
 
-    previewActions.add(ACTION_ID(preview_rename), //
+    previewActions.add(preview_rename, //
+                       "preview_rename",
                        DkImage::loadIcon(":/nomacs/img/rename.svg"),
                        QObject::tr("&Rename"),
                        no_tooltip,
                        Qt::Key_F2);
 
-    previewActions.add(ACTION_ID(preview_batch), //
+    previewActions.add(preview_batch, //
+                       "preview_batch",
                        DkImage::loadIcon(":/nomacs/img/batch-processing.svg"),
                        QObject::tr("&Batch Process"),
                        QObject::tr("Adds selected files to batch processing."),
                        Qt::Key_B);
 
-    previewActions.add(ACTION_ID(preview_print), //
+    previewActions.add(preview_print, //
+                       "preview_print",
                        DkImage::loadIcon(":/nomacs/img/print.svg"),
-                       QObject::tr("&Batch Print"), // FIXME: accelerator conflict
+                       QObject::tr("&Batch Print"),
                        QObject::tr("Prints selected files."),
-                       QKeySequence::Print);
+                       QKeySequence::Print); // FIXME: accelerator conflict
 
     // miscellaneous actions
-    DkActionBuilder miscActions(mMiscActions, numMiscActions, parent);
+    DkActionBuilder<MiscAction> miscActions(mMiscActions, numMiscActions, parent);
 
-    miscActions.add(ACTION_ID(test_rec),
+    miscActions.add(test_rec,
+                    "test_rec",
                     no_icon,
                     QObject::tr("All Images"),
                     QObject::tr("Generates all images in the world"),
                     shortcut_test_rec);
 
-    miscActions.add(ACTION_ID(test_pong), no_icon, QObject::tr("Pong"), QObject::tr("Start pong"), shortcut_test_pong);
+    miscActions.add(test_pong, //
+                    "test_pong",
+                    no_icon,
+                    QObject::tr(" Pong "),
+                    QObject::tr(" Start pong "),
+                    shortcut_test_pong);
 
-    miscActions.add(ACTION_ID(nav_first_file),
+    miscActions.add(nav_first_file,
+                    "nav_first_file",
                     no_icon,
                     QObject::tr("First File"),
                     QObject::tr("Jump to first file"),
                     shortcut_first_file);
 
-    miscActions.add(ACTION_ID(nav_last_file),
+    miscActions.add(nav_last_file,
+                    "nav_last_file",
                     no_icon,
                     QObject::tr("Last File"),
                     QObject::tr("Jump to the end of the current folder"),
                     shortcut_last_file);
 
-    miscActions.add(ACTION_ID(nav_skip_prev),
+    miscActions.add(nav_skip_prev,
+                    "nav_skip_prev",
                     no_icon,
                     QObject::tr("Skip Previous Images"),
                     QObject::tr("Jumps 10 images before the current image"),
                     shortcut_skip_prev);
 
-    miscActions.add(ACTION_ID(nav_skip_next),
+    miscActions.add(nav_skip_next,
+                    "nav_skip_next",
                     no_icon,
                     QObject::tr("Skip Next Images"),
                     QObject::tr("Jumps 10 images after the current image"),
                     shortcut_skip_next);
 
-    miscActions.add(ACTION_ID(nav_first_file_sync),
+    miscActions.add(nav_first_file_sync,
+                    "nav_first_file_sync",
                     no_icon,
                     QObject::tr("First File Sync"),
                     QObject::tr("Jump to first file"),
                     shortcut_first_file_sync);
 
-    miscActions.add(ACTION_ID(nav_last_file_sync),
+    miscActions.add(nav_last_file_sync,
+                    "nav_last_file_sync",
                     no_icon,
                     QObject::tr("Last File Sync"),
                     QObject::tr("Jump to the end of the current folder"),
                     shortcut_last_file_sync);
 
-    miscActions.add(ACTION_ID(nav_skip_prev_sync),
+    miscActions.add(nav_skip_prev_sync,
+                    "nav_skip_prev_sync",
                     no_icon,
                     QObject::tr("Skip Previous Images Sync"),
                     QObject::tr("Jumps 10 images before the current image"),
                     shortcut_skip_prev_sync);
 
-    miscActions.add(ACTION_ID(nav_skip_next_sync),
+    miscActions.add(nav_skip_next_sync,
+                    "nav_skip_next_sync",
                     no_icon,
                     QObject::tr("Skip Next Images Sync"),
                     QObject::tr("Jumps 10 images after the current image"),
                     shortcut_skip_next_sync);
 
-    miscActions.add(ACTION_ID(file_delete_silent),
+    miscActions.add(file_delete_silent,
+                    "file_delete_silent",
                     no_icon,
                     QObject::tr("Delete File Silent"),
                     QObject::tr("Deletes a file without warning"),
                     shortcut_delete_silent);
 
-    miscActions.add(ACTION_ID(star_rating_0),
+    miscActions.add(star_rating_0,
+                    "star_rating_0",
                     no_icon,
                     QObject::tr("Star Rating 0"),
                     QObject::tr("Star rating which is saved to an image's metadata"),
                     shortcut_star_rating_0);
 
-    miscActions.add(ACTION_ID(star_rating_1),
+    miscActions.add(star_rating_1,
+                    "star_rating_1",
                     no_icon,
                     QObject::tr("Star Rating 1"),
                     QObject::tr("Star rating which is saved to an image's metadata"),
                     shortcut_star_rating_1);
 
-    miscActions.add(ACTION_ID(star_rating_2),
+    miscActions.add(star_rating_2,
+                    "star_rating_2",
                     no_icon,
                     QObject::tr("Star Rating 2"),
                     QObject::tr("Star rating which is saved to an image's metadata"),
                     shortcut_star_rating_2);
 
-    miscActions.add(ACTION_ID(star_rating_3),
+    miscActions.add(star_rating_3,
+                    "star_rating_3",
                     no_icon,
                     QObject::tr("Star Rating 3"),
                     QObject::tr("Star rating which is saved to an image's metadata"),
                     shortcut_star_rating_3);
 
-    miscActions.add(ACTION_ID(star_rating_4),
+    miscActions.add(star_rating_4,
+                    "star_rating_4",
                     no_icon,
                     QObject::tr("Star Rating 4"),
                     QObject::tr("Star rating which is saved to an image's metadata"),
                     shortcut_star_rating_4);
 
-    miscActions.add(ACTION_ID(star_rating_5),
+    miscActions.add(star_rating_5,
+                    "star_rating_5",
                     no_icon,
                     QObject::tr("Star Rating 5"),
                     QObject::tr("Star rating which is saved to an image's metadata"),
                     shortcut_star_rating_5);
 
-    miscActions.add(ACTION_ID(view_pan_up),
+    miscActions.add(view_pan_up,
+                    "view_pan_up",
                     no_icon,
                     QObject::tr("Pan Image Up"),
                     QObject::tr("Pans the image up if zoomed."),
                     shortcut_pan_up);
-    miscActions.add(ACTION_ID(view_pan_down),
+    miscActions.add(view_pan_down,
+                    "view_pan_down",
                     no_icon,
                     QObject::tr("Pan Image Down"),
                     QObject::tr("Pans the image down if zoomed."),
                     shortcut_pan_down);
-    miscActions.add(ACTION_ID(view_pan_left),
+    miscActions.add(view_pan_left,
+                    "view_pan_left",
                     no_icon,
                     QObject::tr("Pan Image Left"),
                     QObject::tr("Pans the image left if zoomed."),
                     shortcut_pan_left);
-    miscActions.add(ACTION_ID(view_pan_right),
+    miscActions.add(view_pan_right,
+                    "view_pan_right",
                     no_icon,
                     QObject::tr("Pan Image Right"),
                     QObject::tr("Pans the image right if zoomed."),

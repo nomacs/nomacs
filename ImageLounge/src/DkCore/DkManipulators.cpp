@@ -71,93 +71,108 @@ void DkManipulatorManager::createManipulators(QWidget *parent)
     const QKeySequence no_shortcut{};
     QVector<QAction *> actions;
 
-    DkActionBuilder builder{actions, numManipulators, parent};
+    DkActionBuilder<int> builder{actions, numManipulators, parent};
 
-    builder.add(ACTION_ID(mpl_grayscale),
+    builder.add(mpl_grayscale,
+                "mpl_grayscale",
                 DkImage::loadIcon(":/nomacs/img/grayscale.svg"),
                 QObject::tr("&Grayscale"),
                 QObject::tr("Convert to Grayscale"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_auto_adjust),
+    builder.add(mpl_auto_adjust,
+                "mpl_auto_adjust",
                 DkImage::loadIcon(":/nomacs/img/auto-adjust.svg"),
                 QObject::tr("&Auto Adjust"),
                 QObject::tr("Auto Adjust Image Contrast and Color Balance"),
                 Qt::CTRL | Qt::SHIFT | Qt::Key_L);
 
-    builder.add(ACTION_ID(mpl_normalize),
+    builder.add(mpl_normalize,
+                "mpl_normalize",
                 DkImage::loadIcon(":/nomacs/img/normalize.svg"),
                 QObject::tr("Nor&malize Image"),
                 QObject::tr("Normalize the Image"),
                 Qt::CTRL | Qt::SHIFT | Qt::Key_N);
 
-    builder.add(ACTION_ID(mpl_flip_h),
+    builder.add(mpl_flip_h,
+                "mpl_flip_h",
                 DkImage::loadIcon(":/nomacs/img/flip-horizontal.svg"),
                 QObject::tr("Flip &Horizontal"),
                 QObject::tr("Flip Image Horizontally"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_flip_v),
+    builder.add(mpl_flip_v,
+                "mpl_flip_v",
                 DkImage::loadIcon(":/nomacs/img/flip-vertical.svg"),
                 QObject::tr("Flip &Vertical"),
                 QObject::tr("Flip Image Vertically"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_invert),
+    builder.add(mpl_invert,
+                "mpl_invert",
                 DkImage::loadIcon(":/nomacs/img/invert.svg"),
                 QObject::tr("&Invert Image"),
                 QObject::tr("Invert the Image"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_tiny_planet),
+    builder.add(mpl_tiny_planet,
+                "mpl_tiny_planet",
                 DkImage::loadIcon(":/nomacs/img/tiny-planet.svg"),
                 QObject::tr("&Tiny Planet..."),
                 QObject::tr("Create a Tiny Planet"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_color),
+    builder.add(mpl_color,
+                "mpl_color",
                 DkImage::loadIcon(":/nomacs/img/bucket.svg"),
                 QObject::tr("&Background Color..."),
                 QObject::tr("Add a background color"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_blur),
+    builder.add(mpl_blur,
+                "mpl_blur",
                 DkImage::loadIcon(":/nomacs/img/blur.svg"),
                 QObject::tr("&Blur..."),
                 QObject::tr("Blur the image"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_unsharp_mask),
+    builder.add(mpl_unsharp_mask,
+                "mpl_unsharp_mask",
                 DkImage::loadIcon(":/nomacs/img/sharpen.svg"),
                 QObject::tr("&Sharpen..."),
                 QObject::tr("Sharpens the image by applying an unsharp mask"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_rotate),
+    builder.add(mpl_rotate,
+                "mpl_rotate",
                 DkImage::loadIcon(":/nomacs/img/rotate-cc.svg"),
                 QObject::tr("&Rotate..."),
                 QObject::tr("Rotate the image"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_resize),
+    builder.add(mpl_resize,
+                "mpl_resize",
                 DkImage::loadIcon(":/nomacs/img/resize.svg"),
                 QObject::tr("&Resize..."),
                 QObject::tr("Resize the image"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_threshold),
+    builder.add(mpl_threshold,
+                "mpl_threshold",
                 DkImage::loadIcon(":/nomacs/img/threshold.svg"),
                 QObject::tr("&Threshold..."),
                 QObject::tr("Threshold the image"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_hue),
+    builder.add(mpl_hue,
+                "mpl_hue",
                 DkImage::loadIcon(":/nomacs/img/sliders.svg"),
                 QObject::tr("&Hue/Saturation..."),
                 QObject::tr("Change Hue and Saturation"),
                 no_shortcut);
 
-    builder.add(ACTION_ID(mpl_exposure),
+    builder.add(mpl_exposure,
+                "mpl_exposure",
                 DkImage::loadIcon(":/nomacs/img/exposure.svg"),
                 QObject::tr("&Exposure..."),
                 QObject::tr("Change the Exposure and Gamma"),
