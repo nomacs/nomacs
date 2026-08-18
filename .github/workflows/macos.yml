@@ -26,13 +26,13 @@ jobs:
       matrix:
         runner:
           - name: macos-15-intel # github-hosted runner name
-            packages: googletest exiv2
+            packages: googletest exiv2 create-dmg
             arch: intel
             arch_flags: # cmake flags
             homebrew-opt: "/usr/local/opt" # root of qt_dir
 
           - name: macos-15
-            packages: googletest exiv2
+            packages: googletest exiv2 create-dmg
             arch: arm64
             arch_flags:
             homebrew-opt: "/opt/homebrew/opt"
@@ -167,7 +167,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/build
           ninja portable
-          cd portable && zip -ry nomacs.app.zip nomacs.app
+          mv -v portable/*.dmg "portable/nomacs-${{ steps.get_version.outputs.VERSION }}-${{ matrix.config.type }}.dmg"
 
       - name: Make Portable Bundle (Slow)
         if: matrix.config.bundle
@@ -182,6 +182,7 @@ jobs:
         if: matrix.config.artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: "nomacs-${{ steps.get_version.outputs.VERSION }}-${{ matrix.config.type }}-qt${{ matrix.qt.ver}}"
-          path: build/portable/nomacs.app.zip
+          name: "<ignored-when-archive=false>"
+          path: build/portable/*.dmg
+          archive: false
           retention-days: 30

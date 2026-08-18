@@ -223,3 +223,15 @@ codesign --force --deep --sign - "$BUNDLE_DST" || exit 7
 
 # verify we do not use anything from /usr/local or /opt
 test_exe "$EXE_DST" "$EXE_ARGS"
+
+echo "creating dmg file"
+create-dmg \
+  --volname "nomacs" \
+  --window-pos 200 120 \
+  --window-size 660 400 \
+  --icon-size 100 \
+  --icon "nomacs.app" 180 170 \
+  --app-drop-link 480 170 \
+  --overwrite \
+  "$TMPDIR/nomacs.dmg" \
+  "$TMPDIR/nomacs.app"

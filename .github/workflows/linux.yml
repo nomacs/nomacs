@@ -109,13 +109,15 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/build
           ninja appimage
+          mv -v nomacs*.AppImage "nomacs-${{ steps.get_version.outputs.BUILD }}-${{ matrix.config.name }}.AppImage"
 
       - name: Upload Artifacts
         if: matrix.config.appimage
         uses: actions/upload-artifact@v7
         with:
-          name: "nomacs-${{ steps.get_version.outputs.BUILD }}-${{ matrix.config.name }}.AppImage"
+          name: "<ignored-when-archive=false>"
           path: build/nomacs-*.AppImage
+          archive: false
           retention-days: 30
 
   check:
