@@ -1382,12 +1382,18 @@ void DkPluginActionManager::assignDummyPluginShortcuts()
     settings.beginGroup("PluginActions");
 
     const QStringList pluginActionIds = settings.allKeys();
+    QVector<QString> pluginNames;
+    pluginNames.reserve(pluginActionIds.count());
+    for (auto &actionId : pluginActionIds) {
+        pluginNames.append(settings.value(actionId).toString());
+    }
 
     settings.endGroup();
     settings.beginGroup("CustomShortcuts");
 
-    for (auto &actionId : pluginActionIds) {
-        auto *action = new QAction(actionId, this);
+    for (int i = 0; i < pluginActionIds.count(); ++i) {
+        auto &actionId = pluginActionIds[i];
+        auto *action = new QAction(pluginNames[i], this);
         action->setObjectName(actionId);
         QVariant val = settings.value(actionId);
         if (val.isValid()) {
