@@ -243,7 +243,8 @@ bool DkPluginContainer::load()
 
     if (mType != type_unknown) {
         // init actions
-        plugin()->createActions(actionIdPrefix(), DkUtils::getMainWindow());
+        const auto actions = plugin()->createActions(actionIdPrefix(), DkUtils::getMainWindow());
+        validateActions(actions);
         createMenu();
     }
 
@@ -340,6 +341,20 @@ void DkPluginContainer::loadMetaData(const QJsonValue &val)
 
     if (!isValid() && !keys.empty()) {
         qWarning() << "invalid plugin - missing the PluginName in the json metadata...";
+    }
+}
+
+void DkPluginContainer::validateActions(const QList<QAction *> &actions) const
+{
+    QString prefix = actionIdPrefix();
+    int i = 0;
+    for (auto action : actions) {
+        bool validObjectName = action->objectName().startsWith(prefix);
+        Q_ASSERT(validObjectName);
+        if (!validObjectName) {
+            qWarning() << "invalid plugin action" << action->text() << "objectName() must begin with" << prefix;
+            action->setObjectName(prefix + "invalid_" + QString::number(i++)); // prevent any collisions
+        }
     }
 }
 
@@ -1482,6 +1497,7 @@ void DkPluginActionManager::addPluginsToMenu()
         const QString idPrefix = plugin->actionIdPrefix();
         if (pi && plugin->pluginMenu()) {
             QList<QAction *> actions = pi->createActions(idPrefix, DkUtils::getMainWindow());
+            plugin->validateActions(actions);
             mPluginSubMenus.append(plugin->pluginMenu());
             mMenu->addMenu(plugin->pluginMenu());
         } else if (pi) {

@@ -136,6 +136,7 @@ public:
     DkBatchPluginInterface *batchPlugin() const;
     DkViewPortInterface *pluginViewPort() const;
     QString actionNameToRunId(const QString &actionName) const;
+    void validateActions(const QList<QAction *> &) const;
 
 signals:
     void runPlugin(DkViewPortInterface *viewport, bool close) const;
