@@ -69,7 +69,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: "<unused>"
-          path: "docker/digest*.txt"
+          path: "digest*.txt"
           archive: false
           if-no-files-found: error
           retention-days: 1
