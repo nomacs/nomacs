@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.runner }}
     name: build (${{ matrix.config.name }})
     strategy:
       # needs to be set; reduce if github is cancelling jobs
@@ -26,6 +26,7 @@ jobs:
       matrix:
         config:
           - name: minimum-clang
+            runner: ubuntu-latest
             container: "ghcr.io/nomacs/ubuntu:24.04"
             submodules: false
             deps: ""
@@ -33,6 +34,7 @@ jobs:
             env: "CC=clang CXX=clang++"
             appimage: false
           - name: minimum-gcc
+            runner: ubuntu-latest
             container: "ghcr.io/nomacs/ubuntu:24.04"
             submodules: false
             deps: ""
@@ -40,6 +42,7 @@ jobs:
             env: "CC=gcc CXX=g++"
             appimage: true
           - name: default-clang
+            runner: ubuntu-latest
             container: "ghcr.io/nomacs/ubuntu:24.04"
             submodules: false
             deps: ""
@@ -47,13 +50,22 @@ jobs:
             env: "CC=clang CXX=clang++"
             appimage: false
           - name: default-gcc
+            runner: ubuntu-latest
             container: "ghcr.io/nomacs/ubuntu:24.04"
             submodules: false
             deps: ""
             cmake_flags: ""
             env: "CC=gcc CXX=g++"
             appimage: true
-          - name: quazip-gcc-2404
+          - name: release-gcc-intel
+            runner: ubuntu-latest
+            container: "ghcr.io/nomacs/neon:24.04"
+            deps: "libquazip1-qt6-dev kf6-kimageformat-plugins"
+            cmake_flags: "-DENABLE_QUAZIP=ON"
+            env: "CC=gcc CXX=g++"
+            appimage: true
+          - name: release-gcc-arm
+            runner: ubuntu-24.04-arm
             container: "ghcr.io/nomacs/neon:24.04"
             submodules: false
             deps: "libquazip1-qt6-dev kf6-kimageformat-plugins"
