@@ -36,6 +36,7 @@
  * #RUN_ID_1			- generate an ID using: GUID without hyphens generated at http://www.guidgenerator.com/
  * ID_ACTION1			- your action name (e.g. id_flip_horizontally)
  * #ACTION_NAME1		- your action name (e.g. Flip Horizotally - user friendly!)
+ * #ACTION_ID1          - your action id (e.g. flip_h)
  * #ACTION_TIPP1		- your action status tip (e.g. Flips an image horizontally - user friendly!)
  *******************************************************************************************************/
 
@@ -62,6 +63,11 @@ PLUGIN_CLASS_NAME::PLUGIN_CLASS_NAME(QObject *parent)
     menuNames[ID_ACTION1] = tr("#ACTION_NAME1");
     mMenuNames = menuNames.toList();
 
+    QVector<QString> menuIds;
+    menuIds.resize(id_end);
+    menuIds[ID_ACTION1] = "#ACTION_ID1";
+    mMenuIds = menuIds.toList();
+
     // create menu status tips
     QVector<QString> statusTips;
     statusTips.resize(id_end);
@@ -73,9 +79,7 @@ PLUGIN_CLASS_NAME::PLUGIN_CLASS_NAME(QObject *parent)
 /**
  *	Destructor
  **/
-PLUGIN_CLASS_NAME::~PLUGIN_CLASS_NAME()
-{
-}
+PLUGIN_CLASS_NAME::~PLUGIN_CLASS_NAME() = default;
 
 /**
  * Returns descriptive image for every ID
@@ -84,14 +88,14 @@ PLUGIN_CLASS_NAME::~PLUGIN_CLASS_NAME()
 QImage PLUGIN_CLASS_NAME::image() const
 {
     return QImage(":/#PLUGIN_NAME/img/your-image.png");
-};
+}
 
-QList<QAction *> PLUGIN_CLASS_NAME::createActions(QWidget *parent)
+QList<QAction *> PLUGIN_CLASS_NAME::createActions(const QString &idPrefix, QWidget *parent)
 {
     if (mActions.empty()) {
         for (int idx = 0; idx < id_end; idx++) {
-            QAction *ca = new QAction(mMenuNames[idx], parent);
-            ca->setObjectName(mMenuNames[idx]);
+            auto *ca = new QAction(mMenuNames[idx], parent);
+            ca->setObjectName(idPrefix + mMenuIds[idx]);
             ca->setStatusTip(mMenuStatusTips[idx]);
             ca->setData(mRunIDs[idx]); // runID needed for calling function runPlugin()
             mActions.append(ca);
@@ -118,7 +122,7 @@ QSharedPointer<nmc::DkImageContainer> PLUGIN_CLASS_NAME::runPlugin(const QString
         return imgC;
 
     if (runID == mRunIDs[ID_ACTION1]) {
-        imgC->setImage(imgC->image(), tr("Mirrored"));
+        imgC->setImage(imgC->image().flipped(Qt::Horizontal), tr("Mirrored"));
     } else
         qWarning() << "Illegal run ID...";
 

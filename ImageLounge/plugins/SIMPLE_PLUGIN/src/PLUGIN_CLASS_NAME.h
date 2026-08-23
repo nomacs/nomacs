@@ -36,12 +36,12 @@ class PLUGIN_CLASS_NAME : public QObject, DkPluginInterface
     Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.PLUGIN_CLASS_NAME/3.2" FILE "PLUGIN_CLASS_NAME.json")
 
 public:
-    PLUGIN_CLASS_NAME(QObject *parent = 0);
-    ~PLUGIN_CLASS_NAME();
+    PLUGIN_CLASS_NAME(QObject *parent = nullptr);
+    ~PLUGIN_CLASS_NAME() override;
 
     QImage image() const override;
 
-    QList<QAction *> createActions(QWidget *parent) override;
+    QList<QAction *> createActions(const QString &idPrefix, QWidget *parent) override;
     QList<QAction *> pluginActions() const override;
     QSharedPointer<nmc::DkImageContainer> runPlugin(
         const QString &runID = QString(),
@@ -58,6 +58,7 @@ protected:
     QList<QAction *> mActions;
     QStringList mRunIDs;
     QStringList mMenuNames;
+    QStringList mMenuIds;
     QStringList mMenuStatusTips;
 };
 
