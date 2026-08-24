@@ -14,7 +14,7 @@ environment:
       VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
-      PYTHON: "C:\\Python313-x64"
+      PYTHON: "C:\\Python314-x64"
       GIT_CLONE_PROTECTION_ACTIVE: false
 
     certpwd:
