@@ -129,6 +129,9 @@ if(ENABLE_QUAZIP)
         message(STATUS "QUAZIP: using ${QUAZIP_SOURCE_DIR}")
         find_package(ZLIB REQUIRED)
 
+        set(QUAZIP_CAN_USE_QTEXTCODEC TRUE)
+        configure_file(${QUAZIP_SOURCE_DIR}/quazip/quazip_config.h.in ${QUAZIP_SOURCE_DIR}/quazip/quazip_config.h)
+
         file(GLOB QUAZIP_SOURCES "${QUAZIP_SOURCE_DIR}/quazip/*.c" "${QUAZIP_SOURCE_DIR}/quazip/*.cpp")
         file(GLOB QUAZIP_HEADERS "${QUAZIP_SOURCE_DIR}/quazip/*.h")
 
