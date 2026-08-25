@@ -153,6 +153,8 @@ if(ENABLE_QUAZIP)
     include_directories(
         "${PROJECT_SOURCE_DIR}/../3rd-party/quazip/"
         "${PROJECT_SOURCE_DIR}/../3rd-party/opencv/3rdparty/zlib"
+        "${DEPENDENCY_PATH}/quazip/quazip"
     )
-    set(QUAZIP_LIBRARIES "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt${QT_VERSION_MAJOR}.lib")
+    find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
+    set(QUAZIP_LIBRARIES "${DEPENDENCY_PATH}/quazip/quazip/Release/quazip1-qt${QT_VERSION_MAJOR}.lib" Qt6::Core5Compat)
 endif(ENABLE_QUAZIP)
