@@ -240,6 +240,12 @@ class OpenCVConfig(Config):
             "-DBUILD_opencv_stitiching=OFF",
             "-DBUILD_opencv_video=OFF",
             "-DBUILD_opencv_videoio=OFF",
+            "-DWITH_OPENEXR=OFF",
+            "-DWITH_WEBP=OFF",
+            "-DWITH_JASPER=OFF",
+            "-DWITH_FFMPEG=OFF",
+            "-DWITH_DSHOW=OFF",
+            "-DBUILD_JAVA=OFF",
             "-B" + self.builddir,
             self.srcpath
         ]
