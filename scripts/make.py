@@ -66,8 +66,9 @@ class ExpatConfig(Config):
 
         # tune cmake parameters here
         args = [
-            "-DBUILD_examples=OFF",
-            "-DBUILD_tests=OFF",
+            "-DEXPAT_BUILD_TOOLS=OFF",
+            "-DEXPAT_BUILD_EXAMPLES=OFF",
+            "-DEXPAT_BUILD_TESTS=OFF",
             "-B" + self.builddir,
             self.srcpath + "/expat"
         ]
