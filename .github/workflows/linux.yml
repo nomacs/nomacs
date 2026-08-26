@@ -11,6 +11,7 @@ on:
   pull_request:
     branches:
       - master
+      - 3.22.x
     paths-ignore:
       - appveyor.yml
       - .github/workflows/docker.yml
@@ -72,13 +73,6 @@ jobs:
             cmake_flags: "-DENABLE_QUAZIP=ON"
             env: "CC=gcc CXX=g++"
             appimage: true
-          - name: quazip-gcc-2204
-            container: "ghcr.io/nomacs/neon:22.04"
-            submodules: true
-            deps: "kf6-kimageformat-plugins"
-            cmake_flags: "-DENABLE_QUAZIP=ON -DUSE_SYSTEM_QUAZIP=OFF"
-            env: "CC=gcc CXX=g++"
-            appimage: true
 
     container:
       image: ${{ matrix.config.container }}
@@ -87,7 +81,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           lfs: true
           ref: ${{ github.event.pull_request.head.sha }}
@@ -143,7 +137,7 @@ jobs:
 
       - name: Upload Artifacts
         if: matrix.config.appimage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "<ignored-when-archive=false>"
           path: build/nomacs-*.AppImage
@@ -159,7 +153,7 @@ jobs:
         run: echo "PR_FETCH_DEPTH=$(( ${{ github.event.pull_request.commits }} + 1 ))" >> "${GITHUB_ENV}"
       
       - name: Checkout PR branch and all PR commits
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: ${{ env.PR_FETCH_DEPTH }}
