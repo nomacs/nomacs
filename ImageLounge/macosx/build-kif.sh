@@ -24,7 +24,7 @@ fi
 # highly annoying auto-update behavior potentially breaking things
 export HOMEBREW_NO_AUTO_UPDATE=1
 
-KIF_VERSION="v6.19.0"
+KIF_VERSION="v6.28.1"
 
 SRC_DIR="kimageformats"
 BUILD_DIR="kimageformats/build"
@@ -50,7 +50,7 @@ if [ ! -d $SRC_DIR ]; then git clone https://invent.kde.org/frameworks/kimagefor
        -D CMAKE_INSTALL_PREFIX=./install \
        -D BUILD_TESTING=OFF \
        -D KIMAGEFORMATS_JP2=ON \
-       -D KIMAGEFORMATS_JXR=ON \
+       -D KIMAGEFORMATS_WITH_KNOWN_CRASHES_JXR=ON \
        -D KIMAGEFORMATS_JXL=ON \
       ..
 ) || exit 5
