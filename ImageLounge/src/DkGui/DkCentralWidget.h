@@ -134,7 +134,7 @@ public:
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
     QString getCurrentFilePath() const;
     QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
-    bool requestClose() const;
+    bool requestClose();
 
     static void tryRestart(const QStringList &args = {});
 
@@ -152,7 +152,7 @@ public slots:
     void addTab(const DkFileInfo &file, bool background = false);
     void addTab(DkTabInfo::TabMode mode, bool background = false);
     void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
-    void removeTab(int tabIdx = -1);
+    bool removeTab(int tabIdx = -1);
     void nextTab() const;
     void previousTab() const;
     void showThumbView(bool show = true);
@@ -185,6 +185,7 @@ public slots:
 
 protected:
     void activateTab(int tabIdx);
+    bool promptUnloadTab(int idx);
 
     QTabBar *mTabbar = nullptr;
     DkProgressBar *mProgressBar = nullptr;
