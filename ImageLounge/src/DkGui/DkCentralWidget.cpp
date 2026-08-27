@@ -715,21 +715,15 @@ void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
     // tabbar->setTabButton(0, QTabBar::RightSide, tb);
 }
 
-void DkCentralWidget::removeTab(int tabIdx)
+bool DkCentralWidget::removeTab(int tabIdx)
 {
     if (tabIdx == -1) {
         tabIdx = mTabbar->currentIndex();
     }
 
-    // if user requests close on batch while processing - cancel batch
-    if (mTabInfos[tabIdx]->getMode() == DkTabInfo::tab_batch) {
-        auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
-
-        if (bw)
-            bw->close();
+    if (!promptUnloadTab(tabIdx)) {
+        return false;
     }
-
-    // TODO: ask to save changes here but make sure to abort closeAllTabs
 
     // must block currentTabChanged() here since we'll see inconsistent
     // state until updateTabIdx() returns. Side benefit, we don't
@@ -755,6 +749,8 @@ void DkCentralWidget::removeTab(int tabIdx)
     if (mTabInfos.size() <= 1) {
         mTabbar->hide();
     }
+
+    return true;
 }
 
 void DkCentralWidget::clearAllTabs()
@@ -762,9 +758,10 @@ void DkCentralWidget::clearAllTabs()
     {
         // block while removing to prevent expensive currentTabChanged()
         QSignalBlocker blocker(mTabbar);
-        int count = getTabs().count();
-        for (int idx = 0; idx < count; idx++) {
-            removeTab();
+        for (int idx = mTabbar->count() - 1; idx >= 0; --idx) {
+            if (!removeTab(idx)) {
+                break;
+            }
         }
     }
     currentTabChanged(mTabbar->currentIndex());
@@ -1124,11 +1121,43 @@ QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const
     return mTabInfos[mTabbar->currentIndex()]->getImageLoader();
 }
 
-bool DkCentralWidget::requestClose() const
+bool DkCentralWidget::promptUnloadTab(int idx)
 {
-    if (hasViewPort())
-        return getViewPort()->unloadImage();
+    // here we put anything that should prevent a tab from going away (close tab or quit app)
 
+    const auto &tabInfo = mTabInfos.at(idx);
+
+    // if user requests close on batch while processing - cancel batch
+    if (tabInfo->getMode() == DkTabInfo::tab_batch) {
+        auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
+        return bw->close(); // FIXME: this cancels batch silently (old behavior)
+    }
+
+    const auto &loader = tabInfo->getImageLoader();
+    if (!loader->isEdited()) {
+        return true;
+    }
+
+    // show the image we are going to prompt to save, this is nicer
+    // than having a thumbnail on the dialog
+
+    bool wasBlocked = mTabbar->blockSignals(false); // unblock needed for activateTab
+
+    activateTab(idx);
+    showViewPort(); // ensure we are showing the image and not thumbnails etc
+
+    mTabbar->blockSignals(wasBlocked);
+
+    return tabInfo->getImageLoader()->promptSaveBeforeUnload();
+}
+
+bool DkCentralWidget::requestClose()
+{
+    for (int idx = mTabbar->count() - 1; idx >= 0; --idx) {
+        if (!promptUnloadTab(idx)) {
+            return false;
+        }
+    }
     return true;
 }
 
