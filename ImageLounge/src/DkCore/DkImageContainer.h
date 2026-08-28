@@ -163,6 +163,11 @@ public:
     void saveMetaDataThreaded(const QString &filePath);
     [[nodiscard]] bool saveMetaData() override;
 
+    bool isSaving() const
+    {
+        return mSaveImageWatcher.isRunning();
+    }
+
     QSharedPointer<DkBasicLoader> getLoader() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
