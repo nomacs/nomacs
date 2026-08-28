@@ -268,7 +268,7 @@ public:
                       const QImage &img,
                       QSharedPointer<QByteArray> &ba,
                       int compression = -1) const;
-    void saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
+    [[nodiscard]] bool saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
 
     void pruneEditHistory();
     void setEditImage(const QImage &img, const QString &editName = "");
