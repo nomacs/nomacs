@@ -1195,6 +1195,11 @@ void DkImageLoader::saveFile(const QString &filePath,
     }
 }
 
+bool DkImageLoader::isSaving() const
+{
+    return mCurrentImage && mCurrentImage->isSaving();
+}
+
 void DkImageLoader::imageSaved(const QString &filePath, bool saved, bool loadToTab)
 {
     emit updateSpinnerSignalDelayed(false);
@@ -1867,7 +1872,16 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
             firstFile();
         });
     } else if (!connectSignals) {
-        disconnect(currImage, nullptr, this, nullptr);
+        currImage->disconnect();
+
+        // don't lose info messages when loading another image
+        if (currImage->isSaving()) {
+            connect(currImage,
+                    &DkImageContainerT::showInfoSignal,
+                    this,
+                    &DkImageLoader::showInfoSignal,
+                    Qt::UniqueConnection);
+        }
     }
 
     currImage->receiveUpdates(connectSignals);
