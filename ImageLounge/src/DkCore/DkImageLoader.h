@@ -125,6 +125,7 @@ public slots:
                   const QString &fileFilter = "",
                   int compression = -1,
                   bool threaded = true);
+    bool isSaving() const;
     void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
     void load(const DkFileInfo &filePath);
     void downloadFile(const QUrl &url);
