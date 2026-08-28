@@ -579,6 +579,7 @@ bool DkImageLoader::promptSaveBeforeUnload()
 
     if (answer == QMessageBox::No) {
         // Clear the image container to discard all edited changes.
+        emit showInfoSignal(tr("Discarded changes to: %1").arg(mCurrentImage->fileName()));
         mCurrentImage->clear();
         return true;
     }

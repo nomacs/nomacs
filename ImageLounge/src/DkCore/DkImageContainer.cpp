@@ -897,9 +897,10 @@ void DkImageContainerT::savingFinished()
     DkFileInfo sInfo(savePath);
     qDebug() << "save file: " << savePath;
 
-    if (!sInfo.exists() || !sInfo.isFile())
+    if (!sInfo.exists() || !sInfo.isFile()) {
         emit fileSavedSignal(savePath, false);
-    else {
+        emit showInfoSignal(tr("Sorry, I could not save: %1").arg(sInfo.fileName()));
+    } else {
         //// reset thumb - loadImageThreaded should do it anyway
         // thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(saveFile, loader->image()));
 
@@ -913,6 +914,8 @@ void DkImageContainerT::savingFinished()
         } else {
             emit fileSavedSignal(savePath);
         }
+
+        emit showInfoSignal(tr("Saved: %1").arg(sInfo.fileName()));
 
         mEdited = false;
         if (mSelected) {
