@@ -1549,7 +1549,7 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
  * @param filePath path to image file
  * @param ba file buffer to be saved (leave empty to work on the specified file as it is on disk)
  */
-void DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
+bool DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
 {
     if (!ba)
         ba = QSharedPointer<QByteArray>(new QByteArray());
@@ -1567,8 +1567,11 @@ void DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteAr
     }
 
     // Write in-memory copy to specified file - use this overload only if you really need it
-    if (saved)
-        writeBufferToFile(filePath, ba);
+    if (saved) {
+        return writeBufferToFile(filePath, ba);
+    }
+
+    return false;
 }
 
 /**

@@ -94,7 +94,7 @@ public:
     void setImage(const QImage &img, const QString &editName);
     bool saveImage(const QString &filePath, const QImage saveImg, int compression = -1);
     bool saveImage(const QString &filePath, int compression = -1);
-    void saveMetaData();
+    [[nodiscard]] virtual bool saveMetaData();
     virtual void clear();
     virtual void undo();
     virtual void redo();
@@ -114,9 +114,9 @@ protected:
     QSharedPointer<DkBasicLoader> loadImageIntern(const QString &filePath,
                                                   QSharedPointer<DkBasicLoader> loader,
                                                   const QSharedPointer<QByteArray> fileBuffer);
-    void saveMetaDataIntern(const QString &filePath,
-                            QSharedPointer<DkBasicLoader> loader,
-                            QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
+    [[nodiscard]] bool saveMetaDataIntern(const QString &filePath,
+                                          QSharedPointer<DkBasicLoader> loader,
+                                          QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
     QString saveImageIntern(const QString &filePath,
                             QSharedPointer<DkBasicLoader> loader,
                             QImage saveImg,
@@ -161,6 +161,7 @@ public:
     bool saveImageThreaded(const QString &filePath, const QImage saveImg, int compression = -1);
     bool saveImageThreaded(const QString &filePath, int compression = -1);
     void saveMetaDataThreaded(const QString &filePath);
+    [[nodiscard]] bool saveMetaData() override;
 
     QSharedPointer<DkBasicLoader> getLoader() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
