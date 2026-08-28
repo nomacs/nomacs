@@ -268,7 +268,6 @@ public:
                       const QImage &img,
                       QSharedPointer<QByteArray> &ba,
                       int compression = -1) const;
-    void saveThumbToMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
     void saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
 
     void pruneEditHistory();
