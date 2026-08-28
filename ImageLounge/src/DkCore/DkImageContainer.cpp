@@ -427,20 +427,20 @@ QString DkImageContainer::saveImageIntern(const QString &filePath,
     return loader->save(filePath, saveImg, compression);
 }
 
-void DkImageContainer::saveMetaData()
+bool DkImageContainer::saveMetaData()
 {
-    if (!mLoader)
-        return;
+    if (!mLoader) {
+        return false;
+    }
 
-    saveMetaDataIntern(filePath(), mLoader, mFileBuffer);
+    return saveMetaDataIntern(filePath(), mLoader, mFileBuffer);
 }
 
-void DkImageContainer::saveMetaDataIntern(const QString &filePath,
+bool DkImageContainer::saveMetaDataIntern(const QString &filePath,
                                           QSharedPointer<DkBasicLoader> loader,
                                           QSharedPointer<QByteArray> fileBuffer)
 {
-    // TODO this shouldn't be used without notifying the user, see issue #799
-    loader->saveMetaData(filePath, fileBuffer);
+    return loader->saveMetaData(filePath, fileBuffer);
 }
 
 bool DkImageContainer::isEdited() const
@@ -880,6 +880,16 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
     return true;
 }
 
+bool DkImageContainerT::saveMetaData()
+{
+    bool ok = DkImageContainer::saveMetaData();
+    if (ok) {
+        emit showInfoSignal(tr("Saved metadata for: %1").arg(fileName()));
+    } else {
+        emit showInfoSignal(tr("Sorry, I could not save metadata for: %1").arg(fileName()));
+    }
+    return ok;
+}
 void DkImageContainerT::savingFinished()
 {
     QString savePath = mSaveImageWatcher.result();
