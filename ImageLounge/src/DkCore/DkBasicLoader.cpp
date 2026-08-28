@@ -1535,15 +1535,6 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
     return saved;
 }
 
-void DkBasicLoader::saveThumbToMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
-{
-    if (!hasImage())
-        return;
-
-    mMetaData->setThumbnail(DkImage::createThumb(image()));
-    saveMetaData(filePath, ba);
-}
-
 /**
  * @brief writes metadata to the file on disk, if it's marked as dirty
  *
