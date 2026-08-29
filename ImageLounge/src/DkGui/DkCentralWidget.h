@@ -191,6 +191,7 @@ protected:
     DkProgressBar *mProgressBar = nullptr;
     QVector<QSharedPointer<DkTabInfo>> mTabInfos;
     bool mTabMoved = false;
+    QVector<QSharedPointer<DkImageContainerT>> mPendingJobs;
 
     QVector<QWidget *> mWidgets;
     QStackedLayout *mViewLayout = nullptr;
@@ -206,6 +207,7 @@ protected:
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
     void connectLoader(QSharedPointer<DkImageLoader> loader) const;
+    void saveStarted(QSharedPointer<DkImageContainerT> imgC);
 
     DkPreferenceWidget *createPreferences();
     DkRecentFilesWidget *createRecentFiles();
