@@ -509,6 +509,11 @@ void DkCentralWidget::connectLoader(QSharedPointer<DkImageLoader> loader) const
             &DkCentralWidget::showProgress,
             Qt::UniqueConnection);
     connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab, Qt::UniqueConnection);
+    connect(loader.data(),
+            &DkImageLoader::saveStartedSignal,
+            this,
+            &DkCentralWidget::saveStarted,
+            Qt::UniqueConnection);
 }
 
 void DkCentralWidget::paintEvent(QPaintEvent *)
@@ -826,6 +831,21 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
     updateTab(tabInfo);
 }
 
+void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC)
+{
+    // Keep track of images we are saving, if we move to the next image,
+    // load another directory etc we can still show status and cleanup on quit
+    connect(imgC.get(), &DkImageContainerT::showInfoSignal, this, [this, imgC](const QString &info) {
+        // TODO: need message receiver outside viewport, won't show up on recents, etc
+        getViewPort()->infoSignal(info);
+    });
+    connect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, [this, imgC] {
+        // TODO: load image to tab and take the responsibility from the loader
+        mPendingJobs.removeOne(imgC);
+    });
+    mPendingJobs.append(imgC);
+}
+
 QVector<QSharedPointer<DkTabInfo>> DkCentralWidget::getTabs() const
 {
     return mTabInfos;
@@ -1134,21 +1154,25 @@ bool DkCentralWidget::promptUnloadTab(int idx)
     }
 
     const auto &loader = tabInfo->getImageLoader();
-    if (!loader->isEdited()) {
-        return true;
+
+    bool allowUnload = true;
+
+    if (loader->isEdited() && !loader->isSaving()) {
+        // idx doesn't have to be active tab, for example when closing all tabs
+        // show the image we are referring to in the save prompt so there is no confusion
+        // TODO: we don't need this if remembered dialogs won't show any prompts
+
+        bool wasBlocked = mTabbar->blockSignals(false); // unblock needed for activateTab
+
+        activateTab(idx);
+        showViewPort(); // ensure we are showing the image and not thumbnails etc
+
+        mTabbar->blockSignals(wasBlocked);
+
+        allowUnload = loader->promptSaveBeforeUnload();
     }
 
-    // show the image we are going to prompt to save, this is nicer
-    // than having a thumbnail on the dialog
-
-    bool wasBlocked = mTabbar->blockSignals(false); // unblock needed for activateTab
-
-    activateTab(idx);
-    showViewPort(); // ensure we are showing the image and not thumbnails etc
-
-    mTabbar->blockSignals(wasBlocked);
-
-    return tabInfo->getImageLoader()->promptSaveBeforeUnload();
+    return allowUnload;
 }
 
 bool DkCentralWidget::requestClose()
