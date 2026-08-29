@@ -564,10 +564,14 @@ bool DkImageLoader::promptSaveBeforeUnload()
         const bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
 
         if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
-            if (imgEdited)
-                mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
-            else if (metaEdited)
+            if (imgEdited) {
+                bool saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
+                if (saved) {
+                    emit saveStartedSignal(mCurrentImage);
+                }
+            } else if (metaEdited) {
                 mCurrentImage->saveMetaData();
+            }
         } else {
             saveUserFile(mCurrentImage->image(), false); // we loose all metadata here - right?
         }
@@ -1185,8 +1189,15 @@ void DkImageLoader::saveFile(const QString &filePath,
     QImage sImg = (saveImg.isNull()) ? imgC->image() : saveImg;
 
     mDirWatcher->blockSignals(true);
-    bool saveStarted = (threaded) ? imgC->saveImageThreaded(lFilePath, sImg, compression)
-                                  : imgC->saveImage(lFilePath, sImg, compression);
+    bool saveStarted = false;
+    if (threaded) {
+        saveStarted = imgC->saveImageThreaded(lFilePath, sImg, compression);
+        if (saveStarted) {
+            emit saveStartedSignal(imgC);
+        }
+    } else {
+        saveStarted = imgC->saveImage(lFilePath, sImg, compression);
+    }
 
     if (!saveStarted) {
         imageSaved(QString(), false);
@@ -1872,16 +1883,7 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
             firstFile();
         });
     } else if (!connectSignals) {
-        currImage->disconnect();
-
-        // don't lose info messages when loading another image
-        if (currImage->isSaving()) {
-            connect(currImage,
-                    &DkImageContainerT::showInfoSignal,
-                    this,
-                    &DkImageLoader::showInfoSignal,
-                    Qt::UniqueConnection);
-        }
+        currImage->disconnect(this);
     }
 
     currImage->receiveUpdates(connectSignals);

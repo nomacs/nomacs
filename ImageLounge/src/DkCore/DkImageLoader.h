@@ -105,6 +105,7 @@ signals:
     void updateDirSignal(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void imageHasGPSSignal(bool hasGPS) const;
     void loadImageToTab(const QString &filePath) const;
+    void saveStartedSignal(QSharedPointer<DkImageContainerT> imgC) const;
 
 public slots:
     void undo();
