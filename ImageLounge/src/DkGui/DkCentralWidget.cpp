@@ -56,6 +56,7 @@
 #include <QInputDialog>
 #include <QMimeData>
 #include <QProcess>
+#include <QProgressDialog>
 #include <QSettings>
 #include <QStackedLayout>
 #include <QStandardPaths>
@@ -1182,6 +1183,60 @@ bool DkCentralWidget::requestClose()
             return false;
         }
     }
+
+    if (!mPendingJobs.empty()) {
+        window()->setWindowTitle("nomacs | ImageLounge [" + tr("Quitting") + "...]");
+        window()->setDisabled(true); // try to communicate nomacs can't come back from this state
+
+        QEventLoop eventLoop;
+
+        QProgressDialog progress{this, Qt::WindowFlags() & ~Qt::WindowCloseButtonHint};
+        progress.setMinimumDuration(500);
+        progress.setAutoClose(false);
+        progress.setAutoReset(false);
+        progress.setWindowModality(Qt::ApplicationModal);
+        progress.setWindowTitle(tr("Quitting nomacs..."));
+        progress.setCancelButtonText(tr("&Force Quit"));
+
+        int numJobs = static_cast<int>(mPendingJobs.size());
+        progress.setRange(0, numJobs);
+
+        auto status = tr("%n job(s) remaining", "", numJobs);
+        progress.setLabelText(status);
+
+        QTimer timer;
+
+        connect(&timer, &QTimer::timeout, [this, &progress, &eventLoop] {
+            int remaining = static_cast<int>(mPendingJobs.size());
+            int completed = progress.maximum() - remaining;
+
+            if (completed != progress.value()) { // prevent flicker
+                auto status = tr("%n job(s) remaining", "", remaining);
+                progress.setLabelText(status);
+                progress.setValue(completed);
+            }
+
+            if (mPendingJobs.empty()) {
+                QTimer::singleShot(1000, &eventLoop, &QEventLoop::quit); // show 100% for a moment before exit
+            } else if (progress.wasCanceled()) {
+                int result = QMessageBox::warning( //
+                    this,
+                    tr("Force Quit?"),
+                    tr("Force quitting may leave partially written files. Are "
+                       "you sure you want to quit?"),
+                    QMessageBox::Yes | QMessageBox::No);
+                if (result == QMessageBox::Yes) {
+                    DkSettingsManager::param().save();
+                    std::quick_exit(1); // bypass destructors or else we may deadlock (QThreadPool cleanup etc)
+                }
+                progress.reset();
+            }
+        });
+
+        timer.start(200);
+        eventLoop.exec();
+    }
+
     return true;
 }
 
