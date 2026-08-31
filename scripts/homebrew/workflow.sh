@@ -37,7 +37,7 @@ sudo ninja install
 
 cd $RUN_DIR
 rm -rf opencv
-git clone --depth 1 -b 4.13.0 https://github.com/opencv/opencv.git
+git clone --depth 1 -b 4.14.0 https://github.com/opencv/opencv.git
 cd opencv
 $RUN_DIR/nomacs/scripts/build-opencv.sh -D CMAKE_INSTALL_PREFIX=/opt/opencv
 

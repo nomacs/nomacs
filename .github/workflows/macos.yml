@@ -79,7 +79,7 @@ jobs:
           cd ${RUNNER_TEMP}
 
           # note: our build of opencv has no external deps so compiler and commit is sufficient
-          git clone --depth 1 -b 4.13.0 https://github.com/opencv/opencv.git
+          git clone --depth 1 -b 4.14.0 https://github.com/opencv/opencv.git
           cd opencv
           OPENCV_ID=$(git rev-parse --short HEAD)
 
