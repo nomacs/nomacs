@@ -100,7 +100,7 @@ There are other optional features that can be enabled during build:
 | `ENABLE_QUAZIP`    | Quazip**       |                 | Enable reading from zip files
 | `ENABLE_OPENCV`    | OpenCV         |                 | RAW, TIFF, Adjustments, High-quality thumbnails, DRIF files, histogram, mosaic
 | `ENABLE_PLUGINS`   | nomacs/plugins | `ENABLE_OPENCV` | Paint on image, Composite, Affine Transform, Fake Miniatures, Page Extraction
-| `ENABLE_TESTING`   | GoogleTest     |                 | Enables `make check` target for unit testing
+| `ENABLE_TESTING`   | GoogleTest     |                 | Enables targets for unit and integration testing
 
 (**) Quazip is not enabled by default as of nomacs 3.19.1
 
@@ -183,6 +183,17 @@ Nomacs uses [GoogleTest](https://github.com/google/googletest), which is include
 
 ```bash
 make check
+```
+
+Unit and integration tests can also be built and run separately:
+
+```bash
+make check-unit
+make check-integration
+
+# Alternatively, invoke with ctest
+ctest -L unit
+ctest -L integration
 ```
 
 ### Install nomacs
