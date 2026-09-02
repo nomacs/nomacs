@@ -86,8 +86,10 @@ DkAppManager::DkAppManager(QWidget *parent)
     action->setObjectName(id);
     mApps.append(action);
 
+#ifdef Q_OS_WIN
     if (mFirstTime)
         findDefaultSoftware();
+#endif
 
     for (int idx = 0; idx < mApps.size(); idx++) {
         assignIcon(mApps.at(idx));
