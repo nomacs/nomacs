@@ -155,7 +155,14 @@ public slots:
      * Returns false if the user canceled the operation.
      * */
     bool promptSaveBeforeUnload();
+    /**
+     * @brief release memory and reload the current image and directory
+     */
     void reloadImage();
+    /**
+     * @brief release memory and drop the current image
+     */
+    void unload();
     void showOnMap();
 
 protected:

@@ -737,6 +737,8 @@ bool DkCentralWidget::removeTab(int tabIdx)
     bool currentTabWillChange = tabIdx == mTabbar->currentIndex();
     {
         QSignalBlocker blocker(mTabbar);
+        mTabInfos.at(tabIdx)->getImageLoader()->unload();
+        getViewPort()->setImageLoader(QSharedPointer<DkImageLoader>::create());
         mTabInfos.remove(tabIdx);
         mTabbar->removeTab(tabIdx);
         updateTabIdx();
