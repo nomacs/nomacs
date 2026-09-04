@@ -717,6 +717,23 @@ void DkImageLoader::reloadImage()
     load(mCurrentImage);
 }
 
+void DkImageLoader::unload()
+{
+    if (mCurrentImage) {
+        mCurrentImage->cancel();
+        emit updateSpinnerSignalDelayed(false);
+    }
+
+    mCurrentDir = {};
+    mImages.clear();
+    mCurrentImage = {};
+
+    emit updateDirSignal({});
+    emit imageUpdatedSignal(-1);
+    emit imageUpdatedSignal(QSharedPointer<DkImageContainerT>{});
+    emit imageHasGPSSignal(false);
+}
+
 void DkImageLoader::showOnMap()
 {
     QSharedPointer<DkMetaDataT> metaData = getCurrentImage()->getMetaData();
