@@ -458,6 +458,8 @@ void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC)
 {
     if (!imgC) {
         mProxyModel->setSourceModel(new DkMetaDataModel(this));
+        mThumbNailLabel->hide();
+        mThumbNailLabel->setPixmap({});
         return;
     }
 
