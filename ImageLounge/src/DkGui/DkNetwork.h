@@ -129,7 +129,7 @@ public:
     virtual QList<DkPeer *> getPeerList() = 0;
 
 signals:
-    void receivedTransformation(QTransform transform, QTransform imgTransform, QPointF canvasSize);
+    void receivedTransformation(const QPointF &pos, qreal zoomLevel, bool isRelativeTranslation);
     void receivedPosition(QRect position, bool opacity, bool overlaid);
     void receivedNewFile(qint16 op, const QString &filename);
     void receivedImage(const QImage &image);

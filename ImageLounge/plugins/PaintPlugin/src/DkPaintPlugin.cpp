@@ -468,7 +468,7 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     // paths are in image coordinates, setup transform like DkViewPort::drawImage()
-    painter.setWorldTransform(viewport->getImageMatrix() * viewport->getWorldMatrix());
+    painter.setWorldTransform(viewport->imageToWidgetTransform());
 
     // this part gives us correct pixel sizes for lines, fonts, images etc
     painter.scale(1.0 / devicePixelRatioF(), 1.0 / devicePixelRatioF());

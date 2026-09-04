@@ -39,6 +39,8 @@
 #include "DkToolbars.h"
 #include "DkUtils.h"
 #include "DkViewPort.h"
+#include "DkViewPortImageViewModel.h"
+#include "DkViewPortTransformViewModel.h"
 
 #include <DkUtils.h>
 #include <QAction>
@@ -61,6 +63,9 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QObject>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#include <QOverload>
+#endif
 #include <QPainter>
 #include <QPainterPath>
 #include <QProgressDialog>
@@ -611,67 +616,93 @@ DkOverview::DkOverview(QWidget *parent)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
-bool DkOverview::updateThumb()
+void DkOverview::setImage(const QImage &image)
 {
-    // get the image used in DkViewPort::draw() or else we may desync with view (manipulators, etc)
-    auto storage = mViewPort->getImageStorage();
-    if (!storage)
-        return false;
+    if (image.isNull()) {
+        mImage = std::nullopt;
+        mThumb = std::nullopt;
+        update();
+        return;
+    }
 
-    QImage fullImage = storage->image();
-    if (fullImage.isNull())
-        return false;
+    mImage = image;
+    updateThumb();
+}
 
-    mOriginalImageSize = fullImage.size(); // retain size so we don't have to fetch the image on every paintEvent
+void DkOverview::updateThumb()
+{
+    if (!mImage) {
+        return;
+    }
+    const QImage &image = mImage.value();
+
     mImageToLocal = imageToLocal();
 
     // for best appearance, thumb is sized to draw 1:1 with screen pixels
-    QSize thumbSize = mImageToLocal.mapRect(fullImage.rect()).size() * devicePixelRatioF();
+    QSize thumbSize = mImageToLocal.mapRect(image.rect()).size() * devicePixelRatioF();
 
     // fast downscaling before smooth scaling (similar to AA technique)
-    mThumb = fullImage.scaled(thumbSize.width() * 2,
-                              thumbSize.height() * 2,
-                              Qt::KeepAspectRatio,
-                              Qt::FastTransformation);
-    mThumb = mThumb.scaled(thumbSize.width(), thumbSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QImage thumb = image.scaled(thumbSize.width() * 2,
+                                thumbSize.height() * 2,
+                                Qt::KeepAspectRatio,
+                                Qt::FastTransformation);
+    thumb = thumb.scaled(thumbSize.width(), thumbSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-    mThumb = DkImage::convertToColorSpaceInPlace(this, mThumb);
+    mThumb = DkImage::convertToColorSpaceInPlace(this, thumb);
+    update();
+}
 
-    return true;
+void DkOverview::updateTransform(const QRectF &viewportRect)
+{
+    mViewPortRect = viewportRect;
+    update();
+}
+
+void DkOverview::connectTransformViewModel(DkViewPortTransformViewModel *vm)
+{
+    connect(vm, &DkViewPortTransformViewModel::transformChanged, this, [this, vm]() {
+        updateTransform(vm->viewportInImageCoords());
+    });
+    connect(this, &DkOverview::imageTranslated, vm, &DkViewPortTransformViewModel::moveViewInImageCoords);
+}
+
+void DkOverview::connectImageViewModel(DkViewPortImageViewModel *vm)
+{
+    connect(vm, &DkViewPortImageViewModel::contentStateChanged, [this, vm]() {
+        setImage(vm->image());
+    });
 }
 
 void DkOverview::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
 
-    if (!mViewPort)
+    if (!mThumb) {
         return;
-
-    if (mThumb.isNull() && !updateThumb())
-        return;
+    }
 
     // map original image (disregarding viewport transform)
-    const QRectF thumbRect = mImageToLocal.mapRect(QRectF(QPointF(), mOriginalImageSize));
+    const QRectF thumbRect = mImageToLocal.mapRect(QRectF(QPointF(), mImage->size()));
 
-    // map visible region of the viewport
-    QRectF viewRect = viewPortToLocal().mapRect(mViewPort->geometry());
+    const qreal dpr = devicePixelRatioF();
+    const QRectF viewPortRect = (mImageToLocal * QTransform::fromScale(dpr, dpr)).mapRect(mViewPortRect);
 
     // draw thumbnail
     QPainter painter(this);
-    painter.drawImage(thumbRect, mThumb);
+    painter.drawImage(thumbRect, mThumb.value());
 
     // highlight the visible region, only draw if we cannot see the entire image
-    QSizeF sizeDiff(thumbRect.size() - viewRect.size());
+    QSizeF sizeDiff(thumbRect.size() - viewPortRect.size());
     if (sizeDiff.width() >= 1.0 || sizeDiff.height() >= 1.0) {
         // clip to thumbnail
-        viewRect = viewRect.intersected(thumbRect);
+        const QRectF intersection = viewPortRect.intersected(thumbRect);
 
         QColor col = DkSettingsManager::param().display().highlightColor;
         col.setAlpha(255);
         painter.setPen(col);
         col.setAlpha(50);
         painter.setBrush(col);
-        painter.drawRect(viewRect);
+        painter.drawRect(intersection);
     }
 }
 
@@ -682,7 +713,7 @@ void DkOverview::moveImage(const QPointF &p1, const QPointF &p2)
     QPointF w1 = localToImage.map(p1);
     QPointF w2 = localToImage.map(p2);
 
-    mViewPort->moveViewInImageCoords(w1 - w2);
+    emit imageTranslated(w1 - w2);
 }
 
 void DkOverview::mousePressEvent(QMouseEvent *event)
@@ -696,7 +727,7 @@ void DkOverview::mousePressEvent(QMouseEvent *event)
 
 void DkOverview::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (!mViewPort)
+    if (!mThumb)
         return;
 
     // we already panned, do not jump to cursor location
@@ -704,25 +735,22 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event)
         return;
 
     // jump to cursor; we need two points to send a delta x/y to viewport
-    QPointF currentCenter = viewPortToLocal().mapRect(mViewPort->geometry()).center();
+    QPointF currentCenter = mImageToLocal.map(mViewPortRect.center());
     QPointF newCenter = event->position();
 
     moveImage(currentCenter, newCenter);
-
-    if (event->modifiers() == DkSettingsManager::param().global().altMod)
-        mViewPort->tcpSynchronize();
 }
 
 void DkOverview::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
     // contentRect() changed, update thumb
-    mThumb = {};
+    updateThumb();
 }
 
 void DkOverview::mouseMoveEvent(QMouseEvent *event)
 {
-    if (!mViewPort)
+    if (!mThumb)
         return;
 
     if (event->buttons() != Qt::LeftButton)
@@ -733,20 +761,6 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event)
     QPointF cursorPos = event->position();
     moveImage(mLastMousePos, cursorPos);
     mLastMousePos = cursorPos;
-
-    if (event->modifiers() == DkSettingsManager::param().global().altMod)
-        mViewPort->tcpSynchronize();
-}
-
-QTransform DkOverview::viewPortToLocal() const
-{
-    // multiply by devicePixelRatioF() since imageToWorld is in logical pixels and mImageToLocal is in physical pixels
-    QTransform worldToViewPort = mViewPort->getWorldMatrix();
-    QTransform imageToWorld = mViewPort->getImageMatrix();
-
-    QTransform mat = worldToViewPort.inverted() * imageToWorld.inverted() * devicePixelRatioF() * mImageToLocal;
-
-    return mat;
 }
 
 QTransform DkOverview::imageToLocal() const
@@ -754,10 +768,10 @@ QTransform DkOverview::imageToLocal() const
     QRectF content = contentsRect();
 
     // prevent divide-by-zero
-    if (content.isEmpty() || mOriginalImageSize.isEmpty())
+    if (content.isEmpty() || !mImage || mImage->size().isEmpty())
         return {};
 
-    QRectF imgRect = QRectF(QPoint{0, 0}, mOriginalImageSize);
+    QRectF imgRect = QRectF(QPoint{0, 0}, mImage->size());
     qreal imgAspect = imgRect.width() / imgRect.height();
     qreal contenAspect = content.width() / content.height();
 
@@ -827,6 +841,8 @@ void DkZoomWidget::createLayout()
 void DkZoomWidget::onSbZoomValueChanged(double zoomLevel)
 {
     emit zoomSignal(zoomLevel / 100.0);
+
+    // No update here. We update when the actual zoom is sent back from updateZoom.
 }
 
 void DkZoomWidget::onSlZoomValueChanged(int zoomLevel)
@@ -834,6 +850,8 @@ void DkZoomWidget::onSlZoomValueChanged(int zoomLevel)
     double level = std::exp(static_cast<double>(zoomLevel) / static_cast<double>(sSliderMax) * (mSliderMax - mSliderMin)
                             + mSliderMin);
     emit zoomSignal(level);
+
+    // No update here. We update when the actual zoom is sent back from updateZoom.
 }
 
 void DkZoomWidget::updateZoom(double zoomLevel)
@@ -841,12 +859,13 @@ void DkZoomWidget::updateZoom(double zoomLevel)
     mSlZoom->blockSignals(true);
     mSbZoom->blockSignals(true);
 
-    int slVal = qRound((std::log(zoomLevel / 100) - mSliderMin) / (mSliderMax - mSliderMin)
+    int slVal = qRound((std::log(zoomLevel) - mSliderMin) / (mSliderMax - mSliderMin)
                        * static_cast<double>(sSliderMax));
     mSlZoom->setValue(slVal);
-    mSbZoom->setValue(zoomLevel);
+    mSbZoom->setValue(zoomLevel * 100);
     mSlZoom->blockSignals(false);
     mSbZoom->blockSignals(false);
+    update();
 }
 
 void DkZoomWidget::setZoomLevelRange(double min, double max)
@@ -855,11 +874,26 @@ void DkZoomWidget::setZoomLevelRange(double min, double max)
     mSliderMax = std::log(max);
     mSbZoom->setMinimum(min * 100);
     mSbZoom->setMaximum(max * 100);
+    update();
 }
 
-DkOverview *DkZoomWidget::getOverview() const
+void DkZoomWidget::connectTransformViewModel(DkViewPortTransformViewModel *tVM)
 {
-    return mOverview;
+    connect(this, &DkZoomWidget::zoomSignal, tVM, &DkViewPortTransformViewModel::zoomTo);
+    connect(tVM, &DkViewPortTransformViewModel::transformChanged, this, [this, tVM]() {
+        updateZoom(tVM->zoomLevel());
+    });
+    connect(tVM, &DkViewPortTransformViewModel::zoomLevelRangeChanged, this, [this, tVM]() {
+        const auto zr = tVM->zoomLevelRange();
+        setZoomLevelRange(zr.mMin, zr.mMax);
+    });
+
+    mOverview->connectTransformViewModel(tVM);
+}
+
+void DkZoomWidget::connectImageViewModel(DkViewPortImageViewModel *vm)
+{
+    mOverview->connectImageViewModel(vm);
 }
 
 // DkButton --------------------------------------------------------------------
@@ -1419,10 +1453,13 @@ void DkTransformRect::enterEvent(DkEnterEvent *)
 }
 
 // DkEditableRectangle --------------------------------------------------------------------
-DkEditableRect::DkEditableRect(const QRectF &rect, QWidget *parent, Qt::WindowFlags f)
+DkEditableRect::DkEditableRect(DkViewPortTransformViewModel *transformVM, QWidget *parent, Qt::WindowFlags f)
     : DkFadeWidget(parent, f)
+    , mTransformVM{transformVM}
+    , mRect{QRectF()}
 {
-    mRect = rect;
+    Q_ASSERT(mTransformVM);
+
     mRotatingCursor = QCursor(DkImage::loadIcon(":/nomacs/img/rotating-cursor.svg").pixmap(24));
 
     setAttribute(Qt::WA_MouseTracking);
@@ -1439,6 +1476,8 @@ DkEditableRect::DkEditableRect(const QRectF &rect, QWidget *parent, Qt::WindowFl
         connect(mCtrlPoints[idx], &DkTransformRect::ctrlMovedSignal, this, &DkEditableRect::updateCorner);
         connect(mCtrlPoints[idx], &DkTransformRect::updateDiagonal, this, &DkEditableRect::updateDiagonal);
     }
+
+    connect(mTransformVM, &DkViewPortTransformViewModel::transformChanged, this, qOverload<>(&DkEditableRect::update));
 }
 
 void DkEditableRect::reset()
@@ -1448,23 +1487,15 @@ void DkEditableRect::reset()
 
 QPointF DkEditableRect::map(const QPointF &pos)
 {
-    QPointF posM = pos;
-    if (mWorldTform)
-        posM = mWorldTform->inverted().map(posM);
-    if (mImgTform)
-        posM = mImgTform->inverted().map(posM);
-
-    return posM;
+    return mTransformVM->imageToWidgetTransform().inverted().map(pos);
 }
 
 QPointF DkEditableRect::clipToImage(const QPointF &pos)
 {
-    if (!mImgRect)
+    const QRectF imgViewRect = mTransformVM->getImageViewRect();
+    if (imgViewRect.isEmpty()) {
         return QPointF(pos);
-
-    QRectF imgViewRect(*mImgRect);
-    if (mWorldTform)
-        imgViewRect = mWorldTform->mapRect(imgViewRect);
+    }
 
     auto x = (float)pos.x();
     auto y = (float)pos.y();
@@ -1485,12 +1516,10 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos)
 
 QPointF DkEditableRect::clipToImageForce(const QPointF &pos)
 {
-    if (!mImgRect)
+    const QRectF imgViewRect = mTransformVM->getImageViewRect();
+    if (imgViewRect.isEmpty()) {
         return QPointF(pos);
-
-    QRectF imgViewRect(*mImgRect);
-    if (mWorldTform)
-        imgViewRect = mWorldTform->mapRect(imgViewRect);
+    }
 
     auto x = (float)pos.x();
     auto y = (float)pos.y();
@@ -1580,10 +1609,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event)
         p = mTtform.map(p);
         p = mRtform.map(p);
         p = mTtform.inverted().map(p);
-        if (mImgTform)
-            p = mImgTform->map(p);
-        if (mWorldTform)
-            p = mWorldTform->map(p);
+        p = mTransformVM->imageToWidgetTransform().map(p);
         QPolygon pr = p.toPolygon(); // round coordinates
         path.addPolygon(pr);
     }
@@ -1746,7 +1772,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event)
     if (mState == initializing && event->buttons() == Qt::LeftButton) {
         QPointF clipPos = clipToImageForce(QPointF(event->pos()));
 
-        if (!mImgRect || !mRect.isEmpty() || clipPos == QPointF(event->pos())) {
+        if (mTransformVM->hasImage() || !mRect.isEmpty() || clipPos == QPointF(event->pos())) {
             if (mRect.isEmpty()) {
                 for (int idx = 0; idx < mCtrlPoints.size(); idx++)
                     mCtrlPoints[idx]->show();
@@ -1950,8 +1976,10 @@ void DkEditableRect::setVisible(bool visible)
 }
 
 // DkEditableRect --------------------------------------------------------------------
-DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget *parent /* = 0*/, Qt::WindowFlags f /* = 0*/)
-    : DkEditableRect(rect, parent, f)
+DkCropWidget::DkCropWidget(DkViewPortTransformViewModel *transformVM,
+                           QWidget *parent /* = 0*/,
+                           Qt::WindowFlags f /* = 0*/)
+    : DkEditableRect(transformVM, parent, f)
 {
     cropToolbar = nullptr;
 }

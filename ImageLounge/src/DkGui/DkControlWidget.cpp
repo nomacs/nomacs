@@ -28,6 +28,7 @@
 #include "DkControlWidget.h"
 
 #include "DkActionManager.h"
+#include "DkImageContainer.h"
 #include "DkMessageBox.h"
 #include "DkMetaData.h"
 #include "DkMetaDataWidgets.h"
@@ -36,6 +37,7 @@
 #include "DkThumbsWidgets.h"
 #include "DkToolbars.h"
 #include "DkViewPort.h"
+#include "DkViewPortFSViewModel.h"
 #include "DkWidgets.h"
 
 #include <QGridLayout>
@@ -54,12 +56,13 @@ DkControlWidget::DkControlWidget(DkThumbLoader *thumbLoader, DkViewPort *parent,
 
     // cropping
     // TODO: add lazy initialization here
-    mCropWidget = new DkCropWidget(QRectF(), this);
+    mCropWidget = new DkCropWidget(mViewport->transformVM(), this);
 
     // thumbnails, metadata
     mFilePreview = new DkFilePreview(thumbLoader, this, flags);
     mMetaDataInfo = new DkMetaDataHUD(this);
     mZoomWidget = new DkZoomWidget(this);
+
     mPlayer = new DkPlayer(this);
     mPlayer->setMaximumHeight(90);
 
@@ -262,13 +265,8 @@ void DkControlWidget::connectWidgets()
     connect(mMetaDataInfo, &DkMetaDataHUD::positionChangeSignal, this, &DkControlWidget::changeMetaDataPosition);
 
     // zoom widget
-    connect(mZoomWidget, &DkZoomWidget::zoomSignal, mViewport, &DkViewPort::zoomTo);
-    connect(mViewport, &DkViewPort::zoomSignal, mZoomWidget, &DkZoomWidget::updateZoom);
-    connect(mViewport, &DkViewPort::zoomLevelRangeChanged, this, [this]() {
-        const auto zr = mViewport->zoomLevelRange();
-        mZoomWidget->setZoomLevelRange(zr.mMin, zr.mMax);
-    });
-    connect(mViewport, &DkViewPort::viewImageChanged, mZoomWidget->getOverview(), &DkOverview::imageUpdated);
+    mZoomWidget->connectTransformViewModel(mViewport->transformVM());
+    mZoomWidget->connectImageViewModel(mViewport->imageVM());
 
     // waiting
     connect(mDelayedInfo, &DkDelayedMessage::infoSignal, this, [this](const QString &msg, int time) {
@@ -338,13 +336,6 @@ void DkControlWidget::setCommentSaved(const QString &comment)
         return;
     }
     mViewport->imageContainer()->setMetaData(tr("File comment"));
-}
-
-void DkControlWidget::update()
-{
-    mZoomWidget->update();
-
-    QWidget::update();
 }
 
 void DkControlWidget::showWidgetsSettings()
@@ -714,14 +705,6 @@ void DkControlWidget::changeThumbNailPosition(int pos)
         mFilePreview->hide();
 }
 
-void DkControlWidget::settingsChanged()
-{
-    if (mFileInfoLabel->isActive()) {
-        showFileInfo(false); // just a hack but all states are preserved this way
-        showFileInfo(true);
-    }
-}
-
 void DkControlWidget::updateRating(int rating)
 {
     if (!mImgC) {
@@ -752,11 +735,6 @@ void DkControlWidget::setFullScreen(bool fullscreen)
         mPlayer->showTemporarily();
 }
 
-DkOverview *DkControlWidget::getOverview() const
-{
-    return mZoomWidget->getOverview();
-}
-
 DkZoomWidget *DkControlWidget::getZoomWidget() const
 {
     return mZoomWidget;
@@ -785,11 +763,6 @@ DkCropWidget *DkControlWidget::getCropWidget() const
 DkFilePreview *DkControlWidget::getFilePreview() const
 {
     return mFilePreview;
-}
-
-DkFolderScrollBar *DkControlWidget::getScroller() const
-{
-    return mFolderScroll;
 }
 
 // DkControlWidget - Events --------------------------------------------------------------------
@@ -845,5 +818,32 @@ void DkControlWidget::onImageContainerInternalUpdated()
     QString dateString = metaData->getExifValue("DateTimeOriginal");
     mFileInfoLabel->updateInfo(mImgC->filePath(), dateString, metaData->getRating(), mImgC->isEdited());
     mCommentWidget->setText(metaData->getDescription()); // reset
+}
+
+void DkControlWidget::setFSVM(DkViewPortFSViewModel *vm)
+{
+    Q_ASSERT(vm);
+    connect(vm, &DkViewPortFSViewModel::imageLoadFailed, this, [this]() {
+        mPlayer->startTimer();
+        updateImage(nullptr);
+    });
+    connect(vm, &DkViewPortFSViewModel::directoryChanged, mFilePreview, &DkFilePreview::updateThumbs);
+    connect(vm, &DkViewPortFSViewModel::imageIndexChanged, mFilePreview, &DkFilePreview::setFileIndex);
+    connect(vm, &DkViewPortFSViewModel::showInfoRequested, this, &DkControlWidget::setInfo);
+    connect(vm, &DkViewPortFSViewModel::playStateChanged, mPlayer, &DkPlayer::play);
+    connect(vm, &DkViewPortFSViewModel::directoryChanged, mFolderScroll, &DkFolderScrollBar::updateDir);
+    connect(vm, &DkViewPortFSViewModel::imageIndexChanged, mFolderScroll, &DkFolderScrollBar::updateFile);
+    connect(mFolderScroll, &DkFolderScrollBar::loadFileSignal, vm, &DkViewPortFSViewModel::loadFileAt);
+
+    connect(vm, &DkViewPortFSViewModel::manipulatorBusyAborted, this, [this]() {
+        setInfo(tr("Busy"));
+    });
+
+    connect(vm, &DkViewPortFSViewModel::manipulatorErrored, this, [this](const QString &msg) {
+        setInfo(msg);
+    });
+    connect(vm, &DkViewPortFSViewModel::imageLoaded, this, [this](const QSharedPointer<DkImageContainerT> &img) {
+        updateImage(img);
+    });
 }
 }

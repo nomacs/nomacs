@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include "DkQt5Compat.h"
 
 #include <QFileSystemModel>
@@ -42,6 +44,8 @@
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 #include "DkMath.h"
+#include "DkViewPortImageViewModel.h"
+#include "DkViewPortTransformViewModel.h"
 
 class QDoubleSpinBox;
 class QFileIconProvider;
@@ -338,25 +342,17 @@ public:
     explicit DkOverview(QWidget *parent = nullptr);
     ~DkOverview() override = default;
 
-    // get notified when the image in the viewport changes
-    void imageUpdated()
-    {
-        mThumb = {};
-    }
+    void connectTransformViewModel(DkViewPortTransformViewModel *vm);
+    void connectImageViewModel(DkViewPortImageViewModel *vm);
 
-    // bind to viewport; viewport owns overview (via controller), so dangling pointer is not possible
-    void setViewPort(DkViewPort *viewPort)
-    {
-        mViewPort = viewPort;
-        mThumb = {};
-    }
+signals:
+    void imageTranslated(const QPointF &translationInImageCoords);
 
-protected:
-    DkViewPort *mViewPort{};
-
-    QSize mOriginalImageSize{};
-    QImage mThumb{};
+private:
+    std::optional<QImage> mImage;
+    std::optional<QImage> mThumb;
     QTransform mImageToLocal{};
+    QRectF mViewPortRect{};
 
     bool mMouseMoved = false; // true if we handled a drag
     QPointF mLastMousePos; // set on mouse move
@@ -368,13 +364,15 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
     // recompute thumbnail and transforms after imageUpdated()
-    bool updateThumb();
+    void updateThumb();
+    void setImage(const QImage &image);
 
-    QTransform viewPortToLocal() const;
     QTransform imageToLocal() const;
 
     // move original image in the viewport
     void moveImage(const QPointF &p1, const QPointF &p2);
+
+    void updateTransform(const QRectF &viewportRect);
 };
 
 class DkZoomWidget : public DkFadeLabel
@@ -384,20 +382,18 @@ class DkZoomWidget : public DkFadeLabel
 public:
     explicit DkZoomWidget(QWidget *parent = nullptr);
 
-    DkOverview *getOverview() const;
-
-    void setZoomLevelRange(double min, double max);
+    void connectTransformViewModel(DkViewPortTransformViewModel *vm);
+    void connectImageViewModel(DkViewPortImageViewModel *vm);
 
 signals:
     void zoomSignal(double zoomLevel);
 
-public slots:
+private:
+    void createLayout();
     void updateZoom(double zoomLevel);
     void onSbZoomValueChanged(double zoomLevel);
     void onSlZoomValueChanged(int zoomLevel);
-
-private:
-    void createLayout();
+    void setZoomLevelRange(double min, double max);
 
     DkOverview *mOverview = nullptr;
     QSlider *mSlZoom = nullptr;
@@ -466,27 +462,12 @@ public:
         scaling
     };
 
-    explicit DkEditableRect(const QRectF &rect = QRect(),
+    explicit DkEditableRect(DkViewPortTransformViewModel *transformVM,
                             QWidget *parent = nullptr,
                             Qt::WindowFlags f = Qt::WindowFlags());
     ~DkEditableRect() override = default;
 
     void reset();
-
-    void setWorldTransform(QTransform *worldTform)
-    {
-        mWorldTform = worldTform;
-    };
-
-    void setImageTransform(QTransform *imgTform)
-    {
-        mImgTform = imgTform;
-    };
-
-    void setImageRect(QRectF *imgRect)
-    {
-        mImgRect = imgRect;
-    };
 
     void setVisible(bool visible) override;
 
@@ -525,9 +506,8 @@ protected:
     void drawGuide(QPainter *painter, const QPolygonF &p, int paintMode);
     QPointF map(const QPointF &pos);
 
+    DkViewPortTransformViewModel *mTransformVM = nullptr;
     int mState = do_nothing;
-    QTransform *mImgTform = nullptr;
-    QTransform *mWorldTform = nullptr;
     QTransform mTtform;
     QTransform mRtform;
     QPointF mPosGrab;
@@ -540,7 +520,6 @@ protected:
     QBrush mBrush;
     QVector<DkTransformRect *> mCtrlPoints;
     QCursor mRotatingCursor;
-    QRectF *mImgRect = nullptr;
     bool mPanning = false;
     int mPaintMode = rule_of_thirds;
     bool mShowInfo = false;
@@ -551,7 +530,9 @@ class DkCropWidget : public DkEditableRect
     Q_OBJECT
 
 public:
-    explicit DkCropWidget(QRectF rect = QRect(), QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit DkCropWidget(DkViewPortTransformViewModel *transformVM,
+                          QWidget *parent = nullptr,
+                          Qt::WindowFlags f = Qt::WindowFlags());
 
     DkCropToolBar *getToolbar() const;
 
