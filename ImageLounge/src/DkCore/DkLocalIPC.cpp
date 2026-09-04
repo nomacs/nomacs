@@ -358,6 +358,9 @@ private:
     {
         Q_ASSERT(isFirstInstance());
         mCentralWidget = centralWidget;
+        QObject::connect(mCentralWidget, &QObject::destroyed, this, [this]() {
+            mCentralWidget = nullptr;
+        });
     }
 
     void sendMessage(const QString &method, const QList<QVariant> &args)
@@ -410,12 +413,20 @@ public:
         : QDBusAbstractAdaptor(parent)
         , mCentralWidget(cw)
     {
+        QObject::connect(mCentralWidget, &QObject::destroyed, this, [this]() {
+            mCentralWidget = nullptr;
+        });
     }
 
 public Q_SLOTS:
     void activate(const QByteArray &token)
     {
         qInfo() << "[dbus] activation token received:" << token;
+
+        if (!mCentralWidget) {
+            qWarning() << "[dbus] activate: no registered central widget";
+            return;
+        }
 
         QWidget *top = mCentralWidget->topLevelWidget();
         top->show();
@@ -428,6 +439,11 @@ public Q_SLOTS:
     }
     void loadUnique(const QString &path, bool loadToTab)
     {
+        if (!mCentralWidget) {
+            qWarning() << "[dbus] loadUnique: no registered central widget";
+            return;
+        }
+
         mCentralWidget->loadUnique(path, loadToTab);
     }
 
