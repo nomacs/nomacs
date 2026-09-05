@@ -119,9 +119,9 @@ public slots:
      * @param silent if true, the user wants "Save" and not "Save As"
      * @note "Save" falls back to "Save As" if it is not supported
      */
-    void saveUserFile(const QImage &saveImg, bool silent);
+    bool saveUserFile(const QImage &saveImg, bool silent);
     void copyUserFile();
-    void saveFile(const QString &filename,
+    bool saveFile(const QString &filename,
                   const QImage &saveImg = QImage(),
                   const QString &fileFilter = "",
                   int compression = -1,

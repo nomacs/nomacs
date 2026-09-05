@@ -562,23 +562,25 @@ bool DkImageLoader::promptSaveBeforeUnload()
         // Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
         const bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
         const bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
-
+        bool saved = false;
         if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
             if (imgEdited) {
-                bool saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
+                saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
                 if (saved) {
                     emit saveStartedSignal(mCurrentImage);
                 }
             } else if (metaEdited) {
-                mCurrentImage->saveMetaData();
+                saved = mCurrentImage->saveMetaData();
             }
         } else {
-            saveUserFile(mCurrentImage->image(), false); // we loose all metadata here - right?
+            saved = saveUserFile(mCurrentImage->image(), false);
         }
 
-        // Clear the image container to force reload so we get correct state.
-        mCurrentImage->clear();
-        return true;
+        if (saved) {
+            // Clear the image container to force reload so we get correct state.
+            mCurrentImage->clear();
+        }
+        return saved;
     }
 
     if (answer == QMessageBox::No) {
@@ -942,7 +944,7 @@ void DkImageLoader::copyUserFile()
     }
 }
 
-void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
+bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 {
     // TODO glitch if (!mCurrentImage->getMetaData()->isLoaded()); see rotateImage()
 
@@ -990,8 +992,9 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         int answer = msg.exec();
         overwriteFile = answer == QMessageBox::Yes;
-        if (answer == QDialog::Rejected || answer == QMessageBox::Cancel)
-            return;
+        if (answer == QDialog::Rejected || answer == QMessageBox::Cancel) {
+            return false;
+        }
     }
 
     if (!overwriteFile) {
@@ -1008,8 +1011,9 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
                                                 DkDialog::fileDialogOptions());
     }
 
-    if (fileName.isEmpty())
-        return;
+    if (fileName.isEmpty()) {
+        return false;
+    }
 
     QString ext = QFileInfo(fileName).suffix();
 
@@ -1042,7 +1046,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
         emit imageUpdatedSignal(mCurrentImage);
 
         // Skip the rest which is only relevant when re-encoding/saving the image
-        return;
+        return true;
     }
     // Saving image normally, clear exif rotation flag to prevent double rotation
     mCurrentImage->getLoader()->getMetaData()->clearOrientation();
@@ -1065,7 +1069,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1082,7 +1086,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1099,7 +1103,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1124,7 +1128,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1138,7 +1142,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1149,7 +1153,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!tifDialog->exec()) {
             tifDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = tifDialog->getCompression();
@@ -1161,6 +1165,8 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
         tifDialog->deleteLater();
     if (jpgDialog)
         jpgDialog->deleteLater();
+
+    return true;
 }
 
 /**
@@ -1171,7 +1177,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
  * @param saveImg the image to be saved
  * @param compression the compression method (for jpg, tif)
  **/
-void DkImageLoader::saveFile(const QString &filePath,
+bool DkImageLoader::saveFile(const QString &filePath,
                              const QImage &saveImg,
                              const QString &fileFilter,
                              int compression,
@@ -1217,10 +1223,12 @@ void DkImageLoader::saveFile(const QString &filePath,
     }
 
     if (!saveStarted) {
-        imageSaved(QString(), false);
+        emit imageSaved(QString(), false);
     } else if (saveStarted && !threaded) {
-        imageSaved(lFilePath);
+        emit imageSaved(lFilePath);
     }
+
+    return saveStarted;
 }
 
 bool DkImageLoader::isSaving() const
