@@ -407,6 +407,12 @@ void DkGeneralPreference::createLayout()
     connect(cbOpenNewTab, &QCheckBox::toggled, this, [](bool checked) {
         DkSettingsManager::param().app().openNewTab = checked;
     });
+    auto *cbCloseOnLastTab = new QCheckBox(tr("Close on last tab closed"));
+    cbCloseOnLastTab->setToolTip(tr("If checked, the nomacs exits when the last tab is closed."));
+    cbCloseOnLastTab->setChecked(DkSettingsManager::param().app().closeOnLastTabClosed);
+    connect(cbCloseOnLastTab, &QCheckBox::toggled, this, [](bool checked) {
+        DkSettingsManager::param().app().closeOnLastTabClosed = checked;
+    });
 
     auto *cbRecentFiles = new QCheckBox(tr("Show Recent Files on Start-Up"), this);
     cbRecentFiles->setToolTip(tr("Show the History Panel on Start-Up"));
@@ -503,6 +509,7 @@ void DkGeneralPreference::createLayout()
     startupGroup->addWidget(cbCheckForUpdates);
     auto *tabsGroup = new DkGroupWidget(tr("Tabs"), this);
     tabsGroup->addWidget(cbOpenNewTab);
+    tabsGroup->addWidget(cbCloseOnLastTab);
     tabsGroup->addWidget(cbExtendedTabs);
     auto *openGroup = new DkGroupWidget(tr("On Open"), this);
     openGroup->addWidget(cbCheckOpenDuplicates);

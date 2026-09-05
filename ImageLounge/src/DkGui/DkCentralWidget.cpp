@@ -749,6 +749,10 @@ bool DkCentralWidget::removeTab(int tabIdx)
         if (currentTabWillChange) {
             activateTab(mTabbar->currentIndex());
         }
+    } else if (DkSettingsManager::param().app().closeOnLastTabClosed) {
+        qInfo() << "[removeTab] no tabs left, quitting";
+        qApp->quit();
+        return true;
     } else {
         // make sure we have at least one tab
         addTab(DkTabInfo::tab_recent_files);
