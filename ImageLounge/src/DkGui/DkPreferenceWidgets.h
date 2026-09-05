@@ -29,12 +29,12 @@
 
 #include <QIcon>
 #include <QList>
+#include <QVBoxLayout>
 
 #include "DkBaseWidgets.h"
 
 class QComboBox;
 class QStackedLayout;
-class QVBoxLayout;
 class QStandardItem;
 class QStandardItemModel;
 class QLineEdit;
@@ -109,6 +109,11 @@ class DkGroupWidget : public DkWidget
 
 public:
     DkGroupWidget(const QString &title, QWidget *parent);
+
+    void insertWidget(int index, QWidget *widget)
+    {
+        mContentLayout->insertWidget(index, widget);
+    }
 
     void addWidget(QWidget *widget);
     void addSpace();
