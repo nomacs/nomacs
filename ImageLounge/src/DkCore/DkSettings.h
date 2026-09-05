@@ -192,6 +192,7 @@ public:
         bool advancedSettings;
         bool closeOnEsc;
         bool closeOnMiddleMouse;
+        bool closeOnLastTabClosed;
         bool hideAllPanels;
 
         int defaultJpgQuality;
