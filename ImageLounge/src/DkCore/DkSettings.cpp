@@ -437,6 +437,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     global_p.logRecentFiles = settings.value("logRecentFiles", global_p.logRecentFiles).toBool();
     global_p.askBeforeLoadingLargeFiles = settings.value("askBeforeLoadingLargeFiles", global_p.askBeforeLoadingLargeFiles).toBool();
     global_p.maxAutoLoadSizeMb = settings.value("maxAutoLoadSizeMb", global_p.maxAutoLoadSizeMb).toInt();
+    global_p.startupMode = settings.value("startupMode", global_p.startupMode).toInt();
     global_p.askToSaveDeletedFiles = settings.value("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles).toBool();
     global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
     global_p.language = settings.value("language", global_p.language).toString();
@@ -740,6 +741,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("askBeforeLoadingLargeFiles", global_p.askBeforeLoadingLargeFiles);
     if (force || global_p.maxAutoLoadSizeMb != global_d.maxAutoLoadSizeMb)
         settings.setValue("maxAutoLoadSizeMb", global_p.maxAutoLoadSizeMb);
+    if (force || global_p.startupMode != global_d.startupMode)
+        settings.setValue("startupMode", global_p.startupMode);
     if (force || global_p.askToSaveDeletedFiles != global_d.askToSaveDeletedFiles)
         settings.setValue("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles);
     if (force || global_p.tmpPath != global_d.tmpPath)
@@ -983,6 +986,17 @@ void DkSettings::clearRecentHistory()
     DkSettingsManager::param().saveHistory();
 }
 
+void DkSettings::clearQtFileDialogHistoryIfDisabled()
+{
+    if (DkSettingsManager::param().global().logRecentFiles)
+        return;
+
+    QSettings qtSettings("QtProject");
+    qtSettings.beginGroup("FileDialog");
+    qtSettings.remove("history");
+    qtSettings.endGroup();
+}
+
 void DkSettings::setToDefaultSettings()
 {
     app_p.showToolBar = true;
@@ -1034,6 +1048,7 @@ void DkSettings::setToDefaultSettings()
     global_p.logRecentFiles = true;
     global_p.askBeforeLoadingLargeFiles = true;
     global_p.maxAutoLoadSizeMb = 20;
+    global_p.startupMode = 0; // restore last session
     global_p.askToSaveDeletedFiles = false;
     global_p.tmpPath = "";
     global_p.language = "en";

@@ -274,6 +274,7 @@ public:
         bool logRecentFiles;
         bool askBeforeLoadingLargeFiles;
         int maxAutoLoadSizeMb;
+        int startupMode; // 0 = restore last session, 1 = start empty, 2 = start in home folder
         bool checkOpenDuplicates;
         bool openDirShowFirstImage; // show first image when opening dir, otherwise show thumbs
         bool extendedTabs;
@@ -373,6 +374,7 @@ public:
     void save(QSettings &settings, bool force = false);
     void saveHistory();
     static void clearRecentHistory();
+    static void clearQtFileDialogHistoryIfDisabled();
     void setToDefaultSettings();
     void setNumThreads(int numThreads);
 

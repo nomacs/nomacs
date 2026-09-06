@@ -76,10 +76,11 @@ std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT
 
 std::optional<QImage> loadThumbnailFromFullImage(const QString &filePath,
                                                  QSharedPointer<QByteArray> baZip,
-                                                 DkLoadOptions loadOptions)
+                                                 DkLoadOptions loadOptions,
+                                                 const QSize &targetSize)
 {
     DkBasicLoader loader;
-    if (loader.loadGeneral(filePath, baZip, loadOptions)) {
+    if (loader.loadGeneral(filePath, baZip, loadOptions, targetSize)) {
         return loader.image();
     } else {
         return std::nullopt;
@@ -143,7 +144,7 @@ std::optional<LoadThumbnailResult> loadThumbnail(const LoadThumbnailRequest &req
             && !DkImage::isResizeDownsampling(exifThumb->thumb.size(), request.size, request.constraint);
         if (loadFull) {
             exifThumb = {};
-            fullThumb = loadThumbnailFromFullImage(thumbPath, ba, loadOptions);
+            fullThumb = loadThumbnailFromFullImage(thumbPath, ba, loadOptions, QSize(request.size, request.size));
         }
 
         if (!fullThumb && !exifThumb) {

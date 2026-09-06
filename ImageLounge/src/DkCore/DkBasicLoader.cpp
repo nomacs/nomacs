@@ -202,12 +202,12 @@ bool DkBasicLoader::isOrientationMirrored(const QImageIOHandler::Transformations
     return false;
 }
 
-bool DkBasicLoader::loadGeneral(const QString &filePath, DkLoadOptions options)
+bool DkBasicLoader::loadGeneral(const QString &filePath, DkLoadOptions options, const QSize &targetSize)
 {
-    return loadGeneral(filePath, QSharedPointer<QByteArray>(), options);
+    return loadGeneral(filePath, QSharedPointer<QByteArray>(), options, targetSize);
 }
 
-bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, DkLoadOptions options)
+bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, DkLoadOptions options, const QSize &targetSize)
 {
     DkTimer dt;
 
@@ -332,7 +332,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     // - if the suffix is empty, plugins will check the file header
     LoaderResult result;
     if (loader.isNull() && (qtFormats.contains(suffix) || suffix.isEmpty())) {
-        result = loadQt(mFile, ba, suffix);
+        result = loadQt(mFile, ba, suffix, targetSize);
         if (result.ok) {
             loader = "qt";
             img = result.img;
@@ -365,7 +365,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 
     // Qt loader, unknown/wrong file extension
     if (loader.isNull() && suffix != "roh" && suffix != "vec") {
-        result = loadQt(mFile, ba);
+        result = loadQt(mFile, ba, QByteArray(), targetSize);
         if (result.ok) {
             loader = "qt-unknown-suffix";
             img = result.img;
@@ -381,7 +381,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
             ba = loadFileToBuffer(filePath);
         if (ba && !ba->isEmpty()) {
             if (DkImage::fixSamsungPanorama(*ba)) {
-                result = loadQt(mFile, ba, suffix);
+                result = loadQt(mFile, ba, suffix, targetSize);
                 if (result.ok) {
                     loader = "qt-samsung-panorama";
                     img = result.img;
@@ -535,7 +535,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 
 DkBasicLoader::LoaderResult DkBasicLoader::loadQt(const QString &filePath,
                                                   QSharedPointer<QByteArray> ba,
-                                                  const QByteArray &format)
+                                                  const QByteArray &format,
+                                                  const QSize &targetSize)
 {
     LoaderResult result;
 
@@ -579,6 +580,14 @@ DkBasicLoader::LoaderResult DkBasicLoader::loadQt(const QString &filePath,
             index++;
         } while (qir.jumpToNextImage());
         qir.jumpToImage(maxIndex);
+    }
+
+    if (targetSize.isValid() && !targetSize.isEmpty()) {
+        QSize srcSize = qir.size();
+        if (srcSize.isValid() && !srcSize.isEmpty()) {
+            QSize scaledSize = srcSize.scaled(targetSize, Qt::KeepAspectRatio);
+            qir.setScaledSize(scaledSize);
+        }
     }
 
     result.ok = qir.read(&result.img);

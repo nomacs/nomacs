@@ -511,6 +511,22 @@ void DkGeneralPreference::createLayout()
     largeFilesLayout->addWidget(sbMaxAutoLoadSizeMb);
     largeFilesLayout->addStretch();
     generalGroup->addWidget(largeFilesRow);
+    auto *lblStartupMode = new QLabel(tr("On Startup:"), this);
+
+    auto *cbStartupMode = new QComboBox(this);
+    cbStartupMode->addItem(tr("Restore Last Session"));
+    cbStartupMode->addItem(tr("Start Empty"));
+    cbStartupMode->addItem(tr("Start in Home Folder"));
+    cbStartupMode->setCurrentIndex(DkSettingsManager::param().global().startupMode);
+    connect(cbStartupMode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkGeneralPreference::onStartupModeChanged);
+
+    auto *startupModeRow = new QWidget(this);
+    auto *startupModeLayout = new QHBoxLayout(startupModeRow);
+    startupModeLayout->setContentsMargins(0, 0, 0, 0);
+    startupModeLayout->addWidget(lblStartupMode);
+    startupModeLayout->addWidget(cbStartupMode);
+    startupModeLayout->addStretch();
+    generalGroup->addWidget(startupModeRow);
     generalGroup->addWidget(cbCheckOpenDuplicates);
     generalGroup->addWidget(cbShowFirstImage);
     generalGroup->addWidget(cbExtendedTabs);
@@ -597,6 +613,12 @@ void DkGeneralPreference::onMaxAutoLoadSizeMbChanged(int value) const
 {
     if (DkSettingsManager::param().global().maxAutoLoadSizeMb != value)
         DkSettingsManager::param().global().maxAutoLoadSizeMb = value;
+}
+
+void DkGeneralPreference::onStartupModeChanged(int index) const
+{
+    if (DkSettingsManager::param().global().startupMode != index)
+        DkSettingsManager::param().global().startupMode = index;
 }
 
 

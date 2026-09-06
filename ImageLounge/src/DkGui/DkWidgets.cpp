@@ -304,6 +304,7 @@ void DkBrowseExplorer::browseClicked()
                                                      mRootPath,
                                                      QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
+    DkSettings::clearQtFileDialogHistoryIfDisabled();
     if (root != "")
         setRootPath(root);
 }
@@ -350,7 +351,11 @@ void DkBrowseExplorer::readSettings()
 {
     DefaultSettings settings;
     settings.beginGroup(objectName());
-    setRootPath(settings.value("RootPath", QDir::homePath()).toString());
+    int startupMode = DkSettingsManager::param().global().startupMode;
+    if (startupMode == 1 || startupMode == 2)
+        setRootPath(QDir::homePath());
+    else
+        setRootPath(settings.value("RootPath", QDir::homePath()).toString());
     settings.endGroup();
 }
 
@@ -2319,6 +2324,7 @@ void DkDirectoryChooser::onDirButtonClicked()
                                                         mDirEdit->text(),
                                                         QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
+    DkSettings::clearQtFileDialogHistoryIfDisabled();
     if (dirPath.isEmpty())
         return;
 

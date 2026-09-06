@@ -112,9 +112,15 @@ void DkTabInfo::loadSettings(const QSettings &settings)
         mTabMode = tab_single_image;
     }
 
+    if (DkSettingsManager::param().global().startupMode == 1)
+        file.clear(); // start empty
+
     DkFileInfo info(file);
     if (info.exists())
         mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(info)));
+    else if (DkSettingsManager::param().global().startupMode == 2)
+        mImageLoader->loadDir(QDir::homePath());
+
 }
 
 void DkTabInfo::saveSettings(QSettings &settings) const

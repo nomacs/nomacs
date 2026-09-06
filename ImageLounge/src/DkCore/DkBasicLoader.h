@@ -213,7 +213,7 @@ public:
     /**
      * Load image from file.
      **/
-    bool loadGeneral(const QString &filePath, DkLoadOptions options = DkLoadOption::normal);
+    bool loadGeneral(const QString &filePath, DkLoadOptions options = DkLoadOption::normal, const QSize &targetSize = QSize());
 
     /**
      * Loads the image for the given file
@@ -225,7 +225,8 @@ public:
      **/
     bool loadGeneral(const QString &filePath,
                      const QSharedPointer<QByteArray> ba,
-                     DkLoadOptions options = DkLoadOption::normal);
+                     DkLoadOptions options = DkLoadOption::normal,
+                     const QSize &targetSize = QSize());
 
     /**
      * Loads the page requested (with respect to the current page)
@@ -372,7 +373,8 @@ public:
 #endif
     LoaderResult loadQt(const QString &filePath,
                         QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(),
-                        const QByteArray &format = QByteArray());
+                        const QByteArray &format = QByteArray(),
+                        const QSize &targetSize = QSize());
 
     bool loadPSD(const QString &filePath,
                  QImage &img,
