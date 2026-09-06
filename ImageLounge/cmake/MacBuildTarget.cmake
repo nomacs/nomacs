@@ -211,11 +211,7 @@ add_custom_target(
 
 # this macro must appear after add_subdirectory(<plugins-path>)
 macro(NMC_BUNDLE_COPY_PLUGINS)
-    # find plugin targets, not exposed in any cmake variable I could find
-    # so use this helper
-    set_property(GLOBAL PROPERTY COLLECTED_TARGETS "")
-    collect_dir_targets("${PLUGINS_DIR}")
-    get_property(PLUGINS_TARGETS GLOBAL PROPERTY COLLECTED_TARGETS)
+    get_target_property(PLUGIN_TARGETS nomacs_plugins MANUALLY_ADDED_DEPENDENCIES)
 
     # naming convention for plugins output is "libxxx.dylib"
     set(PLUGINS_FILES "")
