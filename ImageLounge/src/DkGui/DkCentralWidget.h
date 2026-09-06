@@ -171,6 +171,7 @@ public slots:
     void openPreferences();
     void restart() const;
     void showProgress(bool show, int time = -1);
+    void onLoadingConfirmationRequired(const QString &filePath, qint64 sizeMb);
     void startSlideshow(bool start = true) const;
     void setInfo(const QString &msg) const;
     void renameFile();

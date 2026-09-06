@@ -435,6 +435,8 @@ void DkSettings::load(QSettings &settings, bool defaults)
     global_p.pinnedFiles = settings.value("pinnedFiles", global_p.pinnedFiles).toStringList();
     global_p.recentFiles = settings.value("recentFiles", global_p.recentFiles).toStringList();
     global_p.logRecentFiles = settings.value("logRecentFiles", global_p.logRecentFiles).toBool();
+    global_p.askBeforeLoadingLargeFiles = settings.value("askBeforeLoadingLargeFiles", global_p.askBeforeLoadingLargeFiles).toBool();
+    global_p.maxAutoLoadSizeMb = settings.value("maxAutoLoadSizeMb", global_p.maxAutoLoadSizeMb).toInt();
     global_p.askToSaveDeletedFiles = settings.value("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles).toBool();
     global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
     global_p.language = settings.value("language", global_p.language).toString();
@@ -734,6 +736,10 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("pinnedFiles", global_p.pinnedFiles);
     if (force || global_p.logRecentFiles != global_d.logRecentFiles)
         settings.setValue("logRecentFiles", global_p.logRecentFiles);
+    if (force || global_p.askBeforeLoadingLargeFiles != global_d.askBeforeLoadingLargeFiles)
+        settings.setValue("askBeforeLoadingLargeFiles", global_p.askBeforeLoadingLargeFiles);
+    if (force || global_p.maxAutoLoadSizeMb != global_d.maxAutoLoadSizeMb)
+        settings.setValue("maxAutoLoadSizeMb", global_p.maxAutoLoadSizeMb);
     if (force || global_p.askToSaveDeletedFiles != global_d.askToSaveDeletedFiles)
         settings.setValue("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles);
     if (force || global_p.tmpPath != global_d.tmpPath)
@@ -970,6 +976,13 @@ void DkSettings::saveHistory()
     settings.setValue("recentFiles", DkSettingsManager::param().global().recentFiles);
 }
 
+void DkSettings::clearRecentHistory()
+{
+    DkSettingsManager::param().global().recentFiles.clear();
+    DkSettingsManager::param().global().recentFolders.clear();
+    DkSettingsManager::param().saveHistory();
+}
+
 void DkSettings::setToDefaultSettings()
 {
     app_p.showToolBar = true;
@@ -1019,6 +1032,8 @@ void DkSettings::setToDefaultSettings()
     global_p.searchHistory = QStringList();
     global_p.recentFolders = QStringList();
     global_p.logRecentFiles = true;
+    global_p.askBeforeLoadingLargeFiles = true;
+    global_p.maxAutoLoadSizeMb = 20;
     global_p.askToSaveDeletedFiles = false;
     global_p.tmpPath = "";
     global_p.language = "en";

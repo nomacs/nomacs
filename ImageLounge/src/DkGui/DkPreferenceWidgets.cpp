@@ -402,6 +402,9 @@ void DkGeneralPreference::createLayout()
     cbLogRecentFiles->setToolTip(tr("If checked, recent files will be saved."));
     cbLogRecentFiles->setChecked(DkSettingsManager::param().global().logRecentFiles);
     connect(cbLogRecentFiles, &QCheckBox::toggled, this, &DkGeneralPreference::onLogRecentFilesToggled);
+    auto *btnClearRecentFiles = new QPushButton(tr("Clear Now"), this);
+    btnClearRecentFiles->setToolTip(tr("Clears the recent files and folders history immediately."));
+    connect(btnClearRecentFiles, &QPushButton::clicked, this, &DkGeneralPreference::onClearRecentHistoryClicked);
 
     auto *cbCheckOpenDuplicates = new QCheckBox(tr("Check for Duplicates on Open"), this);
     cbCheckOpenDuplicates->setToolTip(
@@ -483,7 +486,31 @@ void DkGeneralPreference::createLayout()
 
     auto *generalGroup = new DkGroupWidget(tr("General"), this);
     generalGroup->addWidget(cbRecentFiles);
-    generalGroup->addWidget(cbLogRecentFiles);
+    auto *logRecentFilesRow = new QWidget(this);
+    auto *logRecentFilesLayout = new QHBoxLayout(logRecentFilesRow);
+    logRecentFilesLayout->setContentsMargins(0, 0, 0, 0);
+    logRecentFilesLayout->addWidget(cbLogRecentFiles);
+    logRecentFilesLayout->addWidget(btnClearRecentFiles);
+    logRecentFilesLayout->addStretch();
+    generalGroup->addWidget(logRecentFilesRow);
+    auto *cbAskBeforeLoadingLargeFiles = new QCheckBox(tr("Ask Before Loading Large Files"), this);
+    cbAskBeforeLoadingLargeFiles->setToolTip(tr("If checked, nomacs will ask for confirmation before loading files larger than the threshold below."));
+    cbAskBeforeLoadingLargeFiles->setChecked(DkSettingsManager::param().global().askBeforeLoadingLargeFiles);
+    connect(cbAskBeforeLoadingLargeFiles, &QCheckBox::toggled, this, &DkGeneralPreference::onAskBeforeLoadingLargeFilesToggled);
+
+    auto *sbMaxAutoLoadSizeMb = new QSpinBox(this);
+    sbMaxAutoLoadSizeMb->setRange(1, 1000);
+    sbMaxAutoLoadSizeMb->setSuffix(tr(" MB"));
+    sbMaxAutoLoadSizeMb->setValue(DkSettingsManager::param().global().maxAutoLoadSizeMb);
+    connect(sbMaxAutoLoadSizeMb, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkGeneralPreference::onMaxAutoLoadSizeMbChanged);
+
+    auto *largeFilesRow = new QWidget(this);
+    auto *largeFilesLayout = new QHBoxLayout(largeFilesRow);
+    largeFilesLayout->setContentsMargins(0, 0, 0, 0);
+    largeFilesLayout->addWidget(cbAskBeforeLoadingLargeFiles);
+    largeFilesLayout->addWidget(sbMaxAutoLoadSizeMb);
+    largeFilesLayout->addStretch();
+    generalGroup->addWidget(largeFilesRow);
     generalGroup->addWidget(cbCheckOpenDuplicates);
     generalGroup->addWidget(cbShowFirstImage);
     generalGroup->addWidget(cbExtendedTabs);
@@ -553,6 +580,25 @@ void DkGeneralPreference::onLogRecentFilesToggled(bool checked) const
     if (DkSettingsManager::param().global().logRecentFiles != checked)
         DkSettingsManager::param().global().logRecentFiles = checked;
 }
+
+void DkGeneralPreference::onClearRecentHistoryClicked() const
+{
+    DkSettings::clearRecentHistory();
+    emit infoSignal(tr("Recent files history cleared"));
+}
+
+void DkGeneralPreference::onAskBeforeLoadingLargeFilesToggled(bool checked) const
+{
+    if (DkSettingsManager::param().global().askBeforeLoadingLargeFiles != checked)
+        DkSettingsManager::param().global().askBeforeLoadingLargeFiles = checked;
+}
+
+void DkGeneralPreference::onMaxAutoLoadSizeMbChanged(int value) const
+{
+    if (DkSettingsManager::param().global().maxAutoLoadSizeMb != value)
+        DkSettingsManager::param().global().maxAutoLoadSizeMb = value;
+}
+
 
 void DkGeneralPreference::onCheckOpenDuplicatesToggled(bool checked) const
 {

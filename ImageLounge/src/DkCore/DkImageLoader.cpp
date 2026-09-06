@@ -779,6 +779,14 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 
     if (mCurrentImage && mCurrentImage->getLoadState() == DkImageContainerT::loading)
         return;
+    // patch: confirmation avant chargement des gros fichiers
+    auto &glob = DkSettingsManager::param().global();
+    qint64 sizeMb = mCurrentImage->fileInfo().size() / (1024 * 1024);
+    if (glob.askBeforeLoadingLargeFiles && sizeMb > glob.maxAutoLoadSizeMb) {
+        emit loadingConfirmationRequiredSignal(mCurrentImage->filePath(), sizeMb);
+        return;
+    }
+
 
     emit updateSpinnerSignalDelayed(true);
     bool loaded = mCurrentImage->loadImageThreaded(); // loads file threaded
@@ -787,6 +795,18 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
         emit updateSpinnerSignalDelayed(false);
 
     // if loaded is false, we definitively know that the file does not exist -> early exception here?
+}
+
+void DkImageLoader::confirmLargeFileLoad()
+{
+    if (!mCurrentImage)
+        return;
+
+    emit updateSpinnerSignalDelayed(true);
+    bool loaded = mCurrentImage->loadImageThreaded();
+
+    if (!loaded)
+        emit updateSpinnerSignalDelayed(false);
 }
 
 void DkImageLoader::imageLoaded(bool loaded /* = false */)

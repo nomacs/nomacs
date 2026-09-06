@@ -131,6 +131,9 @@ public:
 public slots:
     void onShowRecentFilesToggled(bool checked) const;
     void onLogRecentFilesToggled(bool checked) const;
+    void onAskBeforeLoadingLargeFilesToggled(bool checked) const;
+    void onMaxAutoLoadSizeMbChanged(int value) const;
+    void onClearRecentHistoryClicked() const;
     void onCheckOpenDuplicatesToggled(bool checked) const;
     void onExtendedTabsToggled(bool checked) const;
     void onCloseOnEscToggled(bool checked) const;

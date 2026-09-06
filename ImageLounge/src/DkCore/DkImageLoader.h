@@ -91,6 +91,7 @@ public:
 
 signals:
     void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
+    void loadingConfirmationRequiredSignal(const QString &filePath, qint64 sizeMb) const;
     void setPlayer(bool play) const;
 
     // new signals
@@ -123,6 +124,7 @@ public slots:
                   bool threaded = true);
     void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
     void load(const DkFileInfo &filePath);
+    void confirmLargeFileLoad();
     void downloadFile(const QUrl &url);
     bool deleteFile();
     QString saveTempFile(const QImage &img,

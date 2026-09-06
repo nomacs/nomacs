@@ -272,6 +272,8 @@ public:
         QStringList recentFolders;
         QStringList pinnedFiles;
         bool logRecentFiles;
+        bool askBeforeLoadingLargeFiles;
+        int maxAutoLoadSizeMb;
         bool checkOpenDuplicates;
         bool openDirShowFirstImage; // show first image when opening dir, otherwise show thumbs
         bool extendedTabs;
@@ -370,6 +372,7 @@ public:
     void save(bool force = false);
     void save(QSettings &settings, bool force = false);
     void saveHistory();
+    static void clearRecentHistory();
     void setToDefaultSettings();
     void setNumThreads(int numThreads);
 
