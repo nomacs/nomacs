@@ -234,7 +234,8 @@ int main(int argc, char *argv[])
     // When "File/New-Instance" is used, the new instance is never
     // promoted to the first instance. The next instance that starts
     // after the first one closes becomes the first instance.
-    bool keepSingleInstance = nmc::DkSettingsManager::param().app().singleInstance && !parser.isSet(instanceOpt);
+    bool keepSingleInstance = nmc::DkSettingsManager::param().app().singleInstance && !parser.isSet(instanceOpt)
+        && !parser.isSet(privateOpt);
 
     if (keepSingleInstance) {
         const bool restarting = parser.isSet(restartOpt);
