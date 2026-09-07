@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
                     continue;
                 }
 
-                nomacsInstance.loadUnique(QDir::fromNativeSeparators(filePath), newTab);
+                nomacsInstance.loadUnique(nmc::DkFileInfo{filePath}.path(), newTab);
                 newTab = true;
             }
 
