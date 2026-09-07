@@ -207,7 +207,10 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, DkLoadOptions options, 
     return loadGeneral(filePath, QSharedPointer<QByteArray>(), options, targetSize);
 }
 
-bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArray> ba, DkLoadOptions options, const QSize &targetSize)
+bool DkBasicLoader::loadGeneral(const QString &filePath,
+                                QSharedPointer<QByteArray> ba,
+                                DkLoadOptions options,
+                                const QSize &targetSize)
 {
     DkTimer dt;
 

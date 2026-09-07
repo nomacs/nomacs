@@ -494,15 +494,22 @@ void DkGeneralPreference::createLayout()
     logRecentFilesLayout->addStretch();
     generalGroup->addWidget(logRecentFilesRow);
     auto *cbAskBeforeLoadingLargeFiles = new QCheckBox(tr("Ask Before Loading Large Files"), this);
-    cbAskBeforeLoadingLargeFiles->setToolTip(tr("If checked, nomacs will ask for confirmation before loading files larger than the threshold below."));
+    cbAskBeforeLoadingLargeFiles->setToolTip(
+        tr("If checked, nomacs will ask for confirmation before loading files larger than the threshold below."));
     cbAskBeforeLoadingLargeFiles->setChecked(DkSettingsManager::param().global().askBeforeLoadingLargeFiles);
-    connect(cbAskBeforeLoadingLargeFiles, &QCheckBox::toggled, this, &DkGeneralPreference::onAskBeforeLoadingLargeFilesToggled);
+    connect(cbAskBeforeLoadingLargeFiles,
+            &QCheckBox::toggled,
+            this,
+            &DkGeneralPreference::onAskBeforeLoadingLargeFilesToggled);
 
     auto *sbMaxAutoLoadSizeMb = new QSpinBox(this);
     sbMaxAutoLoadSizeMb->setRange(1, 1000);
     sbMaxAutoLoadSizeMb->setSuffix(tr(" MB"));
     sbMaxAutoLoadSizeMb->setValue(DkSettingsManager::param().global().maxAutoLoadSizeMb);
-    connect(sbMaxAutoLoadSizeMb, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkGeneralPreference::onMaxAutoLoadSizeMbChanged);
+    connect(sbMaxAutoLoadSizeMb,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DkGeneralPreference::onMaxAutoLoadSizeMbChanged);
 
     auto *largeFilesRow = new QWidget(this);
     auto *largeFilesLayout = new QHBoxLayout(largeFilesRow);
@@ -518,7 +525,10 @@ void DkGeneralPreference::createLayout()
     cbStartupMode->addItem(tr("Start Empty"));
     cbStartupMode->addItem(tr("Start in Home Folder"));
     cbStartupMode->setCurrentIndex(DkSettingsManager::param().global().startupMode);
-    connect(cbStartupMode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkGeneralPreference::onStartupModeChanged);
+    connect(cbStartupMode,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DkGeneralPreference::onStartupModeChanged);
 
     auto *startupModeRow = new QWidget(this);
     auto *startupModeLayout = new QHBoxLayout(startupModeRow);
@@ -620,7 +630,6 @@ void DkGeneralPreference::onStartupModeChanged(int index) const
     if (DkSettingsManager::param().global().startupMode != index)
         DkSettingsManager::param().global().startupMode = index;
 }
-
 
 void DkGeneralPreference::onCheckOpenDuplicatesToggled(bool checked) const
 {

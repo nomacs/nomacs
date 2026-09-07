@@ -25,11 +25,6 @@
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>&amp;Explorer</source>
-        <translation>资源管理器(&amp;E)</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;File</source>
         <translation>文件(&amp;F)</translation>
     </message>
@@ -899,6 +894,31 @@
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>&amp;Stop Loading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>All Images</source>
+        <translation type="unfinished">所有图像</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>Generates all images in the world</source>
+        <translation type="unfinished">在世界中生成全部图像</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source> Pong </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source> Start pong </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Star Rating 0</source>
         <translation>星级评分 0</translation>
     </message>
@@ -1444,11 +1464,6 @@
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Prints selected files.</source>
         <translation>打印所选文件。</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Start pong</source>
-        <translation>开始乒乓吧</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -2733,24 +2748,6 @@ Please restart nomacs and try again.</source>
     </message>
 </context>
 <context>
-    <name>QObject::QObject</name>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>All Images</source>
-        <translation>所有图像</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Generates all images in the world</source>
-        <translation>在世界中生成全部图像</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Pong</source>
-        <translation>乒乓球</translation>
-    </message>
-</context>
-<context>
     <name>nmc::DkAdvancedPreference</name>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2881,6 +2878,11 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Finder</source>
         <translation>&amp;查找</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>&amp;Explorer</source>
+        <translation type="unfinished">资源管理器(&amp;E)</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -3633,6 +3635,20 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
+        <source>Large file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkCentralWidget.cpp"/>
+        <source>%1
+
+This file is %2 MB.
+
+Load it anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>I could not load &quot;%1&quot;</source>
         <translation>无法载入“%1”</translation>
     </message>
@@ -4039,16 +4055,6 @@ Do you want to replace it?</source>
 </context>
 <context>
     <name>nmc::DkDialogManager</name>
-    <message>
-        <location filename="../src/DkGui/DkDialog.cpp"/>
-        <source>Preview</source>
-        <translation>预览</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkDialog.cpp"/>
-        <source>Shortcuts</source>
-        <translation>快捷键</translation>
-    </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Mosaic</source>
@@ -4953,6 +4959,16 @@ Warning: This will modify the files.</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Clear Now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Clears the recent files and folders history immediately.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Check for Duplicates on Open</source>
         <translation>打开时检查重复</translation>
     </message>
@@ -5088,6 +5104,41 @@ Warning: This will modify the files.</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Ask Before Loading Large Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>If checked, nomacs will ask for confirmation before loading files larger than the threshold below.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source> MB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>On Startup:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Restore Last Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Start Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Start in Home Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose your preferred language.</source>
         <translation>选择首选语言。</translation>
     </message>
@@ -5110,6 +5161,11 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
         <translation>请重启 nomacs 以便修改生效</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Recent files history cleared</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5226,6 +5282,28 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, I could not load: %1</source>
         <translation>抱歉，无法加载：%1</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>Failed to load file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>The file format may not be installed by default.
+
+Installing the kimageformats plugin package from your
+distribution may resolve the issue.
+
+Common package names for your distribution:
+
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>Don&apos;t show this again</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
@@ -5448,6 +5526,31 @@ but saving orientation metadata has been disabled in settings.</source>
         <location filename="../src/DkCore/DkMessageBox.cpp"/>
         <source>Remember my choice</source>
         <translation>记住选择</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>Forever</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>This Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Week</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6078,6 +6181,16 @@ then press %1</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
+        <source>Sorry, %1 does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkNoMacs.cpp"/>
+        <source>Sorry, I could not start %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source> [Private Mode]</source>
         <translation> [隐私模式]</translation>
@@ -6237,7 +6350,6 @@ then press %1</source>
 <context>
     <name>nmc::DkPreferenceTabWidget</name>
     <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source></source>
         <translation>&lt;上下文备注&gt;</translation>
     </message>
@@ -6750,6 +6862,16 @@ then press %1</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
+        <source>Preview</source>
+        <translation type="unfinished">预览</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkDialog.cpp"/>
+        <source>Miscellaneous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
         <translation>%1已经被%2到%3使用
@@ -6931,18 +7053,28 @@ Press ESC to undo changes</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
+        <source>Rename File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
+        <source>Rename Multiple Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Delete File</source>
         <translation>删除文件</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
-        <source>Rename File(s)</source>
-        <translation>重命名文件</translation>
+        <source>New Filename:</source>
+        <translation>新文件名：</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
-        <source>New Filename:</source>
-        <translation>新文件名：</translation>
+        <source>Filename Prefix:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -7192,7 +7324,6 @@ Creating thumbnails...
         <translation>蓝色</translation>
     </message>
     <message>
-        <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source></source>
         <translation>&lt;上下文备注&gt;</translation>
     </message>

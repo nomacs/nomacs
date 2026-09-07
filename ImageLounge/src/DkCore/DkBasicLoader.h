@@ -213,7 +213,9 @@ public:
     /**
      * Load image from file.
      **/
-    bool loadGeneral(const QString &filePath, DkLoadOptions options = DkLoadOption::normal, const QSize &targetSize = QSize());
+    bool loadGeneral(const QString &filePath,
+                     DkLoadOptions options = DkLoadOption::normal,
+                     const QSize &targetSize = QSize());
 
     /**
      * Loads the image for the given file

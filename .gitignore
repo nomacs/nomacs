@@ -64,3 +64,5 @@ snap/.snapcraft/
 CMakeLists.txt.user
 CMakeLists.txt.user.*
 
+ImageLounge/translations/*.qm
+ImageLounge/translations/src/update.log

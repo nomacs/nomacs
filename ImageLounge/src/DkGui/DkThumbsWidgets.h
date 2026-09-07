@@ -245,6 +245,7 @@ private:
     LoadThumbnailRequest mThumbRequest{};
     bool mThumbNotExist = false;
     bool mFetchingThumb = false;
+    bool mLoadCancelled = false;
     qreal mDevicePixelRatio = 1.0;
     LoadThumbnailOption mThumbOption = LoadThumbnailOption::none;
     bool mIsHovered = false;

@@ -1013,6 +1013,7 @@ void DkThumbLabel::cancelLoading()
     }
     mThumbLoader->cancelThumbnailRequest(mThumbRequest);
     mFetchingThumb = false;
+    mLoadCancelled = true;
     mThumbRequest = {};
 }
 
@@ -1118,7 +1119,7 @@ void DkThumbLabel::fetchThumb(float devicePixelRatio)
                                                                           : LoadThumbnailOption::none;
     const QSize pixmapSize = (boundingRect().size() * mDevicePixelRatio).toSize();
 
-    if (!mFetchingThumb && (!pm || pm->size() != pixmapSize) && !mThumbNotExist) {
+    if (!mFetchingThumb && !mLoadCancelled && (!pm || pm->size() != pixmapSize) && !mThumbNotExist) {
         // setting fetching flag first, because requestThumbnail might return thumbnail immediately
         // This avoids stucking infinitely in fetching thumb state
         const int maxThumbSize = DkSettingsManager::param().resources().maxThumbSize;
@@ -1222,6 +1223,7 @@ void DkThumbLabel::setFileInfo(const DkFileInfo &fileInfo)
     mFilePath = fileInfo.path();
     mText.setPlainText(fileInfo.fileName());
     mThumbNotExist = false;
+    mLoadCancelled = false;
 
     // TODO: we can keep pixmap if file did not change (store fileInfo as member)
     if (mPixmapKey)
@@ -2344,6 +2346,7 @@ void DkThumbScrollWidget::createToolbar()
     mToolbar->addSeparator();
     mToolbar->addAction(am.action(DkActionManager::preview_batch));
     mToolbar->addAction(am.action(DkActionManager::preview_print));
+    mToolbar->addAction(am.action(DkActionManager::preview_stop_loading));
 
     // add sorting
     QString menuTitle = tr("&Sort");
@@ -2511,6 +2514,10 @@ void DkThumbScrollWidget::connectToActions(bool activate)
                 &QAction::triggered,
                 mThumbsScene,
                 &DkThumbScene::deleteSelected);
+        connect(am.action(DkActionManager::preview_stop_loading),
+                &QAction::triggered,
+                mThumbsScene,
+                &DkThumbScene::cancelLoading);
         connect(am.action(DkActionManager::preview_copy),
                 &QAction::triggered,
                 mThumbsScene,
@@ -2561,6 +2568,10 @@ void DkThumbScrollWidget::connectToActions(bool activate)
                    &QAction::triggered,
                    mThumbsScene,
                    &DkThumbScene::deleteSelected);
+        disconnect(am.action(DkActionManager::preview_stop_loading),
+                   &QAction::triggered,
+                   mThumbsScene,
+                   &DkThumbScene::cancelLoading);
         disconnect(am.action(DkActionManager::preview_copy),
                    &QAction::triggered,
                    mThumbsScene,

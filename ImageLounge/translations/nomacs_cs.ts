@@ -25,11 +25,6 @@
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>&amp;Explorer</source>
-        <translation>P&amp;růzkumník</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;File</source>
         <translation>&amp;Soubor</translation>
     </message>
@@ -733,6 +728,26 @@
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>All Images</source>
+        <translation type="unfinished">Všechny obrázky</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>Generates all images in the world</source>
+        <translation type="unfinished">Vygeneruje všechny obrázky na světě</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source> Pong </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source> Start pong </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Fit window to the image</source>
         <translation>Přizpůsobí okno podle obrázku</translation>
     </message>
@@ -1192,6 +1207,11 @@
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>&amp;Stop Loading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Rename</source>
         <translation>&amp;Přejmenovat</translation>
     </message>
@@ -1214,11 +1234,6 @@
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Prints selected files.</source>
         <translation>Vytiskne vybrané soubory.</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Start pong</source>
-        <translation>Spustit Pong</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -2734,24 +2749,6 @@ Akci nepůjde vrátit zpět.
     </message>
 </context>
 <context>
-    <name>QObject::QObject</name>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>All Images</source>
-        <translation>Všechny obrázky</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Generates all images in the world</source>
-        <translation>Vygeneruje všechny obrázky na světě</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Pong</source>
-        <translation>Pong</translation>
-    </message>
-</context>
-<context>
     <name>nmc::DkAdvancedPreference</name>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2881,6 +2878,11 @@ Akci nepůjde vrátit zpět.
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Finder</source>
         <translation>&amp;Finder</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>&amp;Explorer</source>
+        <translation type="unfinished">P&amp;růzkumník</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -3634,6 +3636,20 @@ Tato možnost je užitečná pouze pokud rozšíření ukládají soubory strano
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
+        <source>Large file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkCentralWidget.cpp"/>
+        <source>%1
+
+This file is %2 MB.
+
+Load it anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>I could not load &quot;%1&quot;</source>
         <translation>„%1“ nelze načíst</translation>
     </message>
@@ -4039,16 +4055,6 @@ Do you want to replace it?</source>
 </context>
 <context>
     <name>nmc::DkDialogManager</name>
-    <message>
-        <location filename="../src/DkGui/DkDialog.cpp"/>
-        <source>Preview</source>
-        <translation>Náhled</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkDialog.cpp"/>
-        <source>Shortcuts</source>
-        <translation>Zkratky</translation>
-    </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Mosaic</source>
@@ -4953,6 +4959,16 @@ Upozornění: Dojde ke změně souborů.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Clear Now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Clears the recent files and folders history immediately.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Check for Duplicates on Open</source>
         <translation>Zjišťovat přítomnost duplicit při&#xa0;spuštění</translation>
     </message>
@@ -5088,6 +5104,41 @@ Upozornění: Dojde ke změně souborů.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Ask Before Loading Large Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>If checked, nomacs will ask for confirmation before loading files larger than the threshold below.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source> MB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>On Startup:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Restore Last Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Start Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Start in Home Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose your preferred language.</source>
         <translation>Zvolte jazyk, který preferujete.</translation>
     </message>
@@ -5110,6 +5161,11 @@ Upozornění: Dojde ke změně souborů.</translation>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
         <translation>Pro použití změn je třeba aplikaci nomacs restartovat</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Recent files history cleared</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5226,6 +5282,28 @@ Upozornění: Dojde ke změně souborů.</translation>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, I could not load: %1</source>
         <translation>Nelze načíst: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>Failed to load file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>The file format may not be installed by default.
+
+Installing the kimageformats plugin package from your
+distribution may resolve the issue.
+
+Common package names for your distribution:
+
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>Don&apos;t show this again</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
@@ -5451,6 +5529,31 @@ ale ukládání orientace do metadat bylo v&#xa0;nastavení vypnuto.</translatio
         <location filename="../src/DkCore/DkMessageBox.cpp"/>
         <source>Remember my choice</source>
         <translation>Zapamatovat si moji volbu</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>Forever</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>This Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Week</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6087,6 +6190,16 @@ potom stiskněte %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
+        <source>Sorry, %1 does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkNoMacs.cpp"/>
+        <source>Sorry, I could not start %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source> [Private Mode]</source>
         <translation> [Soukromý režim]</translation>
@@ -6241,7 +6354,6 @@ potom stiskněte %1</translation>
 <context>
     <name>nmc::DkPreferenceTabWidget</name>
     <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
@@ -6754,6 +6866,16 @@ potom stiskněte %1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
+        <source>Preview</source>
+        <translation type="unfinished">Náhled</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkDialog.cpp"/>
+        <source>Miscellaneous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
         <translation>%1 již používá položka %2 &gt; %3.
@@ -6936,18 +7058,28 @@ Použijte klávesu ESC k vrácení změn.</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
+        <source>Rename File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
+        <source>Rename Multiple Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Delete File</source>
         <translation>Smazat soubor</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
-        <source>Rename File(s)</source>
-        <translation>Přejmenovat soubor(y)</translation>
+        <source>New Filename:</source>
+        <translation>Nový název souboru:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
-        <source>New Filename:</source>
-        <translation>Nový název souboru:</translation>
+        <source>Filename Prefix:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -7203,7 +7335,6 @@ Vytváření miniatur…
         <translation>Zakáže funkci pseudobarev</translation>
     </message>
     <message>
-        <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>

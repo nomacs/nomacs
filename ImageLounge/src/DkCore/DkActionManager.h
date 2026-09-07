@@ -412,6 +412,7 @@ public:
         preview_filter,
         preview_batch,
         preview_print,
+        preview_stop_loading,
 
         numPreviewActions
     };

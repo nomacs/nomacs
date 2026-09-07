@@ -25,11 +25,6 @@
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>&amp;Explorer</source>
-        <translation>&amp;Intéző</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;File</source>
         <translation>&amp;Fájl</translation>
     </message>
@@ -733,6 +728,26 @@
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>All Images</source>
+        <translation type="unfinished">Összes kép</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>Generates all images in the world</source>
+        <translation type="unfinished">A világ összes képének generálása</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source> Pong </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source> Start pong </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Fit window to the image</source>
         <translation>Ablak igazítása a képhez</translation>
     </message>
@@ -1192,6 +1207,11 @@
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>&amp;Stop Loading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Rename</source>
         <translation>&amp;Átnevezés</translation>
     </message>
@@ -1214,11 +1234,6 @@
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>Prints selected files.</source>
         <translation>Kijelölt fájlok nyomtatása.</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Start pong</source>
-        <translation>Pong indítása</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -2726,24 +2741,6 @@ This action cannot be undone.
     </message>
 </context>
 <context>
-    <name>QObject::QObject</name>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>All Images</source>
-        <translation>Összes kép</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Generates all images in the world</source>
-        <translation>A világ összes képének generálása</translation>
-    </message>
-    <message>
-        <location filename="../src/DkCore/DkActionManager.cpp"/>
-        <source>Pong</source>
-        <translation>Pong</translation>
-    </message>
-</context>
-<context>
     <name>nmc::DkAdvancedPreference</name>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -2873,6 +2870,11 @@ This action cannot be undone.
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>&amp;Finder</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkActionManager.cpp"/>
+        <source>&amp;Explorer</source>
+        <translation type="unfinished">&amp;Intéző</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -3626,6 +3628,20 @@ Legyen óvatos!</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkCentralWidget.cpp"/>
+        <source>Large file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkCentralWidget.cpp"/>
+        <source>%1
+
+This file is %2 MB.
+
+Load it anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkCentralWidget.cpp"/>
         <source>I could not load &quot;%1&quot;</source>
         <translation>I could not load &quot;%1&quot;</translation>
     </message>
@@ -4031,16 +4047,6 @@ Do you want to replace it?</source>
 </context>
 <context>
     <name>nmc::DkDialogManager</name>
-    <message>
-        <location filename="../src/DkGui/DkDialog.cpp"/>
-        <source>Preview</source>
-        <translation>Előnézet</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkDialog.cpp"/>
-        <source>Shortcuts</source>
-        <translation>Gyorsbillentyűk</translation>
-    </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>Mosaic</source>
@@ -4943,6 +4949,16 @@ Warning: This will modify the files.</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Clear Now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Clears the recent files and folders history immediately.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Check for Duplicates on Open</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5078,6 +5094,41 @@ Warning: This will modify the files.</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Ask Before Loading Large Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>If checked, nomacs will ask for confirmation before loading files larger than the threshold below.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source> MB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>On Startup:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Restore Last Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Start Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Start in Home Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Choose your preferred language.</source>
         <translation>Válassza ki a kívánt nyelvet.</translation>
     </message>
@@ -5100,6 +5151,11 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
         <translation>Indítsa újra az nomacs-ot a módosítások alkalmazásáért</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Recent files history cleared</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5216,6 +5272,28 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, I could not load: %1</source>
         <translation>Sajnálom, nem lehet betölteni: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>Failed to load file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>The file format may not be installed by default.
+
+Installing the kimageformats plugin package from your
+distribution may resolve the issue.
+
+Common package names for your distribution:
+
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkImageContainer.cpp"/>
+        <source>Don&apos;t show this again</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
@@ -5436,6 +5514,31 @@ but saving orientation metadata has been disabled in settings.</source>
         <location filename="../src/DkCore/DkMessageBox.cpp"/>
         <source>Remember my choice</source>
         <translation>Emlékezzen a döntésemre</translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>Forever</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>This Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkCore/DkMessageBox.cpp"/>
+        <source>One Week</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6070,6 +6173,16 @@ then press %1</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
+        <source>Sorry, %1 does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkNoMacs.cpp"/>
+        <source>Sorry, I could not start %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source> [Private Mode]</source>
         <translation> [Privát mód]</translation>
@@ -6224,7 +6337,6 @@ then press %1</source>
 <context>
     <name>nmc::DkPreferenceTabWidget</name>
     <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
@@ -6737,6 +6849,16 @@ then press %1</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkDialog.cpp"/>
+        <source>Preview</source>
+        <translation type="unfinished">Előnézet</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkDialog.cpp"/>
+        <source>Miscellaneous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkDialog.cpp"/>
         <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
         <translation type="unfinished"></translation>
@@ -6917,18 +7039,28 @@ Nyomjon ESC-et a változások visszavonásához</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
+        <source>Rename File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
+        <source>Rename Multiple Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Delete File</source>
         <translation>Fájl törlése</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
-        <source>Rename File(s)</source>
-        <translation>Fájl(ok) átnevezése</translation>
+        <source>New Filename:</source>
+        <translation>Új fájlnév:</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
-        <source>New Filename:</source>
-        <translation>Új fájlnév:</translation>
+        <source>Filename Prefix:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
@@ -7184,7 +7316,6 @@ Bélyegképek készítése...
         <translation>Pszeudoszín funkció letiltása</translation>
     </message>
     <message>
-        <location filename="../src/DkGui/DkToolbars.cpp"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>

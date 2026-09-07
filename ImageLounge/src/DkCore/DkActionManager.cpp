@@ -1682,6 +1682,12 @@ void DkActionManager::createActions(QWidget *parent)
                        QObject::tr("&Delete"),
                        no_tooltip,
                        QKeySequence::Delete);
+    previewActions.add(preview_stop_loading, //
+                       "preview_stop_loading",
+                       DkImage::loadIcon(":/nomacs/img/stop.svg"),
+                       QObject::tr("&Stop Loading"),
+                       no_tooltip,
+                       no_shortcut);
 
     previewActions.add(preview_copy, //
                        "preview_copy",

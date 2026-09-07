@@ -435,7 +435,9 @@ void DkSettings::load(QSettings &settings, bool defaults)
     global_p.pinnedFiles = settings.value("pinnedFiles", global_p.pinnedFiles).toStringList();
     global_p.recentFiles = settings.value("recentFiles", global_p.recentFiles).toStringList();
     global_p.logRecentFiles = settings.value("logRecentFiles", global_p.logRecentFiles).toBool();
-    global_p.askBeforeLoadingLargeFiles = settings.value("askBeforeLoadingLargeFiles", global_p.askBeforeLoadingLargeFiles).toBool();
+    global_p.askBeforeLoadingLargeFiles = settings
+                                              .value("askBeforeLoadingLargeFiles", global_p.askBeforeLoadingLargeFiles)
+                                              .toBool();
     global_p.maxAutoLoadSizeMb = settings.value("maxAutoLoadSizeMb", global_p.maxAutoLoadSizeMb).toInt();
     global_p.startupMode = settings.value("startupMode", global_p.startupMode).toInt();
     global_p.askToSaveDeletedFiles = settings.value("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles).toBool();

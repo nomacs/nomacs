@@ -120,7 +120,6 @@ void DkTabInfo::loadSettings(const QSettings &settings)
         mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(info)));
     else if (DkSettingsManager::param().global().startupMode == 2)
         mImageLoader->loadDir(QDir::homePath());
-
 }
 
 void DkTabInfo::saveSettings(QSettings &settings) const
@@ -476,7 +475,10 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
         disconnect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal);
         disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress);
         disconnect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab);
-        disconnect(loader.data(), &DkImageLoader::loadingConfirmationRequiredSignal, this, &DkCentralWidget::onLoadingConfirmationRequired);
+        disconnect(loader.data(),
+                   &DkImageLoader::loadingConfirmationRequiredSignal,
+                   this,
+                   &DkCentralWidget::onLoadingConfirmationRequired);
     }
 
     if (!loader)
@@ -506,7 +508,11 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
             &DkCentralWidget::showProgress,
             Qt::UniqueConnection);
     connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab, Qt::UniqueConnection);
-    connect(loader.data(), &DkImageLoader::loadingConfirmationRequiredSignal, this, &DkCentralWidget::onLoadingConfirmationRequired, Qt::UniqueConnection);
+    connect(loader.data(),
+            &DkImageLoader::loadingConfirmationRequiredSignal,
+            this,
+            &DkCentralWidget::onLoadingConfirmationRequired,
+            Qt::UniqueConnection);
 }
 
 void DkCentralWidget::paintEvent(QPaintEvent *)
@@ -1079,9 +1085,11 @@ void DkCentralWidget::showProgress(bool show, int time)
 void DkCentralWidget::onLoadingConfirmationRequired(const QString &filePath, qint64 sizeMb)
 {
     int result = QMessageBox::question(this,
-                                        tr("Large file"),
-                                        tr("%1\n\nThis file is %2 MB.\n\nLoad it anyway?").arg(QFileInfo(filePath).fileName()).arg(sizeMb),
-                                        QMessageBox::No | QMessageBox::Yes);
+                                       tr("Large file"),
+                                       tr("%1\n\nThis file is %2 MB.\n\nLoad it anyway?")
+                                           .arg(QFileInfo(filePath).fileName())
+                                           .arg(sizeMb),
+                                       QMessageBox::No | QMessageBox::Yes);
 
     QSharedPointer<DkImageLoader> loader = getCurrentImageLoader();
     if (result == QMessageBox::Yes && loader) {

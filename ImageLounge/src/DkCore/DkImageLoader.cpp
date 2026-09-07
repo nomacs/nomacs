@@ -787,7 +787,6 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
         return;
     }
 
-
     emit updateSpinnerSignalDelayed(true);
     bool loaded = mCurrentImage->loadImageThreaded(); // loads file threaded
 

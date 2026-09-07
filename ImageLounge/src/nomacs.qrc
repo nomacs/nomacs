@@ -63,6 +63,7 @@
         <file>img/info.svg</file>
         <file>img/widget-separator.svg</file>
         <file>img/trash.svg</file>
+        <file>img/stop.svg</file>
         <file>img/sort.svg</file>
         <file>img/show-filename.svg</file>
         <file>img/dummy.svg</file>
@@ -83,7 +84,6 @@
         <file>img/power.svg</file>
         <file>img/plugin-banner.svg</file>
         <file>img/warning.svg</file>
-        <file>img/stop.svg</file>
         <file>img/pin.svg</file>
         <file>img/pin-checked.svg</file>
         <file>img/bars.svg</file>
