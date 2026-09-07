@@ -276,12 +276,18 @@ class DkLocalSocketIPC : public QObject, public DkLocalIPC
 public:
     DkLocalSocketIPC()
     {
+        mIsOk = true; // KDSA has no error handling for the connection part, it only returns false on sendMessage()
         mSocket = std::make_unique<KDSingleApplication>();
         if (mSocket->isPrimaryInstance()) {
             connect(mSocket.get(), &KDSingleApplication::messageReceived, this, &DkLocalSocketIPC::messageReceived);
         }
     }
     ~DkLocalSocketIPC() override = default;
+
+    bool isOk() override
+    {
+        return mIsOk;
+    }
 
 private:
     void waitFirstInstance() override
@@ -366,13 +372,22 @@ private:
     void sendMessage(const QString &method, const QList<QVariant> &args)
     {
         Q_ASSERT(!isFirstInstance());
+        if (!mIsOk) {
+            return; // the previous sendMessage() failed
+        }
+
         QJsonObject obj;
         obj["version"] = kIpcVersion;
         obj["id"] = QCoreApplication::applicationPid();
         obj["method"] = method;
         obj["params"] = QJsonArray::fromVariantList(args);
         QByteArray encoded = QJsonDocument{obj}.toJson();
-        mSocket->sendMessage(encoded);
+        mIsOk = mSocket->sendMessage(encoded);
+
+        if (!mIsOk) {
+            qWarning() << "[local-socket] sendMessage failed";
+            return;
+        }
     }
 
     void activate() override
@@ -398,6 +413,7 @@ private:
     std::unique_ptr<KDSingleApplication> mSocket{};
     DkCentralWidget *mCentralWidget{};
     const int kIpcVersion{1};
+    bool mIsOk{};
 };
 
 #endif // WITH_KDSINGLEAPPLICATION
@@ -463,20 +479,27 @@ public:
     DkDBusIPC()
         : mDbus(QDBusConnection::sessionBus())
     {
-        mConnected = mDbus.isConnected();
-        if (!mConnected) {
+        mIsOk = mDbus.isConnected();
+        if (!mIsOk) {
             qWarning() << "[dbus] no connection:" << mDbus.lastError();
         } else {
             mRootObject = std::make_unique<QObject>();
             mAdapter = new DkDBusAdapter(mRootObject.get());
             if (!mDbus.registerObject("/", mRootObject.get())) {
                 qWarning() << "[dbus] failed to register object" << mDbus.lastError();
+                mIsOk = false;
+                return;
             }
             mFirstInstance = mDbus.registerService("org.nomacs.ImageLounge");
         }
     }
 
     ~DkDBusIPC() override = default;
+
+    bool isOk() override
+    {
+        return mIsOk;
+    }
 
     void waitFirstInstance() override
     {
@@ -507,7 +530,7 @@ public:
     {
         Q_ASSERT(!isFirstInstance());
 
-        if (!mConnected) {
+        if (!mIsOk) {
             qWarning() << "[dbus] sendMessage: no connection";
             return;
         }
@@ -518,6 +541,7 @@ public:
 
         if (msg.type() == QDBusMessage::ErrorMessage) {
             qWarning() << "[dbus] sendMessage: error:" << msg.errorName() << msg.errorMessage();
+            mIsOk = false;
         }
     }
 
@@ -542,7 +566,7 @@ public:
 
 private:
     QDBusConnection mDbus;
-    bool mConnected{};
+    bool mIsOk{};
     bool mFirstInstance{};
     std::unique_ptr<QObject> mRootObject{};
     DkDBusAdapter *mAdapter{};

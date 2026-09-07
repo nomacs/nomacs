@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
     if (keepSingleInstance) {
         const bool restarting = parser.isSet(restartOpt);
         auto &nomacsInstance = nmc::DkLocalIPC::instance();
-        if (restarting) {
+        if (nomacsInstance.isOk() && restarting) {
             // When the first instance restarts itself (settings or mode switch),
             // the new process must wait for previous process to release locks so it
             // can become the new leader.
@@ -248,20 +248,22 @@ int main(int argc, char *argv[])
             nomacsInstance.waitFirstInstance();
         }
 
-        if (!nomacsInstance.isFirstInstance() && !restarting) {
+        if (nomacsInstance.isOk() && !nomacsInstance.isFirstInstance() && !restarting) {
             nomacsInstance.activate();
+            if (nomacsInstance.isOk()) {
+                bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
+                for (auto &filePath : parser.positionalArguments()) {
+                    if (filePath.isEmpty()) {
+                        continue;
+                    }
 
-            bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
-            for (auto &filePath : parser.positionalArguments()) {
-                if (filePath.isEmpty()) {
-                    continue;
+                    nomacsInstance.loadUnique(nmc::DkFileInfo{filePath}.path(), newTab);
+                    newTab = true;
                 }
-
-                nomacsInstance.loadUnique(nmc::DkFileInfo{filePath}.path(), newTab);
-                newTab = true;
+                if (nomacsInstance.isOk()) {
+                    return 0;
+                }
             }
-
-            return 0;
         }
     }
 
@@ -342,7 +344,7 @@ int main(int argc, char *argv[])
 
     if (keepSingleInstance) {
         auto &nomacsInstance = nmc::DkLocalIPC::instance();
-        if (nomacsInstance.isFirstInstance()) {
+        if (nomacsInstance.isOk() && nomacsInstance.isFirstInstance()) {
             // NOTE: IPC must be ready before we reach event loop or else we have
             // a race when starting a bunch of nomacs in parallel
             nmc::DkLocalIPC::instance().setCentralWidget(w->getTabWidget());

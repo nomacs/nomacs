@@ -22,11 +22,17 @@ public:
 
     /**
      * @brief create server or client instance; first nomacs process is the server
+     * @note check isOk() to confirm if this worked or not
      */
     static DkLocalIPC &instance();
     /**
+     * @brief error status
+     */
+    virtual bool isOk() = 0;
+    /**
      * @brief wait until this process becomes the first instance (after restarting nomacs for example)
      *        should not be called unless we are certain the first instance is shutting down
+     * @note this can timeout, check isFirstInstance() to confirm
      */
     virtual void waitFirstInstance() = 0;
     /**
@@ -39,10 +45,12 @@ public:
     virtual void setCentralWidget(DkCentralWidget *widget) = 0;
     /**
      * @brief raise the main window of first nomacs process
+     * @note check isOk() to confirm if message was sent/received
      */
     virtual void activate() = 0;
     /**
      * @brief loadUnique open file/dir or switch to already open tab
+     * @note check isOk() to confirm if message was sent/received
      */
     virtual void loadUnique(const QString &path, bool newTab) = 0;
 
