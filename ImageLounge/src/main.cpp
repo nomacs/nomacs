@@ -340,6 +340,15 @@ int main(int argc, char *argv[])
         w = new nmc::DkNoMacsIpl();
     }
 
+    if (keepSingleInstance) {
+        auto &nomacsInstance = nmc::DkLocalIPC::instance();
+        if (nomacsInstance.isFirstInstance()) {
+            // NOTE: IPC must be ready before we reach event loop or else we have
+            // a race when starting a bunch of nomacs in parallel
+            nmc::DkLocalIPC::instance().setCentralWidget(w->getTabWidget());
+        }
+    }
+
     qInfo() << "init window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode
             << "maximized:" << w->isMaximized() << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry()
             << "windowState:" << w->windowState();
@@ -394,13 +403,6 @@ int main(int argc, char *argv[])
     qInfo() << "Initialization takes: " << dt;
 
     nmc::DkCentralWidget *cw = w->getTabWidget();
-
-    if (keepSingleInstance) {
-        auto &nomacsInstance = nmc::DkLocalIPC::instance();
-        if (nomacsInstance.isFirstInstance()) {
-            nmc::DkLocalIPC::instance().setCentralWidget(cw);
-        }
-    }
 
     // if there are any restored tabs, do not replace the last one with first file argument,
     // i.e. never alter the restored state immediately at launch

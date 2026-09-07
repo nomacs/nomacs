@@ -409,13 +409,19 @@ class DkDBusAdapter : QDBusAbstractAdaptor
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.nomacs.ImageLounge.main")
 public:
-    DkDBusAdapter(DkCentralWidget *cw, QObject *parent)
+    DkDBusAdapter(QObject *parent)
         : QDBusAbstractAdaptor(parent)
-        , mCentralWidget(cw)
     {
-        QObject::connect(mCentralWidget, &QObject::destroyed, this, [this]() {
-            mCentralWidget = nullptr;
-        });
+    }
+
+    void setCentralWidget(DkCentralWidget *widget)
+    {
+        mCentralWidget = widget;
+        if (mCentralWidget) {
+            QObject::connect(mCentralWidget, &QObject::destroyed, this, [this]() {
+                mCentralWidget = nullptr;
+            });
+        }
     }
 
 public Q_SLOTS:
@@ -448,7 +454,7 @@ public Q_SLOTS:
     }
 
 private:
-    DkCentralWidget *mCentralWidget;
+    DkCentralWidget *mCentralWidget{};
 };
 
 class DkDBusIPC : public DkLocalIPC
@@ -461,9 +467,16 @@ public:
         if (!mConnected) {
             qWarning() << "[dbus] no connection:" << mDbus.lastError();
         } else {
+            mRootObject = std::make_unique<QObject>();
+            mAdapter = new DkDBusAdapter(mRootObject.get());
+            if (!mDbus.registerObject("/", mRootObject.get())) {
+                qWarning() << "[dbus] failed to register object" << mDbus.lastError();
+            }
             mFirstInstance = mDbus.registerService("org.nomacs.ImageLounge");
         }
     }
+
+    ~DkDBusIPC() override = default;
 
     void waitFirstInstance() override
     {
@@ -486,13 +499,8 @@ public:
     void setCentralWidget(DkCentralWidget *widget) override
     {
         Q_ASSERT(isFirstInstance());
-        if (!mRootObject) {
-            mRootObject = new QObject;
-            (void)new DkDBusAdapter(widget, mRootObject);
-            if (!mDbus.registerObject("/", mRootObject)) {
-                qWarning() << "[dbus] failed to register object" << mDbus.lastError();
-            }
-        }
+        Q_ASSERT(mAdapter);
+        mAdapter->setCentralWidget(widget);
     }
 
     void sendMessage(const char *name, const QList<QVariant> &args)
@@ -536,7 +544,8 @@ private:
     QDBusConnection mDbus;
     bool mConnected{};
     bool mFirstInstance{};
-    QObject *mRootObject{};
+    std::unique_ptr<QObject> mRootObject{};
+    DkDBusAdapter *mAdapter{};
 };
 #endif // WITH_DBUS
 
