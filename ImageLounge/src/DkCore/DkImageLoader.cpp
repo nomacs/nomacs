@@ -157,6 +157,11 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     if (updated) {
         qInfo() << "[loadDir]" << newDirPath << mImages.size() << "indexed in" << dt;
         emit updateDirSignal(mImages);
+        int idx = -1;
+        if (mCurrentImage) {
+            idx = findFileIdx(mCurrentImage->filePath(), mImages);
+        }
+        emit imageUpdatedSignal(idx);
     }
 
     return !empty;
@@ -1668,10 +1673,11 @@ void DkImageLoader::sort()
 
     emit updateDirSignal(mImages);
 
+    int idx = -1;
     if (mCurrentImage) {
-        int idx = findFileIdx(mCurrentImage->filePath(), mImages);
-        emit imageUpdatedSignal(idx);
+        idx = findFileIdx(mCurrentImage->filePath(), mImages);
     }
+    emit imageUpdatedSignal(idx);
 }
 
 void DkImageLoader::currentImageUpdated() const
