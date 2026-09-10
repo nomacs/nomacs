@@ -168,6 +168,13 @@ public:
         return mSaveImageWatcher.isRunning();
     }
 
+    /**
+     * @brief wait for a save operation
+     * @return QString the file path of the saved file, or empty if not saved/error
+     * @note illegal to call if isSaving() is false
+     */
+    QString waitForSaveFinished() const;
+
     QSharedPointer<DkBasicLoader> getLoader() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
