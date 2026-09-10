@@ -314,7 +314,7 @@ void DkViewPort::loadImage(const QImage &newImg)
         setImage(newImg);
 
         // save to temp folder
-        mLoader->saveTempFile(newImg);
+        mLoader->saveTempFile(newImg, "img", "png");
     }
 }
 
@@ -701,12 +701,14 @@ void DkViewPort::setAsWallpaper()
 
     if (!imgC || !imgC->hasImage()) {
         qWarning() << "cannot create wallpaper because there is no image loaded...";
+        return;
     }
 
-    QImage img = imgC->image();
-    QString tmpPath = mLoader->saveTempFile(img, "wallpaper", "jpg", false);
+    QString tmpPath{};
+    if (mLoader->saveTempFile(imgC->image(), "wallpaper", "jpg")) {
+        tmpPath = imageContainer()->waitForSaveFinished();
+    }
 
-    // is there a more elegant way to see if saveTempFile returned an empty path
     if (tmpPath.isEmpty()) {
         QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not create a wallpaper..."));
         return;
