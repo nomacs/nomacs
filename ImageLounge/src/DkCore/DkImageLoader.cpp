@@ -826,24 +826,19 @@ void DkImageLoader::downloadFile(const QUrl &url)
     emit updateSpinnerSignalDelayed(true);
 }
 
-/**
- * Saves a temporary file to the folder specified in DkSettingsManager.
- * @param img the image (which was in most cases pasted to nomacs)
- **/
-QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, const QString &fileExt, bool threaded)
+bool DkImageLoader::saveTempFile(const QImage &img, const QString &baseName, const QString &suffix)
 {
-    QString filePath = DkUtils::getTemporaryFilePath(name, fileExt);
-    if (filePath.isEmpty())
-        return {};
+    QString filePath = DkUtils::getTemporaryFilePath(baseName, suffix);
+    if (filePath.isEmpty()) {
+        return false;
+    }
 
     if (QFile::exists(filePath)) {
         qWarning() << "File exists, will not overwrite:" << filePath;
-        return {};
+        return false;
     }
 
-    qInfo() << "Saving file to: " << filePath;
-    saveFile(filePath, img, "", -1, threaded);
-    return filePath;
+    return saveFile(filePath, img, "", -1);
 }
 
 void DkImageLoader::saveFileWeb(const QImage &saveImg)
@@ -1169,19 +1164,10 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
     return true;
 }
 
-/**
- * Saves a file (not threaded!)
- * If the file already exists, it will be replaced.
- * @param file the file name/path
- * @param fileFilter the file extension (e.g. *.jpg)
- * @param saveImg the image to be saved
- * @param compression the compression method (for jpg, tif)
- **/
 bool DkImageLoader::saveFile(const QString &filePath,
                              const QImage &saveImg,
-                             const QString &fileFilter,
-                             int compression,
-                             bool threaded)
+                             const QString &fallbackFilter,
+                             int compression)
 {
     QSharedPointer<DkImageContainerT> imgC = (mCurrentImage) ? mCurrentImage : findOrCreateFile(filePath);
     setCurrentImage(imgC);
@@ -1193,9 +1179,8 @@ bool DkImageLoader::saveFile(const QString &filePath,
     QString newSuffix = QFileInfo(filePath).suffix();
     QString lFilePath = filePath;
     if (newSuffix == "") {
-        QString lFileFilter = fileFilter;
-        newSuffix = lFileFilter.remove(0, fileFilter.indexOf("."));
-        printf("new suffix: %s\n", newSuffix.toStdString().c_str());
+        QString lFileFilter = fallbackFilter;
+        newSuffix = lFileFilter.remove(0, fallbackFilter.indexOf("."));
 
         int endSuffix = -1;
         if (newSuffix.indexOf(")") == -1)
@@ -1213,19 +1198,11 @@ bool DkImageLoader::saveFile(const QString &filePath,
 
     mDirWatcher->blockSignals(true);
     bool saveStarted = false;
-    if (threaded) {
-        saveStarted = imgC->saveImageThreaded(lFilePath, sImg, compression);
-        if (saveStarted) {
-            emit saveStartedSignal(imgC);
-        }
+    saveStarted = imgC->saveImageThreaded(lFilePath, sImg, compression);
+    if (saveStarted) {
+        emit saveStartedSignal(imgC);
     } else {
-        saveStarted = imgC->saveImage(lFilePath, sImg, compression);
-    }
-
-    if (!saveStarted) {
         emit imageSaved(QString(), false);
-    } else if (saveStarted && !threaded) {
-        emit imageSaved(lFilePath);
     }
 
     return saveStarted;

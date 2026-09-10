@@ -121,20 +121,29 @@ public slots:
      */
     bool saveUserFile(const QImage &saveImg, bool silent);
     void copyUserFile();
-    bool saveFile(const QString &filename,
-                  const QImage &saveImg = QImage(),
-                  const QString &fileFilter = "",
-                  int compression = -1,
-                  bool threaded = true);
+    /**
+     * @brief Saves a file without dialog prompts, potentially overwriting, in a background thread
+     * @param filename file path
+     * @param saveImg image to be saved, or use the current image
+     * @param fallbackFilter filedialog filter if file path has no extension ("JPEG (*.jpg *.jpeg)")
+     * @param compression the compression method/level, -1 for default
+     * @warning if the file already exists, it will be replaced.
+     * @note if there is no current image, it is set to the save file path
+     **/
+    bool saveFile(const QString &filename, const QImage &saveImg, const QString &fallbackFilter, int compression);
     bool isSaving() const;
     void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
     void load(const DkFileInfo &filePath);
     void downloadFile(const QUrl &url);
     bool deleteFile();
-    QString saveTempFile(const QImage &img,
-                         const QString &name = "img",
-                         const QString &fileExt = "png",
-                         bool threaded = true);
+    /**
+     * @brief Save image to unique filename in temporary directory
+     * @param img the image to save
+     * @param baseName prefix of temporary file
+     * @param suffix file format ("png")
+     * @note if there is no current image, it is set to the temporary file
+     **/
+    bool saveTempFile(const QImage &img, const QString &baseName, const QString &suffix);
     void setFolderFilter(const QString &filter);
     // load or update dir; emit updateDirSignal if there is a change
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);

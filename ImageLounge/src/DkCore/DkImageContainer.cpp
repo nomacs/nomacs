@@ -890,6 +890,27 @@ bool DkImageContainerT::saveMetaData()
     }
     return ok;
 }
+
+QString DkImageContainerT::waitForSaveFinished() const
+{
+    Q_ASSERT(isSaving());
+
+    QString savePath{};
+    QEventLoop eventLoop;
+    auto conn = connect(this,
+                        &DkImageContainerT::fileSavedSignal,
+                        this,
+                        [&savePath, &eventLoop](const QString &filePath, bool saved) {
+                            if (saved) {
+                                savePath = filePath;
+                            }
+                            eventLoop.exit(0);
+                        });
+    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+    disconnect(conn);
+    return savePath;
+}
+
 void DkImageContainerT::savingFinished()
 {
     QString savePath = mSaveImageWatcher.result();
