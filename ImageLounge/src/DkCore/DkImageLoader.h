@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <QElapsedTimer>
 #include <QImage>
 #include <QTimer>
 
@@ -201,15 +202,16 @@ protected:
 
     QString mFolderFilterString; // are deleted if a new folder is opened
 
-    QTimer mDelayedUpdateTimer;
-    bool mTimerBlockedUpdate = false;
+    bool mDirUpdated = false; // true to force reload of current dir
+    QTimer mLoadDirTimer; // active when dir update is deferred
+    QElapsedTimer mLastLoadDirTimer; // time since last dir update
+
     QString mCurrentDir;
     QString mCopyDir;
     QFileSystemWatcher *mDirWatcher = nullptr;
     QStringList mSubFolders;
     QVector<QSharedPointer<DkImageContainerT>> mImages;
     QSharedPointer<DkImageContainerT> mCurrentImage;
-    bool mFolderUpdated = false;
     bool mSortingImages = false;
     bool mSortingIsDirty = false;
     bool mOrientationWarningShown = false;
