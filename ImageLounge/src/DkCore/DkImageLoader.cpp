@@ -82,9 +82,9 @@ DkImageLoader::DkImageLoader()
             this,
             &DkImageLoader::imagesSorted);
 
-    mDelayedUpdateTimer.setSingleShot(true);
-    connect(&mDelayedUpdateTimer, &QTimer::timeout, this, [this]() {
-        directoryChanged();
+    mLoadDirTimer.setSingleShot(true);
+    connect(&mLoadDirTimer, &QTimer::timeout, this, [this]() {
+        loadDir(mCurrentDir, false);
     });
 }
 
@@ -100,10 +100,9 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     DkFileInfo info(newDirPath);
     bool updated = false; // only emit signal if we touch mImages
 
-    if (mFolderUpdated && newDirPath == mCurrentDir) {
+    if (mDirUpdated && newDirPath == mCurrentDir) {
         // folder changed signal was emitted
         updated = true;
-        mFolderUpdated = false;
 
         DkFileInfoList files = DkFileInfo::readDirectory(mCurrentDir, mFolderFilterString);
 
@@ -111,7 +110,6 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     } else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && info.isDir()) {
         // new folder
         updated = true;
-        mFolderUpdated = false;
         mCurrentDir = newDirPath;
         mFolderFilterString.clear(); // delete keywords -> otherwise user may be confused
 
@@ -131,6 +129,11 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
     if (empty) {
         emit showInfoSignal(tr("%1 \n does not contain any image").arg(newDirPath), 4000);
     }
+
+    // stop any deferred loadDir() and reset the window for directoryChanged()
+    mDirUpdated = false;
+    mLoadDirTimer.stop();
+    mLastLoadDirTimer.start();
 
     if (updated) {
         qInfo() << "[loadDir]" << newDirPath << mImages.size() << "indexed in" << dt;
@@ -1434,27 +1437,23 @@ void DkImageLoader::rotateImage(double angle)
     // [2022-09, pse]
 }
 
-/**
- * Reloads the file index if the directory was edited.
- * @param path the path to the current directory
- **/
 void DkImageLoader::directoryChanged(const QString &path)
 {
-    if (path.isEmpty() || path == mCurrentDir) {
-        mFolderUpdated = true;
+    if (path != mCurrentDir) {
+        return;
+    }
 
-        // guarantee, that only every XX seconds a folder update occurs
-        // think of a folder where 100s of files are written to...
-        // as this could be pretty fast, the thumbsloader (& whoever) would create a
-        // greater offset and slow down the system
-        if ((path.isEmpty() && mTimerBlockedUpdate) || (!path.isEmpty() && !mDelayedUpdateTimer.isActive())) {
+    mDirUpdated = true;
+
+    // QFileSystemWatcher will signal many times per second, since dir updating
+    // can be slow, we will limit the reloads to at most 1 per second
+    if (!mLoadDirTimer.isActive()) {
+        qint64 elapsed = mLastLoadDirTimer.isValid() ? mLastLoadDirTimer.elapsed() : 1000;
+        if (elapsed >= 1000) {
             loadDir(mCurrentDir, false);
-            mTimerBlockedUpdate = false;
-
-            if (!path.isEmpty())
-                mDelayedUpdateTimer.start(1000);
-        } else
-            mTimerBlockedUpdate = true;
+        } else {
+            mLoadDirTimer.start(1000 - elapsed);
+        }
     }
 }
 
@@ -1788,7 +1787,7 @@ QImage DkImageLoader::getPixmap()
 void DkImageLoader::setFolderFilter(const QString &filter)
 {
     mFolderFilterString = filter;
-    mFolderUpdated = true;
+    mDirUpdated = true;
     loadDir(mCurrentDir); // simulate a folder update operation
 }
 
