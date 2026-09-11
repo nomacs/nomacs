@@ -158,6 +158,7 @@ public slots:
 
 protected:
     // functions
+    void connectActions(bool activate);
     void updateCacher(QSharedPointer<DkImageContainerT> imgC);
     int getSubFolderIdx(int fromIdx, bool forward) const;
     void updateHistory();
@@ -196,6 +197,6 @@ protected:
     bool mOrientationWarningShown = false;
     bool mSaveOrientationWarningShown = false;
     QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>> mCreateImageWatcher;
+    QVector<QMetaObject::Connection> mActionConns;
 };
-
 }

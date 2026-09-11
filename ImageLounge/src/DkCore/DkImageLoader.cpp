@@ -86,28 +86,6 @@ DkImageLoader::DkImageLoader()
     connect(&mDelayedUpdateTimer, &QTimer::timeout, this, [this]() {
         directoryChanged();
     });
-
-    connect(DkActionManager::instance().action(DkActionManager::file_save_copy),
-            &QAction::triggered,
-            this,
-            &DkImageLoader::copyUserFile);
-    connect(DkActionManager::instance().action(DkActionManager::edit_undo),
-            &QAction::triggered,
-            this,
-            &DkImageLoader::undo);
-    connect(DkActionManager::instance().action(DkActionManager::edit_redo),
-            &QAction::triggered,
-            this,
-            &DkImageLoader::redo);
-    connect(DkActionManager::instance().action(DkActionManager::view_gps_map),
-            &QAction::triggered,
-            this,
-            &DkImageLoader::showOnMap);
-    connect(DkActionManager::instance().action(DkActionManager::file_delete_silent),
-            &QAction::triggered,
-            this,
-            &DkImageLoader::deleteFile,
-            Qt::UniqueConnection);
 }
 
 DkImageLoader::~DkImageLoader()
@@ -609,6 +587,39 @@ bool DkImageLoader::promptSaveBeforeUnload()
     return false;
 }
 
+void DkImageLoader::connectActions(bool activate)
+{
+    if (activate) {
+        Q_ASSERT(mActionConns.empty());
+        const auto &am = DkActionManager::instance();
+        mActionConns << connect(am.action(DkActionManager::file_save_copy), //
+                                &QAction::triggered,
+                                this,
+                                &DkImageLoader::copyUserFile);
+        mActionConns << connect(am.action(DkActionManager::edit_undo), //
+                                &QAction::triggered,
+                                this,
+                                &DkImageLoader::undo);
+        mActionConns << connect(am.action(DkActionManager::edit_redo), //
+                                &QAction::triggered,
+                                this,
+                                &DkImageLoader::redo);
+        mActionConns << connect(am.action(DkActionManager::view_gps_map), //
+                                &QAction::triggered,
+                                this,
+                                &DkImageLoader::showOnMap);
+        mActionConns << connect(am.action(DkActionManager::file_delete_silent), //
+                                &QAction::triggered,
+                                this,
+                                &DkImageLoader::deleteFile);
+    } else {
+        for (const auto &c : std::as_const(mActionConns)) {
+            disconnect(c);
+        }
+        mActionConns.clear();
+    }
+}
+
 void DkImageLoader::activate(bool isActive /* = true */)
 {
     // stop or start using the loader, for example when switching tabs or
@@ -623,6 +634,7 @@ void DkImageLoader::activate(bool isActive /* = true */)
 
     blockSignals(!isActive);
     receiveUpdates(isActive);
+    connectActions(isActive);
 
     if (cancelLoading) {
         mCurrentImage->cancel();
