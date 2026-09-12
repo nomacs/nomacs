@@ -201,7 +201,7 @@ protected:
     void switchWidget(QWidget *widget);
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
-    void updateLoader(QSharedPointer<DkImageLoader> loader) const;
+    void connectLoader(QSharedPointer<DkImageLoader> loader) const;
 
     DkPreferenceWidget *createPreferences();
     DkRecentFilesWidget *createRecentFiles();

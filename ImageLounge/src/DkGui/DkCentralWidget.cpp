@@ -426,7 +426,18 @@ void DkCentralWidget::currentTabChanged(int idx)
         return;
 
     auto tab = mTabInfos.at(idx);
-    updateLoader(tab->getImageLoader());
+
+    // deactivate the previous tab
+    for (auto &otherTab : mTabInfos) {
+        if (otherTab == tab) {
+            continue;
+        }
+        otherTab->deactivate(); // block loader signals, save per-tab state, etc
+        if (auto tw = getThumbScrollWidget()) { // disconnect anything else connected to loader
+            tw->getThumbWidget()->setImageLoader({});
+            tw->disconnect(otherTab->getImageLoader().data());
+        }
+    }
 
     if (getThumbScrollWidget())
         getThumbScrollWidget()->clear();
@@ -458,30 +469,11 @@ void DkCentralWidget::currentTabChanged(int idx)
     updateTab(tab);
 }
 
-void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
+void DkCentralWidget::connectLoader(QSharedPointer<DkImageLoader> loader) const
 {
-    for (int tIdx = 0; tIdx < mTabInfos.size(); tIdx++) {
-        QSharedPointer<DkImageLoader> l = mTabInfos.at(tIdx)->getImageLoader();
+    Q_ASSERT(loader);
 
-        if (l != loader)
-            mTabInfos.at(tIdx)->deactivate();
-
-        disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-                   this,
-                   &DkCentralWidget::imageLoaded);
-        disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-                   this,
-                   &DkCentralWidget::imageUpdatedSignal);
-        disconnect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal);
-        disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress);
-        disconnect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab);
-    }
-
-    if (!loader)
-        return;
-
+    // NOTE: a loader is never disconnected, instead signals are blocked when a tab is deactivated
     connect(loader.data(),
             QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
             this,
@@ -664,6 +656,9 @@ void DkCentralWidget::addTab(DkTabInfo::TabMode mode, bool background)
 
 void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 {
+    // the one time we connect, we never disconnect and use tab->deactivate() instead
+    connectLoader(tabInfo->getImageLoader());
+
     {
         // prevent currentTabChanged() until we are ready to change tabs
         // this prevents image loading in background tabs
@@ -869,14 +864,7 @@ void DkCentralWidget::showThumbView(bool show)
 
     } else {
         if (auto tw = getThumbScrollWidget()) {
-            disconnect(tw,
-                       &DkThumbScrollWidget::updateDirSignal,
-                       tabInfo->getImageLoader().data(),
-                       &DkImageLoader::loadDirRecursive);
-            disconnect(tw,
-                       &DkThumbScrollWidget::filterChangedSignal,
-                       tabInfo->getImageLoader().data(),
-                       &DkImageLoader::setFolderFilter);
+            tw->disconnect(tabInfo->getImageLoader().data());
         }
     }
 }
