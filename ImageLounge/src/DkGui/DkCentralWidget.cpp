@@ -93,7 +93,10 @@ DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject *parent)
     mTabIdx = idx;
 }
 
-DkTabInfo::~DkTabInfo() = default;
+DkTabInfo::~DkTabInfo()
+{
+    deactivate();
+}
 
 bool DkTabInfo::operator==(const DkTabInfo &o) const
 {
