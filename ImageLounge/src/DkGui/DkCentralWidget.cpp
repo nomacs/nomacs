@@ -428,6 +428,13 @@ void DkCentralWidget::currentTabChanged(int idx)
     if (idx < 0 || idx >= mTabInfos.size())
         return;
 
+    // QtTabBar sends currrentTabChanged() after tabMoved() when dragging,
+    // but the current tab doesn't actually change
+    if (mTabMoved) {
+        mTabMoved = false;
+        return;
+    }
+
     auto tab = mTabInfos.at(idx);
 
     // deactivate the previous tab
@@ -626,6 +633,7 @@ void DkCentralWidget::tabCloseRequested(int idx)
 
 void DkCentralWidget::tabMoved(int from, int to)
 {
+    mTabMoved = true;
     QSharedPointer<DkTabInfo> tabInfo = mTabInfos.at(from);
     mTabInfos.remove(from);
     mTabInfos.insert(to, tabInfo);
