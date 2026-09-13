@@ -447,6 +447,9 @@ void DkCentralWidget::currentTabChanged(int idx)
             tw->getThumbWidget()->setImageLoader({});
             tw->disconnect(otherTab->getImageLoader().data());
         }
+        if (auto vp = getViewPort()) {
+            vp->setImageLoader(QSharedPointer<DkImageLoader>::create()); // viewport doesn't support null loader yet
+        }
     }
 
     if (getThumbScrollWidget())
