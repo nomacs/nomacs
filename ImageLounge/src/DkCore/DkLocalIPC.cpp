@@ -6,6 +6,14 @@
 #include <QGuiApplication>
 #include <QWindow>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
+#ifdef Q_OS_MACOS
+#include <Carbon/Carbon.h>
+#endif
+
 #if QT_CONFIG(xcb)
 #include <QAbstractNativeEventFilter>
 #include <xcb/xcb.h>
@@ -28,9 +36,14 @@ namespace nmc
 // to show the new image. Unfortunately, most OS implement focus-stealing prevention
 // to stop this from happening.
 //
-// - On macOS the raise works since the open file is a special IPC event sent to the application
-// - On Windows, there is no established way to bypass this, some hacks may be possible.
-// - On Wayland and Xorg, we need to send a token from the new nomacs process to the first one.
+// - On macOS the raise works since the open file is a special IPC event sent to the application,
+//   however if using cmdline it won't raise without user interaction. There are workarounds
+//   for this that may be unsupported at some point.
+// - On Windows, there is no supported way to bypass this, but there are some well-known
+//   workarounds which may go away in the future.
+// - On Wayland and Xorg, we need to send a token from the new nomacs process to the first one. This
+//   means that practically cmdline raising won't work, unless the terminal program supports
+//   creation of these tokens.
 //
 // On Wayland, we just get/set XDG_ACTIVATION_TOKEN in the environment. Qt takes care
 // of the rest.
@@ -249,8 +262,24 @@ static QByteArray getWindowActivationToken()
     return {};
 }
 
+// do setup before calling QWindow::requestActivate() to bypass focus stealing prevention
 static void setWindowActivationToken(QWindow *window, const QByteArray &token)
 {
+#if defined(Q_OS_WIN)
+    Q_UNUSED(window)
+    Q_UNUSED(token)
+    // synthesize a no-op keystroke to pass the "last input event" check in SetForegroundWindow()
+    INPUT input{};
+    input.type = INPUT_KEYBOARD;
+    SendInput(1, &input, sizeof(INPUT));
+    return;
+#elif defined(Q_OS_MACOS)
+    Q_UNUSED(window)
+    Q_UNUSED(token)
+    // use the old Carbon API, still working in 10.15
+    ProcessSerialNumber psn = {0, kCurrentProcess};
+    SetFrontProcess(&psn);
+#else
     if (token.isEmpty()) {
         return;
     }
@@ -264,6 +293,7 @@ static void setWindowActivationToken(QWindow *window, const QByteArray &token)
         setXcbStartupId(window, token);
 #endif
     }
+#endif // Q_OS_WIN
 }
 
 #ifdef WITH_KDSINGLEAPPLICATION
