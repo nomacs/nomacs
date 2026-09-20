@@ -251,14 +251,13 @@ int main(int argc, char *argv[])
         if (nomacsInstance.isOk() && !nomacsInstance.isFirstInstance() && !restarting) {
             nomacsInstance.activate();
             if (nomacsInstance.isOk()) {
-                bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
+                bool newTab = true;
                 for (auto &filePath : parser.positionalArguments()) {
                     if (filePath.isEmpty()) {
                         continue;
                     }
 
                     nomacsInstance.loadUnique(nmc::DkFileInfo{filePath}.path(), newTab);
-                    newTab = true;
                 }
                 if (nomacsInstance.isOk()) {
                     return 0;

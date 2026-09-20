@@ -207,7 +207,7 @@ public:
         QString containerRawFilters;
 
         bool singleInstance; // use the same process for each open file
-        bool openNewTab; // files added from file manager create new tab or replace current
+        bool openNewTab; // files added from file/open create new tab
     };
 
     struct Display {

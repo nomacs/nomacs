@@ -394,7 +394,7 @@ void DkGeneralPreference::createLayout()
 
     // checkboxes
     auto *cbSingleInstance = new QCheckBox(tr("Single application instance"));
-    cbSingleInstance->setToolTip(tr("If checked, files are opened in the first instance."));
+    cbSingleInstance->setToolTip(tr("If checked, files are opened in a new tab in the first instance."));
     cbSingleInstance->setChecked(DkSettingsManager::param().app().singleInstance);
     connect(cbSingleInstance, &QCheckBox::toggled, this, [this](bool checked) {
         DkSettingsManager::param().app().singleInstance = checked;
@@ -402,7 +402,7 @@ void DkGeneralPreference::createLayout()
     });
 
     auto *cbOpenNewTab = new QCheckBox(tr("Open in new tab"));
-    cbOpenNewTab->setToolTip(tr("If checked, files and directories are opened in a new tab."));
+    cbOpenNewTab->setToolTip(tr("If checked, files and directories opened within nomacs use a new tab."));
     cbOpenNewTab->setChecked(DkSettingsManager::param().app().openNewTab);
     connect(cbOpenNewTab, &QCheckBox::toggled, this, [](bool checked) {
         DkSettingsManager::param().app().openNewTab = checked;
