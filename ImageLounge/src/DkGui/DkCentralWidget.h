@@ -121,6 +121,8 @@ public:
     DkViewPort *getViewPort() const;
     DkThumbScrollWidget *getThumbScrollWidget() const;
     QString getCurrentDir() const;
+    // return true if this instance should accept "open in new instance" requests w/o making another instance
+    bool acceptsOpenInNewInstance() const;
 
     void clearAllTabs();
     void setActiveTab(int idx) const;
