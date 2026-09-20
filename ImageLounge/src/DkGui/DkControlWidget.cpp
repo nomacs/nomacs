@@ -789,6 +789,54 @@ DkFolderScrollBar *DkControlWidget::getScroller() const
     return mFolderScroll;
 }
 
+QRegion DkControlWidget::getFramelessMask() const
+{
+    QVector<QWidget *> widgets;
+
+    widgets << mBottomLabel;
+    widgets << mBottomLeftLabel;
+    widgets << mCommentWidget;
+    widgets << mCropWidget;
+    widgets << mFileInfoLabel;
+    widgets << mFilePreview;
+    widgets << mFolderScroll;
+    widgets << mHistogram;
+    widgets << mMetaDataInfo;
+    widgets << mZoomWidget->getOverview();
+
+    const QWidget *wnd = topLevelWidget();
+    QRegion mask{};
+    for (auto *w : std::as_const(widgets)) {
+        if (!w || !w->isVisible()) {
+            continue;
+        }
+
+        QRect r = w->rect();
+        r.moveTopLeft(w->mapTo(wnd, r.topLeft()));
+        mask += r;
+    }
+
+    // a few widgets we want a tighter rect so use the subcontrol
+    if (mPlayer && mPlayer->isActive()) {
+        auto *w = mPlayer->findChild<QWidget *>("DkPlayerButtons");
+        if (w && w->isVisible()) {
+            QRect r = w->rect();
+            r.moveTopLeft(w->mapTo(wnd, r.topLeft()));
+            mask += r;
+        }
+    }
+    if (mZoomWidget && mZoomWidget->isActive()) {
+        auto *w = mZoomWidget->findChild<QWidget *>("DkOverviewSliderWidget");
+        if (w && w->isVisible()) {
+            QRect r = w->rect();
+            r.moveTopLeft(w->mapTo(wnd, r.topLeft()));
+            mask += r;
+        }
+    }
+
+    return mask;
+}
+
 // DkControlWidget - Events --------------------------------------------------------------------
 void DkControlWidget::mousePressEvent(QMouseEvent *event)
 {

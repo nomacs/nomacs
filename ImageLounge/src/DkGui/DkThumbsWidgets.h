@@ -271,6 +271,10 @@ public:
     bool allThumbsSelected() const;
     void ensureVisible(const QString &path) const;
     void viewportChanged(const QRectF &portRect);
+    /**
+     * @brief minimal set of rectangles that cover all opaque areas (for frameless window mask)
+     */
+    QVector<QRect> getOpaqueArea() const;
 
 public slots:
     void updateThumbLabels();
@@ -359,6 +363,8 @@ public:
     {
         mAction = action;
     }
+
+    QRegion getFramelessMask() const;
 
 public slots:
     void setVisible(bool visible) override;
@@ -537,6 +543,8 @@ public:
     {
         mAction = action;
     }
+
+    QRegion getFramelessMask() const;
 
 signals:
     void loadFileSignal(const QString &filePath, bool newTab);
