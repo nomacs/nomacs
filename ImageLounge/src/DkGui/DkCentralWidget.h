@@ -138,6 +138,7 @@ public:
 
     static void tryRestart(const QStringList &args = {});
 
+    QRegion getFramelessMask() const;
 signals:
     void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
     void imageHasGPSSignal(bool) const;
