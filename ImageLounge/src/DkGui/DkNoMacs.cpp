@@ -1306,7 +1306,7 @@ void DkNoMacs::openFileEvent(const QString &filePath)
         return;
     }
 
-    bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
+    bool newTab = true;
     centralWidget->loadUnique(filePath, newTab);
 }
 
