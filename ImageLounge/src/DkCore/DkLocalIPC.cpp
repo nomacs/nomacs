@@ -394,9 +394,6 @@ private:
     {
         Q_ASSERT(isFirstInstance());
         mCentralWidget = centralWidget;
-        QObject::connect(mCentralWidget, &QObject::destroyed, this, [this]() {
-            mCentralWidget = nullptr;
-        });
     }
 
     void sendMessage(const QString &method, const QList<QVariant> &args)
@@ -441,7 +438,7 @@ private:
     }
 
     std::unique_ptr<KDSingleApplication> mSocket{};
-    DkCentralWidget *mCentralWidget{};
+    QPointer<DkCentralWidget> mCentralWidget{}; // safe non-owning pointer
     const int kIpcVersion{1};
     bool mIsOk{};
 };
@@ -463,11 +460,6 @@ public:
     void setCentralWidget(DkCentralWidget *widget)
     {
         mCentralWidget = widget;
-        if (mCentralWidget) {
-            QObject::connect(mCentralWidget, &QObject::destroyed, this, [this]() {
-                mCentralWidget = nullptr;
-            });
-        }
     }
 
 public Q_SLOTS:
@@ -500,7 +492,7 @@ public Q_SLOTS:
     }
 
 private:
-    DkCentralWidget *mCentralWidget{};
+    QPointer<DkCentralWidget> mCentralWidget{}; // safe non-owning pointer
 };
 
 class DkDBusIPC : public DkLocalIPC
