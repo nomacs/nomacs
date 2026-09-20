@@ -1159,6 +1159,11 @@ QString DkCentralWidget::getCurrentDir() const
     return cDir;
 }
 
+bool DkCentralWidget::acceptsOpenInNewInstance() const
+{
+    return mTabInfos.empty() || (mTabInfos.count() == 1 && mTabInfos[0]->useForNewImageTab());
+}
+
 // DropEvents --------------------------------------------------------------------
 void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event)
 {

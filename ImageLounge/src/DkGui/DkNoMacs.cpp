@@ -1296,13 +1296,14 @@ void DkNoMacs::openFileEvent(const QString &filePath)
 {
     // handle open file event from operating system IPC (macOS Apple Events, D-Bus etc)
     bool oneInstance = nmc::DkSettingsManager::param().app().singleInstance;
-    if (!oneInstance) {
-        newInstance(filePath);
-        return;
-    }
 
     auto *centralWidget = getTabWidget();
     if (!centralWidget) {
+        return;
+    }
+
+    if (!oneInstance && !centralWidget->acceptsOpenInNewInstance()) {
+        newInstance(filePath);
         return;
     }
 
