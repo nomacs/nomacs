@@ -34,6 +34,7 @@
 #include "DkDialog.h"
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
+#include "DkLocalIPC.h"
 #include "DkMessageBox.h"
 #include "DkPreferenceWidgets.h"
 #include "DkSettings.h"
@@ -1036,8 +1037,24 @@ void DkCentralWidget::tryRestart(const QStringList &args)
 {
     auto conn = connect(qApp, &QApplication::lastWindowClosed, [args] {
         qInfo() << "Restarting with args:" << args;
+        bool privateMode = DkSettingsManager::param().app().privateMode;
+        bool singleInstance = DkSettingsManager::param().app().singleInstance;
+
         QStringList tmp;
-        tmp << "--nmc-restart";
+
+        // stay in private mode
+        if (privateMode) {
+            tmp << "--private";
+        } else if (singleInstance) {
+            auto &instance = DkLocalIPC::instance();
+            if (instance.isOk() && instance.isFirstInstance()) {
+                // when first instance restarts, new instance waits acquire first-instance status
+                tmp << "--nmc-restart";
+            } else {
+                // start another instance without waiting
+                tmp << "--new-instance";
+            }
+        }
         tmp << "--nmc-session" << QString::number(DkSettingsManager::param().global().sessionId);
         tmp << args;
         QProcess::startDetached(QApplication::applicationFilePath(), tmp);
