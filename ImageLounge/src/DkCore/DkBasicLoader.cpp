@@ -44,6 +44,7 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QRegularExpression>
+#include <QSaveFile>
 #include <QtConcurrentRun>
 
 #include <qmath.h>
@@ -1159,36 +1160,6 @@ QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePa
     return QSharedPointer<QByteArray>(new QByteArray(io->readAll()));
 }
 
-/**
- * @brief writeBufferToFile() writes the passed in file buffer to the specified file.
- *
- * It's called by the save() routine, which saves the image to that file buffer
- * and updates that file buffer to also contain exif data.
- *
- * @param fileInfo path to file to be written
- * @param ba raw content to be written to file
- */
-bool DkBasicLoader::writeBufferToFile(const QString &fileInfo, const QSharedPointer<QByteArray> ba) const
-{
-    if (!ba || ba->isEmpty())
-        return false;
-
-    QFile file(fileInfo);
-    if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << "[DkBasicLoader] failed to open for writing:" << file.error() << file.errorString()
-                   << file.fileName();
-        return false;
-    }
-    qint64 bytesWritten = file.write(*ba.data(), ba->size());
-    file.close();
-    qDebug() << "[DkBasicLoader] buffer saved, bytes written: " << bytesWritten;
-
-    if (!bytesWritten || bytesWritten == -1)
-        return false;
-
-    return true;
-}
-
 void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QByteArray> ba)
 {
     // reset counters
@@ -1552,8 +1523,15 @@ bool DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteAr
     }
 
     // Write in-memory copy to specified file - use this overload only if you really need it
-    if (saved) {
-        return writeBufferToFile(filePath, ba);
+    if (saved && !ba.isNull() && !ba->isEmpty()) {
+        QSaveFile file(filePath);
+        if (!file.open(QFile::WriteOnly)) {
+            qWarning() << "[saveMetaData] failed to open for writing:" << file.error() << file.errorString()
+                       << file.fileName();
+        } else {
+            file.write(*ba);
+            return file.commit();
+        }
     }
 
     return false;
