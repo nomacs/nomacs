@@ -354,18 +354,9 @@ bool DkImageContainer::loadImage()
     return mLoader->hasImage();
 }
 
-bool DkImageContainer::saveImage(const QString &filePath, int compression /* = -1 */)
+bool DkImageContainer::saveImage(const QString &filePath, int compression)
 {
-    return saveImage(filePath, getLoader()->lastImage(), compression);
-}
-
-bool DkImageContainer::saveImage(const QString &filePath, const QImage saveImg, int compression /* = -1 */)
-{
-    QFileInfo saveFile(saveImageIntern(filePath, getLoader(), saveImg, compression));
-
-    qDebug() << "save file: " << saveFile.absoluteFilePath();
-
-    return saveFile.exists() && saveFile.isFile();
+    return DkBasicLoader::save(filePath, getLoader()->lastImage(), getLoader()->getMetaData(), compression);
 }
 
 QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &fileInfo)
@@ -417,14 +408,6 @@ QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QString &f
     }
 
     return loader;
-}
-
-QString DkImageContainer::saveImageIntern(const QString &filePath,
-                                          QSharedPointer<DkBasicLoader> loader,
-                                          QImage saveImg,
-                                          int compression)
-{
-    return loader->save(filePath, saveImg, compression);
 }
 
 bool DkImageContainer::saveMetaData()
@@ -873,8 +856,12 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
             &DkImageContainerT::savingFinished,
             Qt::UniqueConnection);
 
-    mSaveImageWatcher.setFuture(QtConcurrent::run([&, filePath, saveImg, compression] {
-        return saveImageIntern(filePath, mLoader, saveImg, compression);
+    // We have to copy non-COW objects that might change during the save
+    auto metaData = mLoader->getMetaData()->copy();
+
+    mSaveImageWatcher.setProperty("filePath", filePath);
+    mSaveImageWatcher.setFuture(QtConcurrent::run([=] {
+        return DkBasicLoader::save(filePath, saveImg, metaData, compression);
     }));
 
     return true;
@@ -913,13 +900,14 @@ QString DkImageContainerT::waitForSaveFinished() const
 
 void DkImageContainerT::savingFinished()
 {
-    QString savePath = mSaveImageWatcher.result();
+    bool saved = mSaveImageWatcher.result();
 
-    DkFileInfo sInfo(savePath);
-    qDebug() << "save file: " << savePath;
+    QString filePath = mSaveImageWatcher.property("filePath").toString();
+    QFileInfo sInfo(filePath);
 
-    if (!sInfo.exists() || !sInfo.isFile()) {
-        emit fileSavedSignal(savePath, false);
+    if (!saved) {
+        emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(sInfo.fileName()));
+        emit fileSavedSignal(filePath, false);
         emit showInfoSignal(tr("Sorry, I could not save: %1").arg(sInfo.fileName()));
     } else {
         //// reset thumb - loadImageThreaded should do it anyway
@@ -945,17 +933,10 @@ void DkImageContainerT::savingFinished()
             loadImageThreaded(true); // force a reload
             mFileUpdateTimer.start();
         }
-    }
-}
 
-QSharedPointer<DkBasicLoader> DkImageContainerT::getLoader()
-{
-    if (!mLoader) {
-        DkImageContainer::getLoader();
-        connect(mLoader.data(), &DkBasicLoader::errorDialogSignal, this, &DkImageContainerT::errorDialogSignal);
+        emit fileSavedSignal(filePath, true);
+        emit showInfoSignal(tr("Saved: %1").arg(sInfo.fileName()));
     }
-
-    return mLoader;
 }
 
 void DkImageContainerT::undo()
