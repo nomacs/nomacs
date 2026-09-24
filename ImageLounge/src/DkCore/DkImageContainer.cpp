@@ -939,6 +939,8 @@ void DkImageContainerT::savingFinished()
         emit showInfoSignal(tr("Saved: %1").arg(sInfo.fileName()));
 
         mEdited = false;
+        getMetaData()->clearExifState();
+
         if (mSelected) {
             loadImageThreaded(true); // force a reload
             mFileUpdateTimer.start();

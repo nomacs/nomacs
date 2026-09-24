@@ -39,6 +39,7 @@
 
 #include "nmc_config.h"
 
+class QFile;
 class QNetworkReply;
 class LibRaw;
 
@@ -263,11 +264,16 @@ public:
      */
     void resetPageIdx();
 
-    QString save(const QString &filePath, const QImage &img, int compression = -1);
-    bool saveToBuffer(const QString &filePath,
-                      const QImage &img,
-                      QSharedPointer<QByteArray> &ba,
-                      int compression = -1) const;
+    /**
+     * @brief save the image and its metadata to the specified file
+     * @param filePath target path to image file
+     * @param img source image to be written to file (may be converted)
+     * @param compression compression flag for QImageWriter (-1==default, may be ignored depending on format)
+     * @note the file format comes from the file suffix
+     * @warning this overwrites any existing file
+     * @return empty string on failure
+     */
+    QString save(const QString &filePath, const QImage &img, int compression);
     [[nodiscard]] bool saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
 
     void pruneEditHistory();
@@ -384,8 +390,7 @@ public:
                   QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 
 #ifdef Q_OS_WIN
-    // bool saveWindowsIcon(const QString &filePath, const QImage &img) const;
-    bool saveWindowsIcon(const QImage &img, QSharedPointer<QByteArray> &ba) const;
+    static bool saveWindowsIcon(const QImage &img, QFile &file);
 #endif
 
 signals:
