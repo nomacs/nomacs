@@ -92,8 +92,7 @@ public:
 
     bool loadImage();
     void setImage(const QImage &img, const QString &editName);
-    bool saveImage(const QString &filePath, const QImage saveImg, int compression = -1);
-    bool saveImage(const QString &filePath, int compression = -1);
+    [[nodiscard]] bool saveImage(const QString &filePath, int compression);
     [[nodiscard]] virtual bool saveMetaData();
     virtual void clear();
     virtual void undo();
@@ -117,10 +116,6 @@ protected:
     [[nodiscard]] bool saveMetaDataIntern(const QString &filePath,
                                           QSharedPointer<DkBasicLoader> loader,
                                           QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
-    QString saveImageIntern(const QString &filePath,
-                            QSharedPointer<DkBasicLoader> loader,
-                            QImage saveImg,
-                            int compression);
     void setFile(const DkFileInfo &fileInfo);
     void init();
 
@@ -175,7 +170,6 @@ public:
      */
     QString waitForSaveFinished() const;
 
-    QSharedPointer<DkBasicLoader> getLoader() override;
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
     void undo() override;
@@ -209,7 +203,7 @@ protected:
 
     QFutureWatcher<QSharedPointer<QByteArray>> mBufferWatcher;
     QFutureWatcher<QSharedPointer<DkBasicLoader>> mImageWatcher;
-    QFutureWatcher<QString> mSaveImageWatcher;
+    QFutureWatcher<bool> mSaveImageWatcher;
 
     QSharedPointer<FileDownloader> mFileDownloader;
 

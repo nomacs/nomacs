@@ -1144,7 +1144,7 @@ void DkBasicLoader::setHistoryIndex(int idx)
     const QSharedPointer<DkMetaDataT> metaData = lastMetaDataEdit();
     // Update our current metadata object, which is also used elsewhere (pointer)
     // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
-    mMetaData->update(metaData);
+    mMetaData->update(*metaData);
 }
 
 QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath)
@@ -1391,12 +1391,11 @@ void DkBasicLoader::convert32BitOrder(void *buffer, uint32_t width) const
 #endif
 }
 
-QString DkBasicLoader::save(const QString &filePath, const QImage &img, int compression)
+bool DkBasicLoader::save(const QString &filePath,
+                         const QImage &img,
+                         QSharedPointer<const DkMetaDataT> metaData,
+                         int compression)
 {
-    // copy current metadata object: mMetaData pointer may be reset in the background in the process
-    // and then it won't be saved because !isLoaded()... [2022-08, pse]
-    QSharedPointer<DkMetaDataT> srcMetaData = mMetaData; // FIXME: get rid of this
-
     bool saved = false;
 
     QFileInfo fInfo(filePath);
@@ -1471,7 +1470,9 @@ QString DkBasicLoader::save(const QString &filePath, const QImage &img, int comp
     }
     file.close();
 
-    if (srcMetaData) {
+    if (saved && metaData) {
+        Q_ASSERT(metaData->isLoaded());
+
         DkMetaDataT dstMetaData;
         dstMetaData.readMetaData(file.fileName()); // Initially empty since we just wrote the file content
 
@@ -1479,17 +1480,9 @@ QString DkBasicLoader::save(const QString &filePath, const QImage &img, int comp
             qInfo() << "[save] skipped saving metadata, unsupported for file:" << file.fileName();
         } else {
             saved = false;
-            if (!srcMetaData->isLoaded() || !srcMetaData->hasMetaData()) {
-                qWarning() << "[save] I was given unloaded metadata object";
-                srcMetaData->readMetaData(filePath);
-            }
 
-            // If we have metadata for the image, save it
-            // If your images are saved without metadata, check if the metadata object is discarded or reset
-            // causing isLoaded() to return false (glitch on reload) - pse
-            if (srcMetaData->isLoaded()) {
-                dstMetaData.update(srcMetaData); // Copy from src; TODO: will this keep anything deleted from src - or
-                                                 // we don't allow deletion?
+            if (metaData->isLoaded()) {
+                dstMetaData.update(*metaData); // Copy from src TODO: will this keep any keys we deleted?
 
                 if (fInfo.suffix().contains(QRegularExpression("(tif|tiff)"))) {
                     dstMetaData.fixTIFFAfterSave();
@@ -1522,10 +1515,9 @@ QString DkBasicLoader::save(const QString &filePath, const QImage &img, int comp
 
     if (!saved) {
         file.remove();
-        emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(fInfo.fileName()));
     }
 
-    return filePath;
+    return saved;
 }
 
 /**

@@ -268,12 +268,16 @@ public:
      * @brief save the image and its metadata to the specified file
      * @param filePath target path to image file
      * @param img source image to be written to file (may be converted)
+     * @param metaData new file metadata, null pointer means file will have no metadata
      * @param compression compression flag for QImageWriter (-1==default, may be ignored depending on format)
      * @note the file format comes from the file suffix
      * @warning this overwrites any existing file
      * @return empty string on failure
      */
-    QString save(const QString &filePath, const QImage &img, int compression);
+    [[nodiscard]] static bool save(const QString &filePath,
+                                   const QImage &img,
+                                   const QSharedPointer<const DkMetaDataT> metaData,
+                                   int compression);
     [[nodiscard]] bool saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
 
     void pruneEditHistory();
@@ -392,9 +396,6 @@ public:
 #ifdef Q_OS_WIN
     static bool saveWindowsIcon(const QImage &img, QFile &file);
 #endif
-
-signals:
-    void errorDialogSignal(const QString &msg) const;
 
 protected:
     /**
