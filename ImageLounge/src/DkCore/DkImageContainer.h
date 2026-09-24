@@ -155,7 +155,6 @@ public:
     bool loadImageThreaded(bool force = false);
     bool saveImageThreaded(const QString &filePath, const QImage saveImg, int compression = -1);
     bool saveImageThreaded(const QString &filePath, int compression = -1);
-    void saveMetaDataThreaded(const QString &filePath);
     [[nodiscard]] bool saveMetaData() override;
 
     bool isSaving() const
