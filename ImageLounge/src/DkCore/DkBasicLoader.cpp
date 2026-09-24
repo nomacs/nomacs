@@ -1445,26 +1445,24 @@ QString DkBasicLoader::save(const QString &filePath, const QImage &img, int comp
         if (fInfo.suffix().contains(QRegularExpression("(png)")))
             compression = -1;
 
-        auto *imgWriter = new QImageWriter(&file, fInfo.suffix().toLatin1());
+        QImageWriter imgWriter{&file, fInfo.suffix().toLatin1()};
 
         if (compression >= 0) { // -1 -> use Qt's default
-            imgWriter->setCompression(compression);
-            imgWriter->setQuality(compression);
+            imgWriter.setCompression(compression);
+            imgWriter.setQuality(compression);
         }
-        if (compression == -1 && imgWriter->format() == "jpg") {
-            imgWriter->setQuality(DkSettingsManager::instance().settings().app().defaultJpgQuality);
+        if (compression == -1 && imgWriter.format() == "jpg") {
+            imgWriter.setQuality(DkSettingsManager::instance().settings().app().defaultJpgQuality);
         }
 
-        imgWriter->setOptimizedWrite(true); // this saves space TODO: user option here?
-        imgWriter->setProgressiveScanWrite(true);
+        imgWriter.setOptimizedWrite(true); // this saves space TODO: user option here?
+        imgWriter.setProgressiveScanWrite(true);
 
-        saved = imgWriter->write(
+        saved = imgWriter.write(
             sImg); // hint: release() might run now, resetting mMetaData which is used below [2022-08, pse]
         if (!saved) {
-            qWarning() << "[save] imagewriter error:" << imgWriter->errorString() << file.fileName();
+            qWarning() << "[save] imagewriter error:" << imgWriter.errorString() << file.fileName();
         }
-
-        delete imgWriter;
 
         if (file.error()) {
             saved = false;
