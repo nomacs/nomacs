@@ -809,17 +809,6 @@ void DkImageContainerT::receiveUpdates(bool connectSignals)
     mSelected = connectSignals;
 }
 
-void DkImageContainerT::saveMetaDataThreaded(const QString &filePath)
-{
-    if (!exists() || (getLoader()->getMetaData() && !getLoader()->getMetaData()->isDirty()))
-        return;
-
-    mFileUpdateTimer.stop();
-    QFuture<void> future = QtConcurrent::run([&, filePath] {
-        return saveMetaDataIntern(filePath, getLoader(), getFileBuffer());
-    });
-}
-
 bool DkImageContainerT::saveImageThreaded(const QString &filePath, int compression /* = -1 */)
 {
     return saveImageThreaded(filePath, getLoader()->lastImage(), compression);
