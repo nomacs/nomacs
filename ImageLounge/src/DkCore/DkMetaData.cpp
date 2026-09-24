@@ -49,7 +49,7 @@ DkMetaDataT::DkMetaDataT()
     mExifState = not_loaded;
 }
 
-bool DkMetaDataT::isNull()
+bool DkMetaDataT::isNull() const
 {
     return !mExifImg.get();
 }
@@ -84,13 +84,13 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
  *
  * @param other
  */
-void DkMetaDataT::update(QSharedPointer<DkMetaDataT> other)
+void DkMetaDataT::update(const DkMetaDataT &other)
 {
-    if (other->isNull() || !other->mExifImg) {
+    if (other.isNull() || !other.mExifImg) {
         return;
     }
     // Copy metadata from other to this
-    mExifImg->setMetadata(*other->mExifImg);
+    mExifImg->setMetadata(*other.mExifImg);
 }
 
 void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray> ba)
