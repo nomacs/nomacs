@@ -199,6 +199,11 @@ protected:
     QString fileName() const;
 
     void updateDirWatcher();
+    /**
+     * @brief track dir contents to ignore unecesssary updates
+     * @return true if files were added or removed
+     */
+    bool updateDirContents(const DkFileInfoList &files);
 
     QString mFolderFilterString; // are deleted if a new folder is opened
 
@@ -218,5 +223,6 @@ protected:
     bool mSaveOrientationWarningShown = false;
     QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>> mCreateImageWatcher;
     QVector<QMetaObject::Connection> mActionConns;
+    QSet<QString> mFileSet{};
 };
 }
