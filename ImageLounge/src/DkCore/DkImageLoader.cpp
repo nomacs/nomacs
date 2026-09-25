@@ -94,6 +94,18 @@ DkImageLoader::~DkImageLoader()
         mCreateImageWatcher.blockSignals(true);
 }
 
+bool DkImageLoader::updateDirContents(const DkFileInfoList &files)
+{
+    QSet<QString> newSet;
+    for (auto &f : files) {
+        newSet.insert(f.fileName());
+    }
+    bool updated = newSet != mFileSet;
+    mFileSet = newSet;
+
+    return updated;
+}
+
 bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
 {
     DkTimer dt;
@@ -102,11 +114,13 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
 
     if (mDirUpdated && newDirPath == mCurrentDir) {
         // folder changed signal was emitted
-        updated = true;
-
         DkFileInfoList files = DkFileInfo::readDirectory(mCurrentDir, mFolderFilterString);
-
-        createImages(files, true);
+        if (updateDirContents(files)) { // check if file list actually changed
+            updated = true;
+            createImages(files, true);
+        } else {
+            qInfo() << "[loadDir] ignoring dir update, no relevant changes" << dt;
+        }
     } else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && info.isDir()) {
         // new folder
         updated = true;
@@ -121,6 +135,7 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
         }
 
         mImages.clear(); // do not preserve unchanged images
+        updateDirContents(files); // replace dir contents
         createImages(files, true);
     }
 
@@ -1196,16 +1211,12 @@ bool DkImageLoader::saveFile(const QString &filePath,
         lFilePath.append(newSuffix.left(endSuffix));
     }
 
-    emit updateSpinnerSignalDelayed(true);
     QImage sImg = (saveImg.isNull()) ? imgC->image() : saveImg;
 
-    mDirWatcher->blockSignals(true);
-    bool saveStarted = false;
-    saveStarted = imgC->saveImageThreaded(lFilePath, sImg, compression);
+    bool saveStarted = imgC->saveImageThreaded(lFilePath, sImg, compression);
     if (saveStarted) {
+        emit updateSpinnerSignalDelayed(true);
         emit saveStartedSignal(imgC);
-    } else {
-        emit imageSaved(QString(), false);
     }
 
     return saveStarted;
@@ -1219,7 +1230,6 @@ bool DkImageLoader::isSaving() const
 void DkImageLoader::imageSaved(const QString &filePath, bool saved, bool loadToTab)
 {
     emit updateSpinnerSignalDelayed(false);
-    mDirWatcher->blockSignals(false);
 
     QFileInfo fInfo(filePath);
     if (!fInfo.exists() || !fInfo.isFile() || !saved)
