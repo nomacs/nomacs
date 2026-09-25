@@ -199,6 +199,12 @@ protected:
     QString fileName() const;
 
     void updateDirWatcher();
+
+    /**
+     * @brief emit signals for current dir updated, even if the contents are the same
+     */
+    void emitDirUpdated() const;
+
     /**
      * @brief track dir contents to ignore unecesssary updates
      * @return true if files were added or removed
