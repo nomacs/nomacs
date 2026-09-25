@@ -106,6 +106,16 @@ bool DkImageLoader::updateDirContents(const DkFileInfoList &files)
     return updated;
 }
 
+void DkImageLoader::emitDirUpdated() const
+{
+    emit updateDirSignal(mImages);
+    int idx = -1;
+    if (mCurrentImage) {
+        idx = findFileIdx(mCurrentImage->filePath(), mImages);
+    }
+    emit imageUpdatedSignal(idx);
+}
+
 bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
 {
     DkTimer dt;
@@ -152,12 +162,7 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
 
     if (updated) {
         qInfo() << "[loadDir]" << newDirPath << mImages.size() << "indexed in" << dt;
-        emit updateDirSignal(mImages);
-        int idx = -1;
-        if (mCurrentImage) {
-            idx = findFileIdx(mCurrentImage->filePath(), mImages);
-        }
-        emit imageUpdatedSignal(idx);
+        emitDirUpdated();
     }
 
     return !empty;
@@ -195,7 +200,7 @@ void DkImageLoader::imagesSorted()
         return;
     }
 
-    emit updateDirSignal(mImages);
+    emitDirUpdated();
 
     updateDirWatcher();
 }
@@ -1712,14 +1717,7 @@ void DkImageLoader::sortImages()
 void DkImageLoader::sort()
 {
     sortImages();
-
-    emit updateDirSignal(mImages);
-
-    int idx = -1;
-    if (mCurrentImage) {
-        idx = findFileIdx(mCurrentImage->filePath(), mImages);
-    }
-    emit imageUpdatedSignal(idx);
+    emitDirUpdated();
 }
 
 void DkImageLoader::currentImageUpdated() const
