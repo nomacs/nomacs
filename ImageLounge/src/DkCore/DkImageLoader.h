@@ -69,7 +69,7 @@ public:
     QVector<QSharedPointer<DkImageContainerT>> getImages();
     void setImage(const QImage &img, const QString &editName);
     void setImage(QSharedPointer<DkImageContainerT> img);
-    void setImageUpdated();
+    // void setImageUpdated();
     void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
     void sort();
 

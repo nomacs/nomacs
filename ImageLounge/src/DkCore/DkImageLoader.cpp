@@ -1830,10 +1830,10 @@ void DkImageLoader::setImage(QSharedPointer<DkImageContainerT> img)
     emit imageUpdatedSignal(mCurrentImage);
 }
 
-void DkImageLoader::setImageUpdated()
-{
-    mCurrentImage->setEdited();
-}
+// void DkImageLoader::setImageUpdated()
+// {
+//     mCurrentImage->setEdited();
+// }
 
 /**
  * Returns the current file name.
