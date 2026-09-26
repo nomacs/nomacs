@@ -509,7 +509,6 @@ void DkCentralWidget::connectLoader(QSharedPointer<DkImageLoader> loader) const
             this,
             &DkCentralWidget::showProgress,
             Qt::UniqueConnection);
-    connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab, Qt::UniqueConnection);
     connect(loader.data(),
             &DkImageLoader::saveStartedSignal,
             this,
@@ -846,11 +845,35 @@ void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC)
         // TODO: need message receiver outside viewport, won't show up on recents, etc
         getViewPort()->infoSignal(info);
     });
-    connect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, [this, imgC] {
-        // TODO: load image to tab and take the responsibility from the loader
+    connect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, [this, imgC](const QString &filePath, bool saved) {
+        showProgress(false);
         mPendingJobs.removeOne(imgC);
+        disconnect(imgC.get(), &DkImageContainerT::showInfoSignal, this, nullptr);
+        disconnect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, nullptr);
+
+        // TODO: if we are quitting nomacs do nothing
+        if (saved) {
+            // update all tabs where file might be present
+            for (auto &tab : mTabInfos) {
+                tab->getImageLoader()->fileUpdated(filePath);
+            }
+
+            switch (DkSettingsManager::param().resources().loadSavedImage) {
+            case DkSettings::ls_load: {
+                // TODO: load into tab that originated the request (or if closed, a new tab), or current tab?
+                load(filePath);
+            } break;
+            case DkSettings::ls_load_to_tab:
+                loadToTab(filePath);
+                break;
+            case DkSettings::ls_do_nothing:
+            default:;
+            }
+        }
     });
+
     mPendingJobs.append(imgC);
+    showProgress(true);
 }
 
 QVector<QSharedPointer<DkTabInfo>> DkCentralWidget::getTabs() const
