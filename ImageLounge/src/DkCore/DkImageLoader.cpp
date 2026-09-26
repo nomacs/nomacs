@@ -1220,7 +1220,6 @@ bool DkImageLoader::saveFile(const QString &filePath,
 
     bool saveStarted = imgC->saveImageThreaded(lFilePath, sImg, compression);
     if (saveStarted) {
-        emit updateSpinnerSignalDelayed(true);
         emit saveStartedSignal(imgC);
     }
 
@@ -1232,23 +1231,24 @@ bool DkImageLoader::isSaving() const
     return mCurrentImage && mCurrentImage->isSaving();
 }
 
-void DkImageLoader::imageSaved(const QString &filePath, bool saved, bool loadToTab)
+void DkImageLoader::fileUpdated(const QString &filePath) const
 {
-    emit updateSpinnerSignalDelayed(false);
-
     QFileInfo fInfo(filePath);
-    if (!fInfo.exists() || !fInfo.isFile() || !saved)
+    if (!fInfo.exists() || !fInfo.isFile()) {
         return;
+    }
 
-    if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load_to_tab && loadToTab) {
-        emit loadImageToTab(filePath);
-    } else if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load) {
-        emit imageLoadedSignal(mCurrentImage, true);
-        emit imageUpdatedSignal(mCurrentImage);
-        qDebug() << "image updated: " << mCurrentImage->fileName();
-    } else {
-        mFolderUpdated = true;
-        loadDir(mCurrentImage->dirPath());
+    if (fInfo.absolutePath() == mCurrentDir) {
+        auto imgC = findFile(filePath);
+
+        if (imgC) {
+            // NOTE: We do not drop file cache here; modification tracking
+            // should be picking this up. Otherwise we would possibly reload
+            // the edited image and lose user edits.
+            // NOTE: in the case of overwriting, dir watcher will not pick up
+            // the changes so we have to emit the same signals to see thumbs update.
+            emitDirUpdated();
+        }
     }
 }
 
@@ -1881,7 +1881,6 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
                 this,
                 &DkImageLoader::showInfoSignal,
                 Qt::UniqueConnection);
-        connect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved, Qt::UniqueConnection);
         connect(currImage,
                 &DkImageContainerT::imageUpdatedSignal,
                 this,

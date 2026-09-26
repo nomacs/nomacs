@@ -94,6 +94,15 @@ public:
     int numFiles() const;
     QImage getPixmap();
 
+    /**
+     * @brief update state on external file change
+     * @param filePath file path of the changed file
+     * @note DkImageLoader only tracks dir changes (file added/removed) or
+     *       changes to the current file. This function is called when there
+     *       is known to be a change to some other file it isn't tracking.
+     */
+    void fileUpdated(const QString &filePath) const;
+
 signals:
     void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
     void setPlayer(bool play) const;
@@ -105,7 +114,6 @@ signals:
     void showInfoSignal(const QString &msg, int time = 3000, int position = 0) const;
     void updateDirSignal(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void imageHasGPSSignal(bool hasGPS) const;
-    void loadImageToTab(const QString &filePath) const;
     void saveStartedSignal(QSharedPointer<DkImageContainerT> imgC) const;
 
 public slots:
@@ -155,7 +163,6 @@ public slots:
     // new slots
     void currentImageUpdated() const;
     void imageLoaded(bool loaded = false);
-    void imageSaved(const QString &file, bool saved = true, bool loadToTab = true);
     void imagesSorted();
 
     /**

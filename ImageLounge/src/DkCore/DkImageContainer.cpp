@@ -899,27 +899,12 @@ void DkImageContainerT::savingFinished()
         emit fileSavedSignal(filePath, false);
         emit showInfoSignal(tr("Sorry, I could not save: %1").arg(sInfo.fileName()));
     } else {
-        //// reset thumb - loadImageThreaded should do it anyway
-        // thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(saveFile, loader->image()));
-
-        if (mFileBuffer)
-            mFileBuffer->clear(); // do a complete clear?
-
-        if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty()
-            || dirPath() == sInfo.dirPath()) {
-            setFile(sInfo);
-            emit fileSavedSignal(savePath, true, false);
-        } else {
-            emit fileSavedSignal(savePath);
-        }
-
-        emit showInfoSignal(tr("Saved: %1").arg(sInfo.fileName()));
-
+        // unset edited state, but don't drop the history, since we might want to save again
+        // the post-save option determines what happens next (file reload/load to tab etc)
         mEdited = false;
         getMetaData()->clearExifState();
 
         if (mSelected) {
-            loadImageThreaded(true); // force a reload
             mFileUpdateTimer.start();
         }
 
