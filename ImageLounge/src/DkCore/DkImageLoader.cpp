@@ -1054,17 +1054,7 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
     bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
     bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
     if (!imgEdited && metaEdited && sameFile) {
-        // Save metadata only
-        mCurrentImage->saveMetaData(); // DkBasicLoader::saveMetaData() (otherwise called after saving)
-
-        // Notify listeners about saved image
-        setCurrentImage(mCurrentImage);
-        mCurrentImage->setEdited(false);
-        emit imageLoadedSignal(mCurrentImage, true);
-        emit imageUpdatedSignal(mCurrentImage);
-
-        // Skip the rest which is only relevant when re-encoding/saving the image
-        return true;
+        return mCurrentImage->saveMetaData();
     }
     // Saving image normally, clear exif rotation flag to prevent double rotation
     mCurrentImage->getLoader()->getMetaData()->clearOrientation();

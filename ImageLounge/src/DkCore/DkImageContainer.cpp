@@ -864,6 +864,11 @@ bool DkImageContainerT::saveMetaData()
     } else {
         emit showInfoSignal(tr("Sorry, I could not save metadata for: %1").arg(fileName()));
     }
+    if (ok) {
+        mEdited = false;
+        getMetaData()->clearExifState();
+        emit imageUpdatedSignal();
+    }
     return ok;
 }
 
@@ -910,6 +915,7 @@ void DkImageContainerT::savingFinished()
 
         emit fileSavedSignal(filePath, true);
         emit showInfoSignal(tr("Saved: %1").arg(sInfo.fileName()));
+        emit imageUpdatedSignal();
     }
 }
 
