@@ -235,6 +235,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     Exiv2::ExifData &exifData = mExifImg->exifData();
     Exiv2::XmpData &xmpData = mExifImg->xmpData();
     Exiv2::IptcData &iptcData = mExifImg->iptcData();
+    std::string comment = mExifImg->comment();
 
     std::unique_ptr<Exiv2::Image> exifImgN;
 
@@ -254,10 +255,29 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     exifImgN->readMetadata();
 
     // Update new exif object, copy changes made to the old exif object (loaded image)
-    exifImgN->setExifData(exifData);
-    exifImgN->setXmpData(xmpData);
-    exifImgN->setIptcData(iptcData);
-    exifImgN->setComment(mExifImg->comment());
+    if (exifImgN->supportsMetadata(Exiv2::mdExif)) {
+        exifImgN->setExifData(exifData);
+    } else if (!exifData.empty()) {
+        qWarning() << "[Exiv2] image format does not support saving exif data";
+    }
+
+    if (exifImgN->supportsMetadata(Exiv2::mdXmp)) {
+        exifImgN->setXmpData(xmpData);
+    } else if (!xmpData.empty()) {
+        qWarning() << "[Exiv2] image format does not support saving xmp data";
+    }
+
+    if (exifImgN->supportsMetadata(Exiv2::mdIptc)) {
+        exifImgN->setIptcData(iptcData);
+    } else if (!iptcData.empty()) {
+        qWarning() << "[Exiv2] image format does not support saving iptc data";
+    }
+
+    if (exifImgN->supportsMetadata(Exiv2::mdComment)) {
+        exifImgN->setComment(comment);
+    } else if (!comment.empty()) {
+        qWarning() << "[Exiv2] image format does not support saving file comment";
+    }
 
     exifImgN->writeMetadata(); // TODO: CIMG6206.jpg crashes here...
 
