@@ -1008,15 +1008,21 @@ QStringList DkMetaDataT::getIptcValues() const
 
 void DkMetaDataT::setQtValues(const QImage &img)
 {
-    // Omit "Raw profile type exif" set by ???, presumably it would conflict when saving file
-    // This is a known unregistered tag in PNG: https://exiftool.org/TagNames/PNG.html
+    // Ignore PNG ztxt/itxt fields parsed by Qt image reader, also parsed by Exiv2.
+    // May cause issues when saving file, e.g. export PNG to JPG may overflow the comment field.
+    // Ref: https://clanmills.com/exiv2/book/
     const QStringList keys = img.textKeys();
     for (const auto &key : keys) {
-        if (key.isEmpty() || key == "Raw profile type exif")
+        if (key.isEmpty() || //
+            key == "Raw profile type exif" || //
+            key == "Raw profile type iptc" || //
+            key == "XML:com.adobe.xmp") {
             continue;
+        }
         QString value = img.text(key);
-        if (value.length() >= 5000)
+        if (value.length() >= 5000) {
             value = QObject::tr("<data too large to display>");
+        }
 
         if (!value.isEmpty()) {
             mQtValues.append(value);
