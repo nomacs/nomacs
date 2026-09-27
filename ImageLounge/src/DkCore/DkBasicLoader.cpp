@@ -1467,6 +1467,8 @@ bool DkBasicLoader::save(const QString &filePath,
                     // write the file
                     bool force = true;
                     saved = dstMetaData.saveMetaData(file.fileName(), force);
+                } catch (std::exception &e) {
+                    qWarning() << "[save] exception saving metadata:" << file.fileName() << e.what();
                 } catch (...) {
                     qWarning() << "[save] exception saving metadata:" << file.fileName();
                 }
