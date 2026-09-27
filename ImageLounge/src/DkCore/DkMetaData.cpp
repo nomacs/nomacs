@@ -257,6 +257,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     exifImgN->setExifData(exifData);
     exifImgN->setXmpData(xmpData);
     exifImgN->setIptcData(iptcData);
+    exifImgN->setComment(mExifImg->comment());
 
     exifImgN->writeMetadata(); // TODO: CIMG6206.jpg crashes here...
 
