@@ -531,7 +531,7 @@ bool DkImageContainerT::loadImageThreaded(bool force)
     // for a moment before that happens
     bool modified = mFileInfo.isModified();
 
-    if (force || modified || getLoader()->isDirty()) {
+    if (force || (!mEdited && (modified || getLoader()->isDirty()))) {
         clear();
     }
 
