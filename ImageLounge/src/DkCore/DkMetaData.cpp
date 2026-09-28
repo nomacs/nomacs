@@ -91,6 +91,7 @@ void DkMetaDataT::update(const DkMetaDataT &other)
     }
     // Copy metadata from other to this
     mExifImg->setMetadata(*other.mExifImg);
+    mExifState = dirty;
 }
 
 void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray> ba)
