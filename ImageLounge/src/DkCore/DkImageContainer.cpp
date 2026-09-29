@@ -900,9 +900,7 @@ void DkImageContainerT::savingFinished()
     QFileInfo sInfo(filePath);
 
     if (!saved) {
-        emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(sInfo.fileName()));
         emit fileSavedSignal(filePath, false);
-        emit showInfoSignal(tr("Sorry, I could not save: %1").arg(sInfo.fileName()));
     } else {
         // unset edited state, but don't drop the history, since we might want to save again
         // the post-save option determines what happens next (file reload/load to tab etc)
@@ -914,7 +912,6 @@ void DkImageContainerT::savingFinished()
         }
 
         emit fileSavedSignal(filePath, true);
-        emit showInfoSignal(tr("Saved: %1").arg(sInfo.fileName()));
         emit imageUpdatedSignal();
     }
 }
