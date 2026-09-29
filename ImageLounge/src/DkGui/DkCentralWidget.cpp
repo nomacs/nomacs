@@ -851,6 +851,13 @@ void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC)
         disconnect(imgC.get(), &DkImageContainerT::showInfoSignal, this, nullptr);
         disconnect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, nullptr);
 
+        QString fileName = QFileInfo{filePath}.fileName();
+        if (saved) {
+            getViewPort()->infoSignal(tr("Saved: %1").arg(fileName));
+        } else {
+            QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not save: %1").arg(fileName));
+        }
+
         // TODO: if we are quitting nomacs do nothing
         if (saved) {
             // update all tabs where file might be present
