@@ -566,7 +566,7 @@ void DkImageLoader::lastFile()
 
 bool DkImageLoader::promptSaveBeforeUnload()
 {
-    if (!mCurrentImage || !mCurrentImage->isEdited()) {
+    if (!mCurrentImage || !mCurrentImage->isEdited() || mCurrentImage->isSaving()) {
         return true;
     }
 
