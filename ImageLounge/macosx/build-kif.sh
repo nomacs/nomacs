@@ -24,7 +24,7 @@ fi
 # highly annoying auto-update behavior potentially breaking things
 export HOMEBREW_NO_AUTO_UPDATE=1
 
-KIF_VERSION="v6.28.1"
+KIF_VERSION="v6.29.0"
 
 SRC_DIR="kimageformats"
 BUILD_DIR="kimageformats/build"
