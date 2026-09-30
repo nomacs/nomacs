@@ -2027,7 +2027,7 @@ void DkUpdateDialog::init()
 
 void DkUpdateDialog::createLayout()
 {
-    setFixedWidth(300);
+    setFixedWidth(320);
     setFixedHeight(150);
     setWindowTitle(tr("nomacs updater"));
 
