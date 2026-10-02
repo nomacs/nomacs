@@ -300,6 +300,13 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
     void createContextMenu() override;
     void paintEvent(QPaintEvent *event) override;
+
+private:
+    bool event(QEvent *event) override;
+    QTimer *mWindowMaskTimer{};
+    QRegion mWindowMask{};
+    bool mUseWindowMask{};
+    bool mIsWayland{};
 };
 
 class DllCoreExport DkNoMacsContrast : public DkNoMacsSync

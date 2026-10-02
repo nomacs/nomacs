@@ -60,6 +60,7 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QBackingStore>
 #include <QDesktopServices>
 #include <QDrag>
 #include <QEvent>
@@ -75,6 +76,7 @@
 #include <QStringBuilder>
 #include <QTimer>
 #include <QUrlQuery>
+#include <QWindow>
 #include <qmath.h>
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
@@ -2154,9 +2156,37 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     DkSettingsManager::param().app().appMode = DkSettings::mode_frameless;
 
     setWindowFlags(Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground, true);
+    setAttribute(Qt::WA_TranslucentBackground, true); // request backing store with an alpha channel
 
-    // init members
+    //
+    // On Wayland and Xorg, click-through on frameless background is only
+    // possible if we use setMask() since these window managers do not hit-test
+    // the backing store like Windows and macOS do.
+    //
+    // On Xorg, setMask() happens immedately and masks painting and mouse
+    // events. On Wayland, it only masks input events and seems to be delayed
+    // until the next wl_surface.commit() which won't always happen immediately.
+    //
+    QString platform = qApp->platformName();
+    mIsWayland = platform == "wayland";
+    mUseWindowMask = mIsWayland || platform == "xcb";
+
+    // setMask() is coalesced to one time after painting finishes
+    // if we try doing this at the end of paintEvent()
+    // - xcb works, but artifacts horribly
+    // - wayland sometimes doesn't work, perhaps due to flood of state changes
+    mWindowMaskTimer = new QTimer(this);
+    mWindowMaskTimer->setSingleShot(true);
+    connect(mWindowMaskTimer, &QTimer::timeout, this, [this]() {
+        windowHandle()->setMask(mWindowMask);
+        if (mIsWayland) {
+            // Qt bug?: sometimes setMask() doesn't commit wayland surface so mask has no effect
+            // Workaround: ensure wl_surface.commit() here. update() also does this,
+            // but requires another repaint
+            backingStore()->flush(rect());
+        }
+    });
+
     auto *cw = new DkCentralWidget(this);
     setCentralWidget(cw);
 
@@ -2199,9 +2229,49 @@ void DkNoMacsFrameless::createContextMenu()
     am.contextMenu()->addAction(am.action(DkActionManager::file_exit));
 }
 
+bool DkNoMacsFrameless::event(QEvent *event)
+{
+    if (mUseWindowMask && event->type() == QEvent::UpdateRequest) {
+        // Reset the mask just before paint events are computed so
+        // it does not affect the repaint. Otherwise we'll see
+        // ghosting and incorrect painting on Xorg. On Wayland this
+        // has no effect since setMask() only affects input events.
+        // BUG: on Xorg this causes animations not to support click-through, e.g.
+        // during slideshow transition or when playing gif.
+        if (!mIsWayland) {
+            windowHandle()->setMask(this->rect());
+        }
+
+        // Build our window mask, we must consider any widgets that appear
+        // over the main content area which do not fill it completely
+        mWindowMask = this->rect();
+        if (!this->isFullScreen()) {
+            DkCentralWidget *tabWidget = getTabWidget();
+            QRegion windowMask = this->rect();
+            windowMask -= tabWidget->geometry(); // subtract transparent content area
+            windowMask += tabWidget->getFramelessMask(); // add region opaque for input
+            windowMask &= this->rect(); // clip to window
+            mWindowMask = windowMask;
+        }
+        // Delay setting the mask, needed for Xorg and seems to help Wayland
+        // BUG: when animating this never fires, so effectively so there is no mask set
+        mWindowMaskTimer->start(100);
+    }
+
+    return DkNoMacs::event(event);
+}
+
 void DkNoMacsFrameless::paintEvent(QPaintEvent *event)
 {
-    // paint everything except the central/transparent area
+    // uncomment to debug the mask and set nomacs background to semitransparent to see it
+    // if (mUseWindowMask) {
+    //     QPainter painter(this);
+    //     for (auto &r : mWindowMask.rects()) {
+    //         painter.fillRect(r, QColor{0, 255, 0, 200});
+    //     }
+    // }
+
+    // paint background color behind main window docks etc
     const QRegion mask = QRegion(event->rect()).subtracted(centralWidget()->geometry());
 
     if (!mask.isEmpty()) {
@@ -2295,7 +2365,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
     DkToolBarManager::inst().createTransferToolBar();
 
     setAcceptDrops(true);
-    setMouseTracking(true); // receive mouse event everytime
+    // setMouseTracking(true); // receive mouse event everytime
 
     // TODO: this should be checked but no event should be called
     DkActionManager &am = DkActionManager::instance();

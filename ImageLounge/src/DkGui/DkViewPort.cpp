@@ -1472,6 +1472,22 @@ QPoint DkViewPort::mapToImage(const QPoint &windowPos) const
     return p;
 }
 
+QRegion DkViewPort::getFramelessMask() const
+{
+    QRegion mask{};
+    const QWidget *wnd = topLevelWidget();
+
+    // add image
+    QRect r = getImageViewRect().toRect();
+    r.moveTopLeft(this->mapTo(wnd, r.topLeft()));
+    mask += r;
+
+    // add hud widgets
+    mask += getController()->getFramelessMask();
+
+    return mask;
+}
+
 void DkViewPort::getPixelInfo(const QPoint &pos)
 {
     if (mImgStorage.isEmpty())
@@ -1992,7 +2008,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
     }
 }
 
-DkControlWidget *DkViewPort::getController()
+DkControlWidget *DkViewPort::getController() const
 {
     return mController;
 }
@@ -2023,10 +2039,14 @@ DkViewPortFrameless::DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *pa
     : DkViewPort(thumbLoader, parent)
 {
     setAttribute(Qt::WA_TranslucentBackground, true);
+
+    // TODO: lazy-load this stuff, it slows down startup somewhat
     mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bgf.png").absoluteFilePath());
 
     if (mImgBg.isNull())
         mImgBg.load(":/nomacs/img/splash-screen.png");
+
+    mBgMask = QBitmap::fromImage(mImgBg.createHeuristicMask(false));
 
     DkActionManager &am = DkActionManager::instance();
     mStartActions.append(am.action(DkActionManager::file_open));
@@ -2173,6 +2193,25 @@ void DkViewPortFrameless::drawFrame(QPainter &painter)
     frameRect.moveCenter(mImgViewRect.center());
 
     painter.drawRect(frameRect);
+}
+
+QRegion DkViewPortFrameless::getFramelessMask() const
+{
+    QRegion mask = DkViewPort::getFramelessMask();
+
+    // NOTE: same condition as eraseBackground()
+    if (!mImgStorage.isEmpty()) {
+        return mask;
+    }
+
+    QRect r = mImgMatrix.mapRect(mStartBgRect).toRect();
+    QPoint p = r.topLeft();
+    p = this->mapTo(topLevelWidget(), p);
+    QRegion bitmapMask = mBgMask;
+    bitmapMask.translate(p);
+    mask += bitmapMask;
+
+    return mask;
 }
 
 void DkViewPortFrameless::mousePressEvent(QMouseEvent *event)
