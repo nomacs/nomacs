@@ -95,11 +95,14 @@ public:
     TabMode getMode() const;
     void setMode(int mode);
 
+    // return true if we should use this tab for "open in new tab" rather
+    // than create a new tab
+    bool useForNewImageTab() const;
+
 protected:
     QSharedPointer<DkImageLoader> mImageLoader;
     int mTabIdx = 0;
     enum TabMode mTabMode = tab_recent_files;
-    QString mFilePath = "";
 };
 
 class DkViewPort;
@@ -118,6 +121,8 @@ public:
     DkViewPort *getViewPort() const;
     DkThumbScrollWidget *getThumbScrollWidget() const;
     QString getCurrentDir() const;
+    // return true if this instance should accept "open in new instance" requests w/o making another instance
+    bool acceptsOpenInNewInstance() const;
 
     void clearAllTabs();
     void setActiveTab(int idx) const;
@@ -143,9 +148,9 @@ public slots:
     void currentTabChanged(int idx);
     void tabCloseRequested(int idx);
     void tabMoved(int from, int to);
-    void setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex = -1);
     void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), bool background = false);
     void addTab(const DkFileInfo &file, bool background = false);
+    void addTab(DkTabInfo::TabMode mode, bool background = false);
     void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
     void removeTab(int tabIdx = -1);
     void nextTab() const;
@@ -163,6 +168,9 @@ public slots:
     // load file/dir to new tab
     void loadToTab(const QString &path);
 
+    // load file/dir, or switch to tab if duplicate
+    void loadUnique(const QString &path, bool newTab);
+
     void loadUrl(const QUrl &urls, bool newTab);
     void loadUrls(const QList<QUrl> &urls, const int maxUrlsToLoad = 20);
 
@@ -176,9 +184,12 @@ public slots:
     void renameFile();
 
 protected:
+    void activateTab(int tabIdx);
+
     QTabBar *mTabbar = nullptr;
     DkProgressBar *mProgressBar = nullptr;
     QVector<QSharedPointer<DkTabInfo>> mTabInfos;
+    bool mTabMoved = false;
 
     QVector<QWidget *> mWidgets;
     QStackedLayout *mViewLayout = nullptr;
@@ -190,11 +201,10 @@ protected:
 
     void createLayout();
     void updateTabIdx();
-    void switchWidget(int widget);
-    void switchWidget(QWidget *widget = nullptr);
+    void switchWidget(QWidget *widget);
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
-    void updateLoader(QSharedPointer<DkImageLoader> loader) const;
+    void connectLoader(QSharedPointer<DkImageLoader> loader) const;
 
     DkPreferenceWidget *createPreferences();
     DkRecentFilesWidget *createRecentFiles();

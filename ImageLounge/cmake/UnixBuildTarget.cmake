@@ -71,6 +71,20 @@ target_link_libraries(
     Qt::Svg
 )
 
+if(ENABLE_DBUS)
+    target_link_libraries(${DLL_CORE_NAME} Qt::DBus)
+else()
+    target_link_libraries(${DLL_CORE_NAME} KDAB::kdsingleapplication)
+endif()
+
+if(QT_FEATURE_xcb)
+    # We use xcb APIs if Qt was built with it
+    message(STATUS "Qt was built with XCB support, requiring XCB libraries")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(XCB REQUIRED IMPORTED_TARGET xcb)
+    target_link_libraries(${DLL_CORE_NAME} PkgConfig::XCB)
+endif()
+
 # core flags
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)

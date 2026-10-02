@@ -48,6 +48,10 @@ option(ENABLE_BENCHMARK "Run benchmark" OFF)
 option(ENABLE_PCH "Enable precompiled headers" OFF)
 option(ENABLE_SANITIZE "Enable runtime sanitizers (slow, development only)" OFF)
 
+if(UNIX AND NOT APPLE)
+    option(ENABLE_DBUS "Enable features using D-Bus" ON)
+endif()
+
 # Codecov
 if(ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
     include("cmake/CodeCoverage.cmake")

@@ -367,26 +367,31 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
     if (!cw)
         return;
 
-    if (cw->getTabs().size() > 1) {
-        DkMessageBox msg(QMessageBox::Question,
-                         tr("Quit nomacs"),
-                         tr("Do you want nomacs to save your tabs?"),
-                         (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
-                         this);
-        msg.setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
-        msg.setButtonText(QMessageBox::No, tr("&Quit"));
-        msg.setObjectName("saveTabsDialog");
+    if (!DkSettingsManager::param().app().privateMode) {
+        bool saveTabs = false;
 
-        int answer = msg.exec();
+        if (cw->getTabs().size() > 1) {
+            DkMessageBox msg(QMessageBox::Question,
+                             tr("Quit nomacs"),
+                             tr("Do you want nomacs to save your tabs?"),
+                             (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                             this);
+            msg.setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
+            msg.setButtonText(QMessageBox::No, tr("&Quit"));
+            msg.setObjectName("saveTabsDialog");
 
-        if (answer == QMessageBox::Cancel || answer == QMessageBox::NoButton) { // User canceled - do not close
-            event->ignore();
-            return;
+            int answer = msg.exec();
+
+            if (answer == QMessageBox::Cancel || answer == QMessageBox::NoButton) { // User canceled - do not close
+                event->ignore();
+                return;
+            }
+
+            saveTabs = answer == QMessageBox::Yes;
         }
 
-        cw->saveSettings(answer == QMessageBox::Yes);
-    } else
-        cw->saveSettings(false);
+        cw->saveSettings(saveTabs);
+    }
 
     if (!getTabWidget()->requestClose()) {
         // do not close if the user hit cancel in the save changes dialog
@@ -745,13 +750,6 @@ void DkNoMacs::restartFrameless(bool)
     nmc::DkSettingsManager::param().save();
 
     DkCentralWidget::tryRestart(args);
-}
-
-void DkNoMacs::showRecentFilesOnStartUp()
-{
-    QTimer::singleShot(100, this, [this]() {
-        getTabWidget()->showRecentFiles();
-    });
 }
 
 void DkNoMacs::startPong() const
@@ -1163,7 +1161,8 @@ void DkNoMacs::openDir()
     if (dirName.isEmpty())
         return;
 
-    getTabWidget()->load(dirName);
+    bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
+    getTabWidget()->loadUnique(dirName, newTab);
 }
 
 void DkNoMacs::openFile()
@@ -1183,43 +1182,12 @@ void DkNoMacs::openFile()
     if (filePaths.isEmpty())
         return;
 
-    int count = getTabWidget()->getTabs().count(); // Save current count of tabs for setting tab position later
-    if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
-        count = 0;
-
-    QSet<QString> duplicates;
-    for (const QString &fp : filePaths) {
-        bool dup = false;
-
-        if (DkSettingsManager::param().global().checkOpenDuplicates) { // Should we check for duplicates?
-            for (auto tab : getTabWidget()->getTabs()) {
-                if (tab->getFilePath().compare(fp) == 0) {
-                    duplicates.insert(tab->getFilePath());
-                    dup = true;
-                    break;
-                }
-            }
-        }
-
-        if (!dup) {
-            // > 1: only open in tab if more than one file is opened
-            bool newTab = (filePaths.size() > 1) || (getTabWidget()->getTabs().size() > 1);
-            if (newTab)
-                getTabWidget()->loadToTab(fp);
-            else
-                getTabWidget()->load(fp);
-        }
+    auto *centralWidget = getTabWidget();
+    bool newTab = nmc::DkSettingsManager::param().app().openNewTab;
+    for (const QString &fp : std::as_const(filePaths)) {
+        centralWidget->loadUnique(fp, newTab);
+        newTab = true;
     }
-    if (duplicates.count() > 0) { // Show message if at least one duplicate was found
-        QString duptext = tr("The following duplicates were not opened:");
-        for (auto dup : duplicates) {
-            duptext.append("\n" + dup);
-        }
-        getTabWidget()->getViewPort()->getController()->setInfo(duptext);
-    }
-
-    if (filePaths.count() > duplicates.count()) // Only set the active tab if there is actually something added
-        getTabWidget()->setActiveTab(count); // Set first file opened to be the active tab
 }
 
 void DkNoMacs::openFileList()
@@ -1324,12 +1292,23 @@ void DkNoMacs::openQuickLaunch()
     }
 }
 
-void DkNoMacs::loadFile(const QString &filePath)
+void DkNoMacs::openFileEvent(const QString &filePath)
 {
-    if (!getTabWidget())
-        return;
+    // handle open file event from operating system IPC (macOS Apple Events, D-Bus etc)
+    bool oneInstance = nmc::DkSettingsManager::param().app().singleInstance;
 
-    getTabWidget()->load(filePath);
+    auto *centralWidget = getTabWidget();
+    if (!centralWidget) {
+        return;
+    }
+
+    if (!oneInstance && !centralWidget->acceptsOpenInNewInstance()) {
+        newInstance(filePath);
+        return;
+    }
+
+    bool newTab = true;
+    centralWidget->loadUnique(filePath, newTab);
 }
 
 void DkNoMacs::find(bool filterAction)
@@ -1532,6 +1511,7 @@ void DkNoMacs::newInstance(const QString &filePath)
 
     auto *a = static_cast<QAction *>(sender());
 
+    args << "--new-instance";
     args << "--nmc-session" << QString::number(DkSettingsManager::param().global().sessionId);
     args << "--skip-startup";
 

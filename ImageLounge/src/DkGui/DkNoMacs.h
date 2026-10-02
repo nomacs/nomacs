@@ -93,7 +93,7 @@ public:
 
     virtual DkCentralWidget *getTabWidget() const;
 
-    void loadFile(const QString &filePath);
+    void openFileEvent(const QString &filePath);
 
 signals:
     void sendArrangeSignal(bool overlaid) const;
@@ -167,7 +167,6 @@ public slots:
     void restartWithTranslationUpdate();
     void restartWithPseudoColor(bool contrast);
     void restartFrameless(bool frameless);
-    void showRecentFilesOnStartUp();
 
     // batch actions
     void computeThumbsBatch();

@@ -34,6 +34,7 @@
 #include "DkDialog.h"
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
+#include "DkLocalIPC.h"
 #include "DkMessageBox.h"
 #include "DkPreferenceWidgets.h"
 #include "DkSettings.h"
@@ -81,7 +82,6 @@ DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObj
     if (imgC)
         mTabMode = tab_single_image;
     mTabIdx = idx;
-    mFilePath = getFilePath();
 }
 
 DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject *parent)
@@ -94,7 +94,10 @@ DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject *parent)
     mTabIdx = idx;
 }
 
-DkTabInfo::~DkTabInfo() = default;
+DkTabInfo::~DkTabInfo()
+{
+    deactivate();
+}
 
 bool DkTabInfo::operator==(const DkTabInfo &o) const
 {
@@ -119,12 +122,7 @@ void DkTabInfo::loadSettings(const QSettings &settings)
 
 void DkTabInfo::saveSettings(QSettings &settings) const
 {
-    QSharedPointer<DkImageContainerT> imgC;
-    if (mImageLoader->getCurrentImage())
-        imgC = mImageLoader->getCurrentImage();
-    else
-        imgC = mImageLoader->getLastImage();
-
+    auto imgC = mImageLoader->getCurrentImage();
     if (imgC)
         settings.setValue("tabFileInfo", imgC->filePath());
     settings.setValue("tabMode", mTabMode);
@@ -132,7 +130,7 @@ void DkTabInfo::saveSettings(QSettings &settings) const
 
 QString DkTabInfo::getFilePath() const
 {
-    return (mImageLoader->getCurrentImage()) ? mImageLoader->getCurrentImage()->filePath() : mFilePath;
+    return mImageLoader->filePath();
 }
 
 void DkTabInfo::setTabIdx(int tabIdx)
@@ -151,7 +149,6 @@ void DkTabInfo::setImage(QSharedPointer<DkImageContainerT> imgC)
 
     if (imgC)
         mTabMode = tab_single_image;
-    mFilePath = getFilePath();
 }
 
 QSharedPointer<DkImageLoader> DkTabInfo::getImageLoader() const
@@ -166,16 +163,11 @@ void DkTabInfo::deactivate()
 
 void DkTabInfo::activate(bool isActive)
 {
-    // on thumb preview causes duplicate updates which are very slow for large directories
-    if (mImageLoader && mTabMode != tab_thumb_preview)
-        mImageLoader->activate(isActive);
+    mImageLoader->activate(isActive);
 }
 
 QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const
 {
-    if (!mImageLoader)
-        return QSharedPointer<DkImageContainerT>();
-
     return mImageLoader->getCurrentImage();
 }
 
@@ -193,7 +185,7 @@ QIcon DkTabInfo::getIcon(const QSize &size)
 
     const QSharedPointer<DkImageContainerT> img = mImageLoader->getCurrentImage();
 
-    if (!img) {
+    if (!img || !img->hasImage()) {
         return {};
     }
 
@@ -217,9 +209,6 @@ QString DkTabInfo::getTabText() const
         tabText = QObject::tr("Thumbnail Preview");
 
     QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
-    if (!imgC)
-        imgC = mImageLoader->getLastImage();
-
     if (!imgC)
         return tabText;
 
@@ -246,6 +235,27 @@ void DkTabInfo::setMode(int mode)
         mTabMode = static_cast<enum TabMode>(mode);
 }
 
+bool DkTabInfo::useForNewImageTab() const
+{
+    auto imgC = getImage();
+    if (imgC && imgC->isEdited()) {
+        return false;
+    }
+
+    switch (mTabMode) {
+    case tab_recent_files:
+    case tab_preferences:
+    case tab_empty:
+        return true;
+    case tab_single_image:
+    case tab_thumb_preview:
+    case tab_batch:
+    case tab_end:
+        return false;
+    }
+    return false;
+}
+
 // DkCenteralWidget --------------------------------------------------------------------
 DkCentralWidget::DkCentralWidget(QWidget *parent)
     : DkWidget(parent)
@@ -256,7 +266,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
 
     DkActionManager &am = DkActionManager::instance();
     connect(am.action(DkActionManager::view_new_tab), &QAction::triggered, this, [this]() {
-        addTab();
+        addTab(DkTabInfo::tab_recent_files);
     });
     connect(am.action(DkActionManager::view_close_tab), &QAction::triggered, this, [this]() {
         removeTab();
@@ -377,10 +387,7 @@ void DkCentralWidget::saveSettings(bool saveTabs) const
 
 void DkCentralWidget::loadSettings()
 {
-    QVector<QSharedPointer<DkTabInfo>> tabInfos;
-
     DefaultSettings settings;
-
     settings.beginGroup(objectName());
 
     int size = settings.beginReadArray("Tabs");
@@ -389,21 +396,14 @@ void DkCentralWidget::loadSettings()
 
         QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo());
         tabInfo->loadSettings(settings);
-        tabInfo->setTabIdx(idx);
-        tabInfos.append(tabInfo);
+        addTab(tabInfo, true);
     }
 
-    settings.endArray();
-    settings.endGroup();
-
-    setTabList(tabInfos);
-
-    if (tabInfos.empty()) {
-        QSharedPointer<DkTabInfo> info = QSharedPointer<DkTabInfo>(new DkTabInfo());
-        info->setMode(DkTabInfo::tab_empty);
-        info->setTabIdx(0);
-        addTab(info);
+    if (mTabInfos.empty()) {
+        addTab(DkTabInfo::tab_empty, true);
     }
+
+    activateTab(mTabbar->count() - 1);
 }
 
 bool DkCentralWidget::hasViewPort() const
@@ -429,55 +429,65 @@ void DkCentralWidget::currentTabChanged(int idx)
     if (idx < 0 || idx >= mTabInfos.size())
         return;
 
-    updateLoader(mTabInfos.at(idx)->getImageLoader());
+    // QtTabBar sends currrentTabChanged() after tabMoved() when dragging,
+    // but the current tab doesn't actually change
+    if (mTabMoved) {
+        mTabMoved = false;
+        return;
+    }
+
+    auto tab = mTabInfos.at(idx);
+
+    // deactivate the previous tab
+    for (auto &otherTab : mTabInfos) {
+        if (otherTab == tab) {
+            continue;
+        }
+        otherTab->deactivate(); // block loader signals, save per-tab state, etc
+        if (auto tw = getThumbScrollWidget()) { // disconnect anything else connected to loader
+            tw->getThumbWidget()->setImageLoader({});
+            tw->disconnect(otherTab->getImageLoader().data());
+        }
+        if (auto vp = getViewPort()) {
+            vp->setImageLoader(QSharedPointer<DkImageLoader>::create()); // viewport doesn't support null loader yet
+        }
+    }
 
     if (getThumbScrollWidget())
         getThumbScrollWidget()->clear();
 
-    mTabInfos.at(idx)->activate();
-    QSharedPointer<DkImageContainerT> imgC = mTabInfos.at(idx)->getImage();
+    tab->activate();
 
-    if (imgC && mTabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image) {
-        mTabInfos.at(idx)->getImageLoader()->load(imgC);
+    switch (tab->getMode()) {
+    case DkTabInfo::tab_single_image:
         showViewPort();
-    } else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_thumb_preview) {
+        break;
+    case DkTabInfo::tab_thumb_preview:
         showThumbView();
-    } else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_recent_files) {
+        break;
+    case DkTabInfo::tab_recent_files:
         showRecentFiles();
-    } else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_preferences) {
+        break;
+    case DkTabInfo::tab_preferences:
         showPreferences();
-    } else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_batch) {
+        break;
+    case DkTabInfo::tab_batch:
         showBatch();
+        break;
+    case DkTabInfo::tab_empty:
+    case DkTabInfo::tab_end:
+        break;
     }
+
+    // the tab is fully configured, we can update the text/icon now
+    updateTab(tab);
 }
 
-void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
+void DkCentralWidget::connectLoader(QSharedPointer<DkImageLoader> loader) const
 {
-    for (int tIdx = 0; tIdx < mTabInfos.size(); tIdx++) {
-        QSharedPointer<DkImageLoader> l = mTabInfos.at(tIdx)->getImageLoader();
+    Q_ASSERT(loader);
 
-        if (l != loader)
-            mTabInfos.at(tIdx)->deactivate();
-
-        disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-                   this,
-                   &DkCentralWidget::imageLoaded);
-        disconnect(loader.data(),
-                   QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
-                   this,
-                   &DkCentralWidget::imageUpdatedSignal);
-        disconnect(loader.data(), &DkImageLoader::imageHasGPSSignal, this, &DkCentralWidget::imageHasGPSSignal);
-        disconnect(loader.data(), &DkImageLoader::updateSpinnerSignalDelayed, this, &DkCentralWidget::showProgress);
-        disconnect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab);
-    }
-
-    if (!loader)
-        return;
-
-    if (hasViewPort())
-        getViewPort()->setImageLoader(loader);
-
+    // NOTE: a loader is never disconnected, instead signals are blocked when a tab is deactivated
     connect(loader.data(),
             QOverload<QSharedPointer<DkImageContainerT>>::of(&DkImageLoader::imageUpdatedSignal),
             this,
@@ -608,8 +618,6 @@ void DkCentralWidget::createViewPort()
     else
         vp = new DkViewPort(&mThumbLoader, this);
 
-    if (mTabbar->currentIndex() != -1)
-        vp->setImageLoader(mTabInfos[mTabbar->currentIndex()]->getImageLoader());
     connect(vp, &DkViewPort::addTabSignal, this, [this](const QString &filePath) {
         addTab(filePath);
     });
@@ -629,27 +637,12 @@ void DkCentralWidget::tabCloseRequested(int idx)
 
 void DkCentralWidget::tabMoved(int from, int to)
 {
+    mTabMoved = true;
     QSharedPointer<DkTabInfo> tabInfo = mTabInfos.at(from);
     mTabInfos.remove(from);
     mTabInfos.insert(to, tabInfo);
 
     updateTabIdx();
-}
-
-void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex /* = -1 */)
-{
-    mTabInfos = tabInfos;
-
-    for (QSharedPointer<DkTabInfo> &tabInfo : tabInfos)
-        mTabbar->addTab(tabInfo->getTabText());
-
-    if (activeIndex == -1)
-        activeIndex = tabInfos.size() - 1;
-
-    mTabbar->setCurrentIndex(activeIndex);
-
-    if (tabInfos.size() > 1)
-        mTabbar->show();
 }
 
 void DkCentralWidget::addTab(const DkFileInfo &file, bool background)
@@ -670,29 +663,42 @@ void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, bool backgr
     addTab(tabInfo, background);
 }
 
+void DkCentralWidget::addTab(DkTabInfo::TabMode mode, bool background)
+{
+    QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo(mode));
+    addTab(tabInfo, background);
+}
+
 void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 {
-    // if the current tab is empty, replace it
-    const int currentIdx = mTabbar->currentIndex();
-    if (currentIdx >= 0 && mTabInfos.at(currentIdx)->getMode() == DkTabInfo::tab_empty
-        && tabInfo->getMode() != DkTabInfo::tab_empty) {
-        // don't use removeTab(), it may create a new empty tab
-        mTabbar->blockSignals(true);
-        mTabbar->removeTab(currentIdx);
-        mTabbar->blockSignals(false);
+    // the one time we connect, we never disconnect and use tab->deactivate() instead
+    connectLoader(tabInfo->getImageLoader());
 
-        tabInfo->setTabIdx(currentIdx);
-        mTabInfos.replace(currentIdx, tabInfo);
-        updateTabIdx();
-        mTabbar->insertTab(currentIdx, tabInfo->getTabText());
-    } else {
-        tabInfo->setTabIdx(mTabInfos.size());
-        mTabInfos.push_back(tabInfo);
-        mTabbar->addTab(tabInfo->getTabText());
+    {
+        // prevent currentTabChanged() until we are ready to change tabs
+        // this prevents image loading in background tabs
+        QSignalBlocker blocker(mTabbar);
+
+        // if the current tab is empty, replace it
+        const int currentIdx = mTabbar->currentIndex();
+        if (currentIdx >= 0 && mTabInfos.at(currentIdx)->getMode() == DkTabInfo::tab_empty
+            && tabInfo->getMode() != DkTabInfo::tab_empty) {
+            // don't use removeTab(), it may create a new empty tab
+            mTabbar->removeTab(currentIdx);
+
+            tabInfo->setTabIdx(currentIdx);
+            mTabInfos.replace(currentIdx, tabInfo);
+            updateTabIdx();
+            mTabbar->insertTab(currentIdx, tabInfo->getTabText());
+        } else {
+            tabInfo->setTabIdx(mTabInfos.size());
+            mTabInfos.push_back(tabInfo);
+            mTabbar->addTab(tabInfo->getTabText());
+        }
     }
 
     if (!background)
-        mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+        activateTab(tabInfo->getTabIdx());
 
     if (mTabInfos.size() > 1)
         mTabbar->show();
@@ -711,8 +717,9 @@ void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 
 void DkCentralWidget::removeTab(int tabIdx)
 {
-    if (tabIdx == -1)
+    if (tabIdx == -1) {
         tabIdx = mTabbar->currentIndex();
+    }
 
     // if user requests close on batch while processing - cancel batch
     if (mTabInfos[tabIdx]->getMode() == DkTabInfo::tab_batch) {
@@ -722,25 +729,45 @@ void DkCentralWidget::removeTab(int tabIdx)
             bw->close();
     }
 
-    mTabInfos.remove(tabIdx);
-    mTabbar->removeTab(tabIdx); // => currentTabChanged() => switchWidget()
-    updateTabIdx();
+    // TODO: ask to save changes here but make sure to abort closeAllTabs
 
-    if (mTabInfos.size() == 0) { // Make sure we have at least one tab
-        addTab();
-        imageUpdatedSignal(mTabInfos.at(0)->getImage());
-        return;
+    // must block currentTabChanged() here since we'll see inconsistent
+    // state until updateTabIdx() returns. Side benefit, we don't
+    // see a refresh when deleting inactive tabs
+    bool currentTabWillChange = tabIdx == mTabbar->currentIndex();
+    {
+        QSignalBlocker blocker(mTabbar);
+        mTabInfos.remove(tabIdx);
+        mTabbar->removeTab(tabIdx);
+        updateTabIdx();
     }
 
-    if (mTabInfos.size() <= 1)
+    if (!mTabInfos.empty()) {
+        // we blocked the signal so we now manually trip the signal
+        if (currentTabWillChange) {
+            activateTab(mTabbar->currentIndex());
+        }
+    } else {
+        // make sure we have at least one tab
+        addTab(DkTabInfo::tab_recent_files);
+    }
+
+    if (mTabInfos.size() <= 1) {
         mTabbar->hide();
+    }
 }
 
 void DkCentralWidget::clearAllTabs()
 {
-    int count = getTabs().count();
-    for (int idx = 0; idx < count; idx++)
-        removeTab();
+    {
+        // block while removing to prevent expensive currentTabChanged()
+        QSignalBlocker blocker(mTabbar);
+        int count = getTabs().count();
+        for (int idx = 0; idx < count; idx++) {
+            removeTab();
+        }
+    }
+    currentTabChanged(mTabbar->currentIndex());
 }
 
 void DkCentralWidget::updateTab(QSharedPointer<DkTabInfo> tabInfo)
@@ -790,19 +817,16 @@ int DkCentralWidget::getActiveTab()
 
 void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
 {
+    Q_UNUSED(img)
+
     int idx = mTabbar->currentIndex();
-
-    if (idx == -1) {
-        addTab(img, false);
-    } else if (idx > mTabInfos.size())
-        addTab(img, idx);
-    else {
-        QSharedPointer<DkTabInfo> tabInfo = mTabInfos[idx];
-        tabInfo->setImage(img);
-
-        updateTab(tabInfo);
-        switchWidget(tabInfo->getMode());
+    if (idx < 0) {
+        qWarning() << "Image loaded but no tab available";
+        return;
     }
+
+    QSharedPointer<DkTabInfo> tabInfo = mTabInfos[idx];
+    updateTab(tabInfo);
 }
 
 QVector<QSharedPointer<DkTabInfo>> DkCentralWidget::getTabs() const
@@ -826,8 +850,7 @@ void DkCentralWidget::showThumbView(bool show)
         }
 
         tabInfo->setMode(DkTabInfo::tab_thumb_preview);
-        switchWidget(thumbs_widget);
-        tabInfo->activate();
+        switchWidget(mWidgets[thumbs_widget]);
 
         auto tw = getThumbScrollWidget();
         Q_ASSERT(tw);
@@ -835,13 +858,11 @@ void DkCentralWidget::showThumbView(bool show)
         auto imageLoader = tabInfo->getImageLoader();
 
         tw->getThumbWidget()->setImageLoader(imageLoader);
+        tw->updateThumbs(imageLoader->getImages());
 
-        if (imageLoader) {
-            tw->updateThumbs(imageLoader->getImages());
-
-            auto image = imageLoader->getCurrentImage();
-            if (image)
-                tw->getThumbWidget()->ensureVisible(image->filePath());
+        auto image = imageLoader->getCurrentImage();
+        if (image) {
+            tw->getThumbWidget()->ensureVisible(image->filePath());
         }
 
         connect(tw,
@@ -858,14 +879,7 @@ void DkCentralWidget::showThumbView(bool show)
 
     } else {
         if (auto tw = getThumbScrollWidget()) {
-            disconnect(tw,
-                       &DkThumbScrollWidget::updateDirSignal,
-                       tabInfo->getImageLoader().data(),
-                       &DkImageLoader::loadDirRecursive);
-            disconnect(tw,
-                       &DkThumbScrollWidget::filterChangedSignal,
-                       tabInfo->getImageLoader().data(),
-                       &DkImageLoader::setFolderFilter);
+            tw->disconnect(tabInfo->getImageLoader().data());
         }
     }
 }
@@ -877,9 +891,14 @@ void DkCentralWidget::showViewPort(bool show /* = true */)
             createViewPort();
 
         switchWidget(mWidgets[viewport_widget]);
-        if (getCurrentImage())
-            getViewPort()->setImage(getCurrentImage()->image());
+
+        auto tab = mTabInfos[mTabbar->currentIndex()];
+
+        getViewPort()->setImageLoader(tab->getImageLoader());
         getViewPort()->show();
+
+        tab->getImageLoader()->load(tab->getImage());
+
     } else if (hasViewPort()) {
         getViewPort()->getController()->getFilePreview()->cancelLoading();
         getViewPort()->deactivate();
@@ -911,8 +930,7 @@ void DkCentralWidget::openPreferences()
         }
     }
 
-    QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_preferences, mTabInfos.size()));
-    addTab(info);
+    addTab(DkTabInfo::tab_preferences);
 }
 
 void DkCentralWidget::showPreferences(bool show)
@@ -952,8 +970,7 @@ void DkCentralWidget::openBatch(const QStringList &selectedFiles)
         }
     }
 
-    QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_batch, mTabInfos.size()));
-    addTab(info);
+    addTab(DkTabInfo::tab_batch);
 
     auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
     if (!bw) {
@@ -988,24 +1005,10 @@ void DkCentralWidget::showTabs(bool show)
         mTabbar->hide();
 }
 
-void DkCentralWidget::switchWidget(int widget)
-{
-    if (widget == DkTabInfo::tab_single_image)
-        switchWidget(mWidgets[viewport_widget]);
-    else if (widget == DkTabInfo::tab_thumb_preview)
-        switchWidget(mWidgets[thumbs_widget]);
-    else if (widget == DkTabInfo::tab_preferences)
-        switchWidget(mWidgets[preference_widget]);
-    else if (widget == DkTabInfo::tab_recent_files)
-        switchWidget(mWidgets[recent_files_widget]);
-    else if (widget == DkTabInfo::tab_batch)
-        switchWidget(mWidgets[batch_widget]);
-    else
-        qDebug() << "Sorry, I cannot switch to widget: " << widget;
-}
-
 void DkCentralWidget::switchWidget(QWidget *widget)
 {
+    Q_ASSERT(widget);
+
     if (mViewLayout->currentWidget() == widget && mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty)
         return;
 
@@ -1014,7 +1017,7 @@ void DkCentralWidget::switchWidget(QWidget *widget)
     else
         mViewLayout->setCurrentWidget(mWidgets[viewport_widget]);
 
-    if (!mTabInfos.isEmpty()) {
+    if (widget && !mTabInfos.isEmpty()) {
         int mode = DkTabInfo::tab_single_image;
 
         if (widget == mWidgets[thumbs_widget])
@@ -1027,7 +1030,6 @@ void DkCentralWidget::switchWidget(QWidget *widget)
             mode = DkTabInfo::tab_batch;
 
         mTabInfos[mTabbar->currentIndex()]->setMode(mode);
-        updateTab(mTabInfos[mTabbar->currentIndex()]);
     }
 }
 
@@ -1035,7 +1037,24 @@ void DkCentralWidget::tryRestart(const QStringList &args)
 {
     auto conn = connect(qApp, &QApplication::lastWindowClosed, [args] {
         qInfo() << "Restarting with args:" << args;
+        bool privateMode = DkSettingsManager::param().app().privateMode;
+        bool singleInstance = DkSettingsManager::param().app().singleInstance;
+
         QStringList tmp;
+
+        // stay in private mode
+        if (privateMode) {
+            tmp << "--private";
+        } else if (singleInstance) {
+            auto &instance = DkLocalIPC::instance();
+            if (instance.isOk() && instance.isFirstInstance()) {
+                // when first instance restarts, new instance waits acquire first-instance status
+                tmp << "--nmc-restart";
+            } else {
+                // start another instance without waiting
+                tmp << "--new-instance";
+            }
+        }
         tmp << "--nmc-session" << QString::number(DkSettingsManager::param().global().sessionId);
         tmp << args;
         QProcess::startDetached(QApplication::applicationFilePath(), tmp);
@@ -1140,6 +1159,11 @@ QString DkCentralWidget::getCurrentDir() const
     return cDir;
 }
 
+bool DkCentralWidget::acceptsOpenInNewInstance() const
+{
+    return mTabInfos.empty() || (mTabInfos.count() == 1 && mTabInfos[0]->useForNewImageTab());
+}
+
 // DropEvents --------------------------------------------------------------------
 void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -1153,54 +1177,78 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void DkCentralWidget::load(const QString &path)
 {
-    if (!hasViewPort())
-        createViewPort(); // viewport is shared by all tabs
-
-    // create the initial empty tab; do not show recents if we fail here
-    // TODO: also add tab if modifier key is pressed
-    if (mTabbar->count() == 0) {
-        QSharedPointer<DkTabInfo> newTab(new DkTabInfo(DkTabInfo::tab_empty));
-        addTab(newTab);
+    if (mTabbar->count() <= 0) {
+        qWarning() << "no tab to load into";
+        return;
     }
 
     QSharedPointer<DkTabInfo> tab = mTabInfos[mTabbar->currentIndex()];
     QSharedPointer<DkImageLoader> loader = tab->getImageLoader();
 
     // if we have changes to the image, always ask to save them
-    if (!loader->promptSaveBeforeUnload())
+    if (!loader->promptSaveBeforeUnload()) {
         return;
+    }
+
+    Q_ASSERT(!loader->isEdited());
+    Q_ASSERT(!loader->signalsBlocked());
 
     DkFileInfo fileInfo(path);
     if (fileInfo.isDir()) {
-        if (!loader->loadDir(fileInfo.path())) {
-            setInfo(tr("I could not load \"%1\"").arg(path));
-            return;
-        }
-        // load dir does not set a current image; it seems one is always needed
-        // or else switching between tabs could revert to the old directory
-        auto img = loader->getImages().value(0);
+        loader->setCurrentDir(fileInfo);
+
         if (DkSettingsManager::param().global().openDirShowFirstImage) {
-            tab->setMode(DkTabInfo::tab_single_image);
-            loader->load(img);
+            showViewPort();
         } else {
-            loader->setCurrentImage(img);
             showThumbView();
         }
     } else {
-        tab->setMode(DkTabInfo::tab_single_image);
-        // load() does nothing if file matches; but we want to reset edit history etc if we have changes
-        if (loader->isEdited() && fileInfo == loader->getCurrentImage()->fileInfo())
-            loader->reloadImage();
-        else
-            loader->load(fileInfo);
+        auto img = QSharedPointer<DkImageContainerT>{new DkImageContainerT{fileInfo}};
+        loader->setCurrentImage(img);
+        showViewPort();
     }
-    updateTab(tab); // required to set the tab text on background tabs
+
+    // must update tab text/icon here in case loading fails
+    updateTab(tab);
+}
+
+void DkCentralWidget::loadUnique(const QString &path, bool newTab)
+{
+    if (DkSettingsManager::param().global().checkOpenDuplicates) {
+        const DkFileInfo fileInfo(path);
+        for (auto &tab : std::as_const(mTabInfos)) {
+            const DkFileInfo tabInfo(tab->getFilePath());
+            auto imgC = tab->getImage();
+            bool edited = imgC && imgC->isEdited();
+            bool sameFile = tab->getMode() == DkTabInfo::tab_single_image && fileInfo == tabInfo;
+            bool sameDir = tab->getMode() == DkTabInfo::tab_thumb_preview && fileInfo.isDir()
+                && fileInfo.path() == tabInfo.dirPath();
+            if (!edited && (sameFile || sameDir)) {
+                qInfo() << "Using existing tab for duplicate" << path;
+                mTabbar->setCurrentIndex(tab->getTabIdx());
+                return;
+            }
+        }
+    }
+
+    if (newTab) {
+        loadToTab(path);
+    } else {
+        load(path);
+    }
 }
 
 void DkCentralWidget::loadToTab(const QString &path)
 {
-    QSharedPointer<DkTabInfo> newTab(new DkTabInfo(DkTabInfo::tab_empty));
-    addTab(newTab);
+    // if current tab is empty or non-image just use that instead
+    bool useCurrentTab = false;
+    if (mTabInfos.count() > 0) {
+        useCurrentTab = mTabInfos[mTabbar->currentIndex()]->useForNewImageTab();
+    }
+
+    if (!useCurrentTab) {
+        addTab(DkTabInfo::tab_empty);
+    }
 
     load(path);
 }
@@ -1216,11 +1264,14 @@ void DkCentralWidget::loadUrls(const QList<QUrl> &urls, int maxUrlsToLoad)
     if (urls.size() > maxUrlsToLoad)
         qWarning() << "Too many urls found, I will only load the first" << maxUrlsToLoad;
 
-    if (urls.size() == 1)
-        loadUrl(urls[0], false);
-    else {
-        for (const QUrl &url : urls)
-            loadUrl(url, true);
+    bool newTab = false;
+    auto tabInfo = mTabInfos.value(mTabbar->currentIndex());
+    if (tabInfo && !tabInfo->useForNewImageTab()) {
+        newTab = true;
+    }
+    for (const QUrl &url : urls) {
+        loadUrl(url, newTab);
+        newTab = true;
     }
 }
 
@@ -1243,10 +1294,19 @@ void DkCentralWidget::loadUrl(const QUrl &url, bool newTab)
         fileInfo = DkFileInfo(url.path());
     } else if (QNetworkAccessManager().supportedSchemes().contains(url.scheme())) {
         // load a remote url
-        if (newTab) {
-            QSharedPointer<DkTabInfo> tab(new DkTabInfo(DkTabInfo::tab_empty));
-            addTab(tab, false); // must be current tab
+        // there isn't a path yet but the tab needs a title
+        QString path = url.fileName();
+        if (path.isEmpty()) {
+            path = "<url>";
         }
+
+        // we need to go through load() to get the tab state correct
+        if (newTab) {
+            loadToTab(path);
+        } else {
+            load(path);
+        }
+
         setInfo(tr("Downloading \"%1\"").arg(url.toDisplayString()));
         getCurrentImageLoader()->downloadFile(url);
         return;
@@ -1263,8 +1323,6 @@ void DkCentralWidget::loadUrl(const QUrl &url, bool newTab)
 
 void DkCentralWidget::pasteImage()
 {
-    qDebug() << "pasting...";
-
     QClipboard *clipboard = QApplication::clipboard();
 
     if (!loadFromMime(clipboard->mimeData()))
@@ -1287,9 +1345,6 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
     if (!mimeData)
         return false;
 
-    if (!hasViewPort())
-        createViewPort();
-
     QStringList mimeFmts = mimeData->formats();
 
     // try to load an image
@@ -1310,8 +1365,9 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
 
                 dropImg = bl.image();
 
-                if (!dropImg.isNull())
-                    qDebug() << "image loaded from MS data";
+                if (!dropImg.isNull()) {
+                    qInfo() << "image loaded from MS data";
+                }
                 break;
             }
         }
@@ -1326,21 +1382,27 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
         // we got text data. maybe it is a list of urls
         urls = DkUtils::findUrlsInTextNewline(mimeData->text());
     }
+
     // load from image buffer
-    else if (dropImg.isNull() && mimeData->hasImage()) {
+    if (urls.empty() && dropImg.isNull() && mimeData->hasImage()) {
         // we got an image buffer
         dropImg = qvariant_cast<QImage>(mimeData->imageData());
-        qInfo() << "Qt image loaded from mime";
+        qInfo() << "image loaded from mime";
     } else {
-        qDebug() << "Sorry, I could not handle the clipboard data:" << mimeData->formats();
+        qInfo() << "Unsupported clipboard data:" << mimeData->formats();
     }
 
     if (!dropImg.isNull()) {
+        auto tabInfo = mTabInfos.value(mTabbar->currentIndex());
+        if (tabInfo && !tabInfo->useForNewImageTab()) {
+            addTab(DkTabInfo::tab_empty);
+        }
+        showViewPort();
         getViewPort()->loadImage(dropImg);
         return true;
     }
 
-    if (urls.size() == 0) {
+    if (urls.empty()) {
         return false;
     }
 
@@ -1509,6 +1571,24 @@ void DkCentralWidget::renameFile()
     }
 
     load(renamedInfo.absoluteFilePath());
+}
+
+void DkCentralWidget::activateTab(int tabIdx)
+{
+    // make a tab active and guarantee signal delivery as
+    // setCurrentIndex is noop when index doesn't change
+    Q_ASSERT(tabIdx >= 0 && tabIdx < mTabbar->count());
+
+    // if signals blocked assume we don't want anything to happen (closeAllTabs etc)
+    if (mTabbar->signalsBlocked()) {
+        return;
+    }
+
+    if (tabIdx == mTabbar->currentIndex()) {
+        currentTabChanged(tabIdx);
+    } else {
+        mTabbar->setCurrentIndex(tabIdx);
+    }
 }
 
 } // namespace nmc

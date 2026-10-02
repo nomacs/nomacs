@@ -38,6 +38,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
 #include <QObject>
@@ -47,6 +48,7 @@
 
 #include "DkCachedThumb.h"
 #include "DkCentralWidget.h"
+#include "DkLocalIPC.h"
 #include "DkNoMacs.h"
 #include "DkPluginManager.h"
 #include "DkPong.h"
@@ -70,6 +72,7 @@ int main(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 {
 #endif
+    nmc::DkLocalIPC::initialize();
 
     QCoreApplication::setOrganizationName("nomacs");
     QCoreApplication::setOrganizationDomain("https://nomacs.org");
@@ -89,14 +92,6 @@ int main(int argc, char *argv[])
     nmc::DkSettingsManager::instance().init();
     nmc::DkMetaDataHelper::initialize(); // this line makes the XmpParser thread-save - so don't delete it even if you
                                          // seem to know what you do
-    // uncomment this for the single instance feature...
-    //// check for single instance
-    // nmc::DkRunGuard guard;
-    //
-    // if (!guard.tryRunning()) {
-    //	qDebug() << "nomacs is already running - quitting...";
-    //	return 0;
-    // }
 
     // CMD parser --------------------------------------------------------------------
     QCommandLineParser parser;
@@ -122,6 +117,9 @@ int main(int argc, char *argv[])
                                QObject::tr("Set the viewing mode <mode>."),
                                QObject::tr("default | frameless | pseudocolor"));
     parser.addOption(modeOpt);
+
+    QCommandLineOption instanceOpt(QStringList{"i", "new-instance"}, QObject::tr("Start a new instance"));
+    parser.addOption(instanceOpt);
 
     QCommandLineOption batchOpt(QStringList() << "batch",
                                 QObject::tr("Batch processing of <batch-settings.pnm>."),
@@ -159,6 +157,10 @@ int main(int argc, char *argv[])
     QCommandLineOption sessionOpt(QStringList("nmc-session"), "", "sessionId");
     sessionOpt.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(sessionOpt);
+
+    QCommandLineOption restartOpt(QStringList("nmc-restart"));
+    restartOpt.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(restartOpt);
 
     parser.process(app);
 
@@ -228,6 +230,41 @@ int main(int argc, char *argv[])
 
     if (noUI)
         return 0;
+
+    // When "File/New-Instance" is used, the new instance is never
+    // promoted to the first instance. The next instance that starts
+    // after the first one closes becomes the first instance.
+    bool keepSingleInstance = nmc::DkSettingsManager::param().app().singleInstance && !parser.isSet(instanceOpt)
+        && !parser.isSet(privateOpt);
+
+    if (keepSingleInstance) {
+        const bool restarting = parser.isSet(restartOpt);
+        auto &nomacsInstance = nmc::DkLocalIPC::instance();
+        if (nomacsInstance.isOk() && restarting) {
+            // When the first instance restarts itself (settings or mode switch),
+            // the new process must wait for previous process to release locks so it
+            // can become the new leader.
+            // In the unlikely chance this fails, allow a second instance of nomacs to proceed
+            nomacsInstance.waitFirstInstance();
+        }
+
+        if (nomacsInstance.isOk() && !nomacsInstance.isFirstInstance() && !restarting) {
+            nomacsInstance.activate();
+            if (nomacsInstance.isOk()) {
+                bool newTab = true;
+                for (auto &filePath : parser.positionalArguments()) {
+                    if (filePath.isEmpty()) {
+                        continue;
+                    }
+
+                    nomacsInstance.loadUnique(nmc::DkFileInfo{filePath}.path(), newTab);
+                }
+                if (nomacsInstance.isOk()) {
+                    return 0;
+                }
+            }
+        }
+    }
 
     // install translations
     const QString translationName = "nomacs_" + nmc::DkSettingsManager::param().global().language + ".qm";
@@ -304,6 +341,15 @@ int main(int argc, char *argv[])
         w = new nmc::DkNoMacsIpl();
     }
 
+    if (keepSingleInstance) {
+        auto &nomacsInstance = nmc::DkLocalIPC::instance();
+        if (nomacsInstance.isOk() && nomacsInstance.isFirstInstance()) {
+            // NOTE: IPC must be ready before we reach event loop or else we have
+            // a race when starting a bunch of nomacs in parallel
+            nmc::DkLocalIPC::instance().setCentralWidget(w->getTabWidget());
+        }
+    }
+
     qInfo() << "init window: appMode:" << nmc::DkSettingsManager::param().app().currentAppMode
             << "maximized:" << w->isMaximized() << "fullscreen:" << w->isFullScreen() << "geometry:" << w->geometry()
             << "windowState:" << w->windowState();
@@ -359,23 +405,26 @@ int main(int argc, char *argv[])
 
     nmc::DkCentralWidget *cw = w->getTabWidget();
 
+    // if there are any restored tabs, do not replace the last one with first file argument,
+    // i.e. never alter the restored state immediately at launch
+    bool restoredTabs = cw->getTabs().count() > 1;
     bool loading = false;
+    bool newTab = restoredTabs || nmc::DkSettingsManager::param().app().openNewTab;
 
     for (auto &filePath : parser.positionalArguments()) {
         if (filePath.isEmpty())
             continue;
 
-        if (loading)
-            cw->loadToTab(filePath);
-        else
-            cw->load(filePath);
-
         loading = true;
+
+        cw->loadUnique(QDir::fromNativeSeparators(filePath), newTab);
+        newTab = true;
     }
 
     // load recent files if there is nothing to display
-    if (!loading && nmc::DkSettingsManager::param().app().showRecentFiles)
-        w->showRecentFilesOnStartUp();
+    if (!loading && !restoredTabs && nmc::DkSettingsManager::param().app().showRecentFiles) {
+        cw->showRecentFiles();
+    }
 
     if (w->isFullScreen())
         w->enterFullScreen();
@@ -386,11 +435,11 @@ int main(int argc, char *argv[])
     if (cw->hasViewPort())
         cw->getViewPort()->setFocus(Qt::TabFocusReason);
 
-// since Qt5 only Q_OS_MACOS is defined, see https://doc.qt.io/qt-5/macos-issues.html#compile-time-flags
 #ifdef Q_OS_MACOS
-    nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
+    // handler for macOS open file event
+    auto *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
     app.installEventFilter(osxEventFilter);
-    QObject::connect(osxEventFilter, &nmc::DkNomacsOSXEventFilter::loadFile, w, &nmc::DkNoMacs::loadFile);
+    QObject::connect(osxEventFilter, &nmc::DkNomacsOSXEventFilter::loadFile, w, &nmc::DkNoMacs::openFileEvent);
 #endif
 
     app.installEventFilter(nmc::DkShortcutEventFilter::instance());
