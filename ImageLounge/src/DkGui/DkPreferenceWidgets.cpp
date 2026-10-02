@@ -829,8 +829,42 @@ void DkDisplayPreference::createLayout()
     auto *keepZoomGroup = new DkGroupWidget(tr("When Displaying New Images"), this);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
+
+    QVector<QRadioButton *> keepZoomKeepSameSizeFallbackButtons;
+    keepZoomKeepSameSizeFallbackButtons.resize(DkSettings::kzkss_fallback_end);
+    keepZoomKeepSameSizeFallbackButtons
+        [DkSettings::kzkss_fallback_fit_bigger_or_reset] = new QRadioButton(tr("Zoom to fit if image is bigger than "
+                                                                               "viewport, otherwise reset to 100%"),
+                                                                            this);
+    keepZoomKeepSameSizeFallbackButtons
+        [DkSettings::kzkss_fallback_always_fit] = new QRadioButton(tr("Always zoom to fit"), this);
+    keepZoomKeepSameSizeFallbackButtons[DkSettingsManager::param().display().keepZoomKeepSameSizeFallback]->setChecked(
+        true);
+
+    auto *keepZoomKeepSameSizeFallBackButtonGroup = new QButtonGroup(this);
+    keepZoomKeepSameSizeFallBackButtonGroup
+        ->addButton(keepZoomKeepSameSizeFallbackButtons[DkSettings::kzkss_fallback_fit_bigger_or_reset],
+                    DkSettings::kzkss_fallback_fit_bigger_or_reset);
+    keepZoomKeepSameSizeFallBackButtonGroup
+        ->addButton(keepZoomKeepSameSizeFallbackButtons[DkSettings::kzkss_fallback_always_fit],
+                    DkSettings::kzkss_fallback_always_fit);
+    connect(keepZoomKeepSameSizeFallBackButtonGroup,
+            &QButtonGroup::idClicked,
+            this,
+            &DkDisplayPreference::onKeepZoomKeepSameSizeFallbackButtonClicked);
+
+    mKeepZoomKeepSameSizeFallbackWidget = new QWidget(this);
+    auto *keepZoomKeepSameSizeLayout = new QVBoxLayout(mKeepZoomKeepSameSizeFallbackWidget);
+    keepZoomKeepSameSizeLayout->setContentsMargins(20, 0, 0, 0);
+    keepZoomKeepSameSizeLayout->addWidget(new QLabel(tr("If the size is different"), this));
+    keepZoomKeepSameSizeLayout->addWidget(
+        keepZoomKeepSameSizeFallbackButtons[DkSettings::kzkss_fallback_fit_bigger_or_reset]);
+    keepZoomKeepSameSizeLayout->addWidget(keepZoomKeepSameSizeFallbackButtons[DkSettings::kzkss_fallback_always_fit]);
+
+    keepZoomGroup->addWidget(mKeepZoomKeepSameSizeFallbackWidget);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
     keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_fit]);
+    updateKeepZoomKeepSameSizeFallbackEnabled();
 
     mColorProfiles = new QComboBox(this);
     mColorProfiles->setToolTip(tr("Choose the color profile of the monitor"));
@@ -1003,6 +1037,20 @@ void DkDisplayPreference::onKeepZoomButtonClicked(int buttonId) const
 {
     if (DkSettingsManager::param().display().keepZoom != buttonId)
         DkSettingsManager::param().display().keepZoom = buttonId;
+
+    updateKeepZoomKeepSameSizeFallbackEnabled();
+}
+
+void DkDisplayPreference::onKeepZoomKeepSameSizeFallbackButtonClicked(int buttonId) const
+{
+    if (DkSettingsManager::param().display().keepZoomKeepSameSizeFallback != buttonId)
+        DkSettingsManager::param().display().keepZoomKeepSameSizeFallback = buttonId;
+}
+
+void DkDisplayPreference::updateKeepZoomKeepSameSizeFallbackEnabled() const
+{
+    const int keepZoomMode = DkSettingsManager::param().display().keepZoom;
+    mKeepZoomKeepSameSizeFallbackWidget->setEnabled(keepZoomMode == DkSettings::zoom_keep_same_size);
 }
 
 void DkDisplayPreference::onInvertZoomToggled(bool checked) const

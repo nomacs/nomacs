@@ -777,7 +777,17 @@ void DkBaseViewPort::updateImageMatrix(std::optional<DkSettings::keepZoom> keepZ
         break;
     case DkSettings::zoom_keep_same_size: {
         if (!isSameSize) {
-            mWorldMatrix.reset();
+            switch (static_cast<DkSettings::keepZoomKeepSameSizeFallback>(
+                DkSettingsManager::param().display().keepZoomKeepSameSizeFallback)) {
+            case DkSettings::kzkss_fallback_fit_bigger_or_reset:
+                mWorldMatrix.reset();
+                break;
+            case DkSettings::kzkss_fallback_always_fit:
+                zoomToFit();
+                break;
+            default:
+                Q_UNREACHABLE();
+            }
         }
         break;
     }
