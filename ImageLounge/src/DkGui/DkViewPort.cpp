@@ -2265,8 +2265,12 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     mColorTable = QVector<QRgb>(256);
     for (int i = 0; i < mColorTable.size(); i++)
         mColorTable[i] = qRgb(i, i, i);
+}
 
-    // connect
+DkViewPortContrast::~DkViewPortContrast() = default;
+
+void DkViewPortContrast::connectActions()
+{
     auto ttb = DkToolBarManager::inst().transferToolBar();
     connect(ttb, &DkTransferToolBar::colorTableChanged, this, &DkViewPortContrast::changeColorTable);
     connect(ttb, &DkTransferToolBar::channelChanged, this, &DkViewPortContrast::changeChannel);
@@ -2276,8 +2280,6 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(this, &DkViewPortContrast::tFSliderAdded, ttb, &DkTransferToolBar::insertSlider);
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
-
-DkViewPortContrast::~DkViewPortContrast() = default;
 
 void DkViewPortContrast::changeChannel(int channel)
 {

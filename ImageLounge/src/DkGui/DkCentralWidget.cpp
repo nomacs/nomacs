@@ -263,6 +263,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
 {
     setObjectName("DkCentralWidget");
     createLayout();
+    createViewPort();
     setAcceptDrops(true);
 
     DkActionManager &am = DkActionManager::instance();
@@ -407,15 +408,9 @@ void DkCentralWidget::loadSettings()
     activateTab(mTabbar->count() - 1);
 }
 
-bool DkCentralWidget::hasViewPort() const
-{
-    return mWidgets[viewport_widget] != 0;
-}
-
 DkViewPort *DkCentralWidget::getViewPort() const
 {
-    if (!mWidgets[viewport_widget])
-        qWarning() << "danger zone: viewport is queried before its initialization";
+    Q_ASSERT(mWidgets[viewport_widget]);
 
     return dynamic_cast<DkViewPort *>(mWidgets[viewport_widget]);
 }
@@ -609,10 +604,7 @@ DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
 
 void DkCentralWidget::createViewPort()
 {
-    if (hasViewPort()) {
-        qDebug() << "viewport already created...";
-        return;
-    }
+    Q_ASSERT(!mWidgets[viewport_widget]);
 
     DkViewPort *vp = nullptr;
 
@@ -940,23 +932,22 @@ void DkCentralWidget::showThumbView(bool show)
 
 void DkCentralWidget::showViewPort(bool show /* = true */)
 {
-    if (show) {
-        if (!hasViewPort())
-            createViewPort();
+    DkViewPort *viewport = getViewPort();
 
-        switchWidget(mWidgets[viewport_widget]);
+    if (show) {
+        switchWidget(viewport);
 
         auto tab = mTabInfos[mTabbar->currentIndex()];
 
-        getViewPort()->setImageLoader(tab->getImageLoader());
-        getViewPort()->show();
+        viewport->setImageLoader(tab->getImageLoader());
+        viewport->show();
 
         tab->getImageLoader()->load(tab->getImage());
 
-    } else if (hasViewPort()) {
-        getViewPort()->getController()->getFilePreview()->cancelLoading();
-        getViewPort()->deactivate();
-        getViewPort()->hide();
+    } else {
+        viewport->getController()->getFilePreview()->cancelLoading();
+        viewport->deactivate();
+        viewport->hide();
     }
 }
 
@@ -1148,8 +1139,7 @@ void DkCentralWidget::startSlideshow(bool start) const
 
 void DkCentralWidget::setInfo(const QString &msg) const
 {
-    if (hasViewPort())
-        getViewPort()->getController()->setInfo(msg);
+    getViewPort()->getController()->setInfo(msg);
 
     qInfo() << msg;
 }
@@ -1475,7 +1465,7 @@ void DkCentralWidget::pasteImage()
 
 void DkCentralWidget::dropEvent(QDropEvent *event)
 {
-    if (event->source() == this || (hasViewPort() && event->source() == getViewPort())) {
+    if (event->source() == this || event->source() == getViewPort()) {
         event->accept();
         return;
     }
@@ -1609,10 +1599,6 @@ bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls)
 
 void DkCentralWidget::renameFile()
 {
-    // TODO:ref move! ??
-    if (!hasViewPort())
-        return;
-
     if (getViewPort()->isEdited()) {
         setInfo(tr("Sorry, there are unsaved changes"));
         return;

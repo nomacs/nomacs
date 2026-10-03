@@ -270,6 +270,7 @@ public:
     explicit DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPortContrast() override;
 
+    void connectActions();
 signals:
     void tFSliderAdded(qreal pos) const;
     void imageModeSet(int mode) const;
