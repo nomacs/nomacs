@@ -117,7 +117,6 @@ public:
     explicit DkCentralWidget(QWidget *parent = nullptr);
     ~DkCentralWidget() override;
 
-    bool hasViewPort() const;
     DkViewPort *getViewPort() const;
     DkThumbScrollWidget *getThumbScrollWidget() const;
     QString getCurrentDir() const;
