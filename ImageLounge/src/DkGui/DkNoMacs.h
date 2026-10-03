@@ -281,7 +281,6 @@ class DllCoreExport DkNoMacsIpl : public DkNoMacsSync
 
 public:
     explicit DkNoMacsIpl(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    void paintEvent(QPaintEvent *event) override;
 };
 
 class DllCoreExport DkNoMacsFrameless : public DkNoMacs
