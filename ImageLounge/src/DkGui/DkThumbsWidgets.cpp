@@ -2057,6 +2057,38 @@ void DkThumbScene::viewportChanged(const QRectF &portRect)
     }
 }
 
+QVector<QRect> DkThumbScene::getOpaqueArea() const
+{
+    QVector<QRect> rects;
+
+    int rows = mNumRows;
+    int cols = mNumCols;
+    int count = mThumbs.size();
+
+    auto addRect = [&](int idx) {
+        QRect r = mThumbLabels[idx]->sceneBoundingRect().toRect();
+        rects += r;
+    };
+    auto addSpan = [&](int topLeftIdx, int botRightIdx) {
+        QRect topLeft = mThumbLabels[topLeftIdx]->sceneBoundingRect().toRect();
+        QRect botRight = mThumbLabels[botRightIdx]->sceneBoundingRect().toRect();
+        rects += QRect{topLeft.topLeft(), botRight.bottomRight()};
+    };
+
+    if (count == 0) {
+        return rects;
+    } else if (count == 1) {
+        addRect(0);
+    } else {
+        if (rows > 1) {
+            addSpan(0, (rows - 1) * cols - 1); // all full rows
+        }
+        addSpan((rows - 1) * cols, count - 1); // last row (usually partial)
+    }
+
+    return rects;
+}
+
 // DkThumbView --------------------------------------------------------------------
 DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
     : QGraphicsView(scene, parent)
@@ -2440,6 +2472,34 @@ void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT>
 void DkThumbScrollWidget::clear()
 {
     mThumbsScene->updateThumbs(QVector<QSharedPointer<DkImageContainerT>>());
+}
+
+QRegion DkThumbScrollWidget::getFramelessMask() const
+{
+    QRegion mask;
+    auto *wnd = topLevelWidget();
+    if (mToolbar->isVisible()) {
+        QRect r = mToolbar->rect();
+        r.moveTopLeft(mToolbar->mapTo(wnd, r.topLeft()));
+        mask += r;
+    }
+
+    auto *scrollBar = mView->verticalScrollBar();
+    if (scrollBar->isVisible()) {
+        QRect r = scrollBar->rect();
+        r.moveTopLeft(scrollBar->mapTo(wnd, r.topLeft()));
+        mask += r;
+    }
+
+    const auto rects = mThumbsScene->getOpaqueArea();
+    for (QRect r : rects) {
+        QPoint p = r.topLeft();
+        p = mView->mapFromScene(p);
+        p = mView->mapTo(wnd, p);
+        r.moveTopLeft(p);
+        mask += r;
+    }
+    return mask;
 }
 
 void DkThumbScrollWidget::setDir(const QString &dirPath)
@@ -2829,6 +2889,27 @@ DkRecentFilesWidget::DkRecentFilesWidget(DkThumbLoader *thumbLoader, QWidget *pa
 {
     createLayout();
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+}
+
+QRegion DkRecentFilesWidget::getFramelessMask() const
+{
+    QRegion mask{};
+    const auto *wnd = topLevelWidget();
+    QWidget *w = mScrollArea->widget();
+    if (w) {
+        QRect r = w->rect();
+        r.moveTopLeft(w->mapTo(wnd, r.topLeft()));
+        mask += r;
+    }
+
+    auto scrollBar = mScrollArea->verticalScrollBar();
+    if (scrollBar->isVisible()) {
+        QRect r = scrollBar->rect();
+        r.moveTopLeft(scrollBar->mapTo(wnd, r.topLeft()));
+        mask += r;
+    }
+
+    return mask;
 }
 
 void DkRecentFilesWidget::setVisible(bool visible)

@@ -63,12 +63,14 @@ public:
     // getter
     QSharedPointer<DkImageContainerT> imageContainer() const;
     void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
-    DkControlWidget *getController();
+    DkControlWidget *getController() const;
 
     // map window location (cursor position) to image pixel location, return {-1,-1} if out of bounds
     // TODO: this shadows a similar method in DkBaseViewPort, need to investigate
     // whether this should be an override later.
     QPoint mapToImage(const QPoint &windowPos) const;
+
+    virtual QRegion getFramelessMask() const;
 
 signals:
     void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
@@ -236,6 +238,8 @@ public:
     explicit DkViewPortFrameless(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPortFrameless() override = default;
 
+    QRegion getFramelessMask() const override;
+
 public slots:
     void moveViewInWidgetCoords(const QPointF &delta) override;
 
@@ -256,6 +260,7 @@ private:
     QVector<QRectF> mStartActionsRects;
     QVector<QPixmap> mStartActionsIcons;
     QRectF mStartBgRect;
+    QRegion mBgMask{};
 
     [[nodiscard]] ZoomPos calcZoomCenter(const QPointF &center, double factor) const override;
     void controlImagePosition() override;

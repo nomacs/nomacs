@@ -1048,6 +1048,59 @@ void DkCentralWidget::tryRestart(const QStringList &args)
     disconnect(conn);
 }
 
+QRegion DkCentralWidget::getFramelessMask() const
+{
+    QRegion mask;
+    const QWidget *wnd = topLevelWidget();
+
+    if (mTabbar->isVisible()) {
+        QRect r = mTabbar->geometry();
+        r.moveTopLeft(this->mapTo(wnd, r.topLeft()));
+        mask += r;
+    }
+
+    if (mTabbar->currentIndex() < 0) {
+        return mask;
+    }
+
+    const auto &tabInfo = mTabInfos[mTabbar->currentIndex()];
+    switch (tabInfo->getMode()) {
+    case nmc::DkTabInfo::tab_single_image: {
+        DkViewPort *viewport = getViewPort();
+        if (viewport && viewport->isVisible()) {
+            mask += viewport->getFramelessMask();
+        }
+    } break;
+    case DkTabInfo::tab_thumb_preview: {
+        DkThumbScrollWidget *thumbs = getThumbScrollWidget();
+        if (thumbs && thumbs->isVisible()) {
+            mask += thumbs->getFramelessMask();
+        }
+        break;
+    }
+    case DkTabInfo::tab_recent_files: {
+        auto *recent = dynamic_cast<DkRecentFilesWidget *>(mWidgets[recent_files_widget]);
+        if (recent && recent->isVisible()) {
+            mask += recent->getFramelessMask();
+        }
+        break;
+    }
+    case nmc::DkTabInfo::tab_empty: {
+        // nothing here
+    } break;
+    case nmc::DkTabInfo::tab_preferences:
+    case nmc::DkTabInfo::tab_batch:
+    case nmc::DkTabInfo::tab_end: {
+        // occupy full content area
+        QRect r = rect();
+        r.moveTopLeft(this->mapTo(wnd, r.topLeft()));
+        mask += r;
+        break;
+    }
+    }
+    return mask;
+}
+
 void DkCentralWidget::restart() const
 {
     // save settings first - since the intention of a restart is often a global settings change

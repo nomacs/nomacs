@@ -1199,9 +1199,13 @@ void DkPlayer::createLayout()
     int height = 50;
     QSize ih(height - 12, height - 12);
 
+    container = new QWidget(this);
+    container->setObjectName("DkPlayerButtons");
+    auto *layout = new QHBoxLayout(container);
+    layout->setContentsMargins(1, 1, 1, 1);
+
     QColor iconColor = DkSettingsManager::param().display().hudFgdColor;
-    previousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous.svg", iconColor), "", this);
-    // previousButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    previousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous.svg", iconColor), "", container);
     previousButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     previousButton->setToolTip(tr("Show previous image"));
     previousButton->setObjectName("DkPlayerButton");
@@ -1210,8 +1214,7 @@ void DkPlayer::createLayout()
 
     QIcon icon = DkImage::loadIcon(":/nomacs/img/play.svg", iconColor);
     icon.addFile(":/nomacs/img/pause.svg", QSize(), QIcon::Normal, QIcon::On);
-    playButton = new QPushButton(icon, "", this);
-    // playButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    playButton = new QPushButton(icon, "", container);
     playButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     playButton->setToolTip(tr("Play/Pause"));
     playButton->setObjectName("DkPlayerButton");
@@ -1221,8 +1224,7 @@ void DkPlayer::createLayout()
     playButton->addAction(DkActionManager::instance().action(DkActionManager::view_slideshow));
     connect(playButton, &QPushButton::clicked, this, &DkPlayer::play);
 
-    nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", iconColor), "", this);
-    // nextButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", iconColor), "", container);
     nextButton->setMinimumSize(QSize(qRound(1.5 * height), height));
     nextButton->setToolTip(tr("Show next image"));
     nextButton->setObjectName("DkPlayerButton");
@@ -1230,21 +1232,14 @@ void DkPlayer::createLayout()
     connect(nextButton, &QPushButton::pressed, this, &DkPlayer::next);
 
     // now add to mLayout
-    container = new QWidget(this);
-    auto *layout = new QHBoxLayout(container);
-    // layout->setContentsMargins(0,0,0,0);
-    layout->addStretch();
     layout->addWidget(previousButton);
     layout->addWidget(playButton);
     layout->addWidget(nextButton);
-    layout->addStretch();
 
     auto *l = new QVBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(container);
     l->addStretch();
-
-    // setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
 void DkPlayer::init()

@@ -112,6 +112,7 @@ public:
     DkFileInfoLabel *getFileInfoLabel() const;
     DkHistogramWidget *getHistogram() const;
     DkCropWidget *getCropWidget() const;
+    QRegion getFramelessMask() const;
 
     void showWidgetsSettings();
     void setWidgetsVisible(bool visible, bool saveSettings = false);
