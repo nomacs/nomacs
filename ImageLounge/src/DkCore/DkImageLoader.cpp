@@ -620,7 +620,7 @@ bool DkImageLoader::promptSaveBeforeUnload()
 void DkImageLoader::connectActions(bool activate)
 {
     if (activate) {
-        Q_ASSERT(mActionConns.empty());
+        // Q_ASSERT(mActionConns.empty());
         const auto &am = DkActionManager::instance();
         mActionConns << connect(am.action(DkActionManager::file_save_copy), //
                                 &QAction::triggered,

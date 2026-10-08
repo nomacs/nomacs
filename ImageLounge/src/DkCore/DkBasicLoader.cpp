@@ -1438,6 +1438,8 @@ bool DkBasicLoader::save(const QString &filePath,
             saved = false;
             qWarning() << "[save] i/o error on write:" << file.fileName() << file.error() << file.errorString();
         }
+
+        QThread::msleep(5000);
     }
     file.close();
 

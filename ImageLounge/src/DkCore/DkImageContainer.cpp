@@ -482,6 +482,9 @@ void DkImageContainerT::clear()
     if (mFetchingImage || mFetchingBuffer)
         return;
 
+    if (mEdited) {
+        qDebug() << "Dropping edited image" << fileName();
+    }
     DkImageContainer::clear();
 }
 

@@ -422,8 +422,11 @@ DkThumbScrollWidget *DkCentralWidget::getThumbScrollWidget() const
 
 void DkCentralWidget::currentTabChanged(int idx)
 {
-    if (idx < 0 || idx >= mTabInfos.size())
+    Q_ASSERT(idx < mTabInfos.size());
+
+    if (idx < 0) {
         return;
+    }
 
     // QtTabBar sends currrentTabChanged() after tabMoved() when dragging,
     // but the current tab doesn't actually change
@@ -434,6 +437,7 @@ void DkCentralWidget::currentTabChanged(int idx)
 
     auto tab = mTabInfos.at(idx);
 
+    // FIXME: keep track of the last tab index rather than this loop
     // deactivate the previous tab
     for (auto &otherTab : mTabInfos) {
         if (otherTab == tab) {
@@ -452,6 +456,7 @@ void DkCentralWidget::currentTabChanged(int idx)
     if (getThumbScrollWidget())
         getThumbScrollWidget()->clear();
 
+    // TODO: double-activate on close edited image, since not deactivated in loop above
     tab->activate();
 
     switch (tab->getMode()) {
@@ -729,7 +734,7 @@ bool DkCentralWidget::removeTab(int tabIdx)
     {
         QSignalBlocker blocker(mTabbar);
         mTabInfos.at(tabIdx)->getImageLoader()->unload();
-        getViewPort()->setImageLoader({});
+        getViewPort()->setImageLoader(QSharedPointer<DkImageLoader>::create()); // was in a previous commit
         mTabInfos.remove(tabIdx);
         mTabbar->removeTab(tabIdx);
         updateTabIdx();

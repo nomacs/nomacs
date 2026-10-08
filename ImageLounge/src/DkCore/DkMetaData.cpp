@@ -89,6 +89,7 @@ void DkMetaDataT::update(const DkMetaDataT &other)
     if (other.isNull() || !other.mExifImg) {
         return;
     }
+    Q_ASSERT(other.mExifState == loaded || other.mExifState == dirty);
     // Copy metadata from other to this
     mExifImg->setMetadata(*other.mExifImg);
     mExifState = dirty;
