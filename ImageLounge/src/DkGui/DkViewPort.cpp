@@ -1699,10 +1699,12 @@ void DkViewPort::loadFile(const QString &filePath)
 
     DkFileInfo info(filePath);
 
-    if (info.isDir())
-        mLoader->setDir(info);
-    else
+    if (info.isDir()) {
+        mLoader->setCurrentDir(info);
+        mLoader->firstFile();
+    } else {
         mLoader->load(info);
+    }
 
     // diem: I removed this line for a) we don't support remote displays anymore and be:
     // https://github.com/nomacs/nomacs/issues/219 qDebug() << "sync mode: " <<
@@ -1885,14 +1887,17 @@ QSharedPointer<DkImageContainerT> DkViewPort::imageContainer() const
 
 void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader)
 {
+    connectLoader(mLoader, false);
     mLoader = newLoader;
-    connectLoader(newLoader);
 
     if (mLoader) {
+        connectLoader(mLoader, true);
+
         // The image loader can have a previous directory,
         // so need to get the states from it.
-        mController->getFilePreview()->updateThumbs(mLoader->getImages());
-        mLoader->activate();
+        auto images = mLoader->getImages();
+        mController->getScroller()->updateDir(images);
+        mController->getFilePreview()->updateThumbs(images);
     }
 }
 

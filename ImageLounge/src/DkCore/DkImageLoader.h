@@ -62,7 +62,6 @@ public:
 
     void rotateImage(double angle);
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
-    QSharedPointer<DkImageContainerT> getLastImage() const;
     QString filePath() const;
     QStringList getFileNames() const;
 
@@ -79,7 +78,12 @@ public:
     QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool recursive = false, int currFileIdx = 0);
 
     QString getDirPath() const;
-    void setDir(const DkFileInfo &info);
+    /**
+     * @brief set current dir and file but don't load any image
+     * @param info directory
+     * @note reads dir contents and emits updateDirSignal()
+     */
+    void setCurrentDir(const DkFileInfo &info);
     bool hasMovie() const;
     bool hasSvg() const;
 
@@ -130,6 +134,7 @@ public slots:
                          const QString &fileExt = "png",
                          bool threaded = true);
     void setFolderFilter(const QString &filter);
+    // load or update dir; emit updateDirSignal if there is a change
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);
     void loadDirRecursive(const QString &newDirPath);
     void errorDialog(const QString &msg) const;
@@ -153,17 +158,17 @@ public slots:
 
 protected:
     // functions
+    void connectActions(bool activate);
     void updateCacher(QSharedPointer<DkImageContainerT> imgC);
     int getSubFolderIdx(int fromIdx, bool forward) const;
     void updateHistory();
+    void sortImages();
     void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images);
     void createImages(const DkFileInfoList &files, bool sort = true);
     QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void receiveUpdates(bool connectSignals);
 
     static QStringList getFoldersRecursive(const QString &dirPath);
-
-    void clearPath();
 
     QString getCopyPath() const;
 
@@ -186,13 +191,12 @@ protected:
     QStringList mSubFolders;
     QVector<QSharedPointer<DkImageContainerT>> mImages;
     QSharedPointer<DkImageContainerT> mCurrentImage;
-    QSharedPointer<DkImageContainerT> mLastImageLoaded;
     bool mFolderUpdated = false;
     bool mSortingImages = false;
     bool mSortingIsDirty = false;
     bool mOrientationWarningShown = false;
     bool mSaveOrientationWarningShown = false;
     QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>> mCreateImageWatcher;
+    QVector<QMetaObject::Connection> mActionConns;
 };
-
 }

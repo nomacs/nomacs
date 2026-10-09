@@ -128,11 +128,20 @@ jobs:
           ninja
           sudo ninja install
 
+      - name: Build kdsingleapplication
+        run: |
+          cd ${RUNNER_TEMP}
+          git clone --depth 1 -b v1.2.1 https://github.com/KDAB/KDSingleApplication.git kdsa
+          cd kdsa && mkdir build && cd build
+          cmake -G Ninja -D CMAKE_INSTALL_PREFIX=/opt/kdsa ..
+          ninja
+          sudo ninja install
+
       - name: Configure
         run: |
           mkdir ${GITHUB_WORKSPACE}/build
           cd ${GITHUB_WORKSPACE}/build
-          export CMAKE_PREFIX_PATH="/opt/opencv:/opt/quazip:${{ matrix.runner.homebrew-opt }}/${{ matrix.qt.cmakefiles }}"
+          export CMAKE_PREFIX_PATH="/opt/opencv:/opt/quazip:/opt/kdsa:${{ matrix.runner.homebrew-opt }}/${{ matrix.qt.cmakefiles }}"
           cmake -G Ninja ${{ matrix.runner.arch_flags }} ${{ matrix.qt.flags }} ${{ matrix.config.flags }} ../ImageLounge
 
       - name: Get Build Version
