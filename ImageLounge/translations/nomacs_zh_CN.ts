@@ -4690,7 +4690,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation type="unfinished"></translation>
+        <translation>请重新启动nomacs来应用更改</translation>
     </message>
 </context>
 <context>
