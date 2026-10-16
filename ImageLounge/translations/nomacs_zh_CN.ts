@@ -5010,7 +5010,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Next Image on Horizontal Zoom</source>
-        <translation>横向滑动操作改为切换图像</translation>
+        <translation>切换图像：勾选为滚轮左右切换，取消勾选为滚轮滚动切换(先取消鼠标滚轮缩放)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
