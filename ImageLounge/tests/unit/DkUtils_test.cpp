@@ -48,3 +48,56 @@ TEST(DkFileNameConverterTest, OldIndex)
     nmc::DkFileNameConverter fourPad("<d:4:0>");
     EXPECT_EQ(fourPad.convert("test.jpg", 11).toStdString(), std::string("00011"));
 }
+
+TEST(DkNaturalCompareTest, NumericPrefixes)
+{
+    const QStringList names = {"1_a.ppm", "2_a.ppm", "11_a.ppm", "12_a.ppm", "101_a.ppm", "1999_a.ppm"};
+    for (int i = 0; i < names.size(); ++i) {
+        EXPECT_FALSE(nmc::DkUtils::naturalCompare(names[i], names[i]));
+        for (int j = i + 1; j < names.size(); ++j) {
+            SCOPED_TRACE((names[i] + " < " + names[j]).toStdString());
+            EXPECT_TRUE(nmc::DkUtils::naturalCompare(names[i], names[j]));
+            EXPECT_FALSE(nmc::DkUtils::naturalCompare(names[j], names[i]));
+        }
+    }
+}
+
+TEST(DkNaturalCompareTest, EarlierRegressions)
+{
+    const QList<QStringList> sequences = {
+        {"90", "90a", "91"},
+        {"img4.jpg", "img10.jpg", "img12.jpg", "img101.jpg"},
+        {"img001.jpg", "img101.jpg"},
+        {"20140808-1802-P1000002.jpg", "20140808-2128-P1000028.jpg", "20140808-2148-P1000031.jpg"},
+    };
+    for (const QStringList &names : sequences) {
+        for (int i = 0; i < names.size(); ++i) {
+            for (int j = i + 1; j < names.size(); ++j) {
+                SCOPED_TRACE((names[i] + " < " + names[j]).toStdString());
+                EXPECT_TRUE(nmc::DkUtils::naturalCompare(names[i], names[j]));
+                EXPECT_FALSE(nmc::DkUtils::naturalCompare(names[j], names[i]));
+            }
+        }
+    }
+}
+
+TEST(DkNaturalCompareTest, CaseInsensitivePrefixes)
+{
+    const QStringList names = {"A2.ppm", "a3.ppm", "a11.ppm"};
+    for (int i = 0; i < names.size(); ++i) {
+        for (int j = i + 1; j < names.size(); ++j) {
+            SCOPED_TRACE((names[i] + " < " + names[j]).toStdString());
+            EXPECT_TRUE(nmc::DkUtils::naturalCompare(names[i], names[j], Qt::CaseInsensitive));
+            EXPECT_FALSE(nmc::DkUtils::naturalCompare(names[j], names[i], Qt::CaseInsensitive));
+        }
+    }
+}
+
+TEST(DkNaturalCompareTest, LargeNumericPrefixes)
+{
+    const QString prefix(320, '9');
+    const QString shorter = prefix + "_a.ppm";
+    const QString longer = prefix + "0_a.ppm";
+    EXPECT_TRUE(nmc::DkUtils::naturalCompare(shorter, longer));
+    EXPECT_FALSE(nmc::DkUtils::naturalCompare(longer, shorter));
+}

@@ -221,47 +221,33 @@ bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensi
 {
     int sIdx = 0;
 
-    // the first value is the most significant bit
-    // so we try to find the first difference in the strings
-    // this gives us an advantage:
-    // img1 and img10 are sorted correctly since the string compare
-    // does here what it should
-    // img4 and img10 are also sorted correctly since 4 < 10
-    // in addition we don't get into troubles with large numbers
-    // as we skip identical values...
-    for (; sIdx < s1.length() && sIdx < s2.length(); sIdx++)
-        if (s1[sIdx] != s2[sIdx])
+    // Find the first difference using the same case sensitivity as the fallback.
+    for (; sIdx < s1.length() && sIdx < s2.length(); sIdx++) {
+        const QChar c1 = cs == Qt::CaseInsensitive ? s1[sIdx].toCaseFolded() : s1[sIdx];
+        const QChar c2 = cs == Qt::CaseInsensitive ? s2[sIdx].toCaseFolded() : s2[sIdx];
+        if (c1 != c2)
             break;
+    }
 
-    // if both values start with a digit
+    // A shared prefix can end inside a number, including when one number ends
+    // before the other (e.g. 1_a and 11_a). Compare the complete digit runs.
+    while (sIdx > 0 && s1[sIdx - 1].isDigit())
+        --sIdx;
+
     if (sIdx < s1.length() && sIdx < s2.length() && s1[sIdx].isDigit() && s2[sIdx].isDigit()) {
-        QString prefix = "";
+        QString n1 = getLongestNumber(s1, sIdx);
+        QString n2 = getLongestNumber(s2, sIdx);
+        while (n1.startsWith('0'))
+            n1.remove(0, 1);
+        while (n2.startsWith('0'))
+            n2.remove(0, 1);
 
-        // if the number has zeros we get into troubles:
-        // 101 and 12 result in '01' and '2'
-        // for double sort this means: 01 < 2 (though 101 > 12)
-        // so we simply search the last non zero number that was equal and prepend that
-        // if there is no such number (e.g. img001 vs img101) we are fine already
-        // this fixes #469
-        if (s1[sIdx] == '0' || s2[sIdx] == '0') {
-            for (int idx = sIdx - 1; idx >= 0; idx--) {
-                if (s1[idx] != '0'
-                    && s1[idx].isDigit()) { // find the last non-zero number (just check one string they are the same)
-                    prefix = s1[idx];
-                    break;
-                } else if (s1[idx] != '0')
-                    break;
-            }
-        }
-
-        QString cs1 = prefix + getLongestNumber(s1, sIdx);
-        QString cs2 = prefix + getLongestNumber(s2, sIdx);
-
-        double n1 = cs1.toDouble();
-        double n2 = cs2.toDouble();
-
-        if (n1 != n2)
-            return n1 < n2;
+        // Comparing lengths and digits avoids rounding or overflowing large numbers.
+        if (n1.length() != n2.length())
+            return n1.length() < n2.length();
+        const int comparison = QString::compare(n1, n2);
+        if (comparison != 0)
+            return comparison < 0;
     }
 
     // we're good to go with a string compare here...
