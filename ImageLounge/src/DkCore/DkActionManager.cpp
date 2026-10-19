@@ -606,10 +606,10 @@ QMenu *DkActionManager::createToolsMenu(QWidget *parent /* = 0 */)
 #ifdef WITH_OPENCV
     mToolsMenu->addAction(mToolsActions[tools_mosaic]);
 #endif
-#ifdef Q_OS_WIN
+    // #ifdef Q_OS_WIN
     mToolsMenu->addAction(mToolsActions[tools_wallpaper]);
     mToolsMenu->addSeparator();
-#endif
+    // #endif
     mToolsMenu->addAction(mToolsActions[tools_batch]);
     mToolsMenu->addAction(mToolsActions[tools_thumbs]);
     mToolsMenu->addAction(mToolsActions[tools_train_format]);

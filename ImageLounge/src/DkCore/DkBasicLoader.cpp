@@ -32,6 +32,7 @@
 #include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
+#include "DkUtils.h"
 
 #include <QBuffer>
 #include <QColorSpace>
@@ -43,6 +44,7 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QRegularExpression>
+#include <QSaveFile>
 #include <QtConcurrentRun>
 
 #include <qmath.h>
@@ -77,6 +79,7 @@
 #include "qpsdhandler.h"
 #endif // Q_OS_WIN
 
+#include <filesystem>
 #include <memory>
 #include <utility>
 
@@ -1142,49 +1145,19 @@ void DkBasicLoader::setHistoryIndex(int idx)
     const QSharedPointer<DkMetaDataT> metaData = lastMetaDataEdit();
     // Update our current metadata object, which is also used elsewhere (pointer)
     // for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
-    mMetaData->update(metaData);
+    mMetaData->update(*metaData);
 }
 
 QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePath)
 {
     DkFileInfo file(filePath);
-    Q_ASSERT(file.isFile());
+    // Q_ASSERT(file.isFile());
 
     std::unique_ptr<QIODevice> io = file.getIODevice();
     if (!io)
         return {};
 
     return QSharedPointer<QByteArray>(new QByteArray(io->readAll()));
-}
-
-/**
- * @brief writeBufferToFile() writes the passed in file buffer to the specified file.
- *
- * It's called by the save() routine, which saves the image to that file buffer
- * and updates that file buffer to also contain exif data.
- *
- * @param fileInfo path to file to be written
- * @param ba raw content to be written to file
- */
-bool DkBasicLoader::writeBufferToFile(const QString &fileInfo, const QSharedPointer<QByteArray> ba) const
-{
-    if (!ba || ba->isEmpty())
-        return false;
-
-    QFile file(fileInfo);
-    if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << "[DkBasicLoader] failed to open for writing:" << file.error() << file.errorString()
-                   << file.fileName();
-        return false;
-    }
-    qint64 bytesWritten = file.write(*ba.data(), ba->size());
-    file.close();
-    qDebug() << "[DkBasicLoader] buffer saved, bytes written: " << bytesWritten;
-
-    if (!bytesWritten || bytesWritten == -1)
-        return false;
-
-    return true;
 }
 
 void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QByteArray> ba)
@@ -1389,62 +1362,27 @@ void DkBasicLoader::convert32BitOrder(void *buffer, uint32_t width) const
 #endif
 }
 
-/**
- * @brief saves the image and its metadata to the specified file.
- *
- * It writes the image to a file buffer and then writes that buffer back to the original file.
- * Modified metadata is saved afterwards.
- *
- * @param filePath target path to image file
- * @param img source image to be written to file (may be converted along the way)
- * @param compression compression flag for QImageWriter
- */
-QString DkBasicLoader::save(const QString &filePath, const QImage &img, int compression)
+bool DkBasicLoader::save(const QString &filePath,
+                         const QImage &img,
+                         QSharedPointer<const DkMetaDataT> metaData,
+                         int compression)
 {
-    QSharedPointer<QByteArray> ba;
-
-    DkTimer dt;
-    if (saveToBuffer(filePath, img, ba, compression) && ba) {
-        if (writeBufferToFile(filePath, ba)) {
-            qInfo() << "saved to" << filePath << "in" << dt;
-            return filePath;
-        }
-    }
-
-    return QString();
-}
-
-/**
- * @brief saveToBuffer() writes the image matrix img to the file buffer.
- *
- * The file path is used to convert the image based on the file suffix.
- *
- * @param filePath path to file to which this image will later be written, the suffix is relevant
- * @param img image to be written to file buffer
- * @param ba in-memory file buffer containing resulting file
- * @param compression compression flag for QImageWriter
- */
-bool DkBasicLoader::saveToBuffer(const QString &filePath,
-                                 const QImage &img,
-                                 QSharedPointer<QByteArray> &ba,
-                                 int compression) const
-{
-    bool bufferCreated = false;
-
-    if (!ba) {
-        ba = QSharedPointer<QByteArray>(new QByteArray());
-        bufferCreated = true;
-    }
-    // copy current metadata object: mMetaData pointer may be reset in the background in the process
-    // and then it won't be saved because !isLoaded()... [2022-08, pse]
-    QSharedPointer<DkMetaDataT> metaData = mMetaData;
-
     bool saved = false;
 
     QFileInfo fInfo(filePath);
+
+    // We don't use QSaveFile or QTemporaryFile because the former doesn't give us
+    // a path for metadata saving, and the latter holds the file open so we can't write metadata to it
+    // We get effectively the same protection with a random string tacked on the end
+    QFile file(fInfo.absolutePath() + "/" + fInfo.fileName() + "." + DkUtils::randomString(7) + ".part");
+    if (!file.open(QFile::NewOnly)) {
+        qWarning() << "[save] i/o error on file open:" << file.fileName() << file.error() << file.errorString();
+        return {};
+    }
+
 #ifdef Q_OS_WIN
     if (0 == fInfo.suffix().compare("ico", Qt::CaseInsensitive)) {
-        saved = saveWindowsIcon(img, ba);
+        saved = saveWindowsIcon(img, file);
     } else
 #endif
     {
@@ -1477,71 +1415,84 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath,
         if (fInfo.suffix().contains(QRegularExpression("(png)")))
             compression = -1;
 
-        QBuffer fileBuffer(ba.data());
-        // size_t s = fileBuffer.size();
-        fileBuffer.open(QIODevice::WriteOnly);
-        auto *imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
+        QImageWriter imgWriter{&file, fInfo.suffix().toLatin1()};
 
         if (compression >= 0) { // -1 -> use Qt's default
-            imgWriter->setCompression(compression);
-            imgWriter->setQuality(compression);
+            imgWriter.setCompression(compression);
+            imgWriter.setQuality(compression);
         }
-        if (compression == -1 && imgWriter->format() == "jpg") {
-            imgWriter->setQuality(DkSettingsManager::instance().settings().app().defaultJpgQuality);
+        if (compression == -1 && imgWriter.format() == "jpg") {
+            imgWriter.setQuality(DkSettingsManager::instance().settings().app().defaultJpgQuality);
         }
 
-        imgWriter->setOptimizedWrite(true); // this saves space TODO: user option here?
-        imgWriter->setProgressiveScanWrite(true);
+        imgWriter.setOptimizedWrite(true); // this saves space TODO: user option here?
+        imgWriter.setProgressiveScanWrite(true);
 
-        saved = imgWriter->write(
+        saved = imgWriter.write(
             sImg); // hint: release() might run now, resetting mMetaData which is used below [2022-08, pse]
-        delete imgWriter;
+        if (!saved) {
+            qWarning() << "[save] imagewriter error:" << imgWriter.errorString() << file.fileName();
+        }
+
+        if (file.error()) {
+            saved = false;
+            qWarning() << "[save] i/o error on write:" << file.fileName() << file.error() << file.errorString();
+        }
+
+        QThread::msleep(5000);
     }
+    file.close();
 
     if (saved && metaData) {
-        if (!metaData->isLoaded() || !metaData->hasMetaData()) {
-            if (!bufferCreated)
-                metaData->readMetaData(filePath, ba);
-            else
-                // if we created the buffere here - force loading metadata from the file
-                metaData->readMetaData(filePath);
-        }
+        Q_ASSERT(metaData->isLoaded());
 
-        // If we have metadata for the image, save it
-        // If your images are saved without metadata, check if the metadata object is discarded or reset
-        // causing isLoaded() to return false (glitch on reload) - pse
-        if (metaData->isLoaded()) {
-            if (fInfo.suffix().contains(QRegularExpression("(tif|tiff)"))) {
-                mMetaData->fixTIFFAfterSave();
-            }
+        DkMetaDataT dstMetaData;
+        dstMetaData.readMetaData(file.fileName()); // Initially empty since we just wrote the file content
 
-            try {
-                // be careful: here we actually lie about the constness
-                metaData->updateImageMetaData(img, false); // set dimensions in exif (do not reset exif orientation)
-                if (!metaData->saveMetaData(ba, true))
-                    metaData->clearExifState();
-            } catch (...) {
-                // is it still throwing anything?
-                qInfo() << "Sorry, I could not save the meta data...";
-                // clear exif state here -> the 'dirty' flag would otherwise edit the original image (see #514)
-                metaData->clearExifState();
+        if (!dstMetaData.isWriteable()) {
+            qInfo() << "[save] skipped saving metadata, unsupported for file:" << file.fileName();
+        } else {
+            saved = false;
+
+            if (metaData->isLoaded()) {
+                dstMetaData.update(*metaData); // Copy from src TODO: will this keep any keys we deleted?
+
+                if (fInfo.suffix().contains(QRegularExpression("(tif|tiff)"))) {
+                    dstMetaData.fixTIFFAfterSave();
+                }
+
+                try {
+                    // set dimensions and thumbnail in exif, reset orientation since image was recompressed
+                    bool resetOrientation = true;
+                    dstMetaData.updateImageMetaData(img, resetOrientation);
+
+                    // write the file
+                    bool force = true;
+                    saved = dstMetaData.saveMetaData(file.fileName(), force);
+                } catch (std::exception &e) {
+                    qWarning() << "[save] exception saving metadata:" << file.fileName() << e.what();
+                } catch (...) {
+                    qWarning() << "[save] exception saving metadata:" << file.fileName();
+                }
             }
         }
     }
 
-    if (!saved)
-        emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(fInfo.fileName()));
+    // now commit atomically by renaming the file (overwriting destination)
+    if (saved) {
+        std::error_code error;
+        std::filesystem::rename(file.filesystemFileName(), fInfo.filesystemFilePath(), error);
+        if (error) {
+            qWarning() << "[save] i/o error on rename:" << file.fileName() << error.value() << error.message().c_str();
+            saved = false;
+        }
+    }
+
+    if (!saved) {
+        file.remove();
+    }
 
     return saved;
-}
-
-void DkBasicLoader::saveThumbToMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
-{
-    if (!hasImage())
-        return;
-
-    mMetaData->setThumbnail(DkImage::createThumb(image()));
-    saveMetaData(filePath, ba);
 }
 
 /**
@@ -1558,7 +1509,7 @@ void DkBasicLoader::saveThumbToMetaData(const QString &filePath, QSharedPointer<
  * @param filePath path to image file
  * @param ba file buffer to be saved (leave empty to work on the specified file as it is on disk)
  */
-void DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
+bool DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
 {
     if (!ba)
         ba = QSharedPointer<QByteArray>(new QByteArray());
@@ -1576,8 +1527,18 @@ void DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteAr
     }
 
     // Write in-memory copy to specified file - use this overload only if you really need it
-    if (saved)
-        writeBufferToFile(filePath, ba);
+    if (saved && !ba.isNull() && !ba->isEmpty()) {
+        QSaveFile file(filePath);
+        if (!file.open(QFile::WriteOnly)) {
+            qWarning() << "[saveMetaData] failed to open for writing:" << file.error() << file.errorString()
+                       << file.fileName();
+        } else {
+            file.write(*ba);
+            return file.commit();
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -1606,17 +1567,6 @@ void DkBasicLoader::release()
 }
 
 #ifdef Q_OS_WIN
-// bool DkBasicLoader::saveWindowsIcon(const QString &filePath, const QImage &img) const
-// {
-//     QSharedPointer<QByteArray> ba;
-
-//     if (saveWindowsIcon(img, ba) && ba && !ba->isEmpty()) {
-//         writeBufferToFile(filePath, ba);
-//         return true;
-//     }
-
-//     return false;
-// }
 
 struct ICONDIRENTRY {
     UCHAR nWidth;
@@ -1629,19 +1579,13 @@ struct ICONDIRENTRY {
     ULONG nOffset; // offset of BMP or PNG data from beginning of file
 };
 
-bool DkBasicLoader::saveWindowsIcon(const QImage &img, QSharedPointer<QByteArray> &ba) const
+bool DkBasicLoader::saveWindowsIcon(const QImage &img, QFile &file)
 {
     // this code is an adopted version of:
     // http://stackoverflow.com/questions/2289894/how-can-i-save-hicon-to-an-ico-file
 
-    if (!ba)
-        ba = QSharedPointer<QByteArray>(new QByteArray());
-
     HICON hIcon = img.toHICON();
     int nColorBits = 32;
-
-    QBuffer buffer(ba.data());
-    buffer.open(QIODevice::WriteOnly);
 
     if (!hIcon)
         return false;
@@ -1650,7 +1594,7 @@ bool DkBasicLoader::saveWindowsIcon(const QImage &img, QSharedPointer<QByteArray
 
     // Write header:
     UCHAR icoHeader[6] = {0, 0, 1, 0, 1, 0}; // ICO file with 1 image
-    buffer.write((const char *)(&icoHeader), sizeof(icoHeader));
+    file.write((const char *)(&icoHeader), sizeof(icoHeader));
 
     // Get information about icon:
     ICONINFO iconInfo;
@@ -1719,22 +1663,22 @@ bool DkBasicLoader::saveWindowsIcon(const QImage &img, QSharedPointer<QByteArray
     dir.nBitsPerPixel = pBmInfo->bmiHeader.biBitCount;
     dir.nDataLength = pBmInfo->bmiHeader.biSizeImage + pMaskInfo->bmiHeader.biSizeImage + nBmInfoSize;
     dir.nOffset = sizeof(dir) + sizeof(icoHeader);
-    buffer.write((const char *)&dir, sizeof(dir));
+    file.write((const char *)&dir, sizeof(dir));
 
     // Write DIB header (including color table):
     int nBitsSize = pBmInfo->bmiHeader.biSizeImage;
     pBmInfo->bmiHeader.biHeight *= 2; // because the header is for both image and mask
     pBmInfo->bmiHeader.biCompression = 0;
     pBmInfo->bmiHeader.biSizeImage += pMaskInfo->bmiHeader.biSizeImage; // because the header is for both image and mask
-    buffer.write((const char *)&pBmInfo->bmiHeader, nBmInfoSize);
+    file.write((const char *)&pBmInfo->bmiHeader, nBmInfoSize);
 
     // Write image data:
-    buffer.write((const char *)bits.data(), nBitsSize);
+    file.write((const char *)bits.data(), nBitsSize);
 
     // Write mask data:
-    buffer.write((const char *)maskBits.data(), pMaskInfo->bmiHeader.biSizeImage);
+    file.write((const char *)maskBits.data(), pMaskInfo->bmiHeader.biSizeImage);
 
-    buffer.close();
+    file.close();
 
     DeleteObject(handle1);
 

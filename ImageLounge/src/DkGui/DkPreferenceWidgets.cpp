@@ -407,6 +407,12 @@ void DkGeneralPreference::createLayout()
     connect(cbOpenNewTab, &QCheckBox::toggled, this, [](bool checked) {
         DkSettingsManager::param().app().openNewTab = checked;
     });
+    auto *cbCloseOnLastTab = new QCheckBox(tr("Close on last tab closed"));
+    cbCloseOnLastTab->setToolTip(tr("If checked, the nomacs exits when the last tab is closed."));
+    cbCloseOnLastTab->setChecked(DkSettingsManager::param().app().closeOnLastTabClosed);
+    connect(cbCloseOnLastTab, &QCheckBox::toggled, this, [](bool checked) {
+        DkSettingsManager::param().app().closeOnLastTabClosed = checked;
+    });
 
     auto *cbRecentFiles = new QCheckBox(tr("Show Recent Files on Start-Up"), this);
     cbRecentFiles->setToolTip(tr("Show the History Panel on Start-Up"));
@@ -496,24 +502,28 @@ void DkGeneralPreference::createLayout()
     cbCheckForUpdates->setDisabled(DkSettingsManager::param().sync().disableUpdateInteraction);
     connect(cbCheckForUpdates, &QCheckBox::toggled, this, &DkGeneralPreference::onCheckForUpdatesToggled);
 
-    auto *generalGroup = new DkGroupWidget(tr("General"), this);
-    generalGroup->addWidget(cbSingleInstance);
-    generalGroup->addWidget(cbOpenNewTab);
-    generalGroup->addWidget(cbRecentFiles);
-    generalGroup->addWidget(cbLogRecentFiles);
-    generalGroup->addWidget(cbCheckOpenDuplicates);
-    generalGroup->addWidget(cbShowFirstImage);
-    generalGroup->addWidget(cbExtendedTabs);
-    generalGroup->addWidget(cbLoopImages);
-    generalGroup->addWidget(cbZoomOnWheel);
-    generalGroup->addWidget(cbHorZoomSkips);
-    generalGroup->addWidget(cbDoubleClickForFullscreen);
-    generalGroup->addWidget(cbSwitchModifier);
-    generalGroup->addWidget(cbCloseOnEsc);
-    generalGroup->addWidget(cbCloseOnMiddleMouse);
-    generalGroup->addWidget(cbCheckForUpdates);
-    generalGroup->addWidget(cbShowBgImage);
-    generalGroup->addWidget(cbEnableAnimation);
+    auto *startupGroup = new DkGroupWidget(tr("Startup"), this);
+    startupGroup->addWidget(cbSingleInstance);
+    startupGroup->addWidget(cbLogRecentFiles);
+    startupGroup->addWidget(cbRecentFiles);
+    startupGroup->addWidget(cbCheckForUpdates);
+    auto *tabsGroup = new DkGroupWidget(tr("Tabs"), this);
+    tabsGroup->addWidget(cbOpenNewTab);
+    tabsGroup->addWidget(cbCloseOnLastTab);
+    tabsGroup->addWidget(cbExtendedTabs);
+    auto *openGroup = new DkGroupWidget(tr("On Open"), this);
+    openGroup->addWidget(cbCheckOpenDuplicates);
+    openGroup->addWidget(cbShowFirstImage);
+    auto *controlsGroup = new DkGroupWidget(tr("Controls"), this);
+    controlsGroup->addWidget(cbLoopImages);
+    controlsGroup->addWidget(cbZoomOnWheel);
+    controlsGroup->addWidget(cbHorZoomSkips);
+    controlsGroup->addWidget(cbDoubleClickForFullscreen);
+    controlsGroup->addWidget(cbSwitchModifier);
+    controlsGroup->addWidget(cbCloseOnEsc);
+    controlsGroup->addWidget(cbCloseOnMiddleMouse);
+    themeGroup->insertWidget(0, cbShowBgImage);
+    themeGroup->insertWidget(1, cbEnableAnimation);
 
     // language
     auto *languageCombo = new QComboBox(this);
@@ -543,10 +553,13 @@ void DkGeneralPreference::createLayout()
     auto *cbWidget = new QWidget(this);
     auto *cbLayout = new QVBoxLayout(cbWidget);
     cbLayout->setAlignment(Qt::AlignTop);
-    cbLayout->addWidget(generalGroup);
+    cbLayout->addWidget(startupGroup);
+    cbLayout->addWidget(tabsGroup);
+    cbLayout->addWidget(openGroup);
+    cbLayout->addWidget(controlsGroup);
 
     // add language
-    cbLayout->addWidget(languageGroup);
+    leftColumnLayout->insertWidget(0, languageGroup);
 
     auto *contentLayout = new QHBoxLayout(this);
     contentLayout->setAlignment(Qt::AlignLeft);

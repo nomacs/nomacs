@@ -49,7 +49,7 @@ DkMetaDataT::DkMetaDataT()
     mExifState = not_loaded;
 }
 
-bool DkMetaDataT::isNull()
+bool DkMetaDataT::isNull() const
 {
     return !mExifImg.get();
 }
@@ -84,13 +84,15 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
  *
  * @param other
  */
-void DkMetaDataT::update(QSharedPointer<DkMetaDataT> other)
+void DkMetaDataT::update(const DkMetaDataT &other)
 {
-    if (other->isNull() || !other->mExifImg) {
+    if (other.isNull() || !other.mExifImg) {
         return;
     }
+    Q_ASSERT(other.mExifState == loaded || other.mExifState == dirty);
     // Copy metadata from other to this
-    mExifImg->setMetadata(*other->mExifImg);
+    mExifImg->setMetadata(*other.mExifImg);
+    mExifState = dirty;
 }
 
 void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray> ba)
@@ -235,6 +237,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     Exiv2::ExifData &exifData = mExifImg->exifData();
     Exiv2::XmpData &xmpData = mExifImg->xmpData();
     Exiv2::IptcData &iptcData = mExifImg->iptcData();
+    std::string comment = mExifImg->comment();
 
     std::unique_ptr<Exiv2::Image> exifImgN;
 
@@ -254,9 +257,29 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     exifImgN->readMetadata();
 
     // Update new exif object, copy changes made to the old exif object (loaded image)
-    exifImgN->setExifData(exifData);
-    exifImgN->setXmpData(xmpData);
-    exifImgN->setIptcData(iptcData);
+    if (exifImgN->supportsMetadata(Exiv2::mdExif)) {
+        exifImgN->setExifData(exifData);
+    } else if (!exifData.empty()) {
+        qWarning() << "[Exiv2] image format does not support saving exif data";
+    }
+
+    if (exifImgN->supportsMetadata(Exiv2::mdXmp)) {
+        exifImgN->setXmpData(xmpData);
+    } else if (!xmpData.empty()) {
+        qWarning() << "[Exiv2] image format does not support saving xmp data";
+    }
+
+    if (exifImgN->supportsMetadata(Exiv2::mdIptc)) {
+        exifImgN->setIptcData(iptcData);
+    } else if (!iptcData.empty()) {
+        qWarning() << "[Exiv2] image format does not support saving iptc data";
+    }
+
+    if (exifImgN->supportsMetadata(Exiv2::mdComment)) {
+        exifImgN->setComment(comment);
+    } else if (!comment.empty()) {
+        qWarning() << "[Exiv2] image format does not support saving file comment";
+    }
 
     exifImgN->writeMetadata(); // TODO: CIMG6206.jpg crashes here...
 
@@ -1007,15 +1030,21 @@ QStringList DkMetaDataT::getIptcValues() const
 
 void DkMetaDataT::setQtValues(const QImage &img)
 {
-    // Omit "Raw profile type exif" set by ???, presumably it would conflict when saving file
-    // This is a known unregistered tag in PNG: https://exiftool.org/TagNames/PNG.html
+    // Ignore PNG ztxt/itxt fields parsed by Qt image reader, also parsed by Exiv2.
+    // May cause issues when saving file, e.g. export PNG to JPG may overflow the comment field.
+    // Ref: https://clanmills.com/exiv2/book/
     const QStringList keys = img.textKeys();
     for (const auto &key : keys) {
-        if (key.isEmpty() || key == "Raw profile type exif")
+        if (key.isEmpty() || //
+            key == "Raw profile type exif" || //
+            key == "Raw profile type iptc" || //
+            key == "XML:com.adobe.xmp") {
             continue;
+        }
         QString value = img.text(key);
-        if (value.length() >= 5000)
+        if (value.length() >= 5000) {
             value = QObject::tr("<data too large to display>");
+        }
 
         if (!value.isEmpty()) {
             mQtValues.append(value);

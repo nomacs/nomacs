@@ -39,6 +39,7 @@
 
 #include "nmc_config.h"
 
+class QFile;
 class QNetworkReply;
 class LibRaw;
 
@@ -263,13 +264,21 @@ public:
      */
     void resetPageIdx();
 
-    QString save(const QString &filePath, const QImage &img, int compression = -1);
-    bool saveToBuffer(const QString &filePath,
-                      const QImage &img,
-                      QSharedPointer<QByteArray> &ba,
-                      int compression = -1) const;
-    void saveThumbToMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
-    void saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
+    /**
+     * @brief save the image and its metadata to the specified file
+     * @param filePath target path to image file
+     * @param img source image to be written to file (may be converted)
+     * @param metaData new file metadata, null pointer means file will have no metadata
+     * @param compression compression flag for QImageWriter (-1==default, may be ignored depending on format)
+     * @note the file format comes from the file suffix
+     * @warning this overwrites any existing file
+     * @return empty string on failure
+     */
+    [[nodiscard]] static bool save(const QString &filePath,
+                                   const QImage &img,
+                                   const QSharedPointer<const DkMetaDataT> metaData,
+                                   int compression);
+    [[nodiscard]] bool saveMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba);
 
     void pruneEditHistory();
     void setEditImage(const QImage &img, const QString &editName = "");
@@ -325,7 +334,6 @@ public:
     int historyIndex() const;
 
     static QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath);
-    bool writeBufferToFile(const QString &fileInfo, const QSharedPointer<QByteArray> ba) const;
 
     void release();
 
@@ -385,12 +393,8 @@ public:
                   QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 
 #ifdef Q_OS_WIN
-    // bool saveWindowsIcon(const QString &filePath, const QImage &img) const;
-    bool saveWindowsIcon(const QImage &img, QSharedPointer<QByteArray> &ba) const;
+    static bool saveWindowsIcon(const QImage &img, QFile &file);
 #endif
-
-signals:
-    void errorDialogSignal(const QString &msg) const;
 
 protected:
     /**
