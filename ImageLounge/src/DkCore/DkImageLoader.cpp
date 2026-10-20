@@ -1167,14 +1167,12 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
         compression = tifDialog->getCompression();
     }
 
-    saveFile(sFile.absoluteFilePath(), lSaveImg, selectedFilter, compression);
-
     if (tifDialog)
         tifDialog->deleteLater();
     if (jpgDialog)
         jpgDialog->deleteLater();
 
-    return true;
+    return saveFile(sFile.absoluteFilePath(), lSaveImg, selectedFilter, compression);
 }
 
 bool DkImageLoader::saveFile(const QString &filePath,
