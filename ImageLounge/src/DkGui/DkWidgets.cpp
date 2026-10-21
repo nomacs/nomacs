@@ -1131,16 +1131,7 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings)
             DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating));
     }
 
-    int height = 32;
-    if (mTitleLabel->isVisible())
-        height += mTitleLabel->sizeHint().height();
-    if (mDateLabel->isVisible())
-        height += mDateLabel->sizeHint().height();
-    if (mRatingLabel->isVisible())
-        height += mRatingLabel->sizeHint().height();
-
-    setMinimumHeight(height);
-    updateWidth();
+    updateDimensions(true);
 }
 
 void DkFileInfoLabel::updateInfo(const QString &filePath, const QString &date, int rating, bool edited)
@@ -1150,7 +1141,7 @@ void DkFileInfoLabel::updateInfo(const QString &filePath, const QString &date, i
     updateDate(date);
     updateRating(rating);
 
-    updateWidth();
+    updateDimensions();
 }
 
 void DkFileInfoLabel::updateTitle(const QString &filePath, bool edited)
@@ -1174,16 +1165,50 @@ void DkFileInfoLabel::updateRating(const int rating)
     mRatingLabel->setRating(rating);
 }
 
-void DkFileInfoLabel::updateWidth()
+void DkFileInfoLabel::updateDimensions(bool updateHeight)
 {
-    int width = 20; // mar
-    width += qMax(qMax(mTitleLabel->sizeHint().width(), mDateLabel->sizeHint().width()),
-                  mRatingLabel->sizeHint().width());
+    int width = 0;
+    int height = 0;
+
+    if (mTitleLabel->isVisible()) {
+        const QSize title_hint = mTitleLabel->sizeHint();
+        if (title_hint.width() > 0) {
+            width = title_hint.width();
+        }
+        if (title_hint.height() > 0) {
+            height = title_hint.height();
+        }
+    }
+    if (mDateLabel->isVisible()) {
+        const QSize date_hint = mDateLabel->sizeHint();
+        if (date_hint.width() > width) {
+            width = date_hint.width();
+        }
+        if (date_hint.height() > 0) {
+            height += date_hint.height();
+        }
+    }
+    if (mRatingLabel->isVisible()) {
+        const QSize rating_hint = mRatingLabel->sizeHint();
+        if (rating_hint.width() > width) {
+            width = rating_hint.width();
+        }
+        if (rating_hint.height() > 0) {
+            height += rating_hint.height();
+        }
+    }
+
+    width += 20; // add margin
 
     if (width < minimumWidth())
         setMinimumWidth(width);
 
     setMaximumWidth(width);
+
+    if (updateHeight) {
+        height += 32;
+        setMinimumHeight(height);
+    }
 }
 
 // player --------------------------------------------------------------------

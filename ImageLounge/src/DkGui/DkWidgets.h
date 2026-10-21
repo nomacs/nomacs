@@ -136,7 +136,7 @@ private:
     DkRatingLabel *mRatingLabel;
 
     void createLayout();
-    void updateWidth();
+    void updateDimensions(bool updateHeight = false);
     void updateTitle(const QString &filePath, bool edited);
     void updateDate(const QString &date = QString());
     void updateRating(const int rating);
