@@ -364,8 +364,15 @@ DkCentralWidget *DkNoMacs::getTabWidget() const
 void DkNoMacs::closeEvent(QCloseEvent *event)
 {
     DkCentralWidget *cw = getTabWidget();
-    if (!cw)
+    if (!cw) {
         return;
+    }
+
+    if (!cw->requestClose()) {
+        // do not close if the user hit cancel in the save changes dialog
+        event->ignore();
+        return;
+    }
 
     if (!DkSettingsManager::param().app().privateMode) {
         bool saveTabs = false;
@@ -391,12 +398,6 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
         }
 
         cw->saveSettings(saveTabs);
-    }
-
-    if (!getTabWidget()->requestClose()) {
-        // do not close if the user hit cancel in the save changes dialog
-        event->ignore();
-        return;
     }
 
     emit closeSignal();
