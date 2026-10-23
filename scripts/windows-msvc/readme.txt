@@ -1,9 +1,9 @@
 1) Required software needed to compile nomacs dependencies:
-Visual Studio Community
+Visual Studio Community, C++ Clang Compiler for Windows
 Qt (same version as used on AppVeyor)
 MSYS2 ( https://www.msys2.org/ )
 Meson ( https://github.com/mesonbuild/meson/releases/download/1.11.0/meson-1.11.0-64.msi )
-nasm ( https://github.com/novomesk/downloads/raw/main/nasm-2.16.03-win64.zip )
+nasm ( https://github.com/novomesk/downloads/raw/refs/heads/main/nasm-3.02-win64.zip )
 Python ( https://www.python.org/downloads/windows/ )
 Git for Windows
 
@@ -13,6 +13,13 @@ Git for Windows
 
 4) Run 'x64 Native Tools Command Prompt for VS 2022'
 Make sure that the tools (meson.exe, ninja.exe, nasm.exe, python.exe, ...) can be executed (PATH variable set to their folders)
+git --version
+meson --version
+ninja --version
+nasm --version
+python --version
+cl.exe
+clang-cl --version
 
 5) cd C:\projects\nomacs-dependencies
 

@@ -8,7 +8,7 @@ if not defined NOMACS_DEPENDENCIES (
 RMDIR /S /Q libavif\ext\libyuv\build
 mkdir libavif\ext\libyuv\build
 cd libavif\ext\libyuv\build
-cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=%NOMACS_DEPENDENCIES% -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON ..
+cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=%NOMACS_DEPENDENCIES% -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_COMPILER=clang-cl -D CMAKE_CXX_COMPILER=clang-cl ..
 if %ERRORLEVEL% NEQ 0 (
   echo Error configure libyuv
   exit /b 1
