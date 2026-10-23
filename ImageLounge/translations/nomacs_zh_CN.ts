@@ -1035,12 +1035,12 @@
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>copy file path</source>
-        <translation type="unfinished"></translation>
+        <translation>复制文件路径</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
         <source>copy image pixels</source>
-        <translation type="unfinished"></translation>
+        <translation>复制图片像素</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkActionManager.cpp"/>
@@ -4469,117 +4469,117 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Custom temporary folder</source>
-        <translation type="unfinished"></translation>
+        <translation>自定义临时文件夹</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Pasted images and URLs are saved here. Empty to use system default.</source>
-        <translation type="unfinished"></translation>
+        <translation>粘贴的图片和网址会保存在这里。留空则使用系统默认设置。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Image allocation limit</source>
-        <translation type="unfinished"></translation>
+        <translation>图片分配限制</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Maximum memory allowed for any image. If exceeded, image will not be loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>图片允许的最大内存。超出将无法加载。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>File cache limit</source>
-        <translation type="unfinished"></translation>
+        <translation>文件缓存限制</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Speeds up viewing of the next image. We recommend at least twice the size of the largest file.</source>
-        <translation type="unfinished"></translation>
+        <translation>加快查看下一张图片的速度。建议大小至少是最大文件的两倍。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Edit history limit</source>
-        <translation type="unfinished"></translation>
+        <translation>编辑历史限制</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Determines maximum number of undo/redo entries.</source>
-        <translation type="unfinished"></translation>
+        <translation>确定最大撤销/重做条目数。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Memory Usage</source>
-        <translation type="unfinished"></translation>
+        <translation>内存用量</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Use high-quality thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>使用高质量缩略图</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Use antialiasing and avoid upsampling.</source>
-        <translation type="unfinished"></translation>
+        <translation>使用抗锯齿并避免上采样。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Preload thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>预载缩略图</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Compute a limited number of thumbnails before they are needed. Reduces delays but uses more memory.</source>
-        <translation type="unfinished"></translation>
+        <translation>在需要之前先计算有限数量的缩略图。可以减少延迟，但会使用更多内存。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Limit the size of thumbnails to conserve resources. Zooming above this size will be disabled or will lose sharpness.</source>
-        <translation type="unfinished"></translation>
+        <translation>为了节省资源，请限制缩略图的大小。放大超过这个尺寸会被禁用，或者会变得不清晰。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Thumbnail threads</source>
-        <translation type="unfinished"></translation>
+        <translation>缩略图线程数</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Limit temporary memory and CPU used to generate thumbnails.</source>
-        <translation type="unfinished"></translation>
+        <translation>限制生成缩略图时使用的临时内存和CPU。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Thumbnail memory cache limit</source>
-        <translation type="unfinished"></translation>
+        <translation>缩略图内存缓存限制</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Keeps recent thumbnails in memory. Use 0 to disable.</source>
-        <translation type="unfinished"></translation>
+        <translation>将最近的缩略图保存在内存中。0表示禁用。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Disk cache limit</source>
-        <translation type="unfinished"></translation>
+        <translation>磁盘缓存限制</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>When deletion is enabled, trim disk cache to this size.</source>
-        <translation type="unfinished"></translation>
+        <translation>启用删除时，将磁盘缓存裁剪到此大小。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Share thumbnails with other programs</source>
-        <translation type="unfinished"></translation>
+        <translation>与其它程序共享缩略图</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Thumbnails created by other software will be used by nomacs, and vice versa.</source>
-        <translation type="unfinished"></translation>
+        <translation>nomacs会使用其他软件创建的缩略图，反之亦然。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Cleanup thumbnails?</source>
-        <translation type="unfinished"></translation>
+        <translation>清理缩略图？</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4590,27 +4590,33 @@ Do you want to show them again?</source>
 When sharing thumbnails, these will no longer be used.
 
 Delete them now?</source>
-        <translation type="unfinished"></translation>
+        <translation>这里保存了缩略图:
+
+&quot;%1&quot;
+
+共享缩略图时，将不再使用它们。
+
+现在删除它们?</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Delete old thumbnails on startup</source>
-        <translation type="unfinished"></translation>
+        <translation>启动时删除旧缩略图</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>When cache limit is exceeded, delete least-recently-used thumbnails in the background.</source>
-        <translation type="unfinished"></translation>
+        <translation>当缓存超过限制时，后台会删除最近最少使用的缩略图。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Enable disk cache</source>
-        <translation type="unfinished"></translation>
+        <translation>启用磁盘缓存</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Save generated thumbnails to disk for future use.</source>
-        <translation type="unfinished"></translation>
+        <translation>将生成的缩略图保存到磁盘以便将来使用。</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4620,7 +4626,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Maximum thumbnail size</source>
-        <translation type="unfinished"></translation>
+        <translation>最大缩略图大小</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -4690,7 +4696,7 @@ Delete them now?</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Please Restart nomacs to apply changes</source>
-        <translation type="unfinished"></translation>
+        <translation>请重新启动nomacs来应用更改</translation>
     </message>
 </context>
 <context>
@@ -4939,7 +4945,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Reset Dialog Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>重置窗口设置</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5004,7 +5010,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Next Image on Horizontal Zoom</source>
-        <translation>横向滑动操作改为切换图像</translation>
+        <translation>切换图像：勾选为滚轮左右切换，取消勾选为滚轮滚动切换(先取消鼠标滚轮缩放)</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
@@ -5255,7 +5261,7 @@ Warning: This will modify the files.</source>
     <message>
         <location filename="../src/DkCore/DkImageContainer.cpp"/>
         <source>Sorry, I cannot save rating on this image format.</source>
-        <translation type="unfinished"></translation>
+        <translation>抱歉，我无法在这种图片格式上保存评分。</translation>
     </message>
 </context>
 <context>
@@ -6074,7 +6080,7 @@ then press %1</source>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
         <source>All panels are hidden.</source>
-        <translation type="unfinished"></translation>
+        <translation>已隐藏所有面板</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkNoMacs.cpp"/>
