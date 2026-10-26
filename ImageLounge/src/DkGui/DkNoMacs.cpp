@@ -400,7 +400,6 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
         cw->saveSettings(saveTabs);
     }
 
-    emit closeSignal();
     setVisible(false);
 
     DefaultSettings settings;

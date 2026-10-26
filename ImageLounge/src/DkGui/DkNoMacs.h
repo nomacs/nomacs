@@ -97,7 +97,6 @@ public:
 
 signals:
     void sendArrangeSignal(bool overlaid) const;
-    void closeSignal() const;
     void sendQuitLocalClientsSignal() const;
 
 public slots:
