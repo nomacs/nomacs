@@ -25,7 +25,7 @@ IF NOT EXIST lcms2 (
 )
 
 IF NOT EXIST libjxl (
-  git clone --depth 1 --shallow-submodules --recursive -b v0.12.0 https://github.com/libjxl/libjxl.git libjxl 
+  git clone --depth 1 --shallow-submodules --recursive -b main https://github.com/libjxl/libjxl.git libjxl 
 )
 
 IF NOT EXIST libaom (
@@ -77,7 +77,7 @@ IF NOT EXIST libraw (
   mkdir libraw
   cd libraw
   git clone --depth 1 https://github.com/LibRaw/LibRaw-cmake.git
-  git clone --depth 1 -b 0.22.2 https://github.com/LibRaw/LibRaw.git
+  git clone --depth 1 -b 0.22.3 https://github.com/LibRaw/LibRaw.git
   copy ..\!patches\libraw-build-source.txt CMakeLists.txt
   cd ..
 )
@@ -99,7 +99,7 @@ IF NOT EXIST x264 (
 )
 
 IF NOT EXIST libheif (
-  git clone --depth 1 -b v1.23.6 https://github.com/strukturag/libheif.git libheif
+  git clone --depth 1 -b v1.23.7 https://github.com/strukturag/libheif.git libheif
 )
 
 IF NOT EXIST extra-cmake-modules (
