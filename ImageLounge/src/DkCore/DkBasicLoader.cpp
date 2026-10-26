@@ -1441,37 +1441,35 @@ bool DkBasicLoader::save(const QString &filePath,
     }
     file.close();
 
-    if (saved && metaData) {
-        Q_ASSERT(metaData->isLoaded());
-
+    if (saved) {
         DkMetaDataT dstMetaData;
         dstMetaData.readMetaData(file.fileName()); // Initially empty since we just wrote the file content
 
         if (!dstMetaData.isWriteable()) {
             qInfo() << "[save] skipped saving metadata, unsupported for file:" << file.fileName();
         } else {
-            saved = false;
-
-            if (metaData->isLoaded()) {
+            if (metaData && metaData->isLoaded()) {
                 dstMetaData.update(*metaData); // Copy from src TODO: will this keep any keys we deleted?
+            }
 
-                if (fInfo.suffix().contains(QRegularExpression("(tif|tiff)"))) {
-                    dstMetaData.fixTIFFAfterSave();
-                }
+            if (fInfo.suffix().contains(QRegularExpression("(tif|tiff)"))) {
+                dstMetaData.fixTIFFAfterSave();
+            }
 
-                try {
-                    // set dimensions and thumbnail in exif, reset orientation since image was recompressed
-                    bool resetOrientation = true;
-                    dstMetaData.updateImageMetaData(img, resetOrientation);
+            try {
+                // set dimensions and thumbnail in exif, reset orientation since image was recompressed
+                bool resetOrientation = true;
+                dstMetaData.updateImageMetaData(img, resetOrientation);
 
-                    // write the file
-                    bool force = true;
-                    saved = dstMetaData.saveMetaData(file.fileName(), force);
-                } catch (std::exception &e) {
-                    qWarning() << "[save] exception saving metadata:" << file.fileName() << e.what();
-                } catch (...) {
-                    qWarning() << "[save] exception saving metadata:" << file.fileName();
-                }
+                // write the file
+                bool force = true;
+                saved = dstMetaData.saveMetaData(file.fileName(), force);
+            } catch (std::exception &e) {
+                saved = false;
+                qWarning() << "[save] exception saving metadata:" << file.fileName() << e.what();
+            } catch (...) {
+                saved = false;
+                qWarning() << "[save] exception saving metadata:" << file.fileName();
             }
         }
     }
