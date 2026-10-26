@@ -227,16 +227,24 @@ Install required dependencies:
 brew install qt6 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
-Go to the `nomacs` directory and run the correct cmake for your hardware and Qt version. We recommend Qt6.
+Go to the `nomacs` directory and build the required KDSingleApplication dependency
+using the same version as the macOS CI workflow:
 
 ```console
-cd nomacs; mkdir build; cd build
+cd nomacs
+git clone --depth 1 --branch v1.2.1 https://github.com/KDAB/KDSingleApplication.git build/kdsa
+cmake -S build/kdsa -B build/kdsa/build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH="$(brew --prefix qt6)" -DCMAKE_INSTALL_PREFIX="$PWD/build/deps"
+cmake --build build/kdsa/build --parallel 8
+cmake --install build/kdsa/build
+```
 
-# Qt6 / Intel 
-CMAKE_PREFIX_PATH=/usr/local/opt/qt6/lib/cmake cmake -D ENABLE_QUAZIP=ON ../ImageLounge
+Configure nomacs with both dependency prefixes. This works on Intel and Apple Silicon:
 
-# Qt6 / Apple Silicon
-CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt6/lib/cmake cmake -D ENABLE_QUAZIP=ON ../ImageLounge
+```console
+cmake -S ImageLounge -B build -D ENABLE_QUAZIP=ON \
+  -DCMAKE_PREFIX_PATH="$PWD/build/deps;$(brew --prefix qt6)"
+cd build
 ```
 
 Run make:
