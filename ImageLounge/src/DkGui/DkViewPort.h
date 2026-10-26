@@ -104,7 +104,6 @@ public:
     QImage getImage() const override;
 
     void updateLoadedImage();
-    void loadImage(const QImage &newImg);
     void setEditedImage(QSharedPointer<DkImageContainerT> img);
     void setImage(const QImage &newImg) override;
 
