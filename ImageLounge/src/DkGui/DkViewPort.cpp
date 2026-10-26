@@ -303,21 +303,6 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     mController->updateImage(image);
 }
 
-void DkViewPort::loadImage(const QImage &newImg)
-{
-    // delete current information
-    if (mLoader) {
-        if (!unloadImage())
-            return; // user canceled
-
-        mLoader->setImage(newImg, tr("Original Image"));
-        setImage(newImg);
-
-        // save to temp folder
-        mLoader->saveTempFile(newImg, "img", "png");
-    }
-}
-
 void DkViewPort::setImage(const QImage &newImg)
 {
     mDisabledBackground = false;

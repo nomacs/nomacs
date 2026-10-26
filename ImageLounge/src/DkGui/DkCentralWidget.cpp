@@ -1524,13 +1524,25 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
     }
 
     if (!dropImg.isNull()) {
-        auto tabInfo = mTabInfos.value(mTabbar->currentIndex());
-        if (tabInfo && !tabInfo->useForNewImageTab()) {
-            addTab(DkTabInfo::tab_empty);
-        }
-        showViewPort();
-        getViewPort()->loadImage(dropImg);
-        return true;
+        // save to a temporary file and load to a new tab
+        DkImageLoader loader;
+        connect(&loader, &DkImageLoader::saveStartedSignal, this, [this](QSharedPointer<DkImageContainerT> imgC) {
+            mPendingJobs.append(imgC);
+            showProgress(true);
+            connect(imgC.get(),
+                    &DkImageContainerT::fileSavedSignal,
+                    this,
+                    [this, imgC](const QString &filePath, bool saved) {
+                        mPendingJobs.removeOne(imgC);
+                        if (mPendingJobs.empty()) {
+                            showProgress(false);
+                        }
+                        if (saved) { // TODO: do not load if quitting nomacs
+                            loadToTab(filePath);
+                        }
+                    });
+        });
+        return loader.saveTempFile(dropImg, "img", "png");
     }
 
     if (urls.empty()) {
