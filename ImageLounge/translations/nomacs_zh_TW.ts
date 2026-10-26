@@ -2679,16 +2679,6 @@ Please restart nomacs and try again.</source>
         <translation>無法繪製背景色</translation>
     </message>
     <message>
-        <location filename="../src/DkGui/DkToolbars.cpp"/>
-        <source>Toolbar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkToolbars.cpp"/>
-        <source>Movie ToolBar</source>
-        <translation>影片工具列</translation>
-    </message>
-    <message>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Name: </source>
@@ -2717,6 +2707,16 @@ Please restart nomacs and try again.</source>
         <location filename="../src/DkGui/DkThumbsWidgets.cpp"/>
         <source>Embedded </source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkToolbars.cpp"/>
+        <source>Toolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkToolbars.cpp"/>
+        <source>Movie ToolBar</source>
+        <translation>影片工具列</translation>
     </message>
     <message>
         <location filename="../src/DkCore/DkImageStorage.cpp"/>
@@ -4859,6 +4859,37 @@ Warning: This will modify the files.</source>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Reset All Settings</source>
+        <translation>重置所有設定</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>&amp;Import Settings</source>
+        <translation>&amp;Import Settings</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>&amp;Export Settings</source>
+        <translation>&amp;Export Settings</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Default Settings</source>
+        <translation>預設設定</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Show Recent Files on Start-Up</source>
+        <translation>在啟動時顯示最近開啟的檔案</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
+        <source>Show the History Panel on Start-Up</source>
+        <translation>在啟動時顯示歷史記錄面板</translation>
+    </message>
+    <message>
+        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Previewing theme. Restart nomacs to apply all changes.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4896,37 +4927,6 @@ Warning: This will modify the files.</source>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
         <source>Reset Dialog Settings</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>Reset All Settings</source>
-        <translation>重置所有設定</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>&amp;Import Settings</source>
-        <translation>&amp;Import Settings</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>&amp;Export Settings</source>
-        <translation>&amp;Export Settings</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>Default Settings</source>
-        <translation>預設設定</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>Show Recent Files on Start-Up</source>
-        <translation>在啟動時顯示最近開啟的檔案</translation>
-    </message>
-    <message>
-        <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
-        <source>Show the History Panel on Start-Up</source>
-        <translation>在啟動時顯示歷史記錄面板</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkPreferenceWidgets.cpp"/>
