@@ -970,12 +970,11 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
     QWidget *dialogParent = DkUtils::getMainWindow();
 
     QString selectedFilter;
-    QString saveName = fileName();
-    QFileInfo saveFileInfo;
+    const DkFileInfo saveFileInfo = mCurrentImage ? mCurrentImage->fileInfo()
+                                                  : DkFileInfo(mCurrentDir + u'/' + fileName());
+    QString saveName = saveFileInfo.fileName();
 
-    if (hasFile()) {
-        saveFileInfo = QFileInfo(mCurrentDir, fileName());
-
+    {
         int filterIdx = -1;
 
         QStringList sF = DkSettingsManager::param().app().saveFilters;
@@ -991,15 +990,18 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
             }
         }
 
-        if (filterIdx == -1)
-            saveName.remove("." + saveFileInfo.suffix());
+        // unsupported extension, change to something we can save
+        if (filterIdx == -1) {
+            saveName.resize(saveName.lastIndexOf("."));
+            saveName += ".png";
+        }
     }
 
     bool overwriteFile = false;
     QString fileName;
 
     // don't ask the user if save was hit & the file format is supported for saving
-    if (silent && !selectedFilter.isEmpty() && isEdited()) {
+    if (silent && !saveFileInfo.isFromZip() && !selectedFilter.isEmpty() && isEdited()) {
         fileName = filePath();
         DkMessageBox msg(QMessageBox::Question,
                          tr("Overwrite File"),
@@ -1016,10 +1018,11 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
     }
 
     if (!overwriteFile) {
-        // note: basename removes the whole file name from the first dot...
-        QString savePath = (!selectedFilter.isEmpty())
-            ? saveFileInfo.absoluteFilePath()
-            : QFileInfo(saveFileInfo.absoluteDir(), saveName).absoluteFilePath();
+        QString dirPath = saveFileInfo.dirPath();
+        if (saveFileInfo.isFromZip()) {
+            dirPath = QFileInfo{dirPath}.absolutePath(); // dir containing the zip
+        }
+        QString savePath = dirPath + u'/' + saveName;
 
         fileName = QFileDialog::getSaveFileName(dialogParent,
                                                 tr("Save File %1").arg(saveName),
