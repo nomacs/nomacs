@@ -30,6 +30,7 @@
 #include "DkBaseWidgets.h"
 
 #include "DkImageContainer.h"
+#include "DkImageLoader.h"
 #include "DkThumbs.h"
 
 #include "nmc_config.h"
@@ -207,7 +208,7 @@ protected:
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
     void connectLoader(QSharedPointer<DkImageLoader> loader) const;
-    void saveStarted(QSharedPointer<DkImageContainerT> imgC);
+    void saveStarted(QSharedPointer<DkImageContainerT> imgC, DkImageLoader::SaveReason reason);
 
     DkPreferenceWidget *createPreferences();
     DkRecentFilesWidget *createRecentFiles();
