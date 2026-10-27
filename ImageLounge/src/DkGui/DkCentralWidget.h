@@ -228,6 +228,6 @@ protected:
 
 private:
     DkThumbLoader mThumbLoader{};
+    int mPrevTabIdx = -1;
 };
-
 }
