@@ -829,7 +829,7 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
     updateTab(tabInfo);
 }
 
-void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC)
+void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC, DkImageLoader::SaveReason reason)
 {
     // Keep track of images we are saving, if we move to the next image,
     // load another directory etc we can still show status and cleanup on quit
@@ -837,39 +837,51 @@ void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC)
         // TODO: need message receiver outside viewport, won't show up on recents, etc
         getViewPort()->infoSignal(info);
     });
-    connect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, [this, imgC](const QString &filePath, bool saved) {
-        showProgress(false);
-        mPendingJobs.removeOne(imgC);
-        disconnect(imgC.get(), &DkImageContainerT::showInfoSignal, this, nullptr);
-        disconnect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, nullptr);
+    connect(imgC.get(),
+            &DkImageContainerT::fileSavedSignal,
+            this,
+            [this, imgC, reason](const QString &filePath, bool saved) {
+                showProgress(false);
+                mPendingJobs.removeOne(imgC);
+                disconnect(imgC.get(), &DkImageContainerT::showInfoSignal, this, nullptr);
+                disconnect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, nullptr);
 
-        QString fileName = QFileInfo{filePath}.fileName();
-        if (saved) {
-            getViewPort()->infoSignal(tr("Saved: %1").arg(fileName));
-        } else {
-            QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not save: %1").arg(fileName));
-        }
+                QString fileName = QFileInfo{filePath}.fileName();
+                if (saved) {
+                    getViewPort()->infoSignal(tr("Saved: %1").arg(fileName));
+                } else {
+                    QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not save: %1").arg(fileName));
+                }
 
-        // TODO: if we are quitting nomacs do nothing
-        if (saved) {
-            // update all tabs where file might be present
-            for (auto &tab : mTabInfos) {
-                tab->getImageLoader()->fileUpdated(filePath);
-            }
+                if (saved) {
+                    // update all tabs where file might be present
+                    for (auto &tab : mTabInfos) {
+                        tab->getImageLoader()->fileUpdated(filePath);
+                    }
 
-            switch (DkSettingsManager::param().resources().loadSavedImage) {
-            case DkSettings::ls_load: {
-                // TODO: load into tab that originated the request (or if closed, a new tab), or current tab?
-                load(filePath);
-            } break;
-            case DkSettings::ls_load_to_tab:
-                loadToTab(filePath);
-                break;
-            case DkSettings::ls_do_nothing:
-            default:;
-            }
-        }
-    });
+                    switch (reason) {
+                    case DkImageLoader::SaveReason::user: {
+                        switch (DkSettingsManager::param().resources().loadSavedImage) {
+                        case DkSettings::ls_load: {
+                            // TODO: load into tab that originated the request (or if closed, a new tab), or current
+                            // tab?
+                            load(filePath);
+                        } break;
+                        case DkSettings::ls_load_to_tab:
+                            loadToTab(filePath);
+                            break;
+                        case DkSettings::ls_do_nothing:
+                        default:;
+                        }
+                    } break;
+                    case DkImageLoader::SaveReason::paste:
+                        loadToTab(filePath);
+                        break;
+                    case DkImageLoader::SaveReason::forced:
+                    case DkImageLoader::SaveReason::temporary:; // do nothing
+                    }
+                }
+            });
 
     mPendingJobs.append(imgC);
     showProgress(true);
@@ -1524,25 +1536,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
     }
 
     if (!dropImg.isNull()) {
-        // save to a temporary file and load to a new tab
-        DkImageLoader loader;
-        connect(&loader, &DkImageLoader::saveStartedSignal, this, [this](QSharedPointer<DkImageContainerT> imgC) {
-            mPendingJobs.append(imgC);
-            showProgress(true);
-            connect(imgC.get(),
-                    &DkImageContainerT::fileSavedSignal,
-                    this,
-                    [this, imgC](const QString &filePath, bool saved) {
-                        mPendingJobs.removeOne(imgC);
-                        if (mPendingJobs.empty()) {
-                            showProgress(false);
-                        }
-                        if (saved) { // TODO: do not load if quitting nomacs
-                            loadToTab(filePath);
-                        }
-                    });
-        });
-        return loader.saveTempFile(dropImg, "img", "png");
+        return getCurrentImageLoader()->saveTempFile(dropImg, "img", "png", DkImageLoader::SaveReason::paste);
     }
 
     if (urls.empty()) {

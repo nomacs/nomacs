@@ -667,7 +667,7 @@ void DkViewPort::saveFileAs(bool silent)
             }
         }
 
-        mLoader->saveUserFile(img, silent);
+        mLoader->saveUserFile(img, silent, DkImageLoader::SaveReason::user);
     }
 }
 
@@ -690,7 +690,7 @@ void DkViewPort::setAsWallpaper()
     }
 
     QString tmpPath{};
-    if (mLoader->saveTempFile(imgC->image(), "wallpaper", "jpg")) {
+    if (mLoader->saveTempFile(imgC->image(), "wallpaper", "jpg", DkImageLoader::SaveReason::temporary)) {
         tmpPath = imageContainer()->waitForSaveFinished();
     }
 

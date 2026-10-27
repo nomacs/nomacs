@@ -103,6 +103,13 @@ public:
      */
     void fileUpdated(const QString &filePath) const;
 
+    enum class SaveReason {
+        user, // normal save/save-as menu action
+        forced, // save forced by closing a modified file
+        paste, // save forced by pasting or dropping image buffer
+        temporary, // saving temporary file
+    };
+
 signals:
     void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
     void setPlayer(bool play) const;
@@ -114,7 +121,7 @@ signals:
     void showInfoSignal(const QString &msg, int time = 3000, int position = 0) const;
     void updateDirSignal(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void imageHasGPSSignal(bool hasGPS) const;
-    void saveStartedSignal(QSharedPointer<DkImageContainerT> imgC) const;
+    void saveStartedSignal(QSharedPointer<nmc::DkImageContainerT> imgC, nmc::DkImageLoader::SaveReason reason) const;
 
 public slots:
     void undo();
@@ -128,7 +135,7 @@ public slots:
      * @param silent if true, the user wants "Save" and not "Save As"
      * @note "Save" falls back to "Save As" if it is not supported
      */
-    bool saveUserFile(const QImage &saveImg, bool silent);
+    bool saveUserFile(const QImage &saveImg, bool silent, SaveReason reason);
     void copyUserFile();
     /**
      * @brief Saves a file without dialog prompts, potentially overwriting, in a background thread
@@ -136,10 +143,15 @@ public slots:
      * @param saveImg image to be saved, or use the current image
      * @param fallbackFilter filedialog filter if file path has no extension ("JPEG (*.jpg *.jpeg)")
      * @param compression the compression method/level, -1 for default
+     * @param reason the reason for saving which can change the flow
      * @warning if the file already exists, it will be replaced.
      * @note if there is no current image, it is set to the save file path
      **/
-    bool saveFile(const QString &filename, const QImage &saveImg, const QString &fallbackFilter, int compression);
+    bool saveFile(const QString &filename,
+                  const QImage &saveImg,
+                  const QString &fallbackFilter,
+                  int compression,
+                  SaveReason reason);
     bool isSaving() const;
     void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
     void load(const DkFileInfo &filePath);
@@ -152,7 +164,7 @@ public slots:
      * @param suffix file format ("png")
      * @note if there is no current image, it is set to the temporary file
      **/
-    bool saveTempFile(const QImage &img, const QString &baseName, const QString &suffix);
+    bool saveTempFile(const QImage &img, const QString &baseName, const QString &suffix, SaveReason reason);
     void setFolderFilter(const QString &filter);
     // load or update dir; emit updateDirSignal if there is a change
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);

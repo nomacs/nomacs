@@ -594,13 +594,13 @@ bool DkImageLoader::promptSaveBeforeUnload()
             if (imgEdited) {
                 saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
                 if (saved) {
-                    emit saveStartedSignal(mCurrentImage);
+                    emit saveStartedSignal(mCurrentImage, SaveReason::forced);
                 }
             } else if (metaEdited) {
                 saved = mCurrentImage->saveMetaData();
             }
         } else {
-            saved = saveUserFile(mCurrentImage->image(), false);
+            saved = saveUserFile(mCurrentImage->image(), false, SaveReason::forced);
         }
 
         if (saved) {
@@ -853,7 +853,7 @@ void DkImageLoader::downloadFile(const QUrl &url)
     emit updateSpinnerSignalDelayed(true);
 }
 
-bool DkImageLoader::saveTempFile(const QImage &img, const QString &baseName, const QString &suffix)
+bool DkImageLoader::saveTempFile(const QImage &img, const QString &baseName, const QString &suffix, SaveReason reason)
 {
     QString filePath = DkUtils::getTemporaryFilePath(baseName, suffix);
     if (filePath.isEmpty()) {
@@ -865,7 +865,7 @@ bool DkImageLoader::saveTempFile(const QImage &img, const QString &baseName, con
         return false;
     }
 
-    return saveFile(filePath, img, "", -1);
+    return saveFile(filePath, img, "", -1, reason);
 }
 
 void DkImageLoader::saveFileWeb(const QImage &saveImg)
@@ -917,7 +917,7 @@ void DkImageLoader::saveFileWeb(const QImage &saveImg)
     if (factor != -1)
         rImg = DkImage::resizeImage(rImg, QSize(), factor, DkImage::ipl_area);
 
-    saveFile(fileName, rImg, suffix, jpgDialog->getCompression());
+    saveFile(fileName, rImg, suffix, jpgDialog->getCompression(), SaveReason::user);
 
     jpgDialog->deleteLater();
 }
@@ -966,7 +966,7 @@ void DkImageLoader::copyUserFile()
     }
 }
 
-bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
+bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent, SaveReason reason)
 {
     // TODO glitch if (!mCurrentImage->getMetaData()->isLoaded()); see rotateImage()
 
@@ -1179,13 +1179,14 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
     if (jpgDialog)
         jpgDialog->deleteLater();
 
-    return saveFile(sFile.absoluteFilePath(), lSaveImg, selectedFilter, compression);
+    return saveFile(sFile.absoluteFilePath(), lSaveImg, selectedFilter, compression, reason);
 }
 
 bool DkImageLoader::saveFile(const QString &filePath,
                              const QImage &saveImg,
                              const QString &fallbackFilter,
-                             int compression)
+                             int compression,
+                             SaveReason reason)
 {
     QSharedPointer<DkImageContainerT> imgC = (mCurrentImage) ? mCurrentImage : findOrCreateFile(filePath);
     setCurrentImage(imgC);
@@ -1215,7 +1216,7 @@ bool DkImageLoader::saveFile(const QString &filePath,
 
     bool saveStarted = imgC->saveImageThreaded(lFilePath, sImg, compression);
     if (saveStarted) {
-        emit saveStartedSignal(imgC);
+        emit saveStartedSignal(imgC, reason);
     }
 
     return saveStarted;
