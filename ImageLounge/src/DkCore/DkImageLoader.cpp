@@ -586,7 +586,11 @@ bool DkImageLoader::promptSaveBeforeUnload()
         const bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
         const bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
         bool saved = false;
-        if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
+        // TODO: this flow is incorrect for some file types, e.g. we can write metadata to some
+        // types that we cannot recompress
+        // TODO: this should also check if file is writeable or not
+        // TODO: if not writeable there could be a copy & write option for metadata path
+        if (!mCurrentImage->fileInfo().isFromZip() && DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
             if (imgEdited) {
                 saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
                 if (saved) {
