@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <QElapsedTimer>
 #include <QImage>
 #include <QTimer>
 
@@ -68,7 +69,7 @@ public:
     QVector<QSharedPointer<DkImageContainerT>> getImages();
     void setImage(const QImage &img, const QString &editName);
     void setImage(QSharedPointer<DkImageContainerT> img);
-    void setImageUpdated();
+    // void setImageUpdated();
     void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
     void sort();
 
@@ -93,6 +94,15 @@ public:
     int numFiles() const;
     QImage getPixmap();
 
+    /**
+     * @brief update state on external file change
+     * @param filePath file path of the changed file
+     * @note DkImageLoader only tracks dir changes (file added/removed) or
+     *       changes to the current file. This function is called when there
+     *       is known to be a change to some other file it isn't tracking.
+     */
+    void fileUpdated(const QString &filePath) const;
+
 signals:
     void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
     void setPlayer(bool play) const;
@@ -104,7 +114,7 @@ signals:
     void showInfoSignal(const QString &msg, int time = 3000, int position = 0) const;
     void updateDirSignal(QVector<QSharedPointer<DkImageContainerT>> images) const;
     void imageHasGPSSignal(bool hasGPS) const;
-    void loadImageToTab(const QString &filePath) const;
+    void saveStartedSignal(QSharedPointer<DkImageContainerT> imgC) const;
 
 public slots:
     void undo();
@@ -118,21 +128,31 @@ public slots:
      * @param silent if true, the user wants "Save" and not "Save As"
      * @note "Save" falls back to "Save As" if it is not supported
      */
-    void saveUserFile(const QImage &saveImg, bool silent);
+    bool saveUserFile(const QImage &saveImg, bool silent);
     void copyUserFile();
-    void saveFile(const QString &filename,
-                  const QImage &saveImg = QImage(),
-                  const QString &fileFilter = "",
-                  int compression = -1,
-                  bool threaded = true);
+    /**
+     * @brief Saves a file without dialog prompts, potentially overwriting, in a background thread
+     * @param filename file path
+     * @param saveImg image to be saved, or use the current image
+     * @param fallbackFilter filedialog filter if file path has no extension ("JPEG (*.jpg *.jpeg)")
+     * @param compression the compression method/level, -1 for default
+     * @warning if the file already exists, it will be replaced.
+     * @note if there is no current image, it is set to the save file path
+     **/
+    bool saveFile(const QString &filename, const QImage &saveImg, const QString &fallbackFilter, int compression);
+    bool isSaving() const;
     void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
     void load(const DkFileInfo &filePath);
     void downloadFile(const QUrl &url);
     bool deleteFile();
-    QString saveTempFile(const QImage &img,
-                         const QString &name = "img",
-                         const QString &fileExt = "png",
-                         bool threaded = true);
+    /**
+     * @brief Save image to unique filename in temporary directory
+     * @param img the image to save
+     * @param baseName prefix of temporary file
+     * @param suffix file format ("png")
+     * @note if there is no current image, it is set to the temporary file
+     **/
+    bool saveTempFile(const QImage &img, const QString &baseName, const QString &suffix);
     void setFolderFilter(const QString &filter);
     // load or update dir; emit updateDirSignal if there is a change
     bool loadDir(const QString &newDirPath, bool scanRecursive = true);
@@ -143,7 +163,6 @@ public slots:
     // new slots
     void currentImageUpdated() const;
     void imageLoaded(bool loaded = false);
-    void imageSaved(const QString &file, bool saved = true, bool loadToTab = true);
     void imagesSorted();
 
     /**
@@ -153,7 +172,14 @@ public slots:
      * Returns false if the user canceled the operation.
      * */
     bool promptSaveBeforeUnload();
+    /**
+     * @brief release memory and reload the current image and directory
+     */
     void reloadImage();
+    /**
+     * @brief release memory and drop the current image
+     */
+    void unload();
     void showOnMap();
 
 protected:
@@ -181,22 +207,35 @@ protected:
 
     void updateDirWatcher();
 
+    /**
+     * @brief emit signals for current dir updated, even if the contents are the same
+     */
+    void emitDirUpdated() const;
+
+    /**
+     * @brief track dir contents to ignore unecesssary updates
+     * @return true if files were added or removed
+     */
+    bool updateDirContents(const DkFileInfoList &files);
+
     QString mFolderFilterString; // are deleted if a new folder is opened
 
-    QTimer mDelayedUpdateTimer;
-    bool mTimerBlockedUpdate = false;
+    bool mDirUpdated = false; // true to force reload of current dir
+    QTimer mLoadDirTimer; // active when dir update is deferred
+    QElapsedTimer mLastLoadDirTimer; // time since last dir update
+
     QString mCurrentDir;
     QString mCopyDir;
     QFileSystemWatcher *mDirWatcher = nullptr;
     QStringList mSubFolders;
     QVector<QSharedPointer<DkImageContainerT>> mImages;
     QSharedPointer<DkImageContainerT> mCurrentImage;
-    bool mFolderUpdated = false;
     bool mSortingImages = false;
     bool mSortingIsDirty = false;
     bool mOrientationWarningShown = false;
     bool mSaveOrientationWarningShown = false;
     QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>> mCreateImageWatcher;
     QVector<QMetaObject::Connection> mActionConns;
+    QSet<QString> mFileSet{};
 };
 }

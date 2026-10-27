@@ -1775,8 +1775,8 @@ void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool e
 
     if (!size.isEmpty())
         attributes = QString::asprintf(" - %i x %i", size.width(), size.height());
-    if (size.isEmpty() && vp && !vp->getImageSize().isEmpty())
-        attributes = QString::asprintf(" - %i x %i", vp->getImage().width(), vp->getImage().height());
+    // if (size.isEmpty() && vp && !vp->getImageSize().isEmpty())
+    // attributes = QString::asprintf(" - %i x %i", vp->getImage().width(), vp->getImage().height());
     if (DkSettingsManager::param().app().privateMode)
         attributes.append(tr(" [Private Mode]"));
 
@@ -2112,20 +2112,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     setMouseTracking(true); // receive mouse event everytime
 }
 
-void DkNoMacsIpl::paintEvent(QPaintEvent *event)
-{
-    // prevent visual glitch where initial fullscreen window is filled
-    // with normal window bg color. Once the viewport comes up it takes over
-    // drawing the background and dock widgets get the default bg color
-    bool hasViewPort = getTabWidget() && getTabWidget()->hasViewPort();
-    if (isFullScreen() && !hasViewPort) {
-        QColor bgColor = nmc::DkSettingsManager::param().slideShow().backgroundColor;
-        QPainter painter(this);
-        painter.fillRect(rect(), bgColor);
-    } else
-        QMainWindow::paintEvent(event);
-}
-
 // FramelessNoMacs --------------------------------------------------------------------
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     : DkNoMacs(parent, flags)
@@ -2272,7 +2258,10 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
     init();
 
+    // add toolbar to after the main toolbar
     DkToolBarManager::inst().createTransferToolBar();
+    DkViewPortContrast *vp = dynamic_cast<DkViewPortContrast *>(cw->getViewPort());
+    vp->connectActions();
 
     setAcceptDrops(true);
     setMouseTracking(true); // receive mouse event everytime

@@ -354,18 +354,9 @@ bool DkImageContainer::loadImage()
     return mLoader->hasImage();
 }
 
-bool DkImageContainer::saveImage(const QString &filePath, int compression /* = -1 */)
+bool DkImageContainer::saveImage(const QString &filePath, int compression)
 {
-    return saveImage(filePath, getLoader()->lastImage(), compression);
-}
-
-bool DkImageContainer::saveImage(const QString &filePath, const QImage saveImg, int compression /* = -1 */)
-{
-    QFileInfo saveFile(saveImageIntern(filePath, getLoader(), saveImg, compression));
-
-    qDebug() << "save file: " << saveFile.absoluteFilePath();
-
-    return saveFile.exists() && saveFile.isFile();
+    return DkBasicLoader::save(filePath, getLoader()->lastImage(), getLoader()->getMetaData(), compression);
 }
 
 QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const DkFileInfo &fileInfo)
@@ -419,28 +410,20 @@ QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QString &f
     return loader;
 }
 
-QString DkImageContainer::saveImageIntern(const QString &filePath,
-                                          QSharedPointer<DkBasicLoader> loader,
-                                          QImage saveImg,
-                                          int compression)
+bool DkImageContainer::saveMetaData()
 {
-    return loader->save(filePath, saveImg, compression);
+    if (!mLoader) {
+        return false;
+    }
+
+    return saveMetaDataIntern(filePath(), mLoader, mFileBuffer);
 }
 
-void DkImageContainer::saveMetaData()
-{
-    if (!mLoader)
-        return;
-
-    saveMetaDataIntern(filePath(), mLoader, mFileBuffer);
-}
-
-void DkImageContainer::saveMetaDataIntern(const QString &filePath,
+bool DkImageContainer::saveMetaDataIntern(const QString &filePath,
                                           QSharedPointer<DkBasicLoader> loader,
                                           QSharedPointer<QByteArray> fileBuffer)
 {
-    // TODO this shouldn't be used without notifying the user, see issue #799
-    loader->saveMetaData(filePath, fileBuffer);
+    return loader->saveMetaData(filePath, fileBuffer);
 }
 
 bool DkImageContainer::isEdited() const
@@ -499,6 +482,9 @@ void DkImageContainerT::clear()
     if (mFetchingImage || mFetchingBuffer)
         return;
 
+    if (mEdited) {
+        qDebug() << "Dropping edited image" << fileName();
+    }
     DkImageContainer::clear();
 }
 
@@ -548,7 +534,7 @@ bool DkImageContainerT::loadImageThreaded(bool force)
     // for a moment before that happens
     bool modified = mFileInfo.isModified();
 
-    if (force || modified || getLoader()->isDirty()) {
+    if (force || (!mEdited && (modified || getLoader()->isDirty()))) {
         clear();
     }
 
@@ -826,17 +812,6 @@ void DkImageContainerT::receiveUpdates(bool connectSignals)
     mSelected = connectSignals;
 }
 
-void DkImageContainerT::saveMetaDataThreaded(const QString &filePath)
-{
-    if (!exists() || (getLoader()->getMetaData() && !getLoader()->getMetaData()->isDirty()))
-        return;
-
-    mFileUpdateTimer.stop();
-    QFuture<void> future = QtConcurrent::run([&, filePath] {
-        return saveMetaDataIntern(filePath, getLoader(), getFileBuffer());
-    });
-}
-
 bool DkImageContainerT::saveImageThreaded(const QString &filePath, int compression /* = -1 */)
 {
     return saveImageThreaded(filePath, getLoader()->lastImage(), compression);
@@ -873,53 +848,75 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
             &DkImageContainerT::savingFinished,
             Qt::UniqueConnection);
 
-    mSaveImageWatcher.setFuture(QtConcurrent::run([&, filePath, saveImg, compression] {
-        return saveImageIntern(filePath, mLoader, saveImg, compression);
+    // We have to copy non-COW objects that might change during the save
+    auto metaData = mLoader->getMetaData()->copy();
+
+    mSaveImageWatcher.setProperty("filePath", filePath);
+    mSaveImageWatcher.setFuture(QtConcurrent::run([=] {
+        return DkBasicLoader::save(filePath, saveImg, metaData, compression);
     }));
 
     return true;
 }
 
-void DkImageContainerT::savingFinished()
+bool DkImageContainerT::saveMetaData()
 {
-    QString savePath = mSaveImageWatcher.result();
-
-    DkFileInfo sInfo(savePath);
-    qDebug() << "save file: " << savePath;
-
-    if (!sInfo.exists() || !sInfo.isFile())
-        emit fileSavedSignal(savePath, false);
-    else {
-        //// reset thumb - loadImageThreaded should do it anyway
-        // thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(saveFile, loader->image()));
-
-        if (mFileBuffer)
-            mFileBuffer->clear(); // do a complete clear?
-
-        if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || filePath().isEmpty()
-            || dirPath() == sInfo.dirPath()) {
-            setFile(sInfo);
-            emit fileSavedSignal(savePath, true, false);
-        } else {
-            emit fileSavedSignal(savePath);
-        }
-
-        mEdited = false;
-        if (mSelected) {
-            loadImageThreaded(true); // force a reload
-            mFileUpdateTimer.start();
-        }
+    bool ok = DkImageContainer::saveMetaData();
+    if (ok) {
+        emit showInfoSignal(tr("Saved metadata for: %1").arg(fileName()));
+    } else {
+        emit showInfoSignal(tr("Sorry, I could not save metadata for: %1").arg(fileName()));
     }
+    if (ok) {
+        mEdited = false;
+        getMetaData()->clearExifState();
+        emit imageUpdatedSignal();
+    }
+    return ok;
 }
 
-QSharedPointer<DkBasicLoader> DkImageContainerT::getLoader()
+QString DkImageContainerT::waitForSaveFinished() const
 {
-    if (!mLoader) {
-        DkImageContainer::getLoader();
-        connect(mLoader.data(), &DkBasicLoader::errorDialogSignal, this, &DkImageContainerT::errorDialogSignal);
-    }
+    Q_ASSERT(isSaving());
 
-    return mLoader;
+    QString savePath{};
+    QEventLoop eventLoop;
+    auto conn = connect(this,
+                        &DkImageContainerT::fileSavedSignal,
+                        this,
+                        [&savePath, &eventLoop](const QString &filePath, bool saved) {
+                            if (saved) {
+                                savePath = filePath;
+                            }
+                            eventLoop.exit(0);
+                        });
+    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+    disconnect(conn);
+    return savePath;
+}
+
+void DkImageContainerT::savingFinished()
+{
+    bool saved = mSaveImageWatcher.result();
+
+    QString filePath = mSaveImageWatcher.property("filePath").toString();
+    QFileInfo sInfo(filePath);
+
+    if (!saved) {
+        emit fileSavedSignal(filePath, false);
+    } else {
+        // unset edited state, but don't drop the history, since we might want to save again
+        // the post-save option determines what happens next (file reload/load to tab etc)
+        mEdited = false;
+        getMetaData()->clearExifState();
+
+        if (mSelected) {
+            mFileUpdateTimer.start();
+        }
+
+        emit fileSavedSignal(filePath, true);
+        emit imageUpdatedSignal();
+    }
 }
 
 void DkImageContainerT::undo()

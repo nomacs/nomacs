@@ -314,7 +314,7 @@ void DkViewPort::loadImage(const QImage &newImg)
         setImage(newImg);
 
         // save to temp folder
-        mLoader->saveTempFile(newImg);
+        mLoader->saveTempFile(newImg, "img", "png");
     }
 }
 
@@ -701,12 +701,14 @@ void DkViewPort::setAsWallpaper()
 
     if (!imgC || !imgC->hasImage()) {
         qWarning() << "cannot create wallpaper because there is no image loaded...";
+        return;
     }
 
-    QImage img = imgC->image();
-    QString tmpPath = mLoader->saveTempFile(img, "wallpaper", "jpg", false);
+    QString tmpPath{};
+    if (mLoader->saveTempFile(imgC->image(), "wallpaper", "jpg")) {
+        tmpPath = imageContainer()->waitForSaveFinished();
+    }
 
-    // is there a more elegant way to see if saveTempFile returned an empty path
     if (tmpPath.isEmpty()) {
         QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not create a wallpaper..."));
         return;
@@ -2263,8 +2265,12 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     mColorTable = QVector<QRgb>(256);
     for (int i = 0; i < mColorTable.size(); i++)
         mColorTable[i] = qRgb(i, i, i);
+}
 
-    // connect
+DkViewPortContrast::~DkViewPortContrast() = default;
+
+void DkViewPortContrast::connectActions()
+{
     auto ttb = DkToolBarManager::inst().transferToolBar();
     connect(ttb, &DkTransferToolBar::colorTableChanged, this, &DkViewPortContrast::changeColorTable);
     connect(ttb, &DkTransferToolBar::channelChanged, this, &DkViewPortContrast::changeChannel);
@@ -2274,8 +2280,6 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(this, &DkViewPortContrast::tFSliderAdded, ttb, &DkTransferToolBar::insertSlider);
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
-
-DkViewPortContrast::~DkViewPortContrast() = default;
 
 void DkViewPortContrast::changeChannel(int channel)
 {

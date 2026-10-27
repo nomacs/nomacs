@@ -239,6 +239,12 @@ int DkMessageBox::exec()
         show = now > expiration;
     }
 
+    // TODO: use modifier setting (swap ctrl/alt thing)
+    // needs to be modifier that is not used by viewport
+    if (!show && qApp->queryKeyboardModifiers() & Qt::ControlModifier && qApp->mouseButtons() == Qt::LeftButton) {
+        show = true;
+    }
+
     if (!show) {
         qInfo() << this << "skipped with answer" << static_cast<QMessageBox::StandardButton>(answer) << answer;
         return answer;

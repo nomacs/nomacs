@@ -56,6 +56,7 @@
 #include <QInputDialog>
 #include <QMimeData>
 #include <QProcess>
+#include <QProgressDialog>
 #include <QSettings>
 #include <QStackedLayout>
 #include <QStandardPaths>
@@ -262,6 +263,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
 {
     setObjectName("DkCentralWidget");
     createLayout();
+    createViewPort();
     setAcceptDrops(true);
 
     DkActionManager &am = DkActionManager::instance();
@@ -406,15 +408,9 @@ void DkCentralWidget::loadSettings()
     activateTab(mTabbar->count() - 1);
 }
 
-bool DkCentralWidget::hasViewPort() const
-{
-    return mWidgets[viewport_widget] != 0;
-}
-
 DkViewPort *DkCentralWidget::getViewPort() const
 {
-    if (!mWidgets[viewport_widget])
-        qWarning() << "danger zone: viewport is queried before its initialization";
+    Q_ASSERT(mWidgets[viewport_widget]);
 
     return dynamic_cast<DkViewPort *>(mWidgets[viewport_widget]);
 }
@@ -426,8 +422,11 @@ DkThumbScrollWidget *DkCentralWidget::getThumbScrollWidget() const
 
 void DkCentralWidget::currentTabChanged(int idx)
 {
-    if (idx < 0 || idx >= mTabInfos.size())
+    Q_ASSERT(idx < mTabInfos.size());
+
+    if (idx < 0) {
         return;
+    }
 
     // QtTabBar sends currrentTabChanged() after tabMoved() when dragging,
     // but the current tab doesn't actually change
@@ -438,6 +437,7 @@ void DkCentralWidget::currentTabChanged(int idx)
 
     auto tab = mTabInfos.at(idx);
 
+    // FIXME: keep track of the last tab index rather than this loop
     // deactivate the previous tab
     for (auto &otherTab : mTabInfos) {
         if (otherTab == tab) {
@@ -456,6 +456,7 @@ void DkCentralWidget::currentTabChanged(int idx)
     if (getThumbScrollWidget())
         getThumbScrollWidget()->clear();
 
+    // TODO: double-activate on close edited image, since not deactivated in loop above
     tab->activate();
 
     switch (tab->getMode()) {
@@ -508,7 +509,11 @@ void DkCentralWidget::connectLoader(QSharedPointer<DkImageLoader> loader) const
             this,
             &DkCentralWidget::showProgress,
             Qt::UniqueConnection);
-    connect(loader.data(), &DkImageLoader::loadImageToTab, this, &DkCentralWidget::loadToTab, Qt::UniqueConnection);
+    connect(loader.data(),
+            &DkImageLoader::saveStartedSignal,
+            this,
+            &DkCentralWidget::saveStarted,
+            Qt::UniqueConnection);
 }
 
 void DkCentralWidget::paintEvent(QPaintEvent *)
@@ -604,10 +609,7 @@ DkThumbScrollWidget *DkCentralWidget::createThumbScrollWidget()
 
 void DkCentralWidget::createViewPort()
 {
-    if (hasViewPort()) {
-        qDebug() << "viewport already created...";
-        return;
-    }
+    Q_ASSERT(!mWidgets[viewport_widget]);
 
     DkViewPort *vp = nullptr;
 
@@ -715,21 +717,15 @@ void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
     // tabbar->setTabButton(0, QTabBar::RightSide, tb);
 }
 
-void DkCentralWidget::removeTab(int tabIdx)
+bool DkCentralWidget::removeTab(int tabIdx)
 {
     if (tabIdx == -1) {
         tabIdx = mTabbar->currentIndex();
     }
 
-    // if user requests close on batch while processing - cancel batch
-    if (mTabInfos[tabIdx]->getMode() == DkTabInfo::tab_batch) {
-        auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
-
-        if (bw)
-            bw->close();
+    if (!promptUnloadTab(tabIdx)) {
+        return false;
     }
-
-    // TODO: ask to save changes here but make sure to abort closeAllTabs
 
     // must block currentTabChanged() here since we'll see inconsistent
     // state until updateTabIdx() returns. Side benefit, we don't
@@ -737,6 +733,8 @@ void DkCentralWidget::removeTab(int tabIdx)
     bool currentTabWillChange = tabIdx == mTabbar->currentIndex();
     {
         QSignalBlocker blocker(mTabbar);
+        mTabInfos.at(tabIdx)->getImageLoader()->unload();
+        getViewPort()->setImageLoader(QSharedPointer<DkImageLoader>::create()); // was in a previous commit
         mTabInfos.remove(tabIdx);
         mTabbar->removeTab(tabIdx);
         updateTabIdx();
@@ -747,6 +745,10 @@ void DkCentralWidget::removeTab(int tabIdx)
         if (currentTabWillChange) {
             activateTab(mTabbar->currentIndex());
         }
+    } else if (DkSettingsManager::param().app().closeOnLastTabClosed) {
+        qInfo() << "[removeTab] no tabs left, quitting";
+        qApp->quit();
+        return true;
     } else {
         // make sure we have at least one tab
         addTab(DkTabInfo::tab_recent_files);
@@ -755,6 +757,8 @@ void DkCentralWidget::removeTab(int tabIdx)
     if (mTabInfos.size() <= 1) {
         mTabbar->hide();
     }
+
+    return true;
 }
 
 void DkCentralWidget::clearAllTabs()
@@ -762,9 +766,10 @@ void DkCentralWidget::clearAllTabs()
     {
         // block while removing to prevent expensive currentTabChanged()
         QSignalBlocker blocker(mTabbar);
-        int count = getTabs().count();
-        for (int idx = 0; idx < count; idx++) {
-            removeTab();
+        for (int idx = mTabbar->count() - 1; idx >= 0; --idx) {
+            if (!removeTab(idx)) {
+                break;
+            }
         }
     }
     currentTabChanged(mTabbar->currentIndex());
@@ -829,6 +834,52 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img)
     updateTab(tabInfo);
 }
 
+void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC)
+{
+    // Keep track of images we are saving, if we move to the next image,
+    // load another directory etc we can still show status and cleanup on quit
+    connect(imgC.get(), &DkImageContainerT::showInfoSignal, this, [this, imgC](const QString &info) {
+        // TODO: need message receiver outside viewport, won't show up on recents, etc
+        getViewPort()->infoSignal(info);
+    });
+    connect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, [this, imgC](const QString &filePath, bool saved) {
+        showProgress(false);
+        mPendingJobs.removeOne(imgC);
+        disconnect(imgC.get(), &DkImageContainerT::showInfoSignal, this, nullptr);
+        disconnect(imgC.get(), &DkImageContainerT::fileSavedSignal, this, nullptr);
+
+        QString fileName = QFileInfo{filePath}.fileName();
+        if (saved) {
+            getViewPort()->infoSignal(tr("Saved: %1").arg(fileName));
+        } else {
+            QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not save: %1").arg(fileName));
+        }
+
+        // TODO: if we are quitting nomacs do nothing
+        if (saved) {
+            // update all tabs where file might be present
+            for (auto &tab : mTabInfos) {
+                tab->getImageLoader()->fileUpdated(filePath);
+            }
+
+            switch (DkSettingsManager::param().resources().loadSavedImage) {
+            case DkSettings::ls_load: {
+                // TODO: load into tab that originated the request (or if closed, a new tab), or current tab?
+                load(filePath);
+            } break;
+            case DkSettings::ls_load_to_tab:
+                loadToTab(filePath);
+                break;
+            case DkSettings::ls_do_nothing:
+            default:;
+            }
+        }
+    });
+
+    mPendingJobs.append(imgC);
+    showProgress(true);
+}
+
 QVector<QSharedPointer<DkTabInfo>> DkCentralWidget::getTabs() const
 {
     return mTabInfos;
@@ -886,23 +937,22 @@ void DkCentralWidget::showThumbView(bool show)
 
 void DkCentralWidget::showViewPort(bool show /* = true */)
 {
-    if (show) {
-        if (!hasViewPort())
-            createViewPort();
+    DkViewPort *viewport = getViewPort();
 
-        switchWidget(mWidgets[viewport_widget]);
+    if (show) {
+        switchWidget(viewport);
 
         auto tab = mTabInfos[mTabbar->currentIndex()];
 
-        getViewPort()->setImageLoader(tab->getImageLoader());
-        getViewPort()->show();
+        viewport->setImageLoader(tab->getImageLoader());
+        viewport->show();
 
         tab->getImageLoader()->load(tab->getImage());
 
-    } else if (hasViewPort()) {
-        getViewPort()->getController()->getFilePreview()->cancelLoading();
-        getViewPort()->deactivate();
-        getViewPort()->hide();
+    } else {
+        viewport->getController()->getFilePreview()->cancelLoading();
+        viewport->deactivate();
+        viewport->hide();
     }
 }
 
@@ -1094,8 +1144,7 @@ void DkCentralWidget::startSlideshow(bool start) const
 
 void DkCentralWidget::setInfo(const QString &msg) const
 {
-    if (hasViewPort())
-        getViewPort()->getController()->setInfo(msg);
+    getViewPort()->getController()->setInfo(msg);
 
     qInfo() << msg;
 }
@@ -1124,10 +1173,100 @@ QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const
     return mTabInfos[mTabbar->currentIndex()]->getImageLoader();
 }
 
-bool DkCentralWidget::requestClose() const
+bool DkCentralWidget::promptUnloadTab(int idx)
 {
-    if (hasViewPort())
-        return getViewPort()->unloadImage();
+    // here we put anything that should prevent a tab from going away (close tab or quit app)
+
+    const auto &tabInfo = mTabInfos.at(idx);
+
+    // if user requests close on batch while processing - cancel batch
+    if (tabInfo->getMode() == DkTabInfo::tab_batch) {
+        auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
+        return bw->close(); // FIXME: this cancels batch silently (old behavior)
+    }
+
+    const auto &loader = tabInfo->getImageLoader();
+
+    bool allowUnload = true;
+
+    if (loader->isEdited() && !loader->isSaving()) {
+        // idx doesn't have to be active tab, for example when closing all tabs
+        // show the image we are referring to in the save prompt so there is no confusion
+        // TODO: we don't need this if remembered dialogs won't show any prompts
+
+        bool wasBlocked = mTabbar->blockSignals(false); // unblock needed for activateTab
+
+        activateTab(idx);
+        showViewPort(); // ensure we are showing the image and not thumbnails etc
+
+        mTabbar->blockSignals(wasBlocked);
+
+        allowUnload = loader->promptSaveBeforeUnload();
+    }
+
+    return allowUnload;
+}
+
+bool DkCentralWidget::requestClose()
+{
+    for (int idx = mTabbar->count() - 1; idx >= 0; --idx) {
+        if (!promptUnloadTab(idx)) {
+            return false;
+        }
+    }
+
+    if (!mPendingJobs.empty()) {
+        window()->setWindowTitle("nomacs | ImageLounge [" + tr("Quitting") + "...]");
+        window()->setDisabled(true); // try to communicate nomacs can't come back from this state
+
+        QEventLoop eventLoop;
+
+        QProgressDialog progress{this, Qt::WindowFlags() & ~Qt::WindowCloseButtonHint};
+        progress.setMinimumDuration(500);
+        progress.setAutoClose(false);
+        progress.setAutoReset(false);
+        progress.setWindowModality(Qt::ApplicationModal);
+        progress.setWindowTitle(tr("Quitting nomacs..."));
+        progress.setCancelButtonText(tr("&Force Quit"));
+
+        int numJobs = static_cast<int>(mPendingJobs.size());
+        progress.setRange(0, numJobs);
+
+        auto status = tr("%n job(s) remaining", "", numJobs);
+        progress.setLabelText(status);
+
+        QTimer timer;
+
+        connect(&timer, &QTimer::timeout, [this, &progress, &eventLoop] {
+            int remaining = static_cast<int>(mPendingJobs.size());
+            int completed = progress.maximum() - remaining;
+
+            if (completed != progress.value()) { // prevent flicker
+                auto status = tr("%n job(s) remaining", "", remaining);
+                progress.setLabelText(status);
+                progress.setValue(completed);
+            }
+
+            if (mPendingJobs.empty()) {
+                QTimer::singleShot(1000, &eventLoop, &QEventLoop::quit); // show 100% for a moment before exit
+            } else if (progress.wasCanceled()) {
+                int result = QMessageBox::warning( //
+                    this,
+                    tr("Force Quit?"),
+                    tr("Force quitting may leave partially written files. Are "
+                       "you sure you want to quit?"),
+                    QMessageBox::Yes | QMessageBox::No);
+                if (result == QMessageBox::Yes) {
+                    DkSettingsManager::param().save();
+                    std::quick_exit(1); // bypass destructors or else we may deadlock (QThreadPool cleanup etc)
+                }
+                progress.reset();
+            }
+        });
+
+        timer.start(200);
+        eventLoop.exec();
+    }
 
     return true;
 }
@@ -1331,7 +1470,7 @@ void DkCentralWidget::pasteImage()
 
 void DkCentralWidget::dropEvent(QDropEvent *event)
 {
-    if (event->source() == this || (hasViewPort() && event->source() == getViewPort())) {
+    if (event->source() == this || event->source() == getViewPort()) {
         event->accept();
         return;
     }
@@ -1465,10 +1604,6 @@ bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls)
 
 void DkCentralWidget::renameFile()
 {
-    // TODO:ref move! ??
-    if (!hasViewPort())
-        return;
-
     if (getViewPort()->isEdited()) {
         setInfo(tr("Sorry, there are unsaved changes"));
         return;
