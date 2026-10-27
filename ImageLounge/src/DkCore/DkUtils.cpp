@@ -56,6 +56,8 @@
 #include <QtConcurrentRun>
 #include <qmath.h>
 
+#include <algorithm>
+
 #include <exiv2/version.hpp>
 
 #ifdef WITH_LIBRAW
@@ -212,60 +214,49 @@ bool DkUtils::compLogicQString(const QString &lhs, const QString &rhs)
 
 bool DkUtils::compLogicQString(const QString &lhs, const QString &rhs)
 {
-    return naturalCompare(lhs, rhs, Qt::CaseInsensitive);
+    return naturalCompare(lhs, rhs);
 }
 
 #endif //! Q_OS_WIN
 
-bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity cs)
+bool DkUtils::naturalCompare(QStringView s1, QStringView s2)
 {
-    int sIdx = 0;
+    const qsizetype minLength = std::min(s1.length(), s2.length());
+    qsizetype sIdx = 0;
 
-    // the first value is the most significant bit
-    // so we try to find the first difference in the strings
-    // this gives us an advantage:
-    // img1 and img10 are sorted correctly since the string compare
-    // does here what it should
-    // img4 and img10 are also sorted correctly since 4 < 10
-    // in addition we don't get into troubles with large numbers
-    // as we skip identical values...
-    for (; sIdx < s1.length() && sIdx < s2.length(); sIdx++)
-        if (s1[sIdx] != s2[sIdx])
-            break;
-
-    // if both values start with a digit
-    if (sIdx < s1.length() && sIdx < s2.length() && s1[sIdx].isDigit() && s2[sIdx].isDigit()) {
-        QString prefix = "";
-
-        // if the number has zeros we get into troubles:
-        // 101 and 12 result in '01' and '2'
-        // for double sort this means: 01 < 2 (though 101 > 12)
-        // so we simply search the last non zero number that was equal and prepend that
-        // if there is no such number (e.g. img001 vs img101) we are fine already
-        // this fixes #469
-        if (s1[sIdx] == '0' || s2[sIdx] == '0') {
-            for (int idx = sIdx - 1; idx >= 0; idx--) {
-                if (s1[idx] != '0'
-                    && s1[idx].isDigit()) { // find the last non-zero number (just check one string they are the same)
-                    prefix = s1[idx];
-                    break;
-                } else if (s1[idx] != '0')
-                    break;
+    while (sIdx < minLength) {
+        if (s1[sIdx].isDigit() && s2[sIdx].isDigit()) {
+            QStringView n1 = getLongestNumber(s1, sIdx);
+            QStringView n2 = getLongestNumber(s2, sIdx);
+            if (n1 == n2) {
+                sIdx += n1.length();
+                continue;
             }
+
+            // Ignore leading zeros without allocating or copying the digit runs.
+            const auto nonZero = [](QChar c) {
+                return c != QLatin1Char('0');
+            };
+            n1 = n1.sliced(std::find_if(n1.begin(), n1.end(), nonZero) - n1.begin());
+            n2 = n2.sliced(std::find_if(n2.begin(), n2.end(), nonZero) - n2.begin());
+
+            // Comparing lengths and digits avoids rounding or overflowing large numbers.
+            if (n1.length() != n2.length())
+                return n1.length() < n2.length();
+            const int comparison = n1.compare(n2);
+            if (comparison != 0)
+                return comparison < 0;
+
+            // Equal numeric values retain the lexical ordering of their padding.
+            break;
         }
 
-        QString cs1 = prefix + getLongestNumber(s1, sIdx);
-        QString cs2 = prefix + getLongestNumber(s2, sIdx);
-
-        double n1 = cs1.toDouble();
-        double n2 = cs2.toDouble();
-
-        if (n1 != n2)
-            return n1 < n2;
+        if (s1[sIdx].toCaseFolded() != s2[sIdx].toCaseFolded())
+            break;
+        ++sIdx;
     }
 
-    // we're good to go with a string compare here...
-    return QString::compare(s1, s2, cs) < 0;
+    return s1.compare(s2, Qt::CaseInsensitive) < 0;
 }
 
 /// <summary>
@@ -318,9 +309,9 @@ QString DkUtils::resolveSymLink(const QString &filePath)
     return rFilePath;
 }
 
-QString DkUtils::getLongestNumber(const QString &str, int startIdx)
+QStringView DkUtils::getLongestNumber(QStringView str, qsizetype startIdx)
 {
-    int idx;
+    qsizetype idx;
 
     for (idx = startIdx; idx < str.length(); idx++) {
         if (!str[idx].isDigit())
