@@ -193,6 +193,7 @@ protected:
     QVector<QSharedPointer<DkTabInfo>> mTabInfos;
     bool mTabMoved = false;
     QVector<QSharedPointer<DkImageContainerT>> mPendingJobs;
+    bool mCleaningUpJobs{};
 
     QVector<QWidget *> mWidgets;
     QStackedLayout *mViewLayout = nullptr;
