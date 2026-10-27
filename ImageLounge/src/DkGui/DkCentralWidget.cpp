@@ -853,7 +853,7 @@ void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC, DkImag
                     QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not save: %1").arg(fileName));
                 }
 
-                if (saved) {
+                if (saved && !mCleaningUpJobs) {
                     // update all tabs where file might be present
                     for (auto &tab : mTabInfos) {
                         tab->getImageLoader()->fileUpdated(filePath);
@@ -1268,8 +1268,10 @@ bool DkCentralWidget::requestClose()
             }
         });
 
+        mCleaningUpJobs = true;
         timer.start(200);
         eventLoop.exec();
+        mCleaningUpJobs = false;
     }
 
     return true;
