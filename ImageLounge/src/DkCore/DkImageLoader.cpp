@@ -623,8 +623,12 @@ bool DkImageLoader::promptSaveBeforeUnload()
 
 void DkImageLoader::connectActions(bool activate)
 {
+    for (const auto &c : std::as_const(mActionConns)) {
+        disconnect(c);
+    }
+    mActionConns.clear();
+
     if (activate) {
-        Q_ASSERT(mActionConns.empty());
         const auto &am = DkActionManager::instance();
         mActionConns << connect(am.action(DkActionManager::file_save_copy), //
                                 &QAction::triggered,
@@ -646,11 +650,6 @@ void DkImageLoader::connectActions(bool activate)
                                 &QAction::triggered,
                                 this,
                                 &DkImageLoader::deleteFile);
-    } else {
-        for (const auto &c : std::as_const(mActionConns)) {
-            disconnect(c);
-        }
-        mActionConns.clear();
     }
 }
 
