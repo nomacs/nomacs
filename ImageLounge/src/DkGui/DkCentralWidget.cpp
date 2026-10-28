@@ -960,7 +960,13 @@ void DkCentralWidget::showViewPort(bool show /* = true */)
         viewport->setImageLoader(tab->getImageLoader());
         viewport->show();
 
-        tab->getImageLoader()->load(tab->getImage());
+        auto imgC = tab->getImage();
+        if (imgC && imgC->hasImage() && !DkFileInfo{imgC->filePath()}.exists()) {
+            if (DkSettingsManager::param().global().askToSaveDeletedFiles) {
+                imgC->setEdited(true);
+            }
+        }
+        tab->getImageLoader()->load(imgC);
 
     } else {
         viewport->getController()->getFilePreview()->cancelLoading();
