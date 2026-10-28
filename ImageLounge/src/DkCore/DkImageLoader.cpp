@@ -801,8 +801,10 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
     emit updateSpinnerSignalDelayed(true);
     bool loaded = mCurrentImage->loadImageThreaded(); // loads file threaded
 
-    if (!loaded)
+    if (!loaded) {
         emit updateSpinnerSignalDelayed(false);
+        emit imageLoadedSignal(mCurrentImage, false);
+    }
 
     // if loaded is false, we definitively know that the file does not exist -> early exception here?
 }
