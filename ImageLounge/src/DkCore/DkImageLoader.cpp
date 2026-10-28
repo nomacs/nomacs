@@ -583,6 +583,7 @@ bool DkImageLoader::promptSaveBeforeUnload()
 
     if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
         // Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
+        const bool missingFile = !DkFileInfo{mCurrentImage->filePath()}.exists();
         const bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
         const bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
         bool saved = false;
@@ -591,7 +592,7 @@ bool DkImageLoader::promptSaveBeforeUnload()
         // TODO: this should also check if file is writeable or not
         // TODO: if not writeable there could be a copy & write option for metadata path
         if (!mCurrentImage->fileInfo().isFromZip() && DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
-            if (imgEdited) {
+            if (imgEdited || missingFile) {
                 saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
                 if (saved) {
                     emit saveStartedSignal(mCurrentImage, SaveReason::forced);
