@@ -731,10 +731,8 @@ void DkImageLoader::reloadImage()
     if (!mCurrentImage)
         return;
 
-    if (!mCurrentImage->exists()) {
-        // message when reloaded
-        QString msg = tr("sorry, %1 does not exist anymore...").arg(mCurrentImage->fileName());
-        emit showInfoSignal(msg, 4000);
+    if (!DkFileInfo{mCurrentImage->filePath()}.exists()) {
+        qWarning() << "[reloadImage] file does not exist:" << mCurrentImage->filePath();
         return;
     }
 
