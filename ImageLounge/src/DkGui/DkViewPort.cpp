@@ -267,7 +267,13 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     // things todo if a file was not loaded...
     if (!loaded) {
         mController->getPlayer()->startTimer();
-        mController->updateImage(nullptr);
+        // load failed but we have something to show (e.g. deleted file)
+        if (image->hasImage()) {
+            mController->updateImage(image);
+            setImage(image->pixmap());
+        } else {
+            mController->updateImage(nullptr);
+        }
         return;
     }
 
