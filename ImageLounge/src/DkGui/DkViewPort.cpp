@@ -1728,8 +1728,13 @@ void DkViewPort::loadFile(const QString &filePath)
 void DkViewPort::reloadFile()
 {
     if (mLoader) {
-        if (unloadImage())
+        DkFileInfo info{mLoader->filePath()};
+        if (!info.exists()) {
+            QString msg = tr("Sorry, %1 does not exist anymore...").arg(info.fileName());
+            mController->setInfo(msg);
+        } else if (unloadImage()) {
             mLoader->reloadImage();
+        }
     }
 }
 
