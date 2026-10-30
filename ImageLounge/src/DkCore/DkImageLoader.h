@@ -136,7 +136,7 @@ public slots:
      * @note "Save" falls back to "Save As" if it is not supported
      */
     bool saveUserFile(const QImage &saveImg, bool silent, SaveReason reason);
-    void copyUserFile();
+    bool copyUserFile();
     /**
      * @brief Saves a file without dialog prompts, potentially overwriting, in a background thread
      * @param filename file path
