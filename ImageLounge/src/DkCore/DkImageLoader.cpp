@@ -62,6 +62,8 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
+#include <QBuffer>
+#include <QSaveFile>
 #include <utility>
 
 namespace nmc
@@ -922,48 +924,108 @@ void DkImageLoader::saveFileWeb(const QImage &saveImg)
     jpgDialog->deleteLater();
 }
 
-void DkImageLoader::copyUserFile()
+bool DkImageLoader::copyUserFile()
 {
+    bool saved = false;
+
     // the subsequent modals destroy the active window
     QWidget *dialogParent = DkUtils::getMainWindow();
 
     auto imgC = getCurrentImage();
+    if (!imgC) {
+        return false;
+    }
 
-    if (hasFile() && imgC) {
-        QString extension = imgC->fileInfo().suffix();
+    DkFileInfo srcInfo{imgC->filePath()};
+    (void)srcInfo.lastModified(); // check file wasn't modified in file dialog
 
-        // retrieve the extension name (that's more user friendly)
-        QStringList sF = DkSettingsManager::param().app().openFilters;
-        QRegularExpression exp = QRegularExpression(extension, QRegularExpression::CaseInsensitiveOption);
+    QString savePath = QFileInfo(getCopyPath(), imgC->fileName()).absoluteFilePath();
 
-        for (int idx = 1; idx < sF.size(); idx++) {
-            if (exp.match(sF.at(idx)).hasMatch()) {
-                extension = sF.at(idx);
-                break;
-            }
-        }
+    savePath = QFileDialog::getSaveFileName(dialogParent,
+                                            tr("Save File %1").arg(savePath),
+                                            savePath,
+                                            QString{},
+                                            nullptr,
+                                            DkDialog::fileDialogOptions());
+    if (savePath.isEmpty()) {
+        return false;
+    }
 
-        QString saveName = QFileInfo(getCopyPath(), imgC->fileName()).absoluteFilePath();
+    // don't copy a file if the file wasn't loaded, which could mean it was corrupted
+    if (imgC->getLoadState() != DkImageContainerT::loaded) {
+        emit showInfoSignal(tr("Sorry, the file could not be loaded, use \"Save As\" to recover"));
+        return false;
+    }
 
-        saveName = QFileDialog::getSaveFileName(dialogParent,
-                                                tr("Save File %1").arg(saveName),
-                                                saveName,
-                                                extension,
-                                                nullptr,
-                                                DkDialog::fileDialogOptions());
-
-        if (saveName.isEmpty())
-            return;
-
-        qDebug() << fileName() << "->" << saveName;
-
-        if (QFile::copy(imgC->filePath(), saveName)) {
-            mCopyDir = QFileInfo(saveName).absolutePath();
-            qInfo() << fileName() << "copied to" << saveName;
-        } else {
-            emit showInfoSignal(tr("Sorry, I could not copy the image..."));
+    const QFileInfo dstInfo{savePath};
+    if (srcInfo.exists() && dstInfo.exists()) {
+        // QSaveFile writes into target of symlink, which means it could overwrite itself
+        // It will not overwrite hard links since it uses temporary-and-swap method
+        if (QFileInfo{srcInfo.path()}.canonicalFilePath() == dstInfo.canonicalFilePath()) {
+            emit showInfoSignal(tr("Sorry, overwriting the original file isn't allowed"));
+            return false;
         }
     }
+
+    // if file changed externally, user may not have seen the change yet
+    if (srcInfo.exists() && srcInfo.isModified()) {
+        emit showInfoSignal(tr("Sorry, the file changed on disk. Please try again"));
+        return false;
+    }
+
+    std::unique_ptr<QIODevice> src{};
+
+    if (srcInfo.exists()) {
+        src = imgC->fileInfo().getIODevice();
+    } else {
+        // fallback for deleted files recovery
+        auto buffer = imgC->getFileBuffer();
+        if (buffer && !buffer->isEmpty()) {
+            src = std::make_unique<QBuffer>(buffer.get());
+            src->open(QIODevice::ReadOnly);
+        }
+    }
+
+    if (src) {
+        QSaveFile dst(savePath);
+        if (dst.open(QSaveFile::WriteOnly)) {
+            bool ok = true;
+            const size_t bufferSize = 256 * 1024;
+            auto buffer = std::make_unique<char[]>(bufferSize);
+            while (!src->atEnd()) {
+                qint64 readSize = src->read(buffer.get(), bufferSize);
+                if (readSize <= 0) {
+                    ok = false;
+                    qWarning() << "read error" << src->errorString();
+                    break;
+                }
+                qint64 writeSize = dst.write(buffer.get(), readSize);
+                if (writeSize != readSize) {
+                    ok = false;
+                    qWarning() << "write error" << dst.error() << dst.errorString();
+                    break;
+                }
+            }
+            if (ok) {
+                saved = dst.commit();
+                if (!saved) {
+                    qWarning() << "commit error" << dst.error() << dst.errorString();
+                }
+            }
+        }
+    }
+
+    if (saved) {
+        mCopyDir = QFileInfo(savePath).absolutePath();
+        if (imgC->isEdited() && !imgC->getLoader()->isImageEdited() && !imgC->getLoader()->isMetaDataEdited()) {
+            imgC->setEdited(false); // we recovered a file
+        }
+        emit showInfoSignal(tr("Copied to: %1").arg(savePath));
+    } else {
+        emit showInfoSignal(tr("Sorry, I could not copy the image..."));
+    }
+
+    return saved;
 }
 
 bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent, SaveReason reason)
