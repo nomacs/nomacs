@@ -242,11 +242,11 @@ cmake --install build/kdsa/build
 Configure nomacs with both dependency prefixes.
 
 ```console
-mkdir nomacs/build
+cd nomacs/build
 cmake -D ENABLE_QUAZIP=ON -DCMAKE_PREFIX_PATH="$PWD/build/deps;$(brew --prefix qt6)" ../ImageLounge
 ```
 
-Run make:
+Compile nomacs:
 
 ```console
 cd nomacs/build
