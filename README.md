@@ -243,7 +243,7 @@ Configure nomacs with both dependency prefixes.
 
 ```console
 cd nomacs/build
-cmake -D ENABLE_QUAZIP=ON -DCMAKE_PREFIX_PATH="$PWD/build/deps;$(brew --prefix qt6)" ../ImageLounge
+cmake -D ENABLE_QUAZIP=ON -DCMAKE_PREFIX_PATH="$PWD/deps;$(brew --prefix qt6)" ../ImageLounge
 ```
 
 Compile nomacs:
