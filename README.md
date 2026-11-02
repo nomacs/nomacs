@@ -228,28 +228,33 @@ Install required dependencies:
 brew install qt6 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
-Go to the `nomacs` directory and build the required KDSingleApplication dependency:
+Create a separate directory for build commands in the nomacs source tree:
 
 ```console
 cd nomacs
-git clone --depth 1 --branch v1.2.1 https://github.com/KDAB/KDSingleApplication.git build/kdsa
-cmake -S build/kdsa -B build/kdsa/build -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_PREFIX_PATH="$(brew --prefix qt6)" -DCMAKE_INSTALL_PREFIX="$PWD/build/deps"
-cmake --build build/kdsa/build --parallel 8
-cmake --install build/kdsa/build
+mkdir build
+cd build
 ```
 
-Configure nomacs with both dependency prefixes.
+Build the required KDSingleApplication dependency and install into `deps`:
 
 ```console
-cd nomacs/build
+git clone --depth 1 --branch v1.2.1 https://github.com/KDAB/KDSingleApplication.git kdsa
+cmake -S kdsa -B kdsa/build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH="$(brew --prefix qt6)" -DCMAKE_INSTALL_PREFIX="$PWD/deps"
+cmake --build kdsa/build --parallel
+cmake --install kdsa/build
+```
+
+Configure nomacs with zip support and cmake prefix for `deps` and Qt6:
+
+```console
 cmake -D ENABLE_QUAZIP=ON -DCMAKE_PREFIX_PATH="$PWD/deps;$(brew --prefix qt6)" ../ImageLounge
 ```
 
 Compile nomacs:
 
 ```console
-cd nomacs/build
 cmake --build . --parallel
 ```
 
