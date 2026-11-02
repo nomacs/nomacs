@@ -584,23 +584,23 @@ bool DkImageLoader::promptSaveBeforeUnload()
     const int answer = msgBox.exec();
 
     if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
-        // Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
-        const bool missingFile = !DkFileInfo{mCurrentImage->filePath()}.exists();
         const bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
         const bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
+        const bool fromZip = mCurrentImage->fileInfo().isFromZip();
         bool saved = false;
-        // TODO: this flow is incorrect for some file types, e.g. we can write metadata to some
-        // types that we cannot recompress
-        // TODO: this should also check if file is writeable or not
-        // TODO: if not writeable there could be a copy & write option for metadata path
-        if (!mCurrentImage->fileInfo().isFromZip() && DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
-            if (imgEdited || missingFile) {
-                saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
-                if (saved) {
-                    emit saveStartedSignal(mCurrentImage, SaveReason::forced);
-                }
-            } else if (metaEdited) {
-                saved = mCurrentImage->saveMetaData();
+
+        if (!imgEdited && !metaEdited) {
+            // edited flag set due to missing file, try to recover from the buffer
+            saved = copyUserFile();
+        } else if (!fromZip && !imgEdited && metaEdited) {
+            // only metadata was changed, save it without recompressing the image
+            // "quick save" skipping overwrite dialog
+            saved = mCurrentImage->saveMetaData();
+        } else if (!fromZip && imgEdited && DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
+            // "quick save" skipping overwrite dialog, preview dialog etc
+            saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
+            if (saved) {
+                emit saveStartedSignal(mCurrentImage, SaveReason::forced);
             }
         } else {
             saved = saveUserFile(mCurrentImage->image(), false, SaveReason::forced);
@@ -1119,6 +1119,7 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent, SaveReason 
     int compression = -1; // default value
 
     // Save only metadata if image itself hasn't been edited (after exif rotation)
+    // TODO: remove the same-file restriction here by adding extra options to saveMetaData()
     bool sameFile = fileName == filePath();
     bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
     bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
