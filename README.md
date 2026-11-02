@@ -221,28 +221,41 @@ sudo ldconfig
 ## Build nomacs (MacOS)
 
 Install [Homebrew](http://brew.sh/) for easier installation of dependencies.
+
 Install required dependencies:
 
 ```console
 brew install qt6 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
-Go to the `nomacs` directory and run the correct cmake for your hardware and Qt version. We recommend Qt6.
+Create a separate directory for build commands in the nomacs source tree:
 
 ```console
-cd nomacs; mkdir build; cd build
-
-# Qt6 / Intel 
-CMAKE_PREFIX_PATH=/usr/local/opt/qt6/lib/cmake cmake -D ENABLE_QUAZIP=ON ../ImageLounge
-
-# Qt6 / Apple Silicon
-CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt6/lib/cmake cmake -D ENABLE_QUAZIP=ON ../ImageLounge
+cd nomacs
+mkdir build
+cd build
 ```
 
-Run make:
+Build the required KDSingleApplication dependency and install into `deps`:
 
 ```console
-make
+git clone --depth 1 --branch v1.2.1 https://github.com/KDAB/KDSingleApplication.git kdsa
+cmake -S kdsa -B kdsa/build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH="$(brew --prefix qt6)" -DCMAKE_INSTALL_PREFIX="$PWD/deps"
+cmake --build kdsa/build --parallel
+cmake --install kdsa/build
+```
+
+Configure nomacs with zip support and cmake prefix for `deps` and Qt6:
+
+```console
+cmake -D ENABLE_QUAZIP=ON -DCMAKE_PREFIX_PATH="$PWD/deps;$(brew --prefix qt6)" ../ImageLounge
+```
+
+Compile nomacs:
+
+```console
+cmake --build . --parallel
 ```
 
 You will now have a binary (`nomacs.app`), which you can test (or use directly):
