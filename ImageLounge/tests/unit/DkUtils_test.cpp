@@ -91,6 +91,14 @@ TEST(DkNaturalCompareTest, CaseInsensitivePrefixes)
             EXPECT_FALSE(nmc::DkUtils::naturalCompare(names[j], names[i]));
         }
     }
+
+    const QString sameCase = QString::fromUtf8("\u00c42.ppm");
+    const QString mixedCase = QString::fromUtf8("\u00e43.ppm");
+    const QString longerNumber = QString::fromUtf8("\u00c411.ppm");
+    EXPECT_TRUE(nmc::DkUtils::naturalCompare(sameCase, mixedCase));
+    EXPECT_FALSE(nmc::DkUtils::naturalCompare(mixedCase, sameCase));
+    EXPECT_TRUE(nmc::DkUtils::naturalCompare(sameCase, longerNumber));
+    EXPECT_FALSE(nmc::DkUtils::naturalCompare(longerNumber, sameCase));
 }
 
 TEST(DkNaturalCompareTest, LargeNumericPrefixes)
@@ -189,8 +197,9 @@ TEST(DkNaturalCompareTest, StrictWeakOrdering)
             EXPECT_FALSE(ab && ba);
             for (const QString &c : names) {
                 SCOPED_TRACE((a + ", " + b + ", " + c).toStdString());
-                if (ab && nmc::DkUtils::naturalCompare(b, c))
+                if (ab && nmc::DkUtils::naturalCompare(b, c)) {
                     EXPECT_TRUE(nmc::DkUtils::naturalCompare(a, c));
+                }
                 if (!ab && !ba && !nmc::DkUtils::naturalCompare(b, c) && !nmc::DkUtils::naturalCompare(c, b)) {
                     EXPECT_FALSE(nmc::DkUtils::naturalCompare(a, c));
                     EXPECT_FALSE(nmc::DkUtils::naturalCompare(c, a));

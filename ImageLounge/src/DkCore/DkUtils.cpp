@@ -241,18 +241,25 @@ bool DkUtils::naturalCompare(QStringView s1, QStringView s2)
             n2 = n2.sliced(std::find_if(n2.begin(), n2.end(), nonZero) - n2.begin());
 
             // Comparing lengths and digits avoids rounding or overflowing large numbers.
-            if (n1.length() != n2.length())
+            if (n1.length() != n2.length()) {
                 return n1.length() < n2.length();
+            }
             const int comparison = n1.compare(n2);
-            if (comparison != 0)
+            if (comparison != 0) {
                 return comparison < 0;
+            }
 
             // Equal numeric values retain the lexical ordering of their padding.
             break;
         }
 
-        if (s1[sIdx].toCaseFolded() != s2[sIdx].toCaseFolded())
+        if (s1[sIdx] == s2[sIdx]) {
+            ++sIdx;
+            continue;
+        }
+        if (s1[sIdx].toCaseFolded() != s2[sIdx].toCaseFolded()) {
             break;
+        }
         ++sIdx;
     }
 
