@@ -29,6 +29,7 @@
 
 #include <QDebug>
 #include <QFileInfo>
+#include <QStringView>
 #include <QVector>
 
 #ifdef WITH_OPENCV
@@ -103,11 +104,11 @@ public:
 
     static bool compRandom(const DkFileInfo &lhf, const DkFileInfo &rhf);
 
-    static bool naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity cs = Qt::CaseSensitive);
+    static bool naturalCompare(QStringView s1, QStringView s2);
 
     static QString resolveSymLink(const QString &filePath);
 
-    static QString getLongestNumber(const QString &str, int startIdx = 0);
+    static QStringView getLongestNumber(QStringView str, qsizetype startIdx = 0);
 
     static void addLanguages(QComboBox *langCombo, QStringList &languages);
 

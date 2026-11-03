@@ -56,6 +56,8 @@
 #include <QtConcurrentRun>
 #include <qmath.h>
 
+#include <algorithm>
+
 #include <exiv2/version.hpp>
 
 #ifdef WITH_LIBRAW
@@ -212,46 +214,49 @@ bool DkUtils::compLogicQString(const QString &lhs, const QString &rhs)
 
 bool DkUtils::compLogicQString(const QString &lhs, const QString &rhs)
 {
-    return naturalCompare(lhs, rhs, Qt::CaseInsensitive);
+    return naturalCompare(lhs, rhs);
 }
 
 #endif //! Q_OS_WIN
 
-bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity cs)
+bool DkUtils::naturalCompare(QStringView s1, QStringView s2)
 {
-    int sIdx = 0;
+    const qsizetype minLength = std::min(s1.length(), s2.length());
+    qsizetype sIdx = 0;
 
-    // Find the first difference using the same case sensitivity as the fallback.
-    for (; sIdx < s1.length() && sIdx < s2.length(); sIdx++) {
-        const QChar c1 = cs == Qt::CaseInsensitive ? s1[sIdx].toCaseFolded() : s1[sIdx];
-        const QChar c2 = cs == Qt::CaseInsensitive ? s2[sIdx].toCaseFolded() : s2[sIdx];
-        if (c1 != c2)
+    while (sIdx < minLength) {
+        if (s1[sIdx].isDigit() && s2[sIdx].isDigit()) {
+            QStringView n1 = getLongestNumber(s1, sIdx);
+            QStringView n2 = getLongestNumber(s2, sIdx);
+            if (n1 == n2) {
+                sIdx += n1.length();
+                continue;
+            }
+
+            // Ignore leading zeros without allocating or copying the digit runs.
+            const auto nonZero = [](QChar c) {
+                return c != QLatin1Char('0');
+            };
+            n1 = n1.sliced(std::find_if(n1.begin(), n1.end(), nonZero) - n1.begin());
+            n2 = n2.sliced(std::find_if(n2.begin(), n2.end(), nonZero) - n2.begin());
+
+            // Comparing lengths and digits avoids rounding or overflowing large numbers.
+            if (n1.length() != n2.length())
+                return n1.length() < n2.length();
+            const int comparison = n1.compare(n2);
+            if (comparison != 0)
+                return comparison < 0;
+
+            // Equal numeric values retain the lexical ordering of their padding.
             break;
+        }
+
+        if (s1[sIdx].toCaseFolded() != s2[sIdx].toCaseFolded())
+            break;
+        ++sIdx;
     }
 
-    // A shared prefix can end inside a number, including when one number ends
-    // before the other (e.g. 1_a and 11_a). Compare the complete digit runs.
-    while (sIdx > 0 && s1[sIdx - 1].isDigit())
-        --sIdx;
-
-    if (sIdx < s1.length() && sIdx < s2.length() && s1[sIdx].isDigit() && s2[sIdx].isDigit()) {
-        QString n1 = getLongestNumber(s1, sIdx);
-        QString n2 = getLongestNumber(s2, sIdx);
-        while (n1.startsWith('0'))
-            n1.remove(0, 1);
-        while (n2.startsWith('0'))
-            n2.remove(0, 1);
-
-        // Comparing lengths and digits avoids rounding or overflowing large numbers.
-        if (n1.length() != n2.length())
-            return n1.length() < n2.length();
-        const int comparison = QString::compare(n1, n2);
-        if (comparison != 0)
-            return comparison < 0;
-    }
-
-    // we're good to go with a string compare here...
-    return QString::compare(s1, s2, cs) < 0;
+    return s1.compare(s2, Qt::CaseInsensitive) < 0;
 }
 
 /// <summary>
@@ -304,9 +309,9 @@ QString DkUtils::resolveSymLink(const QString &filePath)
     return rFilePath;
 }
 
-QString DkUtils::getLongestNumber(const QString &str, int startIdx)
+QStringView DkUtils::getLongestNumber(QStringView str, qsizetype startIdx)
 {
-    int idx;
+    qsizetype idx;
 
     for (idx = startIdx; idx < str.length(); idx++) {
         if (!str[idx].isDigit())
