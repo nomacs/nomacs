@@ -188,8 +188,8 @@ if(ENABLE_HEIF)
     )
     file(
         DOWNLOAD
-            "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/openh264-7.dll"
-            ${CMAKE_BINARY_DIR}/Release/openh264-7.dll
+            "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/openh264-8.dll"
+            ${CMAKE_BINARY_DIR}/Release/openh264-8.dll
     )
     file(
         DOWNLOAD
