@@ -2721,13 +2721,13 @@ int DkExportTiffDialog::exportImages(const QString &saveFilePath, int from, int 
             continue;
         }
 
-        QString lSaveFilePath = mLoader.save(cInfo.absoluteFilePath(),
-                                             mLoader.image(),
-                                             90); // TODO: ask user for compression?
-        QFileInfo lSaveInfo = QFileInfo(lSaveFilePath);
-
-        if (!lSaveInfo.exists() || !lSaveInfo.isFile())
+        bool ok = DkBasicLoader::save(cInfo.absoluteFilePath(),
+                                      mLoader.image(),
+                                      mLoader.getMetaData(),
+                                      90); // TODO: ask user for compression?
+        if (!ok) {
             emit infoMessage(tr("Sorry, I could not save: %1").arg(cInfo.fileName()));
+        }
 
         emit updateImage(mLoader.image());
         emit updateProgress(idx);

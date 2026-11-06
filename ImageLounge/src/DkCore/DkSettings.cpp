@@ -400,6 +400,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
     app_p.hideAllPanels = settings.value("hideAllPanels", app_p.hideAllPanels).toBool();
     app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
     app_p.closeOnMiddleMouse = settings.value("closeOnMiddleMouse", app_p.closeOnMiddleMouse).toBool();
+    app_p.closeOnLastTabClosed = settings.value("closeOnLastTabClosed", app_p.closeOnLastTabClosed).toBool();
     app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
     app_p.useLogFile = settings.value("useLogFile", app_p.useLogFile).toBool();
     app_p.defaultJpgQuality = settings.value("defaultJpgQuality", app_p.defaultJpgQuality).toInt();
@@ -695,6 +696,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("closeOnEsc", app_p.closeOnEsc);
     if (force || app_p.closeOnMiddleMouse != app_d.closeOnMiddleMouse)
         settings.setValue("closeOnMiddleMouse", app_p.closeOnMiddleMouse);
+    if (force || app_p.closeOnLastTabClosed != app_d.closeOnLastTabClosed)
+        settings.setValue("closeOnLastTabClosed", app_p.closeOnLastTabClosed);
     if (force || app_p.showRecentFiles != app_d.showRecentFiles)
         settings.setValue("showRecentFiles", app_p.showRecentFiles);
     if (force || app_p.useLogFile != app_d.useLogFile)
@@ -998,6 +1001,7 @@ void DkSettings::setToDefaultSettings()
     app_p.advancedSettings = false;
     app_p.closeOnEsc = false;
     app_p.closeOnMiddleMouse = false;
+    app_p.closeOnLastTabClosed = false;
     app_p.hideAllPanels = false;
     app_p.showRecentFiles = true;
     app_p.browseFilters = QStringList();

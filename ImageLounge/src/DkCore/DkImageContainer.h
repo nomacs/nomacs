@@ -92,9 +92,8 @@ public:
 
     bool loadImage();
     void setImage(const QImage &img, const QString &editName);
-    bool saveImage(const QString &filePath, const QImage saveImg, int compression = -1);
-    bool saveImage(const QString &filePath, int compression = -1);
-    void saveMetaData();
+    [[nodiscard]] bool saveImage(const QString &filePath, int compression);
+    [[nodiscard]] virtual bool saveMetaData();
     virtual void clear();
     virtual void undo();
     virtual void redo();
@@ -114,13 +113,9 @@ protected:
     QSharedPointer<DkBasicLoader> loadImageIntern(const QString &filePath,
                                                   QSharedPointer<DkBasicLoader> loader,
                                                   const QSharedPointer<QByteArray> fileBuffer);
-    void saveMetaDataIntern(const QString &filePath,
-                            QSharedPointer<DkBasicLoader> loader,
-                            QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
-    QString saveImageIntern(const QString &filePath,
-                            QSharedPointer<DkBasicLoader> loader,
-                            QImage saveImg,
-                            int compression);
+    [[nodiscard]] bool saveMetaDataIntern(const QString &filePath,
+                                          QSharedPointer<DkBasicLoader> loader,
+                                          QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
     void setFile(const DkFileInfo &fileInfo);
     void init();
 
@@ -160,9 +155,20 @@ public:
     bool loadImageThreaded(bool force = false);
     bool saveImageThreaded(const QString &filePath, const QImage saveImg, int compression = -1);
     bool saveImageThreaded(const QString &filePath, int compression = -1);
-    void saveMetaDataThreaded(const QString &filePath);
+    [[nodiscard]] bool saveMetaData() override;
 
-    QSharedPointer<DkBasicLoader> getLoader() override;
+    bool isSaving() const
+    {
+        return mSaveImageWatcher.isRunning();
+    }
+
+    /**
+     * @brief wait for a save operation
+     * @return QString the file path of the saved file, or empty if not saved/error
+     * @note illegal to call if isSaving() is false
+     */
+    QString waitForSaveFinished() const;
+
     static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
     void undo() override;
@@ -175,7 +181,7 @@ public:
 
 signals:
     void fileLoadedSignal(bool loaded = true) const;
-    void fileSavedSignal(const QString &fileInfo, bool saved = true, bool loadToTab = true) const;
+    void fileSavedSignal(const QString &fileInfo, bool saved) const;
     void showInfoSignal(const QString &msg, int time = 3000, int position = 0) const;
     void errorDialogSignal(const QString &msg) const;
     void imageUpdatedSignal() const;
@@ -196,7 +202,7 @@ protected:
 
     QFutureWatcher<QSharedPointer<QByteArray>> mBufferWatcher;
     QFutureWatcher<QSharedPointer<DkBasicLoader>> mImageWatcher;
-    QFutureWatcher<QString> mSaveImageWatcher;
+    QFutureWatcher<bool> mSaveImageWatcher;
 
     QSharedPointer<FileDownloader> mFileDownloader;
 

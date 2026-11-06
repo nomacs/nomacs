@@ -366,8 +366,15 @@ DkCentralWidget *DkNoMacs::getTabWidget() const
 void DkNoMacs::closeEvent(QCloseEvent *event)
 {
     DkCentralWidget *cw = getTabWidget();
-    if (!cw)
+    if (!cw) {
         return;
+    }
+
+    if (!cw->requestClose()) {
+        // do not close if the user hit cancel in the save changes dialog
+        event->ignore();
+        return;
+    }
 
     if (!DkSettingsManager::param().app().privateMode) {
         bool saveTabs = false;
@@ -395,13 +402,6 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
         cw->saveSettings(saveTabs);
     }
 
-    if (!getTabWidget()->requestClose()) {
-        // do not close if the user hit cancel in the save changes dialog
-        event->ignore();
-        return;
-    }
-
-    emit closeSignal();
     setVisible(false);
 
     DefaultSettings settings;
@@ -2114,20 +2114,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     setMouseTracking(true); // receive mouse event everytime
 }
 
-void DkNoMacsIpl::paintEvent(QPaintEvent *event)
-{
-    // prevent visual glitch where initial fullscreen window is filled
-    // with normal window bg color. Once the viewport comes up it takes over
-    // drawing the background and dock widgets get the default bg color
-    bool hasViewPort = getTabWidget() && getTabWidget()->hasViewPort();
-    if (isFullScreen() && !hasViewPort) {
-        QColor bgColor = nmc::DkSettingsManager::param().slideShow().backgroundColor;
-        QPainter painter(this);
-        painter.fillRect(rect(), bgColor);
-    } else
-        QMainWindow::paintEvent(event);
-}
-
 // FramelessNoMacs --------------------------------------------------------------------
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     : DkNoMacs(parent, flags)
@@ -2349,7 +2335,10 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
     init();
 
+    // add toolbar to after the main toolbar
     DkToolBarManager::inst().createTransferToolBar();
+    DkViewPortContrast *vp = dynamic_cast<DkViewPortContrast *>(cw->getViewPort());
+    vp->connectActions();
 
     setAcceptDrops(true);
     setMouseTracking(true); // receive mouse event everytime
