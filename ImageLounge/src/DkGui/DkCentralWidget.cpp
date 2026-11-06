@@ -1078,6 +1078,12 @@ QRegion DkCentralWidget::getFramelessMask() const
         mask += r;
     }
 
+    if (mProgressBar->isVisible()) {
+        QRect r = mProgressBar->geometry();
+        r.moveTopLeft(this->mapTo(wnd, r.topLeft()));
+        mask += r;
+    }
+
     const auto &tabInfo = mTabInfos.value(mTabbar->currentIndex());
     if (!tabInfo) {
         return mask;
