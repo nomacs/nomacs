@@ -2073,7 +2073,8 @@ QVector<QRect> DkThumbScene::getOpaqueArea() const
     auto addSpan = [&](int topLeftIdx, int botRightIdx) {
         QRect topLeft = mThumbLabels[topLeftIdx]->sceneBoundingRect().toRect();
         QRect botRight = mThumbLabels[botRightIdx]->sceneBoundingRect().toRect();
-        rects += QRect{topLeft.topLeft(), botRight.bottomRight()};
+        QPoint padding{1, 1}; // a little padding to avoid gaps between rects
+        rects += QRect{topLeft.topLeft() - padding, botRight.bottomRight() + padding};
     };
 
     if (count == 0) {
