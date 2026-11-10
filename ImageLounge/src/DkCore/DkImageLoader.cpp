@@ -62,6 +62,8 @@
 #include <winsock2.h> // needed since libraw 0.16
 #endif
 
+#include <QBuffer>
+#include <QSaveFile>
 #include <utility>
 
 namespace nmc
@@ -82,9 +84,9 @@ DkImageLoader::DkImageLoader()
             this,
             &DkImageLoader::imagesSorted);
 
-    mDelayedUpdateTimer.setSingleShot(true);
-    connect(&mDelayedUpdateTimer, &QTimer::timeout, this, [this]() {
-        directoryChanged();
+    mLoadDirTimer.setSingleShot(true);
+    connect(&mLoadDirTimer, &QTimer::timeout, this, [this]() {
+        loadDir(mCurrentDir, false);
     });
 }
 
@@ -94,24 +96,46 @@ DkImageLoader::~DkImageLoader()
         mCreateImageWatcher.blockSignals(true);
 }
 
+bool DkImageLoader::updateDirContents(const DkFileInfoList &files)
+{
+    QSet<QString> newSet;
+    for (auto &f : files) {
+        newSet.insert(f.fileName());
+    }
+    bool updated = newSet != mFileSet;
+    mFileSet = newSet;
+
+    return updated;
+}
+
+void DkImageLoader::emitDirUpdated() const
+{
+    emit updateDirSignal(mImages);
+    int idx = -1;
+    if (mCurrentImage) {
+        idx = findFileIdx(mCurrentImage->filePath(), mImages);
+    }
+    emit imageUpdatedSignal(idx);
+}
+
 bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
 {
     DkTimer dt;
     DkFileInfo info(newDirPath);
     bool updated = false; // only emit signal if we touch mImages
 
-    if (mFolderUpdated && newDirPath == mCurrentDir) {
+    if (mDirUpdated && newDirPath == mCurrentDir) {
         // folder changed signal was emitted
-        updated = true;
-        mFolderUpdated = false;
-
         DkFileInfoList files = DkFileInfo::readDirectory(mCurrentDir, mFolderFilterString);
-
-        createImages(files, true);
+        if (updateDirContents(files)) { // check if file list actually changed
+            updated = true;
+            createImages(files, true);
+        } else {
+            qInfo() << "[loadDir] ignoring dir update, no relevant changes" << dt;
+        }
     } else if ((newDirPath != mCurrentDir || mImages.empty()) && !newDirPath.isEmpty() && info.isDir()) {
         // new folder
         updated = true;
-        mFolderUpdated = false;
         mCurrentDir = newDirPath;
         mFolderFilterString.clear(); // delete keywords -> otherwise user may be confused
 
@@ -123,6 +147,7 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
         }
 
         mImages.clear(); // do not preserve unchanged images
+        updateDirContents(files); // replace dir contents
         createImages(files, true);
     }
 
@@ -132,14 +157,14 @@ bool DkImageLoader::loadDir(const QString &newDirPath, bool scanRecursive)
         emit showInfoSignal(tr("%1 \n does not contain any image").arg(newDirPath), 4000);
     }
 
+    // stop any deferred loadDir() and reset the window for directoryChanged()
+    mDirUpdated = false;
+    mLoadDirTimer.stop();
+    mLastLoadDirTimer.start();
+
     if (updated) {
         qInfo() << "[loadDir]" << newDirPath << mImages.size() << "indexed in" << dt;
-        emit updateDirSignal(mImages);
-        int idx = -1;
-        if (mCurrentImage) {
-            idx = findFileIdx(mCurrentImage->filePath(), mImages);
-        }
-        emit imageUpdatedSignal(idx);
+        emitDirUpdated();
     }
 
     return !empty;
@@ -177,7 +202,7 @@ void DkImageLoader::imagesSorted()
         return;
     }
 
-    emit updateDirSignal(mImages);
+    emitDirUpdated();
 
     updateDirWatcher();
 }
@@ -543,7 +568,7 @@ void DkImageLoader::lastFile()
 
 bool DkImageLoader::promptSaveBeforeUnload()
 {
-    if (!mCurrentImage || !mCurrentImage->isEdited()) {
+    if (!mCurrentImage || !mCurrentImage->isEdited() || mCurrentImage->isSaving()) {
         return true;
     }
 
@@ -559,26 +584,38 @@ bool DkImageLoader::promptSaveBeforeUnload()
     const int answer = msgBox.exec();
 
     if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
-        // Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
         const bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
         const bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
+        const bool fromZip = mCurrentImage->fileInfo().isFromZip();
+        bool saved = false;
 
-        if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
-            if (imgEdited)
-                mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
-            else if (metaEdited)
-                mCurrentImage->saveMetaData();
+        if (!imgEdited && !metaEdited) {
+            // edited flag set due to missing file, try to recover from the buffer
+            saved = copyUserFile();
+        } else if (!fromZip && !imgEdited && metaEdited) {
+            // only metadata was changed, save it without recompressing the image
+            // "quick save" skipping overwrite dialog
+            saved = mCurrentImage->saveMetaData();
+        } else if (!fromZip && imgEdited && DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
+            // "quick save" skipping overwrite dialog, preview dialog etc
+            saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
+            if (saved) {
+                emit saveStartedSignal(mCurrentImage, SaveReason::forced);
+            }
         } else {
-            saveUserFile(mCurrentImage->image(), false); // we loose all metadata here - right?
+            saved = saveUserFile(mCurrentImage->image(), false, SaveReason::forced);
         }
 
-        // Clear the image container to force reload so we get correct state.
-        mCurrentImage->clear();
-        return true;
+        if (saved) {
+            // Clear the image container to force reload so we get correct state.
+            mCurrentImage->clear();
+        }
+        return saved;
     }
 
     if (answer == QMessageBox::No) {
         // Clear the image container to discard all edited changes.
+        emit showInfoSignal(tr("Discarded changes to: %1").arg(mCurrentImage->fileName()));
         mCurrentImage->clear();
         return true;
     }
@@ -589,8 +626,12 @@ bool DkImageLoader::promptSaveBeforeUnload()
 
 void DkImageLoader::connectActions(bool activate)
 {
+    for (const auto &c : std::as_const(mActionConns)) {
+        disconnect(c);
+    }
+    mActionConns.clear();
+
     if (activate) {
-        Q_ASSERT(mActionConns.empty());
         const auto &am = DkActionManager::instance();
         mActionConns << connect(am.action(DkActionManager::file_save_copy), //
                                 &QAction::triggered,
@@ -612,11 +653,6 @@ void DkImageLoader::connectActions(bool activate)
                                 &QAction::triggered,
                                 this,
                                 &DkImageLoader::deleteFile);
-    } else {
-        for (const auto &c : std::as_const(mActionConns)) {
-            disconnect(c);
-        }
-        mActionConns.clear();
     }
 }
 
@@ -697,10 +733,8 @@ void DkImageLoader::reloadImage()
     if (!mCurrentImage)
         return;
 
-    if (!mCurrentImage->exists()) {
-        // message when reloaded
-        QString msg = tr("sorry, %1 does not exist anymore...").arg(mCurrentImage->fileName());
-        emit showInfoSignal(msg, 4000);
+    if (!DkFileInfo{mCurrentImage->filePath()}.exists()) {
+        qWarning() << "[reloadImage] file does not exist:" << mCurrentImage->filePath();
         return;
     }
 
@@ -710,6 +744,23 @@ void DkImageLoader::reloadImage()
     setCurrentImage(mCurrentImage);
     loadDir(mCurrentImage->dirPath());
     load(mCurrentImage);
+}
+
+void DkImageLoader::unload()
+{
+    if (mCurrentImage) {
+        mCurrentImage->cancel();
+        emit updateSpinnerSignalDelayed(false);
+    }
+
+    mCurrentDir = {};
+    mImages.clear();
+    mCurrentImage = {};
+
+    emit updateDirSignal({});
+    emit imageUpdatedSignal(-1);
+    emit imageUpdatedSignal(QSharedPointer<DkImageContainerT>{});
+    emit imageHasGPSSignal(false);
 }
 
 void DkImageLoader::showOnMap()
@@ -750,8 +801,10 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
     emit updateSpinnerSignalDelayed(true);
     bool loaded = mCurrentImage->loadImageThreaded(); // loads file threaded
 
-    if (!loaded)
+    if (!loaded) {
         emit updateSpinnerSignalDelayed(false);
+        emit imageLoadedSignal(mCurrentImage, false);
+    }
 
     // if loaded is false, we definitively know that the file does not exist -> early exception here?
 }
@@ -802,24 +855,19 @@ void DkImageLoader::downloadFile(const QUrl &url)
     emit updateSpinnerSignalDelayed(true);
 }
 
-/**
- * Saves a temporary file to the folder specified in DkSettingsManager.
- * @param img the image (which was in most cases pasted to nomacs)
- **/
-QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, const QString &fileExt, bool threaded)
+bool DkImageLoader::saveTempFile(const QImage &img, const QString &baseName, const QString &suffix, SaveReason reason)
 {
-    QString filePath = DkUtils::getTemporaryFilePath(name, fileExt);
-    if (filePath.isEmpty())
-        return {};
+    QString filePath = DkUtils::getTemporaryFilePath(baseName, suffix);
+    if (filePath.isEmpty()) {
+        return false;
+    }
 
     if (QFile::exists(filePath)) {
         qWarning() << "File exists, will not overwrite:" << filePath;
-        return {};
+        return false;
     }
 
-    qInfo() << "Saving file to: " << filePath;
-    saveFile(filePath, img, "", -1, threaded);
-    return filePath;
+    return saveFile(filePath, img, "", -1, reason);
 }
 
 void DkImageLoader::saveFileWeb(const QImage &saveImg)
@@ -871,56 +919,116 @@ void DkImageLoader::saveFileWeb(const QImage &saveImg)
     if (factor != -1)
         rImg = DkImage::resizeImage(rImg, QSize(), factor, DkImage::ipl_area);
 
-    saveFile(fileName, rImg, suffix, jpgDialog->getCompression());
+    saveFile(fileName, rImg, suffix, jpgDialog->getCompression(), SaveReason::user);
 
     jpgDialog->deleteLater();
 }
 
-void DkImageLoader::copyUserFile()
+bool DkImageLoader::copyUserFile()
 {
+    bool saved = false;
+
     // the subsequent modals destroy the active window
     QWidget *dialogParent = DkUtils::getMainWindow();
 
     auto imgC = getCurrentImage();
+    if (!imgC) {
+        return false;
+    }
 
-    if (hasFile() && imgC) {
-        QString extension = imgC->fileInfo().suffix();
+    DkFileInfo srcInfo{imgC->filePath()};
+    (void)srcInfo.lastModified(); // check file wasn't modified in file dialog
 
-        // retrieve the extension name (that's more user friendly)
-        QStringList sF = DkSettingsManager::param().app().openFilters;
-        QRegularExpression exp = QRegularExpression(extension, QRegularExpression::CaseInsensitiveOption);
+    QString savePath = QFileInfo(getCopyPath(), imgC->fileName()).absoluteFilePath();
 
-        for (int idx = 1; idx < sF.size(); idx++) {
-            if (exp.match(sF.at(idx)).hasMatch()) {
-                extension = sF.at(idx);
-                break;
-            }
-        }
+    savePath = QFileDialog::getSaveFileName(dialogParent,
+                                            tr("Save File %1").arg(savePath),
+                                            savePath,
+                                            QString{},
+                                            nullptr,
+                                            DkDialog::fileDialogOptions());
+    if (savePath.isEmpty()) {
+        return false;
+    }
 
-        QString saveName = QFileInfo(getCopyPath(), imgC->fileName()).absoluteFilePath();
+    // don't copy a file if the file wasn't loaded, which could mean it was corrupted
+    if (imgC->getLoadState() != DkImageContainerT::loaded) {
+        emit showInfoSignal(tr("Sorry, the file could not be loaded, use \"Save As\" to recover"));
+        return false;
+    }
 
-        saveName = QFileDialog::getSaveFileName(dialogParent,
-                                                tr("Save File %1").arg(saveName),
-                                                saveName,
-                                                extension,
-                                                nullptr,
-                                                DkDialog::fileDialogOptions());
-
-        if (saveName.isEmpty())
-            return;
-
-        qDebug() << fileName() << "->" << saveName;
-
-        if (QFile::copy(imgC->filePath(), saveName)) {
-            mCopyDir = QFileInfo(saveName).absolutePath();
-            qInfo() << fileName() << "copied to" << saveName;
-        } else {
-            emit showInfoSignal(tr("Sorry, I could not copy the image..."));
+    const QFileInfo dstInfo{savePath};
+    if (srcInfo.exists() && dstInfo.exists()) {
+        // QSaveFile writes into target of symlink, which means it could overwrite itself
+        // It will not overwrite hard links since it uses temporary-and-swap method
+        if (QFileInfo{srcInfo.path()}.canonicalFilePath() == dstInfo.canonicalFilePath()) {
+            emit showInfoSignal(tr("Sorry, overwriting the original file isn't allowed"));
+            return false;
         }
     }
+
+    // if file changed externally, user may not have seen the change yet
+    if (srcInfo.exists() && srcInfo.isModified()) {
+        emit showInfoSignal(tr("Sorry, the file changed on disk. Please try again"));
+        return false;
+    }
+
+    std::unique_ptr<QIODevice> src{};
+
+    if (srcInfo.exists()) {
+        src = imgC->fileInfo().getIODevice();
+    } else {
+        // fallback for deleted files recovery
+        auto buffer = imgC->getFileBuffer();
+        if (buffer && !buffer->isEmpty()) {
+            src = std::make_unique<QBuffer>(buffer.get());
+            src->open(QIODevice::ReadOnly);
+        }
+    }
+
+    if (src) {
+        QSaveFile dst(savePath);
+        if (dst.open(QSaveFile::WriteOnly)) {
+            bool ok = true;
+            const size_t bufferSize = 256 * 1024;
+            auto buffer = std::make_unique<char[]>(bufferSize);
+            while (!src->atEnd()) {
+                qint64 readSize = src->read(buffer.get(), bufferSize);
+                if (readSize <= 0) {
+                    ok = false;
+                    qWarning() << "read error" << src->errorString();
+                    break;
+                }
+                qint64 writeSize = dst.write(buffer.get(), readSize);
+                if (writeSize != readSize) {
+                    ok = false;
+                    qWarning() << "write error" << dst.error() << dst.errorString();
+                    break;
+                }
+            }
+            if (ok) {
+                saved = dst.commit();
+                if (!saved) {
+                    qWarning() << "commit error" << dst.error() << dst.errorString();
+                }
+            }
+        }
+    }
+
+    if (saved) {
+        mCopyDir = QFileInfo(savePath).absolutePath();
+        if (imgC->isEdited() && !imgC->getLoader()->isImageEdited() && !imgC->getLoader()->isMetaDataEdited()) {
+            imgC->setEdited(false); // we recovered a file
+        }
+        emit showInfoSignal(tr("Copied to: %1").arg(savePath));
+    } else {
+        emit showInfoSignal(tr("Sorry, I could not copy the image..."));
+    }
+
+    return saved;
 }
 
-void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
+bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent, SaveReason reason)
 {
     // TODO glitch if (!mCurrentImage->getMetaData()->isLoaded()); see rotateImage()
 
@@ -928,12 +1036,11 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
     QWidget *dialogParent = DkUtils::getMainWindow();
 
     QString selectedFilter;
-    QString saveName = fileName();
-    QFileInfo saveFileInfo;
+    const DkFileInfo saveFileInfo = mCurrentImage ? mCurrentImage->fileInfo()
+                                                  : DkFileInfo(mCurrentDir + u'/' + fileName());
+    QString saveName = saveFileInfo.fileName();
 
-    if (hasFile()) {
-        saveFileInfo = QFileInfo(mCurrentDir, fileName());
-
+    {
         int filterIdx = -1;
 
         QStringList sF = DkSettingsManager::param().app().saveFilters;
@@ -949,15 +1056,18 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
             }
         }
 
-        if (filterIdx == -1)
-            saveName.remove("." + saveFileInfo.suffix());
+        // unsupported extension, change to something we can save
+        if (filterIdx == -1) {
+            saveName.resize(saveName.lastIndexOf("."));
+            saveName += ".png";
+        }
     }
 
     bool overwriteFile = false;
     QString fileName;
 
     // don't ask the user if save was hit & the file format is supported for saving
-    if (silent && !selectedFilter.isEmpty() && isEdited()) {
+    if (silent && !saveFileInfo.isFromZip() && !selectedFilter.isEmpty() && isEdited()) {
         fileName = filePath();
         DkMessageBox msg(QMessageBox::Question,
                          tr("Overwrite File"),
@@ -968,15 +1078,17 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         int answer = msg.exec();
         overwriteFile = answer == QMessageBox::Yes;
-        if (answer == QDialog::Rejected || answer == QMessageBox::Cancel)
-            return;
+        if (answer == QDialog::Rejected || answer == QMessageBox::Cancel) {
+            return false;
+        }
     }
 
     if (!overwriteFile) {
-        // note: basename removes the whole file name from the first dot...
-        QString savePath = (!selectedFilter.isEmpty())
-            ? saveFileInfo.absoluteFilePath()
-            : QFileInfo(saveFileInfo.absoluteDir(), saveName).absoluteFilePath();
+        QString dirPath = saveFileInfo.dirPath();
+        if (saveFileInfo.isFromZip()) {
+            dirPath = QFileInfo{dirPath}.absolutePath(); // dir containing the zip
+        }
+        QString savePath = dirPath + u'/' + saveName;
 
         fileName = QFileDialog::getSaveFileName(dialogParent,
                                                 tr("Save File %1").arg(saveName),
@@ -986,8 +1098,9 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
                                                 DkDialog::fileDialogOptions());
     }
 
-    if (fileName.isEmpty())
-        return;
+    if (fileName.isEmpty()) {
+        return false;
+    }
 
     QString ext = QFileInfo(fileName).suffix();
 
@@ -1006,21 +1119,12 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
     int compression = -1; // default value
 
     // Save only metadata if image itself hasn't been edited (after exif rotation)
+    // TODO: remove the same-file restriction here by adding extra options to saveMetaData()
     bool sameFile = fileName == filePath();
     bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
     bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
     if (!imgEdited && metaEdited && sameFile) {
-        // Save metadata only
-        mCurrentImage->saveMetaData(); // DkBasicLoader::saveMetaData() (otherwise called after saving)
-
-        // Notify listeners about saved image
-        setCurrentImage(mCurrentImage);
-        mCurrentImage->setEdited(false);
-        emit imageLoadedSignal(mCurrentImage, true);
-        emit imageUpdatedSignal(mCurrentImage);
-
-        // Skip the rest which is only relevant when re-encoding/saving the image
-        return;
+        return mCurrentImage->saveMetaData();
     }
     // Saving image normally, clear exif rotation flag to prevent double rotation
     mCurrentImage->getLoader()->getMetaData()->clearOrientation();
@@ -1043,7 +1147,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1060,7 +1164,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1077,7 +1181,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1102,7 +1206,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1116,7 +1220,7 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!jpgDialog->exec()) {
             jpgDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = jpgDialog->getCompression();
@@ -1127,33 +1231,25 @@ void DkImageLoader::saveUserFile(const QImage &saveImg, bool silent)
 
         if (!tifDialog->exec()) {
             tifDialog->deleteLater();
-            return;
+            return false;
         }
 
         compression = tifDialog->getCompression();
     }
 
-    saveFile(sFile.absoluteFilePath(), lSaveImg, selectedFilter, compression);
-
     if (tifDialog)
         tifDialog->deleteLater();
     if (jpgDialog)
         jpgDialog->deleteLater();
+
+    return saveFile(sFile.absoluteFilePath(), lSaveImg, selectedFilter, compression, reason);
 }
 
-/**
- * Saves a file (not threaded!)
- * If the file already exists, it will be replaced.
- * @param file the file name/path
- * @param fileFilter the file extension (e.g. *.jpg)
- * @param saveImg the image to be saved
- * @param compression the compression method (for jpg, tif)
- **/
-void DkImageLoader::saveFile(const QString &filePath,
+bool DkImageLoader::saveFile(const QString &filePath,
                              const QImage &saveImg,
-                             const QString &fileFilter,
+                             const QString &fallbackFilter,
                              int compression,
-                             bool threaded)
+                             SaveReason reason)
 {
     QSharedPointer<DkImageContainerT> imgC = (mCurrentImage) ? mCurrentImage : findOrCreateFile(filePath);
     setCurrentImage(imgC);
@@ -1165,9 +1261,8 @@ void DkImageLoader::saveFile(const QString &filePath,
     QString newSuffix = QFileInfo(filePath).suffix();
     QString lFilePath = filePath;
     if (newSuffix == "") {
-        QString lFileFilter = fileFilter;
-        newSuffix = lFileFilter.remove(0, fileFilter.indexOf("."));
-        printf("new suffix: %s\n", newSuffix.toStdString().c_str());
+        QString lFileFilter = fallbackFilter;
+        newSuffix = lFileFilter.remove(0, fallbackFilter.indexOf("."));
 
         int endSuffix = -1;
         if (newSuffix.indexOf(")") == -1)
@@ -1180,38 +1275,39 @@ void DkImageLoader::saveFile(const QString &filePath,
         lFilePath.append(newSuffix.left(endSuffix));
     }
 
-    emit updateSpinnerSignalDelayed(true);
     QImage sImg = (saveImg.isNull()) ? imgC->image() : saveImg;
 
-    mDirWatcher->blockSignals(true);
-    bool saveStarted = (threaded) ? imgC->saveImageThreaded(lFilePath, sImg, compression)
-                                  : imgC->saveImage(lFilePath, sImg, compression);
-
-    if (!saveStarted) {
-        imageSaved(QString(), false);
-    } else if (saveStarted && !threaded) {
-        imageSaved(lFilePath);
+    bool saveStarted = imgC->saveImageThreaded(lFilePath, sImg, compression);
+    if (saveStarted) {
+        emit saveStartedSignal(imgC, reason);
     }
+
+    return saveStarted;
 }
 
-void DkImageLoader::imageSaved(const QString &filePath, bool saved, bool loadToTab)
+bool DkImageLoader::isSaving() const
 {
-    emit updateSpinnerSignalDelayed(false);
-    mDirWatcher->blockSignals(false);
+    return mCurrentImage && mCurrentImage->isSaving();
+}
 
+void DkImageLoader::fileUpdated(const QString &filePath) const
+{
     QFileInfo fInfo(filePath);
-    if (!fInfo.exists() || !fInfo.isFile() || !saved)
+    if (!fInfo.exists() || !fInfo.isFile()) {
         return;
+    }
 
-    if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load_to_tab && loadToTab) {
-        emit loadImageToTab(filePath);
-    } else if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load) {
-        emit imageLoadedSignal(mCurrentImage, true);
-        emit imageUpdatedSignal(mCurrentImage);
-        qDebug() << "image updated: " << mCurrentImage->fileName();
-    } else {
-        mFolderUpdated = true;
-        loadDir(mCurrentImage->dirPath());
+    if (fInfo.absolutePath() == mCurrentDir) {
+        auto imgC = findFile(filePath);
+
+        if (imgC) {
+            // NOTE: We do not drop file cache here; modification tracking
+            // should be picking this up. Otherwise we would possibly reload
+            // the edited image and lose user edits.
+            // NOTE: in the case of overwriting, dir watcher will not pick up
+            // the changes so we have to emit the same signals to see thumbs update.
+            emitDirUpdated();
+        }
     }
 }
 
@@ -1415,27 +1511,23 @@ void DkImageLoader::rotateImage(double angle)
     // [2022-09, pse]
 }
 
-/**
- * Reloads the file index if the directory was edited.
- * @param path the path to the current directory
- **/
 void DkImageLoader::directoryChanged(const QString &path)
 {
-    if (path.isEmpty() || path == mCurrentDir) {
-        mFolderUpdated = true;
+    if (path != mCurrentDir) {
+        return;
+    }
 
-        // guarantee, that only every XX seconds a folder update occurs
-        // think of a folder where 100s of files are written to...
-        // as this could be pretty fast, the thumbsloader (& whoever) would create a
-        // greater offset and slow down the system
-        if ((path.isEmpty() && mTimerBlockedUpdate) || (!path.isEmpty() && !mDelayedUpdateTimer.isActive())) {
+    mDirUpdated = true;
+
+    // QFileSystemWatcher will signal many times per second, since dir updating
+    // can be slow, we will limit the reloads to at most 1 per second
+    if (!mLoadDirTimer.isActive()) {
+        qint64 elapsed = mLastLoadDirTimer.isValid() ? mLastLoadDirTimer.elapsed() : 1000;
+        if (elapsed >= 1000) {
             loadDir(mCurrentDir, false);
-            mTimerBlockedUpdate = false;
-
-            if (!path.isEmpty())
-                mDelayedUpdateTimer.start(1000);
-        } else
-            mTimerBlockedUpdate = true;
+        } else {
+            mLoadDirTimer.start(1000 - elapsed);
+        }
     }
 }
 
@@ -1684,14 +1776,7 @@ void DkImageLoader::sortImages()
 void DkImageLoader::sort()
 {
     sortImages();
-
-    emit updateDirSignal(mImages);
-
-    int idx = -1;
-    if (mCurrentImage) {
-        idx = findFileIdx(mCurrentImage->filePath(), mImages);
-    }
-    emit imageUpdatedSignal(idx);
+    emitDirUpdated();
 }
 
 void DkImageLoader::currentImageUpdated() const
@@ -1769,7 +1854,7 @@ QImage DkImageLoader::getPixmap()
 void DkImageLoader::setFolderFilter(const QString &filter)
 {
     mFolderFilterString = filter;
-    mFolderUpdated = true;
+    mDirUpdated = true;
     loadDir(mCurrentDir); // simulate a folder update operation
 }
 
@@ -1804,10 +1889,10 @@ void DkImageLoader::setImage(QSharedPointer<DkImageContainerT> img)
     emit imageUpdatedSignal(mCurrentImage);
 }
 
-void DkImageLoader::setImageUpdated()
-{
-    mCurrentImage->setEdited();
-}
+// void DkImageLoader::setImageUpdated()
+// {
+//     mCurrentImage->setEdited();
+// }
 
 /**
  * Returns the current file name.
@@ -1855,7 +1940,6 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
                 this,
                 &DkImageLoader::showInfoSignal,
                 Qt::UniqueConnection);
-        connect(currImage, &DkImageContainerT::fileSavedSignal, this, &DkImageLoader::imageSaved, Qt::UniqueConnection);
         connect(currImage,
                 &DkImageContainerT::imageUpdatedSignal,
                 this,
@@ -1866,7 +1950,7 @@ void DkImageLoader::receiveUpdates(bool connectSignals)
             firstFile();
         });
     } else if (!connectSignals) {
-        disconnect(currImage, nullptr, this, nullptr);
+        currImage->disconnect(this);
     }
 
     currImage->receiveUpdates(connectSignals);

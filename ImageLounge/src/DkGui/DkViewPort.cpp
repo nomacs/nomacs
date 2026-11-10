@@ -267,7 +267,13 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     // things todo if a file was not loaded...
     if (!loaded) {
         mController->getPlayer()->startTimer();
-        mController->updateImage(nullptr);
+        // load failed but we have something to show (e.g. deleted file)
+        if (image->hasImage()) {
+            mController->updateImage(image);
+            setImage(image->pixmap());
+        } else {
+            mController->updateImage(nullptr);
+        }
         return;
     }
 
@@ -301,21 +307,6 @@ void DkViewPort::onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loa
     }
 
     mController->updateImage(image);
-}
-
-void DkViewPort::loadImage(const QImage &newImg)
-{
-    // delete current information
-    if (mLoader) {
-        if (!unloadImage())
-            return; // user canceled
-
-        mLoader->setImage(newImg, tr("Original Image"));
-        setImage(newImg);
-
-        // save to temp folder
-        mLoader->saveTempFile(newImg);
-    }
 }
 
 void DkViewPort::setImage(const QImage &newImg)
@@ -682,7 +673,7 @@ void DkViewPort::saveFileAs(bool silent)
             }
         }
 
-        mLoader->saveUserFile(img, silent);
+        mLoader->saveUserFile(img, silent, DkImageLoader::SaveReason::user);
     }
 }
 
@@ -701,12 +692,14 @@ void DkViewPort::setAsWallpaper()
 
     if (!imgC || !imgC->hasImage()) {
         qWarning() << "cannot create wallpaper because there is no image loaded...";
+        return;
     }
 
-    QImage img = imgC->image();
-    QString tmpPath = mLoader->saveTempFile(img, "wallpaper", "jpg", false);
+    QString tmpPath{};
+    if (mLoader->saveTempFile(imgC->image(), "wallpaper", "jpg", DkImageLoader::SaveReason::temporary)) {
+        tmpPath = imageContainer()->waitForSaveFinished();
+    }
 
-    // is there a more elegant way to see if saveTempFile returned an empty path
     if (tmpPath.isEmpty()) {
         QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not create a wallpaper..."));
         return;
@@ -1735,8 +1728,13 @@ void DkViewPort::loadFile(const QString &filePath)
 void DkViewPort::reloadFile()
 {
     if (mLoader) {
-        if (unloadImage())
+        DkFileInfo info{mLoader->filePath()};
+        if (!info.exists()) {
+            QString msg = tr("Sorry, %1 does not exist anymore...").arg(info.fileName());
+            mController->setInfo(msg);
+        } else if (unloadImage()) {
             mLoader->reloadImage();
+        }
     }
 }
 
@@ -2302,8 +2300,12 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     mColorTable = QVector<QRgb>(256);
     for (int i = 0; i < mColorTable.size(); i++)
         mColorTable[i] = qRgb(i, i, i);
+}
 
-    // connect
+DkViewPortContrast::~DkViewPortContrast() = default;
+
+void DkViewPortContrast::connectActions()
+{
     auto ttb = DkToolBarManager::inst().transferToolBar();
     connect(ttb, &DkTransferToolBar::colorTableChanged, this, &DkViewPortContrast::changeColorTable);
     connect(ttb, &DkTransferToolBar::channelChanged, this, &DkViewPortContrast::changeChannel);
@@ -2313,8 +2315,6 @@ DkViewPortContrast::DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *pare
     connect(this, &DkViewPortContrast::tFSliderAdded, ttb, &DkTransferToolBar::insertSlider);
     connect(this, &DkViewPortContrast::imageModeSet, ttb, &DkTransferToolBar::setImageMode);
 }
-
-DkViewPortContrast::~DkViewPortContrast() = default;
 
 void DkViewPortContrast::changeChannel(int channel)
 {

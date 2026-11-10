@@ -30,6 +30,7 @@
 #include "DkBaseWidgets.h"
 
 #include "DkImageContainer.h"
+#include "DkImageLoader.h"
 #include "DkThumbs.h"
 
 #include "nmc_config.h"
@@ -117,7 +118,6 @@ public:
     explicit DkCentralWidget(QWidget *parent = nullptr);
     ~DkCentralWidget() override;
 
-    bool hasViewPort() const;
     DkViewPort *getViewPort() const;
     DkThumbScrollWidget *getThumbScrollWidget() const;
     QString getCurrentDir() const;
@@ -134,7 +134,7 @@ public:
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
     QString getCurrentFilePath() const;
     QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
-    bool requestClose() const;
+    bool requestClose();
 
     static void tryRestart(const QStringList &args = {});
 
@@ -153,7 +153,7 @@ public slots:
     void addTab(const DkFileInfo &file, bool background = false);
     void addTab(DkTabInfo::TabMode mode, bool background = false);
     void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
-    void removeTab(int tabIdx = -1);
+    bool removeTab(int tabIdx = -1);
     void nextTab() const;
     void previousTab() const;
     void showThumbView(bool show = true);
@@ -186,11 +186,14 @@ public slots:
 
 protected:
     void activateTab(int tabIdx);
+    bool promptUnloadTab(int idx);
 
     QTabBar *mTabbar = nullptr;
     DkProgressBar *mProgressBar = nullptr;
     QVector<QSharedPointer<DkTabInfo>> mTabInfos;
     bool mTabMoved = false;
+    QVector<QSharedPointer<DkImageContainerT>> mPendingJobs;
+    bool mCleaningUpJobs{};
 
     QVector<QWidget *> mWidgets;
     QStackedLayout *mViewLayout = nullptr;
@@ -206,6 +209,7 @@ protected:
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
     void connectLoader(QSharedPointer<DkImageLoader> loader) const;
+    void saveStarted(QSharedPointer<DkImageContainerT> imgC, DkImageLoader::SaveReason reason);
 
     DkPreferenceWidget *createPreferences();
     DkRecentFilesWidget *createRecentFiles();
@@ -225,6 +229,6 @@ protected:
 
 private:
     DkThumbLoader mThumbLoader{};
+    int mPrevTabIdx = -1;
 };
-
 }

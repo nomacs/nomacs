@@ -67,9 +67,9 @@ class DllCoreExport DkMetaDataT
 {
 public:
     DkMetaDataT();
-    bool isNull();
+    bool isNull() const;
     QSharedPointer<DkMetaDataT> copy() const;
-    void update(QSharedPointer<DkMetaDataT> other);
+    void update(const DkMetaDataT &other);
 
     enum ExifOrientationState {
         or_invalid = -2,
