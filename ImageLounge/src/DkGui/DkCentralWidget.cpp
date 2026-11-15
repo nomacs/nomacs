@@ -1268,8 +1268,13 @@ bool DkCentralWidget::promptUnloadTab(int idx)
 
         bool wasBlocked = mTabbar->blockSignals(false); // unblock needed for activateTab
 
+        // change mode to see what we are saving
+        if (idx == mTabbar->currentIndex()) {
+            showViewPort();
+        } else {
+            tabInfo->setMode(DkTabInfo::tab_single_image);
+        }
         activateTab(idx);
-        showViewPort(); // ensure we are showing the image and not thumbnails etc
 
         mTabbar->blockSignals(wasBlocked);
 
