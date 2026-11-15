@@ -885,6 +885,31 @@ QStringList DkUtils::suffixOnly(const QStringList &fileFilters)
     return cleanedFilters;
 }
 
+int DkUtils::findFilter(const QStringView suffix, const QStringList &fileFilters)
+{
+    if (suffix.isEmpty()) {
+        return -1;
+    }
+
+    for (int idx = 0; idx < fileFilters.size(); ++idx) {
+        QStringView sv{fileFilters[idx]};
+        int lParen = sv.indexOf(QChar{u'('});
+        int rParen = sv.indexOf(QChar{u')'});
+        if (lParen < 0 || rParen <= lParen) {
+            qCritical() << "invalid filter string: " << sv;
+            continue;
+        }
+        sv = sv.sliced(lParen + 1, rParen - lParen - 1); // "JPEG Files (*.jpg *.jpeg)" -> "*.jpg *.jpeg"
+        for (auto glob : sv.tokenize(QChar{u' '}, Qt::SkipEmptyParts)) {
+            auto ext = glob.mid(2); // "*.jpg" -> "jpg"
+            if (ext.compare(suffix, Qt::CaseInsensitive) == 0) {
+                return idx;
+            }
+        }
+    }
+    return -1;
+}
+
 QDateTime DkUtils::getConvertableDate(const QString &date)
 {
     QDateTime dateCreated;
