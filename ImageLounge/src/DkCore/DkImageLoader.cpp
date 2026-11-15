@@ -1035,32 +1035,23 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent, SaveReason 
     // the subsequent modals destroy the active window
     QWidget *dialogParent = DkUtils::getMainWindow();
 
-    QString selectedFilter;
     const DkFileInfo saveFileInfo = mCurrentImage ? mCurrentImage->fileInfo()
                                                   : DkFileInfo(mCurrentDir + u'/' + fileName());
     QString saveName = saveFileInfo.fileName();
 
-    {
-        int filterIdx = -1;
+    const QStringList saveFilters = DkSettingsManager::param().app().saveFilters;
+    int filterIdx = DkUtils::findFilter(saveFileInfo.suffix(), saveFilters);
 
-        QStringList sF = DkSettingsManager::param().app().saveFilters;
-        // qDebug() << sF;
-
-        QRegularExpression exp = QRegularExpression(saveFileInfo.suffix(), QRegularExpression::CaseInsensitiveOption);
-
-        for (int idx = 0; idx < sF.size(); idx++) {
-            if (exp.match(sF.at(idx)).hasMatch()) {
-                selectedFilter = sF.at(idx);
-                filterIdx = idx;
-                break;
-            }
+    QString selectedFilter;
+    if (filterIdx >= 0) {
+        selectedFilter = saveFilters.at(filterIdx);
+    } else {
+        // unsupported or empty suffix, change to something we can save
+        int dotIdx = saveName.lastIndexOf(QChar{u'.'});
+        if (dotIdx >= 0) {
+            saveName.resize(dotIdx);
         }
-
-        // unsupported extension, change to something we can save
-        if (filterIdx == -1) {
-            saveName.resize(saveName.lastIndexOf("."));
-            saveName += ".png";
-        }
+        saveName += ".png";
     }
 
     bool overwriteFile = false;

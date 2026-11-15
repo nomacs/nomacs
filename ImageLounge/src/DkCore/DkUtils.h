@@ -400,6 +400,13 @@ public:
     static bool isSavable(const QString &fileName);
 
     static QStringList suffixOnly(const QStringList &fileFilters);
+    /**
+     * @brief find the first filter that matches the suffix, case-insensitive
+     * @param suffix file suffix (not including dot)
+     * @param fileFilters list of filters to search "JPEG (*.jpg *.jpeg *.jpe)"
+     * @return matching filter index or -1 if not found
+     */
+    static int findFilter(const QStringView suffix, const QStringList &fileFilters);
     static QDateTime getConvertableDate(const QString &date);
     static QDateTime convertDate(const QString &date, const QFileInfo &file = QFileInfo());
     static QString convertDateString(const QString &date, const QFileInfo &file = QFileInfo());
