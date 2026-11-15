@@ -1602,7 +1602,9 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
     }
 
     if (!dropImg.isNull()) {
-        return getCurrentImageLoader()->saveTempFile(dropImg, "img", "png", DkImageLoader::SaveReason::paste);
+        DkImageLoader loader{}; // new loader to prevent conflict with current image
+        connect(&loader, &DkImageLoader::saveStartedSignal, this, &DkCentralWidget::saveStarted);
+        return loader.saveTempFile(dropImg, "img", "png", DkImageLoader::SaveReason::paste);
     }
 
     if (urls.empty()) {
