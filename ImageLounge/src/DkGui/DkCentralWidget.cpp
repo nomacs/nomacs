@@ -428,28 +428,23 @@ void DkCentralWidget::currentTabChanged(int idx)
         return;
     }
 
+    auto tab = mTabInfos.at(idx);
+
     // QtTabBar sends currrentTabChanged() after tabMoved() when dragging,
     // but the current tab doesn't actually change
-    if (mTabMoved) {
-        mTabMoved = false;
-        mPrevTabIdx = idx;
+    if (mPrevTab == tab) {
         return;
     }
 
-    auto tab = mTabInfos.at(idx);
-
     // deactivate the previous tab
-    if (mPrevTabIdx >= 0 && mPrevTabIdx < mTabInfos.size()) {
-        auto prevTab = mTabInfos.at(mPrevTabIdx);
-        if (prevTab != tab) {
-            prevTab->deactivate(); // block loader signals, save per-tab state, etc
-            if (auto tw = getThumbScrollWidget()) { // disconnect anything else connected to loader
-                tw->getThumbWidget()->setImageLoader({});
-                tw->disconnect(prevTab->getImageLoader().data());
-            }
-            if (auto vp = getViewPort()) {
-                vp->setImageLoader(QSharedPointer<DkImageLoader>::create()); // viewport doesn't support null loader yet
-            }
+    if (auto prev = mPrevTab.toStrongRef()) {
+        prev->deactivate(); // block loader signals, save per-tab state, etc
+        if (auto tw = getThumbScrollWidget()) { // disconnect anything else connected to loader
+            tw->getThumbWidget()->setImageLoader({});
+            tw->disconnect(prev->getImageLoader().data());
+        }
+        if (auto vp = getViewPort()) {
+            vp->setImageLoader(QSharedPointer<DkImageLoader>::create()); // viewport doesn't support null loader yet
         }
     }
 
@@ -482,7 +477,7 @@ void DkCentralWidget::currentTabChanged(int idx)
     // the tab is fully configured, we can update the text/icon now
     updateTab(tab);
 
-    mPrevTabIdx = idx;
+    mPrevTab = tab;
 }
 
 void DkCentralWidget::connectLoader(QSharedPointer<DkImageLoader> loader) const
@@ -640,7 +635,6 @@ void DkCentralWidget::tabCloseRequested(int idx)
 
 void DkCentralWidget::tabMoved(int from, int to)
 {
-    mTabMoved = true;
     QSharedPointer<DkTabInfo> tabInfo = mTabInfos.at(from);
     mTabInfos.remove(from);
     mTabInfos.insert(to, tabInfo);

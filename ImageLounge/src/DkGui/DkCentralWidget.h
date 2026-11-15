@@ -191,7 +191,6 @@ protected:
     QTabBar *mTabbar = nullptr;
     DkProgressBar *mProgressBar = nullptr;
     QVector<QSharedPointer<DkTabInfo>> mTabInfos;
-    bool mTabMoved = false;
     QVector<QSharedPointer<DkImageContainerT>> mPendingJobs;
     bool mCleaningUpJobs{};
 
@@ -229,6 +228,6 @@ protected:
 
 private:
     DkThumbLoader mThumbLoader{};
-    int mPrevTabIdx = -1;
+    QWeakPointer<DkTabInfo> mPrevTab{};
 };
 }
