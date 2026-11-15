@@ -731,19 +731,19 @@ bool DkCentralWidget::removeTab(int tabIdx)
     // must block currentTabChanged() here since we'll see inconsistent
     // state until updateTabIdx() returns. Side benefit, we don't
     // see a refresh when deleting inactive tabs
-    bool currentTabWillChange = tabIdx == mTabbar->currentIndex();
+    bool currentTabRemoved = tabIdx == mTabbar->currentIndex();
     {
         QSignalBlocker blocker(mTabbar);
         mTabInfos.at(tabIdx)->getImageLoader()->unload();
-        getViewPort()->setImageLoader(QSharedPointer<DkImageLoader>::create());
         mTabInfos.remove(tabIdx);
         mTabbar->removeTab(tabIdx);
         updateTabIdx();
     }
 
     if (!mTabInfos.empty()) {
-        // we blocked the signal so we now manually trip the signal
-        if (currentTabWillChange) {
+        if (currentTabRemoved) {
+            getViewPort()->setImageLoader(QSharedPointer<DkImageLoader>::create());
+            // we blocked the signal so we now manually trip the signal
             activateTab(mTabbar->currentIndex());
         }
     } else if (DkSettingsManager::param().app().closeOnLastTabClosed) {
