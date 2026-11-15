@@ -816,6 +816,11 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, int compressi
 
 bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage saveImg, int compression /* = -1 */)
 {
+    if (isSaving()) {
+        emit showInfoSignal(tr("Sorry, another save is in progress"));
+        return false;
+    }
+
     mSaveImageWatcher.waitForFinished();
 
     QFileInfo fInfo = QFileInfo(filePath);
