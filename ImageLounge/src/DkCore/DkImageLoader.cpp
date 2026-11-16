@@ -1117,12 +1117,9 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent, SaveReason 
     if (!imgEdited && metaEdited && sameFile) {
         return mCurrentImage->saveMetaData();
     }
-    // Saving image normally, clear exif rotation flag to prevent double rotation
-    mCurrentImage->getLoader()->getMetaData()->clearOrientation();
-    // Below are the compress/encode routines; at the end of a long call chain (saveIntern internSave Threaded)
-    // saveToBuffer() is responsible for adding the exif data to the image buffer soup
-    // which is then written to the specified file.
 
+    // Get the settings for QImageWriter, these have different meanings depending on format
+    // We also have background color chooser when the format doesn't support alpha channel.
     DkCompressDialog *jpgDialog = nullptr;
     QImage lSaveImg = saveImg;
 
