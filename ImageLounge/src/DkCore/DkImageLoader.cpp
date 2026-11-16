@@ -986,6 +986,8 @@ bool DkImageLoader::copyUserFile()
         }
     }
 
+    emit saveStartedSignal(imgC, SaveReason::user);
+
     if (src) {
         QSaveFile dst(savePath);
         if (dst.open(QSaveFile::WriteOnly)) {
@@ -1024,6 +1026,8 @@ bool DkImageLoader::copyUserFile()
     } else {
         emit showInfoSignal(tr("Sorry, I could not copy the image..."));
     }
+
+    emit imgC->fileSavedSignal(savePath, saved);
 
     return saved;
 }
