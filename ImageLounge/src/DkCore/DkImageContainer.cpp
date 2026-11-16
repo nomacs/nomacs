@@ -703,7 +703,7 @@ void DkImageContainerT::loadingFinished()
                 qInfo() << "kimageformats supports" << fileSuffix.c_str() << "but it does not seem to be installed";
 
                 DkMessageBox msgBox(QMessageBox::Information,
-                                    tr("Failed to load file"),
+                                    tr("Failed to load file: %1").arg(fileName()),
                                     tr("The file format may not be installed by default.\n"
                                        "\n"
                                        "Installing the kimageformats plugin package from your\n"
