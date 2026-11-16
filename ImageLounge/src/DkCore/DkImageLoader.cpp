@@ -1422,7 +1422,7 @@ void DkImageLoader::rotateImage(double angle)
     // TODO: if format supports EXIF, here we may offer to create default EXIF metadata
     // if (!modifiedPixels && saveMetaData) { }
 
-    if (metaData->hasMetaData() && saveMetaData && !modifiedPixels && metaData->isWriteable()) {
+    if (metaData->hasMetaData() && saveMetaData && !modifiedPixels && metaData->isEditable()) {
         // We may have ignored orientation metadata when loading the image (HEIC/AVIF or user enabled it).
         // Warn if this may result in invalid metadata
         // This is not a problem if there is no write support, "Save As" will clear orientation metadata
@@ -1468,7 +1468,7 @@ void DkImageLoader::rotateImage(double angle)
 
     // User may not be aware they disabled this
     if (!mSaveOrientationWarningShown && metaData->hasMetaData() && !saveMetaData && !modifiedPixels
-        && metaData->isWriteable()) {
+        && metaData->isEditable()) {
         DkMessageBox msgBox(QMessageBox::Warning,
                             tr("Lossless Rotation Disabled"),
                             tr("This file could be rotated losslessly with EXIF metadata,\n"

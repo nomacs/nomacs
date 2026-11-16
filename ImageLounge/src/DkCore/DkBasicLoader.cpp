@@ -1445,7 +1445,7 @@ bool DkBasicLoader::save(const QString &filePath,
         DkMetaDataT dstMetaData;
         dstMetaData.readMetaData(file.fileName()); // Initially empty since we just wrote the file content
 
-        if (!dstMetaData.isWriteable()) {
+        if (dstMetaData.isNull() || !dstMetaData.isWriteable()) {
             qInfo() << "[save] skipped saving metadata, unsupported for file:" << file.fileName();
         } else {
             saved = false;

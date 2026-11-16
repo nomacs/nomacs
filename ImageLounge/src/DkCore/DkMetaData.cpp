@@ -255,29 +255,25 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
 
     exifImgN->readMetadata();
 
-    // Update new exif object, copy changes made to the old exif object (loaded image)
-    if (exifImgN->supportsMetadata(Exiv2::mdExif)) {
+    try {
         exifImgN->setExifData(exifData);
-    } else if (!exifData.empty()) {
-        qWarning() << "[Exiv2] image format does not support saving exif data";
+    } catch (...) {
+        qWarning() << "[Exiv2] failed to set exif data";
     }
-
-    if (exifImgN->supportsMetadata(Exiv2::mdXmp)) {
+    try {
         exifImgN->setXmpData(xmpData);
-    } else if (!xmpData.empty()) {
-        qWarning() << "[Exiv2] image format does not support saving xmp data";
+    } catch (...) {
+        qWarning() << "[Exiv2] failed to set xmp data";
     }
-
-    if (exifImgN->supportsMetadata(Exiv2::mdIptc)) {
+    try {
         exifImgN->setIptcData(iptcData);
-    } else if (!iptcData.empty()) {
-        qWarning() << "[Exiv2] image format does not support saving iptc data";
+    } catch (...) {
+        qWarning() << "[Exiv2] failed to set iptc data";
     }
-
-    if (exifImgN->supportsMetadata(Exiv2::mdComment)) {
+    try {
         exifImgN->setComment(comment);
-    } else if (!comment.empty()) {
-        qWarning() << "[Exiv2] image format does not support saving file comment";
+    } catch (...) {
+        qWarning() << "[Exiv2] failed to set comment";
     }
 
     exifImgN->writeMetadata(); // TODO: CIMG6206.jpg crashes here...
@@ -854,6 +850,19 @@ bool DkMetaDataT::isWriteable() const
                 << mExifImg->mimeType().c_str();
         return false;
     }
+    return true;
+}
+
+bool DkMetaDataT::isEditable() const
+{
+    if (!mExifImg) {
+        qWarning() << "[Exiv2] isEditable() cannot check status";
+        return false;
+    }
+
+    if (!isWriteable()) {
+        return false;
+    }
 
     // here we do what copy() does, if create() does not work then DkEditImage will store null metadata
     try {
@@ -1312,7 +1321,7 @@ bool DkMetaDataT::setRating(int r)
         return false;
     }
 
-    if (!isWriteable()) {
+    if (!isEditable()) {
         return false;
     }
 
@@ -1406,7 +1415,7 @@ bool DkMetaDataT::setExifValue(const QString &key, const QString &value)
         return false;
     }
 
-    if (!isWriteable()) {
+    if (!isEditable()) {
         return false;
     }
 

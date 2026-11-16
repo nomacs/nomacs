@@ -851,7 +851,15 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
             Qt::UniqueConnection);
 
     // We have to copy non-COW objects that might change during the save
-    auto metaData = getLoader()->getMetaData()->copy();
+    // NOTE: some file types metadata cannot be copied, in that case we
+    // have to reload the metadata. The UI prevents changes to these types (for the moment).
+    auto metaData = getLoader()->getMetaData();
+    if (metaData->isEditable()) {
+        metaData = metaData->copy();
+    } else {
+        metaData = QSharedPointer<DkMetaDataT>::create();
+        metaData->readMetaData(fileInfo(), getFileBuffer());
+    }
 
     mSaveImageWatcher.setProperty("filePath", filePath);
     mSaveImageWatcher.setFuture(QtConcurrent::run([=] {
