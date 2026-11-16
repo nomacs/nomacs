@@ -1428,8 +1428,7 @@ bool DkBasicLoader::save(const QString &filePath,
         imgWriter.setOptimizedWrite(true); // this saves space TODO: user option here?
         imgWriter.setProgressiveScanWrite(true);
 
-        saved = imgWriter.write(
-            sImg); // hint: release() might run now, resetting mMetaData which is used below [2022-08, pse]
+        saved = imgWriter.write(sImg);
         if (!saved) {
             qWarning() << "[save] imagewriter error:" << imgWriter.errorString() << file.fileName();
         }
