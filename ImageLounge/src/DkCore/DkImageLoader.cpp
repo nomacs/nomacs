@@ -1380,7 +1380,10 @@ bool DkImageLoader::deleteFile()
         return false;
     }
 
-    mImages.removeAt(currFileIdx);
+    if (currFileIdx >= 0) {
+        mImages.removeAt(currFileIdx);
+    }
+
     QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
     if (!imgC)
         imgC = getSkippedImage(0); // deleted from the end
