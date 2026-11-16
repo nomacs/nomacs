@@ -861,6 +861,9 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
         metaData->readMetaData(fileInfo(), getFileBuffer());
     }
 
+    // We are compressing image so reset orientation
+    metaData->clearOrientation();
+
     mSaveImageWatcher.setProperty("filePath", filePath);
     mSaveImageWatcher.setFuture(QtConcurrent::run([=] {
         return DkBasicLoader::save(filePath, saveImg, metaData, compression);
