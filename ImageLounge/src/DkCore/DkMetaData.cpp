@@ -236,7 +236,6 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     Exiv2::ExifData &exifData = mExifImg->exifData();
     Exiv2::XmpData &xmpData = mExifImg->xmpData();
     Exiv2::IptcData &iptcData = mExifImg->iptcData();
-    std::string comment = mExifImg->comment();
 
     std::unique_ptr<Exiv2::Image> exifImgN;
 
@@ -270,11 +269,9 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     } catch (...) {
         qWarning() << "[Exiv2] failed to set iptc data";
     }
-    try {
-        exifImgN->setComment(comment);
-    } catch (...) {
-        qWarning() << "[Exiv2] failed to set comment";
-    }
+
+    // NOTE: do not use setComment() here, QImageWriter already seems to preserve it,
+    // and this would seem to erase it, at least when writing PNG
 
     exifImgN->writeMetadata(); // TODO: CIMG6206.jpg crashes here...
 
