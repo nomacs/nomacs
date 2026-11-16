@@ -133,7 +133,8 @@ public:
     QImage cleanImage(const QImage &img);
 
     bool hasMetaData() const;
-    bool isWriteable() const;
+    bool isWriteable() const; // can write back to file-backed exiv2 object, may not be copyable
+    bool isEditable() const; // in-memory representation can be copied to empty exiv2 object
     bool isLoaded() const;
     bool isTiff() const;
     bool isJpg() const;
