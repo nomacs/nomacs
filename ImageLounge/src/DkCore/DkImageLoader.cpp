@@ -1058,7 +1058,7 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent, SaveReason 
     QString fileName;
 
     // don't ask the user if save was hit & the file format is supported for saving
-    if (silent && !saveFileInfo.isFromZip() && !selectedFilter.isEmpty() && isEdited()) {
+    if (silent && !saveFileInfo.isFromZip() && !selectedFilter.isEmpty() && isEdited() && QFile::exists(filePath())) {
         fileName = filePath();
         DkMessageBox msg(QMessageBox::Question,
                          tr("Overwrite File"),
