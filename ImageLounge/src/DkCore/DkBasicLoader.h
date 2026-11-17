@@ -268,7 +268,7 @@ public:
      * @brief save the image and its metadata to the specified file
      * @param filePath target path to image file
      * @param img source image to be written to file (may be converted)
-     * @param metaData new file metadata, null pointer means file will have no metadata
+     * @param metaData new file metadata, null pointer means file will get default metadata only
      * @param compression compression flag for QImageWriter (-1==default, may be ignored depending on format)
      * @note the file format comes from the file suffix
      * @warning this overwrites any existing file

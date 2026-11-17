@@ -1449,7 +1449,7 @@ bool DkBasicLoader::save(const QString &filePath,
         } else {
             saved = false;
 
-            if (metaData->isLoaded()) {
+            if (metaData && metaData->isLoaded()) {
                 dstMetaData.update(*metaData); // Copy from src
             }
 
