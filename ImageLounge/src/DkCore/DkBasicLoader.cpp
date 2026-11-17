@@ -1371,6 +1371,21 @@ bool DkBasicLoader::save(const QString &filePath,
 
     QFileInfo fInfo(filePath);
 
+    bool overwriting = false;
+    if (fInfo.exists()) {
+        overwriting = true;
+
+        // don't drop symlinks,.lnk,aliases, write to the target
+        if (fInfo.isSymLink()) {
+            fInfo = QFileInfo{fInfo.symLinkTarget()};
+        }
+
+        if (!fInfo.isWritable()) {
+            qWarning() << "[save] file is not writable:" << fInfo.fileName();
+            return {};
+        }
+    }
+
     // We don't use QSaveFile or QTemporaryFile because the former doesn't give us
     // a path for metadata saving, and the latter holds the file open so we can't write metadata to it
     // We get effectively the same protection with a random string tacked on the end
@@ -1477,6 +1492,12 @@ bool DkBasicLoader::save(const QString &filePath,
                 saved = false;
                 qWarning() << "[save] exception saving metadata:" << file.fileName();
             }
+        }
+    }
+
+    if (saved && overwriting) {
+        if (!file.setPermissions(fInfo.permissions())) {
+            qWarning() << "[save] failed restore permissions:" << file.fileName() << file.error() << file.errorString();
         }
     }
 
