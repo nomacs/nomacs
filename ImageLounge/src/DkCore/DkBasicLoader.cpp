@@ -1432,13 +1432,18 @@ bool DkBasicLoader::save(const QString &filePath,
         if (!saved) {
             qWarning() << "[save] imagewriter error:" << imgWriter.errorString() << file.fileName();
         }
-
         if (file.error()) {
             saved = false;
             qWarning() << "[save] i/o error on write:" << file.fileName() << file.error() << file.errorString();
         }
     }
+
     file.close();
+    if (file.error()) {
+        // close() flushes the file, which could fail, but doesn't report the error
+        saved = false;
+        qWarning() << "[save] i/o error on close:" << file.fileName() << file.error() << file.errorString();
+    }
 
     if (saved) {
         DkMetaDataT dstMetaData;
