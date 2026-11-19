@@ -52,6 +52,7 @@ public:
         status_format_info,
         status_zoom_info,
         status_filenumber_info,
+        status_frame_info,
         status_filesize_info,
         status_time_info,
 

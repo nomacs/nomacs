@@ -1040,6 +1040,7 @@ void DkViewPort::loadMovie()
     qInfo() << "[movie] loaded animation:" << fileInfo.fileName();
 
     connect(mMovie.data(), &QMovie::frameChanged, this, QOverload<>::of(&DkViewPort::update));
+    connect(mMovie.data(), &QMovie::frameChanged, this, &DkViewPort::updateMovieFrameInfo);
     mMovie->start();
 
     emit movieLoadedSignal(true);
@@ -1133,6 +1134,24 @@ void DkViewPort::stopMovie()
 
     mMovie = {};
     mMovieIo = {};
+
+    DkStatusBarManager::instance().setMessage("", DkStatusBar::status_frame_info);
+}
+
+void DkViewPort::updateMovieFrameInfo(int frameNumber)
+{
+    if (!mMovie || frameNumber < 0)
+        return;
+
+    // frameCount() is 0 if the format can't tell the number of frames in advance
+    const int frameCount = mMovie->frameCount();
+    QString msg;
+    if (frameCount > 0 && frameNumber < frameCount)
+        msg = tr("Frame %1 of %2").arg(frameNumber + 1).arg(frameCount);
+    else
+        msg = tr("Frame %1").arg(frameNumber + 1);
+
+    DkStatusBarManager::instance().setMessage(msg, DkStatusBar::status_frame_info);
 }
 
 void DkViewPort::drawPolygon(QPainter &painter, const QPolygon &polygon)
