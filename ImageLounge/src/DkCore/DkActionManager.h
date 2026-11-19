@@ -28,6 +28,7 @@
 #pragma once
 
 #include <QAction>
+#include <QHash>
 #include <QObject>
 
 #include "DkManipulators.h"
@@ -318,6 +319,7 @@ public:
         view_tp_pattern,
         view_frameless,
 
+        view_back,
         view_new_tab,
         view_close_tab,
         view_close_all_tabs,
@@ -707,7 +709,10 @@ public:
         return mPluginManager;
     }
 
-    void assignCustomShortcuts(QVector<QAction *> actions) const;
+    void assignCustomShortcuts(QVector<QAction *> actions);
+
+    /// Returns the shortcuts an action had before custom shortcuts were applied
+    QList<QKeySequence> defaultShortcuts(const QString &objectName) const;
 
     /// Enable actions when an image is loaded in the viewport
     void enableImageActions(bool enable = true) const;
@@ -768,6 +773,8 @@ protected:
 
     DkAppManager *mAppManager = nullptr;
     DkPluginActionManager *mPluginManager = nullptr;
+
+    QHash<QString, QList<QKeySequence>> mDefaultShortcuts;
 
     QSharedPointer<DkActionManager> inst;
 };

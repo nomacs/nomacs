@@ -95,6 +95,14 @@ public:
     TabMode getMode() const;
     void setMode(int mode);
 
+    TabMode getReturnMode() const;
+    void setReturnMode(TabMode mode);
+
+    bool hasBackImages() const;
+    void pushBackImage(const QString &filePath);
+    QString popBackImage();
+    void clearBackHistory();
+
     // return true if we should use this tab for "open in new tab" rather
     // than create a new tab
     bool useForNewImageTab() const;
@@ -103,6 +111,8 @@ protected:
     QSharedPointer<DkImageLoader> mImageLoader;
     int mTabIdx = 0;
     enum TabMode mTabMode = tab_recent_files;
+    enum TabMode mReturnMode = tab_end;
+    QStringList mBackImages;
 };
 
 class DkViewPort;
@@ -134,6 +144,7 @@ public:
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
     QString getCurrentFilePath() const;
     QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
+    bool canGoBack() const;
     bool requestClose() const;
 
     static void tryRestart(const QStringList &args = {});
@@ -156,6 +167,7 @@ public slots:
     void removeTab(int tabIdx = -1);
     void nextTab() const;
     void previousTab() const;
+    void goBack();
     void showThumbView(bool show = true);
     void showViewPort(bool show = true);
     void showRecentFiles(bool show = true);
@@ -191,6 +203,7 @@ protected:
     DkProgressBar *mProgressBar = nullptr;
     QVector<QSharedPointer<DkTabInfo>> mTabInfos;
     bool mTabMoved = false;
+    bool mGoingBack = false;
 
     QVector<QWidget *> mWidgets;
     QStackedLayout *mViewLayout = nullptr;
@@ -202,6 +215,7 @@ protected:
 
     void createLayout();
     void updateTabIdx();
+    void updateBackAction();
     void switchWidget(QWidget *widget);
     bool loadFromMime(const QMimeData *mimeData);
     bool loadCascadeTrainingFiles(QList<QUrl> urls);

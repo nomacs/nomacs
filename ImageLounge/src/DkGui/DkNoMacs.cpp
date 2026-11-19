@@ -1635,7 +1635,15 @@ bool DkNoMacs::eventFilter(QObject *, QEvent *event)
         if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
             exitFullScreen();
             return true;
-        } else if (keyEvent->key() == Qt::Key_Escape && DkSettingsManager::param().app().closeOnEsc)
+        }
+
+        // let the configurable back action handle its shortcut (e.g. return to the thumb view)
+        QAction *backAction = DkActionManager::instance().action(DkActionManager::view_back);
+        if (backAction && backAction->shortcuts().contains(QKeySequence(keyEvent->keyCombination())) && getTabWidget()
+            && getTabWidget()->canGoBack())
+            return false;
+
+        if (keyEvent->key() == Qt::Key_Escape && DkSettingsManager::param().app().closeOnEsc)
             close();
     }
     // if (event->type() == QEvent::Gesture) {
@@ -2319,11 +2327,18 @@ bool DkNoMacsFrameless::eventFilter(QObject *, QEvent *event)
         const auto *keyEvent = static_cast<QKeyEvent *>(event);
 
         // consume esc key if fullscreen is on
+        if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
+            exitFullScreen();
+            return true;
+        }
+
+        // let the configurable back action handle its shortcut (e.g. return to the thumb view)
+        QAction *backAction = DkActionManager::instance().action(DkActionManager::view_back);
+        if (backAction && backAction->shortcuts().contains(QKeySequence(keyEvent->keyCombination())) && getTabWidget()
+            && getTabWidget()->canGoBack())
+            return false;
+
         if (keyEvent->key() == Qt::Key_Escape) {
-            if (isFullScreen()) {
-                exitFullScreen();
-                return true;
-            }
             close();
             return true;
         }

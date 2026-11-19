@@ -481,7 +481,7 @@ void DkGeneralPreference::createLayout()
     connect(cbSwitchModifier, &QCheckBox::toggled, this, &DkGeneralPreference::onSwitchModifierToggled);
 
     auto *cbCloseOnEsc = new QCheckBox(tr("Close on ESC"), this);
-    cbCloseOnEsc->setToolTip(tr("Close nomacs if ESC is pressed."));
+    cbCloseOnEsc->setToolTip(tr("Close nomacs if ESC is pressed and there is no previous view to return to."));
     cbCloseOnEsc->setChecked(DkSettingsManager::param().app().closeOnEsc);
     connect(cbCloseOnEsc, &QCheckBox::toggled, this, &DkGeneralPreference::onCloseOnEscToggled);
 
