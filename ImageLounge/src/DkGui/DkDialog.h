@@ -400,6 +400,7 @@ protected slots:
     void keySequenceChanged(const QKeySequence &keySequence);
 
 protected:
+    bool eventFilter(QObject *object, QEvent *event) override;
     bool editorEvent(QEvent *event,
                      QAbstractItemModel *model,
                      const QStyleOptionViewItem &option,

@@ -235,6 +235,41 @@ void DkTabInfo::setMode(int mode)
         mTabMode = static_cast<enum TabMode>(mode);
 }
 
+DkTabInfo::TabMode DkTabInfo::getReturnMode() const
+{
+    return mReturnMode;
+}
+
+void DkTabInfo::setReturnMode(TabMode mode)
+{
+    mReturnMode = mode;
+}
+
+bool DkTabInfo::hasBackImages() const
+{
+    return !mBackImages.isEmpty();
+}
+
+void DkTabInfo::pushBackImage(const QString &filePath)
+{
+    constexpr int kMaxBackImages = 20;
+
+    mBackImages.append(filePath);
+    while (mBackImages.size() > kMaxBackImages)
+        mBackImages.removeFirst();
+}
+
+QString DkTabInfo::popBackImage()
+{
+    return mBackImages.isEmpty() ? QString() : mBackImages.takeLast();
+}
+
+void DkTabInfo::clearBackHistory()
+{
+    mReturnMode = tab_end;
+    mBackImages.clear();
+}
+
 bool DkTabInfo::useForNewImageTab() const
 {
     auto imgC = getImage();
@@ -265,6 +300,7 @@ DkCentralWidget::DkCentralWidget(QWidget *parent)
     setAcceptDrops(true);
 
     DkActionManager &am = DkActionManager::instance();
+    connect(am.action(DkActionManager::view_back), &QAction::triggered, this, &DkCentralWidget::goBack);
     connect(am.action(DkActionManager::view_new_tab), &QAction::triggered, this, [this]() {
         addTab(DkTabInfo::tab_recent_files);
     });
@@ -798,6 +834,43 @@ void DkCentralWidget::previousTab() const
     setActiveTab(idx);
 }
 
+bool DkCentralWidget::canGoBack() const
+{
+    if (mTabInfos.isEmpty() || mTabbar->currentIndex() < 0)
+        return false;
+
+    auto tabInfo = mTabInfos[mTabbar->currentIndex()];
+    return tabInfo->getMode() == DkTabInfo::tab_single_image
+        && (tabInfo->getReturnMode() != DkTabInfo::tab_end || tabInfo->hasBackImages());
+}
+
+void DkCentralWidget::goBack()
+{
+    if (!canGoBack())
+        return;
+
+    auto tabInfo = mTabInfos[mTabbar->currentIndex()];
+
+    // go back through images opened from the file explorer, dialogs, etc.
+    if (tabInfo->hasBackImages()) {
+        mGoingBack = true;
+        load(tabInfo->popBackImage());
+        mGoingBack = false;
+        return;
+    }
+
+    switch (tabInfo->getReturnMode()) {
+    case DkTabInfo::tab_thumb_preview:
+        showThumbView();
+        break;
+    case DkTabInfo::tab_recent_files:
+        showRecentFiles();
+        break;
+    default:
+        break;
+    }
+}
+
 void DkCentralWidget::setActiveTab(int idx) const
 {
     if (mTabInfos.size() < 2)
@@ -1005,12 +1078,20 @@ void DkCentralWidget::showTabs(bool show)
         mTabbar->hide();
 }
 
+void DkCentralWidget::updateBackAction()
+{
+    DkActionManager::instance().action(DkActionManager::view_back)->setEnabled(canGoBack());
+}
+
 void DkCentralWidget::switchWidget(QWidget *widget)
 {
     Q_ASSERT(widget);
 
-    if (mViewLayout->currentWidget() == widget && mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty)
+    if (mViewLayout->currentWidget() == widget
+        && mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty) {
+        updateBackAction();
         return;
+    }
 
     if (widget)
         mViewLayout->setCurrentWidget(widget);
@@ -1029,8 +1110,15 @@ void DkCentralWidget::switchWidget(QWidget *widget)
         else if (widget == mWidgets[batch_widget])
             mode = DkTabInfo::tab_batch;
 
-        mTabInfos[mTabbar->currentIndex()]->setMode(mode);
+        auto tabInfo = mTabInfos[mTabbar->currentIndex()];
+        tabInfo->setMode(mode);
+
+        // we are now showing the view we could have returned to
+        if (mode != DkTabInfo::tab_single_image)
+            tabInfo->clearBackHistory();
     }
+
+    updateBackAction();
 }
 
 void DkCentralWidget::tryRestart(const QStringList &args)
@@ -1254,6 +1342,7 @@ void DkCentralWidget::load(const QString &path)
 
     DkFileInfo fileInfo(path);
     if (fileInfo.isDir()) {
+        tab->clearBackHistory();
         loader->setCurrentDir(fileInfo);
 
         if (DkSettingsManager::param().global().openDirShowFirstImage) {
@@ -1262,6 +1351,17 @@ void DkCentralWidget::load(const QString &path)
             showThumbView();
         }
     } else {
+        if (!mGoingBack) {
+            if (tab->getMode() == DkTabInfo::tab_thumb_preview || tab->getMode() == DkTabInfo::tab_recent_files) {
+                // remember the view we are opening the image from
+                tab->setReturnMode(tab->getMode());
+            } else if (tab->getMode() == DkTabInfo::tab_single_image) {
+                auto currentImage = tab->getImage();
+                if (currentImage && currentImage->fileInfo().path() != fileInfo.path())
+                    tab->pushBackImage(currentImage->fileInfo().path());
+            }
+        }
+
         auto img = QSharedPointer<DkImageContainerT>{new DkImageContainerT{fileInfo}};
         loader->setCurrentImage(img);
         showViewPort();

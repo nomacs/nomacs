@@ -58,6 +58,7 @@
 #include <QHeaderView>
 #include <QInputDialog>
 #include <QItemEditorFactory>
+#include <QKeyEvent>
 #include <QKeySequenceEdit>
 #include <QLabel>
 #include <QListView>
@@ -1498,6 +1499,24 @@ DkShortcutDelegate::DkShortcutDelegate(QObject *parent)
     mClearIcon = DkImage::loadIcon(":/nomacs/img/close.svg");
 }
 
+bool DkShortcutDelegate::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        auto *keyEvent = static_cast<QKeyEvent *>(event);
+        auto *edit = qobject_cast<QKeySequenceEdit *>(object);
+
+        // QItemDelegate cancels the edit on Escape; allow Escape as a shortcut instead
+        if (edit && keyEvent->key() == Qt::Key_Escape) {
+            edit->setKeySequence(QKeySequence(Qt::Key_Escape));
+            emit commitData(edit);
+            emit closeEditor(edit, NoHint);
+            return true;
+        }
+    }
+
+    return QItemDelegate::eventFilter(object, event);
+}
+
 QWidget *DkShortcutDelegate::createEditor(QWidget *parent,
                                           const QStyleOptionViewItem &option,
                                           const QModelIndex &index) const
@@ -1829,21 +1848,14 @@ void DkShortcutsModel::clearDuplicateInfo() const
 
 void DkShortcutsModel::resetActions()
 {
-    DefaultSettings settings;
-    settings.beginGroup("CustomShortcuts");
+    DkActionManager &am = DkActionManager::instance();
 
-    for (int pIdx = 0; pIdx < mActions.size(); pIdx++) {
-        QVector<QAction *> cActions = mActions.at(pIdx);
-
-        for (int idx = 0; idx < cActions.size(); idx++) {
-            QVariant val = settings.value(cActions[idx]->objectName());
-            if (val.isValid()) {
-                cActions[idx]->setShortcut(QKeySequence());
-            }
+    for (const QVector<QAction *> &actions : mActions) {
+        for (QAction *action : actions) {
+            if (action)
+                action->setShortcuts(am.defaultShortcuts(action->objectName()));
         }
     }
-
-    settings.endGroup();
 }
 
 void DkShortcutsModel::saveActions() const
