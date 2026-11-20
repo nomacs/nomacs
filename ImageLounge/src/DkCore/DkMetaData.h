@@ -156,7 +156,7 @@ protected:
     std::unique_ptr<Exiv2::Image> loadSidecar(const QString &filePath) const;
 
     enum {
-        not_loaded,
+        not_loaded, // TODO: should be possible to drop these states and just have isLoaded()
         no_data,
         loaded,
         dirty,
