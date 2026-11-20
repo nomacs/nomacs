@@ -1171,7 +1171,7 @@ void DkNoMacs::openFile()
 {
     QStringList openFilters = DkSettingsManager::param().app().openFilters;
     openFilters.pop_front();
-    openFilters.prepend(tr("All Files (*.*)"));
+    openFilters.prepend(tr("All Files (*)"));
 
     // load system default open dialog
     QStringList filePaths = QFileDialog::getOpenFileNames(this,
@@ -1196,7 +1196,7 @@ void DkNoMacs::openFileList()
 {
     QStringList openFilters;
     openFilters.append(tr("Text file (*.txt)"));
-    openFilters.append(tr("All files (*.*)"));
+    openFilters.append(tr("All files (*)"));
 
     // load system default open dialog
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -1229,7 +1229,7 @@ void DkNoMacs::saveFileList()
 {
     QStringList saveFilters;
     saveFilters.append(tr("Text file (*.txt)"));
-    saveFilters.append(tr("All files (*.*)"));
+    saveFilters.append(tr("All files (*)"));
 
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Save Tab List"),
