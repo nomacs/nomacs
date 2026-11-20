@@ -939,13 +939,25 @@ bool DkImageLoader::copyUserFile()
     DkFileInfo srcInfo{imgC->filePath()};
     (void)srcInfo.lastModified(); // check file wasn't modified in file dialog
 
+    if (srcInfo.isSymLink() && !srcInfo.resolveSymLink()) { // resolve src for correct suffix etc
+        return false;
+    }
+
     QString savePath = QFileInfo(getCopyPath(), imgC->fileName()).absoluteFilePath();
 
+    QString selectedFilter = tr("All Files (*)");
+    QStringList saveFilters{selectedFilter};
+    QString suffix = srcInfo.suffix();
+    if (!suffix.isEmpty()) {
+        selectedFilter = QString("%1 (*.%2)").arg(suffix.toUpper(), suffix.toLower());
+        saveFilters += selectedFilter;
+    }
+
     savePath = QFileDialog::getSaveFileName(dialogParent,
-                                            tr("Save File %1").arg(savePath),
+                                            tr("Save Copy %1").arg(imgC->fileName()),
                                             savePath,
-                                            QString{},
-                                            nullptr,
+                                            saveFilters.join(";;"),
+                                            &selectedFilter,
                                             DkDialog::fileDialogOptions());
     if (savePath.isEmpty()) {
         return false;
@@ -1022,11 +1034,7 @@ bool DkImageLoader::copyUserFile()
         if (imgC->isEdited() && !imgC->getLoader()->isImageEdited() && !imgC->getLoader()->isMetaDataEdited()) {
             imgC->setEdited(false); // we recovered a file
         }
-        emit showInfoSignal(tr("Copied to: %1").arg(savePath));
-    } else {
-        emit showInfoSignal(tr("Sorry, I could not copy the image..."));
     }
-
     emit imgC->fileSavedSignal(savePath, saved);
 
     return saved;
