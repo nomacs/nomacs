@@ -324,7 +324,7 @@ void DkTrainDialog::openFile()
     QString filePath = QFileDialog::getOpenFileName(this,
                                                     tr("Open Image"),
                                                     mFile,
-                                                    tr("All Files (*.*)"),
+                                                    tr("All Files (*)"),
                                                     nullptr,
                                                     DkDialog::fileDialogOptions());
 
@@ -2034,7 +2034,7 @@ void DkTextDialog::save()
         savePath = folders.first();
 
     QStringList extList;
-    extList << tr("Text File (*.txt)") << tr("All Files (*.*)");
+    extList << tr("Text File (*.txt)") << tr("All Files (*)");
     QString saveFilters(extList.join(";;"));
 
     QString fileName = QFileDialog::getSaveFileName(this,
