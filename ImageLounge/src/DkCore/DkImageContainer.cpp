@@ -927,8 +927,9 @@ void DkImageContainerT::savingFinished()
             mFileUpdateTimer.start();
         }
 
-        emit fileSavedSignal(filePath, true);
+        // NOTE: fileSaveSignal must emit last as handler could destroy this object
         emit imageUpdatedSignal();
+        emit fileSavedSignal(filePath, true);
     }
 }
 
