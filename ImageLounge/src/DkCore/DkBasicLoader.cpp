@@ -1544,7 +1544,8 @@ bool DkBasicLoader::saveMetaData(const QString &filePath, QSharedPointer<QByteAr
     // Update in-memory copy of file (ba) with new meta data
     bool ok = false;
     try {
-        if (mMetaData->saveMetaData(ba)) {
+        bool force = true;
+        if (mMetaData->saveMetaData(ba, force)) {
             QSaveFile file(filePath);
             if (file.open(QFile::WriteOnly)) {
                 ok = file.write(*ba) == ba->size() && file.commit();
