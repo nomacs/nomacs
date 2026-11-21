@@ -1213,6 +1213,7 @@ void DkNoMacs::openFileList()
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
+    // TODO: this should use same parse/flow as paste text feature
     while (!file.atEnd()) {
         QString filePath = file.readLine().trimmed();
         if (filePath.isEmpty())

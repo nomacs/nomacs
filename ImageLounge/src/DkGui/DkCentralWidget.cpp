@@ -875,7 +875,7 @@ void DkCentralWidget::saveStarted(QSharedPointer<DkImageContainerT> imgC, DkImag
                         }
                     } break;
                     case DkImageLoader::SaveReason::paste:
-                        loadToTab(filePath);
+                        loadToTab(filePath); // TODO: background all but last tab pasted
                         break;
                     case DkImageLoader::SaveReason::forced:
                     case DkImageLoader::SaveReason::temporary:; // do nothing
