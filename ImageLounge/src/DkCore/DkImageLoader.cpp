@@ -566,6 +566,31 @@ void DkImageLoader::lastFile()
     loadFileAt(-1);
 }
 
+bool DkImageLoader::acceptOverwriteWarnings() const
+{
+    // TODO: also warn multipage tiff, we cannot preserve the pages
+
+    auto md = mCurrentImage->getLoader()->getMetaData();
+
+    // NOTE: some formats like AVIF and JXL seem to retain certain metadata keys,
+    // hence the language "missing some or all metadata"
+    if (md && md->hasMetaData() && !md->isWriteable()) {
+        DkMessageBox msgBox(QMessageBox::Warning,
+                            tr("Metadata Unsupported"),
+                            tr("Saving metadata is unsupported for this file format,\n"
+                               "the file will be missing some or all metadata.\n\n"
+                               "Proceed to overwrite the file?"),
+                            QMessageBox::Yes | QMessageBox::No,
+                            DkUtils::getMainWindow());
+        msgBox.setObjectName("metadataLossDialog");
+        msgBox.setDefaultButton(QMessageBox::No);
+        if (msgBox.exec() != QMessageBox::Yes) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool DkImageLoader::promptSaveBeforeUnload()
 {
     if (!mCurrentImage || !mCurrentImage->isEdited() || mCurrentImage->isSaving()) {
@@ -598,6 +623,9 @@ bool DkImageLoader::promptSaveBeforeUnload()
             saved = mCurrentImage->saveMetaData();
         } else if (!fromZip && imgEdited && DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
             // "quick save" skipping overwrite dialog, preview dialog etc
+            if (!acceptOverwriteWarnings()) {
+                return false;
+            }
             saved = mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
             if (saved) {
                 emit saveStartedSignal(mCurrentImage, SaveReason::forced);
@@ -1084,6 +1112,10 @@ bool DkImageLoader::saveUserFile(const QImage &saveImg, bool silent, SaveReason 
         if (answer == QDialog::Rejected || answer == QMessageBox::Cancel) {
             return false;
         }
+    }
+
+    if (overwriteFile && !acceptOverwriteWarnings()) {
+        return false;
     }
 
     if (!overwriteFile) {
