@@ -229,6 +229,12 @@ protected:
      */
     bool updateDirContents(const DkFileInfoList &files);
 
+    /**
+     * @brief warn user about data loss or other caveats when overwriting
+     * @return true if OK to proceed to overwrite
+     */
+    bool acceptOverwriteWarnings() const;
+
     QString mFolderFilterString; // are deleted if a new folder is opened
 
     bool mDirUpdated = false; // true to force reload of current dir
