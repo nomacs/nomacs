@@ -104,7 +104,6 @@ public:
     QImage getImage() const override;
 
     void updateLoadedImage();
-    void loadImage(const QImage &newImg);
     void setEditedImage(QSharedPointer<DkImageContainerT> img);
     void setImage(const QImage &newImg) override;
 
@@ -280,6 +279,7 @@ public:
     explicit DkViewPortContrast(DkThumbLoader *thumbLoader, QWidget *parent = nullptr);
     ~DkViewPortContrast() override;
 
+    void connectActions();
 signals:
     void tFSliderAdded(qreal pos) const;
     void imageModeSet(int mode) const;

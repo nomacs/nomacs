@@ -366,8 +366,15 @@ DkCentralWidget *DkNoMacs::getTabWidget() const
 void DkNoMacs::closeEvent(QCloseEvent *event)
 {
     DkCentralWidget *cw = getTabWidget();
-    if (!cw)
+    if (!cw) {
         return;
+    }
+
+    if (!cw->requestClose()) {
+        // do not close if the user hit cancel in the save changes dialog
+        event->ignore();
+        return;
+    }
 
     if (!DkSettingsManager::param().app().privateMode) {
         bool saveTabs = false;
@@ -395,13 +402,6 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
         cw->saveSettings(saveTabs);
     }
 
-    if (!getTabWidget()->requestClose()) {
-        // do not close if the user hit cancel in the save changes dialog
-        event->ignore();
-        return;
-    }
-
-    emit closeSignal();
     setVisible(false);
 
     DefaultSettings settings;
@@ -1171,7 +1171,7 @@ void DkNoMacs::openFile()
 {
     QStringList openFilters = DkSettingsManager::param().app().openFilters;
     openFilters.pop_front();
-    openFilters.prepend(tr("All Files (*.*)"));
+    openFilters.prepend(tr("All Files (*)"));
 
     // load system default open dialog
     QStringList filePaths = QFileDialog::getOpenFileNames(this,
@@ -1196,7 +1196,7 @@ void DkNoMacs::openFileList()
 {
     QStringList openFilters;
     openFilters.append(tr("Text file (*.txt)"));
-    openFilters.append(tr("All files (*.*)"));
+    openFilters.append(tr("All files (*)"));
 
     // load system default open dialog
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -1213,6 +1213,7 @@ void DkNoMacs::openFileList()
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
+    // TODO: this should use same parse/flow as paste text feature
     while (!file.atEnd()) {
         QString filePath = file.readLine().trimmed();
         if (filePath.isEmpty())
@@ -1229,7 +1230,7 @@ void DkNoMacs::saveFileList()
 {
     QStringList saveFilters;
     saveFilters.append(tr("Text file (*.txt)"));
-    saveFilters.append(tr("All files (*.*)"));
+    saveFilters.append(tr("All files (*)"));
 
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Save Tab List"),
@@ -2114,20 +2115,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags)
     setMouseTracking(true); // receive mouse event everytime
 }
 
-void DkNoMacsIpl::paintEvent(QPaintEvent *event)
-{
-    // prevent visual glitch where initial fullscreen window is filled
-    // with normal window bg color. Once the viewport comes up it takes over
-    // drawing the background and dock widgets get the default bg color
-    bool hasViewPort = getTabWidget() && getTabWidget()->hasViewPort();
-    if (isFullScreen() && !hasViewPort) {
-        QColor bgColor = nmc::DkSettingsManager::param().slideShow().backgroundColor;
-        QPainter painter(this);
-        painter.fillRect(rect(), bgColor);
-    } else
-        QMainWindow::paintEvent(event);
-}
-
 // FramelessNoMacs --------------------------------------------------------------------
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     : DkNoMacs(parent, flags)
@@ -2349,7 +2336,10 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
     init();
 
+    // add toolbar to after the main toolbar
     DkToolBarManager::inst().createTransferToolBar();
+    DkViewPortContrast *vp = dynamic_cast<DkViewPortContrast *>(cw->getViewPort());
+    vp->connectActions();
 
     setAcceptDrops(true);
     setMouseTracking(true); // receive mouse event everytime

@@ -97,7 +97,6 @@ public:
 
 signals:
     void sendArrangeSignal(bool overlaid) const;
-    void closeSignal() const;
     void sendQuitLocalClientsSignal() const;
 
 public slots:
@@ -281,7 +280,6 @@ class DllCoreExport DkNoMacsIpl : public DkNoMacsSync
 
 public:
     explicit DkNoMacsIpl(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-    void paintEvent(QPaintEvent *event) override;
 };
 
 class DllCoreExport DkNoMacsFrameless : public DkNoMacs

@@ -45,6 +45,7 @@
 #include <QMessageBox>
 #include <QMimeDatabase>
 #include <QMouseEvent>
+#include <QNetworkAccessManager>
 #include <QPushButton>
 #include <QRandomGenerator>
 #include <QRegularExpression>
@@ -884,6 +885,31 @@ QStringList DkUtils::suffixOnly(const QStringList &fileFilters)
     return cleanedFilters;
 }
 
+int DkUtils::findFilter(const QStringView suffix, const QStringList &fileFilters)
+{
+    if (suffix.isEmpty()) {
+        return -1;
+    }
+
+    for (int idx = 0; idx < fileFilters.size(); ++idx) {
+        QStringView sv{fileFilters[idx]};
+        int lParen = sv.indexOf(QChar{u'('});
+        int rParen = sv.indexOf(QChar{u')'});
+        if (lParen < 0 || rParen <= lParen) {
+            qCritical() << "invalid filter string: " << sv;
+            continue;
+        }
+        sv = sv.sliced(lParen + 1, rParen - lParen - 1); // "JPEG Files (*.jpg *.jpeg)" -> "*.jpg *.jpeg"
+        for (auto glob : sv.tokenize(QChar{u' '}, Qt::SkipEmptyParts)) {
+            auto ext = glob.mid(2); // "*.jpg" -> "jpg"
+            if (ext.compare(suffix, Qt::CaseInsensitive) == 0) {
+                return idx;
+            }
+        }
+    }
+    return -1;
+}
+
 QDateTime DkUtils::getConvertableDate(const QString &date)
 {
     QDateTime dateCreated;
@@ -1260,21 +1286,67 @@ QString DkUtils::resolveFraction(const QString &frac)
 
 QList<QUrl> DkUtils::findUrlsInTextNewline(QString text)
 {
+    static auto supportedSchemes = QNetworkAccessManager{}.supportedSchemes();
     QList<QUrl> urls;
-    QStringList lines = text.split(QRegularExpression("\n|\r\n|\r"));
-    for (QString fp : lines) {
-        // fixes urls for windows - yes that actually annoys me
-        fp = fp.replace("\\", "/");
+    const QStringList lines = text.split(QRegularExpression("\n|\r\n|\r"));
+    for (QString line : lines) {
+        line = line.trimmed();
 
-        QUrl url(fp);
-
-        if (url.isValid()) {
-            if (url.isRelative()) {
-                url.setScheme("file");
+        // support quoted paths, e.g. Explorer "Copy As Path", terminal programs
+        // assume any internal quote is escaped, but nothing else
+        if (line.size() > 2) {
+            QChar first = line.front();
+            QChar last = line.back();
+            for (const QChar quote : {u'"', u'\''}) {
+                if (first == quote && last == quote) {
+                    line.remove(line.size() - 1, 1);
+                    line.remove(0, 1);
+                    QChar find[] = {u'\\', quote};
+                    QChar replace[] = {quote};
+                    line.replace(find, 2, replace, 1);
+                    break;
+                }
             }
-
-            urls.append(url);
         }
+
+        if (line.isEmpty()) {
+            continue;
+        }
+
+        // convert backslash to forward; backslash is not compatible with URLs
+        // and creates some broken corner cases otherwise
+        line.replace(u'\\', u'/');
+
+        // use AssumeLocalFile to support odd file names
+        // this will not deduce a non-file scheme from url-like text
+        QUrl url = QUrl::fromUserInput(line, QDir::currentPath(), QUrl::AssumeLocalFile);
+        if (!url.isValid()) {
+            qWarning() << "[findUrls] invalid url:" << line;
+            continue;
+        }
+
+        bool isFile = url.isLocalFile();
+        if (isFile) {
+            QString path = url.toLocalFile();
+            DkFileInfo fileInfo{path};
+            if (!fileInfo.exists()) {
+                // when random text is pasted we assume each line is a file,
+                // prevent opening a zillion tabs in this case
+                qWarning() << "[findUrls] path does not exist:" << path;
+                continue;
+            }
+            path = fileInfo.path(); // allow fileinfo to clean up the path
+            if (url.hasFragment()) {
+                // toLocalFile() drops fragment, but it to points to zip member
+                path += u'#' + url.fragment();
+            }
+            url = QUrl::fromLocalFile(path);
+        } else if (!supportedSchemes.contains(url.scheme())) {
+            qWarning() << "[findUrls] unsupported scheme:" << url;
+            continue;
+        }
+
+        urls.append(url);
     }
     return urls;
 }

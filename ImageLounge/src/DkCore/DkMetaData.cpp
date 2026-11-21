@@ -49,7 +49,7 @@ DkMetaDataT::DkMetaDataT()
     mExifState = not_loaded;
 }
 
-bool DkMetaDataT::isNull()
+bool DkMetaDataT::isNull() const
 {
     return !mExifImg.get();
 }
@@ -84,13 +84,14 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
  *
  * @param other
  */
-void DkMetaDataT::update(QSharedPointer<DkMetaDataT> other)
+void DkMetaDataT::update(const DkMetaDataT &other)
 {
-    if (other->isNull() || !other->mExifImg) {
+    if (other.isNull() || !other.mExifImg) {
         return;
     }
     // Copy metadata from other to this
-    mExifImg->setMetadata(*other->mExifImg);
+    mExifImg->setMetadata(*other.mExifImg);
+    mExifState = dirty;
 }
 
 void DkMetaDataT::readMetaData(const DkFileInfo &file, QSharedPointer<QByteArray> ba)
@@ -253,10 +254,24 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
 
     exifImgN->readMetadata();
 
-    // Update new exif object, copy changes made to the old exif object (loaded image)
-    exifImgN->setExifData(exifData);
-    exifImgN->setXmpData(xmpData);
-    exifImgN->setIptcData(iptcData);
+    try {
+        exifImgN->setExifData(exifData);
+    } catch (...) {
+        qWarning() << "[Exiv2] failed to set exif data";
+    }
+    try {
+        exifImgN->setXmpData(xmpData);
+    } catch (...) {
+        qWarning() << "[Exiv2] failed to set xmp data";
+    }
+    try {
+        exifImgN->setIptcData(iptcData);
+    } catch (...) {
+        qWarning() << "[Exiv2] failed to set iptc data";
+    }
+
+    // NOTE: do not use setComment() here, QImageWriter already seems to preserve it,
+    // and this would seem to erase it, at least when writing PNG
 
     exifImgN->writeMetadata(); // TODO: CIMG6206.jpg crashes here...
 
@@ -832,6 +847,19 @@ bool DkMetaDataT::isWriteable() const
                 << mExifImg->mimeType().c_str();
         return false;
     }
+    return true;
+}
+
+bool DkMetaDataT::isEditable() const
+{
+    if (!mExifImg) {
+        qWarning() << "[Exiv2] isEditable() cannot check status";
+        return false;
+    }
+
+    if (!isWriteable()) {
+        return false;
+    }
 
     // here we do what copy() does, if create() does not work then DkEditImage will store null metadata
     try {
@@ -1007,15 +1035,21 @@ QStringList DkMetaDataT::getIptcValues() const
 
 void DkMetaDataT::setQtValues(const QImage &img)
 {
-    // Omit "Raw profile type exif" set by ???, presumably it would conflict when saving file
-    // This is a known unregistered tag in PNG: https://exiftool.org/TagNames/PNG.html
+    // Ignore PNG ztxt/itxt fields parsed by Qt image reader, also parsed by Exiv2.
+    // May cause issues when saving file, e.g. export PNG to JPG may overflow the comment field.
+    // Ref: https://clanmills.com/exiv2/book/
     const QStringList keys = img.textKeys();
     for (const auto &key : keys) {
-        if (key.isEmpty() || key == "Raw profile type exif")
+        if (key.isEmpty() || //
+            key == "Raw profile type exif" || //
+            key == "Raw profile type iptc" || //
+            key == "XML:com.adobe.xmp") {
             continue;
+        }
         QString value = img.text(key);
-        if (value.length() >= 5000)
+        if (value.length() >= 5000) {
             value = QObject::tr("<data too large to display>");
+        }
 
         if (!value.isEmpty()) {
             mQtValues.append(value);
@@ -1284,7 +1318,7 @@ bool DkMetaDataT::setRating(int r)
         return false;
     }
 
-    if (!isWriteable()) {
+    if (!isEditable()) {
         return false;
     }
 
@@ -1378,7 +1412,7 @@ bool DkMetaDataT::setExifValue(const QString &key, const QString &value)
         return false;
     }
 
-    if (!isWriteable()) {
+    if (!isEditable()) {
         return false;
     }
 

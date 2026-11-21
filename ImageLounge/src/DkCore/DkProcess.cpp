@@ -893,6 +893,7 @@ bool DkBatchProcess::renameFile()
         return false;
     }
 
+    // FIXME: use tmpfile and swap after all changes to prevent corrupt output
     QFile file(mSaveInfo.inputFilePath());
 
     QSharedPointer<DkMetaDataT> md(new DkMetaDataT());
@@ -983,6 +984,7 @@ bool DkBatchProcess::copyFile()
 
     bool exifUpdated = updateMetaData(md.data());
 
+    // FIXME: use tmpfile and swap after all changes to prevent corrupt output
     QString copyError = copyFileIntern(mSaveInfo.inputFilePath(), mSaveInfo.outputFilePath());
 
     if (!copyError.isEmpty()) {

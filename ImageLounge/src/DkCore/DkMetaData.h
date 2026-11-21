@@ -67,9 +67,9 @@ class DllCoreExport DkMetaDataT
 {
 public:
     DkMetaDataT();
-    bool isNull();
+    bool isNull() const;
     QSharedPointer<DkMetaDataT> copy() const;
-    void update(QSharedPointer<DkMetaDataT> other);
+    void update(const DkMetaDataT &other);
 
     enum ExifOrientationState {
         or_invalid = -2,
@@ -133,7 +133,8 @@ public:
     QImage cleanImage(const QImage &img);
 
     bool hasMetaData() const;
-    bool isWriteable() const;
+    bool isWriteable() const; // can write back to file-backed exiv2 object, may not be copyable
+    bool isEditable() const; // in-memory representation can be copied to empty exiv2 object
     bool isLoaded() const;
     bool isTiff() const;
     bool isJpg() const;
@@ -155,7 +156,7 @@ protected:
     std::unique_ptr<Exiv2::Image> loadSidecar(const QString &filePath) const;
 
     enum {
-        not_loaded,
+        not_loaded, // TODO: should be possible to drop these states and just have isLoaded()
         no_data,
         loaded,
         dirty,
