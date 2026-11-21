@@ -1465,7 +1465,7 @@ bool DkBasicLoader::save(const QString &filePath,
         dstMetaData.readMetaData(file.fileName()); // Initially empty since we just wrote the file content
 
         if (dstMetaData.isNull() || !dstMetaData.isWriteable()) {
-            qInfo() << "[save] skipped saving metadata, unsupported for file:" << file.fileName();
+            qWarning() << "[save] skipped saving metadata, unsupported for file:" << file.fileName();
         } else {
             saved = false;
 
@@ -1491,6 +1491,12 @@ bool DkBasicLoader::save(const QString &filePath,
             } catch (...) {
                 saved = false;
                 qWarning() << "[save] exception saving metadata:" << file.fileName();
+            }
+
+            // when we don't have data loss saving metadata is a soft error, otherwise some
+            // unforseen problem with exiv2 etc and the file can't be saved at all
+            if (!saved && !overwriting) {
+                saved = true;
             }
         }
     }
