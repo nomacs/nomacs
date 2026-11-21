@@ -728,6 +728,7 @@ void DkImageContainerT::loadingFinished()
     if (mFileBuffer) {
         double bs = mFileBuffer->size() / (1024.0f * 1024.0f);
 
+        // FIXME: this makes large files unrecoverable when deleted
         // if the file buffer is more than 5MB - we check if we need to delete it
         if (bs > 5 && bs > DkSettingsManager::param().resources().cacheMemory * 0.5f)
             mFileBuffer->clear();
