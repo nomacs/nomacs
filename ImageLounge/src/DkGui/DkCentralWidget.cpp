@@ -1584,15 +1584,8 @@ bool DkCentralWidget::loadFromMime(const QMimeData *mimeData)
         }
     }
 
-    // parse mime data. get a non-empty list of urls. url is the first.
-    QList<QUrl> urls;
-
-    if (mimeFmts.contains("text/uri-list")) {
-        urls = mimeData->urls();
-    } else if (mimeData->formats().contains("text/plain")) {
-        // we got text data. maybe it is a list of urls
-        urls = DkUtils::findUrlsInTextNewline(mimeData->text());
-    }
+    // Both the central view and batch input use the same URL/text precedence.
+    QList<QUrl> urls = DkUtils::findUrlsInMimeData(mimeData);
 
     // load from image buffer
     if (urls.empty() && dropImg.isNull() && mimeData->hasImage()) {

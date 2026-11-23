@@ -44,6 +44,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QMimeDatabase>
+#include <QMimeData>
 #include <QMouseEvent>
 #include <QNetworkAccessManager>
 #include <QPushButton>
@@ -1282,6 +1283,17 @@ QString DkUtils::resolveFraction(const QString &frac)
     }
 
     return result;
+}
+
+QList<QUrl> DkUtils::findUrlsInMimeData(const QMimeData *mimeData)
+{
+    if (!mimeData)
+        return {};
+    if (mimeData->hasUrls())
+        return mimeData->urls();
+    if (mimeData->hasText())
+        return findUrlsInTextNewline(mimeData->text());
+    return {};
 }
 
 QList<QUrl> DkUtils::findUrlsInTextNewline(QString text)
