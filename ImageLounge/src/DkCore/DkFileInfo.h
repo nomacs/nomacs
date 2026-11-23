@@ -107,6 +107,7 @@ public:
 
     // check for file or metadata modification and refresh internal state
     // return true if no longer exists or modified
+    // NOTE: the initial timestamp is set when constructing DkFileInfo
     bool isModified();
 
     // switch to the link target if isSymLink() is true
@@ -208,6 +209,7 @@ private:
         ZipData mZipData;
         QFileInfo mContainerInfo; // isFromZip() => info of the .zip file itself
 #endif
+        QDateTime mLastModified;
     };
 
     QSharedDataPointer<SharedData> d;

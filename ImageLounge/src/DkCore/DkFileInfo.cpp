@@ -132,6 +132,7 @@ DkFileInfo::SharedData::SharedData(const QString &path)
     : mFileInfo(path)
     , mZipData(mFileInfo.absoluteFilePath())
     , mContainerInfo(mZipData.isZipMember() ? mZipData.zipFilePath() : QString{})
+    , mLastModified(mZipData.isZipMember() ? mContainerInfo.lastModified() : mFileInfo.lastModified())
 {
 }
 
@@ -139,6 +140,7 @@ DkFileInfo::SharedData::SharedData(const QFileInfo &info)
     : mFileInfo(info)
     , mZipData(mFileInfo.absoluteFilePath())
     , mContainerInfo(mZipData.isZipMember() ? mZipData.zipFilePath() : QString{})
+    , mLastModified(mZipData.isZipMember() ? mContainerInfo.lastModified() : mFileInfo.lastModified())
 {
 }
 
@@ -146,6 +148,7 @@ DkFileInfo::SharedData::SharedData(const QString &zipPath, const QuaZipFileInfo6
     : mFileInfo(ZipData::encodePath(zipPath, info.name))
     , mZipData(zipPath, info)
     , mContainerInfo(zipPath)
+    , mLastModified(mContainerInfo.lastModified())
 {
 }
 
@@ -153,11 +156,13 @@ DkFileInfo::SharedData::SharedData(const QString &zipPath, const QuaZipFileInfo6
 
 DkFileInfo::SharedData::SharedData(const QString &path)
     : mFileInfo(path)
+    , mLastModified(mFileInfo.lastModified())
 {
 }
 
 DkFileInfo::SharedData::SharedData(const QFileInfo &info)
     : mFileInfo(info)
+    , mLastModified(mFileInfo.lastModified())
 {
 }
 
@@ -312,18 +317,21 @@ bool DkFileInfo::isModified()
 {
     QFileInfo &info = IF_FROM_ZIP(d->mContainerInfo, d->mFileInfo);
 
-    QDateTime prevModified = info.lastModified();
+    QDateTime prevModified = d->mLastModified;
     bool prevExists = info.exists();
 
-    // do not use refresh() as it won't see exists() change
-    info = QFileInfo(info.absoluteFilePath());
+    // drop fileInfo's cache; do not use refresh() as it won't see exists() change
+    info = QFileInfo{info.absoluteFilePath()};
+    QDateTime modified = info.lastModified();
+    bool exists = info.exists();
 
-    bool modified = info.exists() != prevExists || info.lastModified() != prevModified;
+    bool changed = exists != prevExists || modified != prevModified;
 #ifdef WITH_QUAZIP
-    if (modified && isFromZip())
+    if (changed && isFromZip())
         d->mZipData.zipFileModified(); // force reload of zip metadata
 #endif
-    return modified;
+    d->mLastModified = modified;
+    return changed;
 }
 
 QString DkFileInfo::owner() const
