@@ -965,7 +965,6 @@ bool DkImageLoader::copyUserFile()
     }
 
     DkFileInfo srcInfo{imgC->filePath()};
-    (void)srcInfo.lastModified(); // check file wasn't modified in file dialog
 
     if (srcInfo.isSymLink() && !srcInfo.resolveSymLink()) { // resolve src for correct suffix etc
         return false;
