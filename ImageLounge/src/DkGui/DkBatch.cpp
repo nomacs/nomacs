@@ -193,7 +193,7 @@ void DkInputTextEdit::appendFiles(const QStringList &fileList)
 
     // unique!
     for (const QString &cStr : fileList) {
-        if (!cFileList.contains(cStr))
+        if (!cFileList.contains(cStr) && !newFiles.contains(cStr))
             newFiles.append(cStr);
     }
 
@@ -228,20 +228,19 @@ void DkInputTextEdit::appendDir(const QString &newDir, bool recursive)
     appendFiles(strFileList);
 }
 
-void DkInputTextEdit::appendFromMime(const QMimeData *mimeData, bool recursive)
+void DkInputTextEdit::appendFromMime(const QMimeData *mimeData, bool recursive, bool allowAnyFile)
 {
-    if (!mimeData || !mimeData->hasUrls())
-        return;
-
     QStringList files;
-
-    const auto urls = mimeData->urls();
-    for (auto &url : urls) {
+    const QList<QUrl> urls = DkUtils::findUrlsInMimeData(mimeData);
+    for (const QUrl &url : urls) {
+        if (!url.isLocalFile())
+            continue;
         DkFileInfo fileInfo(DkUtils::urlToLocalFile(url));
 
         if (fileInfo.isDir())
             appendDir(fileInfo.path(), recursive);
-        else if (DkUtils::isLoadable(fileInfo))
+        else if ((allowAnyFile && fileInfo.exists() && fileInfo.isFile())
+                 || (!allowAnyFile && DkUtils::isLoadable(fileInfo)))
             files.append(fileInfo.path());
     }
 
@@ -251,8 +250,7 @@ void DkInputTextEdit::appendFromMime(const QMimeData *mimeData, bool recursive)
 
 void DkInputTextEdit::insertFromMimeData(const QMimeData *mimeData)
 {
-    appendFromMime(mimeData);
-    QTextEdit::insertFromMimeData(mimeData);
+    appendFromMime(mimeData, false, true);
 }
 
 void DkInputTextEdit::dragEnterEvent(QDragEnterEvent *event)
