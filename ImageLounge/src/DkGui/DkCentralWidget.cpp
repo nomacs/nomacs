@@ -471,11 +471,9 @@ void DkCentralWidget::currentTabChanged(int idx)
         break;
     case DkTabInfo::tab_empty:
     case DkTabInfo::tab_end:
+        updateTab(tab);
         break;
     }
-
-    // the tab is fully configured, we can update the text/icon now
-    updateTab(tab);
 
     mPrevTab = tab;
 }
@@ -907,7 +905,6 @@ void DkCentralWidget::showThumbView(bool show)
             mViewLayout->insertWidget(thumbs_widget, mWidgets[thumbs_widget]);
         }
 
-        tabInfo->setMode(DkTabInfo::tab_thumb_preview);
         switchWidget(mWidgets[thumbs_widget]);
 
         auto tw = getThumbScrollWidget();
@@ -1071,29 +1068,29 @@ void DkCentralWidget::showTabs(bool show)
 void DkCentralWidget::switchWidget(QWidget *widget)
 {
     Q_ASSERT(widget);
+    Q_ASSERT(!mTabInfos.empty());
 
-    if (mViewLayout->currentWidget() == widget && mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty)
+    auto &tabInfo = mTabInfos[mTabbar->currentIndex()];
+
+    if (mViewLayout->currentWidget() == widget && tabInfo->getMode() != DkTabInfo::tab_empty) {
+        updateTab(tabInfo);
         return;
-
-    if (widget)
-        mViewLayout->setCurrentWidget(widget);
-    else
-        mViewLayout->setCurrentWidget(mWidgets[viewport_widget]);
-
-    if (widget && !mTabInfos.isEmpty()) {
-        int mode = DkTabInfo::tab_single_image;
-
-        if (widget == mWidgets[thumbs_widget])
-            mode = DkTabInfo::tab_thumb_preview;
-        else if (widget == mWidgets[recent_files_widget])
-            mode = DkTabInfo::tab_recent_files;
-        else if (widget == mWidgets[preference_widget])
-            mode = DkTabInfo::tab_preferences;
-        else if (widget == mWidgets[batch_widget])
-            mode = DkTabInfo::tab_batch;
-
-        mTabInfos[mTabbar->currentIndex()]->setMode(mode);
     }
+
+    int mode = DkTabInfo::tab_single_image;
+
+    if (widget == mWidgets[thumbs_widget])
+        mode = DkTabInfo::tab_thumb_preview;
+    else if (widget == mWidgets[recent_files_widget])
+        mode = DkTabInfo::tab_recent_files;
+    else if (widget == mWidgets[preference_widget])
+        mode = DkTabInfo::tab_preferences;
+    else if (widget == mWidgets[batch_widget])
+        mode = DkTabInfo::tab_batch;
+
+    tabInfo->setMode(mode);
+    updateTab(tabInfo);
+    mViewLayout->setCurrentWidget(widget);
 }
 
 void DkCentralWidget::tryRestart(const QStringList &args)
