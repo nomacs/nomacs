@@ -31,63 +31,28 @@ git submodule init
 git submodule update
 ```
 
-## Build nomacs (Windows)
+## Build nomacs (Windows MSVC)
 
-We assume you have an IDE (i.e. Visual Studio), python, git, and [Qt](https://www.qt.io/download-open-source) installed.
+The [MSVC Readme](scripts/windows-msvc/readme.txt) details how to compile all 3rd-party dependencies and nomacs.
 
-Get all dependencies:
-
-```bash
-git submodule init
-git submodule update
-```
-
-Project folders in ``3rd-party`` will not be empty anymore. Now call:
-
-```bash
-python scripts/make.py "qtpath/bin"
-```
-
-This will build nomacs into `build/nomacs`. If you are using Visual Studio, you can then double-click `build/nomacs/nomacs.sln`. Right-click the nomacs project and choose `Set as StartUp Project`.
-
-Build individual projects using:
-
-```bash
-python scripts/make.py "qt/bin" --project quazip,libraw --force
-```
-
-### Developer Build
-
-I like having a separate developer build (without submodules) that uses 3rd party libs already compiled. To do so you need to:
-
-```bash
-git submodule update --init --remote scripts 
-
-# python scripts/make.py "C:\Qt\Qt-5.14.1-installer\5.14.2\msvc2017_64\bin" --lib-path C:\coding\nomacs\nomacs\3rd-party\build
-python scripts/make.py "qt/bin" --lib-path "nomacs/3rd-party/build"
-```
-
-### If anything did not work
-
-- check if you have setup opencv (otherwise uncheck ENABLE_OPENCV)
-- check if your Qt is set correctly (otherwise set the path to `qt_install_dir/qtbase/bin/qmake.exe`)
-- check if your builds proceeded correctly
+The [AppVeyor configuration](appveyor.yml) details the build steps we use for release builds.
 
 ## Build nomacs (Linux/Unix)
 
 Before you build nomacs, please note the following:
 
-- Nomacs requires using Qt6.
-- [kimageformats-plugins]([https://github.com/KDE/kimageformats](https://invent.kde.org/frameworks/kimageformats)) is an optional dependency that provides additional formats such as AVIF, HEIC/HEIF, and JPEG XL/JXL. The Qt version of the plugins should match the Qt version when compiling nomacs.
-- Zip file support requires Quazip, which has varied support in distributions. If the system package is missing or does not work, you can set `USE_SYSTEM_QUAZIP=NO` to use the version in nomacs/3rdparty. However, you may also need to remove the any system quazip development package temporarily. (such as `llibquazip*-dev` for Ubuntu)
+- Nomacs requires Qt6, Qt5 is no longer supported.
+- [kimageformats-plugins]([https://github.com/KDE/kimageformats](https://invent.kde.org/frameworks/kimageformats)) is an optional dependency that provides additional formats such as AVIF, HEIC/HEIF, and JPEG XL/JXL. It must be the Qt6 version of the plugins (some distros have both Qt5 and Qt6)
+- Zip file support requires Quazip for Qt6 and `ENABLE_QUAZIP=ON`. Quazip has varied support in distributions. If the system package is missing, outdated, or compiled for Qt5, you must compile it separately for Qt6. In some cases, you may also need to remove the any other Quazip development package from your system (such as `llibquazip*-dev` for Ubuntu)
+- The [Linux workflow file](.github/workflows/linux.yml) may provide additional hints if you get stuck.
 
 ### Get the required packages
 
 The package lists and cmake configuration listed below enable all features in nomacs, which we recommend. However, if you do not want a particular feature you can omit certain packages.
 
-#### Build options and their dependencies
+#### Build options and dependencies
 
-This is the list of configurable packages and what they provide in nomacs. To ensure a feature is included/excluded set the cmake option for that feature. By default, all features are enabled if the dependencies are found when running cmake**.
+Nomacs has several optional features which require 3rd-party software packages. To ensure a feature is included/excluded set the cmake option for that feature. By default, all features are enabled if the dependencies are found when running cmake**.
 
 The following Qt components are necessary: Core, Concurrent, Network, PrintSupport, SVG, Widgets, Core5Compat.
 
@@ -106,12 +71,12 @@ There are other optional features that can be enabled during build:
 
 #### Runtime dependencies
 
-Additional packages will be used by nomacs if they are available at runtime, and they use the same Qt version as nomacs (5 or 6).
+Additional packages will be used by nomacs if they are available at runtime, provided they use Qt6.
 
 - QImageFormats: Enables reading ICNS, MNG, TGA, TIFF, WBMP, WEBP
 - KImageFormats: Enables reading AVIF, HEIF/HEIC, JXL, EXR, EPS and [more](https://github.com/KDE/kimageformats)
 
-#### Ubuntu 24.04
+#### Ubuntu 24.04 - 26.04
 
 ```console
 sudo apt install qt6-base-dev qt6-tools-dev qt6-svg-dev qt6-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev libtiff-dev libtiff-dev libquazip1-qt6-dev build-essential git cmake lcov libgtest-dev
@@ -126,7 +91,6 @@ sudo apt install qt6-base-dev qt6-tools-dev qt6-tools-dev-tools libqt6svg6-dev l
 #### Arch
 
 ```console
-# qt6
 sudo pacman -S qt6-base qt6-imageformats qt6-svg qt6-tools quazip-qt6 exiv2 libraw libtiff opencv kimageformats git cmake gtest base-devel
 ```
 
@@ -145,7 +109,6 @@ sudo pkg install qt6-base qt6-imageformats qt6-svg qt6-5compat qt6-tools quazip-
 #### Haiku (r1 beta 5)
 
 ```console
-# qt6
 pkgman install qt6_base_devel qt6_tools_devel qt6_svg_devel qt6_5compat_devel quazip1_qt6_devel tiff_devel libraw_devel opencv_devel gtest_devel exiv2_devel kimageformats6 qt6_imageformats cake git gcc make pkgconfig lcms_devel
 ```
 
@@ -154,8 +117,7 @@ pkgman install qt6_base_devel qt6_tools_devel qt6_svg_devel qt6_5compat_devel qu
 Nomacs is configured with cmake. These cmake options are often needed:
 
 - ENABLE_QUAZIP=[ON|OFF] - Default OFF
-- USE_SYSTEM_QUAZIP=[ON|OFF] - Default ON
-- CMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo] - For normal usage, choose `RelWithDebInfo`. For development, `Debug` builds have more logging as well as debug symbols.
+- CMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo] - For normal usage, choose `RelWithDebInfo`. For development, `Debug` builds have more logging and compile much faster.
 
 ```console
 cd nomacs
@@ -170,7 +132,7 @@ cmake ../ImageLounge
 make [-j 8]
 ```
 
-You will now have a binary (~/nomacs/build/nomacs), which you can use directly, however you may need to set LD_LIBRARY_PATH for this to work. You can check the log output to see that nomacs is loading configuration files from the expected locations.
+You will now have a binary (~/nomacs/build/nomacs), which you can use directly, however you may need to set `LD_LIBRARY_PATH` for this to work. You can check the log output to see that nomacs is loading configuration files from the expected locations.
 
 ```console
 # running nomacs from ~/nomacs/build/
@@ -210,9 +172,8 @@ sudo ldconfig
 
 ### For Package Maintainers
 
-- Highly recommended optional dependency: nomacs officially supported [plugins](https://github.com/nomacs/nomacs-plugins/), provide core features like paint-on-image. Enabled by default if `nomacs/ImageLounge/plugins` submodule is present.
 - Recommended optional dependency: qt-imageformats-plugins provides WEBP and many more formats
-- Recommended optional dependency: quazip provides support for reading images from zip files (with `ENABLE_QUAZIP=ON`). In the unlikely case there is a conflict with the quazip package, you may use 3rdparty/quazip with `USE_SYSTEM_QUAZIP=OFF`.
+- Recommended optional dependency: quazip provides support for reading images from zip files (with `ENABLE_QUAZIP=ON`).
 - Recommended optional dependency: kimageformats provides AVIF, HEIF/HEIC, JXL and many more formats.
 - Recommended build dependency: gtest so you may run `make check` to validate the build
 - Ensure `ENABLE_TRANSLATIONS` is `ON` (default: `ON`)
