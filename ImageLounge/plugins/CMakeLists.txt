@@ -1,7 +1,13 @@
 # check cmake requirements
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 project(nomacs-plugins)
+
+if(COMMAND cmake_policy)
+    if(POLICY CMP0177)
+        cmake_policy(SET CMP0177 NEW)
+    endif()
+endif(COMMAND cmake_policy)
 
 # include macros needed
 include("cmake/Utils.cmake")
