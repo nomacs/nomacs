@@ -217,8 +217,6 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
 
 DkViewPort::~DkViewPort()
 {
-    mController->closePlugin(false, true);
-
     mManipulatorWatcher.cancel();
     mManipulatorWatcher.blockSignals(true);
 }
