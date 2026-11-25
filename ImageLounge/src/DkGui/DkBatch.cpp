@@ -193,8 +193,9 @@ void DkInputTextEdit::appendFiles(const QStringList &fileList)
 
     // unique!
     for (const QString &cStr : fileList) {
-        if (!cFileList.contains(cStr) && !newFiles.contains(cStr))
+        if (!cFileList.contains(cStr) && !newFiles.contains(cStr)) {
             newFiles.append(cStr);
+        }
     }
 
     if (!newFiles.empty()) {
@@ -233,15 +234,17 @@ void DkInputTextEdit::appendFromMime(const QMimeData *mimeData, bool recursive, 
     QStringList files;
     const QList<QUrl> urls = DkUtils::findUrlsInMimeData(mimeData);
     for (const QUrl &url : urls) {
-        if (!url.isLocalFile())
+        if (!url.isLocalFile()) {
             continue;
+        }
         DkFileInfo fileInfo(DkUtils::urlToLocalFile(url));
 
-        if (fileInfo.isDir())
+        if (fileInfo.isDir()) {
             appendDir(fileInfo.path(), recursive);
-        else if ((allowAnyFile && fileInfo.exists() && fileInfo.isFile())
-                 || (!allowAnyFile && DkUtils::isLoadable(fileInfo)))
+        } else if ((allowAnyFile && fileInfo.exists() && fileInfo.isFile())
+                   || (!allowAnyFile && DkUtils::isLoadable(fileInfo))) {
             files.append(fileInfo.path());
+        }
     }
 
     if (!files.empty())

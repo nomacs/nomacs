@@ -1287,12 +1287,15 @@ QString DkUtils::resolveFraction(const QString &frac)
 
 QList<QUrl> DkUtils::findUrlsInMimeData(const QMimeData *mimeData)
 {
-    if (!mimeData)
+    if (!mimeData) {
         return {};
-    if (mimeData->hasUrls())
+    }
+    if (mimeData->hasUrls()) {
         return mimeData->urls();
-    if (mimeData->hasText())
+    }
+    if (mimeData->hasText()) {
         return findUrlsInTextNewline(mimeData->text());
+    }
     return {};
 }
 
