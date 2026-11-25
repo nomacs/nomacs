@@ -436,6 +436,9 @@ void DkCentralWidget::currentTabChanged(int idx)
         return;
     }
 
+    // close active plugin
+    (void)getViewPort()->getController()->applyPluginChanges(true);
+
     // deactivate the previous tab
     if (auto prev = mPrevTab.toStrongRef()) {
         prev->deactivate(); // block loader signals, save per-tab state, etc
@@ -1253,6 +1256,9 @@ bool DkCentralWidget::promptUnloadTab(int idx)
         auto *bw = dynamic_cast<DkBatchWidget *>(mWidgets[batch_widget]);
         return bw->close(); // FIXME: this cancels batch silently (old behavior)
     }
+
+    // close active plugin, which could set the edited flag
+    (void)getViewPort()->getController()->applyPluginChanges(true);
 
     const auto &loader = tabInfo->getImageLoader();
 
