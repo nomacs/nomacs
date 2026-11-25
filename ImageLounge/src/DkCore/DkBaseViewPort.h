@@ -298,5 +298,5 @@ private:
 // to coordinates in r2 (`QRectF(QPointF(), tgt)`)
 // when r1 is scaled to maximum inside r2 while keeping aspect ratio
 // and the scaled rectangle is centered in r2.
-[[nodiscard]] QTransform scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt);
+[[nodiscard]] QTransform DllCoreExport scaleKeepAspectRatioAndCenter(const QSizeF &src, const QSizeF &tgt);
 }

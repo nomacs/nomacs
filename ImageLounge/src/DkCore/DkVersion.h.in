@@ -29,10 +29,17 @@
 // compile-time revision of nomacs
 #define NOMACS_REVISION_STR "${NOMACS_REVISION}"
 
+// windows resource compiler chokes on the include
+#ifndef RC_INVOKED
+
+#include "nmc_config.h"
+
 namespace nmc
 {
 // run-time revision of nomacs
-extern char const * const revisionString;
+extern DllCoreExport char const * const revisionString;
 }
+
+#endif // RC_INVOKED
 
 #endif

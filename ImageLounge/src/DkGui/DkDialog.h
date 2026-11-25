@@ -411,7 +411,7 @@ protected:
     QIcon mClearIcon;
 };
 
-class DkShortcutsModel : public QAbstractItemModel
+class DllCoreExport DkShortcutsModel : public QAbstractItemModel
 {
     Q_OBJECT
 

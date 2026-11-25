@@ -5,6 +5,8 @@
 #include "opencv2/core/mat.hpp"
 #endif
 
+#include "nmc_config.h"
+
 namespace nmc
 {
 #ifdef WITH_OPENCV
@@ -20,7 +22,7 @@ namespace nmc
  * The exposed references remain valid as long as the lifetime of
  * the DkNativeImage instance.
  */
-class DkNativeImage
+class DllCoreExport DkNativeImage
 {
     QImage mImg{};
     cv::Mat mMat{};

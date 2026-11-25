@@ -67,7 +67,7 @@ Its main purpose is to provide Mac OS X "open file from finder"
 functionality for nomacs. It *has* to be catched on the
 QApplication level in the event().
 */
-class DkNomacsOSXEventFilter : public QObject
+class DllCoreExport DkNomacsOSXEventFilter : public QObject
 {
     Q_OBJECT
 
