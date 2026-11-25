@@ -64,8 +64,9 @@ nomacs might have a weird coding style at the first glance, however we try to fo
 - Prefix static variables with `s`
 - Prefix classes with `Dk`.
 ### Formatting
-- We format C++ sources `clang-format`. You can run `scripts/format-cpp.sh` or configure your editor to use `clang-format`.
-- We format cmake sources with `gersemi`. You can run `scripts/format-cmake.sh`.
+- Format C++ sources `clang-format`. You can run `scripts/format-cpp.sh` or configure your editor to use `clang-format`.
+- Use braces around single-line conditional statements.
+- Format cmake sources with `gersemi`. You can run `scripts/format-cmake.sh`.
 - All repository files must have **LF** line endings
 ### C++ guidelines
 - Standard: C++17
