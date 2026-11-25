@@ -213,7 +213,7 @@ add_custom_target(
 
 # this macro must appear after add_subdirectory(<plugins-path>)
 macro(NMC_BUNDLE_COPY_PLUGINS)
-    get_target_property(PLUGIN_TARGETS nomacs_plugins MANUALLY_ADDED_DEPENDENCIES)
+    get_target_property(PLUGINS_TARGETS nomacs_plugins MANUALLY_ADDED_DEPENDENCIES)
 
     # naming convention for plugins output is "libxxx.dylib"
     set(PLUGINS_FILES "")
