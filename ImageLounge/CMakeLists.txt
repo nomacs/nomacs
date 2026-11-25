@@ -30,6 +30,11 @@ add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
 
+# enable -fvisibility=hidden by default to avoid symbol exports that could conflict with Qt plugins
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+
 # if python is available, we can run additional build scripts (i.e. versioning)
 find_package(Python QUIET)
 
