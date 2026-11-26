@@ -45,14 +45,16 @@ public:
     ~DkStatusBar() override = default;
 
     enum StatusLabel {
-        status_pixel_info, // the first is special (left)
+        // left side, grouped in one container widget (QStatusBar::addWidget)
+        status_pixel_info,
+        status_frame_info,
 
+        // right side (permanent widgets)
         status_file_info,
         status_dimension_info,
         status_format_info,
         status_zoom_info,
         status_filenumber_info,
-        status_frame_info,
         status_filesize_info,
         status_time_info,
 
