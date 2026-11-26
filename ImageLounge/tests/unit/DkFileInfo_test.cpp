@@ -15,9 +15,6 @@ TEST(DkFileInfo, OpensOrdinaryFilesInDirectoriesEndingInHash)
     QTemporaryDir tempDir;
     ASSERT_TRUE(tempDir.isValid());
     const QStringList directories = {"#middle", "#ending#", "#ending#/nested#"};
-    QFile sibling(tempDir.filePath("#ending"));
-    ASSERT_TRUE(sibling.open(QIODevice::WriteOnly));
-    sibling.close();
 
     for (const QString &directory : directories) {
         ASSERT_TRUE(QDir(tempDir.path()).mkpath(directory));

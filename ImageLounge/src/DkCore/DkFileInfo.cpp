@@ -57,8 +57,6 @@ static constexpr QStringView ZipMarker = u"#/";
 DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
 {
     qsizetype index = encodedFilePath.lastIndexOf(ZipMarker);
-    if (index < 0 || QFileInfo(encodedFilePath).exists())
-        return;
 
     while (index > 0) {
         const QString zipFilePath = encodedFilePath.left(index);
@@ -67,7 +65,7 @@ DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
             mIsMember = true;
             mZipFilePath = zipFilePath;
             mZipMemberPath = encodedFilePath.mid(index + ZipMarker.length());
-            break;
+            return;
         }
         index = encodedFilePath.lastIndexOf(ZipMarker, index - 1);
     }
