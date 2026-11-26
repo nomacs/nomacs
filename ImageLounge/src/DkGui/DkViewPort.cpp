@@ -745,6 +745,9 @@ void DkViewPort::applyManipulator()
         return;
     }
 
+    // remember the last manipulator, also initialize the dock to this manipulator
+    DkSettingsManager::param().global().lastManipulatorId = mpl->action()->objectName();
+
     // show the dock (in case it's not shown yet)
     if (mplExt) {
         am.action(DkActionManager::panel_edit_image)->setChecked(true);

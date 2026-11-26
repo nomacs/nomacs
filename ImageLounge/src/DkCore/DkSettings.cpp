@@ -1046,6 +1046,7 @@ void DkSettings::setToDefaultSettings()
     global_p.doubleClickForFullscreen = true;
     global_p.showLogoImage = true;
     global_p.sessionId = QDateTime::currentSecsSinceEpoch();
+    global_p.lastManipulatorId = "";
 
 #ifdef Q_OS_LINUX
     sync_p.switchModifier = true;

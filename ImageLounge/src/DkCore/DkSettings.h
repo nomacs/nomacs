@@ -301,6 +301,7 @@ public:
         QString pluginsDir;
 
         qulonglong sessionId;
+        QString lastManipulatorId; // action id of last manipulator used
     };
 
     struct SlideShow {
