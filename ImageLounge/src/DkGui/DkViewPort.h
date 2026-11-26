@@ -184,6 +184,7 @@ private:
     void loadSvg();
     void nextMovieFrame();
     void previousMovieFrame();
+    void updateMovieFrameInfo(int frameNumber);
     void animateFade();
 
     void onImageLoaded(QSharedPointer<DkImageContainerT> image, bool loaded = true);

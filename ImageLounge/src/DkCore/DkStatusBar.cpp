@@ -30,6 +30,7 @@
 #include "DkActionManager.h"
 #include "DkSettings.h"
 
+#include <QHBoxLayout>
 #include <QLabel>
 
 namespace nmc
@@ -46,14 +47,22 @@ void DkStatusBar::createLayout()
     mLabels.resize(status_end);
     setObjectName("DkStatusBar");
 
+    // labels on the left side share one container, so that labels changing
+    // often (pixel info, animation frame) don't move the right-side labels
+    auto *leftWidget = new QWidget(this);
+    auto *leftLayout = new QHBoxLayout(leftWidget);
+    leftLayout->setContentsMargins(0, 0, 0, 0);
+    leftLayout->setSpacing(12);
+    addWidget(leftWidget);
+
     for (int idx = 0; idx < mLabels.size(); idx++) {
         mLabels[idx] = new QLabel(this);
         mLabels[idx]->setObjectName("statusBarLabel");
         mLabels[idx]->hide();
 
-        if (idx == 0) {
+        if (idx < status_file_info) {
             // mLabels[idx]->setToolTip(tr("CTRL activates the crosshair cursor"));
-            addWidget(mLabels[idx]);
+            leftLayout->addWidget(mLabels[idx]);
         } else
             addPermanentWidget(mLabels[idx]);
     }
