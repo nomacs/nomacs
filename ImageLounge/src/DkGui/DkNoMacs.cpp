@@ -770,6 +770,13 @@ void DkNoMacs::fitFrame()
     if (!getTabWidget()->getViewPort())
         return;
 
+    // in fullscreen/frameless the window needs to fill the screen
+    if (isFullScreen() || objectName() == "DkNomacsFrameless") {
+        return;
+    }
+    if (isMaximized()) {
+        showNormal();
+    }
     auto vp = getTabWidget()->getViewPort();
 
     QRectF viewRect = vp->getImageViewRect();
