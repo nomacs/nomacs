@@ -37,6 +37,7 @@
 #include "DkBasicLoader.h"
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
+#include "nmc_config.h"
 
 class QThreadPool;
 
@@ -110,7 +111,7 @@ struct ThumbnailFromMetadata {
 std::optional<ThumbnailFromMetadata> loadThumbnailFromMetadata(const DkMetaDataT &metaData,
                                                                DkLoadOptions loadOptions = DkLoadOption::normal);
 
-class DkThumbLoader : public QObject
+class DllCoreExport DkThumbLoader : public QObject
 {
     Q_OBJECT
 

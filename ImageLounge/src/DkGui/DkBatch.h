@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkManipulators.h"
+#include "nmc_config.h"
 
 // Qt defines
 class QListView;
@@ -95,7 +96,7 @@ class DkSettingsWidget;
 class DkBatchPluginInterface;
 class DkRectWidget;
 
-class DkBatchContent : public DkWidget
+class DllCoreExport DkBatchContent : public DkWidget
 {
     Q_OBJECT
 
@@ -155,7 +156,7 @@ protected:
     DkBatchContent *mBatchContent = nullptr;
 };
 
-class DkInputTextEdit : public QTextEdit
+class DllCoreExport DkInputTextEdit : public QTextEdit
 {
     Q_OBJECT
 
@@ -178,12 +179,12 @@ protected:
     void dropEvent(QDropEvent *event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
-    void appendFromMime(const QMimeData *mimeData, bool recursive = false);
+    void appendFromMime(const QMimeData *mimeData, bool recursive = false, bool allowAnyFile = false);
 
     QList<int> mResultList;
 };
 
-class DkBatchInput : public DkBatchContent
+class DllCoreExport DkBatchInput : public DkBatchContent
 {
     Q_OBJECT
 

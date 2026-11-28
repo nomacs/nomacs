@@ -49,6 +49,7 @@
 
 class QComboBox;
 class QColor;
+class QMimeData;
 class QUrl;
 
 #if !defined(QT_NO_DEBUG_OUTPUT)
@@ -179,6 +180,7 @@ public:
     static QStringList filterStringList(const QString &query, const QStringList &list);
     static bool moveToTrash(const QStringList &files);
     static QList<QUrl> findUrlsInTextNewline(QString text);
+    static QList<QUrl> findUrlsInMimeData(const QMimeData *mimeData);
 
 #ifdef WITH_OPENCV
     /**

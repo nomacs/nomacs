@@ -9,3 +9,10 @@ add_nomacs_test(
 if(TARGET nomacs_plugins)
     add_dependencies(test_shortcutsmodel nomacs_plugins)
 endif()
+
+add_nomacs_test(
+    test_batch_paste
+    integration
+    DkBatchPaste_test.cpp
+)
+target_link_libraries(test_batch_paste PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
