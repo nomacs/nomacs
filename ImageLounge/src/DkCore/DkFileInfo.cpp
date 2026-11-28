@@ -56,11 +56,18 @@ static constexpr QStringView ZipMarker = u"#/";
 
 DkFileInfo::ZipData::ZipData(const QString &encodedFilePath)
 {
-    qsizetype index = encodedFilePath.indexOf(ZipMarker);
-    if (index > 0) {
-        mIsMember = true;
-        mZipFilePath = encodedFilePath.mid(0, index);
-        mZipMemberPath = encodedFilePath.mid(index + ZipMarker.length());
+    qsizetype index = encodedFilePath.lastIndexOf(ZipMarker);
+
+    while (index > 0) {
+        const QString zipFilePath = encodedFilePath.left(index);
+        // Markers before the archive can also be part of real directory names.
+        if (QFileInfo(zipFilePath).isFile()) {
+            mIsMember = true;
+            mZipFilePath = zipFilePath;
+            mZipMemberPath = encodedFilePath.mid(index + ZipMarker.length());
+            return;
+        }
+        index = encodedFilePath.lastIndexOf(ZipMarker, index - 1);
     }
 }
 

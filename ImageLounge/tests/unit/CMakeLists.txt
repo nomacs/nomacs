@@ -7,4 +7,5 @@ add_nomacs_test(
     DkBaseViewPort_test.cpp
     DkNativeImage_test.cpp
     DkMetaData_test.cpp
+    DkFileInfo_test.cpp
 )
