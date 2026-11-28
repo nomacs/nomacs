@@ -377,6 +377,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
     }
 
     if (!DkSettingsManager::param().app().privateMode) {
+        // unload "global" plugins that stay open when switching images
         bool saveTabs = false;
 
         if (cw->getTabs().size() > 1) {
@@ -430,6 +431,10 @@ void DkNoMacs::closeEvent(QCloseEvent *event)
         settings.setValue(mThumbsDock->objectName(), QMainWindow::dockWidgetArea(mThumbsDock));
 
     nmc::DkSettingsManager::param().save();
+
+    // close global plugins like CompositeImage so they can save their settings
+    // do this after main settings are saved so a bad plugin won't cause a problem
+    (void)cw->getViewPort()->getController()->closePlugin(false, true);
 
     QMainWindow::closeEvent(event);
 }
@@ -765,6 +770,13 @@ void DkNoMacs::fitFrame()
     if (!getTabWidget()->getViewPort())
         return;
 
+    // in fullscreen/frameless the window needs to fill the screen
+    if (isFullScreen() || objectName() == "DkNomacsFrameless") {
+        return;
+    }
+    if (isMaximized()) {
+        showNormal();
+    }
     auto vp = getTabWidget()->getViewPort();
 
     QRectF viewRect = vp->getImageViewRect();

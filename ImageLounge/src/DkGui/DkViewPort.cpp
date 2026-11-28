@@ -217,8 +217,6 @@ DkViewPort::DkViewPort(DkThumbLoader *thumbLoader, QWidget *parent)
 
 DkViewPort::~DkViewPort()
 {
-    mController->closePlugin(false, true);
-
     mManipulatorWatcher.cancel();
     mManipulatorWatcher.blockSignals(true);
 }
@@ -746,6 +744,9 @@ void DkViewPort::applyManipulator()
         mController->setInfo(tr("Busy"));
         return;
     }
+
+    // remember the last manipulator, also initialize the dock to this manipulator
+    DkSettingsManager::param().global().lastManipulatorId = mpl->action()->objectName();
 
     // show the dock (in case it's not shown yet)
     if (mplExt) {

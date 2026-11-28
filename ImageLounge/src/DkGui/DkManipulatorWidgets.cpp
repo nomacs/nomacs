@@ -40,6 +40,7 @@
 #include <QColorSpace>
 #include <QComboBox>
 #include <QLabel>
+#include <QPointer>
 #include <QVBoxLayout>
 
 namespace nmc
@@ -68,8 +69,10 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
     for (auto w : mWidgets)
         w->setObjectName("darkManipulator");
 
-    for (QAction *a : am.manipulatorActions())
-        connect(a, &QAction::triggered, this, &DkManipulatorWidget::selectManipulator, Qt::UniqueConnection);
+    // Recall the last manipulator used. When dock is uninitialized and mpl action fires,
+    // this also ensures the initial state is correct.
+    QString lastMpl = DkSettingsManager::param().global().lastManipulatorId;
+    clickManipulatorButton(lastMpl);
 }
 
 void DkManipulatorWidget::createLayout()
@@ -87,14 +90,20 @@ void DkManipulatorWidget::createLayout()
     for (int idx = DkManipulatorManager::numSimpleManipulators; idx < DkManipulatorManager::numManipulators; idx++) {
         const auto extIdx = static_cast<DkManipulatorManager::ExtendedManipulator>(idx);
         auto mpl = am.manipulatorManager().manipulatorExt(extIdx);
+        auto *action = mpl->action();
 
-        auto *entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
+        auto *entry = new DkTabEntryWidget(action->icon(), mpl->name(), this);
         connect(entry, &DkTabEntryWidget::clicked, this, [this, mpl]() {
-            selectManipulatorInner(mpl);
+            selectManipulator(mpl);
         });
 
         aLayout->addWidget(entry);
         group->addButton(entry);
+
+        connect(action, &QAction::triggered, this, [this, action] {
+            clickManipulatorButton(action->objectName());
+        });
+        mButtons.insert(action->objectName(), entry);
     }
 
     QString scrollbarStyle = QString("QScrollBar:vertical {border: 1px solid "
@@ -140,17 +149,15 @@ void DkManipulatorWidget::createLayout()
         w->setFocusPolicy(Qt::ClickFocus);
 }
 
-void DkManipulatorWidget::selectManipulator()
+void DkManipulatorWidget::clickManipulatorButton(const QString &actionId)
 {
-    const auto *action = dynamic_cast<QAction *>(QObject::sender());
-
-    DkActionManager &am = DkActionManager::instance();
-    QSharedPointer<DkBaseManipulator> mpl = am.manipulatorManager().manipulator(action);
-    QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
-    selectManipulatorInner(mplExt);
+    auto button = mButtons.value(actionId);
+    if (button) { // null for manipulators with no UI
+        button->click(); // calls selectManipulator()
+    }
 }
 
-void DkManipulatorWidget::selectManipulatorInner(QSharedPointer<DkBaseManipulatorExt> mplExt)
+void DkManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulatorExt> mplExt)
 {
     if (!mplExt) {
         mTitleLabel->hide();

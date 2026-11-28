@@ -217,16 +217,15 @@ public:
 
     void setImage(QSharedPointer<DkImageContainerT> imgC);
 
-public slots:
-    void selectManipulator();
-
 private:
     void createLayout();
-    void selectManipulatorInner(QSharedPointer<DkBaseManipulatorExt> mpl);
+    void clickManipulatorButton(const QString &actionId);
+    void selectManipulator(QSharedPointer<DkBaseManipulatorExt> mpl);
 
     QVector<DkBaseManipulatorWidget *> mWidgets;
 
     QLabel *mTitleLabel = nullptr;
+    QMap<QString, QPointer<QAbstractButton>> mButtons{};
 };
 
 class DkEditDock : public DkDockWidget
